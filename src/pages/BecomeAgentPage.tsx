@@ -255,23 +255,24 @@ export default function BecomeAgentPage() {
                 profissional ilimitado.
               </p>
 
-              <div className="flex flex-wrap gap-4">
+              <div className="flex gap-3">
                 <a
                   href={whatsappUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group inline-flex items-center gap-3 px-8 py-4 rounded-2xl bg-accent text-accent-foreground font-bold text-sm hover:bg-accent/90 transition-all shadow-2xl shadow-accent/30 hover:shadow-accent/50 hover:scale-105"
+                  className="group inline-flex items-center gap-2 px-5 py-3 md:px-8 md:py-4 rounded-2xl bg-accent text-accent-foreground font-bold text-xs md:text-sm hover:bg-accent/90 transition-all shadow-2xl shadow-accent/30 hover:shadow-accent/50 hover:scale-105"
                 >
-                  <Phone size={18} />
-                  Quero Ser Corretor
-                  <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
+                  <Phone size={16} />
+                  <span className="hidden sm:inline">Quero Ser Corretor</span>
+                  <span className="sm:hidden">Ser Corretor</span>
+                  <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
                 </a>
                 <a
                   href="#por-que"
-                  className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-white/10 text-white font-bold text-sm hover:bg-white/20 transition-all border border-white/10 backdrop-blur-sm"
+                  className="inline-flex items-center gap-2 px-5 py-3 md:px-8 md:py-4 rounded-2xl bg-white/10 text-white font-bold text-xs md:text-sm hover:bg-white/20 transition-all border border-white/10 backdrop-blur-sm"
                 >
                   Saiba Mais
-                  <ChevronDown size={16} className="animate-bounce" />
+                  <ChevronDown size={14} className="animate-bounce" />
                 </a>
               </div>
             </motion.div>
