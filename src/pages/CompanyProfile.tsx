@@ -403,7 +403,7 @@ export default function CompanyProfile() {
               {/* Company Card */}
               <div className="bg-card border border-border rounded-2xl overflow-hidden">
                 {/* Mini banner */}
-                <div className="h-20 bg-gradient-to-r from-primary to-primary/60 relative">
+                <div className="h-20 relative" style={{ background: dbProfile?.cover_color || 'linear-gradient(to right, hsl(var(--primary)), hsl(var(--primary) / 0.6))' }}>
                   {company.logo && (
                     <img src={company.logo} alt="" className="absolute -bottom-6 left-4 w-14 h-14 rounded-xl object-cover border-3 border-card shadow-lg" />
                   )}
