@@ -638,7 +638,7 @@ export default function CompanyProfile() {
       {/* ═══ FULLSCREEN CINEMA MODE ═══ */}
       {(() => {
         const galleryProducts = products.filter((p: any) => p.image || p.images?.length);
-        if (galleryProducts.length < 2) return null;
+        if (galleryProducts.length < 1) return null;
         const seg = isProperty ? "imoveis" : "veiculos";
         const total = galleryProducts.length;
 
