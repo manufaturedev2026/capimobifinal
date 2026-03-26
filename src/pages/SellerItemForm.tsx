@@ -436,21 +436,28 @@ export default function SellerItemForm() {
               <Lock size={10} /> Algumas tags são exclusivas para planos Premium e VIP
             </p>
           )}
-          <div className="flex flex-wrap gap-2">
-            {availableTags.map((tag) => (
-              <button
-                key={tag.value}
-                type="button"
-                onClick={() => toggleTag(tag.value)}
-                className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
-                  form.tags.includes(tag.value)
-                    ? "bg-accent text-accent-foreground ring-2 ring-accent"
-                    : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
-                }`}
-              >
-                {tag.label}
-              </button>
-            ))}
+          <div className="flex flex-wrap gap-2.5">
+            {availableTags.map((tag) => {
+              const selected = form.tags.includes(tag.value);
+              return (
+                <button
+                  key={tag.value}
+                  type="button"
+                  onClick={() => toggleTag(tag.value)}
+                  className={`relative px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-1.5 ${
+                    selected
+                      ? `bg-gradient-to-r ${tag.gradient} text-white shadow-lg scale-105 ring-2 ring-white/20`
+                      : "bg-secondary text-secondary-foreground hover:scale-105 hover:shadow-md"
+                  }`}
+                >
+                  <span>{tag.emoji}</span>
+                  {tag.label}
+                  {selected && (
+                    <span className="ml-1 w-4 h-4 rounded-full bg-white/25 flex items-center justify-center text-[10px]">✓</span>
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
 
