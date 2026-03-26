@@ -611,7 +611,15 @@ export default function CompanyProfile() {
                               {isDbProfile
                                 ? `R$ ${product.price.toLocaleString("pt-BR")}`
                                 : formatPrice(product.price)}
+                              {isDbProfile && ((product.tags || []).includes("aluguel_flex") || product.category === "aluguel") && (
+                                <span className="text-sm font-normal text-muted-foreground"> /mês</span>
+                              )}
                             </p>
+                          )}
+                          {isDbProfile && ((product.tags || []).includes("aluguel_flex") || product.category === "aluguel") && (
+                            <span className="inline-block mt-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary text-primary-foreground">
+                              🏠 Aluguel
+                            </span>
                           )}
                           {product.city && (
                             <p className="text-[11px] text-muted-foreground mt-1.5 flex items-center gap-1">
@@ -730,6 +738,9 @@ export default function CompanyProfile() {
                         {lbProduct.price > 0 && (
                           <p className="font-display font-bold text-2xl md:text-4xl text-primary mt-4 drop-shadow-lg">
                             {isDbProfile ? `R$ ${lbProduct.price.toLocaleString("pt-BR")}` : formatPrice(lbProduct.price)}
+                            {isDbProfile && (((lbProduct as any).tags || []).includes("aluguel_flex") || (lbProduct as any).category === "aluguel") && (
+                              <span className="text-lg font-normal text-muted-foreground"> /mês</span>
+                            )}
                           </p>
                         )}
 
