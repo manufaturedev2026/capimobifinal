@@ -94,6 +94,9 @@ export default function ProductDetail() {
   }
 
   const isProperty = true;
+  const isAluguel = isDb
+    ? ((product.tags || []).includes("aluguel_flex") || product.category === "aluguel")
+    : false;
 
   const images: string[] = isDb ? (product.photos?.length > 0 ? product.photos : []) : product.images;
   const title = product.title;
