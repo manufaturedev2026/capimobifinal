@@ -77,8 +77,8 @@ export default function AuthPage() {
             <div className="space-y-4">
               {[
                 { icon: Building2, text: "Publique imóveis com fotos e detalhes" },
-                { icon: Car, text: "Anuncie veículos com ficha técnica completa" },
                 { icon: KeyRound, text: "Controle total dos seus anúncios" },
+                { icon: Shield, text: "Perfil verificado e confiável" },
               ].map((item, i) => (
                 <motion.div
                   key={i}
