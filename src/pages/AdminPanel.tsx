@@ -136,6 +136,7 @@ export default function AdminPanel() {
       phone: p.phone,
       seller_type: p.seller_type,
       city: p.city,
+      account_manager: p.account_manager || null,
       subscription: subsMap.get(p.user_id)
         ? {
             id: subsMap.get(p.user_id).id,
