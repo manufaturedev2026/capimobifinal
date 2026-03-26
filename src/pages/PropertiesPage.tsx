@@ -353,7 +353,7 @@ export default function PropertiesPage() {
                           {product.tag}
                         </span>
                       )}
-                      {(product as any).realCategory === "aluguel" && (
+                      {(product as any).isAluguel && (
                         <span className="absolute bottom-3 left-3 px-3 py-1 rounded-full text-xs font-bold shadow bg-primary text-primary-foreground">
                           🏠 Aluguel
                         </span>
