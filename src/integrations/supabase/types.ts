@@ -67,6 +67,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          account_manager: string | null
           address: string | null
           bio: string | null
           city: string | null
@@ -90,6 +91,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          account_manager?: string | null
           address?: string | null
           bio?: string | null
           city?: string | null
@@ -115,6 +117,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          account_manager?: string | null
           address?: string | null
           bio?: string | null
           city?: string | null
