@@ -1,11 +1,15 @@
 import { useState, useEffect, createContext, useContext } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { User, Session } from "@supabase/supabase-js";
+import type { Database } from "@/integrations/supabase/types";
+
+type Profile = Database["public"]["Tables"]["profiles"]["Row"];
+type ProfileInsert = Database["public"]["Tables"]["profiles"]["Insert"];
 
 interface AuthContextType {
   user: User | null;
   session: Session | null;
-  profile: any | null;
+  profile: Profile | null;
   loading: boolean;
   signUp: (email: string, password: string, fullName: string, phone?: string) => Promise<{ error: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
@@ -18,36 +22,85 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
-  const [profile, setProfile] = useState<any | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
 
   const fetchProfile = async (userId: string) => {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("profiles")
       .select("*")
       .eq("user_id", userId)
-      .single();
+      .maybeSingle();
+
+    if (error) {
+      console.error("Erro ao carregar perfil:", error);
+      setProfile(null);
+      return null;
+    }
+
     setProfile(data);
+    return data;
+  };
+
+  const ensureProfile = async (authUser: User) => {
+    const existingProfile = await fetchProfile(authUser.id);
+    if (existingProfile) return existingProfile;
+
+    const metadata = authUser.user_metadata ?? {};
+    const profilePayload: ProfileInsert = {
+      user_id: authUser.id,
+      full_name:
+        typeof metadata.full_name === "string" && metadata.full_name.trim()
+          ? metadata.full_name.trim()
+          : authUser.email?.split("@")[0] ?? "Novo usuário",
+      email: authUser.email ?? "",
+      phone: typeof metadata.phone === "string" && metadata.phone.trim() ? metadata.phone.trim() : null,
+    };
+
+    const { data, error } = await supabase
+      .from("profiles")
+      .insert(profilePayload)
+      .select("*")
+      .maybeSingle();
+
+    if (error) {
+      console.error("Erro ao criar perfil automaticamente:", error);
+      setProfile(null);
+      return null;
+    }
+
+    setProfile(data);
+    return data;
   };
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        if (session?.user) {
-          setTimeout(() => fetchProfile(session.user.id), 0);
+      async (_event, nextSession) => {
+        setSession(nextSession);
+        setUser(nextSession?.user ?? null);
+
+        if (nextSession?.user) {
+          setTimeout(() => {
+            void ensureProfile(nextSession.user);
+          }, 0);
         } else {
           setProfile(null);
         }
+
         setLoading(false);
       }
     );
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) fetchProfile(session.user.id);
+    supabase.auth.getSession().then(async ({ data: { session: currentSession } }) => {
+      setSession(currentSession);
+      setUser(currentSession?.user ?? null);
+
+      if (currentSession?.user) {
+        await ensureProfile(currentSession.user);
+      } else {
+        setProfile(null);
+      }
+
       setLoading(false);
     });
 
@@ -63,6 +116,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         emailRedirectTo: window.location.origin,
       },
     });
+
     return { error };
   };
 
@@ -79,7 +133,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const refreshProfile = async () => {
-    if (user) await fetchProfile(user.id);
+    if (user) await ensureProfile(user);
   };
 
   return (

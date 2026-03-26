@@ -80,29 +80,58 @@ export default function SellerProfile() {
       toast({ title: "Erro", description: "Você precisa estar logado.", variant: "destructive" });
       return;
     }
+
     setSaving(true);
 
-    const updateData: any = { ...form };
-    if (!updateData.seller_category) delete updateData.seller_category;
-    if (!updateData.creci) delete updateData.creci;
-    if (!updateData.cnpj) delete updateData.cnpj;
+    const profileData: any = {
+      ...form,
+      user_id: user.id,
+      full_name: form.full_name.trim(),
+      email: form.email.trim(),
+      phone: form.phone.trim() || null,
+      company_name: form.company_name.trim() || null,
+      address: form.address.trim() || null,
+      city: form.city || null,
+      instagram: form.instagram.trim() || null,
+      bio: form.bio.trim() || null,
+      logo_url: form.logo_url.trim() || null,
+      seller_type: "imoveis",
+      state: "ES",
+    };
 
-    console.log("Saving profile:", updateData);
+    if (!profileData.seller_category) delete profileData.seller_category;
+    if (!profileData.creci?.trim()) delete profileData.creci;
+    else profileData.creci = profileData.creci.trim();
 
-    const { error } = await supabase
+    if (!profileData.cnpj?.trim()) delete profileData.cnpj;
+    else profileData.cnpj = profileData.cnpj.trim();
+
+    const { data: existingProfile, error: lookupError } = await supabase
       .from("profiles")
-      .update(updateData)
-      .eq("user_id", user.id);
+      .select("id")
+      .eq("user_id", user.id)
+      .maybeSingle();
 
-    console.log("Profile save result:", { error });
+    if (lookupError) {
+      toast({ title: "Erro ao salvar", description: lookupError.message, variant: "destructive" });
+      setSaving(false);
+      return;
+    }
+
+    const query = existingProfile
+      ? supabase.from("profiles").update(profileData).eq("user_id", user.id)
+      : supabase.from("profiles").insert(profileData);
+
+    const { error } = await query;
 
     if (error) {
       toast({ title: "Erro ao salvar", description: error.message, variant: "destructive" });
     } else {
       await refreshProfile();
-      toast({ title: "Perfil atualizado!" });
+      toast({ title: existingProfile ? "Perfil atualizado!" : "Perfil criado!" });
       navigate("/painel");
     }
+
     setSaving(false);
   };
 
