@@ -34,7 +34,7 @@ export default function InstallPWA() {
           <Download size={20} className="text-white" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="font-display font-bold text-sm text-foreground">Instalar Melhor Busca</p>
+          <p className="font-display font-bold text-sm text-foreground">Instalar ES Corretores</p>
           <p className="text-xs text-muted-foreground">Acesse rápido pelo celular!</p>
         </div>
         <button onClick={handleInstall} className="px-4 py-2 rounded-xl bg-primary text-primary-foreground font-bold text-xs shrink-0">
