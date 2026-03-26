@@ -96,7 +96,7 @@ export default function SellerItemForm() {
         .single()
         .then(({ data }) => {
           if (data) {
-            const editIsAluguel = data.category === "aluguel";
+            const editIsAluguel = (data.tags as string[] || []).includes("aluguel_flex") || data.category === "aluguel";
             setIsAluguel(editIsAluguel);
             setForm({
               title: data.title || "",
@@ -225,14 +225,14 @@ export default function SellerItemForm() {
       seller_id: profile.id,
       title: form.title,
       description: form.description || null,
-      category: (isAluguel ? "aluguel" : form.category) as ItemCategory,
+      category: form.category as ItemCategory,
       seller_type: "imoveis" as const,
       price: form.price ? parseFloat(form.price) : null,
       city: form.city || null,
       state: form.state || null,
       neighborhood: form.neighborhood || null,
       address: [form.address, form.addressNumber].filter(Boolean).join(", ") || null,
-      tags: form.tags,
+      tags: isAluguel ? [...new Set([...form.tags, "aluguel_flex" as ItemTag])] : form.tags.filter(t => t !== "aluguel_flex"),
       photos: form.photos,
       brand: form.brand || null,
       model: form.model || null,
@@ -328,11 +328,10 @@ export default function SellerItemForm() {
           <div>
             <label className="block text-sm font-medium text-foreground mb-1.5">Categoria *</label>
             <select
-              required={!isAluguel}
-              value={isAluguel ? "" : form.category}
+              required
+              value={form.category}
               onChange={(e) => setForm((f) => ({ ...f, category: e.target.value as ItemCategory }))}
-              disabled={isAluguel}
-              className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none disabled:opacity-50"
+              className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
             >
               <option value="">Selecione...</option>
               {categories.map((c) => (
@@ -344,12 +343,7 @@ export default function SellerItemForm() {
           {/* Aluguel Toggle */}
           <button
             type="button"
-            onClick={() => {
-              setIsAluguel(!isAluguel);
-              if (!isAluguel) {
-                setForm((f) => ({ ...f, category: "aluguel" as ItemCategory }));
-              }
-            }}
+            onClick={() => setIsAluguel(!isAluguel)}
             className={`flex items-center gap-3 w-full px-4 py-3 rounded-xl border-2 transition-all ${
               isAluguel
                 ? "border-primary bg-primary/10 shadow-sm"
@@ -368,24 +362,6 @@ export default function SellerItemForm() {
               <p className="text-[11px] text-muted-foreground">Marque se este imóvel é para alugar</p>
             </div>
           </button>
-
-          {isAluguel && (
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-1.5">Tipo do Imóvel (Aluguel) *</label>
-              <select
-                required
-                value={form.category === "aluguel" ? "" : form.category}
-                onChange={(e) => setForm((f) => ({ ...f, category: e.target.value as ItemCategory }))}
-                className="w-full px-4 py-3 rounded-xl border border-primary/30 bg-primary/5 text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
-              >
-                <option value="">Selecione o tipo...</option>
-                {categories.map((c) => (
-                  <option key={c.value} value={c.value}>{c.label}</option>
-                ))}
-              </select>
-              <p className="text-[10px] text-muted-foreground mt-1">O imóvel será listado como aluguel na categoria selecionada</p>
-            </div>
-          )}
 
           <div>
             <label className="block text-sm font-medium text-foreground mb-1.5">Preço (R$) {isAluguel && <span className="text-primary font-normal">/Mês</span>}</label>

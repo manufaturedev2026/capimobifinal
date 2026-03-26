@@ -49,20 +49,21 @@ export default function PropertiesPage() {
   // Merge real items into unified product format
   const propertyProducts = useMemo(() => {
     const staticProds = allProducts.filter((p) => p.type === "imovel");
-    const realProds: (Product & { sellerTier?: string; realCategory?: string })[] = realItems.map((item) => ({
+    const realProds: (Product & { sellerTier?: string; realCategory?: string; isAluguel?: boolean })[] = realItems.map((item) => ({
       id: item.id,
       companyId: item.sellerId,
       title: item.title,
       price: item.price,
       image: item.image,
       images: item.images,
-      tag: item.tags?.[0] ? getTagLabel(item.tags[0]) : undefined,
+      tag: item.tags?.[0] && item.tags[0] !== "aluguel_flex" ? getTagLabel(item.tags[0]) : item.tags?.[1] ? getTagLabel(item.tags[1]) : undefined,
       description: item.description || "",
       type: "imovel" as const,
       specs: {},
       location: item.city || "",
       sellerTier: item.sellerTier || "basico",
       realCategory: item.category,
+      isAluguel: (item.tags || []).includes("aluguel_flex") || item.category === "aluguel",
     }));
     return [...realProds, ...staticProds];
   }, [realItems]);
@@ -106,15 +107,13 @@ export default function PropertiesPage() {
       : [...propertyProducts];
     // Filter by category
     if (effectiveCategory) {
-      const matchCats = categoryMap[effectiveCategory] || [];
       if (effectiveCategory === "aluguel") {
-        // Only show aluguel items
-        base = base.filter((p) => (p as any).realCategory === "aluguel");
+        base = base.filter((p) => (p as any).isAluguel);
       } else {
-        // Show items of this category + aluguel items (they appear in all categories with Aluguel tag)
+        const matchCats = categoryMap[effectiveCategory] || [];
         base = base.filter((p) => {
           const realCat = (p as any).realCategory;
-          return realCat && (matchCats.includes(realCat) || realCat === "aluguel");
+          return realCat && matchCats.includes(realCat);
         });
       }
     }
@@ -354,7 +353,7 @@ export default function PropertiesPage() {
                           {product.tag}
                         </span>
                       )}
-                      {(product as any).realCategory === "aluguel" && (
+                      {(product as any).isAluguel && (
                         <span className="absolute bottom-3 left-3 px-3 py-1 rounded-full text-xs font-bold shadow bg-primary text-primary-foreground">
                           🏠 Aluguel
                         </span>
@@ -372,7 +371,7 @@ export default function PropertiesPage() {
                       </h3>
                       <p className="text-xl font-bold text-emerald-500 mt-1">
                         {formatPrice(product.price)}
-                        {(product as any).realCategory === "aluguel" && <span className="text-sm font-normal text-muted-foreground"> /mês</span>}
+                        {(product as any).isAluguel && <span className="text-sm font-normal text-muted-foreground"> /mês</span>}
                       </p>
 
                       {company && (
