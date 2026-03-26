@@ -303,7 +303,7 @@ export default function SellerDashboard() {
                 <Plus size={18} /> Novo Anúncio
               </Link>
               {profile?.id && (
-                <Link to={`/${profile.seller_type === "automoveis" ? "veiculos" : "imoveis"}/empresa/${profile.id}`}
+                <Link to={`/imoveis/empresa/${profile.id}`}
                   className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-all">
                   <Eye size={18} /> Ver Minha Loja
                 </Link>

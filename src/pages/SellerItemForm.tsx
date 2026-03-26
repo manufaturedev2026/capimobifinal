@@ -409,7 +409,8 @@ export default function SellerItemForm() {
             <input type="number" value={form.parking_spots} onChange={(e) => setForm((f) => ({ ...f, parking_spots: e.target.value }))} className="px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="Vagas" />
           </div>
         </div>
-        </div>
+
+
 
         {/* Tags */}
         <div className="bg-card border border-border rounded-2xl p-5">

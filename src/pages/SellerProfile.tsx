@@ -169,18 +169,11 @@ export default function SellerProfile() {
           <h2 className="font-display font-bold text-foreground">Categoria</h2>
           <p className="text-xs text-muted-foreground">Selecione o tipo que melhor descreve você ou sua empresa.</p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {(form.seller_type === "imoveis"
-              ? [
-                  { value: "imobiliaria", label: "🏢 Imobiliária" },
-                  { value: "corretor", label: "📋 Corretor(a)" },
-                  { value: "proprietario", label: "🏠 Proprietário" },
-                ]
-              : [
-                  { value: "loja_veiculos", label: "🏪 Loja de Veículos" },
-                  { value: "autonomo", label: "👤 Autônomo" },
-                  { value: "concessionaria", label: "🚗 Concessionária" },
-                ]
-            ).map((cat) => (
+            {[
+              { value: "imobiliaria", label: "🏢 Imobiliária" },
+              { value: "corretor", label: "📋 Corretor(a)" },
+              { value: "proprietario", label: "🏠 Proprietário" },
+            ].map((cat) => (
               <button
                 key={cat.value}
                 type="button"
