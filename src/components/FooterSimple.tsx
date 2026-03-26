@@ -14,7 +14,7 @@ export default function FooterSimple() {
               </span>
             </Link>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Marketplace de imóveis e veículos no Espírito Santo. Encontre casas, apartamentos, carros e motos com contato direto via WhatsApp.
+              Marketplace de imóveis no Espírito Santo. Encontre casas, apartamentos, terrenos e mais com contato direto via WhatsApp.
             </p>
           </div>
 
