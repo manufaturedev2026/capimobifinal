@@ -49,6 +49,7 @@ export default function SellerItemForm() {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [activeItemCount, setActiveItemCount] = useState(0);
+  const [isAluguel, setIsAluguel] = useState(false);
   const { subscription, currentTier, config: pkgConfig, isExpired } = useSubscription(user?.id);
 
   
