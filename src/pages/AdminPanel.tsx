@@ -17,6 +17,7 @@ interface SellerWithSub {
   phone: string | null;
   seller_type: string;
   city: string | null;
+  account_manager: string | null;
   subscription?: {
     id: string;
     tier: string;
