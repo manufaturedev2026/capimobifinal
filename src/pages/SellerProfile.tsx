@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { ArrowLeft, Save, Upload, User, Instagram } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { Database } from "@/integrations/supabase/types";
+import { ES_CITIES } from "@/data/esCities";
 
 type SellerType = Database["public"]["Enums"]["seller_type"];
 
