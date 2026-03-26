@@ -32,6 +32,7 @@ export default function SellerProfile() {
     seller_category: "" as string,
     creci: "",
     cnpj: "",
+    cover_color: "",
   });
 
   useEffect(() => {
@@ -56,6 +57,7 @@ export default function SellerProfile() {
         seller_category: (profile as any).seller_category || "",
         creci: (profile as any).creci || "",
         cnpj: (profile as any).cnpj || "",
+        cover_color: (profile as any).cover_color || "",
       });
     }
   }, [profile]);
@@ -105,6 +107,9 @@ export default function SellerProfile() {
 
     if (!profileData.cnpj?.trim()) delete profileData.cnpj;
     else profileData.cnpj = profileData.cnpj.trim();
+
+    if (!profileData.cover_color?.trim()) delete profileData.cover_color;
+    else profileData.cover_color = profileData.cover_color.trim();
 
     const { data: existingProfile, error: lookupError } = await supabase
       .from("profiles")
@@ -169,7 +174,49 @@ export default function SellerProfile() {
           </label>
         </div>
 
-        {/* Categoria do vendedor */}
+        {/* Cover Color */}
+        <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
+          <h2 className="font-display font-bold text-foreground">Cor da Capa da Loja</h2>
+          <p className="text-xs text-muted-foreground">Escolha a cor de fundo da capa do seu perfil público.</p>
+          <div className="flex flex-wrap gap-3">
+            {[
+              { value: "", label: "Padrão", color: "bg-gradient-to-br from-primary via-primary/80 to-accent" },
+              { value: "#000000", label: "Preto", color: "bg-black" },
+              { value: "#1a1a2e", label: "Azul Escuro", color: "bg-[#1a1a2e]" },
+              { value: "#002F6C", label: "Marinho", color: "bg-[#002F6C]" },
+              { value: "#00AEEF", label: "Azul", color: "bg-[#00AEEF]" },
+              { value: "#dc2626", label: "Vermelho", color: "bg-[#dc2626]" },
+              { value: "#831843", label: "Bordô", color: "bg-[#831843]" },
+              { value: "#ec4899", label: "Rosa", color: "bg-[#ec4899]" },
+              { value: "#059669", label: "Verde", color: "bg-[#059669]" },
+              { value: "#d97706", label: "Dourado", color: "bg-[#d97706]" },
+              { value: "#6d28d9", label: "Roxo", color: "bg-[#6d28d9]" },
+              { value: "#374151", label: "Cinza", color: "bg-[#374151]" },
+            ].map((c) => (
+              <button
+                key={c.value}
+                type="button"
+                onClick={() => setForm((f) => ({ ...f, cover_color: c.value }))}
+                className={`flex flex-col items-center gap-1.5 group`}
+              >
+                <div className={`w-10 h-10 rounded-xl ${c.color} border-2 transition-all ${
+                  form.cover_color === c.value
+                    ? "border-primary ring-2 ring-primary/40 scale-110"
+                    : "border-border hover:border-primary/50"
+                }`} />
+                <span className="text-[10px] text-muted-foreground font-medium">{c.label}</span>
+              </button>
+            ))}
+          </div>
+          {form.cover_color && (
+            <div className="h-16 rounded-xl overflow-hidden" style={{ backgroundColor: form.cover_color }}>
+              <div className="w-full h-full flex items-center justify-center text-white/80 text-xs font-medium">
+                Pré-visualização da capa
+              </div>
+            </div>
+          )}
+        </div>
+
         <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
           <h2 className="font-display font-bold text-foreground">Categoria</h2>
           <p className="text-xs text-muted-foreground">Selecione o tipo que melhor descreve você ou sua empresa.</p>
