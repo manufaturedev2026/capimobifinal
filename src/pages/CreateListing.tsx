@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { Eye, EyeOff, LogIn, UserPlus, Building2, Car, Shield, Sparkles } from "lucide-react";
+import { Eye, EyeOff, LogIn, UserPlus, Building2, Shield, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import heroImg from "@/assets/hero-anunciar.jpg";
