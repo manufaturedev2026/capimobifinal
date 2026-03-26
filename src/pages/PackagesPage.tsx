@@ -72,7 +72,7 @@ export default function PackagesPage() {
         </div>
       </div>
 
-      <div className="container max-w-5xl mx-auto px-4 -mt-8 relative z-10 pb-16">
+      <div className="container max-w-5xl mx-auto px-4 -mt-8 relative z-10 pb-24 lg:pb-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {tiers.map((tier, i) => {
             const config = PACKAGE_CONFIG[tier];
