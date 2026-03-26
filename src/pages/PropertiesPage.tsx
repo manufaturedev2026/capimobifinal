@@ -361,6 +361,7 @@ export default function PropertiesPage() {
                       </h3>
                       <p className="text-xl font-bold text-emerald-500 mt-1">
                         {formatPrice(product.price)}
+                        {(product as any).realCategory === "aluguel" && <span className="text-sm font-normal text-muted-foreground"> /mês</span>}
                       </p>
 
                       {company && (
