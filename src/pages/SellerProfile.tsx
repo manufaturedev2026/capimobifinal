@@ -108,6 +108,9 @@ export default function SellerProfile() {
     if (!profileData.cnpj?.trim()) delete profileData.cnpj;
     else profileData.cnpj = profileData.cnpj.trim();
 
+    if (!profileData.cover_color?.trim()) delete profileData.cover_color;
+    else profileData.cover_color = profileData.cover_color.trim();
+
     const { data: existingProfile, error: lookupError } = await supabase
       .from("profiles")
       .select("id")
