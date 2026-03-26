@@ -1,4 +1,4 @@
-import { Building2, Plus, Search, Menu, X, MapPin, ChevronDown, LayoutDashboard } from "lucide-react";
+import { Building2, Plus, Search, Menu, X, MapPin, ChevronDown, LayoutDashboard, GraduationCap } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useCityDetection } from "@/hooks/useCityDetection";
