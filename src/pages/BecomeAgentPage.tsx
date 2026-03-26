@@ -54,7 +54,7 @@ function HorizontalRow({
           <p className="text-white/50 mt-1 text-sm md:text-base">{subtitle}</p>
         )}
       </div>
-      <div className="flex gap-4 overflow-x-auto px-4 md:px-[calc((100%-72rem)/2+1rem)] pb-4 scrollbar-hide snap-x snap-mandatory">
+      <div className="flex gap-4 overflow-x-auto px-4 md:px-[calc((100%-72rem)/2+1rem)] py-4 scrollbar-hide snap-x snap-mandatory">
         {items.map((item, i) => (
           <motion.div
             key={item.title}
