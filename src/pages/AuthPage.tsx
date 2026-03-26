@@ -71,7 +71,7 @@ export default function AuthPage() {
               <span className="text-accent">anúncios</span> em um só lugar
             </h1>
             <p className="text-white/70 text-lg leading-relaxed mb-10">
-              Cadastre imóveis e veículos, acompanhe visualizações e destaque seus melhores anúncios no maior marketplace de Colatina.
+              Cadastre imóveis, acompanhe visualizações e destaque seus melhores anúncios no maior marketplace do ES.
             </p>
 
             <div className="space-y-4">
