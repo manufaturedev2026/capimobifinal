@@ -150,7 +150,7 @@ export default function SellerDashboard() {
   }
 
   const storeUrl = profile?.id
-    ? `${window.location.origin}/${profile.seller_type === "automoveis" ? "veiculos" : "imoveis"}/empresa/${profile.id}`
+    ? `${window.location.origin}/imoveis/empresa/${profile.id}`
     : "";
 
   const copyStoreUrl = () => {
