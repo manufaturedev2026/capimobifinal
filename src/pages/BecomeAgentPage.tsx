@@ -149,7 +149,7 @@ const stepsItems: CardItem[] = [
     icon: Briefcase,
     title: "4. Comece a Atuar",
     description:
-      "Cadastre-se no Melhor Busca, crie seu perfil profissional e comece a anunciar e vender imóveis.",
+      "Cadastre-se no ES Corretores, crie seu perfil profissional e comece a anunciar e vender imóveis.",
   },
 ];
 
@@ -164,7 +164,7 @@ const skillsItems: CardItem[] = [
     icon: Lightbulb,
     title: "Marketing Digital",
     description:
-      "Aprenda a usar redes sociais, portais e plataformas como o Melhor Busca para atrair clientes.",
+      "Aprenda a usar redes sociais, portais e plataformas como o ES Corretores para atrair clientes.",
     accent: true,
   },
   {
@@ -192,7 +192,7 @@ const benefitsItems: CardItem[] = [
     icon: CheckCircle2,
     title: "Perfil Profissional",
     description:
-      "Tenha sua loja virtual no Melhor Busca com logo, dados de contato e portfólio de imóveis.",
+      "Tenha sua loja virtual no ES Corretores com logo, dados de contato e portfólio de imóveis.",
     accent: true,
   },
   {
@@ -291,7 +291,7 @@ export default function BecomeAgentPage() {
       />
 
       <HorizontalRow
-        title="Vantagens no Melhor Busca"
+        title="Vantagens no ES Corretores"
         subtitle="Por que anunciar na nossa plataforma"
         items={benefitsItems}
       />
@@ -311,7 +311,7 @@ export default function BecomeAgentPage() {
               <span className="text-accent">carreira</span>?
             </h2>
             <p className="text-white/60 mb-8 max-w-lg mx-auto">
-              Crie sua conta gratuita no Melhor Busca e comece a construir seu
+              Crie sua conta gratuita no ES Corretores e comece a construir seu
               portfólio de imóveis hoje mesmo.
             </p>
             <Link

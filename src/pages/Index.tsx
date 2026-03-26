@@ -69,7 +69,7 @@ export default function Index() {
   return (
     <div className="min-h-screen bg-secondary/50">
       <Helmet>
-        <title>{`Imóveis ${displayCity.includes("Espírito") ? "no" : "em"} ${displayCity} | MelhorBusca`}</title>
+        <title>{`Imóveis ${displayCity.includes("Espírito") ? "no" : "em"} ${displayCity} | ES Corretores`}</title>
         <meta name="description" content={`Marketplace de imóveis ${displayCity.includes("Espírito") ? "no" : "em"} ${displayCity}. Casas, apartamentos, terrenos e mais com contato direto via WhatsApp.`} />
         <link rel="canonical" href={`https://redeimoveisgb.lovable.app${cidade ? `/${cidade}` : '/'}`} />
       </Helmet>
