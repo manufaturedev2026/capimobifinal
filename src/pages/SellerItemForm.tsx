@@ -10,7 +10,6 @@ import { ES_CITIES } from "@/data/esCities";
 
 type ItemCategory = Database["public"]["Enums"]["item_category"];
 type ItemTag = Database["public"]["Enums"]["item_tag"];
-type SellerType = Database["public"]["Enums"]["seller_type"];
 
 const vehicleCategories: { value: ItemCategory; label: string }[] = [
   { value: "carro", label: "Carro" },
