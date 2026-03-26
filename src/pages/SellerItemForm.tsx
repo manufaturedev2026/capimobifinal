@@ -232,7 +232,7 @@ export default function SellerItemForm() {
       state: form.state || null,
       neighborhood: form.neighborhood || null,
       address: [form.address, form.addressNumber].filter(Boolean).join(", ") || null,
-      tags: form.tags,
+      tags: isAluguel ? [...new Set([...form.tags, "aluguel_flex" as ItemTag])] : form.tags.filter(t => t !== "aluguel_flex"),
       photos: form.photos,
       brand: form.brand || null,
       model: form.model || null,
