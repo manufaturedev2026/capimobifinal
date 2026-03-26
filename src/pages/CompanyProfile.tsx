@@ -236,7 +236,7 @@ export default function CompanyProfile() {
 
         {/* Back button */}
         <div className="absolute top-4 left-4 z-20">
-          <Link to={isProperty ? "/imoveis" : "/veiculos"} className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 backdrop-blur-md text-white text-sm font-medium hover:bg-white/20 transition-colors">
+          <Link to="/imoveis" className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 backdrop-blur-md text-white text-sm font-medium hover:bg-white/20 transition-colors">
             <ArrowLeft size={16} /> Voltar
           </Link>
         </div>

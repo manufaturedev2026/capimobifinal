@@ -100,7 +100,7 @@ export default function ProductDetail() {
   const price = product.price;
   const description = product.description;
   const tag = isDb ? product.tags?.[0] : product.tag;
-  const companyUrl = `/${isProperty ? "imoveis" : "veiculos"}/empresa/${company.id}`;
+  const companyUrl = `/imoveis/empresa/${company.id}`;
   const formattedPrice = isDb
     ? price ? `R$ ${Number(price).toLocaleString("pt-BR")}` : ""
     : formatPrice(price);
