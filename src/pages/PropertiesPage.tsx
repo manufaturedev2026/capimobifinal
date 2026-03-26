@@ -186,9 +186,13 @@ export default function PropertiesPage() {
       list = list.filter((product) => cityIds.has(product.companyId) || normalizeCityValue((product as any).location) === selectedCity);
     }
 
+    if (!showRentals) {
+      list = list.filter((p) => !(p as any).isAluguel);
+    }
+
     list.sort((a, b) => a.id.localeCompare(b.id));
     return list;
-  }, [activeCategory, propertyProducts, filterCity, filterType, realSellers]);
+  }, [activeCategory, propertyProducts, filterCity, filterType, realSellers, showRentals]);
 
   return (
     <div className="min-h-screen bg-background">
