@@ -239,12 +239,30 @@ export default function AdminPanel() {
     }
   };
 
-  const filteredSellers = sellers.filter(
-    (s) =>
+  const filteredSellers = sellers.filter((s) => {
+    const matchesSearch =
       s.full_name.toLowerCase().includes(search.toLowerCase()) ||
       s.email.toLowerCase().includes(search.toLowerCase()) ||
-      s.company_name?.toLowerCase().includes(search.toLowerCase())
-  );
+      s.company_name?.toLowerCase().includes(search.toLowerCase());
+    const matchesTier =
+      tierFilter === "todos" ||
+      (tierFilter === "sem_pacote" && !s.subscription) ||
+      s.subscription?.tier === tierFilter;
+    return matchesSearch && matchesTier;
+  });
+
+  const updateAccountManager = async (profileId: string, manager: string) => {
+    const { error } = await supabase
+      .from("profiles")
+      .update({ account_manager: manager || null } as any)
+      .eq("id", profileId);
+    if (!error) {
+      setSellers((prev) =>
+        prev.map((s) => (s.id === profileId ? { ...s, account_manager: manager || null } : s))
+      );
+      toast({ title: "Gerente de conta atualizado!" });
+    }
+  };
 
   const totalByTier = {
     start: sellers.filter((s) => s.subscription?.tier === "start").length,
