@@ -21,6 +21,7 @@ export default function PropertiesPage() {
   const [activeCategory, setActiveCategory] = useState<string | null>(categoriaParam);
   const [filterCity, setFilterCity] = useState(initialCity);
   const [filterType, setFilterType] = useState("");
+  const [showRentals, setShowRentals] = useState(true);
   const itemsSectionRef = useRef<HTMLDivElement>(null);
 
   // Sync filter when detected city loads async
