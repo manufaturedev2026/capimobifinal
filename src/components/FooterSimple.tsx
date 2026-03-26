@@ -9,8 +9,8 @@ export default function FooterSimple() {
           <div className="md:col-span-1">
             <Link to="/" className="flex items-center gap-2.5 mb-3">
               <img src="/pwa-512x512.png" alt="ES Corretores" className="w-9 h-9 rounded-xl shadow-md object-contain" />
-              <span className="font-display font-bold text-lg text-foreground">
-                ES<span className="text-primary">Corretores</span>
+              <span className="font-display font-bold text-lg">
+                <span className="text-primary">E</span><span className="text-accent">S</span><span className="text-foreground">Corretores</span>
               </span>
             </Link>
             <p className="text-xs text-muted-foreground leading-relaxed">
