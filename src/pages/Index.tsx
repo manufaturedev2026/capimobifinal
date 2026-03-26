@@ -1,4 +1,5 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { useCityDetection } from "@/hooks/useCityDetection";
 import { Building2, ArrowRight, Search, Home, Key, Landmark, Store, MapPin, Shield, Zap, Star, ChevronRight, Plus } from "lucide-react";
 import NotFoundPage from "@/pages/NotFound";
 import { motion } from "framer-motion";
