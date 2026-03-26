@@ -67,14 +67,14 @@ export default function CreateListing() {
             transition={{ duration: 0.8 }}
           >
             <div className="flex items-center gap-2 mb-4">
-              <Sparkles size={20} className="text-accent" />
-              <span className="text-accent font-semibold text-sm uppercase tracking-wider">
+              <Sparkles size={20} className="text-primary" />
+              <span className="text-primary font-semibold text-sm uppercase tracking-wider">
                 ES Corretores
               </span>
             </div>
-            <h1 className="font-display font-bold text-3xl lg:text-5xl text-white leading-tight mb-3">
-              Anuncie seu<br />
-              <span className="text-primary">imóvel</span>
+            <h1 className="font-display font-bold text-3xl lg:text-5xl leading-tight mb-3">
+              <span className="text-primary">Anuncie</span> <span className="text-white">seu</span><br />
+              <span className="text-accent">imóvel</span>
             </h1>
             <p className="text-white/60 text-sm lg:text-base max-w-md">
               O maior marketplace de imóveis do Espírito Santo. Cadastre-se e comece a anunciar hoje mesmo.
