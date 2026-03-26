@@ -159,6 +159,9 @@ export default function PropertiesPage() {
     let list = !effectiveCategory
       ? [...propertyProducts]
       : propertyProducts.filter((p) => {
+          if (effectiveCategory === "aluguel") {
+            return (p as any).isAluguel;
+          }
           const realCat = (p as any).realCategory;
           if (realCat) {
             const matchCats = categoryMap[effectiveCategory] || [];
