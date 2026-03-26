@@ -52,7 +52,7 @@ export default function CreateListing() {
       <div className="relative w-full lg:w-1/2 h-[40vh] lg:h-auto lg:min-h-screen overflow-hidden">
         <img
           src={heroImg}
-          alt="Imóveis e veículos de luxo"
+          alt="Imóveis de qualidade"
           className="absolute inset-0 w-full h-full object-cover"
         />
         {/* Dark overlay */}
