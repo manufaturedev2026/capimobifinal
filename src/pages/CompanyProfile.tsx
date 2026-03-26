@@ -99,12 +99,9 @@ export default function CompanyProfile() {
       : null
     : staticCompany;
 
-  // Determine segment from URL path first, then fallback to seller_type
-  const vehicleCategories = ["carro", "moto", "caminhao", "van", "utilitario"];
-  const urlIsProperty = location.pathname.startsWith("/imoveis");
-  const urlIsVehicle = location.pathname.startsWith("/veiculos");
-  const isProperty = urlIsProperty ? true : urlIsVehicle ? false : company?.segment === "imoveis";
-  const subcategories = isProperty ? propertySubcategories : vehicleSubcategories;
+  const vehicleCategories: string[] = [];
+  const isProperty = true;
+  const subcategories = propertySubcategories;
 
   const dbDisplayItems = dbItems.map((item) => ({
     id: item.id,
