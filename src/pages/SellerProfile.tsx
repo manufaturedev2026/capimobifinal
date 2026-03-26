@@ -158,21 +158,9 @@ export default function SellerProfile() {
         </div>
         <div className="bg-card border border-border rounded-2xl p-5">
           <h2 className="font-display font-bold text-foreground mb-3">Tipo de vendedor</h2>
-          <div className="grid grid-cols-2 gap-3">
-            {(["imoveis", "automoveis"] as SellerType[]).map((type) => (
-              <button
-                key={type}
-                type="button"
-                onClick={() => setForm((f) => ({ ...f, seller_type: type, seller_category: "" }))}
-                className={`py-3 rounded-xl border-2 font-bold text-sm transition-all ${
-                  form.seller_type === type
-                    ? "border-primary bg-primary/10 text-primary"
-                    : "border-border text-muted-foreground hover:border-primary/50"
-                }`}
-              >
-                {type === "imoveis" ? "🏠 Imóveis" : "🚗 Automóveis"}
-              </button>
-            ))}
+          <div className="flex items-center gap-3 py-3 px-4 rounded-xl border-2 border-primary bg-primary/10">
+            <span className="text-lg">🏠</span>
+            <span className="font-bold text-sm text-primary">Imóveis</span>
           </div>
         </div>
 
