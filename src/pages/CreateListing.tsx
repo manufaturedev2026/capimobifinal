@@ -12,7 +12,7 @@ export default function CreateListing() {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
-  const [sellerType, setSellerType] = useState<"imoveis" | "automoveis">("imoveis");
+  
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const { user, signIn, signUp } = useAuth();
