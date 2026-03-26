@@ -612,7 +612,7 @@ export default function CompanyProfile() {
                             {product.title}
                           </h3>
                           {product.price > 0 && (
-                            <p className="font-display font-bold text-primary text-base md:text-lg mt-1.5">
+                            <p className="font-display font-bold text-emerald-500 text-base md:text-lg mt-1.5">
                               {isDbProfile
                                 ? `R$ ${product.price.toLocaleString("pt-BR")}`
                                 : formatPrice(product.price)}
