@@ -12,22 +12,16 @@ export interface CityItem {
   images: string[];
   tags: string[];
   category: string;
-  type: "imovel" | "veiculo";
+  type: "imovel";
   city?: string;
   neighborhood?: string;
-  brand?: string;
-  model?: string;
   description?: string;
   bedrooms?: number;
   bathrooms?: number;
   area?: number;
-  year?: number;
-  mileage?: number;
 }
 
-const vehicleCategories = ["carro", "moto", "caminhao", "van", "utilitario"];
-
-export function useCityData(city: string, segment: "imoveis" | "automoveis") {
+export function useCityData(city: string, segment?: "imoveis") {
   const [items, setItems] = useState<CityItem[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -37,11 +31,10 @@ export function useCityData(city: string, segment: "imoveis" | "automoveis") {
     const fetchData = async () => {
       setLoading(true);
 
-      // Fetch sellers of this segment in this city
       const { data: profiles } = await supabase
         .from("profiles")
         .select("id, company_name, full_name, logo_url, seller_type")
-        .eq("seller_type", segment)
+        .eq("seller_type", "imoveis")
         .ilike("city", `%${normalizedCity}%`);
 
       const sellerMap = new Map<string, { name: string; logo: string }>();
@@ -52,18 +45,17 @@ export function useCityData(city: string, segment: "imoveis" | "automoveis") {
         });
       });
 
-      // Fetch items in this city
       const { data: rawItems } = await supabase
         .from("seller_items")
         .select("*")
         .ilike("city", `%${normalizedCity}%`)
+        .eq("seller_type", "imoveis")
         .eq("status", "ativo")
         .order("created_at", { ascending: false });
 
       const mapped: CityItem[] = (rawItems || []).map((item: any) => {
         const seller = sellerMap.get(item.seller_id);
         const photos = item.photos?.length ? item.photos : [];
-        const isVehicle = vehicleCategories.includes(item.category);
         return {
           id: item.id,
           sellerId: item.seller_id,
@@ -75,31 +67,22 @@ export function useCityData(city: string, segment: "imoveis" | "automoveis") {
           images: photos,
           tags: item.tags || [],
           category: item.category,
-          type: isVehicle ? "veiculo" : "imovel",
+          type: "imovel" as const,
           city: item.city,
           neighborhood: item.neighborhood,
-          brand: item.brand,
-          model: item.model,
           description: item.description,
           bedrooms: item.bedrooms,
           bathrooms: item.bathrooms,
           area: item.area,
-          year: item.year,
-          mileage: item.mileage,
         };
       });
 
-      // Filter by segment type
-      const filtered = segment === "imoveis"
-        ? mapped.filter((i) => i.type === "imovel")
-        : mapped.filter((i) => i.type === "veiculo");
-
-      setItems(filtered);
+      setItems(mapped);
       setLoading(false);
     };
 
     fetchData();
-  }, [normalizedCity, segment]);
+  }, [normalizedCity]);
 
   return { items, loading, cityName: normalizedCity };
 }
@@ -112,7 +95,8 @@ export function useAvailableCities() {
       const { data } = await supabase
         .from("seller_items")
         .select("city")
-        .eq("status", "ativo");
+        .eq("status", "ativo")
+        .eq("seller_type", "imoveis");
 
       const unique = new Set<string>();
       (data || []).forEach((item: any) => {
