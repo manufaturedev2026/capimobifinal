@@ -140,7 +140,7 @@
   }
   .card-epic:hover {
     transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 20px 60px -15px rgba(0, 174, 239, 0.4), 0 8px 24px -8px rgba(255, 209, 0, 0.2);
+    box-shadow: 0 20px 60px -15px rgba(0, 174, 239, 0.4), 0 8px 24px -8px rgba(212, 112, 143, 0.2);
   }
 }
 
