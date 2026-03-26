@@ -20,12 +20,11 @@ import {
 } from "lucide-react";
 import heroImg from "@/assets/hero-corretor.jpg";
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 30 },
+const fadeIn = {
+  hidden: { opacity: 0 },
   visible: (i: number) => ({
     opacity: 1,
-    y: 0,
-    transition: { delay: i * 0.1, duration: 0.6 },
+    transition: { delay: i * 0.08, duration: 0.5 },
   }),
 };
 
@@ -63,7 +62,7 @@ function HorizontalRow({
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            variants={fadeUp}
+            variants={fadeIn}
             className={`min-w-[280px] md:min-w-[320px] snap-start rounded-2xl p-6 border transition-all hover:scale-[1.03] hover:shadow-2xl cursor-default ${
               item.accent
                 ? "bg-gradient-to-br from-accent/20 to-accent/5 border-accent/30"
