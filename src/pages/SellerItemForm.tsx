@@ -139,8 +139,8 @@ export default function SellerItemForm() {
 
   const isAtLimit = !isEdit && activeItemCount >= pkgConfig.maxItems;
 
-  // Tags by segment + tier
-  const allTags = sellerType === "imoveis" ? [...commonTags, ...propertyOnlyTags] : commonTags;
+  // Tags for properties
+  const allTags = [...commonTags, ...propertyOnlyTags];
   const premiumOnlyTags: ItemTag[] = ["premium", "luxo", "prime", "exclusivo"];
   const availableTags = currentTier === "basico"
     ? allTags.filter((t) => !premiumOnlyTags.includes(t.value))
