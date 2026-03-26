@@ -154,6 +154,25 @@ export default function Header() {
             <Search size={18} />
             Buscar
           </Link>
+          {user ? (
+            <Link
+              to="/painel"
+              onClick={() => setMenuOpen(false)}
+              className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold bg-primary text-primary-foreground"
+            >
+              <LayoutDashboard size={18} />
+              Painel
+            </Link>
+          ) : (
+            <Link
+              to="/login"
+              onClick={() => setMenuOpen(false)}
+              className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary"
+            >
+              <LogIn size={18} />
+              Login
+            </Link>
+          )}
         </div>
       )}
     </header>
