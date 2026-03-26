@@ -1,4 +1,4 @@
-import { Building2, Plus, Search, Menu, X, MapPin, ChevronDown, LayoutDashboard, GraduationCap } from "lucide-react";
+import { Building2, Plus, Search, Menu, X, MapPin, ChevronDown, LayoutDashboard, GraduationCap, LogIn } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useCityDetection } from "@/hooks/useCityDetection";
@@ -23,9 +23,7 @@ export default function Header() {
     { to: "/", label: "Início" },
     { to: "/imoveis", label: "Imóveis", icon: Building2 },
     { to: "/seja-corretor", label: "Seja um Corretor", icon: GraduationCap },
-    ...(user
-      ? [{ to: "/painel", label: "Painel", icon: LayoutDashboard, highlight: true }]
-      : [{ to: "/anunciar", label: "Anunciar", icon: Plus }]),
+    { to: "/anunciar", label: "Anunciar", icon: Plus },
   ];
 
   const handleCitySelect = (city: string) => {
@@ -50,11 +48,9 @@ export default function Header() {
               key={link.to}
               to={link.to}
               className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-                link.highlight
+                location.pathname === link.to
                   ? "bg-primary text-primary-foreground shadow-md"
-                  : location.pathname === link.to
-                    ? "bg-primary text-primary-foreground shadow-md"
-                    : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+                  : "text-muted-foreground hover:text-foreground hover:bg-secondary"
               }`}
             >
               {link.label}
@@ -82,13 +78,32 @@ export default function Header() {
           </DropdownMenu>
         </nav>
 
-        <Link
-          to="/buscar"
-          className="hidden md:flex items-center gap-2 px-4 py-2 rounded-xl bg-secondary text-secondary-foreground text-sm hover:bg-secondary/80 transition-colors"
-        >
-          <Search size={16} />
-          Buscar
-        </Link>
+        <div className="hidden md:flex items-center gap-2">
+          <Link
+            to="/buscar"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-secondary text-secondary-foreground text-sm hover:bg-secondary/80 transition-colors"
+          >
+            <Search size={16} />
+            Buscar
+          </Link>
+          {user ? (
+            <Link
+              to="/painel"
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors shadow-md"
+            >
+              <LayoutDashboard size={16} />
+              Painel
+            </Link>
+          ) : (
+            <Link
+              to="/login"
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-secondary text-secondary-foreground text-sm hover:bg-secondary/80 transition-colors"
+            >
+              <LogIn size={16} />
+              Login
+            </Link>
+          )}
+        </div>
 
         <button
           onClick={() => setMenuOpen(!menuOpen)}
@@ -139,6 +154,25 @@ export default function Header() {
             <Search size={18} />
             Buscar
           </Link>
+          {user ? (
+            <Link
+              to="/painel"
+              onClick={() => setMenuOpen(false)}
+              className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold bg-primary text-primary-foreground"
+            >
+              <LayoutDashboard size={18} />
+              Painel
+            </Link>
+          ) : (
+            <Link
+              to="/login"
+              onClick={() => setMenuOpen(false)}
+              className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary"
+            >
+              <LogIn size={18} />
+              Login
+            </Link>
+          )}
         </div>
       )}
     </header>
