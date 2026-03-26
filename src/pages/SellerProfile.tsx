@@ -236,7 +236,13 @@ export default function SellerProfile() {
               onChange={(e) => setForm((f) => ({ ...f, show_location: e.target.checked }))}
               className="w-5 h-5 rounded border-input text-primary focus:ring-ring accent-primary cursor-pointer"
             />
-            <span className="text-sm text-foreground">Mostrar localização no perfil da loja</span>
+            <span className="text-sm text-foreground">
+              {form.seller_category === "proprietario"
+                ? "Mostrar localização da propriedade no perfil"
+                : form.seller_category === "corretor" || form.seller_category === "imobiliaria"
+                ? "Mostrar localização do escritório no perfil"
+                : "Mostrar localização no perfil da loja"}
+            </span>
           </label>
         </div>
           <button
