@@ -96,7 +96,6 @@ export default function SellerItemForm() {
         .single()
         .then(({ data }) => {
           if (data) {
-            setSellerType(data.seller_type);
             setForm({
               title: data.title || "",
               description: data.description || "",
