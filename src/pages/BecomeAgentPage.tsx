@@ -314,12 +314,14 @@ export default function BecomeAgentPage() {
               Crie sua conta gratuita no ES Corretores e comece a construir seu
               portfólio de imóveis hoje mesmo.
             </p>
-            <Link
-              to="/anunciar"
+            <a
+              href="https://wa.me/5527999894321?text=Ol%C3%A1%20Jo%C3%A3o%20Paulo%20!%20tudo%20bem%20%3F%20eu%20vim%20pelo%20site%20ES%20Corretores%20e%20gostaria%20de%20saber%20mais%20como%20posso%20me%20tornar%20um%20Corretor(a)%20de%20im%C3%B3veis."
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-10 py-4 rounded-xl bg-accent text-accent-foreground font-bold hover:bg-accent/90 transition-all shadow-lg shadow-accent/20"
             >
-              Criar Conta Grátis <ArrowRight size={16} />
-            </Link>
+              Quero Ser um Corretor de Imóveis <ArrowRight size={16} />
+            </a>
           </motion.div>
         </div>
       </section>
