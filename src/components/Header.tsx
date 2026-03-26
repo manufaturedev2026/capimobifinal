@@ -23,9 +23,7 @@ export default function Header() {
     { to: "/", label: "Início" },
     { to: "/imoveis", label: "Imóveis", icon: Building2 },
     { to: "/seja-corretor", label: "Seja um Corretor", icon: GraduationCap },
-    ...(user
-      ? [{ to: "/painel", label: "Painel", icon: LayoutDashboard, highlight: true }]
-      : [{ to: "/anunciar", label: "Anunciar", icon: Plus }]),
+    { to: "/anunciar", label: "Anunciar", icon: Plus },
   ];
 
   const handleCitySelect = (city: string) => {
