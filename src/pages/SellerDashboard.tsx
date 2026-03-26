@@ -248,7 +248,7 @@ export default function SellerDashboard() {
             </div>
             <div className="flex items-center gap-1.5">
               {profile?.id && (
-                <Link to={`/${profile.seller_type === "automoveis" ? "veiculos" : "imoveis"}/empresa/${profile.id}`}
+                <Link to={`/imoveis/empresa/${profile.id}`}
                   className="p-2.5 rounded-xl bg-white/20 text-white hover:bg-white/30 transition-colors">
                   <Eye size={16} />
                 </Link>
