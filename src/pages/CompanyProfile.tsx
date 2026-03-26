@@ -114,7 +114,7 @@ export default function CompanyProfile() {
     city: item.city,
     description: item.description,
     specs: {} as Record<string, string>,
-    type: vehicleCategories.includes(item.category) ? "veiculo" : "imovel",
+    type: "imovel" as const,
   }));
 
   const products = isDbProfile ? dbDisplayItems : staticProducts;
