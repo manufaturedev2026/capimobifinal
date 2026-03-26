@@ -61,8 +61,8 @@ export default function StudyMaterial() {
                 </div>
                 <div className="p-5">
                   <h3 className="font-display font-bold text-white text-lg mb-2 group-hover:text-primary transition-colors line-clamp-2">{article.title}</h3>
-                  <p className="text-white/50 text-sm line-clamp-2 mb-3">{article.description}</p>
-                  <div className="flex items-center gap-2 text-white/40 text-xs">
+                  <p className="text-white/80 text-sm line-clamp-2 mb-3">{article.description}</p>
+                  <div className="flex items-center gap-2 text-white/60 text-xs">
                     <Clock size={12} /> {article.readTime} de leitura
                   </div>
                 </div>
