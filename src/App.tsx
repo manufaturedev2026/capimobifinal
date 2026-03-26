@@ -13,7 +13,7 @@ import Index from "@/pages/Index";
 import PropertiesPage from "@/pages/PropertiesPage";
 
 import CityPropertiesPage from "@/pages/CityPropertiesPage";
-import CityVehiclesPage from "@/pages/CityVehiclesPage";
+
 import CompanyProfile from "@/pages/CompanyProfile";
 import ProductDetail from "@/pages/ProductDetail";
 import CreateListing from "@/pages/CreateListing";
