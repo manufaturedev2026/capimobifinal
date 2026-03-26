@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import type { Database } from "@/integrations/supabase/types";
 import { useSubscription, PACKAGE_CONFIG } from "@/hooks/useSubscription";
 import { ES_CITIES } from "@/data/esCities";
+import { ES_NEIGHBORHOODS } from "@/data/esNeighborhoods";
 
 type ItemCategory = Database["public"]["Enums"]["item_category"];
 type ItemTag = Database["public"]["Enums"]["item_tag"];
