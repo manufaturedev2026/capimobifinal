@@ -1,4 +1,4 @@
-import { Building2, Plus, Search, Menu, X, MapPin, ChevronDown, LayoutDashboard } from "lucide-react";
+import { Building2, Plus, Search, Menu, X, MapPin, ChevronDown, LayoutDashboard, GraduationCap } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useCityDetection } from "@/hooks/useCityDetection";
@@ -22,6 +22,7 @@ export default function Header() {
   const navLinks = [
     { to: "/", label: "Início" },
     { to: "/imoveis", label: "Imóveis", icon: Building2 },
+    { to: "/seja-corretor", label: "Seja Corretor", icon: GraduationCap },
     ...(user
       ? [{ to: "/painel", label: "Painel", icon: LayoutDashboard, highlight: true }]
       : [{ to: "/anunciar", label: "Anunciar", icon: Plus }]),

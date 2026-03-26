@@ -11,6 +11,7 @@ import InstallPWA from "@/components/InstallPWA";
 import ScrollToTop from "@/components/ScrollToTop";
 import Index from "@/pages/Index";
 import PropertiesPage from "@/pages/PropertiesPage";
+import BecomeAgentPage from "@/pages/BecomeAgentPage";
 
 import CityPropertiesPage from "@/pages/CityPropertiesPage";
 
@@ -48,6 +49,7 @@ const AppLayout = () => {
 
           <Route path="/:cidade/imoveis" element={<CityPropertiesPage />} />
           
+          <Route path="/seja-corretor" element={<BecomeAgentPage />} />
           <Route path="/anunciar" element={<CreateListing />} />
           <Route path="/buscar" element={<SearchPage />} />
           <Route path="/entrar" element={<AuthPage />} />
