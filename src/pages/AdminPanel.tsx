@@ -192,8 +192,7 @@ export default function AdminPanel() {
   };
 
   const getSellerStoreUrl = (seller: SellerWithSub) => {
-    const type = seller.seller_type === "automoveis" ? "veiculos" : "imoveis";
-    return `/${type}/empresa/${seller.id}`;
+    return `/imoveis/empresa/${seller.id}`;
   };
 
   const copyRedirectUrl = (seller: SellerWithSub) => {
