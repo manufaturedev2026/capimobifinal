@@ -237,170 +237,182 @@ export const ES_NEIGHBORHOODS: Record<string, string[]> = {
     "Vila Nova", "Vista Alegre"
   ],
   "Marechal Floriano": [
-    "Araguaia", "Centro", "Soído",
-    "Vila Nova"
+    "Araguaia", "Centro", "Paraju", "Santa Maria",
+    "São Bento", "Soído", "Vila Nova"
   ],
   "Venda Nova do Imigrante": [
-    "Alto Caxixe", "Centro", "Lavrinhas",
-    "São João de Viçosa", "Vila Nova"
+    "Alto Caxixe", "Alto Viçosa", "Centro", "Caxixe Quente",
+    "Lavrinhas", "São João de Viçosa", "São José do Alto Viçosa",
+    "Vila Nova"
   ],
   "Itapemirim": [
     "Barra de Itapemirim", "Centro", "Gamboa",
-    "Graúna", "Itaipava", "Nativo",
-    "Vila Nova", "Vila Rica"
+    "Graúna", "Itaipava", "Itaoca", "Nativo",
+    "Piabanha", "Rosário", "Vila Nova", "Vila Rica"
   ],
   "Presidente Kennedy": [
     "Centro", "Jaqueira", "Marobá",
-    "Praia das Neves", "Praia de Marobá"
+    "Praia das Neves", "Praia de Marobá", "São Salvador",
+    "Santana", "Vila Nova"
   ],
   "Alfredo Chaves": [
-    "Centro", "Crubixá", "Matilde",
+    "Água Limpa", "Cachoeirinha", "Centro", "Crubixá",
+    "Ibitiruí", "Matilde", "Ribeirão do Cristo",
     "Sagrada Família", "Vila Nova"
   ],
   "Conceição da Barra": [
     "Braço do Rio", "Centro", "Cohab",
     "Coqueiral", "Itaúnas", "Praia Central",
-    "São João da Barra"
+    "São João da Barra", "Vila Nova"
   ],
   "Pedro Canário": [
-    "Agrovila", "Centro", "Cohab",
-    "Santa Luzia", "Vila Nova"
+    "Agrovila", "Boa Vista", "Centro", "Cohab",
+    "Residencial", "Santa Luzia", "Vila Nova"
   ],
   "Pinheiros": [
-    "Centro", "Cohab", "Santo Antônio",
-    "Vila Nova"
+    "Boa Esperança", "Centro", "Cohab",
+    "Córrego da Areia", "Santo Antônio", "Vila Nova"
   ],
   "Montanha": [
-    "Centro", "Vinhático", "Vila Nova"
+    "Centro", "Panorama", "São Sebastião",
+    "Vinhático", "Vila Nova"
   ],
   "Sooretama": [
     "Bairro de Fátima", "Centro", "Juncado",
-    "Vila Nova"
+    "Novo Horizonte", "Vila Nova"
   ],
   "Jaguaré": [
-    "Barra Seca", "Centro", "Novo Horizonte",
-    "Palmito", "Vila Nova"
+    "Barra Seca", "Boa Esperança", "Centro",
+    "Novo Horizonte", "Palmito", "São João do Sobrado",
+    "Vila Nova"
   ],
   "Rio Bananal": [
-    "Centro", "Córrego do Cedro",
-    "Santa Luzia", "Vila Nova"
+    "Centro", "Córrego do Cedro", "Nova Esperança",
+    "Santa Luzia", "São Brás", "Vila Nova"
   ],
   "Iúna": [
-    "Centro", "Nossa Senhora de Lourdes",
-    "Santíssima Trindade", "Vila Nova"
+    "Centro", "Morro da Garrafinha", "Nossa Senhora de Lourdes",
+    "Santíssima Trindade", "São João do Príncipe", "Vila Nova"
   ],
   "Muniz Freire": [
-    "Centro", "Menino Jesus",
-    "Piaçu", "Vila Nova"
+    "Centro", "Menino Jesus", "Piaçu",
+    "Ribeirão Claro", "Vila Nova"
   ],
   "Ibatiba": [
-    "Centro", "Pedra Menina",
+    "Alto Ibatiba", "Centro", "Pedra Menina",
     "São João do Príncipe", "Vila Nova"
   ],
   "Guaçuí": [
     "Aeroporto", "Alto Calçado", "Centro",
-    "Cohab", "Nova Esperança", "São Miguel",
-    "Vila Nova"
+    "Cohab", "Humaíta", "Nova Esperança",
+    "São Miguel", "Vila Nova"
   ],
   "Mimoso do Sul": [
-    "Centro", "São José das Torres",
+    "Centro", "Conceição do Muqui", "São José das Torres",
     "São Pedro", "Vila Nova"
   ],
   "Muqui": [
-    "Centro", "São Pedro", "Vila Nova"
-  ],
-  "Itaguaçu": [
-    "Centro", "Palmeiras", "Santa Luzia",
+    "Centro", "Lajinha", "São Pedro",
     "Vila Nova"
   ],
+  "Itaguaçu": [
+    "Centro", "Itaimbé", "Palmeiras",
+    "Santa Luzia", "Vila Nova"
+  ],
   "Itarana": [
-    "Centro", "Limoeiro", "Vila Nova"
+    "Centro", "Jatibocas", "Limoeiro",
+    "São João de Petrópolis", "Vila Nova"
   ],
   "Laranja da Terra": [
-    "Centro", "Joatuba", "Vila Nova"
+    "Centro", "Joatuba", "Rio da Cobra",
+    "Vila Nova"
   ],
   "Marilândia": [
-    "Centro", "Liberdade", "Vila Nova"
+    "Centro", "Liberdade", "São Francisco",
+    "Vila Nova"
   ],
   "São Roque do Canaã": [
-    "Centro", "São Jacinto", "Vila Nova"
+    "Centro", "Santa Júlia", "São Jacinto",
+    "Vila Nova"
   ],
   "Governador Lindenberg": [
-    "Centro", "Morello", "Vila Nova"
+    "Centro", "Morello", "Nova Esperança",
+    "Vila Nova"
   ],
   "Vila Valério": [
-    "Centro", "São Jorge", "Vila Nova"
+    "Centro", "São Jorge", "São Roque",
+    "Vila Nova"
   ],
   "Vila Pavão": [
-    "Centro", "Vila Nova"
+    "Centro", "Praça Rica", "Vila Nova"
   ],
   "Água Doce do Norte": [
-    "Centro", "Vila Nova"
+    "Centro", "Nova Esperança", "Vila Nova"
   ],
   "Águia Branca": [
-    "Centro", "Vila Nova"
+    "Centro", "Córrego d'Água", "Vila Nova"
   ],
   "Alto Rio Novo": [
-    "Centro", "Vila Nova"
+    "Centro", "São Brás", "Vila Nova"
   ],
   "Apiacá": [
-    "Centro", "Vila Nova"
+    "Centro", "Boa Esperança", "Vila Nova"
   ],
   "Atílio Vivácqua": [
-    "Centro", "Vila Nova"
+    "Centro", "Jacarandá", "Vila Nova"
   ],
   "Boa Esperança": [
-    "Centro", "Vila Nova"
+    "Centro", "Boa Vista", "Vila Nova"
   ],
   "Bom Jesus do Norte": [
-    "Centro", "Vila Nova"
+    "Centro", "Boa Vista", "São José", "Vila Nova"
   ],
   "Brejetuba": [
-    "Centro", "Vila Nova"
+    "Centro", "Aracê", "Vila Nova"
   ],
   "Conceição do Castelo": [
-    "Centro", "Vila Nova"
+    "Centro", "Rio Novo", "Vila Nova"
   ],
   "Divino de São Lourenço": [
-    "Centro", "Vila Nova"
+    "Centro", "Patrimônio da Penha", "Vila Nova"
   ],
   "Dores do Rio Preto": [
-    "Centro", "Vila Nova"
+    "Centro", "São José do Calçado", "Vila Nova"
   ],
   "Iconha": [
-    "Centro", "Vila Nova"
+    "Centro", "Rio Novo do Sul", "Duas Barras", "Vila Nova"
   ],
   "Ibitirama": [
-    "Centro", "Vila Nova"
+    "Centro", "Santa Marta", "Vila Nova"
   ],
   "Irupi": [
-    "Centro", "Vila Nova"
+    "Centro", "Santíssima Trindade", "Vila Nova"
   ],
   "Jerônimo Monteiro": [
-    "Centro", "Vila Nova"
+    "Centro", "Ponte de Itabapoana", "Vila Nova"
   ],
   "Mantenópolis": [
-    "Centro", "Vila Nova"
+    "Centro", "Alto Mutum Preto", "Vila Nova"
   ],
   "Mucurici": [
-    "Centro", "Vila Nova"
+    "Centro", "Itabaiana", "Vila Nova"
   ],
   "Ponto Belo": [
-    "Centro", "Vila Nova"
+    "Centro", "Boa Vista", "Vila Nova"
   ],
   "Rio Novo do Sul": [
-    "Centro", "Vila Nova"
+    "Centro", "São José", "Vila Esperança", "Vila Nova"
   ],
   "Santa Leopoldina": [
-    "Centro", "Vila Nova"
+    "Centro", "Luxemburgo", "Suíça", "Vila Nova"
   ],
   "São Domingos do Norte": [
-    "Centro", "Vila Nova"
+    "Centro", "Córrego da Lapa", "Vila Nova"
   ],
   "São José do Calçado": [
-    "Centro", "Vila Nova"
+    "Centro", "Airituba", "Vila Nova"
   ],
   "Vargem Alta": [
-    "Centro", "Vila Nova"
+    "Centro", "Fruteiras", "Jaciguá", "Vila Nova"
   ],
 };
