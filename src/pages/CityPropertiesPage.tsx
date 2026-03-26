@@ -76,9 +76,18 @@ export default function CityPropertiesPage() {
   }, [items]);
 
   const featuredProducts = useMemo(() => {
-    const shuffled = [...heroItems].sort(() => Math.random() - 0.5);
+    let base = [...heroItems];
+    if (activeCategory) {
+      if (activeCategory === "aluguel") {
+        base = base.filter((p) => p.isAluguel);
+      } else {
+        const matchCats = categoryMap[activeCategory] || [];
+        base = base.filter((p) => matchCats.includes(p.realCategory));
+      }
+    }
+    const shuffled = [...base].sort(() => Math.random() - 0.5);
     return shuffled.slice(0, 7);
-  }, [heroItems]);
+  }, [heroItems, activeCategory]);
 
   const filteredProducts = useMemo(() => {
     let list = [...items];
