@@ -83,9 +83,8 @@ export default function SellerItemForm() {
     if (!authLoading && !user) navigate("/entrar");
   }, [user, authLoading]);
 
-  useEffect(() => {
-    if (profile) setSellerType(profile.seller_type || "imoveis");
-  }, [profile]);
+
+
 
   useEffect(() => {
     if (isEdit && user) {
