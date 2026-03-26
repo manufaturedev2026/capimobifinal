@@ -142,7 +142,7 @@ export default function CreateListing() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-white/10 bg-white/5 text-white text-sm placeholder:text-white/30 focus:ring-2 focus:ring-accent/50 focus:border-accent/50 focus:outline-none transition-all backdrop-blur-sm"
+                className="w-full px-4 py-3 rounded-xl border border-white/10 bg-white/5 text-white text-sm placeholder:text-white/30 focus:ring-2 focus:ring-primary/50 focus:border-primary/50 focus:outline-none transition-all backdrop-blur-sm"
                 placeholder="seu@email.com"
               />
             </div>
