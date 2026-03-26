@@ -98,7 +98,7 @@ export default function CreateListing() {
             <p className="text-white/50 mt-2 text-sm">
               {isLogin
                 ? "Entre para gerenciar seus anúncios"
-                : "Cadastre-se gratuitamente como corretor"}
+                : "Cadastre-se gratuitamente como corretor de imóveis"}
             </p>
           </div>
 
