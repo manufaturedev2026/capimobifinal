@@ -80,6 +80,7 @@ export default function ProductDetail() {
           rating: "5.0",
           reviewCount: 0,
           segment: dbSeller.seller_type,
+          sellerCategory: dbSeller.seller_category,
         }
       : null
     : staticCompany;
