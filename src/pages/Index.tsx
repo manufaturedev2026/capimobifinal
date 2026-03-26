@@ -49,8 +49,9 @@ function getCategories(prefix: string) {
 
 export default function Index() {
   const { cidade } = useParams<{ cidade?: string }>();
+  const { detectedCity } = useCityDetection();
   const navigate = useNavigate();
-  const cityName = cidade ? slugToCity(cidade) : null;
+  const cityName = cidade ? slugToCity(cidade) : (detectedCity || null);
   const displayCity = cityName || "Espírito Santo";
   const citySlug = cityName ? cityToSlug(cityName) : "";
   const [searchQuery, setSearchQuery] = useState("");
