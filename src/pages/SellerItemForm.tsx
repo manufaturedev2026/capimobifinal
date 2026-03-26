@@ -189,7 +189,7 @@ export default function SellerItemForm() {
       toast({ title: "Erro", description: "Perfil não encontrado. Complete seu perfil primeiro.", variant: "destructive" });
       return;
     }
-    if (!form.category) {
+    if (!isAluguel && !form.category) {
       toast({ title: "Erro", description: "Selecione uma categoria.", variant: "destructive" });
       return;
     }
