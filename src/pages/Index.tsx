@@ -1,4 +1,5 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { useCityDetection } from "@/hooks/useCityDetection";
 import { Building2, ArrowRight, Search, Home, Key, Landmark, Store, MapPin, Shield, Zap, Star, ChevronRight, Plus } from "lucide-react";
 import NotFoundPage from "@/pages/NotFound";
 import { motion } from "framer-motion";
@@ -48,8 +49,9 @@ function getCategories(prefix: string) {
 
 export default function Index() {
   const { cidade } = useParams<{ cidade?: string }>();
+  const { detectedCity } = useCityDetection();
   const navigate = useNavigate();
-  const cityName = cidade ? slugToCity(cidade) : null;
+  const cityName = cidade ? slugToCity(cidade) : (detectedCity || null);
   const displayCity = cityName || "Espírito Santo";
   const citySlug = cityName ? cityToSlug(cityName) : "";
   const [searchQuery, setSearchQuery] = useState("");
