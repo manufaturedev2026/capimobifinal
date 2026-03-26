@@ -19,7 +19,7 @@ export default function SearchPage() {
 
   return (
     <div className="container max-w-6xl mx-auto px-4 py-8">
-      <h1 className="font-display font-bold text-3xl text-foreground mb-6">Buscar Empresas</h1>
+      <h1 className="font-display font-bold text-3xl text-foreground mb-6">Buscar Imóveis</h1>
 
       <div className="relative max-w-xl">
         <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
