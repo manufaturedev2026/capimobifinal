@@ -459,8 +459,8 @@ export default function CompanyProfile() {
                     <Store size={13} className="flex-shrink-0" />
                     <span>
                       {dbProfile?.seller_category
-                        ? ({ imobiliaria: "Imobiliária", corretor: "Corretor(a) de Imóveis", proprietario: "Proprietário", loja_veiculos: "Loja de Veículos", autonomo: "Vendedor Autônomo", concessionaria: "Concessionária" } as Record<string, string>)[dbProfile.seller_category] || (isProperty ? "Especialista em imóveis" : "Especialista em veículos")
-                        : isProperty ? "Especialista em imóveis" : "Especialista em veículos"}
+                        ? ({ imobiliaria: "Imobiliária", corretor: "Corretor(a) de Imóveis", proprietario: "Proprietário" } as Record<string, string>)[dbProfile.seller_category] || "Especialista em imóveis"
+                        : "Especialista em imóveis"}
                     </span>
                   </div>
                   {dbProfile?.seller_category === "corretor" && dbProfile?.creci && (
