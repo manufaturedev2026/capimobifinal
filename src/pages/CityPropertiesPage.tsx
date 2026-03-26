@@ -153,12 +153,25 @@ export default function CityPropertiesPage() {
               <MapPin size={14} /> {cityName}, ES — {items.length} imóvel(is)
             </div>
             <button
-              onClick={() => { setActiveCategory(null); setFilterNeighborhood(""); }}
+              onClick={() => { setActiveCategory(null); setFilterNeighborhood(""); setShowRentals(true); }}
               className="w-full px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#002F6C] to-[#00AEEF] text-white font-bold text-sm hover:opacity-90 transition-opacity shadow"
             >
               Limpar Filtros
             </button>
           </div>
+          {activeCategory !== "aluguel" && (
+            <div className="mt-3 flex items-center gap-2">
+              <button
+                onClick={() => setShowRentals(!showRentals)}
+                className={`relative w-10 h-5 rounded-full transition-colors duration-200 ${showRentals ? "bg-primary" : "bg-muted-foreground/30"}`}
+              >
+                <span className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform duration-200 ${showRentals ? "translate-x-5" : "translate-x-0"}`} />
+              </button>
+              <span className="text-sm text-foreground font-medium">
+                {showRentals ? "Exibindo itens de aluguel" : "Itens de aluguel ocultos"}
+              </span>
+            </div>
+          )}
         </div>
       </section>
 
