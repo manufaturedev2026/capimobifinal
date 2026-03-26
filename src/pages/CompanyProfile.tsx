@@ -466,7 +466,7 @@ export default function CompanyProfile() {
                   {dbProfile?.seller_category === "corretor" && dbProfile?.creci && (
                     <div className="flex items-center gap-2">
                       <Shield size={13} className="flex-shrink-0 text-primary" />
-                      <span className="font-semibold text-primary">CRECI - {dbProfile.creci}</span>
+                      <span className="font-semibold text-primary">{dbProfile.creci}</span>
                     </div>
                   )}
                   <div className="flex items-center gap-2">
@@ -807,7 +807,7 @@ export default function CompanyProfile() {
               {dbProfile?.seller_category === "corretor" && dbProfile?.creci && (
                 <div className="flex items-center gap-2">
                   <Shield size={13} className="flex-shrink-0 text-primary" />
-                  <span className="font-semibold text-primary">CRECI - {dbProfile.creci}</span>
+                  <span className="font-semibold text-primary">{dbProfile.creci}</span>
                 </div>
               )}
               <div className="flex items-center gap-2">
