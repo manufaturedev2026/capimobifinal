@@ -18,7 +18,6 @@ const propertyCategories: { value: ItemCategory; label: string }[] = [
   { value: "comercial", label: "Comercial" },
   { value: "galpao", label: "Galpão" },
   { value: "flat", label: "Flat" },
-  { value: "aluguel", label: "Aluguel" },
 ];
 
 const commonTags: { value: ItemTag; label: string; gradient: string; emoji: string }[] = [
