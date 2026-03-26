@@ -303,7 +303,7 @@ export default function SellerItemForm() {
               value={form.title}
               onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
               className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
-              placeholder={isVehicle ? "Ex: Honda Civic 2022" : "Ex: Casa 3 quartos no Centro"}
+              placeholder="Ex: Casa 3 quartos no Centro"
             />
           </div>
 
