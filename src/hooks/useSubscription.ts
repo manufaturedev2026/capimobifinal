@@ -101,7 +101,7 @@ export const PACKAGE_CONFIG = {
   },
   premium_empresa: {
     name: "Premium Empresa",
-    price: 200.00,
+    price: 999.90,
     maxItems: 9999,
     color: "from-sky-600 to-blue-800",
     borderColor: "border-sky-500",
