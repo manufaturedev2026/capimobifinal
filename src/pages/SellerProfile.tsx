@@ -152,7 +152,7 @@ export default function SellerProfile() {
             rows={5}
             maxLength={1000}
             className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none resize-none"
-            placeholder="Ex: Somos uma empresa especializada em veículos seminovos com mais de 10 anos de experiência..."
+            placeholder="Ex: Somos uma empresa especializada em imóveis com mais de 10 anos de experiência..."
           />
           <span className="text-xs text-muted-foreground">{form.bio.length}/1000</span>
         </div>
