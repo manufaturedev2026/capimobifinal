@@ -738,7 +738,7 @@ export default function CompanyProfile() {
                         {lbProduct.price > 0 && (
                           <p className="font-display font-bold text-2xl md:text-4xl text-primary mt-4 drop-shadow-lg">
                             {isDbProfile ? `R$ ${lbProduct.price.toLocaleString("pt-BR")}` : formatPrice(lbProduct.price)}
-                            {isDbProfile && ((lbProduct.tags || []).includes("aluguel_flex") || lbProduct.category === "aluguel") && (
+                            {isDbProfile && (((lbProduct as any).tags || []).includes("aluguel_flex") || (lbProduct as any).category === "aluguel") && (
                               <span className="text-lg font-normal text-muted-foreground"> /mês</span>
                             )}
                           </p>
