@@ -61,7 +61,7 @@ export default function AuthPage() {
                 <Shield size={28} className="text-accent" />
               </div>
               <div>
-                <h2 className="text-white font-display text-2xl font-bold">Melhor Busca</h2>
+                <h2 className="text-white font-display text-2xl font-bold">ES Corretores</h2>
                 <p className="text-white/60 text-sm">Painel do Corretor</p>
               </div>
             </div>
@@ -71,7 +71,7 @@ export default function AuthPage() {
               <span className="text-accent">anúncios</span> em um só lugar
             </h1>
             <p className="text-white/70 text-lg leading-relaxed mb-10">
-              Cadastre imóveis e veículos, acompanhe visualizações e destaque seus melhores anúncios no maior marketplace de Colatina.
+              Cadastre imóveis, acompanhe visualizações e destaque seus melhores anúncios no maior marketplace do ES.
             </p>
 
             <div className="space-y-4">
@@ -111,7 +111,7 @@ export default function AuthPage() {
             <div className="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center mx-auto mb-4 shadow-lg shadow-primary/30">
               <Shield size={28} className="text-primary-foreground" />
             </div>
-            <h2 className="font-display text-xl font-bold text-foreground">Melhor Busca</h2>
+            <h2 className="font-display text-xl font-bold text-foreground">ES Corretores</h2>
             <p className="text-muted-foreground text-sm">Painel do Corretor</p>
           </div>
 

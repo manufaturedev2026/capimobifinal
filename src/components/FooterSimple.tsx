@@ -8,9 +8,9 @@ export default function FooterSimple() {
           {/* Brand */}
           <div className="md:col-span-1">
             <Link to="/" className="flex items-center gap-2.5 mb-3">
-              <img src="/pwa-512x512.png" alt="Melhor Busca" className="w-9 h-9 rounded-xl shadow-md object-contain" />
+              <img src="/pwa-512x512.png" alt="ES Corretores" className="w-9 h-9 rounded-xl shadow-md object-contain" />
               <span className="font-display font-bold text-lg text-foreground">
-                Melhor<span className="text-primary">Busca</span>
+                ES<span className="text-primary">Corretores</span>
               </span>
             </Link>
             <p className="text-xs text-muted-foreground leading-relaxed">
@@ -52,7 +52,7 @@ export default function FooterSimple() {
 
         <div className="border-t border-border mt-8 pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-xs text-muted-foreground">
-            © {new Date().getFullYear()} MelhorBusca. Todos os direitos reservados.
+            © {new Date().getFullYear()} ES Corretores. Todos os direitos reservados.
           </p>
           <p className="text-xs text-muted-foreground">
             Colatina, ES — Brasil

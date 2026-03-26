@@ -39,7 +39,7 @@ export default function CreateListing() {
       if (error) {
         toast({ title: "Erro ao cadastrar", description: error.message, variant: "destructive" });
       } else {
-        toast({ title: "Cadastro realizado!", description: "Bem-vindo ao Melhor Busca!" });
+        toast({ title: "Cadastro realizado!", description: "Bem-vindo ao ES Corretores!" });
         navigate("/painel");
       }
     }
@@ -69,7 +69,7 @@ export default function CreateListing() {
             <div className="flex items-center gap-2 mb-4">
               <Sparkles size={20} className="text-accent" />
               <span className="text-accent font-semibold text-sm uppercase tracking-wider">
-                Melhor Busca
+                ES Corretores
               </span>
             </div>
             <h1 className="font-display font-bold text-3xl lg:text-5xl text-white leading-tight mb-3">

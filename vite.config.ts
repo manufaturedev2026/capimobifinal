@@ -35,9 +35,9 @@ export default defineConfig(({ mode }) => ({
         ],
       },
       manifest: {
-        name: "Melhor Busca - Imóveis e Veículos",
-        short_name: "MelhorBusca",
-        description: "Marketplace de imóveis e veículos em Colatina. Encontre casas, apartamentos, carros e motos.",
+        name: "ES Corretores - Imóveis no Espírito Santo",
+        short_name: "ESCorretores",
+        description: "Marketplace de imóveis no Espírito Santo. Encontre casas, apartamentos, terrenos e mais.",
         theme_color: "#ffffff",
         background_color: "#002F6C",
         lang: "pt-BR",

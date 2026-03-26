@@ -4,8 +4,8 @@ export default function PrivacyPage() {
   return (
     <>
       <Helmet>
-        <title>Política de Privacidade | MelhorBusca</title>
-        <meta name="description" content="Política de Privacidade do MelhorBusca. Saiba como coletamos, usamos e protegemos seus dados pessoais." />
+        <title>Política de Privacidade | ES Corretores</title>
+        <meta name="description" content="Política de Privacidade do ES Corretores. Saiba como coletamos, usamos e protegemos seus dados pessoais." />
         <link rel="canonical" href="https://redeimoveisgb.lovable.app/privacidade" />
       </Helmet>
       <div className="container max-w-3xl mx-auto px-4 py-12">
@@ -15,7 +15,7 @@ export default function PrivacyPage() {
         <div className="prose prose-sm max-w-none text-foreground space-y-6">
           <section>
             <h2 className="font-display font-bold text-xl mb-3">1. Introdução</h2>
-            <p className="text-muted-foreground leading-relaxed">A MelhorBusca ("nós", "nosso") opera o site redeimoveisgb.lovable.app. Esta política descreve como coletamos, usamos e protegemos suas informações pessoais quando você utiliza nosso marketplace de imóveis e veículos.</p>
+            <p className="text-muted-foreground leading-relaxed">A ES Corretores ("nós", "nosso") opera o site redeimoveisgb.lovable.app. Esta política descreve como coletamos, usamos e protegemos suas informações pessoais quando você utiliza nosso marketplace de imóveis e veículos.</p>
           </section>
 
           <section>
