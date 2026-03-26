@@ -74,7 +74,7 @@ export default function CreateListing() {
             </div>
             <h1 className="font-display font-bold text-3xl lg:text-5xl text-white leading-tight mb-3">
               Anuncie seu<br />
-              <span className="text-accent">imóvel</span>
+              <span className="text-primary">imóvel</span>
             </h1>
             <p className="text-white/60 text-sm lg:text-base max-w-md">
               O maior marketplace de imóveis do Espírito Santo. Cadastre-se e comece a anunciar hoje mesmo.
