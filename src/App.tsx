@@ -12,6 +12,8 @@ import ScrollToTop from "@/components/ScrollToTop";
 import Index from "@/pages/Index";
 import PropertiesPage from "@/pages/PropertiesPage";
 import BecomeAgentPage from "@/pages/BecomeAgentPage";
+import StudyMaterial from "@/pages/StudyMaterial";
+import ArticleReader from "@/pages/ArticleReader";
 
 import CityPropertiesPage from "@/pages/CityPropertiesPage";
 
@@ -57,6 +59,8 @@ const AppLayout = () => {
           <Route path="/painel/novo" element={<SellerItemForm />} />
           <Route path="/painel/editar/:id" element={<SellerItemForm />} />
           <Route path="/painel/perfil" element={<SellerProfile />} />
+          <Route path="/painel/estudo" element={<StudyMaterial />} />
+          <Route path="/painel/estudo/:slug" element={<ArticleReader />} />
           <Route path="/pacotes" element={<PackagesPage />} />
           <Route path="/admin" element={<AdminPanel />} />
           <Route path="/privacidade" element={<PrivacyPage />} />

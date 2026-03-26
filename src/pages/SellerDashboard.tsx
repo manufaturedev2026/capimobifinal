@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Package, Eye, Plus, Settings, Edit, Trash2, Copy, ToggleLeft, ToggleRight, Search, Image, LogOut, BarChart3, Star, Crown, Zap, AlertTriangle, Shield, MessageCircle, Home, UserCircle, Headphones, Globe, ExternalLink, CheckCircle2, ClipboardCopy, Megaphone, Send, Calculator, Lock, Clapperboard, Menu, X, Building2 } from "lucide-react";
+import { Package, Eye, Plus, Settings, Edit, Trash2, Copy, ToggleLeft, ToggleRight, Search, Image, LogOut, BarChart3, Star, Crown, Zap, AlertTriangle, Shield, MessageCircle, Home, UserCircle, Headphones, Globe, ExternalLink, CheckCircle2, ClipboardCopy, Megaphone, Send, Calculator, Lock, Clapperboard, Menu, X, Building2, BookOpen } from "lucide-react";
 import { getTagStyle, getTagLabel } from "@/data/products";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
@@ -26,7 +26,7 @@ type SellerItem = {
   seller_type: string;
 };
 
-type DashboardTab = "overview" | "items" | "stats" | "domain" | "ads";
+type DashboardTab = "overview" | "items" | "stats" | "domain" | "ads" | "study";
 
 export default function SellerDashboard() {
   const { user, profile, signOut, refreshProfile, loading: authLoading } = useAuth();
@@ -212,9 +212,14 @@ export default function SellerDashboard() {
     { id: "stats" as const, label: "Estatísticas", icon: BarChart3 },
     { id: "ads" as const, label: "Fazer ADS", icon: Megaphone, locked: lockedTabs.includes("ads") },
     { id: "domain" as const, label: "Meu Domínio", icon: Globe, locked: lockedTabs.includes("domain") },
+    { id: "study" as const, label: "Material de Estudo", icon: BookOpen },
   ];
 
   const handleTabClick = (tabId: DashboardTab) => {
+    if (tabId === "study") {
+      navigate("/painel/estudo");
+      return;
+    }
     if (lockedTabs.includes(tabId)) {
       toast({
         title: "Recurso bloqueado 🔒",
