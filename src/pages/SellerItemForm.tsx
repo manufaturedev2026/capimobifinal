@@ -406,7 +406,7 @@ export default function SellerItemForm() {
               <label className="text-xs text-muted-foreground mb-1 block">Cidade</label>
               <select
                 value={form.city}
-                onChange={(e) => setForm((f) => ({ ...f, city: e.target.value }))}
+                onChange={(e) => setForm((f) => ({ ...f, city: e.target.value, neighborhood: "" }))}
                 className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
               >
                 <option value="">Selecione a cidade</option>
