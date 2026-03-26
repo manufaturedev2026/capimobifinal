@@ -132,45 +132,6 @@ export default function SellerProfile() {
           </label>
         </div>
 
-        {/* Info */}
-        <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
-          <h2 className="font-display font-bold text-foreground">Informações Pessoais</h2>
-          <input value={form.full_name} onChange={(e) => setForm((f) => ({ ...f, full_name: e.target.value }))} className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="Nome completo" />
-          <input value={form.email} disabled className="w-full px-4 py-3 rounded-xl border border-input bg-muted text-muted-foreground text-sm" placeholder="E-mail" />
-          <input value={form.phone} onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))} className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="Telefone" />
-          <input value={form.company_name} onChange={(e) => setForm((f) => ({ ...f, company_name: e.target.value }))} className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder={
-            form.seller_category === "corretor" ? "Nome do Corretor" :
-            form.seller_category === "proprietario" ? "Nome do Proprietário" :
-            "Nome da Empresa"
-          } />
-          <div className="relative">
-            <Instagram size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            <input value={form.instagram} onChange={(e) => setForm((f) => ({ ...f, instagram: e.target.value }))} className="w-full pl-10 pr-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="Instagram (ex: @sualoja)" />
-          </div>
-        </div>
-
-        {/* Sobre a empresa */}
-        <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
-          <h2 className="font-display font-bold text-foreground">Sobre a Empresa</h2>
-          <p className="text-xs text-muted-foreground">Descreva sua empresa, diferenciais, horário de funcionamento, etc. Esse texto aparece na sua loja pública.</p>
-          <textarea
-            value={form.bio}
-            onChange={(e) => setForm((f) => ({ ...f, bio: e.target.value }))}
-            rows={5}
-            maxLength={1000}
-            className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none resize-none"
-            placeholder="Ex: Somos uma empresa especializada em imóveis com mais de 10 anos de experiência..."
-          />
-          <span className="text-xs text-muted-foreground">{form.bio.length}/1000</span>
-        </div>
-        <div className="bg-card border border-border rounded-2xl p-5">
-          <h2 className="font-display font-bold text-foreground mb-3">Tipo de vendedor</h2>
-          <div className="flex items-center gap-3 py-3 px-4 rounded-xl border-2 border-primary bg-primary/10">
-            <span className="text-lg">🏠</span>
-            <span className="font-bold text-sm text-primary">Imóveis</span>
-          </div>
-        </div>
-
         {/* Categoria do vendedor */}
         <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
           <h2 className="font-display font-bold text-foreground">Categoria</h2>
@@ -223,6 +184,45 @@ export default function SellerProfile() {
               <p className="text-xs text-muted-foreground mt-1">O CNPJ será exibido no perfil da sua loja.</p>
             </div>
           )}
+        </div>
+
+        {/* Info */}
+        <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
+          <h2 className="font-display font-bold text-foreground">Informações Pessoais</h2>
+          <input value={form.full_name} onChange={(e) => setForm((f) => ({ ...f, full_name: e.target.value }))} className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="Nome completo" />
+          <input value={form.email} disabled className="w-full px-4 py-3 rounded-xl border border-input bg-muted text-muted-foreground text-sm" placeholder="E-mail" />
+          <input value={form.phone} onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))} className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="Telefone" />
+          <input value={form.company_name} onChange={(e) => setForm((f) => ({ ...f, company_name: e.target.value }))} className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder={
+            form.seller_category === "corretor" ? "Nome do Corretor" :
+            form.seller_category === "proprietario" ? "Nome do Proprietário" :
+            "Nome da Empresa"
+          } />
+          <div className="relative">
+            <Instagram size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <input value={form.instagram} onChange={(e) => setForm((f) => ({ ...f, instagram: e.target.value }))} className="w-full pl-10 pr-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="Instagram (ex: @sualoja)" />
+          </div>
+        </div>
+
+        {/* Sobre a empresa */}
+        <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
+          <h2 className="font-display font-bold text-foreground">Sobre a Empresa</h2>
+          <p className="text-xs text-muted-foreground">Descreva sua empresa, diferenciais, horário de funcionamento, etc. Esse texto aparece na sua loja pública.</p>
+          <textarea
+            value={form.bio}
+            onChange={(e) => setForm((f) => ({ ...f, bio: e.target.value }))}
+            rows={5}
+            maxLength={1000}
+            className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none resize-none"
+            placeholder="Ex: Somos uma empresa especializada em imóveis com mais de 10 anos de experiência..."
+          />
+          <span className="text-xs text-muted-foreground">{form.bio.length}/1000</span>
+        </div>
+        <div className="bg-card border border-border rounded-2xl p-5">
+          <h2 className="font-display font-bold text-foreground mb-3">Tipo de vendedor</h2>
+          <div className="flex items-center gap-3 py-3 px-4 rounded-xl border-2 border-primary bg-primary/10">
+            <span className="text-lg">🏠</span>
+            <span className="font-bold text-sm text-primary">Imóveis</span>
+          </div>
         </div>
 
         {/* Location */}
