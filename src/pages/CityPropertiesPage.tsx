@@ -103,8 +103,11 @@ export default function CityPropertiesPage() {
     if (filterNeighborhood) {
       list = list.filter((i) => i.neighborhood === filterNeighborhood);
     }
+    if (!showRentals && activeCategory !== "aluguel") {
+      list = list.filter((i) => !((i.tags || []).includes("aluguel_flex") || i.category === "aluguel"));
+    }
     return list;
-  }, [items, activeCategory, filterNeighborhood]);
+  }, [items, activeCategory, filterNeighborhood, showRentals]);
 
   if (loading) {
     return (
