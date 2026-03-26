@@ -388,7 +388,7 @@ export default function SellerItemForm() {
           )}
 
           <div>
-            <label className="block text-sm font-medium text-foreground mb-1.5">Preço (R$)</label>
+            <label className="block text-sm font-medium text-foreground mb-1.5">Preço (R$) {isAluguel && <span className="text-primary font-normal">/Mês</span>}</label>
             <input
               type="number"
               step="0.01"
