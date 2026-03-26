@@ -52,7 +52,7 @@ export default function FooterSimple() {
 
         <div className="border-t border-border mt-8 pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-xs text-muted-foreground">
-            © {new Date().getFullYear()} MelhorBusca. Todos os direitos reservados.
+            © {new Date().getFullYear()} ES Corretores. Todos os direitos reservados.
           </p>
           <p className="text-xs text-muted-foreground">
             Colatina, ES — Brasil

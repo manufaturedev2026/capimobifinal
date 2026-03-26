@@ -38,9 +38,9 @@ export default function Header() {
     <header className="sticky top-0 z-50 bg-card/90 backdrop-blur-xl border-b border-border">
       <div className="container max-w-6xl mx-auto flex items-center justify-between h-16 px-4">
         <Link to="/" className="flex items-center gap-2.5">
-          <img src="/pwa-512x512.png" alt="Melhor Busca" className="w-9 h-9 rounded-xl shadow-md object-contain" />
+          <img src="/pwa-512x512.png" alt="ES Corretores" className="w-9 h-9 rounded-xl shadow-md object-contain" />
           <span className="font-display font-bold text-xl text-foreground">
-            Melhor<span className="text-primary">Busca</span>
+            ES<span className="text-primary">Corretores</span>
           </span>
         </Link>
 
