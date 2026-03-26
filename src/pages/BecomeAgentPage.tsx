@@ -20,12 +20,11 @@ import {
 } from "lucide-react";
 import heroImg from "@/assets/hero-corretor.jpg";
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 30 },
+const fadeIn = {
+  hidden: { opacity: 0 },
   visible: (i: number) => ({
     opacity: 1,
-    y: 0,
-    transition: { delay: i * 0.1, duration: 0.6 },
+    transition: { delay: i * 0.08, duration: 0.5 },
   }),
 };
 
