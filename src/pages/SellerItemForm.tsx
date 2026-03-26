@@ -96,7 +96,7 @@ export default function SellerItemForm() {
         .single()
         .then(({ data }) => {
           if (data) {
-            const editIsAluguel = data.category === "aluguel";
+            const editIsAluguel = (data.tags as string[] || []).includes("aluguel_flex") || data.category === "aluguel";
             setIsAluguel(editIsAluguel);
             setForm({
               title: data.title || "",
