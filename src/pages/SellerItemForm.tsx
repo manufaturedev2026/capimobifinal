@@ -208,7 +208,7 @@ export default function SellerItemForm() {
       title: form.title,
       description: form.description || null,
       category: form.category as ItemCategory,
-      seller_type: sellerType,
+      seller_type: "imoveis" as const,
       price: form.price ? parseFloat(form.price) : null,
       city: form.city || null,
       state: form.state || null,
