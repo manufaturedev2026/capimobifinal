@@ -295,7 +295,7 @@ export default function ProductDetail() {
               </div>
               <h1 className="font-display font-bold text-2xl md:text-4xl text-foreground mt-1 leading-tight">{title}</h1>
               {formattedPrice && (
-                <p className="font-display font-bold text-3xl md:text-4xl text-primary mt-3">
+                <p className="font-display font-bold text-3xl md:text-4xl text-emerald-500 mt-3">
                   {formattedPrice}
                   {isAluguel && <span className="text-lg font-normal text-muted-foreground"> /mês</span>}
                 </p>
