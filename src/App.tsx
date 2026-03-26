@@ -20,6 +20,7 @@ import CityPropertiesPage from "@/pages/CityPropertiesPage";
 import CompanyProfile from "@/pages/CompanyProfile";
 import ProductDetail from "@/pages/ProductDetail";
 import CreateListing from "@/pages/CreateListing";
+import LoginPage from "@/pages/LoginPage";
 import SearchPage from "@/pages/SearchPage";
 import AuthPage from "@/pages/AuthPage";
 import SellerDashboard from "@/pages/SellerDashboard";
