@@ -63,7 +63,7 @@ export const PACKAGE_CONFIG = {
   },
   vip: {
     name: "VIP",
-    price: 22.99,
+    price: 114.99,
     maxItems: 50,
     color: "from-purple-600 to-indigo-700",
     borderColor: "border-purple-500",
