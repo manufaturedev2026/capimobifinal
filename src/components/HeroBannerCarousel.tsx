@@ -26,7 +26,7 @@ interface HeroBannerCarouselProps {
   items: HeroItem[];
   sellers: Record<string, { id: string; name: string; logo: string }>;
   featuredItemIds?: Set<string>;
-  type: "imoveis" | "veiculos";
+  type: "imoveis";
   filterCity?: string;
   filterCategory?: string;
   fallbackImage: string;
