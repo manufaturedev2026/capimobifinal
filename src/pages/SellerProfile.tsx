@@ -32,6 +32,7 @@ export default function SellerProfile() {
     seller_category: "" as string,
     creci: "",
     cnpj: "",
+    cover_color: "",
   });
 
   useEffect(() => {
