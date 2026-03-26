@@ -190,7 +190,7 @@ export default function SellerProfile() {
         <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
           <h2 className="font-display font-bold text-foreground">Informações Pessoais</h2>
           <input value={form.full_name} onChange={(e) => setForm((f) => ({ ...f, full_name: e.target.value }))} className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="Nome completo" />
-          <input value={form.email} disabled className="w-full px-4 py-3 rounded-xl border border-input bg-muted text-muted-foreground text-sm" placeholder="E-mail" />
+          <input value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="E-mail" />
           <input value={form.phone} onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))} className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="Telefone" />
           <input value={form.company_name} onChange={(e) => setForm((f) => ({ ...f, company_name: e.target.value }))} className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder={
             form.seller_category === "corretor" ? "Nome do Corretor" :
