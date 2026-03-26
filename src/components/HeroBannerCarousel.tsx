@@ -5,7 +5,7 @@ import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { formatPrice } from "@/data/products";
 import type { RealItem, RealSeller } from "@/hooks/useRealListings";
 
-const VEHICLE_CATEGORIES = ["carro", "moto", "caminhao", "van", "utilitario"];
+
 
 interface HeroItem {
   id: string;
