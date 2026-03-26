@@ -45,6 +45,7 @@ export default function AdminPanel() {
   const [sellers, setSellers] = useState<SellerWithSub[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [tierFilter, setTierFilter] = useState<string>("todos");
   const [tab, setTab] = useState<"sellers" | "billing" | "domains" | "ads">("sellers");
   const [adRequests, setAdRequests] = useState<any[]>([]);
   const [adsLoading, setAdsLoading] = useState(false);
