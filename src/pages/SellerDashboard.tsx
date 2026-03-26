@@ -212,6 +212,7 @@ export default function SellerDashboard() {
     { id: "stats" as const, label: "Estatísticas", icon: BarChart3 },
     { id: "ads" as const, label: "Fazer ADS", icon: Megaphone, locked: lockedTabs.includes("ads") },
     { id: "domain" as const, label: "Meu Domínio", icon: Globe, locked: lockedTabs.includes("domain") },
+    { id: "study" as const, label: "Material de Estudo", icon: BookOpen },
   ];
 
   const handleTabClick = (tabId: DashboardTab) => {
