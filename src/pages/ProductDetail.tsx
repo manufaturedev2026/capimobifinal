@@ -404,7 +404,7 @@ export default function ProductDetail() {
                   </div>
                   <div className="p-3">
                     <h3 className="font-display font-semibold text-foreground text-sm leading-tight line-clamp-2">{rp.title}</h3>
-                    <p className="font-display font-bold text-primary text-base mt-1">{formatPrice(rp.price)}</p>
+                    <p className="font-display font-bold text-emerald-500 text-base mt-1">{formatPrice(rp.price)}</p>
                   </div>
                 </Link>
               ))}
