@@ -24,7 +24,7 @@ export default function FooterSimple() {
             <nav className="flex flex-col gap-2 text-sm text-muted-foreground">
               <Link to="/" className="hover:text-foreground transition-colors">Início</Link>
               <Link to="/imoveis" className="hover:text-foreground transition-colors">Imóveis</Link>
-              <Link to="/veiculos" className="hover:text-foreground transition-colors">Veículos</Link>
+              
               <Link to="/buscar" className="hover:text-foreground transition-colors">Buscar</Link>
               <Link to="/anunciar" className="hover:text-foreground transition-colors">Anunciar</Link>
             </nav>

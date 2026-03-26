@@ -44,10 +44,8 @@ const AppLayout = () => {
           <Route path="/imoveis/:cidade" element={<PropertiesPage />} />
           <Route path="/imoveis/empresa/:id" element={<CompanyProfile />} />
           <Route path="/imoveis/produto/:productId" element={<ProductDetail />} />
-          <Route path="/veiculos" element={<VehiclesPage />} />
-          <Route path="/veiculos/:cidade" element={<VehiclesPage />} />
-          <Route path="/veiculos/empresa/:id" element={<CompanyProfile />} />
-          <Route path="/veiculos/produto/:productId" element={<ProductDetail />} />
+
+
           <Route path="/:cidade/imoveis" element={<CityPropertiesPage />} />
           
           <Route path="/anunciar" element={<CreateListing />} />

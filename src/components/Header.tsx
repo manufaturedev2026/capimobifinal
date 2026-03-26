@@ -22,7 +22,6 @@ export default function Header() {
   const navLinks = [
     { to: "/", label: "Início" },
     { to: "/imoveis", label: "Imóveis", icon: Building2 },
-    { to: "/veiculos", label: "Veículos", icon: Car },
     ...(user
       ? [{ to: "/painel", label: "Painel", icon: LayoutDashboard, highlight: true }]
       : [{ to: "/anunciar", label: "Anunciar", icon: Plus }]),
