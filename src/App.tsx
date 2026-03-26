@@ -11,9 +11,9 @@ import InstallPWA from "@/components/InstallPWA";
 import ScrollToTop from "@/components/ScrollToTop";
 import Index from "@/pages/Index";
 import PropertiesPage from "@/pages/PropertiesPage";
-import VehiclesPage from "@/pages/VehiclesPage";
+
 import CityPropertiesPage from "@/pages/CityPropertiesPage";
-import CityVehiclesPage from "@/pages/CityVehiclesPage";
+
 import CompanyProfile from "@/pages/CompanyProfile";
 import ProductDetail from "@/pages/ProductDetail";
 import CreateListing from "@/pages/CreateListing";
@@ -44,12 +44,10 @@ const AppLayout = () => {
           <Route path="/imoveis/:cidade" element={<PropertiesPage />} />
           <Route path="/imoveis/empresa/:id" element={<CompanyProfile />} />
           <Route path="/imoveis/produto/:productId" element={<ProductDetail />} />
-          <Route path="/veiculos" element={<VehiclesPage />} />
-          <Route path="/veiculos/:cidade" element={<VehiclesPage />} />
-          <Route path="/veiculos/empresa/:id" element={<CompanyProfile />} />
-          <Route path="/veiculos/produto/:productId" element={<ProductDetail />} />
+
+
           <Route path="/:cidade/imoveis" element={<CityPropertiesPage />} />
-          <Route path="/:cidade/veiculos" element={<CityVehiclesPage />} />
+          
           <Route path="/anunciar" element={<CreateListing />} />
           <Route path="/buscar" element={<SearchPage />} />
           <Route path="/entrar" element={<AuthPage />} />

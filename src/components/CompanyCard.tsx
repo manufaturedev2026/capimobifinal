@@ -10,7 +10,7 @@ function openWhatsApp(e: React.MouseEvent, whatsapp: string, name: string) {
 }
 
 export default function CompanyCard({ company, index }: { company: Company; index: number }) {
-  const profileUrl = company.segment === "imoveis" ? `/imoveis/empresa/${company.id}` : `/veiculos/empresa/${company.id}`;
+  const profileUrl = `/imoveis/empresa/${company.id}`;
 
   return (
     <motion.div

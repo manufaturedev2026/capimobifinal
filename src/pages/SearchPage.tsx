@@ -19,7 +19,7 @@ export default function SearchPage() {
 
   return (
     <div className="container max-w-6xl mx-auto px-4 py-8">
-      <h1 className="font-display font-bold text-3xl text-foreground mb-6">Buscar Empresas</h1>
+      <h1 className="font-display font-bold text-3xl text-foreground mb-6">Buscar Imóveis</h1>
 
       <div className="relative max-w-xl">
         <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
@@ -27,7 +27,7 @@ export default function SearchPage() {
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Buscar empresas, categorias, localização..."
+          placeholder="Buscar imóveis, corretores, localização..."
           className="w-full pl-11 pr-4 py-3 rounded-xl bg-secondary text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
           autoFocus
         />

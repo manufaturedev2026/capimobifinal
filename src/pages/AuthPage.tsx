@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { Eye, EyeOff, LogIn, UserPlus, Building2, Car, Shield, KeyRound } from "lucide-react";
+import { Eye, EyeOff, LogIn, UserPlus, Building2, Shield, KeyRound } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 
@@ -11,7 +11,7 @@ export default function AuthPage() {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
-  const [sellerType, setSellerType] = useState<"imoveis" | "automoveis">("imoveis");
+  
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const { signIn, signUp } = useAuth();
@@ -77,8 +77,8 @@ export default function AuthPage() {
             <div className="space-y-4">
               {[
                 { icon: Building2, text: "Publique imóveis com fotos e detalhes" },
-                { icon: Car, text: "Anuncie veículos com ficha técnica completa" },
                 { icon: KeyRound, text: "Controle total dos seus anúncios" },
+                { icon: Shield, text: "Perfil verificado e confiável" },
               ].map((item, i) => (
                 <motion.div
                   key={i}
@@ -148,35 +148,8 @@ export default function AuthPage() {
                     placeholder="(27) 99999-9999"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-1.5">Tipo de corretor</label>
-                  <div className="grid grid-cols-2 gap-3">
-                    <button
-                      type="button"
-                      onClick={() => setSellerType("imoveis")}
-                      className={`flex items-center justify-center gap-2 py-3 rounded-xl border-2 text-sm font-medium transition-all ${
-                        sellerType === "imoveis"
-                          ? "border-primary bg-primary/10 text-primary"
-                          : "border-input bg-card text-muted-foreground hover:border-primary/40"
-                      }`}
-                    >
-                      <Building2 size={18} />
-                      Imóveis
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setSellerType("automoveis")}
-                      className={`flex items-center justify-center gap-2 py-3 rounded-xl border-2 text-sm font-medium transition-all ${
-                        sellerType === "automoveis"
-                          ? "border-primary bg-primary/10 text-primary"
-                          : "border-input bg-card text-muted-foreground hover:border-primary/40"
-                      }`}
-                    >
-                      <Car size={18} />
-                      Veículos
-                    </button>
-                  </div>
-                </div>
+
+
               </>
             )}
 

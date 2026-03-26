@@ -7,7 +7,7 @@ export interface Product {
   images: string[];
   tag?: string;
   description: string;
-  type: "imovel" | "veiculo";
+  type: "imovel";
   specs: Record<string, string>;
   location?: string;
 }

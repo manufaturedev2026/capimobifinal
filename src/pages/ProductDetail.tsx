@@ -93,16 +93,14 @@ export default function ProductDetail() {
     );
   }
 
-  const isProperty = isDb
-    ? ["casa", "apartamento", "terreno", "comercial", "galpao", "flat", "aluguel"].includes(product.category)
-    : product.type === "imovel";
+  const isProperty = true;
 
   const images: string[] = isDb ? (product.photos?.length > 0 ? product.photos : []) : product.images;
   const title = product.title;
   const price = product.price;
   const description = product.description;
   const tag = isDb ? product.tags?.[0] : product.tag;
-  const companyUrl = `/${isProperty ? "imoveis" : "veiculos"}/empresa/${company.id}`;
+  const companyUrl = `/imoveis/empresa/${company.id}`;
   const formattedPrice = isDb
     ? price ? `R$ ${Number(price).toLocaleString("pt-BR")}` : ""
     : formatPrice(price);
@@ -382,7 +380,7 @@ export default function ProductDetail() {
             <h2 className="font-display font-bold text-xl text-foreground mb-6">Mais de {company.name}</h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
               {relatedProducts.map((rp: any) => (
-                <Link key={rp.id} to={`/${isProperty ? "imoveis" : "veiculos"}/produto/${rp.id}`} className="card-epic bg-card border border-border group">
+                <Link key={rp.id} to={`/imoveis/produto/${rp.id}`} className="card-epic bg-card border border-border group">
                   <div className="relative aspect-[4/3] overflow-hidden rounded-t-2xl">
                     <img src={rp.image} alt={rp.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
                   </div>

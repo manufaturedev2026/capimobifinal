@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { Eye, EyeOff, LogIn, UserPlus, Building2, Car, Shield, Sparkles } from "lucide-react";
+import { Eye, EyeOff, LogIn, UserPlus, Building2, Shield, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import heroImg from "@/assets/hero-anunciar.jpg";
@@ -12,7 +12,7 @@ export default function CreateListing() {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
-  const [sellerType, setSellerType] = useState<"imoveis" | "automoveis">("imoveis");
+  
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const { user, signIn, signUp } = useAuth();
@@ -52,7 +52,7 @@ export default function CreateListing() {
       <div className="relative w-full lg:w-1/2 h-[40vh] lg:h-auto lg:min-h-screen overflow-hidden">
         <img
           src={heroImg}
-          alt="Imóveis e veículos de luxo"
+          alt="Imóveis de qualidade"
           className="absolute inset-0 w-full h-full object-cover"
         />
         {/* Dark overlay */}
@@ -74,11 +74,10 @@ export default function CreateListing() {
             </div>
             <h1 className="font-display font-bold text-3xl lg:text-5xl text-white leading-tight mb-3">
               Anuncie seu<br />
-              <span className="text-accent">imóvel</span> ou{" "}
-              <span className="text-accent">veículo</span>
+              <span className="text-accent">imóvel</span>
             </h1>
             <p className="text-white/60 text-sm lg:text-base max-w-md">
-              O maior marketplace de Colatina. Cadastre-se e comece a vender hoje mesmo.
+              O maior marketplace de imóveis do Espírito Santo. Cadastre-se e comece a anunciar hoje mesmo.
             </p>
           </motion.div>
         </div>
@@ -99,7 +98,7 @@ export default function CreateListing() {
             <p className="text-white/50 mt-2 text-sm">
               {isLogin
                 ? "Entre para gerenciar seus anúncios"
-                : "Cadastre-se gratuitamente como corretor"}
+                : "Cadastre-se gratuitamente como corretor de imóveis"}
             </p>
           </div>
 
@@ -131,37 +130,8 @@ export default function CreateListing() {
                     placeholder="(27) 99999-9999"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-white/80 mb-1.5">
-                    Tipo de corretor
-                  </label>
-                  <div className="grid grid-cols-2 gap-3">
-                    <button
-                      type="button"
-                      onClick={() => setSellerType("imoveis")}
-                      className={`flex items-center justify-center gap-2 py-3 rounded-xl border-2 text-sm font-medium transition-all ${
-                        sellerType === "imoveis"
-                          ? "border-accent bg-accent/10 text-accent"
-                          : "border-white/10 bg-white/5 text-white/50 hover:border-white/30"
-                      }`}
-                    >
-                      <Building2 size={18} />
-                      Imóveis
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setSellerType("automoveis")}
-                      className={`flex items-center justify-center gap-2 py-3 rounded-xl border-2 text-sm font-medium transition-all ${
-                        sellerType === "automoveis"
-                          ? "border-accent bg-accent/10 text-accent"
-                          : "border-white/10 bg-white/5 text-white/50 hover:border-white/30"
-                      }`}
-                    >
-                      <Car size={18} />
-                      Veículos
-                    </button>
-                  </div>
-                </div>
+
+
               </>
             )}
 

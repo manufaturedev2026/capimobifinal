@@ -10,16 +10,6 @@ import { ES_CITIES } from "@/data/esCities";
 
 type ItemCategory = Database["public"]["Enums"]["item_category"];
 type ItemTag = Database["public"]["Enums"]["item_tag"];
-type SellerType = Database["public"]["Enums"]["seller_type"];
-
-const vehicleCategories: { value: ItemCategory; label: string }[] = [
-  { value: "carro", label: "Carro" },
-  { value: "moto", label: "Moto" },
-  { value: "caminhao", label: "Caminhão" },
-  { value: "van", label: "Van" },
-  { value: "utilitario", label: "Utilitário" },
-  { value: "outros", label: "Outros" },
-];
 
 const propertyCategories: { value: ItemCategory; label: string }[] = [
   { value: "casa", label: "Casa" },
@@ -30,29 +20,6 @@ const propertyCategories: { value: ItemCategory; label: string }[] = [
   { value: "flat", label: "Flat" },
   { value: "aluguel", label: "Aluguel" },
 ];
-
-const CAR_BRANDS = [
-  "Audi", "BMW", "BYD", "Caoa Chery", "Chevrolet", "Citroën", "Dodge", "Fiat", "Ford",
-  "Honda", "Hyundai", "JAC", "Jeep", "Kia", "Land Rover", "Mercedes-Benz", "Mitsubishi",
-  "Nissan", "Peugeot", "Porsche", "RAM", "Renault", "Subaru", "Suzuki", "Toyota",
-  "Volkswagen", "Volvo",
-];
-
-const MOTO_BRANDS = [
-  "BMW", "Dafra", "Ducati", "Haojue", "Harley-Davidson", "Honda", "Husqvarna",
-  "Kawasaki", "KTM", "Royal Enfield", "Shineray", "Suzuki", "Triumph", "Yamaha",
-];
-
-const TRUCK_BRANDS = [
-  "DAF", "Ford", "Iveco", "MAN", "Mercedes-Benz", "Scania", "Volkswagen", "Volvo",
-];
-
-function getBrandsForCategory(category: string): string[] {
-  if (category === "moto") return MOTO_BRANDS;
-  if (category === "caminhao") return TRUCK_BRANDS;
-  if (category === "van" || category === "utilitario") return [...new Set([...CAR_BRANDS, ...TRUCK_BRANDS])].sort();
-  return CAR_BRANDS;
-}
 
 const commonTags: { value: ItemTag; label: string }[] = [
   { value: "premium", label: "Premium" },
@@ -85,7 +52,7 @@ export default function SellerItemForm() {
   const [activeItemCount, setActiveItemCount] = useState(0);
   const { subscription, currentTier, config: pkgConfig, isExpired } = useSubscription(user?.id);
 
-  const [sellerType, setSellerType] = useState<SellerType>("imoveis");
+  
   
   const [form, setForm] = useState({
     title: "",
@@ -116,9 +83,8 @@ export default function SellerItemForm() {
     if (!authLoading && !user) navigate("/entrar");
   }, [user, authLoading]);
 
-  useEffect(() => {
-    if (profile) setSellerType(profile.seller_type || "imoveis");
-  }, [profile]);
+
+
 
   useEffect(() => {
     if (isEdit && user) {
@@ -130,7 +96,6 @@ export default function SellerItemForm() {
         .single()
         .then(({ data }) => {
           if (data) {
-            setSellerType(data.seller_type);
             setForm({
               title: data.title || "",
               description: data.description || "",
@@ -174,8 +139,8 @@ export default function SellerItemForm() {
 
   const isAtLimit = !isEdit && activeItemCount >= pkgConfig.maxItems;
 
-  // Tags by segment + tier
-  const allTags = sellerType === "imoveis" ? [...commonTags, ...propertyOnlyTags] : commonTags;
+  // Tags for properties
+  const allTags = [...commonTags, ...propertyOnlyTags];
   const premiumOnlyTags: ItemTag[] = ["premium", "luxo", "prime", "exclusivo"];
   const availableTags = currentTier === "basico"
     ? allTags.filter((t) => !premiumOnlyTags.includes(t.value))
@@ -243,7 +208,7 @@ export default function SellerItemForm() {
       title: form.title,
       description: form.description || null,
       category: form.category as ItemCategory,
-      seller_type: sellerType,
+      seller_type: "imoveis" as const,
       price: form.price ? parseFloat(form.price) : null,
       city: form.city || null,
       state: form.state || null,
@@ -280,8 +245,7 @@ export default function SellerItemForm() {
     setSaving(false);
   };
 
-  const categories = sellerType === "automoveis" ? vehicleCategories : propertyCategories;
-  const isVehicle = sellerType === "automoveis";
+  const categories = propertyCategories;
 
   return (
     <div className="min-h-screen bg-background">
@@ -325,19 +289,8 @@ export default function SellerItemForm() {
           </div>
         )}
 
-        {/* Seller Type - locked based on profile */}
-        <div className="bg-card border border-border rounded-2xl p-5">
-          <label className="block text-sm font-bold text-foreground mb-3">Tipo de anúncio</label>
-          <div className="flex items-center gap-3 py-3 px-4 rounded-xl border-2 border-primary bg-primary/10">
-            <span className="text-lg">{sellerType === "imoveis" ? "🏠" : "🚗"}</span>
-            <span className="font-bold text-sm text-primary">
-              {sellerType === "imoveis" ? "Imóvel" : "Automóvel"}
-            </span>
-            <span className="ml-auto text-xs text-muted-foreground flex items-center gap-1">
-              <Lock size={12} /> Definido no cadastro
-            </span>
-          </div>
-        </div>
+
+
 
         {/* Basic Info */}
         <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
@@ -350,7 +303,7 @@ export default function SellerItemForm() {
               value={form.title}
               onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
               className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
-              placeholder={isVehicle ? "Ex: Honda Civic 2022" : "Ex: Casa 3 quartos no Centro"}
+              placeholder="Ex: Casa 3 quartos no Centro"
             />
           </div>
 
@@ -446,36 +399,18 @@ export default function SellerItemForm() {
           </div>
         </div>
 
-        {/* Specific Fields */}
+        {/* Property Fields */}
         <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
-          <h2 className="font-display font-bold text-foreground">
-            {isVehicle ? "🚗 Dados do Veículo" : "🏠 Dados do Imóvel"}
-          </h2>
-
-          {isVehicle ? (
-            <div className="grid grid-cols-2 gap-3">
-              <select value={form.brand} onChange={(e) => setForm((f) => ({ ...f, brand: e.target.value }))} className="px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none">
-                <option value="">Marca</option>
-                {getBrandsForCategory(form.category).map((b) => (
-                  <option key={b} value={b}>{b}</option>
-                ))}
-              </select>
-              <input value={form.model} onChange={(e) => setForm((f) => ({ ...f, model: e.target.value }))} className="px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="Modelo" />
-              <input type="number" value={form.year} onChange={(e) => setForm((f) => ({ ...f, year: e.target.value }))} className="px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="Ano" />
-              <input type="number" value={form.mileage} onChange={(e) => setForm((f) => ({ ...f, mileage: e.target.value }))} className="px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="Quilometragem" />
-              <input value={form.fuel} onChange={(e) => setForm((f) => ({ ...f, fuel: e.target.value }))} className="px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="Combustível" />
-              <input value={form.transmission} onChange={(e) => setForm((f) => ({ ...f, transmission: e.target.value }))} className="px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="Câmbio" />
-              <input value={form.color} onChange={(e) => setForm((f) => ({ ...f, color: e.target.value }))} className="px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="Cor" />
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 gap-3">
-              <input type="number" value={form.bedrooms} onChange={(e) => setForm((f) => ({ ...f, bedrooms: e.target.value }))} className="px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="Quartos" />
-              <input type="number" value={form.bathrooms} onChange={(e) => setForm((f) => ({ ...f, bathrooms: e.target.value }))} className="px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="Banheiros" />
-              <input type="number" value={form.area} onChange={(e) => setForm((f) => ({ ...f, area: e.target.value }))} className="px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="Área (m²)" />
-              <input type="number" value={form.parking_spots} onChange={(e) => setForm((f) => ({ ...f, parking_spots: e.target.value }))} className="px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="Vagas" />
-            </div>
-          )}
+          <h2 className="font-display font-bold text-foreground">🏠 Dados do Imóvel</h2>
+          <div className="grid grid-cols-2 gap-3">
+            <input type="number" value={form.bedrooms} onChange={(e) => setForm((f) => ({ ...f, bedrooms: e.target.value }))} className="px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="Quartos" />
+            <input type="number" value={form.bathrooms} onChange={(e) => setForm((f) => ({ ...f, bathrooms: e.target.value }))} className="px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="Banheiros" />
+            <input type="number" value={form.area} onChange={(e) => setForm((f) => ({ ...f, area: e.target.value }))} className="px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="Área (m²)" />
+            <input type="number" value={form.parking_spots} onChange={(e) => setForm((f) => ({ ...f, parking_spots: e.target.value }))} className="px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="Vagas" />
+          </div>
         </div>
+
+
 
         {/* Tags */}
         <div className="bg-card border border-border rounded-2xl p-5">

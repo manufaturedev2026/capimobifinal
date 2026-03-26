@@ -5,7 +5,7 @@ import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { formatPrice } from "@/data/products";
 import type { RealItem, RealSeller } from "@/hooks/useRealListings";
 
-const VEHICLE_CATEGORIES = ["carro", "moto", "caminhao", "van", "utilitario"];
+
 
 interface HeroItem {
   id: string;
@@ -26,7 +26,7 @@ interface HeroBannerCarouselProps {
   items: HeroItem[];
   sellers: Record<string, { id: string; name: string; logo: string }>;
   featuredItemIds?: Set<string>;
-  type: "imoveis" | "veiculos";
+  type: "imoveis";
   filterCity?: string;
   filterCategory?: string;
   fallbackImage: string;
@@ -98,15 +98,10 @@ export default function HeroBannerCarousel({
   const goNext = () => setActiveIndex((prev) => (prev + 1) % heroItems.length);
   const goPrev = () => setActiveIndex((prev) => (prev - 1 + heroItems.length) % heroItems.length);
 
-  // Determine correct segment based on item's actual category
-  const getItemSegment = (item: HeroItem) => {
-    if (item.realCategory && VEHICLE_CATEGORIES.includes(item.realCategory)) return "veiculos";
-    if (item.realCategory) return "imoveis";
-    return type;
-  };
+  const getItemSegment = () => "imoveis";
 
   const productUrl = currentItem
-    ? `/${getItemSegment(currentItem)}/produto/${currentItem.id}`
+    ? `/imoveis/produto/${currentItem.id}`
     : "";
 
   return (

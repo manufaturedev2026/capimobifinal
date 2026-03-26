@@ -3,7 +3,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { toast } from "@/hooks/use-toast";
 import { useParams, Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Star, MapPin, MessageCircle, Share2, Key, Home, Building2, Landmark, Store, Warehouse, Car, Bike, Truck, Cog, MoreHorizontal, Image, Eye, Instagram, Phone, ExternalLink, Clock, Shield, Zap, ChevronLeft, ChevronRight, Heart, BadgeCheck, Clapperboard } from "lucide-react";
+import { ArrowLeft, Star, MapPin, MessageCircle, Share2, Key, Home, Building2, Landmark, Store, Warehouse, MoreHorizontal, Image, Eye, Instagram, Phone, ExternalLink, Clock, Shield, Zap, ChevronLeft, ChevronRight, Heart, BadgeCheck, Clapperboard } from "lucide-react";
 import { allCompanies } from "@/data/companies";
 import { getProductsByCompany, formatPrice, getTagStyle, getTagLabel } from "@/data/products";
 import { supabase } from "@/integrations/supabase/client";
@@ -23,14 +23,8 @@ const propertySubcategories = [
   { slug: "galpao", name: "Galpões", icon: Warehouse, img: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=300&h=200&fit=crop" },
 ];
 
-const vehicleSubcategories = [
-  { slug: "todos", name: "Todos", icon: Car, img: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=300&h=200&fit=crop" },
-  { slug: "carro", name: "Carros", icon: Car, img: "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=300&h=200&fit=crop" },
-  { slug: "moto", name: "Motos", icon: Bike, img: "https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=300&h=200&fit=crop" },
-  { slug: "caminhao", name: "Caminhões", icon: Truck, img: "https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?w=300&h=200&fit=crop" },
-  { slug: "utilitario", name: "Utilitários", icon: Cog, img: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=300&h=200&fit=crop" },
-  { slug: "outros", name: "Outros", icon: MoreHorizontal, img: "https://images.unsplash.com/photo-1549317661-bd32c8ce0afa?w=300&h=200&fit=crop" },
-];
+
+
 
 function isUUID(str: string) {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
@@ -105,12 +99,9 @@ export default function CompanyProfile() {
       : null
     : staticCompany;
 
-  // Determine segment from URL path first, then fallback to seller_type
-  const vehicleCategories = ["carro", "moto", "caminhao", "van", "utilitario"];
-  const urlIsProperty = location.pathname.startsWith("/imoveis");
-  const urlIsVehicle = location.pathname.startsWith("/veiculos");
-  const isProperty = urlIsProperty ? true : urlIsVehicle ? false : company?.segment === "imoveis";
-  const subcategories = isProperty ? propertySubcategories : vehicleSubcategories;
+  const vehicleCategories: string[] = [];
+  const isProperty = true;
+  const subcategories = propertySubcategories;
 
   const dbDisplayItems = dbItems.map((item) => ({
     id: item.id,
@@ -123,7 +114,7 @@ export default function CompanyProfile() {
     city: item.city,
     description: item.description,
     specs: {} as Record<string, string>,
-    type: vehicleCategories.includes(item.category) ? "veiculo" : "imovel",
+    type: "imovel" as const,
   }));
 
   const products = isDbProfile ? dbDisplayItems : staticProducts;
@@ -209,7 +200,7 @@ export default function CompanyProfile() {
 
   const handleWhatsApp = (title: string, productId?: string) => {
     if (isDbProfile && id) trackSellerEvent(id, "whatsapp_click");
-    const seg = isProperty ? "imoveis" : "veiculos";
+    const seg = "imoveis";
     const link = productId ? `\n\n🔗 ${window.location.origin}/${seg}/produto/${productId}` : `\n\n🔗 ${window.location.href}`;
     window.location.href = `https://wa.me/${company.whatsapp}?text=${encodeURIComponent(`Olá ${company.name}! Tenho interesse: ${title}${link}`)}`;
   };
@@ -245,7 +236,7 @@ export default function CompanyProfile() {
 
         {/* Back button */}
         <div className="absolute top-4 left-4 z-20">
-          <Link to={isProperty ? "/imoveis" : "/veiculos"} className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 backdrop-blur-md text-white text-sm font-medium hover:bg-white/20 transition-colors">
+          <Link to="/imoveis" className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 backdrop-blur-md text-white text-sm font-medium hover:bg-white/20 transition-colors">
             <ArrowLeft size={16} /> Voltar
           </Link>
         </div>
@@ -290,7 +281,7 @@ export default function CompanyProfile() {
                   <div className="flex items-center gap-3 mt-1 flex-wrap">
                     {dbProfile?.seller_category && (
                       <span className="flex items-center gap-1 text-white/80 text-xs font-medium bg-white/10 px-2 py-0.5 rounded-full">
-                        {({ imobiliaria: "🏢 Imobiliária", corretor: "📋 Corretor(a)", proprietario: "🏠 Proprietário", loja_veiculos: "🏪 Loja de Veículos", autonomo: "👤 Autônomo", concessionaria: "🚗 Concessionária" } as Record<string, string>)[dbProfile.seller_category]}
+                        {({ imobiliaria: "🏢 Imobiliária", corretor: "📋 Corretor(a)", proprietario: "🏠 Proprietário" } as Record<string, string>)[dbProfile.seller_category]}
                         {dbProfile.seller_category === "corretor" && dbProfile.creci && ` • ${dbProfile.creci}`}
                       </span>
                     )}
@@ -416,8 +407,8 @@ export default function CompanyProfile() {
                   <h3 className="font-display font-bold text-foreground text-sm">{company.name}</h3>
                   <p className="text-xs text-muted-foreground mt-0.5">
                     {dbProfile?.seller_category
-                      ? ({ imobiliaria: "Imobiliária", corretor: "Corretor(a) de Imóveis", proprietario: "Proprietário", loja_veiculos: "Loja de Veículos", autonomo: "Autônomo", concessionaria: "Concessionária" } as Record<string, string>)[dbProfile.seller_category] || (isProperty ? "Imobiliária" : "Loja de Veículos")
-                      : isProperty ? "Imobiliária" : "Loja de Veículos"}
+                      ? ({ imobiliaria: "Imobiliária", corretor: "Corretor(a) de Imóveis", proprietario: "Proprietário" } as Record<string, string>)[dbProfile.seller_category] || "Imobiliária"
+                      : "Imobiliária"}
                   </p>
                   {dbProfile?.seller_category === "corretor" && dbProfile?.creci && (
                     <p className="text-xs text-primary font-semibold mt-1 flex items-center gap-1">
@@ -468,8 +459,8 @@ export default function CompanyProfile() {
                     <Store size={13} className="flex-shrink-0" />
                     <span>
                       {dbProfile?.seller_category
-                        ? ({ imobiliaria: "Imobiliária", corretor: "Corretor(a) de Imóveis", proprietario: "Proprietário", loja_veiculos: "Loja de Veículos", autonomo: "Vendedor Autônomo", concessionaria: "Concessionária" } as Record<string, string>)[dbProfile.seller_category] || (isProperty ? "Especialista em imóveis" : "Especialista em veículos")
-                        : isProperty ? "Especialista em imóveis" : "Especialista em veículos"}
+                        ? ({ imobiliaria: "Imobiliária", corretor: "Corretor(a) de Imóveis", proprietario: "Proprietário" } as Record<string, string>)[dbProfile.seller_category] || "Especialista em imóveis"
+                        : "Especialista em imóveis"}
                     </span>
                   </div>
                   {dbProfile?.seller_category === "corretor" && dbProfile?.creci && (

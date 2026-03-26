@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Package, Eye, Plus, Settings, Edit, Trash2, Copy, ToggleLeft, ToggleRight, Search, Image, LogOut, BarChart3, Star, Crown, Zap, AlertTriangle, Shield, MessageCircle, Home, UserCircle, Headphones, Globe, ExternalLink, CheckCircle2, ClipboardCopy, Megaphone, Send, Calculator, Lock, Clapperboard, Menu, X, Building2, Car } from "lucide-react";
+import { Package, Eye, Plus, Settings, Edit, Trash2, Copy, ToggleLeft, ToggleRight, Search, Image, LogOut, BarChart3, Star, Crown, Zap, AlertTriangle, Shield, MessageCircle, Home, UserCircle, Headphones, Globe, ExternalLink, CheckCircle2, ClipboardCopy, Megaphone, Send, Calculator, Lock, Clapperboard, Menu, X, Building2 } from "lucide-react";
 import { getTagStyle, getTagLabel } from "@/data/products";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
@@ -150,7 +150,7 @@ export default function SellerDashboard() {
   }
 
   const storeUrl = profile?.id
-    ? `${window.location.origin}/${profile.seller_type === "automoveis" ? "veiculos" : "imoveis"}/empresa/${profile.id}`
+    ? `${window.location.origin}/imoveis/empresa/${profile.id}`
     : "";
 
   const copyStoreUrl = () => {
@@ -248,7 +248,7 @@ export default function SellerDashboard() {
             </div>
             <div className="flex items-center gap-1.5">
               {profile?.id && (
-                <Link to={`/${profile.seller_type === "automoveis" ? "veiculos" : "imoveis"}/empresa/${profile.id}`}
+                <Link to={`/imoveis/empresa/${profile.id}`}
                   className="p-2.5 rounded-xl bg-white/20 text-white hover:bg-white/30 transition-colors">
                   <Eye size={16} />
                 </Link>
@@ -303,7 +303,7 @@ export default function SellerDashboard() {
                 <Plus size={18} /> Novo Anúncio
               </Link>
               {profile?.id && (
-                <Link to={`/${profile.seller_type === "automoveis" ? "veiculos" : "imoveis"}/empresa/${profile.id}`}
+                <Link to={`/imoveis/empresa/${profile.id}`}
                   className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-all">
                   <Eye size={18} /> Ver Minha Loja
                 </Link>
@@ -968,7 +968,7 @@ export default function SellerDashboard() {
                     <Plus size={16} /> Novo Anúncio
                   </Link>
                   {profile?.id && (
-                    <Link to={`/${profile.seller_type === "automoveis" ? "veiculos" : "imoveis"}/empresa/${profile.id}`} onClick={() => setMobileMenuOpen(false)}
+                    <Link to={`/imoveis/empresa/${profile.id}`} onClick={() => setMobileMenuOpen(false)}
                       className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-foreground hover:bg-secondary transition-all">
                       <Eye size={16} /> Ver Minha Loja
                     </Link>
@@ -1004,10 +1004,8 @@ export default function SellerDashboard() {
                     className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-foreground hover:bg-secondary transition-all">
                     <Building2 size={16} /> Imóveis
                   </Link>
-                  <Link to="/veiculos" onClick={() => setMobileMenuOpen(false)}
-                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-foreground hover:bg-secondary transition-all">
-                    <Car size={16} /> Veículos
-                  </Link>
+
+
                   <Link to="/buscar" onClick={() => setMobileMenuOpen(false)}
                     className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-foreground hover:bg-secondary transition-all">
                     <Search size={16} /> Buscar

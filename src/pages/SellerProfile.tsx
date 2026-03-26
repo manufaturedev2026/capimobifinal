@@ -152,27 +152,15 @@ export default function SellerProfile() {
             rows={5}
             maxLength={1000}
             className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none resize-none"
-            placeholder="Ex: Somos uma empresa especializada em veículos seminovos com mais de 10 anos de experiência..."
+            placeholder="Ex: Somos uma empresa especializada em imóveis com mais de 10 anos de experiência..."
           />
           <span className="text-xs text-muted-foreground">{form.bio.length}/1000</span>
         </div>
         <div className="bg-card border border-border rounded-2xl p-5">
           <h2 className="font-display font-bold text-foreground mb-3">Tipo de vendedor</h2>
-          <div className="grid grid-cols-2 gap-3">
-            {(["imoveis", "automoveis"] as SellerType[]).map((type) => (
-              <button
-                key={type}
-                type="button"
-                onClick={() => setForm((f) => ({ ...f, seller_type: type, seller_category: "" }))}
-                className={`py-3 rounded-xl border-2 font-bold text-sm transition-all ${
-                  form.seller_type === type
-                    ? "border-primary bg-primary/10 text-primary"
-                    : "border-border text-muted-foreground hover:border-primary/50"
-                }`}
-              >
-                {type === "imoveis" ? "🏠 Imóveis" : "🚗 Automóveis"}
-              </button>
-            ))}
+          <div className="flex items-center gap-3 py-3 px-4 rounded-xl border-2 border-primary bg-primary/10">
+            <span className="text-lg">🏠</span>
+            <span className="font-bold text-sm text-primary">Imóveis</span>
           </div>
         </div>
 
@@ -181,18 +169,11 @@ export default function SellerProfile() {
           <h2 className="font-display font-bold text-foreground">Categoria</h2>
           <p className="text-xs text-muted-foreground">Selecione o tipo que melhor descreve você ou sua empresa.</p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {(form.seller_type === "imoveis"
-              ? [
-                  { value: "imobiliaria", label: "🏢 Imobiliária" },
-                  { value: "corretor", label: "📋 Corretor(a)" },
-                  { value: "proprietario", label: "🏠 Proprietário" },
-                ]
-              : [
-                  { value: "loja_veiculos", label: "🏪 Loja de Veículos" },
-                  { value: "autonomo", label: "👤 Autônomo" },
-                  { value: "concessionaria", label: "🚗 Concessionária" },
-                ]
-            ).map((cat) => (
+            {[
+              { value: "imobiliaria", label: "🏢 Imobiliária" },
+              { value: "corretor", label: "📋 Corretor(a)" },
+              { value: "proprietario", label: "🏠 Proprietário" },
+            ].map((cat) => (
               <button
                 key={cat.value}
                 type="button"

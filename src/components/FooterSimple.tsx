@@ -14,7 +14,7 @@ export default function FooterSimple() {
               </span>
             </Link>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Marketplace de imóveis e veículos no Espírito Santo. Encontre casas, apartamentos, carros e motos com contato direto via WhatsApp.
+              Marketplace de imóveis no Espírito Santo. Encontre casas, apartamentos, terrenos e mais com contato direto via WhatsApp.
             </p>
           </div>
 
@@ -24,7 +24,7 @@ export default function FooterSimple() {
             <nav className="flex flex-col gap-2 text-sm text-muted-foreground">
               <Link to="/" className="hover:text-foreground transition-colors">Início</Link>
               <Link to="/imoveis" className="hover:text-foreground transition-colors">Imóveis</Link>
-              <Link to="/veiculos" className="hover:text-foreground transition-colors">Veículos</Link>
+              
               <Link to="/buscar" className="hover:text-foreground transition-colors">Buscar</Link>
               <Link to="/anunciar" className="hover:text-foreground transition-colors">Anunciar</Link>
             </nav>
