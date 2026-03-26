@@ -178,7 +178,23 @@ export default function SellerItemForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user || !profile || !form.category) return;
+    console.log("handleSubmit called", { user: !!user, profile: !!profile, category: form.category, title: form.title });
+    if (!user) {
+      toast({ title: "Erro", description: "Você precisa estar logado.", variant: "destructive" });
+      return;
+    }
+    if (!profile) {
+      toast({ title: "Erro", description: "Perfil não encontrado. Complete seu perfil primeiro.", variant: "destructive" });
+      return;
+    }
+    if (!form.category) {
+      toast({ title: "Erro", description: "Selecione uma categoria.", variant: "destructive" });
+      return;
+    }
+    if (!form.title.trim()) {
+      toast({ title: "Erro", description: "Preencha o título do anúncio.", variant: "destructive" });
+      return;
+    }
 
     // Check item limit
     if (!isEdit && activeItemCount >= pkgConfig.maxItems) {
