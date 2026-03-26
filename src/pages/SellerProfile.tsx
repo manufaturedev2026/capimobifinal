@@ -81,6 +81,7 @@ export default function SellerProfile() {
     const updateData: any = { ...form };
     if (!updateData.seller_category) delete updateData.seller_category;
     if (!updateData.creci) delete updateData.creci;
+    if (!updateData.cnpj) delete updateData.cnpj;
 
     const { error } = await supabase
       .from("profiles")
