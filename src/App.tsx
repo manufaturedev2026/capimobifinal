@@ -12,6 +12,8 @@ import ScrollToTop from "@/components/ScrollToTop";
 import Index from "@/pages/Index";
 import PropertiesPage from "@/pages/PropertiesPage";
 import BecomeAgentPage from "@/pages/BecomeAgentPage";
+import StudyMaterial from "@/pages/StudyMaterial";
+import ArticleReader from "@/pages/ArticleReader";
 
 import CityPropertiesPage from "@/pages/CityPropertiesPage";
 
