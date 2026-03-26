@@ -76,9 +76,18 @@ export default function CityPropertiesPage() {
   }, [items]);
 
   const featuredProducts = useMemo(() => {
-    const shuffled = [...heroItems].sort(() => Math.random() - 0.5);
+    let base = [...heroItems];
+    if (activeCategory) {
+      if (activeCategory === "aluguel") {
+        base = base.filter((p) => p.isAluguel);
+      } else {
+        const matchCats = categoryMap[activeCategory] || [];
+        base = base.filter((p) => matchCats.includes(p.realCategory));
+      }
+    }
+    const shuffled = [...base].sort(() => Math.random() - 0.5);
     return shuffled.slice(0, 7);
-  }, [heroItems]);
+  }, [heroItems, activeCategory]);
 
   const filteredProducts = useMemo(() => {
     let list = [...items];
@@ -197,7 +206,9 @@ export default function CityPropertiesPage() {
       {featuredProducts.length > 0 && (
         <section className="pt-8 pb-2">
           <h3 className="font-display font-semibold text-base text-foreground mb-4 px-4 md:px-8 lg:px-12">
-            Destaques em {cityName}
+            {activeCategory
+              ? `Destaques de ${propertyCategories.find((c) => c.slug === activeCategory)?.name || activeCategory} em ${cityName}`
+              : `Destaques em ${cityName}`}
           </h3>
           <div className="flex gap-3 overflow-x-auto md:overflow-visible scrollbar-hide pb-2 snap-x snap-mandatory md:snap-none px-4 md:px-8 lg:px-12 md:grid md:grid-cols-7">
             {featuredProducts.map((product, i) => {
