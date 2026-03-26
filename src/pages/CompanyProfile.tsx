@@ -227,7 +227,16 @@ export default function CompanyProfile() {
           )}
         </AnimatePresence>
         {heroImages.length === 0 && (
-          <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/80 to-accent" />
+          <div
+            className="absolute inset-0"
+            style={dbProfile?.cover_color
+              ? { backgroundColor: dbProfile.cover_color }
+              : undefined}
+          >
+            {!dbProfile?.cover_color && (
+              <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/80 to-accent" />
+            )}
+          </div>
         )}
 
         {/* Overlays */}
