@@ -216,6 +216,10 @@ export default function SellerDashboard() {
   ];
 
   const handleTabClick = (tabId: DashboardTab) => {
+    if (tabId === "study") {
+      navigate("/painel/estudo");
+      return;
+    }
     if (lockedTabs.includes(tabId)) {
       toast({
         title: "Recurso bloqueado 🔒",
