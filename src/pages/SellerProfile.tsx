@@ -30,6 +30,7 @@ export default function SellerProfile() {
     bio: "",
     seller_category: "" as string,
     creci: "",
+    cnpj: "",
   });
 
   useEffect(() => {
