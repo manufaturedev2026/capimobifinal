@@ -107,10 +107,16 @@ export default function PropertiesPage() {
     // Filter by category
     if (effectiveCategory) {
       const matchCats = categoryMap[effectiveCategory] || [];
-      base = base.filter((p) => {
-        const realCat = (p as any).realCategory;
-        return realCat && matchCats.includes(realCat);
-      });
+      if (effectiveCategory === "aluguel") {
+        // Only show aluguel items
+        base = base.filter((p) => (p as any).realCategory === "aluguel");
+      } else {
+        // Show items of this category + aluguel items (they appear in all categories with Aluguel tag)
+        base = base.filter((p) => {
+          const realCat = (p as any).realCategory;
+          return realCat && (matchCats.includes(realCat) || realCat === "aluguel");
+        });
+      }
     }
     const shuffled = [...base].sort(() => Math.random() - 0.5);
     return shuffled.slice(0, 7);
@@ -346,6 +352,11 @@ export default function PropertiesPage() {
                       {product.tag && (
                         <span className={`absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-bold shadow ${getTagStyle(product.tag)}`}>
                           {product.tag}
+                        </span>
+                      )}
+                      {(product as any).realCategory === "aluguel" && (
+                        <span className="absolute bottom-3 left-3 px-3 py-1 rounded-full text-xs font-bold shadow bg-primary text-primary-foreground">
+                          🏠 Aluguel
                         </span>
                       )}
                       {(product as any).sellerTier && (product as any).sellerTier !== "basico" && (
