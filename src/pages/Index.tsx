@@ -1,16 +1,14 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { Building2, Car, ArrowRight, Search, Home, Key, Bike, Truck, MapPin, Shield, Zap, Star, ChevronRight, Plus } from "lucide-react";
+import { Building2, ArrowRight, Search, Home, Key, Landmark, Store, MapPin, Shield, Zap, Star, ChevronRight, Plus } from "lucide-react";
 import NotFoundPage from "@/pages/NotFound";
 import { motion } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
 import { Helmet } from "react-helmet-async";
 import heroImoveis from "@/assets/hero-imoveis.jpg";
-import heroVeiculos from "@/assets/hero-veiculos.jpg";
 import { slugToCity, cityToSlug } from "@/lib/citySlug";
 
 function getHeroBanners(city: string, prefix: string) {
   const imoveisLink = prefix ? `/${prefix}/imoveis` : "/imoveis";
-  const veiculosLink = prefix ? `/${prefix}/veiculos` : "/veiculos";
   return [
     {
       image: heroImoveis,
@@ -19,41 +17,32 @@ function getHeroBanners(city: string, prefix: string) {
       link: imoveisLink,
       accent: "from-primary to-[hsl(212,100%,21%)]",
     },
-    {
-      image: heroVeiculos,
-      title: `Veículos ${city.includes("Espírito") ? "no" : "em"} ${city}`,
-      subtitle: "Carros, motos e utilitários com contato direto via WhatsApp",
-      link: veiculosLink,
-      accent: "from-accent to-[hsl(49,100%,42%)]",
-    },
   ];
 }
 
 function getQuickActions(prefix: string) {
   const i = prefix ? `/${prefix}/imoveis` : "/imoveis";
-  const v = prefix ? `/${prefix}/veiculos` : "/veiculos";
   return [
     { icon: Home, label: "Casas", desc: "Encontre a casa ideal", link: `${i}?categoria=casas`, color: "text-primary" },
     { icon: Building2, label: "Apartamentos", desc: "Aptos disponíveis", link: `${i}?categoria=apartamentos`, color: "text-primary" },
-    { icon: Car, label: "Carros", desc: "Seminovos e novos", link: `${v}?categoria=carros`, color: "text-accent-foreground" },
-    { icon: Bike, label: "Motos", desc: "Diversas marcas", link: `${v}?categoria=motos`, color: "text-accent-foreground" },
     { icon: Key, label: "Aluguel", desc: "Imóveis para alugar", link: `${i}?categoria=alugueis`, color: "text-primary" },
-    { icon: Truck, label: "Caminhões", desc: "Leves e pesados", link: `${v}?categoria=caminhoes`, color: "text-accent-foreground" },
+    { icon: Landmark, label: "Terrenos", desc: "Lotes e terrenos", link: `${i}?categoria=terrenos`, color: "text-primary" },
+    { icon: Store, label: "Comerciais", desc: "Salas e lojas", link: `${i}?categoria=comerciais`, color: "text-primary" },
+    { icon: Building2, label: "Flats", desc: "Flats e studios", link: `${i}?categoria=flats`, color: "text-primary" },
   ];
 }
 
 function getCategories(prefix: string) {
   const i = prefix ? `/${prefix}/imoveis` : "/imoveis";
-  const v = prefix ? `/${prefix}/veiculos` : "/veiculos";
   return [
     { name: "Casas", img: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&h=400&fit=crop", link: `${i}?categoria=casas` },
     { name: "Apartamentos", img: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=400&fit=crop", link: `${i}?categoria=apartamentos` },
     { name: "Terrenos", img: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400&h=400&fit=crop", link: `${i}?categoria=terrenos` },
-    { name: "Carros", img: "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=400&h=400&fit=crop", link: `${v}?categoria=carros` },
-    { name: "Motos", img: "https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=400&h=400&fit=crop", link: `${v}?categoria=motos` },
     { name: "Aluguel", img: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400&h=400&fit=crop", link: `${i}?categoria=alugueis` },
     { name: "Comercial", img: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&h=400&fit=crop", link: `${i}?categoria=comerciais` },
-    { name: "Utilitários", img: "https://images.unsplash.com/photo-1619767886558-efdc259cde1a?w=400&h=400&fit=crop", link: `${v}?categoria=utilitarios` },
+    { name: "Flats", img: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=400&fit=crop", link: `${i}?categoria=flats` },
+    { name: "Galpões", img: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=400&h=400&fit=crop", link: `${i}?categoria=galpoes` },
+    { name: "Cobertura", img: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400&h=400&fit=crop", link: `${i}?categoria=coberturas` },
   ];
 }
 
@@ -63,19 +52,10 @@ export default function Index() {
   const cityName = cidade ? slugToCity(cidade) : null;
   const displayCity = cityName || "Espírito Santo";
   const citySlug = cityName ? cityToSlug(cityName) : "";
-  const [currentSlide, setCurrentSlide] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
-  const intervalRef = useRef<ReturnType<typeof setInterval>>(null);
-  const heroBanners = getHeroBanners(displayCity, citySlug);
   const quickActions = getQuickActions(citySlug);
   const categories = getCategories(citySlug);
-
-  useEffect(() => {
-    intervalRef.current = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % heroBanners.length);
-    }, 5000);
-    return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
-  }, []);
+  const heroBanners = getHeroBanners(displayCity, citySlug);
 
   if (cidade && !cityName) {
     return <NotFoundPage />;
@@ -89,36 +69,31 @@ export default function Index() {
   return (
     <div className="min-h-screen bg-secondary/50">
       <Helmet>
-        <title>{`Imóveis e Veículos ${displayCity.includes("Espírito") ? "no" : "em"} ${displayCity} | MelhorBusca`}</title>
-        <meta name="description" content={`Marketplace de imóveis e veículos ${displayCity.includes("Espírito") ? "no" : "em"} ${displayCity}. Casas, apartamentos, carros, motos e mais com contato direto via WhatsApp.`} />
+        <title>{`Imóveis ${displayCity.includes("Espírito") ? "no" : "em"} ${displayCity} | MelhorBusca`}</title>
+        <meta name="description" content={`Marketplace de imóveis ${displayCity.includes("Espírito") ? "no" : "em"} ${displayCity}. Casas, apartamentos, terrenos e mais com contato direto via WhatsApp.`} />
         <link rel="canonical" href={`https://redeimoveisgb.lovable.app${cidade ? `/${cidade}` : '/'}`} />
       </Helmet>
-      {/* Hero Banner Carousel — full width like ML */}
+
+      {/* Hero Banner */}
       <section className="relative w-full h-[280px] md:h-[400px] overflow-hidden">
-        {heroBanners.map((banner, i) => (
-          <Link
-            key={i}
-            to={banner.link}
-            className={`absolute inset-0 transition-opacity duration-700 ${i === currentSlide ? "opacity-100 z-10" : "opacity-0 z-0"}`}
-          >
-            <img src={banner.image} alt={banner.title} className="w-full h-full object-cover" width={1400} height={512} />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent" />
-            <div className="absolute inset-0 flex flex-col justify-center px-6 md:px-16 lg:px-24 max-w-2xl">
-              <h2 className="font-display font-bold text-2xl md:text-5xl text-white drop-shadow-lg leading-tight">
-                {banner.title}
-              </h2>
-              <p className="text-white/80 text-sm md:text-lg mt-2 md:mt-3 drop-shadow">{banner.subtitle}</p>
-              <div className="mt-4 md:mt-6">
-                <span className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r ${banner.accent} text-white font-bold text-sm shadow-lg`}>
-                  Ver ofertas <ArrowRight size={16} />
-                </span>
-              </div>
+        <Link to={heroBanners[0].link} className="absolute inset-0">
+          <img src={heroBanners[0].image} alt={heroBanners[0].title} className="w-full h-full object-cover" width={1400} height={512} />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent" />
+          <div className="absolute inset-0 flex flex-col justify-center px-6 md:px-16 lg:px-24 max-w-2xl">
+            <h2 className="font-display font-bold text-2xl md:text-5xl text-white drop-shadow-lg leading-tight">
+              {heroBanners[0].title}
+            </h2>
+            <p className="text-white/80 text-sm md:text-lg mt-2 md:mt-3 drop-shadow">{heroBanners[0].subtitle}</p>
+            <div className="mt-4 md:mt-6">
+              <span className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r ${heroBanners[0].accent} text-white font-bold text-sm shadow-lg`}>
+                Ver ofertas <ArrowRight size={16} />
+              </span>
             </div>
-          </Link>
-        ))}
+          </div>
+        </Link>
       </section>
 
-      {/* Search Bar — prominent like ML */}
+      {/* Search Bar */}
       <section className="relative z-20 -mt-7 px-4 md:px-8">
         <div className="max-w-4xl mx-auto">
           <form onSubmit={handleSearch} className="flex bg-card rounded-2xl shadow-xl border border-border overflow-hidden">
@@ -128,7 +103,7 @@ export default function Index() {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Buscar imóveis, veículos e muito mais..."
+                placeholder="Buscar imóveis..."
                 className="w-full py-4 text-sm md:text-base bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none"
               />
             </div>
@@ -139,7 +114,7 @@ export default function Index() {
         </div>
       </section>
 
-      {/* Quick Actions Row — like ML benefits cards */}
+      {/* Quick Actions */}
       <section className="px-4 md:px-8 mt-6">
         <div className="max-w-6xl mx-auto">
           <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-1 snap-x snap-mandatory md:grid md:grid-cols-6">
@@ -164,32 +139,17 @@ export default function Index() {
         </div>
       </section>
 
-      {/* Two Promo Banners Side by Side — like ML */}
+      {/* Promo Banner */}
       <section className="px-4 md:px-8 mt-6">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Imóveis Banner */}
-          <Link to={citySlug ? `/${citySlug}/imoveis` : "/imoveis"} className="group relative overflow-hidden rounded-2xl h-[180px] md:h-[200px]">
-            <img src={heroImoveis} alt="Imóveis" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" width={700} height={200} />
+        <div className="max-w-6xl mx-auto">
+          <Link to={citySlug ? `/${citySlug}/imoveis` : "/imoveis"} className="group relative overflow-hidden rounded-2xl h-[180px] md:h-[200px] block">
+            <img src={heroImoveis} alt="Imóveis" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" width={1400} height={200} />
             <div className="absolute inset-0 bg-gradient-to-r from-[hsl(var(--primary)/0.9)] to-transparent" />
             <div className="absolute inset-0 flex flex-col justify-center px-6 md:px-8">
               <span className="text-xs font-semibold text-white/70 uppercase tracking-wider">Marketplace</span>
-              <h3 className="font-display font-bold text-2xl md:text-3xl text-white mt-1">Imóveis</h3>
-              <p className="text-white/80 text-sm mt-1">Casas, aptos e terrenos</p>
+              <h3 className="font-display font-bold text-2xl md:text-3xl text-white mt-1">Todos os Imóveis</h3>
+              <p className="text-white/80 text-sm mt-1">Casas, aptos, terrenos e mais</p>
               <span className="mt-3 inline-flex items-center gap-1 text-white text-sm font-semibold group-hover:gap-2 transition-all">
-                Explorar <ChevronRight size={16} />
-              </span>
-            </div>
-          </Link>
-
-          {/* Veículos Banner */}
-          <Link to={citySlug ? `/${citySlug}/veiculos` : "/veiculos"} className="group relative overflow-hidden rounded-2xl h-[180px] md:h-[200px]">
-            <img src={heroVeiculos} alt="Veículos" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" width={700} height={200} />
-            <div className="absolute inset-0 bg-gradient-to-r from-[hsl(var(--foreground)/0.85)] to-transparent" />
-            <div className="absolute inset-0 flex flex-col justify-center px-6 md:px-8">
-              <span className="text-xs font-semibold text-accent uppercase tracking-wider">Marketplace</span>
-              <h3 className="font-display font-bold text-2xl md:text-3xl text-white mt-1">Veículos</h3>
-              <p className="text-white/80 text-sm mt-1">Carros, motos e mais</p>
-              <span className="mt-3 inline-flex items-center gap-1 text-accent text-sm font-semibold group-hover:gap-2 transition-all">
                 Explorar <ChevronRight size={16} />
               </span>
             </div>
@@ -197,7 +157,7 @@ export default function Index() {
         </div>
       </section>
 
-      {/* Categories Grid — like ML */}
+      {/* Categories Grid */}
       <section className="px-4 md:px-8 mt-8">
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center justify-between mb-4">
@@ -231,8 +191,8 @@ export default function Index() {
           {[
             { icon: Shield, title: "Contato Direto", desc: "Fale via WhatsApp" },
             { icon: MapPin, title: displayCity.includes("Espírito") ? "Todo o ES" : `${displayCity} e Região`, desc: displayCity.includes("Espírito") ? "Cobertura estadual" : "Foco na sua cidade" },
-            { icon: Star, title: "Vendedores Verificados", desc: "Lojas confiáveis" },
-            { icon: Zap, title: "Anuncie Grátis", desc: "Cadastre seus itens" },
+            { icon: Star, title: "Vendedores Verificados", desc: "Corretores confiáveis" },
+            { icon: Zap, title: "Anuncie Grátis", desc: "Cadastre seus imóveis" },
           ].map((item, i) => (
             <motion.div
               key={item.title}
@@ -259,8 +219,8 @@ export default function Index() {
           <div className="gradient-hero rounded-2xl p-6 md:p-10 flex flex-col md:flex-row items-center justify-between gap-4 relative overflow-hidden">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(255,255,255,0.12),transparent_50%)]" />
             <div className="relative z-10 text-center md:text-left">
-              <h2 className="font-display font-bold text-xl md:text-3xl text-white">Quer anunciar?</h2>
-              <p className="text-white/80 text-sm md:text-base mt-1">Publique seu imóvel ou veículo e receba contatos via WhatsApp</p>
+              <h2 className="font-display font-bold text-xl md:text-3xl text-white">Quer anunciar seu imóvel?</h2>
+              <p className="text-white/80 text-sm md:text-base mt-1">Publique seu imóvel e receba contatos via WhatsApp</p>
             </div>
             <Link
               to="/anunciar"
