@@ -211,6 +211,11 @@ export default function CompanyProfile() {
     <div className="min-h-screen bg-background">
       {/* ═══════════ HERO BANNER ═══════════ */}
       <section className="relative h-[50vh] md:h-[60vh] overflow-hidden">
+        {/* Cover color background — always behind everything */}
+        {dbProfile?.cover_color && (
+          <div className="absolute inset-0 z-0" style={{ backgroundColor: dbProfile.cover_color }} />
+        )}
+
         {/* Sliding background images */}
         <AnimatePresence mode="wait">
           {heroImages.length > 0 && (
@@ -226,17 +231,8 @@ export default function CompanyProfile() {
             />
           )}
         </AnimatePresence>
-        {heroImages.length === 0 && (
-          <div
-            className="absolute inset-0"
-            style={dbProfile?.cover_color
-              ? { backgroundColor: dbProfile.cover_color }
-              : undefined}
-          >
-            {!dbProfile?.cover_color && (
-              <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/80 to-accent" />
-            )}
-          </div>
+        {heroImages.length === 0 && !dbProfile?.cover_color && (
+          <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/80 to-accent" />
         )}
 
         {/* Overlays */}
