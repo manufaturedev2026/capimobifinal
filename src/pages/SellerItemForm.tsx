@@ -399,35 +399,16 @@ export default function SellerItemForm() {
           </div>
         </div>
 
-        {/* Specific Fields */}
+        {/* Property Fields */}
         <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
-          <h2 className="font-display font-bold text-foreground">
-            {isVehicle ? "🚗 Dados do Veículo" : "🏠 Dados do Imóvel"}
-          </h2>
-
-          {isVehicle ? (
-            <div className="grid grid-cols-2 gap-3">
-              <select value={form.brand} onChange={(e) => setForm((f) => ({ ...f, brand: e.target.value }))} className="px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none">
-                <option value="">Marca</option>
-                {getBrandsForCategory(form.category).map((b) => (
-                  <option key={b} value={b}>{b}</option>
-                ))}
-              </select>
-              <input value={form.model} onChange={(e) => setForm((f) => ({ ...f, model: e.target.value }))} className="px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="Modelo" />
-              <input type="number" value={form.year} onChange={(e) => setForm((f) => ({ ...f, year: e.target.value }))} className="px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="Ano" />
-              <input type="number" value={form.mileage} onChange={(e) => setForm((f) => ({ ...f, mileage: e.target.value }))} className="px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="Quilometragem" />
-              <input value={form.fuel} onChange={(e) => setForm((f) => ({ ...f, fuel: e.target.value }))} className="px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="Combustível" />
-              <input value={form.transmission} onChange={(e) => setForm((f) => ({ ...f, transmission: e.target.value }))} className="px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="Câmbio" />
-              <input value={form.color} onChange={(e) => setForm((f) => ({ ...f, color: e.target.value }))} className="px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="Cor" />
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 gap-3">
-              <input type="number" value={form.bedrooms} onChange={(e) => setForm((f) => ({ ...f, bedrooms: e.target.value }))} className="px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="Quartos" />
-              <input type="number" value={form.bathrooms} onChange={(e) => setForm((f) => ({ ...f, bathrooms: e.target.value }))} className="px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="Banheiros" />
-              <input type="number" value={form.area} onChange={(e) => setForm((f) => ({ ...f, area: e.target.value }))} className="px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="Área (m²)" />
-              <input type="number" value={form.parking_spots} onChange={(e) => setForm((f) => ({ ...f, parking_spots: e.target.value }))} className="px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="Vagas" />
-            </div>
-          )}
+          <h2 className="font-display font-bold text-foreground">🏠 Dados do Imóvel</h2>
+          <div className="grid grid-cols-2 gap-3">
+            <input type="number" value={form.bedrooms} onChange={(e) => setForm((f) => ({ ...f, bedrooms: e.target.value }))} className="px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="Quartos" />
+            <input type="number" value={form.bathrooms} onChange={(e) => setForm((f) => ({ ...f, bathrooms: e.target.value }))} className="px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="Banheiros" />
+            <input type="number" value={form.area} onChange={(e) => setForm((f) => ({ ...f, area: e.target.value }))} className="px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="Área (m²)" />
+            <input type="number" value={form.parking_spots} onChange={(e) => setForm((f) => ({ ...f, parking_spots: e.target.value }))} className="px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="Vagas" />
+          </div>
+        </div>
         </div>
 
         {/* Tags */}
