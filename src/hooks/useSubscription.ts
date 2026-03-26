@@ -81,7 +81,7 @@ export const PACKAGE_CONFIG = {
   },
   essencial_empresa: {
     name: "Essencial Empresa",
-    price: 107.99,
+    price: 539.90,
     maxItems: 9999,
     color: "from-rose-600 to-red-700",
     borderColor: "border-rose-500",
