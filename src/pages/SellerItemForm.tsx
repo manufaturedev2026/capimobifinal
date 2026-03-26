@@ -52,7 +52,7 @@ export default function SellerItemForm() {
   const [activeItemCount, setActiveItemCount] = useState(0);
   const { subscription, currentTier, config: pkgConfig, isExpired } = useSubscription(user?.id);
 
-  const [sellerType, setSellerType] = useState<SellerType>("imoveis");
+  
   
   const [form, setForm] = useState({
     title: "",
