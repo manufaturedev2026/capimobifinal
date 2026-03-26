@@ -1004,10 +1004,8 @@ export default function SellerDashboard() {
                     className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-foreground hover:bg-secondary transition-all">
                     <Building2 size={16} /> Imóveis
                   </Link>
-                  <Link to="/veiculos" onClick={() => setMobileMenuOpen(false)}
-                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-foreground hover:bg-secondary transition-all">
-                    <Car size={16} /> Veículos
-                  </Link>
+
+
                   <Link to="/buscar" onClick={() => setMobileMenuOpen(false)}
                     className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-foreground hover:bg-secondary transition-all">
                     <Search size={16} /> Buscar
