@@ -206,7 +206,9 @@ export default function CityPropertiesPage() {
       {featuredProducts.length > 0 && (
         <section className="pt-8 pb-2">
           <h3 className="font-display font-semibold text-base text-foreground mb-4 px-4 md:px-8 lg:px-12">
-            Destaques em {cityName}
+            {activeCategory
+              ? `Destaques de ${propertyCategories.find((c) => c.slug === activeCategory)?.name || activeCategory} em ${cityName}`
+              : `Destaques em ${cityName}`}
           </h3>
           <div className="flex gap-3 overflow-x-auto md:overflow-visible scrollbar-hide pb-2 snap-x snap-mandatory md:snap-none px-4 md:px-8 lg:px-12 md:grid md:grid-cols-7">
             {featuredProducts.map((product, i) => {
