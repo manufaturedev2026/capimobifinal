@@ -48,11 +48,12 @@ export default function ArticleReader() {
         <div className="prose prose-invert prose-lg max-w-none
           prose-headings:font-display prose-headings:text-white
           prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4 prose-h2:border-b prose-h2:border-white/10 prose-h2:pb-3
-          prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3
-          prose-p:text-white/70 prose-p:leading-relaxed
-          prose-li:text-white/70
+          prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3 prose-h3:text-white
+          prose-p:text-white prose-p:leading-relaxed
+          prose-li:text-white/90
           prose-strong:text-white
           prose-a:text-primary prose-a:no-underline hover:prose-a:underline
+          prose-blockquote:text-white/85 prose-blockquote:border-accent
         ">
           <ReactMarkdown>{cleanContent}</ReactMarkdown>
         </div>
