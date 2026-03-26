@@ -49,6 +49,7 @@ const AppLayout = () => {
 
           <Route path="/:cidade/imoveis" element={<CityPropertiesPage />} />
           
+          <Route path="/seja-corretor" element={<BecomeAgentPage />} />
           <Route path="/anunciar" element={<CreateListing />} />
           <Route path="/buscar" element={<SearchPage />} />
           <Route path="/entrar" element={<AuthPage />} />
