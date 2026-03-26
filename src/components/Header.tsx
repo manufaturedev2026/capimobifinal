@@ -48,11 +48,9 @@ export default function Header() {
               key={link.to}
               to={link.to}
               className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-                link.highlight
+                location.pathname === link.to
                   ? "bg-primary text-primary-foreground shadow-md"
-                  : location.pathname === link.to
-                    ? "bg-primary text-primary-foreground shadow-md"
-                    : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+                  : "text-muted-foreground hover:text-foreground hover:bg-secondary"
               }`}
             >
               {link.label}
