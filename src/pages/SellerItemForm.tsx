@@ -225,7 +225,7 @@ export default function SellerItemForm() {
       seller_id: profile.id,
       title: form.title,
       description: form.description || null,
-      category: (isAluguel ? "aluguel" : form.category) as ItemCategory,
+      category: form.category as ItemCategory,
       seller_type: "imoveis" as const,
       price: form.price ? parseFloat(form.price) : null,
       city: form.city || null,
