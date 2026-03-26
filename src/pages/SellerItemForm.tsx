@@ -328,10 +328,11 @@ export default function SellerItemForm() {
           <div>
             <label className="block text-sm font-medium text-foreground mb-1.5">Categoria *</label>
             <select
-              required
-              value={form.category}
+              required={!isAluguel}
+              value={isAluguel ? "" : form.category}
               onChange={(e) => setForm((f) => ({ ...f, category: e.target.value as ItemCategory }))}
-              className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+              disabled={isAluguel}
+              className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none disabled:opacity-50"
             >
               <option value="">Selecione...</option>
               {categories.map((c) => (
@@ -339,6 +340,52 @@ export default function SellerItemForm() {
               ))}
             </select>
           </div>
+
+          {/* Aluguel Toggle */}
+          <button
+            type="button"
+            onClick={() => {
+              setIsAluguel(!isAluguel);
+              if (!isAluguel) {
+                setForm((f) => ({ ...f, category: "aluguel" as ItemCategory }));
+              }
+            }}
+            className={`flex items-center gap-3 w-full px-4 py-3 rounded-xl border-2 transition-all ${
+              isAluguel
+                ? "border-primary bg-primary/10 shadow-sm"
+                : "border-input bg-background hover:border-primary/30"
+            }`}
+          >
+            <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all ${
+              isAluguel ? "border-primary bg-primary" : "border-muted-foreground"
+            }`}>
+              {isAluguel && <span className="text-primary-foreground text-xs font-bold">✓</span>}
+            </div>
+            <div className="text-left">
+              <span className={`text-sm font-semibold ${isAluguel ? "text-primary" : "text-foreground"}`}>
+                🏠 Para Aluguel
+              </span>
+              <p className="text-[11px] text-muted-foreground">Marque se este imóvel é para alugar</p>
+            </div>
+          </button>
+
+          {isAluguel && (
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-1.5">Tipo do Imóvel (Aluguel) *</label>
+              <select
+                required
+                value={form.category === "aluguel" ? "" : form.category}
+                onChange={(e) => setForm((f) => ({ ...f, category: e.target.value as ItemCategory }))}
+                className="w-full px-4 py-3 rounded-xl border border-primary/30 bg-primary/5 text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+              >
+                <option value="">Selecione o tipo...</option>
+                {categories.map((c) => (
+                  <option key={c.value} value={c.value}>{c.label}</option>
+                ))}
+              </select>
+              <p className="text-[10px] text-muted-foreground mt-1">O imóvel será listado como aluguel na categoria selecionada</p>
+            </div>
+          )}
 
           <div>
             <label className="block text-sm font-medium text-foreground mb-1.5">Preço (R$)</label>
