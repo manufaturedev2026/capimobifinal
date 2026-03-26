@@ -80,13 +80,32 @@ export default function Header() {
           </DropdownMenu>
         </nav>
 
-        <Link
-          to="/buscar"
-          className="hidden md:flex items-center gap-2 px-4 py-2 rounded-xl bg-secondary text-secondary-foreground text-sm hover:bg-secondary/80 transition-colors"
-        >
-          <Search size={16} />
-          Buscar
-        </Link>
+        <div className="hidden md:flex items-center gap-2">
+          <Link
+            to="/buscar"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-secondary text-secondary-foreground text-sm hover:bg-secondary/80 transition-colors"
+          >
+            <Search size={16} />
+            Buscar
+          </Link>
+          {user ? (
+            <Link
+              to="/painel"
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors shadow-md"
+            >
+              <LayoutDashboard size={16} />
+              Painel
+            </Link>
+          ) : (
+            <Link
+              to="/login"
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-secondary text-secondary-foreground text-sm hover:bg-secondary/80 transition-colors"
+            >
+              <LogIn size={16} />
+              Login
+            </Link>
+          )}
+        </div>
 
         <button
           onClick={() => setMenuOpen(!menuOpen)}

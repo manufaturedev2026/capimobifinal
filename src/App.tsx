@@ -54,6 +54,7 @@ const AppLayout = () => {
           
           <Route path="/seja-corretor" element={<BecomeAgentPage />} />
           <Route path="/anunciar" element={<CreateListing />} />
+          <Route path="/login" element={<LoginPage />} />
           <Route path="/buscar" element={<SearchPage />} />
           <Route path="/entrar" element={<AuthPage />} />
           <Route path="/painel" element={<SellerDashboard />} />
