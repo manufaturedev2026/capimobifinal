@@ -282,12 +282,22 @@ export default function ProductDetail() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-              <p className={`text-xs font-bold uppercase tracking-wider ${isProperty ? "text-primary" : "text-accent"}`}>
-                {isProperty ? "Imóvel" : "Veículo"} {isDb ? `• ${product.category}` : ""}
-              </p>
+              <div className="flex items-center gap-2 flex-wrap">
+                <p className={`text-xs font-bold uppercase tracking-wider ${isProperty ? "text-primary" : "text-accent"}`}>
+                  {isProperty ? "Imóvel" : "Veículo"} {isDb ? `• ${product.category}` : ""}
+                </p>
+                {isAluguel && (
+                  <span className="px-3 py-1 rounded-full text-xs font-bold bg-primary text-primary-foreground shadow">
+                    🏠 Aluguel
+                  </span>
+                )}
+              </div>
               <h1 className="font-display font-bold text-2xl md:text-4xl text-foreground mt-1 leading-tight">{title}</h1>
               {formattedPrice && (
-                <p className="font-display font-bold text-3xl md:text-4xl text-primary mt-3">{formattedPrice}</p>
+                <p className="font-display font-bold text-3xl md:text-4xl text-primary mt-3">
+                  {formattedPrice}
+                  {isAluguel && <span className="text-lg font-normal text-muted-foreground"> /mês</span>}
+                </p>
               )}
             </motion.div>
 
