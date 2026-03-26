@@ -245,8 +245,7 @@ export default function SellerItemForm() {
     setSaving(false);
   };
 
-  const categories = sellerType === "automoveis" ? vehicleCategories : propertyCategories;
-  const isVehicle = sellerType === "automoveis";
+  const categories = propertyCategories;
 
   return (
     <div className="min-h-screen bg-background">
