@@ -18,7 +18,7 @@ export interface Subscription {
 export const PACKAGE_CONFIG = {
   start: {
     name: "Start",
-    price: 5.00,
+    price: 24.99,
     maxItems: 10,
     color: "from-emerald-500 to-teal-600",
     borderColor: "border-emerald-400",
