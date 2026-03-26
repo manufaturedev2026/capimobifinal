@@ -21,24 +21,24 @@ const propertyCategories: { value: ItemCategory; label: string }[] = [
   { value: "aluguel", label: "Aluguel" },
 ];
 
-const commonTags: { value: ItemTag; label: string }[] = [
-  { value: "premium", label: "Premium" },
-  { value: "luxo", label: "Luxo" },
-  { value: "prime", label: "Prime" },
-  { value: "novo", label: "Novo" },
-  { value: "em_destaque", label: "Em Destaque" },
-  { value: "oferta", label: "Oferta" },
-  { value: "exclusivo", label: "Exclusivo" },
-  { value: "top", label: "Top" },
-  { value: "limited", label: "Limited" },
-  { value: "lancamento", label: "Lançamento" },
+const commonTags: { value: ItemTag; label: string; gradient: string; emoji: string }[] = [
+  { value: "premium", label: "Premium", gradient: "from-amber-500 to-yellow-400", emoji: "👑" },
+  { value: "luxo", label: "Luxo", gradient: "from-purple-600 to-pink-500", emoji: "💎" },
+  { value: "prime", label: "Prime", gradient: "from-blue-600 to-cyan-400", emoji: "⭐" },
+  { value: "novo", label: "Novo", gradient: "from-emerald-500 to-green-400", emoji: "✨" },
+  { value: "em_destaque", label: "Em Destaque", gradient: "from-orange-500 to-amber-400", emoji: "🔥" },
+  { value: "oferta", label: "Oferta", gradient: "from-red-500 to-rose-400", emoji: "🏷️" },
+  { value: "exclusivo", label: "Exclusivo", gradient: "from-indigo-600 to-violet-500", emoji: "🔒" },
+  { value: "top", label: "Top", gradient: "from-sky-500 to-blue-400", emoji: "🚀" },
+  { value: "limited", label: "Limited", gradient: "from-slate-600 to-zinc-500", emoji: "⏳" },
+  { value: "lancamento", label: "Lançamento", gradient: "from-fuchsia-600 to-pink-400", emoji: "🆕" },
 ];
 
-const propertyOnlyTags: { value: ItemTag; label: string }[] = [
-  { value: "pronto_para_morar", label: "Pronto p/ Morar" },
-  { value: "cobertura", label: "Cobertura" },
-  { value: "vista_panoramica", label: "Vista Panorâmica" },
-  { value: "aluguel_flex", label: "Aluguel Flex" },
+const propertyOnlyTags: { value: ItemTag; label: string; gradient: string; emoji: string }[] = [
+  { value: "pronto_para_morar", label: "Pronto p/ Morar", gradient: "from-teal-500 to-emerald-400", emoji: "🏡" },
+  { value: "cobertura", label: "Cobertura", gradient: "from-violet-600 to-purple-400", emoji: "🏙️" },
+  { value: "vista_panoramica", label: "Vista Panorâmica", gradient: "from-cyan-500 to-sky-400", emoji: "🌅" },
+  { value: "aluguel_flex", label: "Aluguel Flex", gradient: "from-lime-500 to-green-400", emoji: "🔄" },
 ];
 
 export default function SellerItemForm() {
