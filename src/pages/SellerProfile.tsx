@@ -54,6 +54,7 @@ export default function SellerProfile() {
         bio: (profile as any).bio || "",
         seller_category: (profile as any).seller_category || "",
         creci: (profile as any).creci || "",
+        cnpj: (profile as any).cnpj || "",
       });
     }
   }, [profile]);
