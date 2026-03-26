@@ -59,6 +59,8 @@ const AppLayout = () => {
           <Route path="/painel/novo" element={<SellerItemForm />} />
           <Route path="/painel/editar/:id" element={<SellerItemForm />} />
           <Route path="/painel/perfil" element={<SellerProfile />} />
+          <Route path="/painel/estudo" element={<StudyMaterial />} />
+          <Route path="/painel/estudo/:slug" element={<ArticleReader />} />
           <Route path="/pacotes" element={<PackagesPage />} />
           <Route path="/admin" element={<AdminPanel />} />
           <Route path="/privacidade" element={<PrivacyPage />} />
