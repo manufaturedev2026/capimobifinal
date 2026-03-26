@@ -418,12 +418,25 @@ export default function SellerItemForm() {
           </div>
           <div>
             <label className="text-xs text-muted-foreground mb-1 block">Bairro</label>
-            <input
-              value={form.neighborhood}
-              onChange={(e) => setForm((f) => ({ ...f, neighborhood: e.target.value }))}
-              className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
-              placeholder="Bairro"
-            />
+            {form.city && ES_NEIGHBORHOODS[form.city] ? (
+              <select
+                value={form.neighborhood}
+                onChange={(e) => setForm((f) => ({ ...f, neighborhood: e.target.value }))}
+                className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+              >
+                <option value="">Selecione o bairro</option>
+                {ES_NEIGHBORHOODS[form.city].map((b) => (
+                  <option key={b} value={b}>{b}</option>
+                ))}
+              </select>
+            ) : (
+              <input
+                value={form.neighborhood}
+                onChange={(e) => setForm((f) => ({ ...f, neighborhood: e.target.value }))}
+                className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+                placeholder={form.city ? "Digite o bairro" : "Selecione a cidade primeiro"}
+              />
+            )}
           </div>
           <div className="grid grid-cols-3 gap-3">
             <input
