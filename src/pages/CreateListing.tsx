@@ -142,7 +142,7 @@ export default function CreateListing() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-white/10 bg-white/5 text-white text-sm placeholder:text-white/30 focus:ring-2 focus:ring-accent/50 focus:border-accent/50 focus:outline-none transition-all backdrop-blur-sm"
+                className="w-full px-4 py-3 rounded-xl border border-white/10 bg-white/5 text-white text-sm placeholder:text-white/30 focus:ring-2 focus:ring-primary/50 focus:border-primary/50 focus:outline-none transition-all backdrop-blur-sm"
                 placeholder="seu@email.com"
               />
             </div>
@@ -156,7 +156,7 @@ export default function CreateListing() {
                   minLength={6}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-white/10 bg-white/5 text-white text-sm placeholder:text-white/30 focus:ring-2 focus:ring-accent/50 focus:border-accent/50 focus:outline-none transition-all backdrop-blur-sm pr-12"
+                  className="w-full px-4 py-3 rounded-xl border border-white/10 bg-white/5 text-white text-sm placeholder:text-white/30 focus:ring-2 focus:ring-white/50 focus:border-white/50 focus:outline-none transition-all backdrop-blur-sm pr-12"
                   placeholder="Mínimo 6 caracteres"
                 />
                 <button
