@@ -968,7 +968,7 @@ export default function SellerDashboard() {
                     <Plus size={16} /> Novo Anúncio
                   </Link>
                   {profile?.id && (
-                    <Link to={`/${profile.seller_type === "automoveis" ? "veiculos" : "imoveis"}/empresa/${profile.id}`} onClick={() => setMobileMenuOpen(false)}
+                    <Link to={`/imoveis/empresa/${profile.id}`} onClick={() => setMobileMenuOpen(false)}
                       className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-foreground hover:bg-secondary transition-all">
                       <Eye size={16} /> Ver Minha Loja
                     </Link>
