@@ -70,6 +70,7 @@ export type Database = {
           address: string | null
           bio: string | null
           city: string | null
+          cnpj: string | null
           company_name: string | null
           created_at: string
           creci: string | null
@@ -92,6 +93,7 @@ export type Database = {
           address?: string | null
           bio?: string | null
           city?: string | null
+          cnpj?: string | null
           company_name?: string | null
           created_at?: string
           creci?: string | null
@@ -116,6 +118,7 @@ export type Database = {
           address?: string | null
           bio?: string | null
           city?: string | null
+          cnpj?: string | null
           company_name?: string | null
           created_at?: string
           creci?: string | null

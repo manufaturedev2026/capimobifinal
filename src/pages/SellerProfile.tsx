@@ -30,6 +30,7 @@ export default function SellerProfile() {
     bio: "",
     seller_category: "" as string,
     creci: "",
+    cnpj: "",
   });
 
   useEffect(() => {
@@ -53,6 +54,7 @@ export default function SellerProfile() {
         bio: (profile as any).bio || "",
         seller_category: (profile as any).seller_category || "",
         creci: (profile as any).creci || "",
+        cnpj: (profile as any).cnpj || "",
       });
     }
   }, [profile]);
@@ -79,6 +81,7 @@ export default function SellerProfile() {
     const updateData: any = { ...form };
     if (!updateData.seller_category) delete updateData.seller_category;
     if (!updateData.creci) delete updateData.creci;
+    if (!updateData.cnpj) delete updateData.cnpj;
 
     const { error } = await supabase
       .from("profiles")
@@ -202,6 +205,20 @@ export default function SellerProfile() {
               <p className="text-xs text-muted-foreground mt-1">O CRECI será exibido no perfil da sua loja.</p>
             </div>
           )}
+
+          {/* CNPJ field — only for imobiliaria */}
+          {form.seller_category === "imobiliaria" && (
+            <div className="mt-4">
+              <label className="text-sm font-medium text-foreground mb-1 block">CNPJ</label>
+              <input
+                value={form.cnpj}
+                onChange={(e) => setForm((f) => ({ ...f, cnpj: e.target.value }))}
+                className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+                placeholder="Ex: 12.345.678/0001-90"
+              />
+              <p className="text-xs text-muted-foreground mt-1">O CNPJ será exibido no perfil da sua loja.</p>
+            </div>
+          )}
         </div>
 
         {/* Location */}
@@ -219,7 +236,13 @@ export default function SellerProfile() {
               onChange={(e) => setForm((f) => ({ ...f, show_location: e.target.checked }))}
               className="w-5 h-5 rounded border-input text-primary focus:ring-ring accent-primary cursor-pointer"
             />
-            <span className="text-sm text-foreground">Mostrar localização no perfil da loja</span>
+            <span className="text-sm text-foreground">
+              {form.seller_category === "proprietario"
+                ? "Mostrar localização da propriedade no perfil"
+                : form.seller_category === "corretor" || form.seller_category === "imobiliaria"
+                ? "Mostrar localização do escritório no perfil"
+                : "Mostrar localização no perfil da loja"}
+            </span>
           </label>
         </div>
           <button
