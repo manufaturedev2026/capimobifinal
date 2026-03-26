@@ -39,8 +39,8 @@ export default function Header() {
       <div className="container max-w-6xl mx-auto flex items-center justify-between h-16 px-4">
         <Link to="/" className="flex items-center gap-2.5">
           <img src="/pwa-512x512.png" alt="ES Corretores" className="w-9 h-9 rounded-xl shadow-md object-contain" />
-          <span className="font-display font-bold text-xl text-foreground">
-            ES<span className="text-primary">Corretores</span>
+          <span className="font-display font-bold text-xl">
+            <span className="text-primary">E</span><span className="text-accent">S</span><span className="text-foreground">Corretores</span>
           </span>
         </Link>
 
