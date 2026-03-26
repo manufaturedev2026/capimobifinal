@@ -11,6 +11,7 @@ import InstallPWA from "@/components/InstallPWA";
 import ScrollToTop from "@/components/ScrollToTop";
 import Index from "@/pages/Index";
 import PropertiesPage from "@/pages/PropertiesPage";
+import BecomeAgentPage from "@/pages/BecomeAgentPage";
 
 import CityPropertiesPage from "@/pages/CityPropertiesPage";
 
