@@ -200,7 +200,7 @@ export default function CompanyProfile() {
 
   const handleWhatsApp = (title: string, productId?: string) => {
     if (isDbProfile && id) trackSellerEvent(id, "whatsapp_click");
-    const seg = isProperty ? "imoveis" : "veiculos";
+    const seg = "imoveis";
     const link = productId ? `\n\n🔗 ${window.location.origin}/${seg}/produto/${productId}` : `\n\n🔗 ${window.location.href}`;
     window.location.href = `https://wa.me/${company.whatsapp}?text=${encodeURIComponent(`Olá ${company.name}! Tenho interesse: ${title}${link}`)}`;
   };
