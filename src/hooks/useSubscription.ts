@@ -114,7 +114,7 @@ export const PACKAGE_CONFIG = {
       "Destaque no topo da listagem",
       "Estatísticas completas",
       "Campanha Google Ads ampliada",
-      "Banner exclusivo na homepage",
+      "Anúncios Dinâmicos Google ADS",
       "Gerente de conta dedicado",
       "Suporte VIP dedicado",
       "Instagram na loja",
