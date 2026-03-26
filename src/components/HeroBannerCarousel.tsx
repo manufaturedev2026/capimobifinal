@@ -101,7 +101,7 @@ export default function HeroBannerCarousel({
   const getItemSegment = () => "imoveis";
 
   const productUrl = currentItem
-    ? `/${getItemSegment(currentItem)}/produto/${currentItem.id}`
+    ? `/imoveis/produto/${currentItem.id}`
     : "";
 
   return (

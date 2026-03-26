@@ -380,7 +380,7 @@ export default function ProductDetail() {
             <h2 className="font-display font-bold text-xl text-foreground mb-6">Mais de {company.name}</h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
               {relatedProducts.map((rp: any) => (
-                <Link key={rp.id} to={`/${isProperty ? "imoveis" : "veiculos"}/produto/${rp.id}`} className="card-epic bg-card border border-border group">
+                <Link key={rp.id} to={`/imoveis/produto/${rp.id}`} className="card-epic bg-card border border-border group">
                   <div className="relative aspect-[4/3] overflow-hidden rounded-t-2xl">
                     <img src={rp.image} alt={rp.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
                   </div>

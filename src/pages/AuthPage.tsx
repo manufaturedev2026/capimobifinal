@@ -148,35 +148,8 @@ export default function AuthPage() {
                     placeholder="(27) 99999-9999"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-1.5">Tipo de corretor</label>
-                  <div className="grid grid-cols-2 gap-3">
-                    <button
-                      type="button"
-                      onClick={() => setSellerType("imoveis")}
-                      className={`flex items-center justify-center gap-2 py-3 rounded-xl border-2 text-sm font-medium transition-all ${
-                        sellerType === "imoveis"
-                          ? "border-primary bg-primary/10 text-primary"
-                          : "border-input bg-card text-muted-foreground hover:border-primary/40"
-                      }`}
-                    >
-                      <Building2 size={18} />
-                      Imóveis
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setSellerType("automoveis")}
-                      className={`flex items-center justify-center gap-2 py-3 rounded-xl border-2 text-sm font-medium transition-all ${
-                        sellerType === "automoveis"
-                          ? "border-primary bg-primary/10 text-primary"
-                          : "border-input bg-card text-muted-foreground hover:border-primary/40"
-                      }`}
-                    >
-                      <Car size={18} />
-                      Veículos
-                    </button>
-                  </div>
-                </div>
+
+
               </>
             )}
 
