@@ -61,7 +61,7 @@ export default function AuthPage() {
                 <Shield size={28} className="text-accent" />
               </div>
               <div>
-                <h2 className="text-white font-display text-2xl font-bold">Melhor Busca</h2>
+                <h2 className="text-white font-display text-2xl font-bold">ES Corretores</h2>
                 <p className="text-white/60 text-sm">Painel do Corretor</p>
               </div>
             </div>
