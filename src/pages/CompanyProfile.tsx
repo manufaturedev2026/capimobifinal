@@ -407,8 +407,8 @@ export default function CompanyProfile() {
                   <h3 className="font-display font-bold text-foreground text-sm">{company.name}</h3>
                   <p className="text-xs text-muted-foreground mt-0.5">
                     {dbProfile?.seller_category
-                      ? ({ imobiliaria: "Imobiliária", corretor: "Corretor(a) de Imóveis", proprietario: "Proprietário", loja_veiculos: "Loja de Veículos", autonomo: "Autônomo", concessionaria: "Concessionária" } as Record<string, string>)[dbProfile.seller_category] || (isProperty ? "Imobiliária" : "Loja de Veículos")
-                      : isProperty ? "Imobiliária" : "Loja de Veículos"}
+                      ? ({ imobiliaria: "Imobiliária", corretor: "Corretor(a) de Imóveis", proprietario: "Proprietário" } as Record<string, string>)[dbProfile.seller_category] || "Imobiliária"
+                      : "Imobiliária"}
                   </p>
                   {dbProfile?.seller_category === "corretor" && dbProfile?.creci && (
                     <p className="text-xs text-primary font-semibold mt-1 flex items-center gap-1">
