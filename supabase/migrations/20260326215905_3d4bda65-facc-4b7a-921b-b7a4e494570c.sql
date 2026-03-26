@@ -1,0 +1,1 @@
+ALTER TABLE public.profiles ADD COLUMN account_manager text DEFAULT NULL;

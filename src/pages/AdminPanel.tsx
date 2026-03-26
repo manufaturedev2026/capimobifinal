@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Shield, Users, Package, DollarSign, Search, Check, X, RefreshCw, ArrowLeft, Crown, Star, Zap, Globe, Plus, Trash2, ExternalLink, Copy, Megaphone, LayoutDashboard, Building2, Rocket, FileText } from "lucide-react";
+import { Shield, Users, Package, DollarSign, Search, Check, X, RefreshCw, ArrowLeft, Crown, Star, Zap, Globe, Plus, Trash2, ExternalLink, Copy, Megaphone, LayoutDashboard, Building2, Rocket, FileText, UserCog, Filter } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsAdmin, PACKAGE_CONFIG } from "@/hooks/useSubscription";
@@ -17,6 +17,7 @@ interface SellerWithSub {
   phone: string | null;
   seller_type: string;
   city: string | null;
+  account_manager: string | null;
   subscription?: {
     id: string;
     tier: string;
@@ -44,6 +45,7 @@ export default function AdminPanel() {
   const [sellers, setSellers] = useState<SellerWithSub[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [tierFilter, setTierFilter] = useState<string>("todos");
   const [tab, setTab] = useState<"sellers" | "billing" | "domains" | "ads">("sellers");
   const [adRequests, setAdRequests] = useState<any[]>([]);
   const [adsLoading, setAdsLoading] = useState(false);
@@ -134,6 +136,7 @@ export default function AdminPanel() {
       phone: p.phone,
       seller_type: p.seller_type,
       city: p.city,
+      account_manager: p.account_manager || null,
       subscription: subsMap.get(p.user_id)
         ? {
             id: subsMap.get(p.user_id).id,
@@ -236,12 +239,30 @@ export default function AdminPanel() {
     }
   };
 
-  const filteredSellers = sellers.filter(
-    (s) =>
+  const filteredSellers = sellers.filter((s) => {
+    const matchesSearch =
       s.full_name.toLowerCase().includes(search.toLowerCase()) ||
       s.email.toLowerCase().includes(search.toLowerCase()) ||
-      s.company_name?.toLowerCase().includes(search.toLowerCase())
-  );
+      s.company_name?.toLowerCase().includes(search.toLowerCase());
+    const matchesTier =
+      tierFilter === "todos" ||
+      (tierFilter === "sem_pacote" && !s.subscription) ||
+      s.subscription?.tier === tierFilter;
+    return matchesSearch && matchesTier;
+  });
+
+  const updateAccountManager = async (profileId: string, manager: string) => {
+    const { error } = await supabase
+      .from("profiles")
+      .update({ account_manager: manager || null } as any)
+      .eq("id", profileId);
+    if (!error) {
+      setSellers((prev) =>
+        prev.map((s) => (s.id === profileId ? { ...s, account_manager: manager || null } : s))
+      );
+      toast({ title: "Gerente de conta atualizado!" });
+    }
+  };
 
   const totalByTier = {
     start: sellers.filter((s) => s.subscription?.tier === "start").length,
@@ -371,6 +392,34 @@ export default function AdminPanel() {
 
         {tab === "sellers" && (
           <div className="space-y-3">
+            {/* Tier Filter */}
+            <div className="flex items-center gap-2 flex-wrap mb-2">
+              <Filter size={14} className="text-muted-foreground" />
+              <span className="text-xs text-muted-foreground font-semibold">Filtrar por plano:</span>
+              {[
+                { key: "todos", label: "Todos" },
+                { key: "sem_pacote", label: "Sem Pacote" },
+                { key: "basico", label: "Básico" },
+                { key: "start", label: "Start" },
+                { key: "premium", label: "Premium" },
+                { key: "vip", label: "VIP" },
+                { key: "essencial_empresa", label: "Ess. Empresa" },
+                { key: "premium_empresa", label: "Prem. Empresa" },
+              ].map((f) => (
+                <button
+                  key={f.key}
+                  onClick={() => setTierFilter(f.key)}
+                  className={`px-3 py-1 rounded-full text-xs font-semibold transition-all ${
+                    tierFilter === f.key
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-secondary text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {f.label}
+                </button>
+              ))}
+            </div>
+
             {filteredSellers.map((seller) => {
               const sub = seller.subscription;
               const TierIcon = sub ? tierIcons[sub.tier] || Zap : Zap;
@@ -402,6 +451,27 @@ export default function AdminPanel() {
                           )}
                         </p>
                       )}
+
+                      {/* Account Manager */}
+                      <div className="flex items-center gap-2 mt-2">
+                        <UserCog size={14} className="text-muted-foreground" />
+                        <input
+                          defaultValue={seller.account_manager || ""}
+                          placeholder="Gerente de conta..."
+                          onBlur={(e) => {
+                            if (e.target.value !== (seller.account_manager || "")) {
+                              updateAccountManager(seller.id, e.target.value);
+                            }
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") (e.target as HTMLInputElement).blur();
+                          }}
+                          className="px-2 py-1 rounded-lg border border-input bg-background text-foreground text-xs w-48 focus:ring-1 focus:ring-ring focus:outline-none"
+                        />
+                        {seller.account_manager && (
+                          <span className="text-[10px] text-muted-foreground">👤 {seller.account_manager}</span>
+                        )}
+                      </div>
                     </div>
 
                     <div className="flex gap-1.5 flex-wrap">
@@ -428,6 +498,10 @@ export default function AdminPanel() {
                 </div>
               );
             })}
+
+            {filteredSellers.length === 0 && (
+              <div className="text-center py-8 text-muted-foreground text-sm">Nenhum vendedor encontrado.</div>
+            )}
           </div>
         )}
 
