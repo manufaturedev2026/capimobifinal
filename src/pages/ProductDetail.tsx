@@ -93,9 +93,7 @@ export default function ProductDetail() {
     );
   }
 
-  const isProperty = isDb
-    ? ["casa", "apartamento", "terreno", "comercial", "galpao", "flat", "aluguel"].includes(product.category)
-    : product.type === "imovel";
+  const isProperty = true;
 
   const images: string[] = isDb ? (product.photos?.length > 0 ? product.photos : []) : product.images;
   const title = product.title;
