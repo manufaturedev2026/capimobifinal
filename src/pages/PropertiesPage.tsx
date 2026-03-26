@@ -107,15 +107,13 @@ export default function PropertiesPage() {
       : [...propertyProducts];
     // Filter by category
     if (effectiveCategory) {
-      const matchCats = categoryMap[effectiveCategory] || [];
       if (effectiveCategory === "aluguel") {
-        // Only show aluguel items
-        base = base.filter((p) => (p as any).realCategory === "aluguel");
+        base = base.filter((p) => (p as any).isAluguel);
       } else {
-        // Show items of this category + aluguel items (they appear in all categories with Aluguel tag)
+        const matchCats = categoryMap[effectiveCategory] || [];
         base = base.filter((p) => {
           const realCat = (p as any).realCategory;
-          return realCat && (matchCats.includes(realCat) || realCat === "aluguel");
+          return realCat && matchCats.includes(realCat);
         });
       }
     }
