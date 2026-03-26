@@ -76,7 +76,10 @@ export default function SellerProfile() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
+    if (!user) {
+      toast({ title: "Erro", description: "Você precisa estar logado.", variant: "destructive" });
+      return;
+    }
     setSaving(true);
 
     const updateData: any = { ...form };
@@ -84,10 +87,14 @@ export default function SellerProfile() {
     if (!updateData.creci) delete updateData.creci;
     if (!updateData.cnpj) delete updateData.cnpj;
 
+    console.log("Saving profile:", updateData);
+
     const { error } = await supabase
       .from("profiles")
       .update(updateData)
       .eq("user_id", user.id);
+
+    console.log("Profile save result:", { error });
 
     if (error) {
       toast({ title: "Erro ao salvar", description: error.message, variant: "destructive" });
