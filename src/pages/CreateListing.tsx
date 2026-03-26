@@ -130,37 +130,8 @@ export default function CreateListing() {
                     placeholder="(27) 99999-9999"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-white/80 mb-1.5">
-                    Tipo de corretor
-                  </label>
-                  <div className="grid grid-cols-2 gap-3">
-                    <button
-                      type="button"
-                      onClick={() => setSellerType("imoveis")}
-                      className={`flex items-center justify-center gap-2 py-3 rounded-xl border-2 text-sm font-medium transition-all ${
-                        sellerType === "imoveis"
-                          ? "border-accent bg-accent/10 text-accent"
-                          : "border-white/10 bg-white/5 text-white/50 hover:border-white/30"
-                      }`}
-                    >
-                      <Building2 size={18} />
-                      Imóveis
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setSellerType("automoveis")}
-                      className={`flex items-center justify-center gap-2 py-3 rounded-xl border-2 text-sm font-medium transition-all ${
-                        sellerType === "automoveis"
-                          ? "border-accent bg-accent/10 text-accent"
-                          : "border-white/10 bg-white/5 text-white/50 hover:border-white/30"
-                      }`}
-                    >
-                      <Car size={18} />
-                      Veículos
-                    </button>
-                  </div>
-                </div>
+
+
               </>
             )}
 
