@@ -354,6 +354,11 @@ export default function PropertiesPage() {
                           {product.tag}
                         </span>
                       )}
+                      {(product as any).realCategory === "aluguel" && (
+                        <span className="absolute bottom-3 left-3 px-3 py-1 rounded-full text-xs font-bold shadow bg-primary text-primary-foreground">
+                          🏠 Aluguel
+                        </span>
+                      )}
                       {(product as any).sellerTier && (product as any).sellerTier !== "basico" && (
                         <div className="absolute top-3 right-3">
                           <PackageBadge tier={(product as any).sellerTier} />
