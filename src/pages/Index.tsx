@@ -139,9 +139,9 @@ export default function Index() {
         </div>
       </section>
 
-      {/* Promo Banner */}
+      {/* Promo Banners */}
       <section className="px-4 md:px-8 mt-6">
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-4">
           <Link to={citySlug ? `/${citySlug}/imoveis` : "/imoveis"} className="group relative overflow-hidden rounded-2xl h-[180px] md:h-[200px] block">
             <img src={heroImoveis} alt="Imóveis" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" width={1400} height={200} />
             <div className="absolute inset-0 bg-gradient-to-r from-[hsl(var(--primary)/0.9)] to-transparent" />
@@ -151,6 +151,19 @@ export default function Index() {
               <p className="text-white/80 text-sm mt-1">Casas, aptos, terrenos e mais</p>
               <span className="mt-3 inline-flex items-center gap-1 text-white text-sm font-semibold group-hover:gap-2 transition-all">
                 Explorar <ChevronRight size={16} />
+              </span>
+            </div>
+          </Link>
+
+          <Link to={`${citySlug ? `/${citySlug}/imoveis` : "/imoveis"}?categoria=casas`} className="group relative overflow-hidden rounded-2xl h-[180px] md:h-[200px] block">
+            <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&h=400&fit=crop" alt="Casa Própria" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" width={800} height={400} />
+            <div className="absolute inset-0 bg-gradient-to-r from-[hsl(var(--accent)/0.9)] to-transparent" />
+            <div className="absolute inset-0 flex flex-col justify-center px-6 md:px-8">
+              <span className="text-xs font-semibold text-white/70 uppercase tracking-wider">Mais Buscado</span>
+              <h3 className="font-display font-bold text-2xl md:text-3xl text-white mt-1">Casa Própria</h3>
+              <p className="text-white/80 text-sm mt-1">Realize o sonho da sua casa</p>
+              <span className="mt-3 inline-flex items-center gap-1 text-white text-sm font-semibold group-hover:gap-2 transition-all">
+                Ver Casas <ChevronRight size={16} />
               </span>
             </div>
           </Link>
