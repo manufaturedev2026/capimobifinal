@@ -227,7 +227,7 @@ export default function CompanyProfile() {
             />
           )}
         </AnimatePresence>
-        {heroImages.length === 0 && !dbProfile?.cover_color && (
+        {heroImages.length === 0 && (
           <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/80 to-accent" />
         )}
 
