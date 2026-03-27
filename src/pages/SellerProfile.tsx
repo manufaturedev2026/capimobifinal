@@ -16,6 +16,8 @@ export default function SellerProfile() {
   const { toast } = useToast();
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const sellerTier = useSellerSubscription(profile?.id);
+  const isEmpresa = sellerTier === "essencial_empresa" || sellerTier === "premium_empresa";
 
   const [form, setForm] = useState({
     full_name: "",
