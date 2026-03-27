@@ -17,8 +17,6 @@ import BecomeAgentPage from "@/pages/BecomeAgentPage";
 import StudyMaterial from "@/pages/StudyMaterial";
 import ArticleReader from "@/pages/ArticleReader";
 
-import CityPropertiesPage from "@/pages/CityPropertiesPage";
-
 import CompanyProfile from "@/pages/CompanyProfile";
 import ProductDetail from "@/pages/ProductDetail";
 import CreateListing from "@/pages/CreateListing";
