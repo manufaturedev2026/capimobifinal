@@ -898,10 +898,9 @@ export default function SellerDashboard() {
                     <div className="flex gap-3">
                       <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold">2</div>
                       <div>
-                        <p className="font-semibold text-sm text-foreground">Fale com seu gerente</p>
+                        <p className="font-semibold text-sm text-foreground">Copie a URL da sua loja</p>
                         <p className="text-xs text-muted-foreground mt-1">
-                          Envie o nome do domínio para seu gerente de conta pelo botão abaixo.
-                          Ele fará a configuração técnica para você.
+                          Copie o link acima (URL da sua loja). Esse é o endereço para onde seu domínio vai redirecionar.
                         </p>
                       </div>
                     </div>
@@ -909,36 +908,45 @@ export default function SellerDashboard() {
                     <div className="flex gap-3">
                       <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold">3</div>
                       <div>
-                        <p className="font-semibold text-sm text-foreground">Configure o DNS</p>
-                        <p className="text-xs text-muted-foreground mt-1">Seu gerente irá orientá-lo a adicionar estes registros DNS no seu provedor:</p>
+                        <p className="font-semibold text-sm text-foreground">Configure o Redirecionamento 301</p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          No painel do seu provedor de domínio, procure a opção <strong>"Redirecionamento de URL"</strong> ou <strong>"URL Forwarding"</strong> e configure assim:
+                        </p>
                         <div className="mt-2 bg-muted rounded-lg p-3 space-y-2">
                           <div className="flex items-center justify-between">
                             <span className="text-xs text-muted-foreground">Tipo:</span>
-                            <code className="text-xs font-mono text-foreground bg-background px-2 py-1 rounded">A</code>
+                            <code className="text-xs font-mono text-foreground bg-background px-2 py-1 rounded">Redirecionamento 301 (Permanente)</code>
                           </div>
                           <div className="flex items-center justify-between">
-                            <span className="text-xs text-muted-foreground">Nome:</span>
-                            <code className="text-xs font-mono text-foreground bg-background px-2 py-1 rounded">@ (raiz) e www</code>
+                            <span className="text-xs text-muted-foreground">De:</span>
+                            <code className="text-xs font-mono text-foreground bg-background px-2 py-1 rounded">seudominio.com.br</code>
                           </div>
                           <div className="flex items-center justify-between">
-                            <span className="text-xs text-muted-foreground">Valor:</span>
-                            <code className="text-xs font-mono text-primary bg-primary/10 px-2 py-1 rounded">185.158.133.1</code>
+                            <span className="text-xs text-muted-foreground">Para:</span>
+                            <code className="text-xs font-mono text-primary bg-primary/10 px-2 py-1 rounded break-all">{storeUrl}</code>
                           </div>
                         </div>
-                        <div className="mt-2 bg-amber-500/10 rounded-lg p-3 space-y-2 border border-amber-500/20">
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs text-muted-foreground">Tipo:</span>
-                            <code className="text-xs font-mono text-foreground bg-background px-2 py-1 rounded">TXT</code>
+
+                        <div className="mt-3 space-y-2">
+                          <p className="text-xs font-semibold text-foreground">📌 Como fazer em cada provedor:</p>
+                          <div className="bg-muted rounded-lg p-3 space-y-3">
+                            <div>
+                              <p className="text-xs font-bold text-foreground">GoDaddy:</p>
+                              <p className="text-[11px] text-muted-foreground">Domínios → Gerenciar DNS → Encaminhamento → Adicionar encaminhamento → Cole a URL da loja → Tipo: Permanente (301)</p>
+                            </div>
+                            <div>
+                              <p className="text-xs font-bold text-foreground">Hostinger:</p>
+                              <p className="text-[11px] text-muted-foreground">Domínios → Gerenciar → Redirecionamentos → Novo redirecionamento → Cole a URL da loja → Tipo: 301</p>
+                            </div>
+                            <div>
+                              <p className="text-xs font-bold text-foreground">Registro.br:</p>
+                              <p className="text-[11px] text-muted-foreground">Domínios → Editar → Publicação web → Redirecionar → Cole a URL da loja</p>
+                            </div>
+                            <div>
+                              <p className="text-xs font-bold text-foreground">Cloudflare:</p>
+                              <p className="text-[11px] text-muted-foreground">Rules → Page Rules → URL: seudominio.com/* → Forwarding URL → 301 → Cole a URL da loja</p>
+                            </div>
                           </div>
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs text-muted-foreground">Nome:</span>
-                            <code className="text-xs font-mono text-foreground bg-background px-2 py-1 rounded">@</code>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs text-muted-foreground">Valor:</span>
-                            <code className="text-xs font-mono text-amber-600 bg-amber-500/10 px-2 py-1 rounded">lovable_verify=... (copie do Lovable)</code>
-                          </div>
-                          <p className="text-[10px] text-amber-600 font-semibold">⚠️ Obrigatório! Peça o código ao seu gerente.</p>
                         </div>
                       </div>
                     </div>
@@ -948,8 +956,7 @@ export default function SellerDashboard() {
                       <div>
                         <p className="font-semibold text-sm text-foreground">Pronto!</p>
                         <p className="text-xs text-muted-foreground mt-1">
-                          Após a configuração (pode levar até <strong>48 horas</strong> para propagar),
-                          seu domínio abrirá <strong>diretamente sua loja</strong> — sem redirecionamento visível!
+                          Após configurar, quem acessar <strong>seudominio.com.br</strong> será redirecionado automaticamente para sua loja. A propagação pode levar até <strong>24 horas</strong>.
                         </p>
                       </div>
                     </div>
@@ -961,10 +968,10 @@ export default function SellerDashboard() {
                       <CheckCircle2 size={16} className="text-green-500" /> Dicas importantes
                     </p>
                     <ul className="text-xs text-muted-foreground space-y-1.5">
-                      <li>• Configure os <strong>3 registros</strong>: A (raiz), A (www) e <strong>TXT</strong> (verificação)</li>
-                      <li>• O registro TXT é <strong>obrigatório</strong> — sem ele o domínio não funciona</li>
-                      <li>• A propagação do DNS pode levar até <strong>48 horas</strong></li>
-                      <li>• Compartilhe o seu domínio nas redes sociais e cartão de visita</li>
+                      <li>• Escolha <strong>Redirecionamento 301 (Permanente)</strong> — é melhor para SEO</li>
+                      <li>• Configure tanto <strong>seudominio.com</strong> quanto <strong>www.seudominio.com</strong></li>
+                      <li>• A propagação pode levar até <strong>24 horas</strong></li>
+                      <li>• Compartilhe seu domínio nas redes sociais e cartão de visita</li>
                       <li>• Se tiver dúvidas, fale com seu gerente clicando no botão abaixo</li>
                     </ul>
                   </div>
