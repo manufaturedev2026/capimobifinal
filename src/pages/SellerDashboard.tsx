@@ -613,6 +613,30 @@ export default function SellerDashboard() {
                               className={`p-2 rounded-lg transition-colors ${((profile as any)?.hero_item_ids || []).includes(item.id) ? "bg-primary/20 text-primary" : "bg-secondary text-secondary-foreground hover:bg-secondary/80"}`}>
                               <Clapperboard size={14} />
                             </button>
+                            {item.status === "ativo" && (
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <button title="Marcar como vendido"
+                                    className="p-2 rounded-lg bg-green-500/10 text-green-600 hover:bg-green-500/20 transition-colors">
+                                    <BadgeCheck size={14} />
+                                  </button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>Marcar como vendido?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      Tem certeza que deseja marcar "{item.title}" como vendido? O imóvel ficará visível por 24 horas com etiqueta de vendido e depois será removido automaticamente.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                    <AlertDialogAction onClick={() => markAsSold(item.id)} className="bg-green-600 hover:bg-green-700">
+                                      Sim, marcar como vendido
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                            )}
                             <button onClick={() => deleteItem(item.id)}
                               className="p-2 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors">
                               <Trash2 size={14} />
