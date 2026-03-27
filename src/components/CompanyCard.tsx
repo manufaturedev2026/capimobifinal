@@ -2,15 +2,22 @@ import { MessageCircle, MapPin, Star } from "lucide-react";
 import { Link } from "react-router-dom";
 import { type Company } from "@/data/companies";
 import { motion } from "framer-motion";
-
-function openWhatsApp(e: React.MouseEvent, whatsapp: string, name: string) {
-  e.preventDefault();
-  e.stopPropagation();
-  window.open(`https://wa.me/${whatsapp}?text=${encodeURIComponent(`Olá ${name}! Vi vocês no AutoImóvel e gostaria de saber mais.`)}`, "_blank");
-}
+import { useWhatsAppPicker } from "@/components/WhatsAppTeamPicker";
 
 export default function CompanyCard({ company, index }: { company: Company; index: number }) {
   const profileUrl = `/imoveis/empresa/${company.id}`;
+  const { openWhatsApp } = useWhatsAppPicker();
+
+  const handleWhatsApp = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    openWhatsApp({
+      sellerId: company.id,
+      sellerName: company.name,
+      sellerPhone: company.whatsapp,
+      title: company.name,
+    });
+  };
 
   return (
     <motion.div
@@ -50,7 +57,7 @@ export default function CompanyCard({ company, index }: { company: Company; inde
           </div>
 
           <button
-            onClick={(e) => openWhatsApp(e, company.whatsapp, company.name)}
+            onClick={handleWhatsApp}
             className="mt-4 w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-gradient-to-r from-[#25d366] to-[#128c7e] text-white text-sm font-bold hover:opacity-90 transition-opacity"
           >
             <MessageCircle size={16} />

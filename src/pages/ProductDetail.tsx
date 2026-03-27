@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ChevronLeft, ChevronRight, MessageCircle, Share2, Star, MapPin, Tag, Store, Image, X, ZoomIn, BadgeCheck } from "lucide-react";
+import { useWhatsAppPicker } from "@/components/WhatsAppTeamPicker";
 import { getProductById, formatPrice, getProductsByCompany, getTagStyle, getTagLabel } from "@/data/products";
 import { allCompanies } from "@/data/companies";
 import { supabase } from "@/integrations/supabase/client";
@@ -16,6 +17,7 @@ function isUUID(str: string) {
 export default function ProductDetail() {
   const { productId } = useParams();
   const { toast } = useToast();
+  const { openWhatsApp } = useWhatsAppPicker();
   const [activeImage, setActiveImage] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const carouselRef = useRef<HTMLDivElement>(null);
@@ -119,9 +121,16 @@ export default function ProductDetail() {
     ? price ? `R$ ${Number(price).toLocaleString("pt-BR")}` : ""
     : formatPrice(price);
   const productUrl = window.location.href;
-  const whatsappUrl = `https://wa.me/${company.whatsapp}?text=${encodeURIComponent(`Olá ${company.name}! Tenho interesse: ${title} - ${formattedPrice}\n\n🔗 ${productUrl}`)}`;
-  const handleWhatsAppClick = () => {
+  const handleWhatsAppClick = (e?: React.MouseEvent) => {
+    if (e) e.preventDefault();
     if (isDb && dbItem) trackSellerEvent(dbItem.seller_id, "whatsapp_click", dbItem.id);
+    openWhatsApp({
+      sellerId: company.id,
+      sellerName: company.name,
+      sellerPhone: company.whatsapp,
+      title: `${title} - ${formattedPrice}`,
+      link: productUrl,
+    });
   };
   const mapAddress = isDb
     ? [product.address, product.neighborhood, product.city, product.state].filter(Boolean).join(", ") || company.address
@@ -377,10 +386,10 @@ export default function ProductDetail() {
               )}
 
               {company.whatsapp && (
-                <a href={whatsappUrl} onClick={handleWhatsAppClick} target="_blank" rel="noopener noreferrer"
+                <button onClick={() => handleWhatsAppClick()}
                   className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-green-500 hover:bg-green-600 text-white font-bold text-sm transition-colors shadow-lg">
                   <MessageCircle size={18} /> Chamar no WhatsApp
-                </a>
+                </button>
               )}
 
               <button onClick={async () => {

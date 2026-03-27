@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { AuthProvider } from "@/hooks/useAuth";
+import { WhatsAppTeamPickerProvider } from "@/components/WhatsAppTeamPicker";
 import Header from "@/components/Header";
 import FooterSimple from "@/components/FooterSimple";
 import InstallPWA from "@/components/InstallPWA";
@@ -81,14 +82,16 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <HelmetProvider>
       <AuthProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <ScrollToTop />
-            <AppLayout />
-          </BrowserRouter>
-        </TooltipProvider>
+        <WhatsAppTeamPickerProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <ScrollToTop />
+              <AppLayout />
+            </BrowserRouter>
+          </TooltipProvider>
+        </WhatsAppTeamPickerProvider>
       </AuthProvider>
     </HelmetProvider>
   </QueryClientProvider>
