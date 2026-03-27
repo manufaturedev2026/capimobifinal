@@ -44,6 +44,15 @@ export default function ProductDetail() {
       setDbItem(item);
       const { data: seller } = await supabase.from("profiles").select("*").eq("id", item.seller_id).maybeSingle();
       setDbSeller(seller);
+      // Fetch seller subscription tier
+      const { data: subData } = await supabase
+        .from("seller_subscriptions")
+        .select("tier")
+        .eq("seller_id", item.seller_id)
+        .eq("is_active", true)
+        .order("created_at", { ascending: false })
+        .limit(1);
+      if (subData && subData.length > 0) setSellerTier(subData[0].tier);
       trackSellerEvent(item.seller_id, "view", item.id);
     }
     setLoading(false);
