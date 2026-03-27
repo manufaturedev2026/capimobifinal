@@ -677,19 +677,21 @@ export default function CompanyProfile() {
                             {product.title}
                           </h3>
                           {product.price > 0 && (
-                            <p className="font-display font-bold text-emerald-500 text-base md:text-lg mt-1.5">
-                              {isDbProfile
-                                ? `R$ ${product.price.toLocaleString("pt-BR")}`
-                                : formatPrice(product.price)}
+                            <div className="flex items-center gap-2 mt-1.5">
+                              <p className="font-display font-bold text-emerald-500 text-base md:text-lg">
+                                {isDbProfile
+                                  ? `R$ ${product.price.toLocaleString("pt-BR")}`
+                                  : formatPrice(product.price)}
+                                {isDbProfile && ((product.tags || []).includes("aluguel_flex") || product.category === "aluguel") && (
+                                  <span className="text-sm font-normal text-muted-foreground"> /mês</span>
+                                )}
+                              </p>
                               {isDbProfile && ((product.tags || []).includes("aluguel_flex") || product.category === "aluguel") && (
-                                <span className="text-sm font-normal text-muted-foreground"> /mês</span>
+                                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary text-primary-foreground">
+                                  🏠 Aluguel
+                                </span>
                               )}
-                            </p>
-                          )}
-                          {isDbProfile && ((product.tags || []).includes("aluguel_flex") || product.category === "aluguel") && (
-                            <span className="inline-block mt-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary text-primary-foreground">
-                              🏠 Aluguel
-                            </span>
+                            </div>
                           )}
                           {product.city && (
                             <p className="text-[11px] text-muted-foreground mt-1.5 flex items-center gap-1">
