@@ -442,12 +442,12 @@ export default function ProductDetail() {
 
           <div className="space-y-4">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="bg-card border border-border rounded-2xl p-6 sticky top-20">
-              <Link to={companyUrl} className="flex items-center gap-3 mb-5 group">
+              <Link to={companyUrl} className="flex items-center gap-3 mb-4 group">
                 {company.logo ? (
-                  <img src={company.logo} alt={company.name} className="w-12 h-12 rounded-xl object-cover border border-border" />
+                  <img src={company.logo} alt={company.name} className="w-14 h-14 rounded-xl object-cover border border-border" />
                 ) : (
-                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center border border-border">
-                    <span className="font-bold text-primary">{company.name?.charAt(0)}</span>
+                  <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center border border-border">
+                    <span className="font-bold text-primary text-lg">{company.name?.charAt(0)}</span>
                   </div>
                 )}
                 <div>
@@ -465,8 +465,63 @@ export default function ProductDetail() {
                 </div>
               </Link>
 
+              {/* Sobre o vendedor */}
+              {isDb && dbSeller && (
+                <div className="border-t border-border pt-4 mb-4 space-y-2">
+                  <h3 className="font-display font-semibold text-foreground text-sm">Sobre {(company as any).sellerCategory === "corretor" ? "o Corretor" : (company as any).sellerCategory === "imobiliaria" ? "a Imobiliária" : "o Vendedor"}</h3>
+                  
+                  {dbSeller.bio && (
+                    <p className="text-xs text-muted-foreground leading-relaxed">{dbSeller.bio}</p>
+                  )}
+
+                  <div className="space-y-1.5">
+                    {(company as any).sellerCategory && (
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <BadgeCheck size={13} className="text-primary flex-shrink-0" />
+                        <span>{({ imobiliaria: "Imobiliária", corretor: "Corretor(a) de Imóveis", proprietario: "Proprietário", loja_veiculos: "Loja de Veículos", autonomo: "Autônomo", concessionaria: "Concessionária" } as any)[(company as any).sellerCategory] || (company as any).sellerCategory}</span>
+                      </div>
+                    )}
+
+                    {dbSeller.creci && (
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <BadgeCheck size={13} className="text-primary flex-shrink-0" />
+                        <span>CRECI {dbSeller.creci}</span>
+                      </div>
+                    )}
+
+                    {dbSeller.cnpj && (
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <BadgeCheck size={13} className="text-primary flex-shrink-0" />
+                        <span>CNPJ {dbSeller.cnpj}</span>
+                      </div>
+                    )}
+
+                    {company.whatsapp && (
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <MessageCircle size={13} className="text-green-500 flex-shrink-0" />
+                        <span>Contato direto via WhatsApp</span>
+                      </div>
+                    )}
+
+                    {sellerTier && sellerTier !== "basico" && (
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <Star size={13} className="text-accent fill-accent flex-shrink-0" />
+                        <span>Vendedor verificado e {sellerTier === "start" ? "start" : sellerTier === "premium" ? "VIP" : sellerTier === "vip" ? "premium" : sellerTier === "essencial_empresa" ? "essencial" : sellerTier === "premium_empresa" ? "premium empresa" : sellerTier === "prime_empresa" ? "black" : sellerTier}</span>
+                      </div>
+                    )}
+
+                    {dbSeller.instagram && (
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <span className="flex-shrink-0">📸</span>
+                        <a href={`https://instagram.com/${dbSeller.instagram.replace("@", "")}`} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">{dbSeller.instagram}</a>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
               {mapAddress && (
-                <div className="flex items-center gap-1.5 text-muted-foreground text-xs mb-5">
+                <div className="flex items-center gap-1.5 text-muted-foreground text-xs mb-4">
                   <MapPin size={13} />
                   <span>{mapAddress}</span>
                 </div>
