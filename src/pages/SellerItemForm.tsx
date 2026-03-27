@@ -208,9 +208,33 @@ export default function SellerItemForm() {
   }, [user]);
 
   const isAtLimit = !isEdit && activeItemCount >= pkgConfig.maxItems;
-  const allTags = [...commonTags, ...propertyOnlyTags];
-  const premiumOnlyTags: ItemTag[] = ["premium", "luxo", "prime", "exclusivo"];
-  const availableTags = currentTier === "basico" ? allTags.filter((t) => !premiumOnlyTags.includes(t.value)) : allTags;
+  const premiumOnlyTags: string[] = ["premium", "luxo", "alto_padrao", "exclusivo"];
+  const allTagValues = Object.values(TAG_CATEGORIES).flatMap((c) => c.tags);
+
+  const toggleTag = (tag: ItemTag) => {
+    setForm((f) => {
+      if (f.tags.includes(tag)) return { ...f, tags: f.tags.filter((t) => t !== tag) };
+      if (f.tags.length >= MAX_TAGS) {
+        toast({ title: "Máximo de 3 tags", description: "Remova uma tag antes de adicionar outra.", variant: "destructive" });
+        return f;
+      }
+      return { ...f, tags: [...f.tags, tag] };
+    });
+  };
+
+  // Auto-suggest tags based on form data
+  const suggestedTags = (() => {
+    const suggestions: string[] = [];
+    const price = parseFloat(form.price);
+    if (price >= 800000) suggestions.push("premium");
+    if (price >= 1500000) suggestions.push("alto_padrao");
+    if (form.pool) suggestions.push("piscina_tag");
+    if (form.property_subtype === "cobertura" || form.category === "apartamento" && form.property_subtype === "cobertura") suggestions.push("cobertura");
+    if (form.leisure_amenities.length >= 2) suggestions.push("area_lazer");
+    if (form.accepts_financing) suggestions.push("aceita_financiamento_tag");
+    if (form.furnished) suggestions.push("pronto_para_morar");
+    return suggestions.filter((s) => !form.tags.includes(s as ItemTag));
+  })();
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files?.length || !user) return;
