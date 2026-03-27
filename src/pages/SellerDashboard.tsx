@@ -558,10 +558,19 @@ export default function SellerDashboard() {
                             </div>
                           )}
                           <div className="absolute top-2 right-2 flex gap-1">
-                            <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${item.status === "ativo" ? "bg-green-500/90 text-white" : "bg-muted-foreground/80 text-white"}`}>
-                              {item.status === "ativo" ? "Ativo" : "Inativo"}
+                            <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
+                              item.status === "ativo" ? "bg-green-500/90 text-white" 
+                              : item.status === "vendido" ? "bg-red-500/90 text-white"
+                              : "bg-muted-foreground/80 text-white"
+                            }`}>
+                              {item.status === "ativo" ? "Ativo" : item.status === "vendido" ? "❌ Vendido" : "Inativo"}
                             </span>
                           </div>
+                          {item.status === "vendido" && item.sold_at && (
+                            <div className="absolute bottom-2 left-2 right-2">
+                              <SoldCountdown soldAt={item.sold_at} />
+                            </div>
+                          )}
                           {item.tags && item.tags.length > 0 && (
                             <div className="absolute top-2 left-2 flex gap-1 flex-wrap">
                               {item.tags.slice(0, 2).map((tag) => (
