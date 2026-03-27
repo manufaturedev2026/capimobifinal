@@ -126,6 +126,30 @@ export const PACKAGE_CONFIG = {
       "Até 15 Corretores vinculados",
     ],
   },
+  prime_empresa: {
+    name: "Prime Empresa",
+    price: 1899.00,
+    maxItems: 9999,
+    color: "from-zinc-900 to-black",
+    borderColor: "border-zinc-700",
+    badgeColor: "bg-gradient-to-r from-zinc-900 to-black text-white",
+    benefits: [
+      "Anúncios ilimitados",
+      "Loja estilo Netflix",
+      "Selo Empresa Verificada",
+      "Destaque na homepage",
+      "Destaque no topo da listagem",
+      "Estatísticas completas",
+      "Campanha Google Ads ampliada",
+      "Anúncios Dinâmicos Google ADS",
+      "Gerente de conta dedicado",
+      "Suporte VIP dedicado",
+      "Instagram na loja",
+      "Botão Modo Cinema na loja",
+      "Até 30 Corretores vinculados",
+      "Prioridade total em destaque",
+    ],
+  },
 } as const;
 
 export function useSubscription(userId?: string) {

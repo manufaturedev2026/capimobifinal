@@ -8,9 +8,9 @@ import { useSubscription, PACKAGE_CONFIG } from "@/hooks/useSubscription";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
-const tiers = ["basico", "start", "premium", "vip", "essencial_empresa", "premium_empresa"] as const;
-const tierIcons = { basico: Zap, start: Zap, premium: Star, vip: Crown, essencial_empresa: Building, premium_empresa: Building };
-const empresaTiers = ["essencial_empresa", "premium_empresa"];
+const tiers = ["basico", "start", "premium", "vip", "essencial_empresa", "premium_empresa", "prime_empresa"] as const;
+const tierIcons = { basico: Zap, start: Zap, premium: Star, vip: Crown, essencial_empresa: Building, premium_empresa: Building, prime_empresa: Crown };
+const empresaTiers = ["essencial_empresa", "premium_empresa", "prime_empresa"];
 const individualTiers = ["start", "premium", "vip"];
 
 export default function PackagesPage() {
@@ -138,7 +138,7 @@ export default function PackagesPage() {
                   )}
 
                   <button
-                    onClick={() => handleSelect(tier)}
+                    onClick={() => handleSelect(tier as any)}
                     disabled={isCurrent || selecting === tier || isLocked}
                     className={`w-full mt-3 py-3 rounded-xl font-bold text-sm transition-all ${
                       isCurrent || isLocked
