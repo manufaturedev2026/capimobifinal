@@ -930,7 +930,7 @@ export default function SellerDashboard() {
             )}
 
             {/* Team Tab */}
-            {activeTab === "team" && isEmpresaPlan && profile?.id && (
+            {activeTab === "team" && showTeamTab && profile?.id && (
               <TeamMembersTab
                 profileId={profile.id}
                 userId={user!.id}
