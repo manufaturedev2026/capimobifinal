@@ -130,16 +130,24 @@ export default function PackagesPage() {
                     ))}
                   </ul>
 
+                  {isLocked && (
+                    <p className="text-xs text-muted-foreground mt-4 text-center italic">
+                      Exclusivo para Imobiliárias
+                    </p>
+                  )}
+
                   <button
                     onClick={() => handleSelect(tier)}
-                    disabled={isCurrent || selecting === tier}
-                    className={`w-full mt-6 py-3 rounded-xl font-bold text-sm transition-all ${
-                      isCurrent
+                    disabled={isCurrent || selecting === tier || isLocked}
+                    className={`w-full mt-3 py-3 rounded-xl font-bold text-sm transition-all ${
+                      isCurrent || isLocked
                         ? "bg-muted text-muted-foreground cursor-default"
                         : `bg-gradient-to-r ${config.color} text-white hover:opacity-90 shadow-lg`
                     }`}
                   >
-                    {selecting === tier
+                    {isLocked
+                      ? "Somente Imobiliárias"
+                      : selecting === tier
                       ? "Processando..."
                       : isCurrent
                       ? "Plano Atual"
