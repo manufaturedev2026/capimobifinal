@@ -68,9 +68,9 @@ const stats = [
 ];
 
 const plans = [
-  { name: "Start", price: "Grátis", items: "Até 3 anúncios", features: ["Perfil básico", "Painel de controle", "Suporte por e-mail"] },
-  { name: "Premium", price: "R$ 49/mês", items: "Até 30 anúncios", features: ["Selo verificado", "Destaque nos resultados", "Loja virtual", "Relatórios avançados"], highlight: true },
-  { name: "VIP", price: "R$ 99/mês", items: "Anúncios ilimitados", features: ["Tudo do Premium", "Impulsionamento", "Suporte prioritário", "Domínio personalizado"] },
+  { name: "Start", price: "R$ 24,99/mês", items: "Até 10 anúncios", features: ["Loja estilo Netflix", "Painel do vendedor completo", "Destaque normal na listagem", "Estatísticas básicas"] },
+  { name: "Premium", price: "R$ 59,99/mês", items: "Até 15 anúncios", features: ["Selo Premium nos anúncios", "Destaque no topo da listagem", "Loja estilo Netflix", "Estatísticas avançadas", "Suporte prioritário"], highlight: true },
+  { name: "VIP", price: "R$ 114,99/mês", items: "Até 50 anúncios", features: ["Selo VIP exclusivo", "Destaque no topo da listagem", "Estatísticas completas", "Suporte VIP dedicado", "Anúncios via Google Ads", "Instagram na loja"] },
 ];
 
 export default function CreateListing() {
