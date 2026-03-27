@@ -120,7 +120,8 @@ const steps = [
     icon: GraduationCap,
     title: "Curso TTI",
     description: "Faça o curso de Técnico em Transações Imobiliárias (TTI) em uma escola credenciada. Duração de 6 a 12 meses.",
-    detail: "Investimento médio acessível, podendo variar de acordo com a modalidade de estudo: presencial ou a distância (EAD)",
+    detail: "Investimento médio acessível, podendo variar de acordo com a modalidade de estudo",
+    detailSub: "Presencial ou a distância (EAD)",
   },
   {
     icon: BookOpen,
@@ -444,6 +445,11 @@ export default function BecomeAgentPage() {
                       <span className="inline-flex items-center gap-2 text-xs text-accent font-semibold bg-accent/10 px-3 py-1.5 rounded-full">
                         <CheckCircle2 size={12} /> {step.detail}
                       </span>
+                      {(step as any).detailSub && (
+                        <span className="block text-xs text-white/50 mt-1.5 ml-1">
+                          {(step as any).detailSub}
+                        </span>
+                      )}
                     </div>
                   </div>
 
