@@ -4,7 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Eye, EyeOff, LogIn, UserPlus, Building2, Shield, KeyRound, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
-import heroImg from "@/assets/hero-anunciar.jpg";
+import heroImg from "@/assets/hero-auth.jpg";
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -75,15 +75,15 @@ export default function AuthPage() {
               Gerencie seus<br />
               <span className="text-accent">anúncios</span> em<br />um só lugar
             </h1>
-            <p className="text-white/60 text-sm lg:text-base max-w-md mb-8">
+            <p className="text-white/70 text-sm lg:text-base max-w-md mb-8">
               Cadastre imóveis, acompanhe visualizações e destaque seus melhores anúncios no maior marketplace do ES.
             </p>
 
             <div className="hidden lg:block space-y-4">
               {[
-                { icon: Building2, text: "Publique imóveis com fotos e detalhes" },
-                { icon: KeyRound, text: "Controle total dos seus anúncios" },
-                { icon: Shield, text: "Perfil verificado e confiável" },
+                { icon: Building2, text: "Publique imóveis com fotos e detalhes", color: "text-primary" },
+                { icon: KeyRound, text: "Controle total dos seus anúncios", color: "text-white" },
+                { icon: Shield, text: "Perfil verificado e confiável", color: "text-accent" },
               ].map((item, i) => (
                 <motion.div
                   key={i}
@@ -92,8 +92,8 @@ export default function AuthPage() {
                   transition={{ duration: 0.5, delay: 0.3 + i * 0.15 }}
                   className="flex items-center gap-3"
                 >
-                  <div className="w-10 h-10 rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center shrink-0">
-                    <item.icon size={18} className="text-white" />
+                  <div className="w-10 h-10 rounded-xl bg-white/10 backdrop-blur-sm border border-white/10 flex items-center justify-center shrink-0">
+                    <item.icon size={18} className={item.color} />
                   </div>
                   <span className="text-white/80 text-sm">{item.text}</span>
                 </motion.div>
