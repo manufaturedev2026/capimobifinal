@@ -100,7 +100,7 @@ export const PACKAGE_CONFIG = {
       "Suporte VIP dedicado",
       "Instagram na loja",
       "Botão Modo Cinema na loja",
-      "Até 5 Corretores vinculados",
+      "Até 6 Corretores vinculados",
     ],
   },
   premium_empresa: {
@@ -123,7 +123,7 @@ export const PACKAGE_CONFIG = {
       "Suporte VIP dedicado",
       "Instagram na loja",
       "Botão Modo Cinema na loja",
-      "Até 10 Corretores vinculados",
+      "Até 15 Corretores vinculados",
     ],
   },
 } as const;
