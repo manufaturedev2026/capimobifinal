@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 const tiers = ["basico", "start", "premium", "vip", "essencial_empresa", "premium_empresa"] as const;
 const tierIcons = { basico: Zap, start: Zap, premium: Star, vip: Crown, essencial_empresa: Building, premium_empresa: Building };
 const empresaTiers = ["essencial_empresa", "premium_empresa"];
+const individualTiers = ["start", "premium", "vip"];
 
 export default function PackagesPage() {
   const { user, profile } = useAuth();
@@ -82,7 +83,7 @@ export default function PackagesPage() {
             const isPopular = tier === "premium";
             const isEmpresaTier = empresaTiers.includes(tier);
             const isImobiliaria = profile?.seller_category === "imobiliaria";
-            const isLocked = isEmpresaTier && !isImobiliaria;
+            const isLocked = (isEmpresaTier && !isImobiliaria) || (individualTiers.includes(tier) && isImobiliaria);
 
             return (
               <motion.div
@@ -132,7 +133,7 @@ export default function PackagesPage() {
 
                   {isLocked && (
                     <p className="text-xs text-muted-foreground mt-4 text-center italic">
-                      Exclusivo para Imobiliárias
+                      {isEmpresaTier ? "Exclusivo para Imobiliárias" : "Disponível apenas para Corretores e Proprietários"}
                     </p>
                   )}
 
@@ -146,7 +147,7 @@ export default function PackagesPage() {
                     }`}
                   >
                     {isLocked
-                      ? "Somente Imobiliárias"
+                      ? (isEmpresaTier ? "Somente Imobiliárias" : "Somente Corretores")
                       : selecting === tier
                       ? "Processando..."
                       : isCurrent
