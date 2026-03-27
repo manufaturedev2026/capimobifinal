@@ -82,14 +82,16 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <HelmetProvider>
       <AuthProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <ScrollToTop />
-            <AppLayout />
-          </BrowserRouter>
-        </TooltipProvider>
+        <WhatsAppTeamPickerProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <ScrollToTop />
+              <AppLayout />
+            </BrowserRouter>
+          </TooltipProvider>
+        </WhatsAppTeamPickerProvider>
       </AuthProvider>
     </HelmetProvider>
   </QueryClientProvider>
