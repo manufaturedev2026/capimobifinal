@@ -891,66 +891,6 @@ export default function CompanyProfile() {
           </div>
         </section>
       )}
-
-      {/* Team Member WhatsApp Picker Modal */}
-      <AnimatePresence>
-        {showTeamPicker && pendingWhatsApp && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
-            onClick={() => setShowTeamPicker(false)}
-          >
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-card border border-border rounded-2xl p-6 w-full max-w-md max-h-[80vh] overflow-y-auto"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <h3 className="font-display font-bold text-lg text-foreground mb-1">Fale com um corretor</h3>
-              <p className="text-muted-foreground text-sm mb-5">Escolha o corretor para atendimento via WhatsApp</p>
-              <div className="space-y-3">
-                {shuffledTeamMembers.map((member) => (
-                  <button
-                    key={member.id}
-                    onClick={() => {
-                      setShowTeamPicker(false);
-                      sendWhatsApp(
-                        member.phone || company.whatsapp,
-                        member.full_name,
-                        pendingWhatsApp.title,
-                        pendingWhatsApp.productId
-                      );
-                    }}
-                    className="w-full flex items-center gap-3 p-3 rounded-xl border border-border hover:border-primary hover:bg-primary/5 transition-all group"
-                  >
-                    <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center overflow-hidden flex-shrink-0">
-                      {member.photo_url ? (
-                        <img src={member.photo_url} alt={member.full_name} className="w-full h-full object-cover" />
-                      ) : (
-                        <span className="font-bold text-lg text-muted-foreground">{member.full_name.charAt(0)}</span>
-                      )}
-                    </div>
-                    <div className="flex-1 text-left">
-                      <p className="font-display font-bold text-sm text-foreground group-hover:text-primary transition-colors">{member.full_name}</p>
-                      {member.creci && <p className="text-xs text-muted-foreground">{member.creci}</p>}
-                    </div>
-                    <MessageCircle size={18} className="text-emerald-500 flex-shrink-0" />
-                  </button>
-                ))}
-              </div>
-              <button
-                onClick={() => setShowTeamPicker(false)}
-                className="w-full mt-4 py-2.5 rounded-xl bg-secondary text-secondary-foreground text-sm font-medium hover:bg-secondary/80 transition-colors"
-              >
-                Cancelar
-              </button>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }
