@@ -328,6 +328,28 @@ export default function ProductDetail() {
               </motion.div>
             )}
 
+            {/* Video embed */}
+            {isDb && (product as any).video_url && (() => {
+              const match = (product as any).video_url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([a-zA-Z0-9_-]{11})/);
+              const videoId = match?.[1];
+              return videoId ? (
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
+                  <h2 className="font-display font-semibold text-lg text-foreground mb-3 flex items-center gap-2">
+                    <Video size={18} className="text-primary" />
+                    Vídeo do Imóvel
+                  </h2>
+                  <div className="aspect-video rounded-2xl overflow-hidden border border-border bg-muted">
+                    <iframe
+                      src={`https://www.youtube.com/embed/${videoId}`}
+                      title="Vídeo do imóvel"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      className="w-full h-full"
+                    />
+                  </div>
+                </motion.div>
+              ) : null;
+            })()}
             {Object.keys(displaySpecs).length > 0 && (
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
                 <h2 className="font-display font-semibold text-lg text-foreground mb-3">Especificações</h2>
