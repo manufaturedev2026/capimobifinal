@@ -474,6 +474,9 @@ export default function PropertiesPage() {
                         {(product as any).hasBlackTag && (
                           <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-gradient-to-r from-zinc-900 to-black text-white shadow-lg">🏴 BLACK</span>
                         )}
+                        {(product as any).hasDestaque && (
+                          <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg">⭐ DESTAQUE</span>
+                        )}
                         {(product as any).sellerTier && (product as any).sellerTier !== "basico" && (
                           <PackageBadge tier={(product as any).sellerTier} />
                         )}
