@@ -24,7 +24,7 @@ interface Achievement {
   threshold: number;
   reward_type: string;
   reward_label: string;
-  reward_duration: string;
+  reward_duration_ms: number;
   current: number;
   completed: boolean;
   claimed: boolean;
