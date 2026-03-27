@@ -102,20 +102,30 @@ export default function CityPropertiesPage() {
     return shuffled.slice(0, 7);
   }, [heroItems, activeCategory]);
 
+  const propertyTypes = [
+    { value: "aluguel", label: "Aluguel" },
+    { value: "casas", label: "Casas" },
+    { value: "apartamentos", label: "Apartamentos" },
+    { value: "terrenos", label: "Terrenos" },
+    { value: "comerciais", label: "Comerciais" },
+  ];
+
+  const effectiveCategory = filterType || activeCategory;
+
   const filteredProducts = useMemo(() => {
     let list = [...items];
-    if (activeCategory) {
-      if (activeCategory === "aluguel") {
+    if (effectiveCategory) {
+      if (effectiveCategory === "aluguel") {
         list = list.filter((i) => (i.tags || []).includes("aluguel_flex") || i.category === "aluguel");
       } else {
-        const matchCats = categoryMap[activeCategory] || [];
+        const matchCats = categoryMap[effectiveCategory] || [];
         list = list.filter((i) => matchCats.includes(i.category));
       }
     }
     if (filterNeighborhood) {
       list = list.filter((i) => i.neighborhood === filterNeighborhood);
     }
-    if (!showRentals && activeCategory !== "aluguel") {
+    if (!showRentals && effectiveCategory !== "aluguel") {
       list = list.filter((i) => !((i.tags || []).includes("aluguel_flex") || i.category === "aluguel"));
     }
     if (priceMin) list = list.filter((i) => (i.price || 0) >= parseFloat(priceMin));
@@ -125,7 +135,7 @@ export default function CityPropertiesPage() {
     if (onlyFurnished) list = list.filter((i) => i.furnished);
     if (onlyFinancing) list = list.filter((i) => i.accepts_financing);
     return list;
-  }, [items, activeCategory, filterNeighborhood, showRentals, priceMin, priceMax, minBedrooms, minArea, onlyFurnished, onlyFinancing]);
+  }, [items, effectiveCategory, filterNeighborhood, showRentals, priceMin, priceMax, minBedrooms, minArea, onlyFurnished, onlyFinancing]);
 
   if (loading) {
     return (
