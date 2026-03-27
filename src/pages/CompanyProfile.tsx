@@ -205,6 +205,10 @@ export default function CompanyProfile() {
     }
   }, [galleryLightbox]);
 
+  const shuffledTeamMembers = useMemo(() => {
+    return [...teamMembers].sort(() => Math.random() - 0.5);
+  }, [teamMembers, showTeamPicker]);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -228,7 +232,6 @@ export default function CompanyProfile() {
     : products[0];
 
   const handleWhatsApp = (title: string, productId?: string) => {
-    // If on main page (no corretor slug) and has team members, show picker
     if (!corretorSlug && teamMembers.length > 0) {
       setPendingWhatsApp({ title, productId });
       setShowTeamPicker(true);
@@ -243,11 +246,6 @@ export default function CompanyProfile() {
     const link = productId ? `\n\n🔗 ${window.location.origin}/${seg}/produto/${productId}` : `\n\n🔗 ${window.location.href}`;
     window.location.href = `https://wa.me/${phone}?text=${encodeURIComponent(`Olá ${name}! Tenho interesse: ${title}${link}`)}`;
   };
-
-  const shuffledTeamMembers = useMemo(() => {
-    return [...teamMembers].sort(() => Math.random() - 0.5);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [teamMembers.length, showTeamPicker]);
 
   const isPaid = sellerTier !== "basico";
 
