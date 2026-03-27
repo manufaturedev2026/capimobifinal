@@ -59,6 +59,7 @@ export default function SellerProfile() {
         creci: (profile as any).creci || "",
         cnpj: (profile as any).cnpj || "",
         cover_color: (profile as any).cover_color || "",
+        video_url: (profile as any).video_url || "",
       });
     }
   }, [profile]);
