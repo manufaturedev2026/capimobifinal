@@ -1,0 +1,1 @@
+ALTER TABLE public.profiles ADD COLUMN manager_phone text DEFAULT NULL;
