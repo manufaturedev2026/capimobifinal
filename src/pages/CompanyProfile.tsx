@@ -97,23 +97,22 @@ export default function CompanyProfile() {
   };
 
   const loadProfileData = async (profile: any) => {
-
     if (profile) {
       setDbProfile(profile);
+      const pid = profile.id;
       const { data: items } = await supabase
         .from("seller_items")
         .select("*")
-        .eq("seller_id", profileId)
+        .eq("seller_id", pid)
         .eq("status", "ativo")
         .order("created_at", { ascending: false });
       setDbItems(items || []);
 
-      // Fetch team member if corretor slug present
       if (corretorSlug) {
         const { data: member } = await supabase
           .from("team_members")
           .select("*")
-          .eq("company_id", profileId)
+          .eq("company_id", pid)
           .eq("slug", corretorSlug)
           .eq("is_active", true)
           .single();
@@ -121,13 +120,11 @@ export default function CompanyProfile() {
       } else {
         setTeamMember(null);
       }
-
-      
     }
     setLoading(false);
 
     if (profile) {
-      trackSellerEvent(profileId, "view");
+      trackSellerEvent(profile.id, "view");
     }
   };
 
