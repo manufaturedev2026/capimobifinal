@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Package, Eye, Plus, Settings, Edit, Trash2, Copy, ToggleLeft, ToggleRight, Search, Image, LogOut, BarChart3, Star, Crown, Zap, AlertTriangle, Shield, MessageCircle, Home, UserCircle, Headphones, Globe, ExternalLink, CheckCircle2, ClipboardCopy, Megaphone, Send, Calculator, Lock, Clapperboard, Menu, X, Building2, BookOpen, Users } from "lucide-react";
+import { Package, Eye, Plus, Settings, Edit, Trash2, Copy, ToggleLeft, ToggleRight, Search, Image, LogOut, BarChart3, Star, Crown, Zap, AlertTriangle, Shield, MessageCircle, Home, UserCircle, Headphones, Globe, ExternalLink, CheckCircle2, ClipboardCopy, Megaphone, Send, Calculator, Lock, Clapperboard, Menu, X, Building2, BookOpen, Users, Trophy } from "lucide-react";
 import TeamMembersTab from "@/components/TeamMembersTab";
+import GamificationTab from "@/components/GamificationTab";
 import { getTagStyle, getTagLabel } from "@/data/products";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
@@ -27,7 +28,7 @@ type SellerItem = {
   seller_type: string;
 };
 
-type DashboardTab = "overview" | "items" | "stats" | "domain" | "ads" | "study" | "team";
+type DashboardTab = "overview" | "items" | "stats" | "domain" | "ads" | "study" | "team" | "events";
 
 export default function SellerDashboard() {
   const { user, profile, signOut, refreshProfile, loading: authLoading } = useAuth();
@@ -215,6 +216,7 @@ export default function SellerDashboard() {
     { id: "overview", label: "Visão Geral", icon: Home },
     { id: "items", label: "Meus Anúncios", icon: Package },
     { id: "stats", label: "Estatísticas", icon: BarChart3 },
+    { id: "events", label: "Eventos", icon: Trophy },
     { id: "ads", label: "Fazer ADS", icon: Megaphone, locked: lockedTabs.includes("ads") },
     { id: "domain", label: "Meu Domínio", icon: Globe, locked: lockedTabs.includes("domain") },
     ...(showTeamTab ? [{ id: "team" as DashboardTab, label: "Empresa", icon: Users }] : []),
@@ -927,6 +929,11 @@ export default function SellerDashboard() {
                   </a>
                 </div>
               </div>
+            )}
+
+            {/* Events/Gamification Tab */}
+            {activeTab === "events" && user?.id && profile?.id && (
+              <GamificationTab userId={user.id} sellerId={profile.id} />
             )}
 
             {/* Team Tab */}

@@ -403,6 +403,48 @@ export type Database = {
           },
         ]
       }
+      seller_rewards: {
+        Row: {
+          claimed: boolean
+          created_at: string
+          expires_at: string
+          granted_at: string
+          id: string
+          is_active: boolean
+          reward_type: string
+          seller_id: string
+          trigger_type: string
+          trigger_value: string | null
+          user_id: string
+        }
+        Insert: {
+          claimed?: boolean
+          created_at?: string
+          expires_at: string
+          granted_at?: string
+          id?: string
+          is_active?: boolean
+          reward_type: string
+          seller_id: string
+          trigger_type: string
+          trigger_value?: string | null
+          user_id: string
+        }
+        Update: {
+          claimed?: boolean
+          created_at?: string
+          expires_at?: string
+          granted_at?: string
+          id?: string
+          is_active?: boolean
+          reward_type?: string
+          seller_id?: string
+          trigger_type?: string
+          trigger_value?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       seller_subscriptions: {
         Row: {
           created_at: string
