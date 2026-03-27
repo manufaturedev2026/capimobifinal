@@ -5,8 +5,7 @@ import { useParams, Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Star, MapPin, MessageCircle, Share2, Key, Home, Building2, Landmark, Store, Warehouse, MoreHorizontal, Image, Eye, Instagram, Phone, ExternalLink, Clock, Shield, Zap, ChevronLeft, ChevronRight, Heart, BadgeCheck, Clapperboard } from "lucide-react";
 import FloatingVideoButton from "@/components/FloatingVideoButton";
-import { allCompanies } from "@/data/companies";
-import { getProductsByCompany, formatPrice, getTagStyle, getTagLabel } from "@/data/products";
+import { formatPrice, getTagStyle, getTagLabel } from "@/data/products";
 import { supabase } from "@/integrations/supabase/client";
 import { trackSellerEvent } from "@/hooks/useSellerAnalytics";
 import { useSellerSubscription } from "@/hooks/useSubscription";
@@ -49,9 +48,6 @@ export default function CompanyProfile() {
 
   const searchParams = new URLSearchParams(location.search);
   const corretorSlug = searchParams.get("corretor");
-
-  const staticCompany = allCompanies.find((c) => c.id === id);
-  const staticProducts = staticCompany ? getProductsByCompany(staticCompany.id) : [];
 
   const resolvedProfileId = isDbProfile ? dbProfile?.id : undefined;
   const sellerTier = useSellerSubscription(resolvedProfileId);

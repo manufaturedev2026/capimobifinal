@@ -4,8 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ChevronLeft, ChevronRight, MessageCircle, Share2, Star, MapPin, Tag, Store, Image, X, ZoomIn, BadgeCheck, Video } from "lucide-react";
 import PackageBadge from "@/components/PackageBadge";
 import { useWhatsAppPicker } from "@/components/WhatsAppTeamPicker";
-import { getProductById, formatPrice, getProductsByCompany, getTagStyle, getTagLabel } from "@/data/products";
-import { allCompanies } from "@/data/companies";
+import { formatPrice, getTagStyle, getTagLabel } from "@/data/products";
 import { supabase } from "@/integrations/supabase/client";
 import { trackSellerEvent } from "@/hooks/useSellerAnalytics";
 import { useToast } from "@/hooks/use-toast";
@@ -27,9 +26,6 @@ export default function ProductDetail() {
   const [sellerTier, setSellerTier] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [isDb, setIsDb] = useState(false);
-
-  const staticProduct = productId ? getProductById(productId) : undefined;
-  const staticCompany = staticProduct ? allCompanies.find((c) => c.id === staticProduct.companyId) : undefined;
 
   useEffect(() => {
     if (productId && isUUID(productId)) {
