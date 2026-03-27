@@ -104,12 +104,12 @@ export default function CompanyProfile() {
     ? dbProfile
       ? {
           id: dbProfile.id,
-          name: dbProfile.company_name || dbProfile.full_name,
-          logo: dbProfile.logo_url || "",
+          name: teamMember ? teamMember.full_name : (dbProfile.company_name || dbProfile.full_name),
+          logo: teamMember?.photo_url || dbProfile.logo_url || "",
           address: [dbProfile.address, dbProfile.city, dbProfile.state].filter(Boolean).join(", "),
           rating: "5.0",
           reviewCount: 0,
-          whatsapp: dbProfile.phone || "",
+          whatsapp: teamMember?.phone || dbProfile.phone || "",
           instagram: dbProfile.instagram || "",
           segment: dbProfile.seller_type,
           show_location: dbProfile.show_location ?? true,
