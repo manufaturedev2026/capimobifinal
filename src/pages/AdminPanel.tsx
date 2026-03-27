@@ -30,7 +30,6 @@ interface SellerWithSub {
   };
 }
 
-}
 
 const tierIcons: Record<string, React.ElementType> = { basico: Zap, premium: Star, vip: Crown };
 
