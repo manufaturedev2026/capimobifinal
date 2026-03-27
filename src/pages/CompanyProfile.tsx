@@ -919,6 +919,11 @@ export default function CompanyProfile() {
           </div>
         </section>
       )}
+
+      {/* Floating video button for empresa plans */}
+      {dbProfile?.video_url && (sellerTier === "essencial_empresa" || sellerTier === "premium_empresa") && (
+        <FloatingVideoButton videoUrl={dbProfile.video_url} />
+      )}
     </div>
   );
 }
