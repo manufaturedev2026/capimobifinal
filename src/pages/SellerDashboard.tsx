@@ -338,14 +338,14 @@ export default function SellerDashboard() {
           <div className="p-4 border-t border-border">
             <div className="bg-gradient-to-br from-primary/10 to-accent/10 rounded-2xl p-4">
               <div className="flex items-center gap-3 mb-3">
-                <img src={gabrielImg} alt="Gabriel" className="w-10 h-10 rounded-full object-cover ring-2 ring-primary/30" width={40} height={40} />
+                <img src={gabrielImg} alt={profile?.account_manager || "Gabriel"} className="w-10 h-10 rounded-full object-cover ring-2 ring-primary/30" width={40} height={40} />
                 <div>
-                  <p className="text-xs font-bold text-foreground">Gabriel</p>
+                  <p className="text-xs font-bold text-foreground">{profile?.account_manager || "Gabriel"}</p>
                   <p className="text-[10px] text-muted-foreground">Seu Gerente de Conta</p>
                 </div>
               </div>
               <a
-                href="https://wa.me/5527995055993?text=Olá%20Gabriel!%20Preciso%20de%20ajuda%20com%20minha%20loja."
+                href={`https://wa.me/${((profile as any)?.manager_phone || "5527995055993").replace(/\D/g, "")}?text=Olá%20${encodeURIComponent(profile?.account_manager || "Gabriel")}!%20Preciso%20de%20ajuda%20com%20minha%20loja.`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-green-500 text-white text-xs font-bold hover:bg-green-600 transition-colors"
@@ -478,14 +478,14 @@ export default function SellerDashboard() {
                 {/* Mobile Gerente Card */}
                 <div className="lg:hidden bg-gradient-to-br from-primary/10 to-accent/10 rounded-2xl p-4">
                   <div className="flex items-center gap-3 mb-3">
-                    <img src={gabrielImg} alt="Gabriel" className="w-10 h-10 rounded-full object-cover ring-2 ring-primary/30" width={40} height={40} />
+                    <img src={gabrielImg} alt={profile?.account_manager || "Gabriel"} className="w-10 h-10 rounded-full object-cover ring-2 ring-primary/30" width={40} height={40} />
                     <div>
-                      <p className="text-sm font-bold text-foreground">Gabriel</p>
+                      <p className="text-sm font-bold text-foreground">{profile?.account_manager || "Gabriel"}</p>
                       <p className="text-xs text-muted-foreground">Seu Gerente de Conta</p>
                     </div>
                   </div>
                   <a
-                    href="https://wa.me/5527995055993?text=Olá%20Gabriel!%20Preciso%20de%20ajuda%20com%20minha%20loja."
+                    href={`https://wa.me/${((profile as any)?.manager_phone || "5527995055993").replace(/\D/g, "")}?text=Olá%20${encodeURIComponent(profile?.account_manager || "Gabriel")}!%20Preciso%20de%20ajuda%20com%20minha%20loja.`}
                     target="_blank" rel="noopener noreferrer"
                     className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-green-500 text-white text-xs font-bold hover:bg-green-600 transition-colors">
                     <Headphones size={14} /> Falar com seu Gerente

@@ -18,6 +18,7 @@ interface SellerWithSub {
   seller_type: string;
   city: string | null;
   account_manager: string | null;
+  manager_phone: string | null;
   subscription?: {
     id: string;
     tier: string;
@@ -137,6 +138,7 @@ export default function AdminPanel() {
       seller_type: p.seller_type,
       city: p.city,
       account_manager: p.account_manager || null,
+      manager_phone: p.manager_phone || null,
       subscription: subsMap.get(p.user_id)
         ? {
             id: subsMap.get(p.user_id).id,
@@ -251,14 +253,17 @@ export default function AdminPanel() {
     return matchesSearch && matchesTier;
   });
 
-  const updateAccountManager = async (profileId: string, manager: string) => {
+  const updateAccountManager = async (profileId: string, manager?: string, phone?: string) => {
+    const updateData: any = {};
+    if (manager !== undefined) updateData.account_manager = manager || null;
+    if (phone !== undefined) updateData.manager_phone = phone || null;
     const { error } = await supabase
       .from("profiles")
-      .update({ account_manager: manager || null } as any)
+      .update(updateData)
       .eq("id", profileId);
     if (!error) {
       setSellers((prev) =>
-        prev.map((s) => (s.id === profileId ? { ...s, account_manager: manager || null } : s))
+        prev.map((s) => (s.id === profileId ? { ...s, ...updateData } : s))
       );
       toast({ title: "Gerente de conta atualizado!" });
     }
@@ -453,24 +458,34 @@ export default function AdminPanel() {
                       )}
 
                       {/* Account Manager */}
-                      <div className="flex items-center gap-2 mt-2">
-                        <UserCog size={14} className="text-muted-foreground" />
+                      <div className="flex items-center gap-2 mt-2 flex-wrap">
+                        <UserCog size={14} className="text-muted-foreground shrink-0" />
                         <input
                           defaultValue={seller.account_manager || ""}
-                          placeholder="Gerente de conta..."
+                          placeholder="Nome do gerente..."
                           onBlur={(e) => {
                             if (e.target.value !== (seller.account_manager || "")) {
-                              updateAccountManager(seller.id, e.target.value);
+                              updateAccountManager(seller.id, e.target.value, undefined);
                             }
                           }}
                           onKeyDown={(e) => {
                             if (e.key === "Enter") (e.target as HTMLInputElement).blur();
                           }}
-                          className="px-2 py-1 rounded-lg border border-input bg-background text-foreground text-xs w-48 focus:ring-1 focus:ring-ring focus:outline-none"
+                          className="px-2 py-1 rounded-lg border border-input bg-background text-foreground text-xs w-40 focus:ring-1 focus:ring-ring focus:outline-none"
                         />
-                        {seller.account_manager && (
-                          <span className="text-[10px] text-muted-foreground">👤 {seller.account_manager}</span>
-                        )}
+                        <input
+                          defaultValue={seller.manager_phone || ""}
+                          placeholder="WhatsApp do gerente..."
+                          onBlur={(e) => {
+                            if (e.target.value !== (seller.manager_phone || "")) {
+                              updateAccountManager(seller.id, undefined, e.target.value);
+                            }
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") (e.target as HTMLInputElement).blur();
+                          }}
+                          className="px-2 py-1 rounded-lg border border-input bg-background text-foreground text-xs w-44 focus:ring-1 focus:ring-ring focus:outline-none"
+                        />
                       </div>
                     </div>
 
