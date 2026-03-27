@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Edit, Trash2, Users, Save, X, ExternalLink, Upload } from "lucide-react";
+import { Plus, Edit, Trash2, Users, Save, X, ExternalLink, Upload, Copy } from "lucide-react";
 import { motion } from "framer-motion";
 
 type TeamMember = {
