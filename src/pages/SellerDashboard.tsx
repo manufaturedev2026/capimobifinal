@@ -871,6 +871,21 @@ export default function SellerDashboard() {
                             <code className="text-xs font-mono text-primary bg-primary/10 px-2 py-1 rounded">185.158.133.1</code>
                           </div>
                         </div>
+                        <div className="mt-2 bg-amber-500/10 rounded-lg p-3 space-y-2 border border-amber-500/20">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs text-muted-foreground">Tipo:</span>
+                            <code className="text-xs font-mono text-foreground bg-background px-2 py-1 rounded">TXT</code>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs text-muted-foreground">Nome:</span>
+                            <code className="text-xs font-mono text-foreground bg-background px-2 py-1 rounded">@</code>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs text-muted-foreground">Valor:</span>
+                            <code className="text-xs font-mono text-amber-600 bg-amber-500/10 px-2 py-1 rounded">lovable_verify=... (copie do Lovable)</code>
+                          </div>
+                          <p className="text-[10px] text-amber-600 font-semibold">⚠️ Obrigatório! Peça o código ao seu gerente.</p>
+                        </div>
                       </div>
                     </div>
 
@@ -892,7 +907,8 @@ export default function SellerDashboard() {
                       <CheckCircle2 size={16} className="text-green-500" /> Dicas importantes
                     </p>
                     <ul className="text-xs text-muted-foreground space-y-1.5">
-                      <li>• Configure tanto o <strong>@ (raiz)</strong> quanto o <strong>www</strong> no DNS</li>
+                      <li>• Configure os <strong>3 registros</strong>: A (raiz), A (www) e <strong>TXT</strong> (verificação)</li>
+                      <li>• O registro TXT é <strong>obrigatório</strong> — sem ele o domínio não funciona</li>
                       <li>• A propagação do DNS pode levar até <strong>48 horas</strong></li>
                       <li>• Compartilhe o seu domínio nas redes sociais e cartão de visita</li>
                       <li>• Se tiver dúvidas, fale com seu gerente clicando no botão abaixo</li>
@@ -901,7 +917,7 @@ export default function SellerDashboard() {
 
                   {/* CTA Gerente */}
                   <a
-                    href="https://wa.me/5527995055993?text=Olá%20Gabriel!%20Preciso%20de%20ajuda%20para%20configurar%20meu%20domínio%20personalizado."
+                    href={`https://wa.me/${((profile as any)?.manager_phone || "5527995055993").replace(/\D/g, "")}?text=Olá%20${encodeURIComponent(profile?.account_manager || "Gabriel")}!%20Preciso%20de%20ajuda%20para%20configurar%20meu%20domínio%20personalizado.`}
                     target="_blank" rel="noopener noreferrer"
                     className="mt-4 w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-green-500 text-white font-bold text-sm hover:bg-green-600 transition-colors"
                   >

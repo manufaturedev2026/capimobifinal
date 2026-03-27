@@ -658,6 +658,12 @@ export default function AdminPanel() {
                       <div className="flex gap-4"><span className="text-muted-foreground w-12">Nome:</span><span className="text-foreground font-semibold">www</span></div>
                       <div className="flex gap-4"><span className="text-muted-foreground w-12">Valor:</span><span className="text-primary font-semibold">185.158.133.1</span></div>
                     </div>
+                    <div className="mt-2 bg-amber-500/10 rounded-xl p-3 space-y-1 font-mono text-xs border border-amber-500/20">
+                      <div className="flex gap-4"><span className="text-muted-foreground w-12">Tipo:</span><span className="text-foreground font-semibold">TXT</span></div>
+                      <div className="flex gap-4"><span className="text-muted-foreground w-12">Nome:</span><span className="text-foreground font-semibold">@</span></div>
+                      <div className="flex gap-4"><span className="text-muted-foreground w-12">Valor:</span><span className="text-amber-600 font-semibold break-all">lovable_verify=... (copie o código do Lovable em Settings → Domains)</span></div>
+                    </div>
+                    <p className="mt-2 text-xs text-amber-600 font-semibold">⚠️ O registro TXT é obrigatório! Sem ele, o Lovable não valida o domínio e dá erro DNS.</p>
                   </div>
                 </div>
                 <div className="flex gap-3">
