@@ -18,6 +18,7 @@ interface SellerWithSub {
   seller_type: string;
   city: string | null;
   account_manager: string | null;
+  manager_phone: string | null;
   subscription?: {
     id: string;
     tier: string;
@@ -137,6 +138,7 @@ export default function AdminPanel() {
       seller_type: p.seller_type,
       city: p.city,
       account_manager: p.account_manager || null,
+      manager_phone: p.manager_phone || null,
       subscription: subsMap.get(p.user_id)
         ? {
             id: subsMap.get(p.user_id).id,
@@ -251,14 +253,17 @@ export default function AdminPanel() {
     return matchesSearch && matchesTier;
   });
 
-  const updateAccountManager = async (profileId: string, manager: string) => {
+  const updateAccountManager = async (profileId: string, manager?: string, phone?: string) => {
+    const updateData: any = {};
+    if (manager !== undefined) updateData.account_manager = manager || null;
+    if (phone !== undefined) updateData.manager_phone = phone || null;
     const { error } = await supabase
       .from("profiles")
-      .update({ account_manager: manager || null } as any)
+      .update(updateData)
       .eq("id", profileId);
     if (!error) {
       setSellers((prev) =>
-        prev.map((s) => (s.id === profileId ? { ...s, account_manager: manager || null } : s))
+        prev.map((s) => (s.id === profileId ? { ...s, ...updateData } : s))
       );
       toast({ title: "Gerente de conta atualizado!" });
     }
