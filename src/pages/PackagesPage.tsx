@@ -133,7 +133,7 @@ export default function PackagesPage() {
 
                   {isLocked && (
                     <p className="text-xs text-muted-foreground mt-4 text-center italic">
-                      Exclusivo para Imobiliárias
+                      {isEmpresaTier ? "Exclusivo para Imobiliárias" : "Disponível apenas para Corretores e Proprietários"}
                     </p>
                   )}
 
@@ -147,7 +147,7 @@ export default function PackagesPage() {
                     }`}
                   >
                     {isLocked
-                      ? "Somente Imobiliárias"
+                      ? (isEmpresaTier ? "Somente Imobiliárias" : "Somente Corretores")
                       : selecting === tier
                       ? "Processando..."
                       : isCurrent
