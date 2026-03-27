@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ChevronLeft, ChevronRight, MessageCircle, Share2, Star, MapPin, Tag, Store, Image, X, ZoomIn } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, MessageCircle, Share2, Star, MapPin, Tag, Store, Image, X, ZoomIn, BadgeCheck } from "lucide-react";
 import { getProductById, formatPrice, getProductsByCompany, getTagStyle, getTagLabel } from "@/data/products";
 import { allCompanies } from "@/data/companies";
 import { supabase } from "@/integrations/supabase/client";
@@ -21,6 +21,7 @@ export default function ProductDetail() {
   const carouselRef = useRef<HTMLDivElement>(null);
   const [dbItem, setDbItem] = useState<any>(null);
   const [dbSeller, setDbSeller] = useState<any>(null);
+  const [sellerTier, setSellerTier] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [isDb, setIsDb] = useState(false);
 
@@ -43,6 +44,15 @@ export default function ProductDetail() {
       setDbItem(item);
       const { data: seller } = await supabase.from("profiles").select("*").eq("id", item.seller_id).maybeSingle();
       setDbSeller(seller);
+      // Fetch seller subscription tier
+      const { data: subData } = await supabase
+        .from("seller_subscriptions")
+        .select("tier")
+        .eq("seller_id", item.seller_id)
+        .eq("is_active", true)
+        .order("created_at", { ascending: false })
+        .limit(1);
+      if (subData && subData.length > 0) setSellerTier(subData[0].tier);
       trackSellerEvent(item.seller_id, "view", item.id);
     }
     setLoading(false);
@@ -351,6 +361,11 @@ export default function ProductDetail() {
                       ? ({ imobiliaria: "Imobiliária", corretor: "Corretor(a)", proprietario: "Proprietário", loja_veiculos: "Loja de Veículos", autonomo: "Autônomo", concessionaria: "Concessionária" } as any)[(company as any).sellerCategory] || (company as any).sellerCategory
                       : isProperty ? "Imobiliária" : "Revenda"}
                   </p>
+                  {sellerTier && (sellerTier === "essencial_empresa" || sellerTier === "premium_empresa") && (
+                    <span className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold">
+                      <BadgeCheck size={12} /> Empresa Verificada
+                    </span>
+                  )}
                 </div>
               </Link>
 
