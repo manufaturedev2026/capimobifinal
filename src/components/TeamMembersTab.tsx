@@ -13,6 +13,7 @@ type TeamMember = {
   email: string | null;
   photo_url: string | null;
   bio: string | null;
+  instagram: string | null;
   slug: string;
   is_active: boolean;
   created_at: string;
