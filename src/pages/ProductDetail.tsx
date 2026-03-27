@@ -139,19 +139,83 @@ export default function ProductDetail() {
 
   const specs: Record<string, string> = {};
   if (isDb) {
-    if (product.brand) specs["Marca"] = product.brand;
-    if (product.model) specs["Modelo"] = product.model;
-    if (product.year) specs["Ano"] = String(product.year);
-    if (product.mileage) specs["Quilometragem"] = `${Number(product.mileage).toLocaleString("pt-BR")} km`;
-    if (product.fuel) specs["Combustível"] = product.fuel;
-    if (product.transmission) specs["Câmbio"] = product.transmission;
-    if (product.color) specs["Cor"] = product.color;
-    if (product.bedrooms) specs["Quartos"] = String(product.bedrooms);
-    if (product.bathrooms) specs["Banheiros"] = String(product.bathrooms);
-    if (product.area) specs["Área"] = `${product.area} m²`;
-    if (product.parking_spots) specs["Vagas"] = String(product.parking_spots);
-    if (product.city) specs["Cidade"] = product.city;
-    if (product.neighborhood) specs["Bairro"] = product.neighborhood;
+    const p = product as any;
+    // Subtipo
+    const subtypeLabels: Record<string, string> = { terrea: "Térrea", sobrado: "Sobrado", condominio: "Condomínio", apartamento: "Apartamento", cobertura: "Cobertura", kitnet: "Kitnet", urbano: "Urbano", rural: "Rural", galpao: "Galpão", sala: "Sala", loja: "Loja", ponto_comercial: "Ponto Comercial", deposito: "Depósito", barracao: "Barracão" };
+    if (p.property_subtype) specs["Tipo"] = subtypeLabels[p.property_subtype] || p.property_subtype;
+    if (p.finality && p.finality !== "venda") specs["Finalidade"] = p.finality === "aluguel" ? "Aluguel" : "Venda";
+    
+    // Medidas
+    if (p.area) specs["Área Total"] = `${p.area} m²`;
+    if (p.built_area) specs["Área Construída"] = `${p.built_area} m²`;
+    if (p.lot_front) specs["Frente"] = `${p.lot_front} m`;
+    if (p.lot_depth) specs["Fundo"] = `${p.lot_depth} m`;
+    if (p.ceiling_height) specs["Pé Direito"] = `${p.ceiling_height} m`;
+    
+    // Cômodos
+    if (p.bedrooms) specs["Quartos"] = String(p.bedrooms);
+    if (p.suites) specs["Suítes"] = String(p.suites);
+    if (p.bathrooms) specs["Banheiros"] = String(p.bathrooms);
+    if (p.living_rooms) specs["Salas"] = String(p.living_rooms);
+    if (p.parking_spots) specs["Vagas"] = String(p.parking_spots);
+    if (p.floor_number) specs["Andar"] = String(p.floor_number);
+    
+    // Cozinha
+    const kitchenLabels: Record<string, string> = { americana: "Americana", planejada: "Planejada", simples: "Simples" };
+    if (p.kitchen_type) specs["Cozinha"] = kitchenLabels[p.kitchen_type] || p.kitchen_type;
+    
+    // Terreno
+    const topoLabels: Record<string, string> = { plano: "Plano", aclive: "Aclive", declive: "Declive" };
+    if (p.topography) specs["Topografia"] = topoLabels[p.topography] || p.topography;
+    
+    // Documentação
+    if (p.documentation) specs["Documentação"] = p.documentation === "regular" ? "Regular" : "Irregular";
+    
+    // Valores
+    if (p.condo_fee) specs["Condomínio"] = `R$ ${Number(p.condo_fee).toLocaleString("pt-BR")}`;
+    if (p.iptu) specs["IPTU"] = `R$ ${Number(p.iptu).toLocaleString("pt-BR")}/ano`;
+    
+    // Comercial
+    if (p.zoning) specs["Zoneamento"] = p.zoning;
+    if (p.security) specs["Segurança"] = p.security;
+    const trafficLabels: Record<string, string> = { alto: "Alto", medio: "Médio", baixo: "Baixo" };
+    if (p.foot_traffic) specs["Fluxo de Pessoas"] = trafficLabels[p.foot_traffic] || p.foot_traffic;
+    if (p.ideal_for) specs["Ideal para"] = p.ideal_for;
+    
+    // Booleans
+    const boolSpecs: [string, string][] = [
+      ["furnished", "Mobiliado"], ["pool", "Piscina"], ["barbecue", "Churrasqueira"],
+      ["balcony", "Varanda"], ["garden", "Jardim"], ["backyard", "Quintal"],
+      ["service_area", "Área de Serviço"], ["has_elevator", "Elevador"],
+      ["doorman_24h", "Portaria 24h"], ["accepts_financing", "Aceita Financiamento"],
+      ["has_dock", "Docas"], ["internal_office", "Escritório Interno"],
+      ["three_phase_power", "Energia Trifásica"], ["truck_access", "Acesso Caminhão"],
+      ["has_showcase", "Vitrine"], ["has_ac", "Ar-Condicionado"],
+    ];
+    boolSpecs.forEach(([key, label]) => { if (p[key]) specs[label] = "Sim"; });
+    
+    // Arrays
+    if (p.leisure_amenities?.length) {
+      const leisureLabels: Record<string, string> = { piscina: "Piscina", academia: "Academia", salao_festas: "Salão de Festas", playground: "Playground", churrasqueira: "Churrasqueira", sauna: "Sauna", quadra: "Quadra" };
+      specs["Área de Lazer"] = p.leisure_amenities.map((a: string) => leisureLabels[a] || a).join(", ");
+    }
+    if (p.infrastructure?.length) {
+      const infraLabels: Record<string, string> = { agua: "Água", luz: "Luz", esgoto: "Esgoto", asfalto: "Asfalto", internet: "Internet" };
+      specs["Infraestrutura"] = p.infrastructure.map((a: string) => infraLabels[a] || a).join(", ");
+    }
+    
+    // Localização
+    if (p.city) specs["Cidade"] = p.city;
+    if (p.neighborhood) specs["Bairro"] = p.neighborhood;
+    
+    // Veículos (legado)
+    if (p.brand) specs["Marca"] = p.brand;
+    if (p.model) specs["Modelo"] = p.model;
+    if (p.year) specs["Ano"] = String(p.year);
+    if (p.mileage) specs["Quilometragem"] = `${Number(p.mileage).toLocaleString("pt-BR")} km`;
+    if (p.fuel) specs["Combustível"] = p.fuel;
+    if (p.transmission) specs["Câmbio"] = p.transmission;
+    if (p.color) specs["Cor"] = p.color;
   }
   const displaySpecs = isDb ? specs : product.specs;
   const relatedProducts = isDb ? [] : getProductsByCompany(company.id).filter((p: any) => p.id !== product.id).slice(0, 4);

@@ -190,100 +190,208 @@ export type Database = {
       }
       seller_items: {
         Row: {
+          accepts_financing: boolean | null
           address: string | null
           area: number | null
+          backyard: boolean | null
+          balcony: boolean | null
+          barbecue: boolean | null
           bathrooms: number | null
           bedrooms: number | null
           brand: string | null
+          built_area: number | null
           category: Database["public"]["Enums"]["item_category"]
+          ceiling_height: number | null
           city: string | null
           color: string | null
+          condo_fee: number | null
           created_at: string
           description: string | null
+          documentation: string | null
+          doorman_24h: boolean | null
+          finality: string | null
+          floor_number: number | null
+          foot_traffic: string | null
           fuel: string | null
+          furnished: boolean | null
+          garden: boolean | null
+          has_ac: boolean | null
+          has_dock: boolean | null
+          has_elevator: boolean | null
+          has_showcase: boolean | null
           id: string
+          ideal_for: string | null
+          infrastructure: string[] | null
+          internal_office: boolean | null
+          iptu: number | null
+          kitchen_type: string | null
+          leisure_amenities: string[] | null
+          living_rooms: number | null
+          lot_depth: number | null
+          lot_front: number | null
           mileage: number | null
           model: string | null
           neighborhood: string | null
           parking_spots: number | null
           photos: string[] | null
+          pool: boolean | null
           price: number | null
+          property_subtype: string | null
+          security: string | null
           seller_id: string
           seller_type: Database["public"]["Enums"]["seller_type"]
+          service_area: boolean | null
           state: string | null
           status: Database["public"]["Enums"]["item_status"]
+          suites: number | null
           tags: Database["public"]["Enums"]["item_tag"][] | null
+          three_phase_power: boolean | null
           title: string
+          topography: string | null
           transmission: string | null
+          truck_access: boolean | null
           updated_at: string
           user_id: string
           video_url: string | null
           views_count: number | null
           year: number | null
+          zoning: string | null
         }
         Insert: {
+          accepts_financing?: boolean | null
           address?: string | null
           area?: number | null
+          backyard?: boolean | null
+          balcony?: boolean | null
+          barbecue?: boolean | null
           bathrooms?: number | null
           bedrooms?: number | null
           brand?: string | null
+          built_area?: number | null
           category: Database["public"]["Enums"]["item_category"]
+          ceiling_height?: number | null
           city?: string | null
           color?: string | null
+          condo_fee?: number | null
           created_at?: string
           description?: string | null
+          documentation?: string | null
+          doorman_24h?: boolean | null
+          finality?: string | null
+          floor_number?: number | null
+          foot_traffic?: string | null
           fuel?: string | null
+          furnished?: boolean | null
+          garden?: boolean | null
+          has_ac?: boolean | null
+          has_dock?: boolean | null
+          has_elevator?: boolean | null
+          has_showcase?: boolean | null
           id?: string
+          ideal_for?: string | null
+          infrastructure?: string[] | null
+          internal_office?: boolean | null
+          iptu?: number | null
+          kitchen_type?: string | null
+          leisure_amenities?: string[] | null
+          living_rooms?: number | null
+          lot_depth?: number | null
+          lot_front?: number | null
           mileage?: number | null
           model?: string | null
           neighborhood?: string | null
           parking_spots?: number | null
           photos?: string[] | null
+          pool?: boolean | null
           price?: number | null
+          property_subtype?: string | null
+          security?: string | null
           seller_id: string
           seller_type: Database["public"]["Enums"]["seller_type"]
+          service_area?: boolean | null
           state?: string | null
           status?: Database["public"]["Enums"]["item_status"]
+          suites?: number | null
           tags?: Database["public"]["Enums"]["item_tag"][] | null
+          three_phase_power?: boolean | null
           title: string
+          topography?: string | null
           transmission?: string | null
+          truck_access?: boolean | null
           updated_at?: string
           user_id: string
           video_url?: string | null
           views_count?: number | null
           year?: number | null
+          zoning?: string | null
         }
         Update: {
+          accepts_financing?: boolean | null
           address?: string | null
           area?: number | null
+          backyard?: boolean | null
+          balcony?: boolean | null
+          barbecue?: boolean | null
           bathrooms?: number | null
           bedrooms?: number | null
           brand?: string | null
+          built_area?: number | null
           category?: Database["public"]["Enums"]["item_category"]
+          ceiling_height?: number | null
           city?: string | null
           color?: string | null
+          condo_fee?: number | null
           created_at?: string
           description?: string | null
+          documentation?: string | null
+          doorman_24h?: boolean | null
+          finality?: string | null
+          floor_number?: number | null
+          foot_traffic?: string | null
           fuel?: string | null
+          furnished?: boolean | null
+          garden?: boolean | null
+          has_ac?: boolean | null
+          has_dock?: boolean | null
+          has_elevator?: boolean | null
+          has_showcase?: boolean | null
           id?: string
+          ideal_for?: string | null
+          infrastructure?: string[] | null
+          internal_office?: boolean | null
+          iptu?: number | null
+          kitchen_type?: string | null
+          leisure_amenities?: string[] | null
+          living_rooms?: number | null
+          lot_depth?: number | null
+          lot_front?: number | null
           mileage?: number | null
           model?: string | null
           neighborhood?: string | null
           parking_spots?: number | null
           photos?: string[] | null
+          pool?: boolean | null
           price?: number | null
+          property_subtype?: string | null
+          security?: string | null
           seller_id?: string
           seller_type?: Database["public"]["Enums"]["seller_type"]
+          service_area?: boolean | null
           state?: string | null
           status?: Database["public"]["Enums"]["item_status"]
+          suites?: number | null
           tags?: Database["public"]["Enums"]["item_tag"][] | null
+          three_phase_power?: boolean | null
           title?: string
+          topography?: string | null
           transmission?: string | null
+          truck_access?: boolean | null
           updated_at?: string
           user_id?: string
           video_url?: string | null
           views_count?: number | null
           year?: number | null
+          zoning?: string | null
         }
         Relationships: [
           {
