@@ -127,7 +127,7 @@ export const PACKAGE_CONFIG = {
     ],
   },
   prime_empresa: {
-    name: "Prime Empresa",
+    name: "Black Empresa",
     price: 1899.00,
     maxItems: 9999,
     color: "from-zinc-900 to-black",
