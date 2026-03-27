@@ -115,7 +115,39 @@ export function useRealListings(segment?: "imoveis" | "automoveis") {
       const tierOrder = { vip: 0, premium: 1, start: 2, basico: 3 };
       mapped.sort((a: any, b: any) => (tierOrder[a.sellerTier as keyof typeof tierOrder] ?? 3) - (tierOrder[b.sellerTier as keyof typeof tierOrder] ?? 3));
 
-      setItems(mapped);
+      // Apply tier-based visibility percentage
+      const tierVisibility: Record<string, number> = {
+        basico: 0.10,
+        start: 0.15,
+        vip: 0.20,
+        premium: 0.25,
+        essencial_empresa: 0.26,
+        premium_empresa: 0.27,
+        prime_empresa: 0.29,
+      };
+
+      // Group items by seller, apply % filter, then flatten
+      const itemsBySeller = new Map<string, typeof mapped>();
+      mapped.forEach((item) => {
+        const list = itemsBySeller.get(item.sellerId) || [];
+        list.push(item);
+        itemsBySeller.set(item.sellerId, list);
+      });
+
+      const visibleItems: typeof mapped = [];
+      itemsBySeller.forEach((sellerItems, sellerId) => {
+        const tier = tierMap.get(sellerId) || "basico";
+        const pct = tierVisibility[tier] ?? 0.10;
+        const count = Math.max(1, Math.ceil(sellerItems.length * pct));
+        // Shuffle for fairness, then take the allowed count
+        const shuffled = [...sellerItems].sort(() => Math.random() - 0.5);
+        visibleItems.push(...shuffled.slice(0, count));
+      });
+
+      // Re-sort by tier priority
+      visibleItems.sort((a: any, b: any) => (tierOrder[a.sellerTier as keyof typeof tierOrder] ?? 3) - (tierOrder[b.sellerTier as keyof typeof tierOrder] ?? 3));
+
+      setItems(visibleItems);
       setLoading(false);
     };
 
