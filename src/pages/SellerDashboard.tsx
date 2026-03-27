@@ -931,6 +931,11 @@ export default function SellerDashboard() {
               </div>
             )}
 
+            {/* Events/Gamification Tab */}
+            {activeTab === "events" && user?.id && profile?.id && (
+              <GamificationTab userId={user.id} sellerId={profile.id} />
+            )}
+
             {/* Team Tab */}
             {activeTab === "team" && showTeamTab && profile?.id && (
               <TeamMembersTab
