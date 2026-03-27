@@ -116,7 +116,7 @@ export default function ProductDetail() {
   const title = product.title;
   const price = product.price;
   const description = product.description;
-  const tag = isDb ? product.tags?.[0] : product.tag;
+  const tags: string[] = isDb ? (product.tags || []).filter((t: string) => t !== "aluguel_flex") : (product.tag ? [product.tag] : []);
   const companyUrl = `/imoveis/empresa/${company.id}`;
   const formattedPrice = isDb
     ? price ? `R$ ${Number(price).toLocaleString("pt-BR")}` : ""
@@ -256,11 +256,13 @@ export default function ProductDetail() {
             <ArrowLeft size={16} /> Voltar
           </Link>
         </div>
-        {tag && (
-          <div className="absolute top-4 right-4 z-20">
-            <span className={`px-3 py-1.5 rounded-lg text-xs font-bold shadow-lg ${getTagStyle(tag)}`}>
-              <Tag size={12} className="inline mr-1 mb-0.5" />{getTagLabel(tag)}
-            </span>
+        {tags.length > 0 && (
+          <div className="absolute top-4 right-4 z-20 flex flex-wrap gap-1.5 justify-end max-w-[60%]">
+            {tags.map((t) => (
+              <span key={t} className={`px-3 py-1.5 rounded-lg text-xs font-bold shadow-lg ${getTagStyle(t)}`}>
+                <Tag size={12} className="inline mr-1 mb-0.5" />{getTagLabel(t)}
+              </span>
+            ))}
           </div>
         )}
         {/* Hero image counter */}
