@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { ArrowLeft, Save, Upload, User, Instagram, Video } from "lucide-react";
+import { ArrowLeft, Save, Upload, User, Instagram, Video, Link as LinkIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useSellerSubscription } from "@/hooks/useSubscription";
 import type { Database } from "@/integrations/supabase/types";
@@ -311,6 +311,35 @@ export default function SellerProfile() {
             <Instagram size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
             <input value={form.instagram} onChange={(e) => setForm((f) => ({ ...f, instagram: e.target.value }))} className="w-full pl-10 pr-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="Instagram (ex: @sualoja)" />
           </div>
+        </div>
+
+        {/* URL da Loja */}
+        <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
+          <h2 className="font-display font-bold text-foreground">URL da Loja</h2>
+          <p className="text-xs text-muted-foreground">Escolha um nome curto para a URL da sua loja. Use apenas letras minúsculas, números, hífens e underscores.</p>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground whitespace-nowrap">{window.location.origin}/empresa/</span>
+            <div className="relative flex-1">
+              <LinkIcon size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <input
+                value={form.slug}
+                onChange={(e) => {
+                  const val = e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, "");
+                  setForm((f) => ({ ...f, slug: val }));
+                  setSlugError("");
+                }}
+                className="w-full pl-10 pr-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+                placeholder="ex: gabriel01"
+                maxLength={30}
+              />
+            </div>
+          </div>
+          {slugError && <p className="text-xs text-destructive font-medium">{slugError}</p>}
+          {form.slug && !slugError && (
+            <p className="text-xs text-emerald-500 font-medium">
+              Sua loja ficará em: {window.location.origin}/empresa/{form.slug}
+            </p>
+          )}
         </div>
 
         {/* Sobre a empresa */}
