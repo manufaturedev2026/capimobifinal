@@ -166,7 +166,7 @@ export default function CityPropertiesPage() {
           <h3 className="font-display font-semibold text-sm text-muted-foreground mb-3 flex items-center gap-2">
             <Search size={16} /> Filtrar imóveis em {cityName}
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
             <select
               value={filterNeighborhood}
               onChange={(e) => setFilterNeighborhood(e.target.value)}
@@ -177,9 +177,14 @@ export default function CityPropertiesPage() {
                 <option key={n} value={n}>{n}</option>
               ))}
             </select>
-            <div className="flex items-center gap-2 text-muted-foreground text-sm px-2">
-              <MapPin size={14} /> {cityName}, ES — {items.length} imóvel(is)
-            </div>
+            <select
+              value={filterType}
+              onChange={(e) => { setFilterType(e.target.value); setActiveCategory(null); }}
+              className="w-full px-4 py-2.5 rounded-xl bg-secondary text-foreground text-base focus:outline-none focus:ring-2 focus:ring-primary/50"
+            >
+              <option value="">Todos os tipos</option>
+              {propertyTypes.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+            </select>
             <div className="flex gap-2">
               <button
                 onClick={() => setShowAdvanced(!showAdvanced)}
@@ -188,11 +193,14 @@ export default function CityPropertiesPage() {
                 {showAdvanced ? "▲ Filtros" : "▼ Mais Filtros"}
               </button>
               <button
-                onClick={() => { setActiveCategory(null); setFilterNeighborhood(""); setShowRentals(true); setPriceMin(""); setPriceMax(""); setMinBedrooms(""); setMinArea(""); setOnlyFinancing(false); setOnlyFurnished(false); }}
+                onClick={() => { setActiveCategory(null); setFilterType(""); setFilterNeighborhood(""); setShowRentals(true); setPriceMin(""); setPriceMax(""); setMinBedrooms(""); setMinArea(""); setOnlyFinancing(false); setOnlyFurnished(false); }}
                 className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--accent))] text-white font-bold text-sm hover:opacity-90 transition-opacity shadow"
               >
                 Limpar
               </button>
+            </div>
+            <div className="flex items-center gap-2 text-muted-foreground text-sm px-2">
+              <MapPin size={14} /> {cityName}, ES — {filteredProducts.length} imóvel(is)
             </div>
           </div>
 
