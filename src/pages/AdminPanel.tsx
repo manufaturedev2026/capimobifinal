@@ -582,9 +582,60 @@ export default function AdminPanel() {
                   </button>
                 </div>
               </div>
-              <p className="text-xs text-muted-foreground mt-3">
-                💡 Configure o DNS do domínio externo para redirecionar (301) para a URL da loja do vendedor.
-              </p>
+            </div>
+
+            {/* Passo a passo */}
+            <div className="bg-card border border-border rounded-2xl p-6">
+              <h3 className="font-display font-bold text-lg text-foreground mb-4 flex items-center gap-2">
+                📋 Passo a Passo para Configurar Domínio do Lojista
+              </h3>
+              <div className="space-y-4 text-sm text-muted-foreground">
+                <div className="flex gap-3">
+                  <span className="flex-shrink-0 w-7 h-7 rounded-full bg-primary/10 text-primary font-bold flex items-center justify-center text-xs">1</span>
+                  <div>
+                    <p className="font-semibold text-foreground">Cadastrar o domínio aqui no Admin</p>
+                    <p>Preencha o domínio e selecione o vendedor acima, depois clique em "Adicionar".</p>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <span className="flex-shrink-0 w-7 h-7 rounded-full bg-primary/10 text-primary font-bold flex items-center justify-center text-xs">2</span>
+                  <div>
+                    <p className="font-semibold text-foreground">Adicionar o domínio no Lovable</p>
+                    <p>Vá em <strong>Settings → Domains → Connect Domain</strong> no projeto Lovable e adicione o mesmo domínio. Isso faz o Lovable servir o site naquele endereço.</p>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <span className="flex-shrink-0 w-7 h-7 rounded-full bg-primary/10 text-primary font-bold flex items-center justify-center text-xs">3</span>
+                  <div>
+                    <p className="font-semibold text-foreground">Configurar DNS no registrador do domínio</p>
+                    <p>O lojista (ou você) deve configurar no provedor de DNS:</p>
+                    <div className="mt-2 bg-muted/50 rounded-xl p-3 space-y-1 font-mono text-xs">
+                      <div className="flex gap-4"><span className="text-muted-foreground w-12">Tipo:</span><span className="text-foreground font-semibold">A</span></div>
+                      <div className="flex gap-4"><span className="text-muted-foreground w-12">Nome:</span><span className="text-foreground font-semibold">@ (raiz)</span></div>
+                      <div className="flex gap-4"><span className="text-muted-foreground w-12">Valor:</span><span className="text-primary font-semibold">185.158.133.1</span></div>
+                    </div>
+                    <div className="mt-2 bg-muted/50 rounded-xl p-3 space-y-1 font-mono text-xs">
+                      <div className="flex gap-4"><span className="text-muted-foreground w-12">Tipo:</span><span className="text-foreground font-semibold">A</span></div>
+                      <div className="flex gap-4"><span className="text-muted-foreground w-12">Nome:</span><span className="text-foreground font-semibold">www</span></div>
+                      <div className="flex gap-4"><span className="text-muted-foreground w-12">Valor:</span><span className="text-primary font-semibold">185.158.133.1</span></div>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <span className="flex-shrink-0 w-7 h-7 rounded-full bg-primary/10 text-primary font-bold flex items-center justify-center text-xs">4</span>
+                  <div>
+                    <p className="font-semibold text-foreground">Aguardar propagação DNS</p>
+                    <p>A propagação pode levar até <strong>48-72 horas</strong>. O SSL (HTTPS) será provisionado automaticamente pelo Lovable.</p>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <span className="flex-shrink-0 w-7 h-7 rounded-full bg-primary/10 text-primary font-bold flex items-center justify-center text-xs">5</span>
+                  <div>
+                    <p className="font-semibold text-foreground">Testar o acesso</p>
+                    <p>Acesse o domínio no navegador. O sistema detectará automaticamente o domínio e mostrará apenas a loja do vendedor vinculado.</p>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Domain list */}
