@@ -498,34 +498,18 @@ export default function AdminPanel() {
                       )}
 
                       {/* Account Manager */}
-                      <div className="flex items-center gap-2 mt-2 flex-wrap">
-                        <UserCog size={14} className="text-muted-foreground shrink-0" />
-                        <input
-                          defaultValue={seller.account_manager || ""}
-                          placeholder="Nome do gerente..."
-                          onBlur={(e) => {
-                            if (e.target.value !== (seller.account_manager || "")) {
-                              updateAccountManager(seller.id, e.target.value, undefined);
-                            }
-                          }}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") (e.target as HTMLInputElement).blur();
-                          }}
-                          className="px-2 py-1 rounded-lg border border-input bg-background text-foreground text-xs w-40 focus:ring-1 focus:ring-ring focus:outline-none"
-                        />
-                        <input
-                          defaultValue={seller.manager_phone || ""}
-                          placeholder="WhatsApp do gerente..."
-                          onBlur={(e) => {
-                            if (e.target.value !== (seller.manager_phone || "")) {
-                              updateAccountManager(seller.id, undefined, e.target.value);
-                            }
-                          }}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") (e.target as HTMLInputElement).blur();
-                          }}
-                          className="px-2 py-1 rounded-lg border border-input bg-background text-foreground text-xs w-44 focus:ring-1 focus:ring-ring focus:outline-none"
-                        />
+                      <div className="flex items-center gap-2 mt-2">
+                        <button
+                          onClick={() => openManagerDialog(seller)}
+                          className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-input bg-background text-xs font-medium text-foreground hover:bg-secondary transition-colors"
+                        >
+                          {seller.manager_photo ? (
+                            <img src={seller.manager_photo} alt="" className="w-5 h-5 rounded-full object-cover" />
+                          ) : (
+                            <UserCog size={14} className="text-muted-foreground" />
+                          )}
+                          {seller.account_manager || "Definir gerente"}
+                        </button>
                       </div>
                     </div>
 
