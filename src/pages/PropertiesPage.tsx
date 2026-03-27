@@ -72,6 +72,7 @@ export default function PropertiesPage() {
       location: item.city || "",
       sellerTier: item.sellerTier || "basico",
       hasBlackTag: (item as any).hasBlackTag || false,
+      hasDestaque: (item as any).hasDestaque || false,
       realCategory: item.category,
       isAluguel: (item.tags || []).includes("aluguel_flex") || item.category === "aluguel",
       furnished: item.furnished,
