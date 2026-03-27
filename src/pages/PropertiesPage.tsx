@@ -197,9 +197,17 @@ export default function PropertiesPage() {
       list = list.filter((p) => !(p as any).isAluguel);
     }
 
+    // Advanced filters
+    if (priceMin) list = list.filter((p) => (p.price || 0) >= parseFloat(priceMin));
+    if (priceMax) list = list.filter((p) => (p.price || 0) <= parseFloat(priceMax));
+    if (minBedrooms) list = list.filter((p) => ((p as any).specs?.Quartos || (p as any).bedrooms || 0) >= parseInt(minBedrooms));
+    if (minArea) list = list.filter((p) => ((p as any).specs?.["Área"] || (p as any).area || 0) >= parseFloat(minArea));
+    if (onlyFurnished) list = list.filter((p) => (p as any).furnished);
+    if (onlyFinancing) list = list.filter((p) => (p as any).accepts_financing);
+
     list.sort((a, b) => a.id.localeCompare(b.id));
     return list;
-  }, [activeCategory, propertyProducts, filterCity, filterType, realSellers, showRentals]);
+  }, [activeCategory, propertyProducts, filterCity, filterType, realSellers, showRentals, priceMin, priceMax, minBedrooms, minArea, onlyFurnished, onlyFinancing]);
 
   return (
     <div className="min-h-screen bg-background">
