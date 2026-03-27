@@ -218,7 +218,7 @@ export default function ProductDetail() {
 
       {/* Gallery Grid - full quality photos */}
       {images.length > 0 && (
-        <div className="container max-w-6xl mx-auto px-4 -mt-8 z-10 relative">
+        <div className="container max-w-6xl mx-auto px-4 -mt-16 md:-mt-20 z-10 relative">
           <div className="flex gap-2 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-2 md:grid md:grid-cols-5 md:overflow-visible md:snap-none md:pb-0">
             {images.map((img: string, i: number) => (
               <motion.button
