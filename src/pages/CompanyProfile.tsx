@@ -305,9 +305,7 @@ export default function CompanyProfile() {
           </>
         )}
 
-  const shuffledTeamMembers2 = useMemo(() => {
-    return [...teamMembers].sort(() => Math.random() - 0.5);
-  }, [teamMembers, showTeamPicker]);
+
 
         {/* Company info overlay */}
         <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10 z-10">
