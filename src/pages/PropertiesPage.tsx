@@ -465,11 +465,6 @@ export default function PropertiesPage() {
                           {product.tag}
                         </span>
                       ) : null}
-                      {(product as any).isAluguel && (
-                        <span className="absolute bottom-3 left-3 px-3 py-1 rounded-full text-xs font-bold shadow bg-primary text-primary-foreground">
-                          🏠 Aluguel
-                        </span>
-                      )}
                       <div className="absolute top-3 right-3 flex flex-col items-end gap-1">
                         {(product as any).hasDestaque && (
                           <span className="px-2.5 py-1 rounded-md text-[11px] font-bold bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg">⭐ DESTAQUE</span>
@@ -487,10 +482,17 @@ export default function PropertiesPage() {
                       <h3 className="font-display font-bold text-base md:text-lg text-foreground line-clamp-1">
                         {product.title}
                       </h3>
-                      <p className="text-xl font-bold text-emerald-500 mt-1">
-                        {formatPrice(product.price)}
-                        {(product as any).isAluguel && <span className="text-sm font-normal text-muted-foreground"> /mês</span>}
-                      </p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <p className="text-xl font-bold text-emerald-500">
+                          {formatPrice(product.price)}
+                          {(product as any).isAluguel && <span className="text-sm font-normal text-muted-foreground"> /mês</span>}
+                        </p>
+                        {(product as any).isAluguel && (
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary text-primary-foreground">
+                            🏠 Aluguel
+                          </span>
+                        )}
+                      </div>
 
                       {company && (
                         <div className="flex items-center gap-2 mt-3 pt-3 border-t border-border">
