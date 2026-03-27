@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ChevronLeft, ChevronRight, MessageCircle, Share2, Star, MapPin, Tag, Store, Image, X, ZoomIn, BadgeCheck, Video } from "lucide-react";
+import PackageBadge from "@/components/PackageBadge";
 import { useWhatsAppPicker } from "@/components/WhatsAppTeamPicker";
 import { getProductById, formatPrice, getProductsByCompany, getTagStyle, getTagLabel } from "@/data/products";
 import { allCompanies } from "@/data/companies";
@@ -386,17 +387,17 @@ export default function ProductDetail() {
                   </div>
                 )}
                 <div>
-                  <p className="font-display font-bold text-foreground text-sm group-hover:text-primary transition-colors">{company.name}</p>
+                  <div className="flex items-center gap-2">
+                    <p className="font-display font-bold text-foreground text-sm group-hover:text-primary transition-colors">{company.name}</p>
+                    {sellerTier && sellerTier !== "basico" && (
+                      <PackageBadge tier={sellerTier as any} size="sm" />
+                    )}
+                  </div>
                   <p className="text-xs text-muted-foreground mt-0.5">
                     {isDb && (company as any).sellerCategory
                       ? ({ imobiliaria: "Imobiliária", corretor: "Corretor(a)", proprietario: "Proprietário", loja_veiculos: "Loja de Veículos", autonomo: "Autônomo", concessionaria: "Concessionária" } as any)[(company as any).sellerCategory] || (company as any).sellerCategory
                       : isProperty ? "Imobiliária" : "Revenda"}
                   </p>
-                  {sellerTier && (sellerTier === "essencial_empresa" || sellerTier === "premium_empresa") && (
-                    <span className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold">
-                      <BadgeCheck size={12} /> Empresa Verificada
-                    </span>
-                  )}
                 </div>
               </Link>
 
