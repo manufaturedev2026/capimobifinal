@@ -28,7 +28,7 @@ type SellerItem = {
   seller_type: string;
 };
 
-type DashboardTab = "overview" | "items" | "stats" | "domain" | "ads" | "study" | "team";
+type DashboardTab = "overview" | "items" | "stats" | "domain" | "ads" | "study" | "team" | "events";
 
 export default function SellerDashboard() {
   const { user, profile, signOut, refreshProfile, loading: authLoading } = useAuth();
