@@ -26,13 +26,13 @@ const styles: Record<string, { bg: string; icon: any; label: string; glow?: stri
   essencial_empresa: {
     bg: "bg-gradient-to-r from-rose-600 to-red-600",
     icon: Shield,
-    label: "Empresa Verificada",
+    label: "Exclusive",
     glow: "shadow-rose-500/30",
   },
   premium_empresa: {
     bg: "bg-gradient-to-r from-sky-600 to-blue-700",
     icon: Gem,
-    label: "Premium Empresa",
+    label: "Prime",
     glow: "shadow-sky-500/30",
   },
   prime_empresa: {
