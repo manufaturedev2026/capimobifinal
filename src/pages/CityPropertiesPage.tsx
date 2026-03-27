@@ -113,8 +113,14 @@ export default function CityPropertiesPage() {
     if (!showRentals && activeCategory !== "aluguel") {
       list = list.filter((i) => !((i.tags || []).includes("aluguel_flex") || i.category === "aluguel"));
     }
+    if (priceMin) list = list.filter((i) => (i.price || 0) >= parseFloat(priceMin));
+    if (priceMax) list = list.filter((i) => (i.price || 0) <= parseFloat(priceMax));
+    if (minBedrooms) list = list.filter((i) => (i.bedrooms || 0) >= parseInt(minBedrooms));
+    if (minArea) list = list.filter((i) => (i.area || 0) >= parseFloat(minArea));
+    if (onlyFurnished) list = list.filter((i) => i.furnished);
+    if (onlyFinancing) list = list.filter((i) => i.accepts_financing);
     return list;
-  }, [items, activeCategory, filterNeighborhood, showRentals]);
+  }, [items, activeCategory, filterNeighborhood, showRentals, priceMin, priceMax, minBedrooms, minArea, onlyFurnished, onlyFinancing]);
 
   if (loading) {
     return (
