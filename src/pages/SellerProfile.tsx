@@ -37,7 +37,9 @@ export default function SellerProfile() {
     cnpj: "",
     cover_color: "",
     video_url: "",
+    slug: "",
   });
+  const [slugError, setSlugError] = useState("");
 
   useEffect(() => {
     if (!authLoading && !user) navigate("/entrar");
