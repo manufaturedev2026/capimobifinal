@@ -513,8 +513,8 @@ export default function SellerItemForm() {
               const siteStyle = getTagStyle(tag.value);
               return (
                 <button key={tag.value} type="button" onClick={() => toggleTag(tag.value)}
-                  className={`relative px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-1.5 ${
-                    selected ? `${siteStyle} shadow-lg scale-105 ring-2 ring-white/20` : "bg-secondary text-secondary-foreground hover:scale-105 hover:shadow-md"
+                  className={`relative px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-1.5 ${siteStyle} ${
+                    selected ? "shadow-lg scale-105 ring-2 ring-white/40" : "opacity-60 hover:opacity-100 hover:scale-105 hover:shadow-md"
                   }`}>
                   <span>{tag.emoji}</span>{tag.label}
                   {selected && <span className="ml-1 w-4 h-4 rounded-full bg-white/25 flex items-center justify-center text-[10px]">✓</span>}
