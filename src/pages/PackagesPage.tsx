@@ -138,7 +138,7 @@ export default function PackagesPage() {
                   )}
 
                   <button
-                    onClick={() => handleSelect(tier)}
+                    onClick={() => handleSelect(tier as any)}
                     disabled={isCurrent || selecting === tier || isLocked}
                     className={`w-full mt-3 py-3 rounded-xl font-bold text-sm transition-all ${
                       isCurrent || isLocked
