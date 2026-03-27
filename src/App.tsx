@@ -10,6 +10,7 @@ import Header from "@/components/Header";
 import FooterSimple from "@/components/FooterSimple";
 import InstallPWA from "@/components/InstallPWA";
 import ScrollToTop from "@/components/ScrollToTop";
+import { CustomDomainRedirect } from "@/components/CustomDomainRedirect";
 import Index from "@/pages/Index";
 import PropertiesPage from "@/pages/PropertiesPage";
 import BecomeAgentPage from "@/pages/BecomeAgentPage";
@@ -88,6 +89,7 @@ const App = () => (
             <Sonner />
             <BrowserRouter>
               <ScrollToTop />
+              <CustomDomainRedirect />
               <AppLayout />
             </BrowserRouter>
           </TooltipProvider>
