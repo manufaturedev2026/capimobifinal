@@ -118,8 +118,8 @@ export function useRealListings(segment?: "imoveis" | "automoveis") {
         prime_empresa: 29,
         premium_empresa: 27,
         essencial_empresa: 26,
-        premium: 25,
-        vip: 20,
+        vip: 25,      // Display: "Premium" (plano mais caro individual)
+        premium: 20,   // Display: "VIP"
         start: 15,
         basico: 10,
       };
