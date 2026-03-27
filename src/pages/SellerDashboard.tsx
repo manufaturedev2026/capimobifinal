@@ -216,6 +216,7 @@ export default function SellerDashboard() {
     { id: "overview", label: "Visão Geral", icon: Home },
     { id: "items", label: "Meus Anúncios", icon: Package },
     { id: "stats", label: "Estatísticas", icon: BarChart3 },
+    { id: "events", label: "Eventos", icon: Trophy },
     { id: "ads", label: "Fazer ADS", icon: Megaphone, locked: lockedTabs.includes("ads") },
     { id: "domain", label: "Meu Domínio", icon: Globe, locked: lockedTabs.includes("domain") },
     ...(showTeamTab ? [{ id: "team" as DashboardTab, label: "Empresa", icon: Users }] : []),
