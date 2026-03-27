@@ -1,0 +1,1 @@
+ALTER TABLE public.seller_items ADD COLUMN video_url text DEFAULT NULL;
