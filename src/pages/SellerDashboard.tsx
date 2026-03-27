@@ -205,8 +205,10 @@ export default function SellerDashboard() {
   };
 
   const isFreePlan = currentTier === "basico";
+  const isImobiliaria = profile?.seller_category === "imobiliaria";
   const isEmpresaPlan = currentTier === "essencial_empresa" || currentTier === "premium_empresa";
-  const maxTeamMembers = currentTier === "premium_empresa" ? 10 : currentTier === "essencial_empresa" ? 5 : 0;
+  const showTeamTab = isEmpresaPlan || isImobiliaria;
+  const maxTeamMembers = currentTier === "premium_empresa" ? 15 : currentTier === "essencial_empresa" ? 6 : isImobiliaria ? 3 : 0;
   const lockedTabs: DashboardTab[] = isFreePlan ? ["domain", "ads"] : [];
 
   const sidebarNav: { id: DashboardTab; label: string; icon: any; locked?: boolean }[] = [
@@ -215,7 +217,7 @@ export default function SellerDashboard() {
     { id: "stats", label: "Estatísticas", icon: BarChart3 },
     { id: "ads", label: "Fazer ADS", icon: Megaphone, locked: lockedTabs.includes("ads") },
     { id: "domain", label: "Meu Domínio", icon: Globe, locked: lockedTabs.includes("domain") },
-    ...(isEmpresaPlan ? [{ id: "team" as DashboardTab, label: "Empresa", icon: Users }] : []),
+    ...(showTeamTab ? [{ id: "team" as DashboardTab, label: "Empresa", icon: Users }] : []),
     { id: "study", label: "Material de Estudo", icon: BookOpen },
   ];
 
