@@ -48,12 +48,12 @@ export const PACKAGE_CONFIG = {
   premium: {
     name: "VIP",
     price: 59.99,
-    maxItems: 15,
+    maxItems: 25,
     color: "from-amber-500 to-orange-600",
     borderColor: "border-amber-400",
     badgeColor: "bg-gradient-to-r from-amber-500 to-orange-500 text-white",
     benefits: [
-      "Até 15 anúncios ativos",
+      "Até 25 anúncios ativos",
       "Loja estilo Netflix",
       "Selo Premium nos anúncios",
       "Destaque no topo da listagem",
