@@ -450,11 +450,19 @@ export default function PropertiesPage() {
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                         loading="lazy"
                       />
-                      {product.tag && (
+                      {(product as any).allTags?.length > 0 ? (
+                        <div className="absolute top-3 left-3 flex flex-wrap gap-1 max-w-[70%]">
+                          {(product as any).allTags.slice(0, 3).map((t: string) => (
+                            <span key={t} className={`px-2 py-0.5 rounded-full text-[10px] font-bold shadow ${getTagStyle(t)}`}>
+                              {getTagLabel(t)}
+                            </span>
+                          ))}
+                        </div>
+                      ) : product.tag ? (
                         <span className={`absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-bold shadow ${getTagStyle(product.tag)}`}>
                           {product.tag}
                         </span>
-                      )}
+                      ) : null}
                       {(product as any).isAluguel && (
                         <span className="absolute bottom-3 left-3 px-3 py-1 rounded-full text-xs font-bold shadow bg-primary text-primary-foreground">
                           🏠 Aluguel
