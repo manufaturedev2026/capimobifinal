@@ -36,6 +36,7 @@ export default function PropertiesPage() {
   useEffect(() => {
     if (!cidade && detectedCity && !filterCity) {
       setFilterCity(detectedCity);
+      navigate(`/imoveis/${detectedCity.toLowerCase().replace(/\s+/g, "-")}`, { replace: true });
     }
   }, [detectedCity]);
 
