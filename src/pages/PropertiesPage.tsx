@@ -469,11 +469,14 @@ export default function PropertiesPage() {
                           🏠 Aluguel
                         </span>
                       )}
-                      {(product as any).sellerTier && (product as any).sellerTier !== "basico" && (
-                        <div className="absolute top-3 right-3">
+                      <div className="absolute top-3 right-3 flex flex-col items-end gap-1">
+                        {(product as any).hasBlackTag && (
+                          <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-gradient-to-r from-zinc-900 to-black text-white shadow-lg">🏴 BLACK</span>
+                        )}
+                        {(product as any).sellerTier && (product as any).sellerTier !== "basico" && (
                           <PackageBadge tier={(product as any).sellerTier} />
-                        </div>
-                      )}
+                        )}
+                      </div>
                     </div>
 
                     <div className="p-4">
