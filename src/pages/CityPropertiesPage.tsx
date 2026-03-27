@@ -1,8 +1,8 @@
 import { useState, useMemo, useRef } from "react";
-import { useParams, Link, useSearchParams } from "react-router-dom";
+import { useParams, Link, useSearchParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Building2, Home, Landmark, Store, Key, Search, MapPin, Image } from "lucide-react";
-import { useCityData } from "@/hooks/useCityData";
+import { useCityData, useAvailableCities } from "@/hooks/useCityData";
 import { getTagStyle, getTagLabel, formatPrice } from "@/data/products";
 import { propertyCategories } from "@/data/companies";
 import CitySEO from "@/components/CitySEO";
@@ -25,11 +25,13 @@ const categoryMap: Record<string, string[]> = {
 
 export default function CityPropertiesPage() {
   const { cidade } = useParams();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const categoriaParam = searchParams.get("categoria");
   const citySlug = cidade || "";
   const cityName = capitalize(citySlug.replace(/-/g, " "));
   const { items, loading } = useCityData(citySlug, "imoveis");
+  const availableCities = useAvailableCities();
   const [activeCategory, setActiveCategory] = useState<string | null>(categoriaParam);
   const [filterNeighborhood, setFilterNeighborhood] = useState("");
   const [filterType, setFilterType] = useState("");
@@ -166,7 +168,22 @@ export default function CityPropertiesPage() {
           <h3 className="font-display font-semibold text-sm text-muted-foreground mb-3 flex items-center gap-2">
             <Search size={16} /> Filtrar imóveis em {cityName}
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-5 gap-3">
+            <select
+              value={cityName}
+              onChange={(e) => {
+                const v = e.target.value;
+                if (v) {
+                  navigate(`/imoveis/${v.toLowerCase().replace(/\s+/g, "-")}`, { replace: true });
+                } else {
+                  navigate("/imoveis", { replace: true });
+                }
+              }}
+              className="w-full px-4 py-2.5 rounded-xl bg-secondary text-foreground text-base focus:outline-none focus:ring-2 focus:ring-primary/50"
+            >
+              <option value="">Todas as cidades</option>
+              {availableCities.map((c) => <option key={c} value={c}>{c}</option>)}
+            </select>
             <select
               value={filterNeighborhood}
               onChange={(e) => setFilterNeighborhood(e.target.value)}
