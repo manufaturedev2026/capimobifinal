@@ -20,6 +20,7 @@ interface SellerWithSub {
   city: string | null;
   account_manager: string | null;
   manager_phone: string | null;
+  manager_photo: string | null;
   subscription?: {
     id: string;
     tier: string;
