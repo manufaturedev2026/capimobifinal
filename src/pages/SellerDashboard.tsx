@@ -3,7 +3,9 @@ import { getStoreUrl, getStoreFullUrl } from "@/lib/storeUrl";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Package, Eye, Plus, Settings, Edit, Trash2, Copy, ToggleLeft, ToggleRight, Search, Image, LogOut, BarChart3, Star, Crown, Zap, AlertTriangle, Shield, MessageCircle, Home, UserCircle, Headphones, Globe, ExternalLink, CheckCircle2, ClipboardCopy, Megaphone, Send, Calculator, Lock, Clapperboard, Menu, X, Building2, BookOpen, Users, Trophy } from "lucide-react";
+import { Package, Eye, Plus, Settings, Edit, Trash2, Copy, ToggleLeft, ToggleRight, Search, Image, LogOut, BarChart3, Star, Crown, Zap, AlertTriangle, Shield, MessageCircle, Home, UserCircle, Headphones, Globe, ExternalLink, CheckCircle2, ClipboardCopy, Megaphone, Send, Calculator, Lock, Clapperboard, Menu, X, Building2, BookOpen, Users, Trophy, BadgeCheck } from "lucide-react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import SoldCountdown from "@/components/SoldCountdown";
 import TeamMembersTab from "@/components/TeamMembersTab";
 import GamificationTab from "@/components/GamificationTab";
 import { getTagStyle, getTagLabel } from "@/data/products";
@@ -27,6 +29,7 @@ type SellerItem = {
   city: string | null;
   created_at: string;
   seller_type: string;
+  sold_at: string | null;
 };
 
 type DashboardTab = "overview" | "items" | "stats" | "domain" | "ads" | "study" | "team" | "events";
@@ -76,10 +79,10 @@ export default function SellerDashboard() {
   const fetchItems = async () => {
     const { data, error } = await supabase
       .from("seller_items")
-      .select("id, title, category, price, status, photos, tags, views_count, city, created_at, seller_type")
+      .select("id, title, category, price, status, photos, tags, views_count, city, created_at, seller_type, sold_at")
       .eq("user_id", user!.id)
       .order("created_at", { ascending: false });
-    if (!error && data) setItems(data);
+    if (!error && data) setItems(data as any);
     setLoading(false);
   };
 
@@ -159,6 +162,18 @@ export default function SellerDashboard() {
   const copyStoreUrl = () => {
     navigator.clipboard.writeText(storeUrl);
     toast({ title: "URL copiada!", description: storeUrl });
+  };
+
+  const markAsSold = async (id: string) => {
+    const now = new Date().toISOString();
+    const { error } = await supabase
+      .from("seller_items")
+      .update({ status: "vendido" as any, sold_at: now })
+      .eq("id", id);
+    if (!error) {
+      setItems((prev) => prev.map((i) => (i.id === id ? { ...i, status: "vendido", sold_at: now } : i)));
+      toast({ title: "💰 Imóvel marcado como vendido!", description: "Será removido automaticamente em 24 horas." });
+    }
   };
 
 
@@ -517,6 +532,7 @@ export default function SellerDashboard() {
                     <option value="todos">Todos</option>
                     <option value="ativo">Ativos</option>
                     <option value="inativo">Inativos</option>
+                    <option value="vendido">Vendidos</option>
                   </select>
                 </div>
 
@@ -536,17 +552,26 @@ export default function SellerDashboard() {
                         className="bg-card border border-border rounded-2xl overflow-hidden group hover:shadow-lg transition-shadow">
                         <div className="relative aspect-video bg-muted">
                           {item.photos && item.photos.length > 0 ? (
-                            <img src={item.photos[0]} alt={item.title} className="w-full h-full object-cover" />
+                            <img src={item.photos[0]} alt={item.title} className={`w-full h-full object-cover ${item.status === "vendido" ? "brightness-50 blur-[1px]" : ""}`} />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center">
                               <Image size={32} className="text-muted-foreground" />
                             </div>
                           )}
                           <div className="absolute top-2 right-2 flex gap-1">
-                            <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${item.status === "ativo" ? "bg-green-500/90 text-white" : "bg-muted-foreground/80 text-white"}`}>
-                              {item.status === "ativo" ? "Ativo" : "Inativo"}
+                            <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
+                              item.status === "ativo" ? "bg-green-500/90 text-white" 
+                              : item.status === "vendido" ? "bg-red-500/90 text-white"
+                              : "bg-muted-foreground/80 text-white"
+                            }`}>
+                              {item.status === "ativo" ? "Ativo" : item.status === "vendido" ? "❌ Vendido" : "Inativo"}
                             </span>
                           </div>
+                          {item.status === "vendido" && item.sold_at && (
+                            <div className="absolute bottom-2 left-2 right-2">
+                              <SoldCountdown soldAt={item.sold_at} />
+                            </div>
+                          )}
                           {item.tags && item.tags.length > 0 && (
                             <div className="absolute top-2 left-2 flex gap-1 flex-wrap">
                               {item.tags.slice(0, 2).map((tag) => (
@@ -588,6 +613,30 @@ export default function SellerDashboard() {
                               className={`p-2 rounded-lg transition-colors ${((profile as any)?.hero_item_ids || []).includes(item.id) ? "bg-primary/20 text-primary" : "bg-secondary text-secondary-foreground hover:bg-secondary/80"}`}>
                               <Clapperboard size={14} />
                             </button>
+                            {item.status === "ativo" && (
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <button title="Marcar como vendido"
+                                    className="p-2 rounded-lg bg-green-500/10 text-green-600 hover:bg-green-500/20 transition-colors">
+                                    <BadgeCheck size={14} />
+                                  </button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>Marcar como vendido?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      Tem certeza que deseja marcar "{item.title}" como vendido? O imóvel ficará visível por 24 horas com etiqueta de vendido e depois será removido automaticamente.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                    <AlertDialogAction onClick={() => markAsSold(item.id)} className="bg-green-600 hover:bg-green-700">
+                                      Sim, marcar como vendido
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                            )}
                             <button onClick={() => deleteItem(item.id)}
                               className="p-2 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors">
                               <Trash2 size={14} />

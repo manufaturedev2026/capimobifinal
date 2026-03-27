@@ -46,8 +46,8 @@ export interface RealItem {
   built_area?: number;
   condo_fee?: number;
   iptu?: number;
+  sold_at?: string | null;
 }
-
 function mapItem(item: any): RealItem {
   const photos = item.photos?.length ? item.photos : [];
   return {
@@ -80,9 +80,9 @@ function mapItem(item: any): RealItem {
     built_area: item.built_area,
     condo_fee: item.condo_fee,
     iptu: item.iptu,
+    sold_at: item.sold_at,
   };
 }
-
 export function useRealListings(segment?: "imoveis" | "automoveis") {
   const [sellers, setSellers] = useState<RealSeller[]>([]);
   const [items, setItems] = useState<RealItem[]>([]);
@@ -90,16 +90,26 @@ export function useRealListings(segment?: "imoveis" | "automoveis") {
 
   useEffect(() => {
     const fetchData = async () => {
+      // Fetch active items + recently sold items (within 24h)
       const query = supabase
         .from("seller_items")
         .select("*")
         .eq("seller_type", "imoveis")
-        .eq("status", "ativo")
+        .in("status", ["ativo", "vendido"] as any)
         .order("created_at", { ascending: false });
 
       const { data: rawItems } = await query;
 
-      const sellerIds = [...new Set((rawItems || []).map((i: any) => i.seller_id))];
+      // Filter out sold items older than 24h
+      const cutoff = Date.now() - 24 * 60 * 60 * 1000;
+      const filteredItems = (rawItems || []).filter((item: any) => {
+        if (item.status === "vendido" && item.sold_at) {
+          return new Date(item.sold_at).getTime() > cutoff;
+        }
+        return true;
+      });
+
+      const sellerIds = [...new Set(filteredItems.map((i: any) => i.seller_id))];
 
       const { data: subs } = await supabase
         .from("seller_subscriptions")
@@ -145,9 +155,10 @@ export function useRealListings(segment?: "imoveis" | "automoveis") {
       }
       setSellers(mappedSellers);
 
-      const mapped = (rawItems || []).map((item: any) => ({
+      const mapped = filteredItems.map((item: any) => ({
         ...mapItem(item),
         sellerTier: (tierMap.get(item.seller_id) as any) || "basico",
+        status: item.status,
       }));
 
       // Tier weight: higher = more priority in sorting (appears first more often)
