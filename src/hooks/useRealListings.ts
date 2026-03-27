@@ -25,6 +25,7 @@ export interface RealItem {
   category: string;
   type: "imovel";
   city?: string;
+  neighborhood?: string;
   brand?: string;
   model?: string;
   description?: string;
@@ -33,7 +34,18 @@ export interface RealItem {
   area?: number;
   year?: number;
   mileage?: number;
-  sellerTier?: "basico" | "premium" | "vip";
+  sellerTier?: string;
+  // New fields
+  suites?: number;
+  parking_spots?: number;
+  furnished?: boolean;
+  accepts_financing?: boolean;
+  pool?: boolean;
+  balcony?: boolean;
+  property_subtype?: string;
+  built_area?: number;
+  condo_fee?: number;
+  iptu?: number;
 }
 
 function mapItem(item: any): RealItem {
@@ -49,6 +61,7 @@ function mapItem(item: any): RealItem {
     category: item.category,
     type: "imovel",
     city: item.city,
+    neighborhood: item.neighborhood,
     brand: item.brand,
     model: item.model,
     description: item.description,
@@ -57,6 +70,16 @@ function mapItem(item: any): RealItem {
     area: item.area,
     year: item.year,
     mileage: item.mileage,
+    suites: item.suites,
+    parking_spots: item.parking_spots,
+    furnished: item.furnished,
+    accepts_financing: item.accepts_financing,
+    pool: item.pool,
+    balcony: item.balcony,
+    property_subtype: item.property_subtype,
+    built_area: item.built_area,
+    condo_fee: item.condo_fee,
+    iptu: item.iptu,
   };
 }
 
