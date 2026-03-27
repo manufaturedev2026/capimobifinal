@@ -913,6 +913,65 @@ export default function AdminPanel() {
           </div>
         </div>
       )}
+
+      {/* Manager Edit Dialog */}
+      <Dialog open={managerDialogOpen} onOpenChange={setManagerDialogOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2"><UserCog size={18} /> Gerente de Conta</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 pt-2">
+            {/* Photo */}
+            <div className="flex flex-col items-center gap-2">
+              <div
+                onClick={() => managerPhotoRef.current?.click()}
+                className="w-20 h-20 rounded-full bg-secondary border-2 border-dashed border-border flex items-center justify-center cursor-pointer hover:border-primary transition-colors overflow-hidden"
+              >
+                {managerPhotoUrl ? (
+                  <img src={managerPhotoUrl} alt="Gerente" className="w-full h-full object-cover" />
+                ) : (
+                  <Camera size={24} className="text-muted-foreground" />
+                )}
+              </div>
+              <input ref={managerPhotoRef} type="file" accept="image/*" className="hidden" onChange={handleManagerPhotoUpload} />
+              <p className="text-[10px] text-muted-foreground">
+                {managerPhotoUploading ? "Enviando..." : "Clique para enviar foto"}
+              </p>
+            </div>
+
+            {/* Name */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-foreground">Nome do Gerente</label>
+              <input
+                value={managerName}
+                onChange={(e) => setManagerName(e.target.value)}
+                placeholder="Ex: Gabriel"
+                className="w-full px-3 py-2 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+              />
+            </div>
+
+            {/* WhatsApp */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-foreground flex items-center gap-1"><Phone size={12} /> WhatsApp</label>
+              <input
+                value={managerPhoneVal}
+                onChange={(e) => setManagerPhoneVal(e.target.value)}
+                placeholder="5527999999999"
+                className="w-full px-3 py-2 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+              />
+              <p className="text-[10px] text-muted-foreground">Formato: DDI + DDD + número (ex: 5527999999999)</p>
+            </div>
+
+            <button
+              onClick={saveManager}
+              disabled={managerPhotoUploading}
+              className="w-full py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-bold hover:bg-primary/90 transition-colors disabled:opacity-50"
+            >
+              Salvar
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
