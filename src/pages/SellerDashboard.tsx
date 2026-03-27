@@ -908,7 +908,7 @@ export default function SellerDashboard() {
                     target="_blank" rel="noopener noreferrer"
                     className="mt-4 w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-green-500 text-white font-bold text-sm hover:bg-green-600 transition-colors"
                   >
-                    <Headphones size={16} /> Precisa de ajuda? Fale com Gabriel
+                    <Headphones size={16} /> Fale com seu Gerente{profile?.account_manager ? ` ${profile.account_manager}` : ""}
                   </a>
                 </div>
               </div>
