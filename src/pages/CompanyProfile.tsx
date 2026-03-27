@@ -198,9 +198,6 @@ export default function CompanyProfile() {
     }
   }, [galleryLightbox]);
 
-  const shuffledTeamMembers = useMemo(() => {
-    return [...teamMembers].sort(() => Math.random() - 0.5);
-  }, [teamMembers, showTeamPicker]);
 
   if (loading) {
     return (
