@@ -22,7 +22,7 @@ export function CustomDomainRedirect() {
         .then(({ data }) => {
           if (data) {
             const prefix = data.seller_type === "automoveis" ? "automoveis" : "imoveis";
-            navigate(`/${prefix}/empresa/${data.id}`, { replace: true });
+            navigate(`/empresa/${data.id}`, { replace: true });
           }
         });
     }

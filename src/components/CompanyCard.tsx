@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { useWhatsAppPicker } from "@/components/WhatsAppTeamPicker";
 
 export default function CompanyCard({ company, index }: { company: Company; index: number }) {
-  const profileUrl = `/imoveis/empresa/${company.id}`;
+  const profileUrl = `/empresa/${company.id}`;
   const { openWhatsApp } = useWhatsAppPicker();
 
   const handleWhatsApp = (e: React.MouseEvent) => {

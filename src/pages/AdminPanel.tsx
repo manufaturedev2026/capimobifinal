@@ -209,7 +209,7 @@ export default function AdminPanel() {
   };
 
   const getSellerStoreUrl = (seller: SellerWithSub) => {
-    return `/imoveis/empresa/${seller.id}`;
+    return `/empresa/${(seller as any).slug || seller.id}`;
   };
 
   const copyRedirectUrl = (seller: SellerWithSub) => {

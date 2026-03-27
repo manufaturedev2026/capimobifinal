@@ -117,7 +117,7 @@ export default function ProductDetail() {
   const price = product.price;
   const description = product.description;
   const tags: string[] = isDb ? (product.tags || []).filter((t: string) => t !== "aluguel_flex") : (product.tag ? [product.tag] : []);
-  const companyUrl = `/imoveis/empresa/${company.id}`;
+  const companyUrl = `/empresa/${company.id}`;
   const formattedPrice = isDb
     ? price ? `R$ ${Number(price).toLocaleString("pt-BR")}` : ""
     : formatPrice(price);
