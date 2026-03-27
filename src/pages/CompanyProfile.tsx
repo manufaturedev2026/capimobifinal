@@ -100,9 +100,18 @@ export default function CompanyProfile() {
         .from("seller_items")
         .select("*")
         .eq("seller_id", pid)
-        .eq("status", "ativo")
+        .in("status", ["ativo", "vendido"] as any)
         .order("created_at", { ascending: false });
-      setDbItems(items || []);
+      
+      // Filter out sold items older than 24h
+      const cutoff = Date.now() - 24 * 60 * 60 * 1000;
+      const filteredItems = (items || []).filter((item: any) => {
+        if (item.status === "vendido" && item.sold_at) {
+          return new Date(item.sold_at).getTime() > cutoff;
+        }
+        return true;
+      });
+      setDbItems(filteredItems);
 
       if (corretorSlug) {
         const { data: member } = await supabase
