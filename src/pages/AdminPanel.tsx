@@ -452,6 +452,7 @@ export default function AdminPanel() {
                 { key: "vip", label: "VIP" },
                 { key: "essencial_empresa", label: "Ess. Empresa" },
                 { key: "premium_empresa", label: "Prem. Empresa" },
+                { key: "prime_empresa", label: "Prime Empresa" },
               ].map((f) => (
                 <button
                   key={f.key}
