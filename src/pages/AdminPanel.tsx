@@ -1,12 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Shield, Users, Package, DollarSign, Search, Check, X, RefreshCw, ArrowLeft, Crown, Star, Zap, Globe, Plus, Trash2, ExternalLink, Copy, Megaphone, LayoutDashboard, Building2, Rocket, FileText, UserCog, Filter } from "lucide-react";
+import { Shield, Users, Package, DollarSign, Search, Check, X, RefreshCw, ArrowLeft, Crown, Star, Zap, Globe, Plus, Trash2, ExternalLink, Copy, Megaphone, LayoutDashboard, Building2, Rocket, FileText, UserCog, Filter, Camera, Phone } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsAdmin, PACKAGE_CONFIG } from "@/hooks/useSubscription";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 interface SellerWithSub {
   id: string;
@@ -19,6 +20,7 @@ interface SellerWithSub {
   city: string | null;
   account_manager: string | null;
   manager_phone: string | null;
+  manager_photo: string | null;
   subscription?: {
     id: string;
     tier: string;
@@ -53,6 +55,15 @@ export default function AdminPanel() {
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
   const [rejectAdId, setRejectAdId] = useState<string | null>(null);
   const [rejectReason, setRejectReason] = useState("");
+
+  // Manager edit dialog state
+  const [managerDialogOpen, setManagerDialogOpen] = useState(false);
+  const [managerEditSellerId, setManagerEditSellerId] = useState<string | null>(null);
+  const [managerName, setManagerName] = useState("");
+  const [managerPhoneVal, setManagerPhoneVal] = useState("");
+  const [managerPhotoUrl, setManagerPhotoUrl] = useState("");
+  const [managerPhotoUploading, setManagerPhotoUploading] = useState(false);
+  const managerPhotoRef = useRef<HTMLInputElement>(null);
 
   // Domain management state
   const [domains, setDomains] = useState<StoreDomain[]>([]);
@@ -139,6 +150,7 @@ export default function AdminPanel() {
       city: p.city,
       account_manager: p.account_manager || null,
       manager_phone: p.manager_phone || null,
+      manager_photo: p.manager_photo || null,
       subscription: subsMap.get(p.user_id)
         ? {
             id: subsMap.get(p.user_id).id,
@@ -253,19 +265,47 @@ export default function AdminPanel() {
     return matchesSearch && matchesTier;
   });
 
-  const updateAccountManager = async (profileId: string, manager?: string, phone?: string) => {
-    const updateData: any = {};
-    if (manager !== undefined) updateData.account_manager = manager || null;
-    if (phone !== undefined) updateData.manager_phone = phone || null;
-    const { error } = await supabase
-      .from("profiles")
-      .update(updateData)
-      .eq("id", profileId);
+  const openManagerDialog = (seller: SellerWithSub) => {
+    setManagerEditSellerId(seller.id);
+    setManagerName(seller.account_manager || "");
+    setManagerPhoneVal(seller.manager_phone || "");
+    setManagerPhotoUrl(seller.manager_photo || "");
+    setManagerDialogOpen(true);
+  };
+
+  const handleManagerPhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !managerEditSellerId) return;
+    setManagerPhotoUploading(true);
+    const ext = file.name.split(".").pop();
+    const path = `managers/${managerEditSellerId}-${Date.now()}.${ext}`;
+    const { error } = await supabase.storage.from("seller-uploads").upload(path, file, { upsert: true });
+    if (error) {
+      toast({ title: "Erro ao enviar foto", variant: "destructive" });
+      setManagerPhotoUploading(false);
+      return;
+    }
+    const { data: urlData } = supabase.storage.from("seller-uploads").getPublicUrl(path);
+    setManagerPhotoUrl(urlData.publicUrl);
+    setManagerPhotoUploading(false);
+  };
+
+  const saveManager = async () => {
+    if (!managerEditSellerId) return;
+    const updateData: any = {
+      account_manager: managerName || null,
+      manager_phone: managerPhoneVal || null,
+      manager_photo: managerPhotoUrl || null,
+    };
+    const { error } = await supabase.from("profiles").update(updateData).eq("id", managerEditSellerId);
     if (!error) {
       setSellers((prev) =>
-        prev.map((s) => (s.id === profileId ? { ...s, ...updateData } : s))
+        prev.map((s) => (s.id === managerEditSellerId ? { ...s, ...updateData } : s))
       );
       toast({ title: "Gerente de conta atualizado!" });
+      setManagerDialogOpen(false);
+    } else {
+      toast({ title: "Erro ao salvar", variant: "destructive" });
     }
   };
 
@@ -458,34 +498,18 @@ export default function AdminPanel() {
                       )}
 
                       {/* Account Manager */}
-                      <div className="flex items-center gap-2 mt-2 flex-wrap">
-                        <UserCog size={14} className="text-muted-foreground shrink-0" />
-                        <input
-                          defaultValue={seller.account_manager || ""}
-                          placeholder="Nome do gerente..."
-                          onBlur={(e) => {
-                            if (e.target.value !== (seller.account_manager || "")) {
-                              updateAccountManager(seller.id, e.target.value, undefined);
-                            }
-                          }}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") (e.target as HTMLInputElement).blur();
-                          }}
-                          className="px-2 py-1 rounded-lg border border-input bg-background text-foreground text-xs w-40 focus:ring-1 focus:ring-ring focus:outline-none"
-                        />
-                        <input
-                          defaultValue={seller.manager_phone || ""}
-                          placeholder="WhatsApp do gerente..."
-                          onBlur={(e) => {
-                            if (e.target.value !== (seller.manager_phone || "")) {
-                              updateAccountManager(seller.id, undefined, e.target.value);
-                            }
-                          }}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") (e.target as HTMLInputElement).blur();
-                          }}
-                          className="px-2 py-1 rounded-lg border border-input bg-background text-foreground text-xs w-44 focus:ring-1 focus:ring-ring focus:outline-none"
-                        />
+                      <div className="flex items-center gap-2 mt-2">
+                        <button
+                          onClick={() => openManagerDialog(seller)}
+                          className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-input bg-background text-xs font-medium text-foreground hover:bg-secondary transition-colors"
+                        >
+                          {seller.manager_photo ? (
+                            <img src={seller.manager_photo} alt="" className="w-5 h-5 rounded-full object-cover" />
+                          ) : (
+                            <UserCog size={14} className="text-muted-foreground" />
+                          )}
+                          {seller.account_manager || "Definir gerente"}
+                        </button>
                       </div>
                     </div>
 
@@ -889,6 +913,65 @@ export default function AdminPanel() {
           </div>
         </div>
       )}
+
+      {/* Manager Edit Dialog */}
+      <Dialog open={managerDialogOpen} onOpenChange={setManagerDialogOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2"><UserCog size={18} /> Gerente de Conta</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 pt-2">
+            {/* Photo */}
+            <div className="flex flex-col items-center gap-2">
+              <div
+                onClick={() => managerPhotoRef.current?.click()}
+                className="w-20 h-20 rounded-full bg-secondary border-2 border-dashed border-border flex items-center justify-center cursor-pointer hover:border-primary transition-colors overflow-hidden"
+              >
+                {managerPhotoUrl ? (
+                  <img src={managerPhotoUrl} alt="Gerente" className="w-full h-full object-cover" />
+                ) : (
+                  <Camera size={24} className="text-muted-foreground" />
+                )}
+              </div>
+              <input ref={managerPhotoRef} type="file" accept="image/*" className="hidden" onChange={handleManagerPhotoUpload} />
+              <p className="text-[10px] text-muted-foreground">
+                {managerPhotoUploading ? "Enviando..." : "Clique para enviar foto"}
+              </p>
+            </div>
+
+            {/* Name */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-foreground">Nome do Gerente</label>
+              <input
+                value={managerName}
+                onChange={(e) => setManagerName(e.target.value)}
+                placeholder="Ex: Gabriel"
+                className="w-full px-3 py-2 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+              />
+            </div>
+
+            {/* WhatsApp */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-foreground flex items-center gap-1"><Phone size={12} /> WhatsApp</label>
+              <input
+                value={managerPhoneVal}
+                onChange={(e) => setManagerPhoneVal(e.target.value)}
+                placeholder="5527999999999"
+                className="w-full px-3 py-2 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+              />
+              <p className="text-[10px] text-muted-foreground">Formato: DDI + DDD + número (ex: 5527999999999)</p>
+            </div>
+
+            <button
+              onClick={saveManager}
+              disabled={managerPhotoUploading}
+              className="w-full py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-bold hover:bg-primary/90 transition-colors disabled:opacity-50"
+            >
+              Salvar
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -338,7 +338,7 @@ export default function SellerDashboard() {
           <div className="p-4 border-t border-border">
             <div className="bg-gradient-to-br from-primary/10 to-accent/10 rounded-2xl p-4">
               <div className="flex items-center gap-3 mb-3">
-                <img src={gabrielImg} alt={profile?.account_manager || "Gabriel"} className="w-10 h-10 rounded-full object-cover ring-2 ring-primary/30" width={40} height={40} />
+                <img src={(profile as any)?.manager_photo || gabrielImg} alt={profile?.account_manager || "Gabriel"} className="w-10 h-10 rounded-full object-cover ring-2 ring-primary/30" width={40} height={40} />
                 <div>
                   <p className="text-xs font-bold text-foreground">{profile?.account_manager || "Gabriel"}</p>
                   <p className="text-[10px] text-muted-foreground">Seu Gerente de Conta</p>
@@ -478,7 +478,7 @@ export default function SellerDashboard() {
                 {/* Mobile Gerente Card */}
                 <div className="lg:hidden bg-gradient-to-br from-primary/10 to-accent/10 rounded-2xl p-4">
                   <div className="flex items-center gap-3 mb-3">
-                    <img src={gabrielImg} alt={profile?.account_manager || "Gabriel"} className="w-10 h-10 rounded-full object-cover ring-2 ring-primary/30" width={40} height={40} />
+                    <img src={(profile as any)?.manager_photo || gabrielImg} alt={profile?.account_manager || "Gabriel"} className="w-10 h-10 rounded-full object-cover ring-2 ring-primary/30" width={40} height={40} />
                     <div>
                       <p className="text-sm font-bold text-foreground">{profile?.account_manager || "Gabriel"}</p>
                       <p className="text-xs text-muted-foreground">Seu Gerente de Conta</p>
