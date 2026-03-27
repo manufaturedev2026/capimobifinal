@@ -78,6 +78,7 @@ export default function SellerItemForm() {
     bathrooms: "",
     area: "",
     parking_spots: "",
+    video_url: "",
   });
 
   useEffect(() => {
