@@ -7,20 +7,6 @@ interface StoreEffectsProps {
 
 type EffectType = "chuva" | "raios" | "poeira" | "brasas" | "vento" | "neblina" | "fumaca" | "dinheiro" | "pascoa";
 
-const EFFECT_CONFIG: Record<EffectType, { emoji: string; count: number; speed: number; className: string }> = {
-  chuva: { emoji: "💧", count: 40, speed: 1.2, className: "drop-shadow-[0_0_3px_rgba(59,130,246,0.5)]" },
-  raios: { emoji: "⚡", count: 8, speed: 2.5, className: "drop-shadow-[0_0_8px_rgba(250,204,21,0.8)]" },
-  poeira: { emoji: "🌫️", count: 25, speed: 3, className: "opacity-60" },
-  brasas: { emoji: "🔥", count: 20, speed: 2, className: "drop-shadow-[0_0_6px_rgba(239,68,68,0.6)]" },
-  vento: { emoji: "🍃", count: 15, speed: 2.5, className: "" },
-  neblina: { emoji: "☁️", count: 12, speed: 5, className: "opacity-40 blur-[1px]" },
-  fumaca: { emoji: "💨", count: 18, speed: 3, className: "opacity-50" },
-  dinheiro: { emoji: "💵", count: 25, speed: 2, className: "drop-shadow-[0_0_4px_rgba(34,197,94,0.5)]" },
-  pascoa: { emoji: "🥚", count: 20, speed: 2.5, className: "" },
-};
-
-const PASCOA_EMOJIS = ["🥚", "🐰", "🐣", "🍫", "🌸"];
-
 export default function StoreEffects({ sellerId }: StoreEffectsProps) {
   const [activeEffect, setActiveEffect] = useState<EffectType | null>(null);
 
@@ -34,60 +20,503 @@ export default function StoreEffects({ sellerId }: StoreEffectsProps) {
         .gte("expires_at", new Date().toISOString())
         .order("activated_at", { ascending: false })
         .limit(1);
-      if (data && data.length > 0) {
-        setActiveEffect((data[0] as any).effect_type as EffectType);
-      } else {
-        setActiveEffect(null);
-      }
+      setActiveEffect(data && data.length > 0 ? (data[0] as any).effect_type as EffectType : null);
     };
     fetchEffect();
     const interval = setInterval(fetchEffect, 30000);
     return () => clearInterval(interval);
   }, [sellerId]);
 
-  const particles = useMemo(() => {
-    if (!activeEffect || !EFFECT_CONFIG[activeEffect]) return [];
-    const cfg = EFFECT_CONFIG[activeEffect];
-    return Array.from({ length: cfg.count }, (_, i) => ({
-      id: i,
-      left: Math.random() * 100,
-      delay: Math.random() * cfg.speed,
-      duration: cfg.speed + Math.random() * 2,
-      size: 14 + Math.random() * 14,
-      emoji: activeEffect === "pascoa"
-        ? PASCOA_EMOJIS[Math.floor(Math.random() * PASCOA_EMOJIS.length)]
-        : cfg.emoji,
-    }));
-  }, [activeEffect]);
-
-  if (!activeEffect || !EFFECT_CONFIG[activeEffect]) return null;
-
-  const cfg = EFFECT_CONFIG[activeEffect];
+  if (!activeEffect) return null;
 
   return (
     <div className="fixed inset-0 pointer-events-none z-[9999] overflow-hidden">
-      {particles.map((p) => (
-        <span
-          key={p.id}
-          className={`absolute animate-[effectFall_linear_infinite] ${cfg.className}`}
+      {activeEffect === "chuva" && <RainEffect />}
+      {activeEffect === "raios" && <LightningEffect />}
+      {activeEffect === "poeira" && <DustEffect />}
+      {activeEffect === "brasas" && <EmbersEffect />}
+      {activeEffect === "vento" && <WindEffect />}
+      {activeEffect === "neblina" && <FogEffect />}
+      {activeEffect === "fumaca" && <SmokeEffect />}
+      {activeEffect === "dinheiro" && <MoneyEffect />}
+      {activeEffect === "pascoa" && <EasterEffect />}
+    </div>
+  );
+}
+
+/* ═══════════ CHUVA ═══════════ */
+function RainEffect() {
+  const drops = useMemo(() => Array.from({ length: 80 }, (_, i) => ({
+    id: i,
+    left: Math.random() * 100,
+    delay: Math.random() * 2,
+    duration: 0.4 + Math.random() * 0.4,
+    width: 1 + Math.random() * 1.5,
+    height: 15 + Math.random() * 25,
+    opacity: 0.2 + Math.random() * 0.4,
+  })), []);
+
+  return (
+    <>
+      {drops.map(d => (
+        <div
+          key={d.id}
+          className="absolute rounded-full"
           style={{
-            left: `${p.left}%`,
-            top: "-30px",
-            fontSize: `${p.size}px`,
-            animationDuration: `${p.duration}s`,
-            animationDelay: `${p.delay}s`,
+            left: `${d.left}%`,
+            top: "-40px",
+            width: `${d.width}px`,
+            height: `${d.height}px`,
+            background: `linear-gradient(to bottom, transparent, rgba(150,200,255,${d.opacity}))`,
+            animation: `rainDrop ${d.duration}s linear ${d.delay}s infinite`,
           }}
-        >
-          {p.emoji}
-        </span>
+        />
       ))}
+      {/* Splash overlay at bottom */}
+      <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-t from-blue-400/5 to-transparent" />
       <style>{`
-        @keyframes effectFall {
-          0% { transform: translateY(-30px) rotate(0deg); opacity: 1; }
-          85% { opacity: 1; }
-          100% { transform: translateY(105vh) rotate(360deg); opacity: 0; }
+        @keyframes rainDrop {
+          0% { transform: translateY(-40px) translateX(0); opacity: 0; }
+          10% { opacity: 1; }
+          90% { opacity: 1; }
+          100% { transform: translateY(105vh) translateX(-20px); opacity: 0; }
         }
       `}</style>
-    </div>
+    </>
+  );
+}
+
+/* ═══════════ RAIOS ═══════════ */
+function LightningEffect() {
+  const [flash, setFlash] = useState(false);
+  const [bolt, setBolt] = useState<{ left: number; path: string } | null>(null);
+
+  useEffect(() => {
+    const strike = () => {
+      const left = 10 + Math.random() * 80;
+      const segments = 5 + Math.floor(Math.random() * 4);
+      let path = `M ${left} 0`;
+      let x = left, y = 0;
+      for (let i = 0; i < segments; i++) {
+        x += (Math.random() - 0.5) * 12;
+        y += (100 / segments);
+        path += ` L ${x} ${y}`;
+      }
+      setBolt({ left, path });
+      setFlash(true);
+      setTimeout(() => setFlash(false), 100);
+      setTimeout(() => {
+        setFlash(true);
+        setTimeout(() => setFlash(false), 60);
+      }, 150);
+      setTimeout(() => setBolt(null), 400);
+    };
+
+    const loop = () => {
+      strike();
+      const next = 2000 + Math.random() * 5000;
+      return setTimeout(() => { const id = loop(); return id; }, next);
+    };
+    const id = loop();
+    return () => clearTimeout(id);
+  }, []);
+
+  return (
+    <>
+      {flash && <div className="absolute inset-0 bg-white/15 transition-none" />}
+      {bolt && (
+        <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+          <path
+            d={bolt.path}
+            fill="none"
+            stroke="rgba(200,220,255,0.9)"
+            strokeWidth="0.4"
+            filter="url(#glow)"
+            className="animate-[boltFade_0.4s_ease-out_forwards]"
+          />
+          <path
+            d={bolt.path}
+            fill="none"
+            stroke="white"
+            strokeWidth="0.15"
+            className="animate-[boltFade_0.4s_ease-out_forwards]"
+          />
+          <defs>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="0.5" result="blur" />
+              <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+            </filter>
+          </defs>
+        </svg>
+      )}
+      <style>{`
+        @keyframes boltFade {
+          0% { opacity: 1; }
+          100% { opacity: 0; }
+        }
+      `}</style>
+    </>
+  );
+}
+
+/* ═══════════ POEIRA ═══════════ */
+function DustEffect() {
+  const particles = useMemo(() => Array.from({ length: 50 }, (_, i) => ({
+    id: i,
+    left: Math.random() * 100,
+    top: Math.random() * 100,
+    size: 2 + Math.random() * 4,
+    duration: 6 + Math.random() * 8,
+    delay: Math.random() * 5,
+    opacity: 0.15 + Math.random() * 0.25,
+    driftX: (Math.random() - 0.5) * 60,
+    driftY: (Math.random() - 0.5) * 40,
+  })), []);
+
+  return (
+    <>
+      {particles.map(p => (
+        <div
+          key={p.id}
+          className="absolute rounded-full"
+          style={{
+            left: `${p.left}%`,
+            top: `${p.top}%`,
+            width: `${p.size}px`,
+            height: `${p.size}px`,
+            background: `radial-gradient(circle, rgba(200,180,150,${p.opacity}), transparent)`,
+            animation: `dustFloat ${p.duration}s ease-in-out ${p.delay}s infinite`,
+            "--dx": `${p.driftX}px`,
+            "--dy": `${p.driftY}px`,
+          } as any}
+        />
+      ))}
+      <style>{`
+        @keyframes dustFloat {
+          0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.3; }
+          25% { transform: translate(var(--dx), var(--dy)) scale(1.2); opacity: 0.5; }
+          50% { transform: translate(calc(var(--dx) * -0.5), calc(var(--dy) * 0.7)) scale(0.9); opacity: 0.2; }
+          75% { transform: translate(calc(var(--dx) * 0.8), calc(var(--dy) * -0.4)) scale(1.1); opacity: 0.4; }
+        }
+      `}</style>
+    </>
+  );
+}
+
+/* ═══════════ BRASAS ═══════════ */
+function EmbersEffect() {
+  const embers = useMemo(() => Array.from({ length: 35 }, (_, i) => ({
+    id: i,
+    left: Math.random() * 100,
+    size: 3 + Math.random() * 5,
+    duration: 3 + Math.random() * 4,
+    delay: Math.random() * 4,
+    sway: (Math.random() - 0.5) * 80,
+    hue: 10 + Math.random() * 30,
+  })), []);
+
+  return (
+    <>
+      {embers.map(e => (
+        <div
+          key={e.id}
+          className="absolute rounded-full"
+          style={{
+            left: `${e.left}%`,
+            bottom: "-10px",
+            width: `${e.size}px`,
+            height: `${e.size}px`,
+            background: `radial-gradient(circle, hsla(${e.hue},100%,60%,0.9), hsla(${e.hue},100%,40%,0.3), transparent)`,
+            boxShadow: `0 0 ${e.size * 2}px hsla(${e.hue},100%,50%,0.4)`,
+            animation: `emberRise ${e.duration}s ease-out ${e.delay}s infinite`,
+            "--sway": `${e.sway}px`,
+          } as any}
+        />
+      ))}
+      <style>{`
+        @keyframes emberRise {
+          0% { transform: translateY(0) translateX(0) scale(1); opacity: 1; }
+          30% { opacity: 1; }
+          100% { transform: translateY(-105vh) translateX(var(--sway)) scale(0.2); opacity: 0; }
+        }
+      `}</style>
+    </>
+  );
+}
+
+/* ═══════════ VENTO ═══════════ */
+function WindEffect() {
+  const leaves = useMemo(() => Array.from({ length: 20 }, (_, i) => ({
+    id: i,
+    top: Math.random() * 80,
+    size: 8 + Math.random() * 12,
+    duration: 3 + Math.random() * 3,
+    delay: Math.random() * 5,
+    rotation: Math.random() * 720,
+    yDrift: (Math.random() - 0.5) * 100,
+    hue: [100, 120, 50, 30][Math.floor(Math.random() * 4)],
+    sat: 40 + Math.random() * 40,
+  })), []);
+
+  return (
+    <>
+      {leaves.map(l => (
+        <div
+          key={l.id}
+          className="absolute"
+          style={{
+            right: "-30px",
+            top: `${l.top}%`,
+            width: `${l.size}px`,
+            height: `${l.size * 0.6}px`,
+            borderRadius: "50% 0 50% 0",
+            background: `hsla(${l.hue},${l.sat}%,40%,0.7)`,
+            animation: `leafBlow ${l.duration}s ease-in-out ${l.delay}s infinite`,
+            "--rot": `${l.rotation}deg`,
+            "--yDrift": `${l.yDrift}px`,
+          } as any}
+        />
+      ))}
+      {/* Wind streaks */}
+      {Array.from({ length: 6 }, (_, i) => (
+        <div
+          key={`streak-${i}`}
+          className="absolute"
+          style={{
+            right: "-100px",
+            top: `${10 + Math.random() * 70}%`,
+            width: `${60 + Math.random() * 100}px`,
+            height: "1px",
+            background: "linear-gradient(to left, transparent, rgba(200,200,200,0.15), transparent)",
+            animation: `windStreak ${1.5 + Math.random() * 1.5}s linear ${Math.random() * 3}s infinite`,
+          }}
+        />
+      ))}
+      <style>{`
+        @keyframes leafBlow {
+          0% { transform: translateX(0) translateY(0) rotate(0deg); opacity: 0; }
+          10% { opacity: 0.8; }
+          90% { opacity: 0.6; }
+          100% { transform: translateX(-110vw) translateY(var(--yDrift)) rotate(var(--rot)); opacity: 0; }
+        }
+        @keyframes windStreak {
+          0% { transform: translateX(0); opacity: 0; }
+          20% { opacity: 1; }
+          80% { opacity: 1; }
+          100% { transform: translateX(-110vw); opacity: 0; }
+        }
+      `}</style>
+    </>
+  );
+}
+
+/* ═══════════ NEBLINA ═══════════ */
+function FogEffect() {
+  const layers = useMemo(() => Array.from({ length: 5 }, (_, i) => ({
+    id: i,
+    top: 15 + i * 15 + Math.random() * 10,
+    duration: 15 + Math.random() * 10,
+    delay: Math.random() * 8,
+    opacity: 0.06 + Math.random() * 0.08,
+    height: 20 + Math.random() * 15,
+    direction: i % 2 === 0 ? 1 : -1,
+  })), []);
+
+  return (
+    <>
+      {layers.map(l => (
+        <div
+          key={l.id}
+          className="absolute w-[200%]"
+          style={{
+            top: `${l.top}%`,
+            left: l.direction === 1 ? "-100%" : "0",
+            height: `${l.height}%`,
+            background: `radial-gradient(ellipse 80% 50% at center, rgba(200,210,220,${l.opacity * 3}), transparent)`,
+            filter: "blur(30px)",
+            animation: `fogDrift${l.direction === 1 ? "R" : "L"} ${l.duration}s ease-in-out ${l.delay}s infinite alternate`,
+          }}
+        />
+      ))}
+      <style>{`
+        @keyframes fogDriftR {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(50%); }
+        }
+        @keyframes fogDriftL {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+      `}</style>
+    </>
+  );
+}
+
+/* ═══════════ FUMAÇA ═══════════ */
+function SmokeEffect() {
+  const puffs = useMemo(() => Array.from({ length: 12 }, (_, i) => ({
+    id: i,
+    left: 20 + Math.random() * 60,
+    size: 80 + Math.random() * 120,
+    duration: 6 + Math.random() * 5,
+    delay: Math.random() * 6,
+    drift: (Math.random() - 0.5) * 100,
+  })), []);
+
+  return (
+    <>
+      {puffs.map(p => (
+        <div
+          key={p.id}
+          className="absolute rounded-full"
+          style={{
+            left: `${p.left}%`,
+            bottom: "-50px",
+            width: `${p.size}px`,
+            height: `${p.size}px`,
+            background: `radial-gradient(circle, rgba(120,120,120,0.12), rgba(100,100,100,0.04), transparent)`,
+            filter: "blur(20px)",
+            animation: `smokeRise ${p.duration}s ease-out ${p.delay}s infinite`,
+            "--drift": `${p.drift}px`,
+          } as any}
+        />
+      ))}
+      <style>{`
+        @keyframes smokeRise {
+          0% { transform: translateY(0) translateX(0) scale(0.5); opacity: 0; }
+          20% { opacity: 0.6; }
+          100% { transform: translateY(-110vh) translateX(var(--drift)) scale(2.5); opacity: 0; }
+        }
+      `}</style>
+    </>
+  );
+}
+
+/* ═══════════ DINHEIRO ═══════════ */
+function MoneyEffect() {
+  const bills = useMemo(() => Array.from({ length: 25 }, (_, i) => ({
+    id: i,
+    left: Math.random() * 100,
+    duration: 3 + Math.random() * 3,
+    delay: Math.random() * 4,
+    rotation: Math.random() * 360,
+    sway: (Math.random() - 0.5) * 60,
+    size: 18 + Math.random() * 14,
+  })), []);
+
+  return (
+    <>
+      {bills.map(b => (
+        <div
+          key={b.id}
+          className="absolute"
+          style={{
+            left: `${b.left}%`,
+            top: "-40px",
+            width: `${b.size}px`,
+            height: `${b.size * 0.45}px`,
+            borderRadius: "2px",
+            background: "linear-gradient(135deg, #2d8b4e, #45b36b, #3a9e5c)",
+            border: "1px solid rgba(255,255,255,0.2)",
+            boxShadow: "inset 0 0 4px rgba(255,255,255,0.15), 0 2px 8px rgba(0,0,0,0.15)",
+            animation: `moneyFall ${b.duration}s ease-in-out ${b.delay}s infinite`,
+            "--sway": `${b.sway}px`,
+            "--rot": `${b.rotation}deg`,
+          } as any}
+        >
+          <div
+            className="absolute inset-0 flex items-center justify-center font-bold text-white/50"
+            style={{ fontSize: `${b.size * 0.3}px` }}
+          >
+            $
+          </div>
+        </div>
+      ))}
+      <style>{`
+        @keyframes moneyFall {
+          0% { transform: translateY(-40px) translateX(0) rotateX(0) rotateY(0) rotate(0); opacity: 0; }
+          10% { opacity: 1; }
+          50% { transform: translateY(50vh) translateX(var(--sway)) rotateX(180deg) rotateY(90deg) rotate(var(--rot)); }
+          85% { opacity: 0.8; }
+          100% { transform: translateY(105vh) translateX(calc(var(--sway) * -0.5)) rotateX(360deg) rotateY(180deg) rotate(calc(var(--rot) * 2)); opacity: 0; }
+        }
+      `}</style>
+    </>
+  );
+}
+
+/* ═══════════ PÁSCOA ═══════════ */
+function EasterEffect() {
+  const eggs = useMemo(() => Array.from({ length: 20 }, (_, i) => {
+    const colors = [
+      ["#ff6b9d", "#ff85ad"],
+      ["#7c5cff", "#9b82ff"],
+      ["#ffd93d", "#ffe066"],
+      ["#6bcb77", "#8fd99a"],
+      ["#4d96ff", "#70a9ff"],
+      ["#ff6b6b", "#ff8585"],
+    ];
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    return {
+      id: i,
+      left: Math.random() * 100,
+      duration: 3.5 + Math.random() * 3,
+      delay: Math.random() * 5,
+      size: 14 + Math.random() * 10,
+      rotation: (Math.random() - 0.5) * 60,
+      sway: (Math.random() - 0.5) * 40,
+      color1: color[0],
+      color2: color[1],
+      pattern: Math.floor(Math.random() * 3),
+    };
+  }), []);
+
+  return (
+    <>
+      {eggs.map(e => (
+        <div
+          key={e.id}
+          className="absolute"
+          style={{
+            left: `${e.left}%`,
+            top: "-30px",
+            width: `${e.size}px`,
+            height: `${e.size * 1.3}px`,
+            borderRadius: "50% 50% 50% 50% / 60% 60% 40% 40%",
+            background: `linear-gradient(135deg, ${e.color1}, ${e.color2})`,
+            boxShadow: `0 2px 6px rgba(0,0,0,0.15), inset 0 -2px 4px rgba(0,0,0,0.1)`,
+            animation: `eggFall ${e.duration}s ease-in-out ${e.delay}s infinite`,
+            "--sway": `${e.sway}px`,
+            "--rot": `${e.rotation}deg`,
+          } as any}
+        >
+          {/* Egg decoration */}
+          {e.pattern === 0 && (
+            <div className="absolute w-full" style={{ top: "40%", height: "3px", background: "rgba(255,255,255,0.4)" }} />
+          )}
+          {e.pattern === 1 && (
+            <>
+              <div className="absolute rounded-full" style={{ top: "30%", left: "25%", width: "3px", height: "3px", background: "rgba(255,255,255,0.5)" }} />
+              <div className="absolute rounded-full" style={{ top: "50%", left: "55%", width: "3px", height: "3px", background: "rgba(255,255,255,0.5)" }} />
+              <div className="absolute rounded-full" style={{ top: "40%", left: "40%", width: "2px", height: "2px", background: "rgba(255,255,255,0.4)" }} />
+            </>
+          )}
+          {e.pattern === 2 && (
+            <div className="absolute" style={{ top: "30%", left: "10%", right: "10%", height: "30%", borderRadius: "50%", border: "1.5px solid rgba(255,255,255,0.3)" }} />
+          )}
+          {/* Shine */}
+          <div className="absolute rounded-full" style={{ top: "15%", left: "25%", width: "4px", height: "4px", background: "rgba(255,255,255,0.6)", filter: "blur(1px)" }} />
+        </div>
+      ))}
+      <style>{`
+        @keyframes eggFall {
+          0% { transform: translateY(-30px) translateX(0) rotate(0); opacity: 0; }
+          10% { opacity: 1; }
+          50% { transform: translateY(50vh) translateX(var(--sway)) rotate(var(--rot)); }
+          85% { opacity: 0.9; }
+          100% { transform: translateY(105vh) translateX(calc(var(--sway) * -1)) rotate(calc(var(--rot) * -1)); opacity: 0; }
+        }
+      `}</style>
+    </>
   );
 }
