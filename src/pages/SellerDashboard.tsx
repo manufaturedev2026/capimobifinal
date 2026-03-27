@@ -913,6 +913,15 @@ export default function SellerDashboard() {
                 </div>
               </div>
             )}
+
+            {/* Team Tab */}
+            {activeTab === "team" && isEmpresaPlan && profile?.id && (
+              <TeamMembersTab
+                profileId={profile.id}
+                userId={user!.id}
+                maxMembers={maxTeamMembers}
+              />
+            )}
           </div>
         </main>
       </div>
