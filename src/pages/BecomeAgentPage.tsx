@@ -132,8 +132,8 @@ const steps = [
   {
     icon: ShieldCheck,
     title: "Registro no CRECI",
-    description: "Solicite seu registro no CRECI-ES. Com ele, você está habilitado a exercer a profissão legalmente em todo o estado.",
-    detail: "Taxa: cerca de R$ 600",
+    description: "Taxa — O valor integral de R$ 918,00 reflete o desconto para pagamento antecipado (conforme as normas do CRECI para 2026). Caso você esteja realizando o seu registro profissional ao longo do ano, o cálculo é feito de forma proporcional.",
+    detail: "R$ 918,00 (valor integral 2026)",
   },
   {
     icon: Briefcase,
