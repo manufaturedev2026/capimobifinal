@@ -1,7 +1,7 @@
-import { Crown, Star, Zap, Building, Shield, Gem } from "lucide-react";
+import { Crown, Star, Zap, Building, Shield, Gem, Diamond } from "lucide-react";
 
 interface PackageBadgeProps {
-  tier: "start" | "basico" | "premium" | "vip" | "essencial_empresa" | "premium_empresa";
+  tier: "start" | "basico" | "premium" | "vip" | "essencial_empresa" | "premium_empresa" | "prime_empresa";
   size?: "sm" | "md" | "lg";
 }
 
