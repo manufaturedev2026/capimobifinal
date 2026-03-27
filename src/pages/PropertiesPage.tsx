@@ -471,15 +471,13 @@ export default function PropertiesPage() {
                         </span>
                       )}
                       <div className="absolute top-3 right-3 flex flex-col items-end gap-1">
-                        {(product as any).hasBlackTag && (
-                          <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-gradient-to-r from-zinc-900 to-black text-white shadow-lg">🏴 BLACK</span>
-                        )}
-                        {(product as any).hasDestaque && (
-                          <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg">⭐ DESTAQUE</span>
-                        )}
-                        {(product as any).sellerTier && (product as any).sellerTier !== "basico" && (
+                        {(product as any).hasBlackTag ? (
+                          <span className="px-2.5 py-1 rounded-md text-[11px] font-bold bg-gradient-to-r from-zinc-900 to-black text-white shadow-lg ring-1 ring-white/20">🏴 BLACK</span>
+                        ) : (product as any).hasDestaque ? (
+                          <span className="px-2.5 py-1 rounded-md text-[11px] font-bold bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg">⭐ DESTAQUE</span>
+                        ) : (product as any).sellerTier && (product as any).sellerTier !== "basico" ? (
                           <PackageBadge tier={(product as any).sellerTier} />
-                        )}
+                        ) : null}
                       </div>
                     </div>
 
