@@ -65,6 +65,7 @@ export default function PropertiesPage() {
       image: item.image,
       images: item.images,
       tag: item.tags?.[0] && item.tags[0] !== "aluguel_flex" ? getTagLabel(item.tags[0]) : item.tags?.[1] ? getTagLabel(item.tags[1]) : undefined,
+      allTags: (item.tags || []).filter((t) => t !== "aluguel_flex"),
       description: item.description || "",
       type: "imovel" as const,
       specs: {},
