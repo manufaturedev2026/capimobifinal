@@ -33,6 +33,7 @@ export default function SellerProfile() {
     creci: "",
     cnpj: "",
     cover_color: "",
+    video_url: "",
   });
 
   useEffect(() => {
