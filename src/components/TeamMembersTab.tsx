@@ -75,10 +75,10 @@ export default function TeamMembersTab({ profileId, userId, maxMembers }: Props)
 
     setUploading(true);
     const ext = file.name.split(".").pop();
-    const path = `team/${profileId}/${Date.now()}.${ext}`;
+    const path = `${userId}/team/${Date.now()}.${ext}`;
 
     const { error: uploadError } = await supabase.storage
-      .from("logos")
+      .from("seller-uploads")
       .upload(path, file, { upsert: true });
 
     if (uploadError) {
@@ -87,7 +87,7 @@ export default function TeamMembersTab({ profileId, userId, maxMembers }: Props)
       return;
     }
 
-    const { data: urlData } = supabase.storage.from("logos").getPublicUrl(path);
+    const { data: urlData } = supabase.storage.from("seller-uploads").getPublicUrl(path);
     setForm((f) => ({ ...f, photo_url: urlData.publicUrl }));
     setUploading(false);
   };
