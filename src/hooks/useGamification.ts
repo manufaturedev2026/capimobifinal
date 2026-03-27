@@ -135,15 +135,17 @@ export function useGamification(userId?: string, sellerId?: string) {
       .select("views_count")
       .eq("seller_id", sellerId)
       .eq("status", "ativo");
+    const totalViews = (items || []).reduce((sum, i) => sum + (i.views_count || 0), 0);
     const totalListings = (items || []).length;
 
-    setStats({ totalViews: 0, totalListings, profileComplete: false });
+    setStats({ totalViews, totalListings, profileComplete: false });
   }, [userId, sellerId]);
 
   const buildAchievements = useCallback(() => {
     const built: Achievement[] = ACHIEVEMENTS_CONFIG.map((cfg) => {
       let current = 0;
       if (cfg.trigger_type === "listings_milestone") current = stats.totalListings;
+      else if (cfg.trigger_type === "views_milestone") current = stats.totalViews;
 
       const completed = current >= cfg.threshold;
       const existingReward = rewards.find(
