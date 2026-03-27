@@ -244,6 +244,7 @@ export type Database = {
           seller_id: string
           seller_type: Database["public"]["Enums"]["seller_type"]
           service_area: boolean | null
+          sold_at: string | null
           state: string | null
           status: Database["public"]["Enums"]["item_status"]
           suites: number | null
@@ -312,6 +313,7 @@ export type Database = {
           seller_id: string
           seller_type: Database["public"]["Enums"]["seller_type"]
           service_area?: boolean | null
+          sold_at?: string | null
           state?: string | null
           status?: Database["public"]["Enums"]["item_status"]
           suites?: number | null
@@ -380,6 +382,7 @@ export type Database = {
           seller_id?: string
           seller_type?: Database["public"]["Enums"]["seller_type"]
           service_area?: boolean | null
+          sold_at?: string | null
           state?: string | null
           status?: Database["public"]["Enums"]["item_status"]
           suites?: number | null
@@ -626,7 +629,7 @@ export type Database = {
         | "van"
         | "utilitario"
         | "outros"
-      item_status: "ativo" | "inativo"
+      item_status: "ativo" | "inativo" | "vendido"
       item_tag:
         | "premium"
         | "luxo"
@@ -807,7 +810,7 @@ export const Constants = {
         "utilitario",
         "outros",
       ],
-      item_status: ["ativo", "inativo"],
+      item_status: ["ativo", "inativo", "vendido"],
       item_tag: [
         "premium",
         "luxo",
