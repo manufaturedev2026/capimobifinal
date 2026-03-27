@@ -209,7 +209,8 @@ export default function PropertiesPage() {
     if (onlyFurnished) list = list.filter((p) => (p as any).furnished);
     if (onlyFinancing) list = list.filter((p) => (p as any).accepts_financing);
 
-    list.sort((a, b) => a.id.localeCompare(b.id));
+    // Keep priority order from useRealListings (weighted by tier)
+    // Real items already come sorted by tier weight, static items go at the end
     return list;
   }, [activeCategory, propertyProducts, filterCity, filterType, realSellers, showRentals, priceMin, priceMax, minBedrooms, minArea, onlyFurnished, onlyFinancing]);
 
