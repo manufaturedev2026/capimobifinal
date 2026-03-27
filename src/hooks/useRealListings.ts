@@ -118,8 +118,8 @@ export function useRealListings(segment?: "imoveis" | "automoveis") {
       const now = new Date();
       (activeRewards || []).forEach((r: any) => {
         if (new Date(r.expires_at) > now) {
-          if (r.reward_type === "black_tag_24h") blackTagSellers.add(r.seller_id);
-          if (r.reward_type === "destaque_24h") destaqueSellers.add(r.seller_id);
+          if (r.reward_type === "black_tag_24h" || r.reward_type === "black_tag_1h") blackTagSellers.add(r.seller_id);
+          if (r.reward_type === "destaque_24h" || r.reward_type === "destaque_10min") destaqueSellers.add(r.seller_id);
         }
       });
 
