@@ -98,6 +98,9 @@ export default function GamificationTab({ userId, sellerId }: GamificationTabPro
         </div>
       </div>
 
+      {/* Store Effects */}
+      <StoreEffectsPicker userId={userId} sellerId={sellerId} />
+
       {/* Active Rewards */}
       {activeRewards.length > 0 && (
         <div className="bg-card border border-border rounded-2xl p-5">
