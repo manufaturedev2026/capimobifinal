@@ -109,7 +109,7 @@ export function useRealListings(segment?: "imoveis" | "automoveis") {
         return true;
       });
 
-      const sellerIds = [...new Set((rawItems || []).map((i: any) => i.seller_id))];
+      const sellerIds = [...new Set(filteredItems.map((i: any) => i.seller_id))];
 
       const { data: subs } = await supabase
         .from("seller_subscriptions")
@@ -155,9 +155,10 @@ export function useRealListings(segment?: "imoveis" | "automoveis") {
       }
       setSellers(mappedSellers);
 
-      const mapped = (rawItems || []).map((item: any) => ({
+      const mapped = filteredItems.map((item: any) => ({
         ...mapItem(item),
         sellerTier: (tierMap.get(item.seller_id) as any) || "basico",
+        status: item.status,
       }));
 
       // Tier weight: higher = more priority in sorting (appears first more often)
