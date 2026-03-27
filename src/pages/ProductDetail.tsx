@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ChevronLeft, ChevronRight, MessageCircle, Share2, Star, MapPin, Tag, Store, Image, X, ZoomIn } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, MessageCircle, Share2, Star, MapPin, Tag, Store, Image, X, ZoomIn, BadgeCheck } from "lucide-react";
 import { getProductById, formatPrice, getProductsByCompany, getTagStyle, getTagLabel } from "@/data/products";
 import { allCompanies } from "@/data/companies";
 import { supabase } from "@/integrations/supabase/client";
