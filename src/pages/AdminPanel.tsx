@@ -316,6 +316,7 @@ export default function AdminPanel() {
     vip: sellers.filter((s) => s.subscription?.tier === "vip").length,
     essencial_empresa: sellers.filter((s) => s.subscription?.tier === "essencial_empresa").length,
     premium_empresa: sellers.filter((s) => s.subscription?.tier === "premium_empresa").length,
+    prime_empresa: sellers.filter((s) => s.subscription?.tier === "prime_empresa").length,
     sem_pacote: sellers.filter((s) => !s.subscription).length,
   };
 
