@@ -161,11 +161,14 @@ export default function CompanyProfile() {
     images: item.photos || [],
     price: item.price || 0,
     tag: item.tags?.[0] || null,
+    tags: item.tags || [],
     category: item.category,
     city: item.city,
     description: item.description,
     specs: {} as Record<string, string>,
     type: "imovel" as const,
+    status: item.status,
+    sold_at: item.sold_at,
   }));
 
   const products = isDbProfile ? dbDisplayItems : [];
