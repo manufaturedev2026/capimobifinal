@@ -265,6 +265,11 @@ export default function ProductDetail() {
             ))}
           </div>
         )}
+        {isAluguel && (
+          <span className="absolute bottom-4 left-4 z-20 px-3 py-1 rounded-full text-xs font-bold shadow bg-primary text-primary-foreground">
+            🏠 Aluguel
+          </span>
+        )}
         {/* Hero image counter */}
         {images.length > 1 && (
           <div className="absolute bottom-4 right-4 z-20 flex items-center gap-2">
@@ -373,11 +378,6 @@ export default function ProductDetail() {
                 <p className={`text-xs font-bold uppercase tracking-wider ${isProperty ? "text-primary" : "text-accent"}`}>
                   {isProperty ? "Imóvel" : "Veículo"} {isDb ? `• ${product.category}` : ""}
                 </p>
-                {isAluguel && (
-                  <span className="px-3 py-1 rounded-full text-xs font-bold bg-primary text-primary-foreground shadow">
-                    🏠 Aluguel
-                  </span>
-                )}
               </div>
               <h1 className="font-display font-bold text-2xl md:text-4xl text-foreground mt-1 leading-tight">{title}</h1>
               {formattedPrice && (
