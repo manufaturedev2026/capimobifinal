@@ -163,6 +163,18 @@ export default function SellerDashboard() {
     toast({ title: "URL copiada!", description: storeUrl });
   };
 
+  const markAsSold = async (id: string) => {
+    const now = new Date().toISOString();
+    const { error } = await supabase
+      .from("seller_items")
+      .update({ status: "vendido" as any, sold_at: now })
+      .eq("id", id);
+    if (!error) {
+      setItems((prev) => prev.map((i) => (i.id === id ? { ...i, status: "vendido", sold_at: now } : i)));
+      toast({ title: "💰 Imóvel marcado como vendido!", description: "Será removido automaticamente em 24 horas." });
+    }
+  };
+
 
   const adBudget = parseFloat(adDailyBudget) || 0;
   const adDays = parseInt(adDuration) || 0;
