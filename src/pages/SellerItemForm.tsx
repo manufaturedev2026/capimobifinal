@@ -27,11 +27,11 @@ const propertyCategories: { value: ItemCategory; label: string; emoji: string }[
 
 const commonTags: { value: ItemTag; label: string; gradient: string; emoji: string }[] = [
   { value: "premium", label: "Premium", gradient: "from-amber-500 to-yellow-400", emoji: "👑" },
-  { value: "luxo", label: "Alto Padrão", gradient: "from-purple-600 to-pink-500", emoji: "💎" },
-  { value: "prime", label: "Investimento", gradient: "from-blue-600 to-cyan-400", emoji: "⭐" },
-  { value: "novo", label: "Novo / Na Planta", gradient: "from-emerald-500 to-green-400", emoji: "✨" },
-  { value: "em_destaque", label: "Oportunidade", gradient: "from-orange-500 to-amber-400", emoji: "🔥" },
-  { value: "oferta", label: "Urgente", gradient: "from-red-500 to-rose-400", emoji: "🏷️" },
+  { value: "luxo", label: "Luxo", gradient: "from-purple-600 to-pink-500", emoji: "💎" },
+  { value: "prime", label: "Prime", gradient: "from-blue-600 to-cyan-400", emoji: "⭐" },
+  { value: "novo", label: "Novo", gradient: "from-emerald-500 to-green-400", emoji: "✨" },
+  { value: "em_destaque", label: "Em Destaque", gradient: "from-orange-500 to-amber-400", emoji: "🔥" },
+  { value: "oferta", label: "Oferta", gradient: "from-red-500 to-rose-400", emoji: "🏷️" },
   { value: "exclusivo", label: "Exclusivo", gradient: "from-indigo-600 to-violet-500", emoji: "🔒" },
   { value: "top", label: "Top", gradient: "from-sky-500 to-blue-400", emoji: "🚀" },
   { value: "limited", label: "Limited", gradient: "from-slate-600 to-zinc-500", emoji: "⏳" },
