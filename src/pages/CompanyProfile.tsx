@@ -42,6 +42,10 @@ export default function CompanyProfile() {
   const [galleryLightbox, setGalleryLightbox] = useState<number | null>(null);
   const [gallerySlide, setGallerySlide] = useState(0);
   const [galleryPaused, setGalleryPaused] = useState(false);
+  const [teamMember, setTeamMember] = useState<any>(null);
+
+  const searchParams = new URLSearchParams(location.search);
+  const corretorSlug = searchParams.get("corretor");
 
   const staticCompany = allCompanies.find((c) => c.id === id);
   const staticProducts = staticCompany ? getProductsByCompany(staticCompany.id) : [];
