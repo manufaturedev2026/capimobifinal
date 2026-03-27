@@ -59,6 +59,7 @@ export const PACKAGE_CONFIG = {
       "Destaque no topo da listagem",
       "Estatísticas avançadas",
       "Suporte prioritário",
+      "Botão Modo Cinema na loja",
     ],
   },
   vip: {
@@ -77,6 +78,7 @@ export const PACKAGE_CONFIG = {
       "Suporte VIP dedicado",
       "Anúncios via Google Ads",
       "Instagram na loja",
+      "Botão Modo Cinema na loja",
     ],
   },
   essencial_empresa: {
@@ -97,6 +99,7 @@ export const PACKAGE_CONFIG = {
       "Gerente de conta dedicado",
       "Suporte VIP dedicado",
       "Instagram na loja",
+      "Botão Modo Cinema na loja",
       "Até 5 Corretores vinculados",
     ],
   },
@@ -119,6 +122,7 @@ export const PACKAGE_CONFIG = {
       "Gerente de conta dedicado",
       "Suporte VIP dedicado",
       "Instagram na loja",
+      "Botão Modo Cinema na loja",
       "Até 10 Corretores vinculados",
     ],
   },
