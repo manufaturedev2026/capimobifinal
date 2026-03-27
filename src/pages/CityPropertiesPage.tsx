@@ -69,6 +69,8 @@ export default function CityPropertiesPage() {
     return items.map((item) => ({
       id: item.id,
       companyId: item.sellerId,
+      sellerId: item.sellerId,
+      sellerTier: item.sellerTier || "basico",
       title: item.title,
       price: item.price,
       image: item.image,
@@ -78,8 +80,10 @@ export default function CityPropertiesPage() {
       type: "imovel" as const,
       specs: {},
       location: item.city || "",
+      city: item.city || "",
       realCategory: item.category,
       isAluguel: (item.tags || []).includes("aluguel_flex") || item.category === "aluguel",
+      hasDestaque: item.hasDestaque || false,
     }));
   }, [items]);
 
