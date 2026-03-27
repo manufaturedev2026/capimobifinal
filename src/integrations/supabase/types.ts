@@ -597,6 +597,12 @@ export type Database = {
         | "cobertura"
         | "vista_panoramica"
         | "aluguel_flex"
+        | "alto_padrao"
+        | "oportunidade"
+        | "ultimas_unidades"
+        | "area_lazer"
+        | "piscina_tag"
+        | "aceita_financiamento_tag"
       package_tier:
         | "start"
         | "basico"
@@ -772,6 +778,12 @@ export const Constants = {
         "cobertura",
         "vista_panoramica",
         "aluguel_flex",
+        "alto_padrao",
+        "oportunidade",
+        "ultimas_unidades",
+        "area_lazer",
+        "piscina_tag",
+        "aceita_financiamento_tag",
       ],
       package_tier: [
         "start",
