@@ -90,7 +90,9 @@ export default function PropertiesPage() {
       bedrooms: item.bedrooms,
       area: item.area,
       neighborhood: item.neighborhood,
-    })) as (Product & { sellerTier?: string; realCategory?: string; isAluguel?: boolean; furnished?: boolean; accepts_financing?: boolean; bedrooms?: number; area?: number; neighborhood?: string })[];
+      status: (item as any).status || "ativo",
+      sold_at: item.sold_at,
+    })) as (Product & { sellerTier?: string; realCategory?: string; isAluguel?: boolean; furnished?: boolean; accepts_financing?: boolean; bedrooms?: number; area?: number; neighborhood?: string; status?: string; sold_at?: string | null })[];
   }, [realItems]);
 
   const normalizeCityValue = (value?: string | null) => value?.trim().toLowerCase() ?? "";
