@@ -114,7 +114,7 @@ export default function CompanyProfile() {
           rating: "5.0",
           reviewCount: 0,
           whatsapp: teamMember?.phone || dbProfile.phone || "",
-          instagram: dbProfile.instagram || "",
+          instagram: (teamMember?.instagram || dbProfile.instagram) || "",
           segment: dbProfile.seller_type,
           show_location: dbProfile.show_location ?? true,
         }
