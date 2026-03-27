@@ -138,12 +138,12 @@ export function useRealListings(segment?: "imoveis" | "automoveis") {
       // Tier weight: higher = more priority in sorting (appears first more often)
       // All items appear, but higher tiers get weighted shuffle priority
       const tierWeight: Record<string, number> = {
-        prime_empresa: 29,
-        premium_empresa: 27,
-        essencial_empresa: 26,
-        vip: 25,      // Display: "Premium" (plano mais caro individual)
-        premium: 20,   // Display: "VIP"
-        start: 15,
+        prime_empresa: 200,
+        premium_empresa: 140,
+        essencial_empresa: 100,
+        vip: 70,       // Display: "Premium" (plano mais caro individual)
+        premium: 40,   // Display: "VIP"
+        start: 20,
         basico: 10,
       };
 
@@ -153,7 +153,7 @@ export function useRealListings(segment?: "imoveis" | "automoveis") {
       const weightedItems = mapped.map((item: any) => {
         const weight = tierWeight[item.sellerTier] ?? 10;
         const randomFactor = Math.random(); // 0-1
-        const score = weight * (0.5 + randomFactor); // weight * [0.5 - 1.5]
+        const score = weight * (0.7 + randomFactor * 0.6); // weight * [0.7 - 1.3]
         return { ...item, _sortScore: score };
       });
 
