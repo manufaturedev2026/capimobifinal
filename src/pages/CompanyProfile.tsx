@@ -305,8 +305,8 @@ export default function CompanyProfile() {
         )}
 
         {/* Overlays */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-black/10" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-black/5" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
 
         {/* Back button */}
         <div className="absolute top-4 left-4 z-20">
