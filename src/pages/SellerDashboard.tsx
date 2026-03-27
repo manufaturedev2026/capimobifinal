@@ -552,7 +552,7 @@ export default function SellerDashboard() {
                         className="bg-card border border-border rounded-2xl overflow-hidden group hover:shadow-lg transition-shadow">
                         <div className="relative aspect-video bg-muted">
                           {item.photos && item.photos.length > 0 ? (
-                            <img src={item.photos[0]} alt={item.title} className="w-full h-full object-cover" />
+                            <img src={item.photos[0]} alt={item.title} className={`w-full h-full object-cover ${item.status === "vendido" ? "brightness-50 blur-[1px]" : ""}`} />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center">
                               <Image size={32} className="text-muted-foreground" />
