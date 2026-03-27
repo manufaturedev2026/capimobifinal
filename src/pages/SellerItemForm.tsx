@@ -26,25 +26,15 @@ const propertyCategories: { value: ItemCategory; label: string; emoji: string }[
   { value: "flat", label: "Flat / Studio", emoji: "🛏️" },
 ];
 
-const commonTags: { value: ItemTag; label: string; gradient: string; emoji: string }[] = [
-  { value: "premium", label: "Premium", gradient: "from-amber-500 to-yellow-400", emoji: "👑" },
-  { value: "luxo", label: "Luxo", gradient: "from-purple-600 to-pink-500", emoji: "💎" },
-  { value: "prime", label: "Prime", gradient: "from-blue-600 to-cyan-400", emoji: "⭐" },
-  { value: "novo", label: "Novo", gradient: "from-emerald-500 to-green-400", emoji: "✨" },
-  { value: "em_destaque", label: "Em Destaque", gradient: "from-orange-500 to-amber-400", emoji: "🔥" },
-  { value: "oferta", label: "Oferta", gradient: "from-red-500 to-rose-400", emoji: "🏷️" },
-  { value: "exclusivo", label: "Exclusivo", gradient: "from-indigo-600 to-violet-500", emoji: "🔒" },
-  { value: "top", label: "Top", gradient: "from-sky-500 to-blue-400", emoji: "🚀" },
-  { value: "limited", label: "Limited", gradient: "from-slate-600 to-zinc-500", emoji: "⏳" },
-  { value: "lancamento", label: "Lançamento", gradient: "from-fuchsia-600 to-pink-400", emoji: "🆕" },
-];
+const MAX_TAGS = 3;
 
-const propertyOnlyTags: { value: ItemTag; label: string; gradient: string; emoji: string }[] = [
-  { value: "pronto_para_morar", label: "Pronto p/ Morar", gradient: "from-teal-500 to-emerald-400", emoji: "🏡" },
-  { value: "cobertura", label: "Cobertura", gradient: "from-violet-600 to-purple-400", emoji: "🏙️" },
-  { value: "vista_panoramica", label: "Vista Panorâmica", gradient: "from-cyan-500 to-sky-400", emoji: "🌅" },
-  { value: "aluguel_flex", label: "Aluguel Flex", gradient: "from-lime-500 to-green-400", emoji: "🔄" },
-];
+const categoryHeaderStyles: Record<string, string> = {
+  valor: "text-amber-600",
+  destaque: "text-red-500",
+  status: "text-blue-500",
+  diferenciais: "text-emerald-500",
+  facilidade: "text-purple-500",
+};
 
 const INITIAL_FORM = {
   title: "",
