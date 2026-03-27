@@ -479,7 +479,7 @@ export default function PropertiesPage() {
                         )}
                       </div>
                       {(product as any).hasBlackTag && (
-                        <span className="absolute bottom-3 right-3 px-2.5 py-1 rounded-md text-[11px] font-bold bg-gradient-to-r from-zinc-900 to-black text-white shadow-lg ring-1 ring-white/20 z-10">🏴 BLACK</span>
+                        <span className="absolute bottom-3 right-3 px-2.5 py-1 rounded-md text-[11px] font-bold bg-gradient-to-r from-zinc-900 to-black text-white shadow-lg ring-1 ring-white/20 z-10">BLACK</span>
                       )}
                     </div>
 
