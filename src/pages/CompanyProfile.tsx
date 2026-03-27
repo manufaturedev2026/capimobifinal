@@ -222,19 +222,16 @@ export default function CompanyProfile() {
     : products[0];
 
   const handleWhatsApp = (title: string, productId?: string) => {
-    if (!corretorSlug && teamMembers.length > 0) {
-      setPendingWhatsApp({ title, productId });
-      setShowTeamPicker(true);
-      return;
-    }
-    sendWhatsApp(company.whatsapp, company.name, title, productId);
-  };
-
-  const sendWhatsApp = (phone: string, name: string, title: string, productId?: string) => {
     if (isDbProfile && id) trackSellerEvent(id, "whatsapp_click");
     const seg = "imoveis";
-    const link = productId ? `\n\n🔗 ${window.location.origin}/${seg}/produto/${productId}` : `\n\n🔗 ${window.location.href}`;
-    window.location.href = `https://wa.me/${phone}?text=${encodeURIComponent(`Olá ${name}! Tenho interesse: ${title}${link}`)}`;
+    const link = productId ? `${window.location.origin}/${seg}/produto/${productId}` : window.location.href;
+    openWhatsAppPicker({
+      sellerId: company.id,
+      sellerName: company.name,
+      sellerPhone: company.whatsapp,
+      title,
+      link,
+    });
   };
 
   const isPaid = sellerTier !== "basico";
