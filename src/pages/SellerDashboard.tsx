@@ -27,6 +27,7 @@ type SellerItem = {
   city: string | null;
   created_at: string;
   seller_type: string;
+  sold_at: string | null;
 };
 
 type DashboardTab = "overview" | "items" | "stats" | "domain" | "ads" | "study" | "team" | "events";
