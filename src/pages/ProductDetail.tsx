@@ -529,7 +529,7 @@ export default function ProductDetail() {
 
               {company.whatsapp && (
                 <button onClick={() => handleWhatsAppClick()}
-                  className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-green-500 hover:bg-green-600 text-white font-bold text-sm transition-colors shadow-lg">
+                  className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-sm transition-colors shadow-lg">
                   <MessageCircle size={18} /> Chamar no WhatsApp
                 </button>
               )}
@@ -547,12 +547,12 @@ export default function ProductDetail() {
                   toast({ title: "Link copiado!" });
                 }
               }}
-                className="mt-3 w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-secondary text-secondary-foreground font-medium text-sm hover:bg-secondary/80 transition-colors">
+                className="mt-3 w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-white border border-border text-foreground font-medium text-sm hover:bg-secondary transition-colors">
                 <Share2 size={16} /> Compartilhar
               </button>
 
               <Link to={companyUrl}
-                className="mt-3 w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:bg-primary/90 transition-colors shadow-md">
+                className="mt-3 w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-accent text-accent-foreground font-bold text-sm hover:bg-accent/90 transition-colors shadow-md">
                 <Store size={16} /> Ver Loja Completa
               </Link>
             </motion.div>
