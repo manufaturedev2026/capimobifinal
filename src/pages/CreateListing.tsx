@@ -74,7 +74,12 @@ const plans = [
   { name: "VIP", price: "R$ 114,99/mês", items: "Até 50 anúncios", features: ["Selo VIP exclusivo", "Destaque no topo da listagem", "Estatísticas completas", "Suporte VIP dedicado", "Anúncios via Google Ads", "Instagram na loja"] },
 ];
 
-export default function CreateListing() {
+const companyPlans = [
+  { name: "Essencial Empresa", price: "R$ 539,90/mês", items: "Anúncios ilimitados", features: ["Selo Empresa Verificada", "Destaque na homepage", "Destaque no topo da listagem", "Estatísticas completas", "Campanha dedicada de Google Ads", "Gerente de conta dedicado", "Suporte VIP dedicado", "Instagram na loja", "Até 5 corretores vinculados"] },
+  { name: "Premium Empresa", price: "R$ 999,90/mês", items: "Anúncios ilimitados", features: ["Selo Empresa Verificada", "Destaque na homepage", "Destaque no topo da listagem", "Estatísticas completas", "Campanha Google Ads ampliada", "Anúncios Dinâmicos Google Ads", "Gerente de conta dedicado", "Suporte VIP dedicado", "Instagram na loja", "Até 10 corretores vinculados"], highlight: true },
+];
+
+
   return (
     <div className="min-h-screen bg-background">
       {/* Hero */}
