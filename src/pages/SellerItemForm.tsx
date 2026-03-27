@@ -533,6 +533,21 @@ export default function SellerItemForm() {
           </div>
         </div>
 
+        {/* Video URL */}
+        <div className="bg-card border border-border rounded-2xl p-5 space-y-3">
+          <div className="flex items-center gap-2">
+            <Video size={18} className="text-primary" />
+            <h2 className="font-display font-bold text-foreground">Vídeo (opcional)</h2>
+          </div>
+          <p className="text-xs text-muted-foreground">Cole o link de um vídeo do YouTube para exibir na página do anúncio.</p>
+          <input
+            value={form.video_url}
+            onChange={(e) => setForm((f) => ({ ...f, video_url: e.target.value }))}
+            className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+            placeholder="https://www.youtube.com/watch?v=..."
+          />
+        </div>
+
         {/* Submit */}
         <button
           type="submit"
