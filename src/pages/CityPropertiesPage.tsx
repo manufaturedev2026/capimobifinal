@@ -32,6 +32,7 @@ export default function CityPropertiesPage() {
   const { items, loading } = useCityData(citySlug, "imoveis");
   const [activeCategory, setActiveCategory] = useState<string | null>(categoriaParam);
   const [filterNeighborhood, setFilterNeighborhood] = useState("");
+  const [filterType, setFilterType] = useState("");
   const [showRentals, setShowRentals] = useState(true);
   const [priceMin, setPriceMin] = useState("");
   const [priceMax, setPriceMax] = useState("");
@@ -101,20 +102,30 @@ export default function CityPropertiesPage() {
     return shuffled.slice(0, 7);
   }, [heroItems, activeCategory]);
 
+  const propertyTypes = [
+    { value: "aluguel", label: "Aluguel" },
+    { value: "casas", label: "Casas" },
+    { value: "apartamentos", label: "Apartamentos" },
+    { value: "terrenos", label: "Terrenos" },
+    { value: "comerciais", label: "Comerciais" },
+  ];
+
+  const effectiveCategory = filterType || activeCategory;
+
   const filteredProducts = useMemo(() => {
     let list = [...items];
-    if (activeCategory) {
-      if (activeCategory === "aluguel") {
+    if (effectiveCategory) {
+      if (effectiveCategory === "aluguel") {
         list = list.filter((i) => (i.tags || []).includes("aluguel_flex") || i.category === "aluguel");
       } else {
-        const matchCats = categoryMap[activeCategory] || [];
+        const matchCats = categoryMap[effectiveCategory] || [];
         list = list.filter((i) => matchCats.includes(i.category));
       }
     }
     if (filterNeighborhood) {
       list = list.filter((i) => i.neighborhood === filterNeighborhood);
     }
-    if (!showRentals && activeCategory !== "aluguel") {
+    if (!showRentals && effectiveCategory !== "aluguel") {
       list = list.filter((i) => !((i.tags || []).includes("aluguel_flex") || i.category === "aluguel"));
     }
     if (priceMin) list = list.filter((i) => (i.price || 0) >= parseFloat(priceMin));
@@ -124,7 +135,7 @@ export default function CityPropertiesPage() {
     if (onlyFurnished) list = list.filter((i) => i.furnished);
     if (onlyFinancing) list = list.filter((i) => i.accepts_financing);
     return list;
-  }, [items, activeCategory, filterNeighborhood, showRentals, priceMin, priceMax, minBedrooms, minArea, onlyFurnished, onlyFinancing]);
+  }, [items, effectiveCategory, filterNeighborhood, showRentals, priceMin, priceMax, minBedrooms, minArea, onlyFurnished, onlyFinancing]);
 
   if (loading) {
     return (
@@ -155,7 +166,7 @@ export default function CityPropertiesPage() {
           <h3 className="font-display font-semibold text-sm text-muted-foreground mb-3 flex items-center gap-2">
             <Search size={16} /> Filtrar imóveis em {cityName}
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
             <select
               value={filterNeighborhood}
               onChange={(e) => setFilterNeighborhood(e.target.value)}
@@ -166,9 +177,14 @@ export default function CityPropertiesPage() {
                 <option key={n} value={n}>{n}</option>
               ))}
             </select>
-            <div className="flex items-center gap-2 text-muted-foreground text-sm px-2">
-              <MapPin size={14} /> {cityName}, ES — {items.length} imóvel(is)
-            </div>
+            <select
+              value={filterType}
+              onChange={(e) => { setFilterType(e.target.value); setActiveCategory(null); }}
+              className="w-full px-4 py-2.5 rounded-xl bg-secondary text-foreground text-base focus:outline-none focus:ring-2 focus:ring-primary/50"
+            >
+              <option value="">Todos os tipos</option>
+              {propertyTypes.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+            </select>
             <div className="flex gap-2">
               <button
                 onClick={() => setShowAdvanced(!showAdvanced)}
@@ -177,11 +193,14 @@ export default function CityPropertiesPage() {
                 {showAdvanced ? "▲ Filtros" : "▼ Mais Filtros"}
               </button>
               <button
-                onClick={() => { setActiveCategory(null); setFilterNeighborhood(""); setShowRentals(true); setPriceMin(""); setPriceMax(""); setMinBedrooms(""); setMinArea(""); setOnlyFinancing(false); setOnlyFurnished(false); }}
+                onClick={() => { setActiveCategory(null); setFilterType(""); setFilterNeighborhood(""); setShowRentals(true); setPriceMin(""); setPriceMax(""); setMinBedrooms(""); setMinArea(""); setOnlyFinancing(false); setOnlyFurnished(false); }}
                 className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--accent))] text-white font-bold text-sm hover:opacity-90 transition-opacity shadow"
               >
                 Limpar
               </button>
+            </div>
+            <div className="flex items-center gap-2 text-muted-foreground text-sm px-2">
+              <MapPin size={14} /> {cityName}, ES — {filteredProducts.length} imóvel(is)
             </div>
           </div>
 
@@ -236,7 +255,7 @@ export default function CityPropertiesPage() {
             </div>
           )}
 
-          {activeCategory !== "aluguel" && (
+          {effectiveCategory !== "aluguel" && (
             <div className="mt-3 flex items-center gap-2">
               <button
                 onClick={() => setShowRentals(!showRentals)}
