@@ -368,7 +368,7 @@ export default function TeamMembersTab({ profileId, userId, maxMembers }: Props)
               <div className="flex items-center gap-1.5 flex-shrink-0">
                 <button
                   onClick={() => {
-                    const url = `${window.location.origin}/imoveis/empresa/${profileId}?corretor=${m.slug}`;
+                    const url = `${window.location.origin}/empresa/${profileId}?corretor=${m.slug}`;
                     navigator.clipboard.writeText(url);
                     toast({ title: "Link copiado!" });
                   }}
@@ -378,7 +378,7 @@ export default function TeamMembersTab({ profileId, userId, maxMembers }: Props)
                   <Copy size={16} />
                 </button>
                 <a
-                  href={`/imoveis/empresa/${profileId}?corretor=${m.slug}`}
+                  href={`/empresa/${profileId}?corretor=${m.slug}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="p-2 rounded-xl hover:bg-secondary transition-colors text-primary"

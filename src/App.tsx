@@ -48,6 +48,7 @@ const AppLayout = () => {
           <Route path="/" element={<Index />} />
           <Route path="/imoveis" element={<PropertiesPage />} />
           <Route path="/imoveis/:cidade" element={<PropertiesPage />} />
+          <Route path="/empresa/:id" element={<CompanyProfile />} />
           <Route path="/imoveis/empresa/:id" element={<CompanyProfile />} />
           <Route path="/imoveis/produto/:productId" element={<ProductDetail />} />
 

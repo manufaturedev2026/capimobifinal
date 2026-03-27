@@ -89,6 +89,7 @@ export type Database = {
           seller_category: Database["public"]["Enums"]["seller_category"] | null
           seller_type: Database["public"]["Enums"]["seller_type"]
           show_location: boolean
+          slug: string | null
           state: string | null
           updated_at: string
           user_id: string
@@ -119,6 +120,7 @@ export type Database = {
             | null
           seller_type?: Database["public"]["Enums"]["seller_type"]
           show_location?: boolean
+          slug?: string | null
           state?: string | null
           updated_at?: string
           user_id: string
@@ -149,6 +151,7 @@ export type Database = {
             | null
           seller_type?: Database["public"]["Enums"]["seller_type"]
           show_location?: boolean
+          slug?: string | null
           state?: string | null
           updated_at?: string
           user_id?: string

@@ -53,41 +53,66 @@ export default function CompanyProfile() {
   const staticCompany = allCompanies.find((c) => c.id === id);
   const staticProducts = staticCompany ? getProductsByCompany(staticCompany.id) : [];
 
-  const sellerTier = useSellerSubscription(isDbProfile ? id : undefined);
+  const resolvedProfileId = isDbProfile ? dbProfile?.id : undefined;
+  const sellerTier = useSellerSubscription(resolvedProfileId);
 
   useEffect(() => {
-    if (id && isUUID(id)) {
-      setIsDbProfile(true);
-      fetchProfile(id);
-    } else {
+    if (!id) {
       setIsDbProfile(false);
       setLoading(false);
+      return;
+    }
+    // If UUID, fetch directly; otherwise treat as slug
+    if (isUUID(id)) {
+      setIsDbProfile(true);
+      fetchProfileById(id);
+    } else {
+      setIsDbProfile(true);
+      fetchProfileBySlug(id);
     }
   }, [id, corretorSlug]);
 
-  const fetchProfile = async (profileId: string) => {
+  const fetchProfileById = async (profileId: string) => {
     const { data: profile } = await supabase
       .from("profiles")
       .select("*")
       .eq("id", profileId)
       .single();
+    await loadProfileData(profile);
+  };
 
+  const fetchProfileBySlug = async (slug: string) => {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("slug", slug)
+      .single();
+    if (!profile) {
+      // Try static company fallback
+      setIsDbProfile(false);
+      setLoading(false);
+      return;
+    }
+    await loadProfileData(profile);
+  };
+
+  const loadProfileData = async (profile: any) => {
     if (profile) {
       setDbProfile(profile);
+      const pid = profile.id;
       const { data: items } = await supabase
         .from("seller_items")
         .select("*")
-        .eq("seller_id", profileId)
+        .eq("seller_id", pid)
         .eq("status", "ativo")
         .order("created_at", { ascending: false });
       setDbItems(items || []);
 
-      // Fetch team member if corretor slug present
       if (corretorSlug) {
         const { data: member } = await supabase
           .from("team_members")
           .select("*")
-          .eq("company_id", profileId)
+          .eq("company_id", pid)
           .eq("slug", corretorSlug)
           .eq("is_active", true)
           .single();
@@ -95,13 +120,11 @@ export default function CompanyProfile() {
       } else {
         setTeamMember(null);
       }
-
-      
     }
     setLoading(false);
 
     if (profile) {
-      trackSellerEvent(profileId, "view");
+      trackSellerEvent(profile.id, "view");
     }
   };
 
