@@ -75,7 +75,7 @@ const scaleIn = {
 
 /* ─── Data ─── */
 const stats = [
-  { value: 18, suffix: "%", label: "Crescimento do mercado ES em 2025" },
+  { value: 25, suffix: "%", label: "Crescimento do mercado ES em 2025" },
   { value: 500, suffix: "+", label: "Corretores cadastrados" },
   { value: 15000, suffix: "", label: "Reais de comissão média por venda" },
   { value: 78, suffix: "", label: "Cidades atendidas no ES" },
