@@ -4,7 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Save, ArrowLeft, Upload, X, MapPin, Lock, Video } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { getTagStyle, getTagLabel } from "@/data/products";
+import { getTagStyle, getTagLabel, getTagEmoji, TAG_CATEGORIES } from "@/data/products";
 import type { Database } from "@/integrations/supabase/types";
 import { useSubscription, PACKAGE_CONFIG } from "@/hooks/useSubscription";
 import { ES_CITIES } from "@/data/esCities";
@@ -26,25 +26,15 @@ const propertyCategories: { value: ItemCategory; label: string; emoji: string }[
   { value: "flat", label: "Flat / Studio", emoji: "🛏️" },
 ];
 
-const commonTags: { value: ItemTag; label: string; gradient: string; emoji: string }[] = [
-  { value: "premium", label: "Premium", gradient: "from-amber-500 to-yellow-400", emoji: "👑" },
-  { value: "luxo", label: "Luxo", gradient: "from-purple-600 to-pink-500", emoji: "💎" },
-  { value: "prime", label: "Prime", gradient: "from-blue-600 to-cyan-400", emoji: "⭐" },
-  { value: "novo", label: "Novo", gradient: "from-emerald-500 to-green-400", emoji: "✨" },
-  { value: "em_destaque", label: "Em Destaque", gradient: "from-orange-500 to-amber-400", emoji: "🔥" },
-  { value: "oferta", label: "Oferta", gradient: "from-red-500 to-rose-400", emoji: "🏷️" },
-  { value: "exclusivo", label: "Exclusivo", gradient: "from-indigo-600 to-violet-500", emoji: "🔒" },
-  { value: "top", label: "Top", gradient: "from-sky-500 to-blue-400", emoji: "🚀" },
-  { value: "limited", label: "Limited", gradient: "from-slate-600 to-zinc-500", emoji: "⏳" },
-  { value: "lancamento", label: "Lançamento", gradient: "from-fuchsia-600 to-pink-400", emoji: "🆕" },
-];
+const MAX_TAGS = 3;
 
-const propertyOnlyTags: { value: ItemTag; label: string; gradient: string; emoji: string }[] = [
-  { value: "pronto_para_morar", label: "Pronto p/ Morar", gradient: "from-teal-500 to-emerald-400", emoji: "🏡" },
-  { value: "cobertura", label: "Cobertura", gradient: "from-violet-600 to-purple-400", emoji: "🏙️" },
-  { value: "vista_panoramica", label: "Vista Panorâmica", gradient: "from-cyan-500 to-sky-400", emoji: "🌅" },
-  { value: "aluguel_flex", label: "Aluguel Flex", gradient: "from-lime-500 to-green-400", emoji: "🔄" },
-];
+const categoryHeaderStyles: Record<string, string> = {
+  valor: "text-amber-600",
+  destaque: "text-red-500",
+  status: "text-blue-500",
+  diferenciais: "text-emerald-500",
+  facilidade: "text-purple-500",
+};
 
 const INITIAL_FORM = {
   title: "",
@@ -218,9 +208,33 @@ export default function SellerItemForm() {
   }, [user]);
 
   const isAtLimit = !isEdit && activeItemCount >= pkgConfig.maxItems;
-  const allTags = [...commonTags, ...propertyOnlyTags];
-  const premiumOnlyTags: ItemTag[] = ["premium", "luxo", "prime", "exclusivo"];
-  const availableTags = currentTier === "basico" ? allTags.filter((t) => !premiumOnlyTags.includes(t.value)) : allTags;
+  const premiumOnlyTags: string[] = ["premium", "luxo", "alto_padrao", "exclusivo"];
+  const allTagValues = Object.values(TAG_CATEGORIES).flatMap((c) => c.tags);
+
+  const toggleTag = (tag: ItemTag) => {
+    setForm((f) => {
+      if (f.tags.includes(tag)) return { ...f, tags: f.tags.filter((t) => t !== tag) };
+      if (f.tags.length >= MAX_TAGS) {
+        toast({ title: "Máximo de 3 tags", description: "Remova uma tag antes de adicionar outra.", variant: "destructive" });
+        return f;
+      }
+      return { ...f, tags: [...f.tags, tag] };
+    });
+  };
+
+  // Auto-suggest tags based on form data
+  const suggestedTags = (() => {
+    const suggestions: string[] = [];
+    const price = parseFloat(form.price);
+    if (price >= 800000) suggestions.push("premium");
+    if (price >= 1500000) suggestions.push("alto_padrao");
+    if (form.pool) suggestions.push("piscina_tag");
+    if (form.property_subtype === "cobertura" || form.category === "apartamento" && form.property_subtype === "cobertura") suggestions.push("cobertura");
+    if (form.leisure_amenities.length >= 2) suggestions.push("area_lazer");
+    if (form.accepts_financing) suggestions.push("aceita_financiamento_tag");
+    if (form.furnished) suggestions.push("pronto_para_morar");
+    return suggestions.filter((s) => !form.tags.includes(s as ItemTag));
+  })();
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files?.length || !user) return;
@@ -240,7 +254,6 @@ export default function SellerItemForm() {
   };
 
   const removePhoto = (index: number) => setForm((f) => ({ ...f, photos: f.photos.filter((_, i) => i !== index) }));
-  const toggleTag = (tag: ItemTag) => setForm((f) => ({ ...f, tags: f.tags.includes(tag) ? f.tags.filter((t) => t !== tag) : [...f.tags, tag] }));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -502,26 +515,61 @@ export default function SellerItemForm() {
         {renderPropertyFields()}
 
         {/* Tags */}
-        <div className="bg-card border border-border rounded-2xl p-5">
-          <h2 className="font-display font-bold text-foreground mb-1">Tags de Destaque</h2>
-          {currentTier === "basico" && (
-            <p className="text-xs text-muted-foreground mb-3 flex items-center gap-1"><Lock size={10} /> Algumas tags são exclusivas para planos pagos</p>
-          )}
-          <div className="flex flex-wrap gap-2.5">
-            {availableTags.map((tag) => {
-              const selected = form.tags.includes(tag.value);
-              const siteStyle = getTagStyle(tag.value);
-              return (
-                <button key={tag.value} type="button" onClick={() => toggleTag(tag.value)}
-                  className={`relative px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-1.5 ${siteStyle} ${
-                    selected ? "shadow-lg scale-105 ring-2 ring-white/40" : "opacity-60 hover:opacity-100 hover:scale-105 hover:shadow-md"
-                  }`}>
-                  <span>{tag.emoji}</span>{tag.label}
-                  {selected && <span className="ml-1 w-4 h-4 rounded-full bg-white/25 flex items-center justify-center text-[10px]">✓</span>}
-                </button>
-              );
-            })}
+        <div className="bg-card border border-border rounded-2xl p-5 space-y-5">
+          <div>
+            <h2 className="font-display font-bold text-foreground mb-1">Tags de Destaque</h2>
+            <p className="text-xs text-muted-foreground">Selecione até {MAX_TAGS} tags. ({form.tags.length}/{MAX_TAGS})</p>
+            {currentTier === "basico" && (
+              <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1"><Lock size={10} /> Tags de valor são exclusivas para planos pagos</p>
+            )}
           </div>
+
+          {/* Auto-suggestions */}
+          {suggestedTags.length > 0 && form.tags.length < MAX_TAGS && (
+            <div className="bg-primary/5 border border-primary/20 rounded-xl p-3">
+              <p className="text-xs font-semibold text-primary mb-2">💡 Sugestões automáticas:</p>
+              <div className="flex flex-wrap gap-2">
+                {suggestedTags.slice(0, 3).map((tagValue) => (
+                  <button key={tagValue} type="button" onClick={() => toggleTag(tagValue as ItemTag)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold ${getTagStyle(tagValue)} opacity-80 hover:opacity-100 transition-all flex items-center gap-1 border border-white/20`}>
+                    {getTagEmoji(tagValue)} {getTagLabel(tagValue)}
+                    <span className="ml-1 text-[10px] opacity-70">+ Adicionar</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {Object.entries(TAG_CATEGORIES).map(([catKey, catConfig]) => {
+            const isLocked = currentTier === "basico" && catKey === "valor";
+            return (
+              <div key={catKey}>
+                <h3 className={`text-xs font-bold uppercase tracking-wider mb-2 ${categoryHeaderStyles[catKey] || "text-muted-foreground"}`}>
+                  {catConfig.label}
+                  {isLocked && <span className="ml-1 text-muted-foreground">🔒</span>}
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {catConfig.tags.map((tagValue) => {
+                    const selected = form.tags.includes(tagValue as ItemTag);
+                    const locked = isLocked;
+                    const disabled = locked || (!selected && form.tags.length >= MAX_TAGS);
+                    return (
+                      <button key={tagValue} type="button"
+                        onClick={() => !disabled && toggleTag(tagValue as ItemTag)}
+                        disabled={disabled}
+                        className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-1.5 shadow-sm ${getTagStyle(tagValue)} ${
+                          selected ? "ring-2 ring-white/40 scale-105 shadow-lg" : disabled ? "opacity-30 cursor-not-allowed" : "opacity-60 hover:opacity-100 hover:scale-105 hover:shadow-md"
+                        }`}>
+                        <span>{getTagEmoji(tagValue)}</span>
+                        {getTagLabel(tagValue)}
+                        {selected && <span className="ml-0.5 w-4 h-4 rounded-full bg-white/25 flex items-center justify-center text-[10px]">✓</span>}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
         </div>
 
         {/* Photos */}
