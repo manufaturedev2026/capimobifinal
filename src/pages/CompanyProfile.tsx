@@ -228,11 +228,25 @@ export default function CompanyProfile() {
     : products[0];
 
   const handleWhatsApp = (title: string, productId?: string) => {
+    // If on main page (no corretor slug) and has team members, show picker
+    if (!corretorSlug && teamMembers.length > 0) {
+      setPendingWhatsApp({ title, productId });
+      setShowTeamPicker(true);
+      return;
+    }
+    sendWhatsApp(company.whatsapp, company.name, title, productId);
+  };
+
+  const sendWhatsApp = (phone: string, name: string, title: string, productId?: string) => {
     if (isDbProfile && id) trackSellerEvent(id, "whatsapp_click");
     const seg = "imoveis";
     const link = productId ? `\n\n🔗 ${window.location.origin}/${seg}/produto/${productId}` : `\n\n🔗 ${window.location.href}`;
-    window.location.href = `https://wa.me/${company.whatsapp}?text=${encodeURIComponent(`Olá ${company.name}! Tenho interesse: ${title}${link}`)}`;
+    window.location.href = `https://wa.me/${phone}?text=${encodeURIComponent(`Olá ${name}! Tenho interesse: ${title}${link}`)}`;
   };
+
+  const shuffledTeamMembers = useMemo(() => {
+    return [...teamMembers].sort(() => Math.random() - 0.5);
+  }, [teamMembers, showTeamPicker]);
 
   const isPaid = sellerTier !== "basico";
 
