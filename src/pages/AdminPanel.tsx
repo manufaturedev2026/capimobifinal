@@ -150,6 +150,7 @@ export default function AdminPanel() {
       city: p.city,
       account_manager: p.account_manager || null,
       manager_phone: p.manager_phone || null,
+      manager_photo: p.manager_photo || null,
       subscription: subsMap.get(p.user_id)
         ? {
             id: subsMap.get(p.user_id).id,
@@ -264,19 +265,47 @@ export default function AdminPanel() {
     return matchesSearch && matchesTier;
   });
 
-  const updateAccountManager = async (profileId: string, manager?: string, phone?: string) => {
-    const updateData: any = {};
-    if (manager !== undefined) updateData.account_manager = manager || null;
-    if (phone !== undefined) updateData.manager_phone = phone || null;
-    const { error } = await supabase
-      .from("profiles")
-      .update(updateData)
-      .eq("id", profileId);
+  const openManagerDialog = (seller: SellerWithSub) => {
+    setManagerEditSellerId(seller.id);
+    setManagerName(seller.account_manager || "");
+    setManagerPhoneVal(seller.manager_phone || "");
+    setManagerPhotoUrl(seller.manager_photo || "");
+    setManagerDialogOpen(true);
+  };
+
+  const handleManagerPhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !managerEditSellerId) return;
+    setManagerPhotoUploading(true);
+    const ext = file.name.split(".").pop();
+    const path = `managers/${managerEditSellerId}-${Date.now()}.${ext}`;
+    const { error } = await supabase.storage.from("seller-uploads").upload(path, file, { upsert: true });
+    if (error) {
+      toast({ title: "Erro ao enviar foto", variant: "destructive" });
+      setManagerPhotoUploading(false);
+      return;
+    }
+    const { data: urlData } = supabase.storage.from("seller-uploads").getPublicUrl(path);
+    setManagerPhotoUrl(urlData.publicUrl);
+    setManagerPhotoUploading(false);
+  };
+
+  const saveManager = async () => {
+    if (!managerEditSellerId) return;
+    const updateData: any = {
+      account_manager: managerName || null,
+      manager_phone: managerPhoneVal || null,
+      manager_photo: managerPhotoUrl || null,
+    };
+    const { error } = await supabase.from("profiles").update(updateData).eq("id", managerEditSellerId);
     if (!error) {
       setSellers((prev) =>
-        prev.map((s) => (s.id === profileId ? { ...s, ...updateData } : s))
+        prev.map((s) => (s.id === managerEditSellerId ? { ...s, ...updateData } : s))
       );
       toast({ title: "Gerente de conta atualizado!" });
+      setManagerDialogOpen(false);
+    } else {
+      toast({ title: "Erro ao salvar", variant: "destructive" });
     }
   };
 
