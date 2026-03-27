@@ -165,7 +165,7 @@ export default function ProductDetail() {
     <div className="min-h-screen bg-background">
       {/* Hero Banner - always shows active image */}
       <section className="relative">
-        <div className="aspect-[4/3] md:aspect-[21/9] overflow-hidden bg-muted">
+        <div className="aspect-[16/9] md:aspect-[21/7] overflow-hidden bg-muted">
           {images.length > 0 ? (
             <AnimatePresence mode="wait">
               <motion.img
