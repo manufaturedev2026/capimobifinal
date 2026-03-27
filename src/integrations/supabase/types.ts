@@ -90,6 +90,7 @@ export type Database = {
           state: string | null
           updated_at: string
           user_id: string
+          video_url: string | null
         }
         Insert: {
           account_manager?: string | null
@@ -117,6 +118,7 @@ export type Database = {
           state?: string | null
           updated_at?: string
           user_id: string
+          video_url?: string | null
         }
         Update: {
           account_manager?: string | null
@@ -144,6 +146,7 @@ export type Database = {
           state?: string | null
           updated_at?: string
           user_id?: string
+          video_url?: string | null
         }
         Relationships: [
           {
