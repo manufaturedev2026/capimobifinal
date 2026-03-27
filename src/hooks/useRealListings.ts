@@ -46,8 +46,8 @@ export interface RealItem {
   built_area?: number;
   condo_fee?: number;
   iptu?: number;
+  sold_at?: string | null;
 }
-
 function mapItem(item: any): RealItem {
   const photos = item.photos?.length ? item.photos : [];
   return {
