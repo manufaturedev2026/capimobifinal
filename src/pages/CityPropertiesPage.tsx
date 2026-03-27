@@ -361,7 +361,7 @@ export default function CityPropertiesPage() {
                             <span className="px-2.5 py-1 rounded-md text-[11px] font-bold bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg">⭐ DESTAQUE</span>
                           )}
                           {!item.hasDestaque && item.sellerTier && item.sellerTier !== "basico" && (
-                            <PackageBadge tier={item.sellerTier} />
+                            <PackageBadge tier={item.sellerTier as any} />
                           )}
                         </div>
                       </div>
