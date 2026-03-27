@@ -32,6 +32,7 @@ export default function CityPropertiesPage() {
   const { items, loading } = useCityData(citySlug, "imoveis");
   const [activeCategory, setActiveCategory] = useState<string | null>(categoriaParam);
   const [filterNeighborhood, setFilterNeighborhood] = useState("");
+  const [filterType, setFilterType] = useState("");
   const [showRentals, setShowRentals] = useState(true);
   const [priceMin, setPriceMin] = useState("");
   const [priceMax, setPriceMax] = useState("");
