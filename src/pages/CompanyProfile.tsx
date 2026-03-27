@@ -95,7 +95,7 @@ export default function CompanyProfile() {
         setTeamMember(null);
       }
 
-      // Always fetch all team members for WhatsApp picker - handled by global picker now
+      
     }
     setLoading(false);
 
