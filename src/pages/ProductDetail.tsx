@@ -17,6 +17,7 @@ function isUUID(str: string) {
 export default function ProductDetail() {
   const { productId } = useParams();
   const { toast } = useToast();
+  const { openWhatsApp } = useWhatsAppPicker();
   const [activeImage, setActiveImage] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const carouselRef = useRef<HTMLDivElement>(null);
