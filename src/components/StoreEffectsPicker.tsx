@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, X, Clock, CloudRain, Zap, Wind, Flame, CloudFog, DollarSign, Egg, CircleDot } from "lucide-react";
+import { Sparkles, X, Clock, CloudRain, Zap, Wind, Flame, CloudFog, DollarSign, Egg, CircleDot, Star, Flower2, PartyPopper } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -29,6 +29,9 @@ const EFFECTS: EffectOption[] = [
   { type: "fumaca", label: "Fumaça", emoji: "💨", icon: CloudFog, description: "Fumaça misteriosa" },
   { type: "dinheiro", label: "Dinheiro", emoji: "💵", icon: DollarSign, description: "Dinheiro caindo do céu" },
   { type: "pascoa", label: "Páscoa", emoji: "🥚", icon: Egg, description: "Ovos e coelhinhos de páscoa", free: true, oneTime: true },
+  { type: "estrelas", label: "Estrelas Cadentes", emoji: "✨", icon: Star, description: "Estrelas cruzando o céu" },
+  { type: "petalas", label: "Pétalas de Rosa", emoji: "🌸", icon: Flower2, description: "Pétalas voando ao vento" },
+  { type: "confetti", label: "Confetti", emoji: "🎉", icon: PartyPopper, description: "Confete colorido em festa" },
 ];
 
 export default function StoreEffectsPicker({ userId, sellerId }: StoreEffectsPickerProps) {

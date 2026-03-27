@@ -5,7 +5,7 @@ interface StoreEffectsProps {
   sellerId: string;
 }
 
-type EffectType = "chuva" | "raios" | "poeira" | "brasas" | "vento" | "neblina" | "fumaca" | "dinheiro" | "pascoa";
+type EffectType = "chuva" | "raios" | "poeira" | "brasas" | "vento" | "neblina" | "fumaca" | "dinheiro" | "pascoa" | "estrelas" | "petalas" | "confetti";
 
 export default function StoreEffects({ sellerId }: StoreEffectsProps) {
   const [activeEffect, setActiveEffect] = useState<EffectType | null>(null);
@@ -40,6 +40,9 @@ export default function StoreEffects({ sellerId }: StoreEffectsProps) {
       {activeEffect === "fumaca" && <SmokeEffect />}
       {activeEffect === "dinheiro" && <MoneyEffect />}
       {activeEffect === "pascoa" && <EasterEffect />}
+      {activeEffect === "estrelas" && <ShootingStarsEffect />}
+      {activeEffect === "petalas" && <PetalsEffect />}
+      {activeEffect === "confetti" && <ConfettiEffect />}
     </div>
   );
 }
