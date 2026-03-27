@@ -26,7 +26,7 @@ const propertyCategories: { value: ItemCategory; label: string; emoji: string }[
   { value: "flat", label: "Flat / Studio", emoji: "🛏️" },
 ];
 
-const MAX_TAGS = 3;
+const MAX_TAGS = 1;
 
 const categoryHeaderStyles: Record<string, string> = {
   valor: "text-amber-600",
@@ -215,7 +215,7 @@ export default function SellerItemForm() {
     setForm((f) => {
       if (f.tags.includes(tag)) return { ...f, tags: f.tags.filter((t) => t !== tag) };
       if (f.tags.length >= MAX_TAGS) {
-        toast({ title: "Máximo de 3 tags", description: "Remova uma tag antes de adicionar outra.", variant: "destructive" });
+        toast({ title: "Máximo de 1 tag", description: "Remova a tag atual antes de adicionar outra.", variant: "destructive" });
         return f;
       }
       return { ...f, tags: [...f.tags, tag] };
