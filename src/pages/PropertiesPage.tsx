@@ -58,7 +58,7 @@ export default function PropertiesPage() {
   // Merge real items into unified product format
   const propertyProducts = useMemo(() => {
     const staticProds = allProducts.filter((p) => p.type === "imovel");
-    const realProds: (Product & { sellerTier?: string; realCategory?: string; isAluguel?: boolean; furnished?: boolean; accepts_financing?: boolean; bedrooms?: number; area?: number })[] = realItems.map((item) => ({
+    const realProds: (Product & { sellerTier?: string; realCategory?: string; isAluguel?: boolean; furnished?: boolean; accepts_financing?: boolean; bedrooms?: number; area?: number; neighborhood?: string })[] = realItems.map((item) => ({
       id: item.id,
       companyId: item.sellerId,
       title: item.title,
@@ -80,6 +80,7 @@ export default function PropertiesPage() {
       accepts_financing: item.accepts_financing,
       bedrooms: item.bedrooms,
       area: item.area,
+      neighborhood: item.neighborhood,
     }));
     return [...realProds, ...staticProds];
   }, [realItems]);
