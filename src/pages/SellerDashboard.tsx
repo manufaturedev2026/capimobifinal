@@ -531,6 +531,7 @@ export default function SellerDashboard() {
                     <option value="todos">Todos</option>
                     <option value="ativo">Ativos</option>
                     <option value="inativo">Inativos</option>
+                    <option value="vendido">Vendidos</option>
                   </select>
                 </div>
 
