@@ -112,42 +112,35 @@ export function useRealListings(segment?: "imoveis" | "automoveis") {
         sellerTier: (tierMap.get(item.seller_id) as any) || "basico",
       }));
 
-      const tierOrder = { vip: 0, premium: 1, start: 2, basico: 3 };
-      mapped.sort((a: any, b: any) => (tierOrder[a.sellerTier as keyof typeof tierOrder] ?? 3) - (tierOrder[b.sellerTier as keyof typeof tierOrder] ?? 3));
-
-      // Apply tier-based visibility percentage
-      const tierVisibility: Record<string, number> = {
-        basico: 0.10,
-        start: 0.15,
-        vip: 0.20,
-        premium: 0.25,
-        essencial_empresa: 0.26,
-        premium_empresa: 0.27,
-        prime_empresa: 0.29,
+      // Tier weight: higher = more priority in sorting (appears first more often)
+      // All items appear, but higher tiers get weighted shuffle priority
+      const tierWeight: Record<string, number> = {
+        prime_empresa: 29,
+        premium_empresa: 27,
+        essencial_empresa: 26,
+        premium: 25,
+        vip: 20,
+        start: 15,
+        basico: 10,
       };
 
-      // Group items by seller, apply % filter, then flatten
-      const itemsBySeller = new Map<string, typeof mapped>();
-      mapped.forEach((item) => {
-        const list = itemsBySeller.get(item.sellerId) || [];
-        list.push(item);
-        itemsBySeller.set(item.sellerId, list);
+      // Weighted shuffle: each item gets a random score multiplied by tier weight
+      // Higher tiers get higher scores on average, so they appear first more often
+      // But lower tiers still have a chance to appear near the top
+      const weightedItems = mapped.map((item: any) => {
+        const weight = tierWeight[item.sellerTier] ?? 10;
+        const randomFactor = Math.random(); // 0-1
+        const score = weight * (0.5 + randomFactor); // weight * [0.5 - 1.5]
+        return { ...item, _sortScore: score };
       });
 
-      const visibleItems: typeof mapped = [];
-      itemsBySeller.forEach((sellerItems, sellerId) => {
-        const tier = tierMap.get(sellerId) || "basico";
-        const pct = tierVisibility[tier] ?? 0.10;
-        const count = Math.max(1, Math.ceil(sellerItems.length * pct));
-        // Shuffle for fairness, then take the allowed count
-        const shuffled = [...sellerItems].sort(() => Math.random() - 0.5);
-        visibleItems.push(...shuffled.slice(0, count));
-      });
+      // Sort by score descending (highest priority first, with randomness)
+      weightedItems.sort((a: any, b: any) => b._sortScore - a._sortScore);
 
-      // Re-sort by tier priority
-      visibleItems.sort((a: any, b: any) => (tierOrder[a.sellerTier as keyof typeof tierOrder] ?? 3) - (tierOrder[b.sellerTier as keyof typeof tierOrder] ?? 3));
+      // Remove internal score before setting state
+      const finalItems = weightedItems.map(({ _sortScore, ...item }: any) => item);
 
-      setItems(visibleItems);
+      setItems(finalItems);
       setLoading(false);
     };
 
