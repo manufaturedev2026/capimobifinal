@@ -80,9 +80,9 @@ function mapItem(item: any): RealItem {
     built_area: item.built_area,
     condo_fee: item.condo_fee,
     iptu: item.iptu,
+    sold_at: item.sold_at,
   };
 }
-
 export function useRealListings(segment?: "imoveis" | "automoveis") {
   const [sellers, setSellers] = useState<RealSeller[]>([]);
   const [items, setItems] = useState<RealItem[]>([]);
