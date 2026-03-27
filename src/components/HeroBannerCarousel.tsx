@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { formatPrice } from "@/data/products";
 import type { RealItem, RealSeller } from "@/hooks/useRealListings";
+import PackageBadge from "@/components/PackageBadge";
 
 
 
@@ -174,6 +175,9 @@ export default function HeroBannerCarousel({
                   <span className="text-sm font-semibold text-white/90">
                     {currentSeller.name}
                   </span>
+                  {currentItem?.sellerTier && currentItem.sellerTier !== "basico" && (
+                    <PackageBadge tier={currentItem.sellerTier as any} />
+                  )}
                 </div>
               )}
               <h1 className="font-display font-bold text-3xl md:text-5xl text-white drop-shadow-lg leading-tight">
