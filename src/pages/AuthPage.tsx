@@ -5,6 +5,7 @@ import { Eye, EyeOff, LogIn, UserPlus, Building2, Shield, KeyRound, Sparkles } f
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import heroImg from "@/assets/hero-auth.jpg";
+import logoImg from "@/assets/logo-es-corretores.png";
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -62,11 +63,11 @@ export default function AuthPage() {
         <div className="absolute bottom-0 left-0 right-0 p-6 lg:p-12 lg:bottom-auto lg:top-1/2 lg:-translate-y-1/2">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center">
-                <Shield size={28} className="text-accent" />
-              </div>
+              <img src={logoImg} alt="ES Corretores" className="w-14 h-14 rounded-2xl object-contain" />
               <div>
-                <h2 className="text-white font-display text-xl font-bold">ES Corretores</h2>
+                <h2 className="text-white font-display text-xl font-bold">
+                  <span className="text-primary">E</span><span className="text-accent">S</span> Corretores
+                </h2>
                 <p className="text-white/60 text-sm">Painel do Corretor</p>
               </div>
             </div>
@@ -107,11 +108,12 @@ export default function AuthPage() {
       <div className="w-full lg:w-1/2 flex items-center justify-center px-6 py-10 lg:py-12">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }} className="w-full max-w-md">
           {/* Mobile header */}
-          <div className="lg:hidden text-center mb-6">
-            <div className="w-14 h-14 rounded-2xl bg-primary flex items-center justify-center mx-auto mb-3 shadow-lg shadow-primary/30">
-              <Sparkles size={24} className="text-primary-foreground" />
+           <div className="lg:hidden text-center mb-6">
+              <img src={logoImg} alt="ES Corretores" className="w-14 h-14 rounded-2xl object-contain mx-auto mb-3" />
+              <h2 className="font-display font-bold text-lg">
+                <span className="text-primary">E</span><span className="text-accent">S</span> <span className="text-foreground">Corretores</span>
+              </h2>
             </div>
-          </div>
 
           <div className="mb-8">
             <h2 className="font-display font-bold text-2xl lg:text-3xl text-foreground">
