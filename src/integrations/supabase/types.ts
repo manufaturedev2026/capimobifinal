@@ -526,6 +526,42 @@ export type Database = {
         }
         Relationships: []
       }
+      store_effects: {
+        Row: {
+          activated_at: string
+          created_at: string
+          effect_type: string
+          expires_at: string
+          id: string
+          is_active: boolean
+          is_free: boolean
+          seller_id: string
+          user_id: string
+        }
+        Insert: {
+          activated_at?: string
+          created_at?: string
+          effect_type: string
+          expires_at?: string
+          id?: string
+          is_active?: boolean
+          is_free?: boolean
+          seller_id: string
+          user_id: string
+        }
+        Update: {
+          activated_at?: string
+          created_at?: string
+          effect_type?: string
+          expires_at?: string
+          id?: string
+          is_active?: boolean
+          is_free?: boolean
+          seller_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       team_members: {
         Row: {
           bio: string | null

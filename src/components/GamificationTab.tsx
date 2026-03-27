@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Trophy, Gift, Clock, CheckCircle2, Star, Flame, Eye, Zap } from "lucide-react";
 import { useGamification } from "@/hooks/useGamification";
+import StoreEffectsPicker from "@/components/StoreEffectsPicker";
 import { useToast } from "@/hooks/use-toast";
 
 interface GamificationTabProps {
@@ -96,6 +97,9 @@ export default function GamificationTab({ userId, sellerId }: GamificationTabPro
           </div>
         </div>
       </div>
+
+      {/* Store Effects */}
+      <StoreEffectsPicker userId={userId} sellerId={sellerId} />
 
       {/* Active Rewards */}
       {activeRewards.length > 0 && (

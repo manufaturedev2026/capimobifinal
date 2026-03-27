@@ -5,6 +5,7 @@ import { useParams, Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Star, MapPin, MessageCircle, Share2, Key, Home, Building2, Landmark, Store, Warehouse, MoreHorizontal, Image, Eye, Instagram, Phone, ExternalLink, Clock, Shield, Zap, ChevronLeft, ChevronRight, Heart, BadgeCheck, Clapperboard } from "lucide-react";
 import FloatingVideoButton from "@/components/FloatingVideoButton";
+import StoreEffects from "@/components/StoreEffects";
 import { formatPrice, getTagStyle, getTagLabel } from "@/data/products";
 import { supabase } from "@/integrations/supabase/client";
 import { trackSellerEvent } from "@/hooks/useSellerAnalytics";
@@ -280,6 +281,7 @@ export default function CompanyProfile() {
 
   return (
     <div className="min-h-screen bg-background">
+      {isDbProfile && dbProfile?.id && <StoreEffects sellerId={dbProfile.id} />}
       {/* ═══════════ HERO BANNER ═══════════ */}
       <section className="relative h-[50vh] md:h-[60vh] overflow-hidden">
 
