@@ -53,24 +53,50 @@ export default function CompanyProfile() {
   const staticCompany = allCompanies.find((c) => c.id === id);
   const staticProducts = staticCompany ? getProductsByCompany(staticCompany.id) : [];
 
-  const sellerTier = useSellerSubscription(isDbProfile ? id : undefined);
+  const resolvedProfileId = isDbProfile ? dbProfile?.id : undefined;
+  const sellerTier = useSellerSubscription(resolvedProfileId);
 
   useEffect(() => {
-    if (id && isUUID(id)) {
-      setIsDbProfile(true);
-      fetchProfile(id);
-    } else {
+    if (!id) {
       setIsDbProfile(false);
       setLoading(false);
+      return;
+    }
+    // If UUID, fetch directly; otherwise treat as slug
+    if (isUUID(id)) {
+      setIsDbProfile(true);
+      fetchProfileById(id);
+    } else {
+      setIsDbProfile(true);
+      fetchProfileBySlug(id);
     }
   }, [id, corretorSlug]);
 
-  const fetchProfile = async (profileId: string) => {
+  const fetchProfileById = async (profileId: string) => {
     const { data: profile } = await supabase
       .from("profiles")
       .select("*")
       .eq("id", profileId)
       .single();
+    await loadProfileData(profile);
+  };
+
+  const fetchProfileBySlug = async (slug: string) => {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("slug", slug)
+      .single();
+    if (!profile) {
+      // Try static company fallback
+      setIsDbProfile(false);
+      setLoading(false);
+      return;
+    }
+    await loadProfileData(profile);
+  };
+
+  const loadProfileData = async (profile: any) => {
 
     if (profile) {
       setDbProfile(profile);
