@@ -127,7 +127,7 @@ const steps = [
     icon: BookOpen,
     title: "Estágio Obrigatório",
     description: "Temos uma lista de imobiliárias em sua cidade para lhe oferecer o estágio dentro de suas disponibilidades de tempo.",
-    detail: "Duração: 128 horas mínimas",
+    detail: "Flexibilidade",
   },
   {
     icon: ShieldCheck,
