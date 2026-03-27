@@ -139,7 +139,7 @@ export default function CompanyProfile() {
           show_location: dbProfile.show_location ?? true,
         }
       : null
-    : staticCompany;
+    : null;
 
   const vehicleCategories: string[] = [];
   const isProperty = true;
@@ -159,7 +159,7 @@ export default function CompanyProfile() {
     type: "imovel" as const,
   }));
 
-  const products = isDbProfile ? dbDisplayItems : staticProducts;
+  const products = isDbProfile ? dbDisplayItems : [];
 
   const filteredProducts = useMemo(() => {
     if (activeCategory === "todos") return products;

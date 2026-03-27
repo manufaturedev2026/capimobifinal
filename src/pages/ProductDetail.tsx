@@ -77,7 +77,7 @@ export default function ProductDetail() {
     );
   }
 
-  const product = isDb ? dbItem : staticProduct;
+  const product = isDb ? dbItem : null;
   const company = isDb
     ? dbSeller
       ? {
@@ -92,7 +92,7 @@ export default function ProductDetail() {
           sellerCategory: dbSeller.seller_category,
         }
       : null
-    : staticCompany;
+    : null;
 
   if (!product || !company) {
     return (
@@ -214,7 +214,7 @@ export default function ProductDetail() {
     if (p.color) specs["Cor"] = p.color;
   }
   const displaySpecs = isDb ? specs : product.specs;
-  const relatedProducts = isDb ? [] : getProductsByCompany(company.id).filter((p: any) => p.id !== product.id).slice(0, 4);
+  const relatedProducts: any[] = [];
 
   const scrollCarousel = (dir: "left" | "right") => {
     if (!carouselRef.current) return;
