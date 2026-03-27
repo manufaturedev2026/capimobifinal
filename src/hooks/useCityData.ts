@@ -94,6 +94,7 @@ export function useCityData(city: string, segment?: "imoveis") {
           sellerId: item.seller_id,
           sellerName: seller?.name || "",
           sellerLogo: seller?.logo || "",
+          sellerAddress: seller?.address || "",
           title: item.title,
           price: item.price || 0,
           image: photos[0] || "",
@@ -107,6 +108,11 @@ export function useCityData(city: string, segment?: "imoveis") {
           bedrooms: item.bedrooms,
           bathrooms: item.bathrooms,
           area: item.area,
+          sellerTier: tierMap.get(item.seller_id) || "basico",
+          furnished: item.furnished,
+          accepts_financing: item.accepts_financing,
+          hasDestaque: destaqueSet.has(item.seller_id),
+          hasBlackTag: false,
         };
       });
 
