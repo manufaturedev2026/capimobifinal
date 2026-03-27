@@ -60,7 +60,7 @@ export default function CompanyProfile() {
       setIsDbProfile(false);
       setLoading(false);
     }
-  }, [id]);
+  }, [id, corretorSlug]);
 
   const fetchProfile = async (profileId: string) => {
     const { data: profile } = await supabase
@@ -78,6 +78,20 @@ export default function CompanyProfile() {
         .eq("status", "ativo")
         .order("created_at", { ascending: false });
       setDbItems(items || []);
+
+      // Fetch team member if corretor slug present
+      if (corretorSlug) {
+        const { data: member } = await supabase
+          .from("team_members")
+          .select("*")
+          .eq("company_id", profileId)
+          .eq("slug", corretorSlug)
+          .eq("is_active", true)
+          .single();
+        setTeamMember(member || null);
+      } else {
+        setTeamMember(null);
+      }
     }
     setLoading(false);
 
