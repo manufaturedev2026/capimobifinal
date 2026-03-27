@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Package, Eye, Plus, Settings, Edit, Trash2, Copy, ToggleLeft, ToggleRight, Search, Image, LogOut, BarChart3, Star, Crown, Zap, AlertTriangle, Shield, MessageCircle, Home, UserCircle, Headphones, Globe, ExternalLink, CheckCircle2, ClipboardCopy, Megaphone, Send, Calculator, Lock, Clapperboard, Menu, X, Building2, BookOpen } from "lucide-react";
+import { Package, Eye, Plus, Settings, Edit, Trash2, Copy, ToggleLeft, ToggleRight, Search, Image, LogOut, BarChart3, Star, Crown, Zap, AlertTriangle, Shield, MessageCircle, Home, UserCircle, Headphones, Globe, ExternalLink, CheckCircle2, ClipboardCopy, Megaphone, Send, Calculator, Lock, Clapperboard, Menu, X, Building2, BookOpen, Users } from "lucide-react";
+import TeamMembersTab from "@/components/TeamMembersTab";
 import { getTagStyle, getTagLabel } from "@/data/products";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
@@ -26,7 +27,7 @@ type SellerItem = {
   seller_type: string;
 };
 
-type DashboardTab = "overview" | "items" | "stats" | "domain" | "ads" | "study";
+type DashboardTab = "overview" | "items" | "stats" | "domain" | "ads" | "study" | "team";
 
 export default function SellerDashboard() {
   const { user, profile, signOut, refreshProfile, loading: authLoading } = useAuth();
@@ -204,15 +205,18 @@ export default function SellerDashboard() {
   };
 
   const isFreePlan = currentTier === "basico";
+  const isEmpresaPlan = currentTier === "essencial_empresa" || currentTier === "premium_empresa";
+  const maxTeamMembers = currentTier === "premium_empresa" ? 10 : currentTier === "essencial_empresa" ? 5 : 0;
   const lockedTabs: DashboardTab[] = isFreePlan ? ["domain", "ads"] : [];
 
-  const sidebarNav = [
-    { id: "overview" as const, label: "Visão Geral", icon: Home },
-    { id: "items" as const, label: "Meus Anúncios", icon: Package },
-    { id: "stats" as const, label: "Estatísticas", icon: BarChart3 },
-    { id: "ads" as const, label: "Fazer ADS", icon: Megaphone, locked: lockedTabs.includes("ads") },
-    { id: "domain" as const, label: "Meu Domínio", icon: Globe, locked: lockedTabs.includes("domain") },
-    { id: "study" as const, label: "Material de Estudo", icon: BookOpen },
+  const sidebarNav: { id: DashboardTab; label: string; icon: any; locked?: boolean }[] = [
+    { id: "overview", label: "Visão Geral", icon: Home },
+    { id: "items", label: "Meus Anúncios", icon: Package },
+    { id: "stats", label: "Estatísticas", icon: BarChart3 },
+    { id: "ads", label: "Fazer ADS", icon: Megaphone, locked: lockedTabs.includes("ads") },
+    { id: "domain", label: "Meu Domínio", icon: Globe, locked: lockedTabs.includes("domain") },
+    ...(isEmpresaPlan ? [{ id: "team" as DashboardTab, label: "Empresa", icon: Users }] : []),
+    { id: "study", label: "Material de Estudo", icon: BookOpen },
   ];
 
   const handleTabClick = (tabId: DashboardTab) => {
@@ -908,6 +912,15 @@ export default function SellerDashboard() {
                   </a>
                 </div>
               </div>
+            )}
+
+            {/* Team Tab */}
+            {activeTab === "team" && isEmpresaPlan && profile?.id && (
+              <TeamMembersTab
+                profileId={profile.id}
+                userId={user!.id}
+                maxMembers={maxTeamMembers}
+              />
             )}
           </div>
         </main>

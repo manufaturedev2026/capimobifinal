@@ -42,6 +42,10 @@ export default function CompanyProfile() {
   const [galleryLightbox, setGalleryLightbox] = useState<number | null>(null);
   const [gallerySlide, setGallerySlide] = useState(0);
   const [galleryPaused, setGalleryPaused] = useState(false);
+  const [teamMember, setTeamMember] = useState<any>(null);
+
+  const searchParams = new URLSearchParams(location.search);
+  const corretorSlug = searchParams.get("corretor");
 
   const staticCompany = allCompanies.find((c) => c.id === id);
   const staticProducts = staticCompany ? getProductsByCompany(staticCompany.id) : [];
@@ -56,7 +60,7 @@ export default function CompanyProfile() {
       setIsDbProfile(false);
       setLoading(false);
     }
-  }, [id]);
+  }, [id, corretorSlug]);
 
   const fetchProfile = async (profileId: string) => {
     const { data: profile } = await supabase
@@ -74,6 +78,20 @@ export default function CompanyProfile() {
         .eq("status", "ativo")
         .order("created_at", { ascending: false });
       setDbItems(items || []);
+
+      // Fetch team member if corretor slug present
+      if (corretorSlug) {
+        const { data: member } = await supabase
+          .from("team_members")
+          .select("*")
+          .eq("company_id", profileId)
+          .eq("slug", corretorSlug)
+          .eq("is_active", true)
+          .single();
+        setTeamMember(member || null);
+      } else {
+        setTeamMember(null);
+      }
     }
     setLoading(false);
 
@@ -86,12 +104,12 @@ export default function CompanyProfile() {
     ? dbProfile
       ? {
           id: dbProfile.id,
-          name: dbProfile.company_name || dbProfile.full_name,
-          logo: dbProfile.logo_url || "",
+          name: teamMember ? teamMember.full_name : (dbProfile.company_name || dbProfile.full_name),
+          logo: teamMember?.photo_url || dbProfile.logo_url || "",
           address: [dbProfile.address, dbProfile.city, dbProfile.state].filter(Boolean).join(", "),
           rating: "5.0",
           reviewCount: 0,
-          whatsapp: dbProfile.phone || "",
+          whatsapp: teamMember?.phone || dbProfile.phone || "",
           instagram: dbProfile.instagram || "",
           segment: dbProfile.seller_type,
           show_location: dbProfile.show_location ?? true,
@@ -406,15 +424,31 @@ export default function CompanyProfile() {
                 </div>
                 <div className="p-4 pt-8">
                   <h3 className="font-display font-bold text-foreground text-sm">{company.name}</h3>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    {dbProfile?.seller_category
-                      ? ({ imobiliaria: "Imobiliária", corretor: "Corretor(a) de Imóveis", proprietario: "Proprietário" } as Record<string, string>)[dbProfile.seller_category] || "Imobiliária"
-                      : "Imobiliária"}
-                  </p>
-                  {dbProfile?.seller_category === "corretor" && dbProfile?.creci && (
-                    <p className="text-xs text-primary font-semibold mt-1 flex items-center gap-1">
-                      <Shield size={12} /> {dbProfile.creci}
-                    </p>
+                  {teamMember ? (
+                    <>
+                      <p className="text-xs text-muted-foreground mt-0.5">Corretor(a) de Imóveis</p>
+                      {teamMember.creci && (
+                        <p className="text-xs text-primary font-semibold mt-1 flex items-center gap-1">
+                          <Shield size={12} /> {teamMember.creci}
+                        </p>
+                      )}
+                      <p className="text-[10px] text-muted-foreground mt-1">
+                        Vinculado a {dbProfile?.company_name || dbProfile?.full_name}
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        {dbProfile?.seller_category
+                          ? ({ imobiliaria: "Imobiliária", corretor: "Corretor(a) de Imóveis", proprietario: "Proprietário" } as Record<string, string>)[dbProfile.seller_category] || "Imobiliária"
+                          : "Imobiliária"}
+                      </p>
+                      {dbProfile?.seller_category === "corretor" && dbProfile?.creci && (
+                        <p className="text-xs text-primary font-semibold mt-1 flex items-center gap-1">
+                          <Shield size={12} /> {dbProfile.creci}
+                        </p>
+                      )}
+                    </>
                   )}
                   
                   {company.address && (
