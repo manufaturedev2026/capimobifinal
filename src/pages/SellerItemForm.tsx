@@ -4,7 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Save, ArrowLeft, Upload, X, MapPin, Lock, Video } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { getTagStyle, getTagLabel } from "@/data/products";
+import { getTagStyle, getTagLabel, getTagEmoji, TAG_CATEGORIES } from "@/data/products";
 import type { Database } from "@/integrations/supabase/types";
 import { useSubscription, PACKAGE_CONFIG } from "@/hooks/useSubscription";
 import { ES_CITIES } from "@/data/esCities";
