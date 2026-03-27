@@ -254,7 +254,6 @@ export default function SellerItemForm() {
   };
 
   const removePhoto = (index: number) => setForm((f) => ({ ...f, photos: f.photos.filter((_, i) => i !== index) }));
-  const toggleTag = (tag: ItemTag) => setForm((f) => ({ ...f, tags: f.tags.includes(tag) ? f.tags.filter((t) => t !== tag) : [...f.tags, tag] }));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
