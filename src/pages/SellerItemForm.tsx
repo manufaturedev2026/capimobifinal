@@ -123,6 +123,7 @@ export default function SellerItemForm() {
               bathrooms: data.bathrooms?.toString() || "",
               area: data.area?.toString() || "",
               parking_spots: data.parking_spots?.toString() || "",
+              video_url: (data as any).video_url || "",
             });
           }
         });
