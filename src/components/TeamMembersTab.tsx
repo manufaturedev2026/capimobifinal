@@ -137,6 +137,7 @@ export default function TeamMembersTab({ profileId, userId, maxMembers }: Props)
         email: form.email.trim() || null,
         bio: form.bio.trim() || null,
         photo_url: form.photo_url || null,
+        instagram: form.instagram.trim() || null,
         slug,
       });
 
