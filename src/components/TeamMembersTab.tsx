@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Edit, Trash2, Users, Save, X, ExternalLink, Upload } from "lucide-react";
+import { Plus, Edit, Trash2, Users, Save, X, ExternalLink, Upload, Copy } from "lucide-react";
 import { motion } from "framer-motion";
 
 type TeamMember = {
@@ -352,6 +352,17 @@ export default function TeamMembersTab({ profileId, userId, maxMembers }: Props)
               </div>
 
               <div className="flex items-center gap-1.5 flex-shrink-0">
+                <button
+                  onClick={() => {
+                    const url = `${window.location.origin}/imoveis/empresa/${profileId}?corretor=${m.slug}`;
+                    navigator.clipboard.writeText(url);
+                    toast({ title: "Link copiado!" });
+                  }}
+                  className="p-2 rounded-xl hover:bg-secondary transition-colors text-muted-foreground"
+                  title="Copiar link da loja"
+                >
+                  <Copy size={16} />
+                </button>
                 <a
                   href={`/imoveis/empresa/${profileId}?corretor=${m.slug}`}
                   target="_blank"
