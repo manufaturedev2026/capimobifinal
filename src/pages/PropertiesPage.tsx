@@ -22,6 +22,13 @@ export default function PropertiesPage() {
   const [filterCity, setFilterCity] = useState(initialCity);
   const [filterType, setFilterType] = useState("");
   const [showRentals, setShowRentals] = useState(true);
+  const [priceMin, setPriceMin] = useState("");
+  const [priceMax, setPriceMax] = useState("");
+  const [minBedrooms, setMinBedrooms] = useState("");
+  const [minArea, setMinArea] = useState("");
+  const [onlyFinancing, setOnlyFinancing] = useState(false);
+  const [onlyFurnished, setOnlyFurnished] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
   const itemsSectionRef = useRef<HTMLDivElement>(null);
 
   // Sync filter when detected city loads async
