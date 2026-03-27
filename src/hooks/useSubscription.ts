@@ -97,6 +97,7 @@ export const PACKAGE_CONFIG = {
       "Gerente de conta dedicado",
       "Suporte VIP dedicado",
       "Instagram na loja",
+      "Até 5 Corretores vinculados",
     ],
   },
   premium_empresa: {
@@ -118,6 +119,7 @@ export const PACKAGE_CONFIG = {
       "Gerente de conta dedicado",
       "Suporte VIP dedicado",
       "Instagram na loja",
+      "Até 10 Corretores vinculados",
     ],
   },
 } as const;
