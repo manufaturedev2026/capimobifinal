@@ -30,13 +30,6 @@ interface SellerWithSub {
   };
 }
 
-interface StoreDomain {
-  id: string;
-  seller_id: string;
-  domain: string;
-  is_active: boolean;
-  created_at: string;
-}
 
 const tierIcons: Record<string, React.ElementType> = { basico: Zap, premium: Star, vip: Crown };
 
@@ -49,7 +42,7 @@ export default function AdminPanel() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [tierFilter, setTierFilter] = useState<string>("todos");
-  const [tab, setTab] = useState<"sellers" | "billing" | "domains" | "ads">("sellers");
+  const [tab, setTab] = useState<"sellers" | "billing" | "ads">("sellers");
   const [adRequests, setAdRequests] = useState<any[]>([]);
   const [adsLoading, setAdsLoading] = useState(false);
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
@@ -65,11 +58,6 @@ export default function AdminPanel() {
   const [managerPhotoUploading, setManagerPhotoUploading] = useState(false);
   const managerPhotoRef = useRef<HTMLInputElement>(null);
 
-  // Domain management state
-  const [domains, setDomains] = useState<StoreDomain[]>([]);
-  const [domainsLoading, setDomainsLoading] = useState(false);
-  const [newDomain, setNewDomain] = useState("");
-  const [selectedSellerId, setSelectedSellerId] = useState("");
 
   useEffect(() => {
     if (!authLoading && !adminLoading) {
@@ -80,7 +68,6 @@ export default function AdminPanel() {
   useEffect(() => {
     if (isAdmin) {
       fetchSellers();
-      fetchDomains();
       fetchAdRequests();
     }
   }, [isAdmin]);
@@ -166,47 +153,6 @@ export default function AdminPanel() {
     setLoading(false);
   };
 
-  const fetchDomains = async () => {
-    setDomainsLoading(true);
-    const { data } = await supabase.from("store_domains").select("*").order("created_at", { ascending: false });
-    setDomains((data as StoreDomain[]) || []);
-    setDomainsLoading(false);
-  };
-
-  const addDomain = async () => {
-    if (!newDomain.trim() || !selectedSellerId) {
-      toast({ title: "Preencha o domínio e selecione um vendedor", variant: "destructive" });
-      return;
-    }
-    const cleanDomain = newDomain.trim().toLowerCase().replace(/^https?:\/\//, "").replace(/\/$/, "");
-    const { error } = await supabase.from("store_domains").insert({
-      seller_id: selectedSellerId,
-      domain: cleanDomain,
-    } as any);
-    if (error) {
-      toast({ title: "Erro ao adicionar domínio", description: error.message, variant: "destructive" });
-    } else {
-      toast({ title: "Domínio adicionado!" });
-      setNewDomain("");
-      setSelectedSellerId("");
-      fetchDomains();
-    }
-  };
-
-  const removeDomain = async (id: string) => {
-    const { error } = await supabase.from("store_domains").delete().eq("id", id);
-    if (!error) {
-      toast({ title: "Domínio removido" });
-      fetchDomains();
-    }
-  };
-
-  const toggleDomain = async (id: string, currentActive: boolean) => {
-    const { error } = await supabase.from("store_domains").update({ is_active: !currentActive } as any).eq("id", id);
-    if (!error) {
-      fetchDomains();
-    }
-  };
 
   const getSellerStoreUrl = (seller: SellerWithSub) => {
     return `/empresa/${(seller as any).slug || seller.id}`;
@@ -338,7 +284,6 @@ export default function AdminPanel() {
   const sidebarItems = [
     { key: "sellers" as const, label: "Vendedores", icon: Users },
     { key: "billing" as const, label: "Faturamento", icon: DollarSign },
-    { key: "domains" as const, label: "Domínios", icon: Globe },
     { key: "ads" as const, label: "Solicitações ADS", icon: Megaphone, badge: pendingAdsCount },
   ];
 
@@ -429,7 +374,7 @@ export default function AdminPanel() {
         <main className="flex-1 overflow-y-auto p-4 md:p-6 max-w-5xl">
 
         {/* Search */}
-        {tab !== "domains" && (
+        {(
           <div className="relative mb-4">
             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
             <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Buscar vendedor..."
@@ -584,164 +529,6 @@ export default function AdminPanel() {
           </div>
         )}
 
-        {tab === "domains" && (
-          <div className="space-y-4">
-            {/* Add domain form */}
-            <div className="bg-card border border-border rounded-2xl p-6">
-              <h3 className="font-display font-bold text-lg text-foreground mb-4 flex items-center gap-2">
-                <Globe size={20} className="text-primary" /> Adicionar Domínio Custom
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                <div>
-                  <label className="text-xs text-muted-foreground font-semibold mb-1 block">Domínio</label>
-                  <input
-                    value={newDomain}
-                    onChange={(e) => setNewDomain(e.target.value)}
-                    placeholder="manufature.com.br"
-                    className="w-full px-4 py-2.5 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs text-muted-foreground font-semibold mb-1 block">Vendedor</label>
-                  <select
-                    value={selectedSellerId}
-                    onChange={(e) => setSelectedSellerId(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
-                  >
-                    <option value="">Selecione o vendedor...</option>
-                    {sellers.map((s) => (
-                      <option key={s.id} value={s.id}>
-                        {s.company_name || s.full_name} ({s.seller_type})
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="flex items-end">
-                  <button
-                    onClick={addDomain}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-all"
-                  >
-                    <Plus size={16} /> Adicionar
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Passo a passo */}
-            <div className="bg-card border border-border rounded-2xl p-6">
-              <h3 className="font-display font-bold text-lg text-foreground mb-4 flex items-center gap-2">
-                📋 Passo a Passo para Configurar Domínio do Lojista
-              </h3>
-              <div className="space-y-4 text-sm text-muted-foreground">
-                <div className="flex gap-3">
-                  <span className="flex-shrink-0 w-7 h-7 rounded-full bg-primary/10 text-primary font-bold flex items-center justify-center text-xs">1</span>
-                  <div>
-                    <p className="font-semibold text-foreground">Cadastrar o domínio aqui no Admin</p>
-                    <p>Preencha o domínio e selecione o vendedor acima, depois clique em "Adicionar".</p>
-                  </div>
-                </div>
-                <div className="flex gap-3">
-                  <span className="flex-shrink-0 w-7 h-7 rounded-full bg-primary/10 text-primary font-bold flex items-center justify-center text-xs">2</span>
-                  <div>
-                    <p className="font-semibold text-foreground">Adicionar o domínio no Lovable</p>
-                    <p>Vá em <strong>Settings → Domains → Connect Domain</strong> no projeto Lovable e adicione o mesmo domínio. Isso faz o Lovable servir o site naquele endereço.</p>
-                  </div>
-                </div>
-                <div className="flex gap-3">
-                  <span className="flex-shrink-0 w-7 h-7 rounded-full bg-primary/10 text-primary font-bold flex items-center justify-center text-xs">3</span>
-                  <div>
-                    <p className="font-semibold text-foreground">Configurar DNS no registrador do domínio</p>
-                    <p>O lojista (ou você) deve configurar no provedor de DNS:</p>
-                    <div className="mt-2 bg-muted/50 rounded-xl p-3 space-y-1 font-mono text-xs">
-                      <div className="flex gap-4"><span className="text-muted-foreground w-12">Tipo:</span><span className="text-foreground font-semibold">A</span></div>
-                      <div className="flex gap-4"><span className="text-muted-foreground w-12">Nome:</span><span className="text-foreground font-semibold">@ (raiz)</span></div>
-                      <div className="flex gap-4"><span className="text-muted-foreground w-12">Valor:</span><span className="text-primary font-semibold">185.158.133.1</span></div>
-                    </div>
-                    <div className="mt-2 bg-muted/50 rounded-xl p-3 space-y-1 font-mono text-xs">
-                      <div className="flex gap-4"><span className="text-muted-foreground w-12">Tipo:</span><span className="text-foreground font-semibold">A</span></div>
-                      <div className="flex gap-4"><span className="text-muted-foreground w-12">Nome:</span><span className="text-foreground font-semibold">www</span></div>
-                      <div className="flex gap-4"><span className="text-muted-foreground w-12">Valor:</span><span className="text-primary font-semibold">185.158.133.1</span></div>
-                    </div>
-                    <div className="mt-2 bg-amber-500/10 rounded-xl p-3 space-y-1 font-mono text-xs border border-amber-500/20">
-                      <div className="flex gap-4"><span className="text-muted-foreground w-12">Tipo:</span><span className="text-foreground font-semibold">TXT</span></div>
-                      <div className="flex gap-4"><span className="text-muted-foreground w-12">Nome:</span><span className="text-foreground font-semibold">@</span></div>
-                      <div className="flex gap-4"><span className="text-muted-foreground w-12">Valor:</span><span className="text-amber-600 font-semibold break-all">lovable_verify=... (copie o código do Lovable em Settings → Domains)</span></div>
-                    </div>
-                    <p className="mt-2 text-xs text-amber-600 font-semibold">⚠️ O registro TXT é obrigatório! Sem ele, o Lovable não valida o domínio e dá erro DNS.</p>
-                  </div>
-                </div>
-                <div className="flex gap-3">
-                  <span className="flex-shrink-0 w-7 h-7 rounded-full bg-primary/10 text-primary font-bold flex items-center justify-center text-xs">4</span>
-                  <div>
-                    <p className="font-semibold text-foreground">Aguardar propagação DNS</p>
-                    <p>A propagação pode levar até <strong>48-72 horas</strong>. O SSL (HTTPS) será provisionado automaticamente pelo Lovable.</p>
-                  </div>
-                </div>
-                <div className="flex gap-3">
-                  <span className="flex-shrink-0 w-7 h-7 rounded-full bg-primary/10 text-primary font-bold flex items-center justify-center text-xs">5</span>
-                  <div>
-                    <p className="font-semibold text-foreground">Testar o acesso</p>
-                    <p>Acesse o domínio no navegador. O sistema detectará automaticamente o domínio e mostrará apenas a loja do vendedor vinculado.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Domain list */}
-            <div className="bg-card border border-border rounded-2xl p-6">
-              <h3 className="font-display font-bold text-lg text-foreground mb-4">Domínios Configurados</h3>
-              {domainsLoading ? (
-                <div className="text-center py-8 text-muted-foreground text-sm">Carregando...</div>
-              ) : domains.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground text-sm">Nenhum domínio configurado ainda.</div>
-              ) : (
-                <div className="space-y-3">
-                  {domains.map((d) => {
-                    const seller = sellers.find((s) => s.id === d.seller_id);
-                    return (
-                      <div key={d.id} className="flex flex-col md:flex-row md:items-center justify-between gap-3 p-4 rounded-xl bg-secondary/50 border border-border">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2">
-                            <Globe size={16} className={d.is_active ? "text-green-500" : "text-muted-foreground"} />
-                            <span className="font-semibold text-foreground">{d.domain}</span>
-                            <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${d.is_active ? "bg-green-500/10 text-green-500" : "bg-muted text-muted-foreground"}`}>
-                              {d.is_active ? "Ativo" : "Inativo"}
-                            </span>
-                          </div>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            → {seller?.company_name || seller?.full_name || "Vendedor não encontrado"}
-                          </p>
-                        </div>
-                        <div className="flex gap-1.5">
-                          {seller && (
-                            <button
-                              onClick={() => copyRedirectUrl(seller)}
-                              className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-semibold hover:bg-primary/20"
-                            >
-                              <Copy size={12} /> Copiar URL
-                            </button>
-                          )}
-                          <button
-                            onClick={() => toggleDomain(d.id, d.is_active)}
-                            className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-amber-500/10 text-amber-600 text-xs font-semibold hover:bg-amber-500/20"
-                          >
-                            {d.is_active ? "Desativar" : "Ativar"}
-                          </button>
-                          <button
-                            onClick={() => removeDomain(d.id)}
-                            className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-destructive/10 text-destructive text-xs font-semibold hover:bg-destructive/20"
-                          >
-                            <Trash2 size={12} /> Remover
-                          </button>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          </div>
-        )}
 
         {tab === "ads" && (
           <div className="space-y-3">
@@ -830,24 +617,12 @@ export default function AdminPanel() {
                         </p>
                       </div>
                       <div className="flex gap-1.5 flex-wrap">
-                        {seller && (() => {
-                          const customDomain = domains.find(d => d.seller_id === seller.id && d.is_active);
-                          const storeUrl = customDomain 
-                            ? `https://${customDomain.domain}` 
-                            : `/loja/${seller.id}`;
-                          const isExternal = !!customDomain;
-                          return isExternal ? (
-                            <a href={storeUrl} target="_blank" rel="noopener noreferrer"
-                              className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-semibold hover:bg-primary/20">
-                              <ExternalLink size={12} /> Ver Loja ({customDomain.domain})
-                            </a>
-                          ) : (
-                            <Link to={storeUrl} target="_blank"
-                              className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-semibold hover:bg-primary/20">
-                              <ExternalLink size={12} /> Ver Loja
-                            </Link>
-                          );
-                        })()}
+                        {seller && (
+                          <Link to={`/empresa/${seller.id}`} target="_blank"
+                            className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-semibold hover:bg-primary/20">
+                            <ExternalLink size={12} /> Ver Loja
+                          </Link>
+                        )}
                         {ad.status === "aprovado" && seller && (() => {
                           const sitemapUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/seller-sitemap?seller_id=${seller.id}&format=google`;
                           return (
