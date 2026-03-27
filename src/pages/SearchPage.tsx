@@ -1,20 +1,28 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { Search } from "lucide-react";
-import CompanyCard from "@/components/CompanyCard";
-import { allCompanies } from "@/data/companies";
+import { Link } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { formatPrice } from "@/data/products";
 
 export default function SearchPage() {
   const [query, setQuery] = useState("");
+  const [results, setResults] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  const results = useMemo(() => {
-    if (query.length < 2) return [];
-    const q = query.toLowerCase();
-    return allCompanies.filter(
-      (c) =>
-        c.name.toLowerCase().includes(q) ||
-        c.address.toLowerCase().includes(q) ||
-        c.category.toLowerCase().includes(q)
-    );
+  useEffect(() => {
+    if (query.length < 2) { setResults([]); return; }
+    const timeout = setTimeout(async () => {
+      setLoading(true);
+      const { data } = await supabase
+        .from("seller_items")
+        .select("id, title, price, photos, city, neighborhood, category")
+        .eq("status", "ativo")
+        .ilike("title", `%${query}%`)
+        .limit(30);
+      setResults(data || []);
+      setLoading(false);
+    }, 300);
+    return () => clearTimeout(timeout);
   }, [query]);
 
   return (
@@ -34,13 +42,28 @@ export default function SearchPage() {
       </div>
 
       <div className="mt-8">
-        {query.length < 2 ? (
+        {loading ? (
+          <div className="flex justify-center py-16">
+            <div className="w-8 h-8 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
+          </div>
+        ) : query.length < 2 ? (
           <p className="text-muted-foreground text-center py-16">Digite pelo menos 2 caracteres para buscar</p>
         ) : results.length > 0 ? (
           <>
             <p className="text-sm text-muted-foreground mb-4">{results.length} resultado(s) para "{query}"</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {results.map((c, i) => <CompanyCard key={c.id} company={c} index={i} />)}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+              {results.map((item) => (
+                <Link key={item.id} to={`/imoveis/produto/${item.id}`} className="group bg-card border border-border rounded-2xl overflow-hidden hover:shadow-lg transition-all">
+                  <div className="aspect-[4/3] overflow-hidden">
+                    <img src={item.photos?.[0] || ""} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                  </div>
+                  <div className="p-3">
+                    <h3 className="font-semibold text-sm text-foreground line-clamp-2">{item.title}</h3>
+                    <p className="text-primary font-bold text-sm mt-1">{formatPrice(item.price || 0)}</p>
+                    <p className="text-xs text-muted-foreground mt-1">{[item.neighborhood, item.city].filter(Boolean).join(", ")}</p>
+                  </div>
+                </Link>
+              ))}
             </div>
           </>
         ) : (

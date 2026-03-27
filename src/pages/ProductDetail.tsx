@@ -4,8 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ChevronLeft, ChevronRight, MessageCircle, Share2, Star, MapPin, Tag, Store, Image, X, ZoomIn, BadgeCheck, Video } from "lucide-react";
 import PackageBadge from "@/components/PackageBadge";
 import { useWhatsAppPicker } from "@/components/WhatsAppTeamPicker";
-import { getProductById, formatPrice, getProductsByCompany, getTagStyle, getTagLabel } from "@/data/products";
-import { allCompanies } from "@/data/companies";
+import { formatPrice, getTagStyle, getTagLabel } from "@/data/products";
 import { supabase } from "@/integrations/supabase/client";
 import { trackSellerEvent } from "@/hooks/useSellerAnalytics";
 import { useToast } from "@/hooks/use-toast";
@@ -27,9 +26,6 @@ export default function ProductDetail() {
   const [sellerTier, setSellerTier] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [isDb, setIsDb] = useState(false);
-
-  const staticProduct = productId ? getProductById(productId) : undefined;
-  const staticCompany = staticProduct ? allCompanies.find((c) => c.id === staticProduct.companyId) : undefined;
 
   useEffect(() => {
     if (productId && isUUID(productId)) {
@@ -81,7 +77,7 @@ export default function ProductDetail() {
     );
   }
 
-  const product = isDb ? dbItem : staticProduct;
+  const product = isDb ? dbItem : null;
   const company = isDb
     ? dbSeller
       ? {
@@ -96,7 +92,7 @@ export default function ProductDetail() {
           sellerCategory: dbSeller.seller_category,
         }
       : null
-    : staticCompany;
+    : null;
 
   if (!product || !company) {
     return (
@@ -218,7 +214,7 @@ export default function ProductDetail() {
     if (p.color) specs["Cor"] = p.color;
   }
   const displaySpecs = isDb ? specs : product.specs;
-  const relatedProducts = isDb ? [] : getProductsByCompany(company.id).filter((p: any) => p.id !== product.id).slice(0, 4);
+  const relatedProducts: any[] = [];
 
   const scrollCarousel = (dir: "left" | "right") => {
     if (!carouselRef.current) return;

@@ -2,8 +2,8 @@ import { useState, useMemo, useRef, useEffect } from "react";
 import { Link, useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Building2, Home, Landmark, Store, Key, ArrowLeft, ArrowRight, Search } from "lucide-react";
-import { propertyCompanies, propertyCategories, type Company } from "@/data/companies";
-import { allProducts, formatPrice, getTagStyle, getTagLabel, type Product } from "@/data/products";
+import { propertyCategories } from "@/data/companies";
+import { formatPrice, getTagStyle, getTagLabel, type Product } from "@/data/products";
 import { useRealListings } from "@/hooks/useRealListings";
 import PackageBadge from "@/components/PackageBadge";
 import HeroBannerCarousel from "@/components/HeroBannerCarousel";
@@ -59,18 +59,14 @@ export default function PropertiesPage() {
     }, 100);
   };
 
-  // Build unified seller map (real + static)
   const allSellers = useMemo(() => {
-    const map: Record<string, { id: string; name: string; logo: string; address: string; isReal: boolean }> = {};
-    propertyCompanies.forEach((c) => { map[c.id] = { id: c.id, name: c.name, logo: c.logo, address: c.address, isReal: false }; });
-    realSellers.forEach((s) => { map[s.id] = { id: s.id, name: s.name, logo: s.logo, address: s.address, isReal: true }; });
+    const map: Record<string, { id: string; name: string; logo: string; address: string }> = {};
+    realSellers.forEach((s) => { map[s.id] = { id: s.id, name: s.name, logo: s.logo, address: s.address }; });
     return map;
   }, [realSellers]);
 
-  // Merge real items into unified product format
   const propertyProducts = useMemo(() => {
-    const staticProds = allProducts.filter((p) => p.type === "imovel");
-    const realProds: (Product & { sellerTier?: string; realCategory?: string; isAluguel?: boolean; furnished?: boolean; accepts_financing?: boolean; bedrooms?: number; area?: number; neighborhood?: string })[] = realItems.map((item) => ({
+    return realItems.map((item) => ({
       id: item.id,
       companyId: item.sellerId,
       title: item.title,
@@ -93,16 +89,10 @@ export default function PropertiesPage() {
       bedrooms: item.bedrooms,
       area: item.area,
       neighborhood: item.neighborhood,
-    }));
-    return [...realProds, ...staticProds];
+    })) as (Product & { sellerTier?: string; realCategory?: string; isAluguel?: boolean; furnished?: boolean; accepts_financing?: boolean; bedrooms?: number; area?: number; neighborhood?: string })[];
   }, [realItems]);
 
   const normalizeCityValue = (value?: string | null) => value?.trim().toLowerCase() ?? "";
-
-  const getStaticCompanyCity = (company: Company) => {
-    const city = company.address.split(" - ").pop()?.trim();
-    return normalizeCityValue(city);
-  };
 
   // Filter sellers by city + only paid plans
   const paidTiers = ["start", "premium", "vip", "essencial_empresa", "premium_empresa"];
@@ -112,12 +102,6 @@ export default function PropertiesPage() {
     const selectedCity = normalizeCityValue(filterCity);
     return paid.filter((seller) => normalizeCityValue(seller.city) === selectedCity);
   }, [realSellers, filterCity]);
-
-  const filteredStaticCompanies = useMemo(() => {
-    if (!filterCity) return propertyCompanies;
-    const selectedCity = normalizeCityValue(filterCity);
-    return propertyCompanies.filter((company) => getStaticCompanyCity(company) === selectedCity);
-  }, [filterCity]);
 
   // Category mapping for filtering
   const categoryMap: Record<string, string[]> = {
@@ -197,26 +181,13 @@ export default function PropertiesPage() {
             return (p as any).isAluguel;
           }
           const realCat = (p as any).realCategory;
-          if (realCat) {
-            const matchCats = categoryMap[effectiveCategory] || [];
-            return matchCats.includes(realCat);
-          }
-          const companyIds = propertyCompanies
-            .filter((c) => c.category === effectiveCategory)
-            .map((c) => c.id);
-          return companyIds.includes(p.companyId);
+          const matchCats = categoryMap[effectiveCategory] || [];
+          return realCat && matchCats.includes(realCat);
         });
 
     if (filterCity) {
       const selectedCity = normalizeCityValue(filterCity);
-      const staticCityIds = propertyCompanies
-        .filter((company) => getStaticCompanyCity(company) === selectedCity)
-        .map((company) => company.id);
-      const realCityIds = realSellers
-        .filter((seller) => normalizeCityValue(seller.city) === selectedCity)
-        .map((seller) => seller.id);
-      const cityIds = new Set([...staticCityIds, ...realCityIds]);
-      list = list.filter((product) => cityIds.has(product.companyId) || normalizeCityValue((product as any).location) === selectedCity);
+      list = list.filter((product) => normalizeCityValue((product as any).location) === selectedCity);
     }
 
     if (filterNeighborhood) {
