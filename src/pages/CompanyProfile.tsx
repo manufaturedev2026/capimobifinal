@@ -144,6 +144,12 @@ export default function CompanyProfile() {
 
   const filteredProducts = useMemo(() => {
     if (activeCategory === "todos") return products;
+    if (activeCategory === "aluguel") {
+      return products.filter((p: any) => {
+        const tags: string[] = p.tags || [];
+        return tags.includes("aluguel_flex");
+      });
+    }
     return products.filter((p: any) => {
       if (isDbProfile) return p.category === activeCategory;
       return true;
@@ -155,6 +161,10 @@ export default function CompanyProfile() {
     products.forEach((p: any) => {
       const cat = isDbProfile ? p.category : "todos";
       counts[cat] = (counts[cat] || 0) + 1;
+      const tags: string[] = p.tags || [];
+      if (tags.includes("aluguel_flex")) {
+        counts["aluguel"] = (counts["aluguel"] || 0) + 1;
+      }
     });
     return counts;
   }, [products, isDbProfile]);
