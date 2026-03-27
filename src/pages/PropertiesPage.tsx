@@ -40,6 +40,15 @@ export default function PropertiesPage() {
     }
   }, [detectedCity]);
 
+  // Sync filterCity when URL changes
+  useEffect(() => {
+    if (cidade) {
+      const cityFromUrl = cidade.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+      setFilterCity(cityFromUrl);
+      setFilterNeighborhood("");
+    }
+  }, [cidade]);
+
   const { sellers: realSellers, items: realItems } = useRealListings("imoveis");
 
   const scrollToItems = () => {
