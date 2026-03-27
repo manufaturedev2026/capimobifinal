@@ -35,6 +35,12 @@ const styles: Record<string, { bg: string; icon: any; label: string; glow?: stri
     label: "Premium Empresa",
     glow: "shadow-sky-500/30",
   },
+  prime_empresa: {
+    bg: "bg-gradient-to-r from-zinc-800 to-zinc-950",
+    icon: Diamond,
+    label: "Black",
+    glow: "shadow-zinc-500/30",
+  },
 };
 
 export default function PackageBadge({ tier, size = "sm" }: PackageBadgeProps) {
