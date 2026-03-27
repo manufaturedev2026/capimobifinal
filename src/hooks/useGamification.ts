@@ -197,8 +197,8 @@ export function useSellerActiveRewards(sellerId?: string) {
       .then(({ data }) => {
         if (!data) return;
         const now = new Date();
-        setHasBlackTag((data as any[]).some((r) => r.reward_type === "black_tag_24h" && new Date(r.expires_at) > now));
-        setHasDestaque((data as any[]).some((r) => r.reward_type === "destaque_24h" && new Date(r.expires_at) > now));
+        setHasBlackTag((data as any[]).some((r) => (r.reward_type === "black_tag_24h" || r.reward_type === "black_tag_1h") && new Date(r.expires_at) > now));
+        setHasDestaque((data as any[]).some((r) => (r.reward_type === "destaque_24h" || r.reward_type === "destaque_10min") && new Date(r.expires_at) > now));
       });
   }, [sellerId]);
 

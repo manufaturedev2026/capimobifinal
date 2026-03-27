@@ -16,11 +16,20 @@ export default function GamificationTab({ userId, sellerId }: GamificationTabPro
 
   const handleClaim = async (achievement: (typeof achievements)[0]) => {
     setClaiming(achievement.id);
-    const ok = await claimReward(achievement);
-    if (ok) {
+    const result = await claimReward(achievement);
+    if (result === "conflict") {
+      toast({
+        title: "Recompensa ativa",
+        description: "Aguarde a recompensa atual expirar antes de ativar outra.",
+        variant: "destructive",
+      });
+    } else if (result === true) {
+      const dur = achievement.reward_duration_ms >= 3600000
+        ? `${Math.round(achievement.reward_duration_ms / 3600000)} hora(s)`
+        : `${Math.round(achievement.reward_duration_ms / 60000)} minutos`;
       toast({
         title: `🎉 Recompensa resgatada!`,
-        description: `${achievement.reward_label} ativada por 24 horas!`,
+        description: `${achievement.reward_label} ativada por ${dur}!`,
       });
     } else {
       toast({ title: "Erro ao resgatar", variant: "destructive" });
@@ -96,18 +105,19 @@ export default function GamificationTab({ userId, sellerId }: GamificationTabPro
           </h3>
           <div className="space-y-2">
             {activeRewards.map((r) => {
-              const expiresIn = Math.max(0, Math.ceil((new Date(r.expires_at).getTime() - Date.now()) / (1000 * 60 * 60)));
+              const expiresIn = Math.max(0, Math.ceil((new Date(r.expires_at).getTime() - Date.now()) / (1000 * 60)));
+              const timeLabel = expiresIn >= 60 ? `${Math.floor(expiresIn / 60)}h ${expiresIn % 60}min` : `${expiresIn}min`;
               return (
                 <div key={r.id} className="flex items-center gap-3 bg-gradient-to-r from-zinc-900 to-zinc-800 text-white rounded-xl p-3">
                   <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center">
-                    {r.reward_type === "black_tag_24h" ? "🏴" : "⭐"}
+                    {(r.reward_type === "black_tag_24h" || r.reward_type === "black_tag_1h") ? "🏴" : "⭐"}
                   </div>
                   <div className="flex-1">
                     <p className="font-bold text-sm">
-                      {r.reward_type === "black_tag_24h" ? "Tag Black Ativa" : "Destaque Ativo"}
+                      {(r.reward_type === "black_tag_24h" || r.reward_type === "black_tag_1h") ? "Tag Black Ativa" : "Destaque Ativo"}
                     </p>
                     <p className="text-xs text-white/60 flex items-center gap-1">
-                      <Clock size={10} /> Expira em {expiresIn}h
+                      <Clock size={10} /> Expira em {timeLabel}
                     </p>
                   </div>
                   <span className="text-xs bg-green-500/20 text-green-400 px-2 py-1 rounded-lg font-bold">ATIVO</span>
