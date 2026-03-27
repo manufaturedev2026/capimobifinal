@@ -824,20 +824,19 @@ export default function SellerDashboard() {
 
                   {/* Instructions */}
                   <h3 className="font-display font-bold text-foreground mb-4 flex items-center gap-2">
-                    📋 Como configurar na Hostinger
+                    📋 Como configurar seu domínio
                   </h3>
 
                   <div className="space-y-4">
                     <div className="flex gap-3">
                       <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold">1</div>
                       <div>
-                        <p className="font-semibold text-sm text-foreground">Acesse o painel da Hostinger</p>
+                        <p className="font-semibold text-sm text-foreground">Compre seu domínio</p>
                         <p className="text-xs text-muted-foreground mt-1">
-                          Entre em{" "}
-                          <a href="https://hpanel.hostinger.com" target="_blank" rel="noopener noreferrer" className="text-primary underline">
-                            hpanel.hostinger.com
-                          </a>{" "}
-                          e selecione o domínio que deseja configurar.
+                          Registre seu domínio em um provedor como{" "}
+                          <a href="https://registro.br" target="_blank" rel="noopener noreferrer" className="text-primary underline">Registro.br</a>,{" "}
+                          <a href="https://hostinger.com.br" target="_blank" rel="noopener noreferrer" className="text-primary underline">Hostinger</a> ou{" "}
+                          <a href="https://godaddy.com" target="_blank" rel="noopener noreferrer" className="text-primary underline">GoDaddy</a>.
                         </p>
                       </div>
                     </div>
@@ -845,10 +844,10 @@ export default function SellerDashboard() {
                     <div className="flex gap-3">
                       <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold">2</div>
                       <div>
-                        <p className="font-semibold text-sm text-foreground">Vá em Redirecionamentos</p>
+                        <p className="font-semibold text-sm text-foreground">Fale com seu gerente</p>
                         <p className="text-xs text-muted-foreground mt-1">
-                          No menu lateral, clique em <strong>"Avançado"</strong> → <strong>"Redirecionamentos"</strong>.<br />
-                          Ou pesquise "Redirecionamentos" na barra de busca do painel.
+                          Envie o nome do domínio para seu gerente de conta pelo botão abaixo.
+                          Ele fará a configuração técnica para você.
                         </p>
                       </div>
                     </div>
@@ -856,22 +855,20 @@ export default function SellerDashboard() {
                     <div className="flex gap-3">
                       <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold">3</div>
                       <div>
-                        <p className="font-semibold text-sm text-foreground">Crie o redirecionamento</p>
-                        <p className="text-xs text-muted-foreground mt-1">Preencha os campos:</p>
+                        <p className="font-semibold text-sm text-foreground">Configure o DNS</p>
+                        <p className="text-xs text-muted-foreground mt-1">Seu gerente irá orientá-lo a adicionar estes registros DNS no seu provedor:</p>
                         <div className="mt-2 bg-muted rounded-lg p-3 space-y-2">
                           <div className="flex items-center justify-between">
-                            <span className="text-xs text-muted-foreground">Redirecionar de:</span>
-                            <code className="text-xs font-mono text-foreground bg-background px-2 py-1 rounded">seudominio.com.br</code>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs text-muted-foreground">Redirecionar para:</span>
-                            <code className="text-xs font-mono text-primary bg-primary/10 px-2 py-1 rounded break-all text-right max-w-[200px]">
-                              {storeUrl.length > 40 ? storeUrl.substring(0, 40) + "..." : storeUrl}
-                            </code>
-                          </div>
-                          <div className="flex items-center justify-between">
                             <span className="text-xs text-muted-foreground">Tipo:</span>
-                            <code className="text-xs font-mono text-foreground bg-background px-2 py-1 rounded">301 (Permanente)</code>
+                            <code className="text-xs font-mono text-foreground bg-background px-2 py-1 rounded">A</code>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs text-muted-foreground">Nome:</span>
+                            <code className="text-xs font-mono text-foreground bg-background px-2 py-1 rounded">@ (raiz) e www</code>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs text-muted-foreground">Valor:</span>
+                            <code className="text-xs font-mono text-primary bg-primary/10 px-2 py-1 rounded">185.158.133.1</code>
                           </div>
                         </div>
                       </div>
@@ -880,10 +877,10 @@ export default function SellerDashboard() {
                     <div className="flex gap-3">
                       <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold">4</div>
                       <div>
-                        <p className="font-semibold text-sm text-foreground">Salve e teste</p>
+                        <p className="font-semibold text-sm text-foreground">Pronto!</p>
                         <p className="text-xs text-muted-foreground mt-1">
-                          Clique em <strong>"Criar"</strong>. O redirecionamento pode levar até <strong>24 horas</strong> para funcionar completamente.<br />
-                          Depois é só acessar seu domínio e ele vai direto para sua loja!
+                          Após a configuração (pode levar até <strong>48 horas</strong> para propagar),
+                          seu domínio abrirá <strong>diretamente sua loja</strong> — sem redirecionamento visível!
                         </p>
                       </div>
                     </div>
