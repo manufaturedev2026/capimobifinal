@@ -29,6 +29,7 @@ export default function PropertiesPage() {
   const [onlyFinancing, setOnlyFinancing] = useState(false);
   const [onlyFurnished, setOnlyFurnished] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [filterNeighborhood, setFilterNeighborhood] = useState("");
   const itemsSectionRef = useRef<HTMLDivElement>(null);
 
   // Sync filter when detected city loads async
@@ -162,6 +163,22 @@ export default function PropertiesPage() {
     return Array.from(cities).sort();
   }, [realItems]);
 
+  const availableNeighborhoods = useMemo(() => {
+    const set = new Set<string>();
+    realItems.forEach((item) => {
+      if (item.neighborhood) {
+        if (filterCity) {
+          if (normalizeCityValue(item.city) === normalizeCityValue(filterCity)) {
+            set.add(item.neighborhood.trim());
+          }
+        } else {
+          set.add(item.neighborhood.trim());
+        }
+      }
+    });
+    return Array.from(set).sort();
+  }, [realItems, filterCity]);
+
   const propertyTypes = [
     { value: "aluguel", label: "Aluguel" },
     { value: "casas", label: "Casas" },
@@ -200,6 +217,10 @@ export default function PropertiesPage() {
       list = list.filter((product) => cityIds.has(product.companyId) || normalizeCityValue((product as any).location) === selectedCity);
     }
 
+    if (filterNeighborhood) {
+      list = list.filter((p) => (p as any).neighborhood === filterNeighborhood || (p as any).specs?.Bairro === filterNeighborhood);
+    }
+
     if (!showRentals) {
       list = list.filter((p) => !(p as any).isAluguel);
     }
@@ -215,7 +236,7 @@ export default function PropertiesPage() {
     // Keep priority order from useRealListings (weighted by tier)
     // Real items already come sorted by tier weight, static items go at the end
     return list;
-  }, [activeCategory, propertyProducts, filterCity, filterType, realSellers, showRentals, priceMin, priceMax, minBedrooms, minArea, onlyFurnished, onlyFinancing]);
+  }, [activeCategory, propertyProducts, filterCity, filterType, filterNeighborhood, realSellers, showRentals, priceMin, priceMax, minBedrooms, minArea, onlyFurnished, onlyFinancing]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -236,14 +257,22 @@ export default function PropertiesPage() {
           <h3 className="font-display font-semibold text-sm text-muted-foreground mb-3 flex items-center gap-2">
             <Search size={16} /> Filtrar imóveis
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
             <select
               value={filterCity}
-              onChange={(e) => { const v = e.target.value; setFilterCity(v); navigate(v ? `/imoveis/${v.toLowerCase().replace(/\s+/g, "-")}` : "/imoveis", { replace: true }); }}
+              onChange={(e) => { const v = e.target.value; setFilterCity(v); setFilterNeighborhood(""); navigate(v ? `/imoveis/${v.toLowerCase().replace(/\s+/g, "-")}` : "/imoveis", { replace: true }); }}
               className="w-full px-4 py-2.5 rounded-xl bg-secondary text-foreground text-base focus:outline-none focus:ring-2 focus:ring-primary/50"
             >
               <option value="">Todas as cidades</option>
               {availableCities.map((c) => <option key={c} value={c}>{c}</option>)}
+            </select>
+            <select
+              value={filterNeighborhood}
+              onChange={(e) => setFilterNeighborhood(e.target.value)}
+              className="w-full px-4 py-2.5 rounded-xl bg-secondary text-foreground text-base focus:outline-none focus:ring-2 focus:ring-primary/50"
+            >
+              <option value="">Todos os bairros</option>
+              {availableNeighborhoods.map((n) => <option key={n} value={n}>{n}</option>)}
             </select>
             <select
               value={filterType}
@@ -261,7 +290,7 @@ export default function PropertiesPage() {
                 {showAdvanced ? "▲ Filtros" : "▼ Mais Filtros"}
               </button>
               <button
-                onClick={() => { setFilterCity(""); setFilterType(""); setActiveCategory(null); setShowRentals(true); setPriceMin(""); setPriceMax(""); setMinBedrooms(""); setMinArea(""); setOnlyFinancing(false); setOnlyFurnished(false); }}
+                onClick={() => { setFilterCity(""); setFilterType(""); setFilterNeighborhood(""); setActiveCategory(null); setShowRentals(true); setPriceMin(""); setPriceMax(""); setMinBedrooms(""); setMinArea(""); setOnlyFinancing(false); setOnlyFurnished(false); }}
                 className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--accent))] text-white font-bold text-sm hover:opacity-90 transition-opacity shadow"
               >
                 Limpar
