@@ -248,6 +248,7 @@ export default function SellerItemForm() {
       bathrooms: form.bathrooms ? parseInt(form.bathrooms) : null,
       area: form.area ? parseFloat(form.area) : null,
       parking_spots: form.parking_spots ? parseInt(form.parking_spots) : null,
+      video_url: form.video_url?.trim() || null,
     };
 
     let error;
