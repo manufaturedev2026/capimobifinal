@@ -523,3 +523,203 @@ function EasterEffect() {
     </>
   );
 }
+
+/* ═══════════ ESTRELAS CADENTES ═══════════ */
+function ShootingStarsEffect() {
+  const stars = useMemo(() => Array.from({ length: 8 }, (_, i) => ({
+    id: i,
+    top: 5 + Math.random() * 40,
+    left: Math.random() * 80,
+    duration: 1 + Math.random() * 1.5,
+    delay: Math.random() * 6,
+    length: 80 + Math.random() * 120,
+    angle: 25 + Math.random() * 20,
+  })), []);
+
+  return (
+    <>
+      {stars.map(s => (
+        <div
+          key={s.id}
+          className="absolute"
+          style={{
+            top: `${s.top}%`,
+            left: `${s.left}%`,
+            width: `${s.length}px`,
+            height: "2px",
+            background: "linear-gradient(to right, transparent, rgba(255,255,255,0.1), rgba(255,255,255,0.8), white)",
+            borderRadius: "2px",
+            transform: `rotate(${s.angle}deg)`,
+            boxShadow: "0 0 6px rgba(255,255,255,0.6), 0 0 12px rgba(200,220,255,0.3)",
+            animation: `shootingStar ${s.duration}s ease-in ${s.delay}s infinite`,
+          }}
+        >
+          {/* Head glow */}
+          <div
+            className="absolute right-0 top-1/2 -translate-y-1/2 rounded-full"
+            style={{
+              width: "6px",
+              height: "6px",
+              background: "white",
+              boxShadow: "0 0 10px 4px rgba(200,220,255,0.8), 0 0 20px 8px rgba(150,180,255,0.3)",
+            }}
+          />
+        </div>
+      ))}
+      {/* Background twinkle stars */}
+      {Array.from({ length: 20 }, (_, i) => (
+        <div
+          key={`twinkle-${i}`}
+          className="absolute rounded-full"
+          style={{
+            top: `${Math.random() * 60}%`,
+            left: `${Math.random() * 100}%`,
+            width: "2px",
+            height: "2px",
+            background: "white",
+            boxShadow: "0 0 4px rgba(255,255,255,0.5)",
+            animation: `twinkle ${2 + Math.random() * 3}s ease-in-out ${Math.random() * 3}s infinite`,
+          }}
+        />
+      ))}
+      <style>{`
+        @keyframes shootingStar {
+          0% { transform: rotate(var(--angle, 30deg)) translateX(0); opacity: 0; }
+          5% { opacity: 1; }
+          30% { opacity: 1; }
+          100% { transform: rotate(var(--angle, 30deg)) translateX(300px); opacity: 0; }
+        }
+        @keyframes twinkle {
+          0%, 100% { opacity: 0.2; transform: scale(0.8); }
+          50% { opacity: 1; transform: scale(1.3); }
+        }
+      `}</style>
+    </>
+  );
+}
+
+/* ═══════════ PÉTALAS DE ROSA ═══════════ */
+function PetalsEffect() {
+  const petals = useMemo(() => Array.from({ length: 25 }, (_, i) => {
+    const pinks = [
+      ["#ffb6c1", "#ff69b4"],
+      ["#ffc0cb", "#ff85a2"],
+      ["#f8a4c8", "#e75480"],
+      ["#ffcce5", "#ff99cc"],
+      ["#ffd6e7", "#ffadd2"],
+    ];
+    const color = pinks[Math.floor(Math.random() * pinks.length)];
+    return {
+      id: i,
+      left: Math.random() * 100,
+      size: 10 + Math.random() * 12,
+      duration: 4 + Math.random() * 4,
+      delay: Math.random() * 5,
+      sway: (Math.random() - 0.5) * 120,
+      rotation: Math.random() * 540,
+      color1: color[0],
+      color2: color[1],
+      wobble: 2 + Math.random() * 3,
+    };
+  }), []);
+
+  return (
+    <>
+      {petals.map(p => (
+        <div
+          key={p.id}
+          className="absolute"
+          style={{
+            left: `${p.left}%`,
+            top: "-20px",
+            width: `${p.size}px`,
+            height: `${p.size * 0.7}px`,
+            borderRadius: "50% 0 50% 0",
+            background: `linear-gradient(135deg, ${p.color1}, ${p.color2})`,
+            boxShadow: `inset -1px -1px 3px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.05)`,
+            animation: `petalFall ${p.duration}s ease-in-out ${p.delay}s infinite`,
+            "--sway": `${p.sway}px`,
+            "--rot": `${p.rotation}deg`,
+            "--wobble": `${p.wobble}s`,
+          } as any}
+        >
+          {/* Vein line */}
+          <div className="absolute" style={{
+            top: "50%",
+            left: "20%",
+            width: "60%",
+            height: "1px",
+            background: `linear-gradient(to right, transparent, rgba(255,255,255,0.3), transparent)`,
+            transform: "rotate(-10deg)",
+          }} />
+        </div>
+      ))}
+      <style>{`
+        @keyframes petalFall {
+          0% { transform: translateY(-20px) translateX(0) rotate(0) scale(1); opacity: 0; }
+          10% { opacity: 0.9; }
+          25% { transform: translateY(25vh) translateX(calc(var(--sway) * 0.5)) rotate(calc(var(--rot) * 0.3)) scale(0.95); }
+          50% { transform: translateY(50vh) translateX(var(--sway)) rotate(calc(var(--rot) * 0.6)) scale(1.05); }
+          75% { transform: translateY(75vh) translateX(calc(var(--sway) * 0.3)) rotate(calc(var(--rot) * 0.8)) scale(0.9); opacity: 0.7; }
+          100% { transform: translateY(105vh) translateX(calc(var(--sway) * -0.2)) rotate(var(--rot)) scale(0.8); opacity: 0; }
+        }
+      `}</style>
+    </>
+  );
+}
+
+/* ═══════════ CONFETTI ═══════════ */
+function ConfettiEffect() {
+  const pieces = useMemo(() => Array.from({ length: 50 }, (_, i) => {
+    const colors = ["#ff6b6b", "#ffd93d", "#6bcb77", "#4d96ff", "#ff6bcb", "#ff9f43", "#a55eea", "#0abde3", "#ee5a24", "#10ac84"];
+    return {
+      id: i,
+      left: Math.random() * 100,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      width: 6 + Math.random() * 6,
+      height: 4 + Math.random() * 8,
+      duration: 2.5 + Math.random() * 3,
+      delay: Math.random() * 4,
+      sway: (Math.random() - 0.5) * 80,
+      rotX: Math.random() * 720,
+      rotY: Math.random() * 720,
+      rotZ: Math.random() * 360,
+      shape: Math.floor(Math.random() * 3), // 0=rect, 1=circle, 2=strip
+    };
+  }), []);
+
+  return (
+    <>
+      {pieces.map(p => (
+        <div
+          key={p.id}
+          className="absolute"
+          style={{
+            left: `${p.left}%`,
+            top: "-20px",
+            width: `${p.width}px`,
+            height: p.shape === 2 ? `${p.height * 2}px` : `${p.height}px`,
+            borderRadius: p.shape === 1 ? "50%" : p.shape === 2 ? "1px" : "1px",
+            background: p.color,
+            boxShadow: `0 1px 3px rgba(0,0,0,0.15)`,
+            animation: `confettiFall ${p.duration}s ease-in-out ${p.delay}s infinite`,
+            "--sway": `${p.sway}px`,
+            "--rx": `${p.rotX}deg`,
+            "--ry": `${p.rotY}deg`,
+            "--rz": `${p.rotZ}deg`,
+          } as any}
+        />
+      ))}
+      <style>{`
+        @keyframes confettiFall {
+          0% { transform: translateY(-20px) translateX(0) rotateX(0) rotateY(0) rotateZ(0); opacity: 0; }
+          8% { opacity: 1; }
+          25% { transform: translateY(25vh) translateX(calc(var(--sway) * 0.6)) rotateX(calc(var(--rx) * 0.3)) rotateY(calc(var(--ry) * 0.3)) rotateZ(calc(var(--rz) * 0.3)); }
+          50% { transform: translateY(50vh) translateX(var(--sway)) rotateX(calc(var(--rx) * 0.6)) rotateY(calc(var(--ry) * 0.6)) rotateZ(calc(var(--rz) * 0.6)); }
+          75% { opacity: 0.8; }
+          100% { transform: translateY(105vh) translateX(calc(var(--sway) * -0.3)) rotateX(var(--rx)) rotateY(var(--ry)) rotateZ(var(--rz)); opacity: 0; }
+        }
+      `}</style>
+    </>
+  );
+}
