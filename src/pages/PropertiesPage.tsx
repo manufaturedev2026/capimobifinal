@@ -1,6 +1,7 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import { Link, useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
+import SoldCountdown from "@/components/SoldCountdown";
 import { Building2, Home, Landmark, Store, Key, ArrowLeft, ArrowRight, Search } from "lucide-react";
 import { propertyCategories } from "@/data/companies";
 import { formatPrice, getTagStyle, getTagLabel, type Product } from "@/data/products";
@@ -451,9 +452,19 @@ export default function PropertiesPage() {
                       <img
                         src={product.image}
                         alt={product.title}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 ${(product as any).status === "vendido" ? "brightness-50 blur-[1px]" : ""}`}
                         loading="lazy"
                       />
+                      {(product as any).status === "vendido" && (
+                        <div className="absolute inset-0 flex flex-col items-center justify-center z-10">
+                          <span className="px-4 py-2 rounded-xl bg-red-600/90 text-white font-bold text-sm shadow-lg">❌ Vendido</span>
+                          {(product as any).sold_at && (
+                            <div className="mt-2">
+                              <SoldCountdown soldAt={(product as any).sold_at} />
+                            </div>
+                          )}
+                        </div>
+                      )}
                       {(product as any).allTags?.length > 0 ? (
                         <div className="absolute top-3 left-3 flex flex-wrap gap-1 max-w-[70%]">
                           {(product as any).allTags.slice(0, 3).map((t: string) => (
