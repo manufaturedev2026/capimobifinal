@@ -108,11 +108,12 @@ export default function AuthPage() {
       <div className="w-full lg:w-1/2 flex items-center justify-center px-6 py-10 lg:py-12">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }} className="w-full max-w-md">
           {/* Mobile header */}
-          <div className="lg:hidden text-center mb-6">
-            <div className="w-14 h-14 rounded-2xl bg-primary flex items-center justify-center mx-auto mb-3 shadow-lg shadow-primary/30">
-              <Sparkles size={24} className="text-primary-foreground" />
+           <div className="lg:hidden text-center mb-6">
+              <img src={logoImg} alt="ES Corretores" className="w-14 h-14 rounded-2xl object-contain mx-auto mb-3" />
+              <h2 className="font-display font-bold text-lg">
+                <span className="text-primary">E</span><span className="text-accent">S</span> <span className="text-foreground">Corretores</span>
+              </h2>
             </div>
-          </div>
 
           <div className="mb-8">
             <h2 className="font-display font-bold text-2xl lg:text-3xl text-foreground">
