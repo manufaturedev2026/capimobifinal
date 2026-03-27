@@ -246,7 +246,8 @@ export default function CompanyProfile() {
 
   const shuffledTeamMembers = useMemo(() => {
     return [...teamMembers].sort(() => Math.random() - 0.5);
-  }, [teamMembers, showTeamPicker]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [teamMembers.length, showTeamPicker]);
 
   const isPaid = sellerTier !== "basico";
 
