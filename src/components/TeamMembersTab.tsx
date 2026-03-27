@@ -13,6 +13,7 @@ type TeamMember = {
   email: string | null;
   photo_url: string | null;
   bio: string | null;
+  instagram: string | null;
   slug: string;
   is_active: boolean;
   created_at: string;
@@ -47,6 +48,7 @@ export default function TeamMembersTab({ profileId, userId, maxMembers }: Props)
     email: "",
     bio: "",
     photo_url: "",
+    instagram: "",
   });
 
   const fetchMembers = async () => {
@@ -64,7 +66,7 @@ export default function TeamMembersTab({ profileId, userId, maxMembers }: Props)
   }, [profileId]);
 
   const resetForm = () => {
-    setForm({ full_name: "", phone: "", creci: "", email: "", bio: "", photo_url: "" });
+    setForm({ full_name: "", phone: "", creci: "", email: "", bio: "", photo_url: "", instagram: "" });
     setEditing(null);
     setShowForm(false);
   };
@@ -110,6 +112,7 @@ export default function TeamMembersTab({ profileId, userId, maxMembers }: Props)
           email: form.email.trim() || null,
           bio: form.bio.trim() || null,
           photo_url: form.photo_url || null,
+          instagram: form.instagram.trim() || null,
           slug,
           updated_at: new Date().toISOString(),
         })
@@ -134,6 +137,7 @@ export default function TeamMembersTab({ profileId, userId, maxMembers }: Props)
         email: form.email.trim() || null,
         bio: form.bio.trim() || null,
         photo_url: form.photo_url || null,
+        instagram: form.instagram.trim() || null,
         slug,
       });
 
@@ -160,6 +164,7 @@ export default function TeamMembersTab({ profileId, userId, maxMembers }: Props)
       email: m.email || "",
       bio: m.bio || "",
       photo_url: m.photo_url || "",
+      instagram: (m as any).instagram || "",
     });
     setEditing(m.id);
     setShowForm(true);
@@ -277,6 +282,15 @@ export default function TeamMembersTab({ profileId, userId, maxMembers }: Props)
                 onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
                 className="w-full px-4 py-2.5 rounded-xl bg-secondary text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
                 placeholder="corretor@email.com"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-muted-foreground mb-1">Instagram</label>
+              <input
+                value={form.instagram}
+                onChange={(e) => setForm((f) => ({ ...f, instagram: e.target.value }))}
+                className="w-full px-4 py-2.5 rounded-xl bg-secondary text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                placeholder="@corretor"
               />
             </div>
           </div>
