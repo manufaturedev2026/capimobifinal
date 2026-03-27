@@ -13,6 +13,7 @@ import {
   Zap,
   Globe,
   Award,
+  Building,
 } from "lucide-react";
 import heroImg from "@/assets/hero-anunciar.jpg";
 
