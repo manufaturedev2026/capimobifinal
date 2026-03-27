@@ -255,7 +255,7 @@ export default function CityPropertiesPage() {
             </div>
           )}
 
-          {activeCategory !== "aluguel" && (
+          {effectiveCategory !== "aluguel" && (
             <div className="mt-3 flex items-center gap-2">
               <button
                 onClick={() => setShowRentals(!showRentals)}
