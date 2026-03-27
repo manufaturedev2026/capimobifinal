@@ -176,7 +176,7 @@ export default function HeroBannerCarousel({
                     {currentSeller.name}
                   </span>
                   {currentItem?.sellerTier && currentItem.sellerTier !== "basico" && (
-                    <PackageBadge tier={currentItem.sellerTier} />
+                    <PackageBadge tier={currentItem.sellerTier as any} />
                   )}
                 </div>
               )}
