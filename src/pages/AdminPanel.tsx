@@ -370,6 +370,7 @@ export default function AdminPanel() {
               { label: "VIP", value: totalByTier.vip, icon: Crown, color: "text-purple-500" },
               { label: "Ess. Empresa", value: totalByTier.essencial_empresa, icon: Building2, color: "text-blue-500" },
               { label: "Prem. Empresa", value: totalByTier.premium_empresa, icon: Building2, color: "text-indigo-500" },
+              { label: "Prime Empresa", value: totalByTier.prime_empresa, icon: Crown, color: "text-zinc-400" },
             ].map((s) => (
               <div key={s.label} className="bg-secondary rounded-xl p-2.5 text-center">
                 <s.icon size={14} className={`${s.color} mx-auto mb-0.5`} />
@@ -549,7 +550,7 @@ export default function AdminPanel() {
           <div className="bg-card border border-border rounded-2xl p-6">
             <h3 className="font-display font-bold text-lg text-foreground mb-4">Resumo de Faturamento</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {(["start", "basico", "premium", "vip", "essencial_empresa", "premium_empresa"] as const).map((tier) => {
+              {(["start", "basico", "premium", "vip", "essencial_empresa", "premium_empresa", "prime_empresa"] as const).map((tier) => {
                 const config = PACKAGE_CONFIG[tier];
                 const count = totalByTier[tier];
                 const revenue = count * config.price;
@@ -573,7 +574,8 @@ export default function AdminPanel() {
                     totalByTier.premium * PACKAGE_CONFIG.premium.price +
                     totalByTier.vip * PACKAGE_CONFIG.vip.price +
                     totalByTier.essencial_empresa * PACKAGE_CONFIG.essencial_empresa.price +
-                    totalByTier.premium_empresa * PACKAGE_CONFIG.premium_empresa.price
+                    totalByTier.premium_empresa * PACKAGE_CONFIG.premium_empresa.price +
+                    totalByTier.prime_empresa * PACKAGE_CONFIG.prime_empresa.price
                   ).toFixed(2).replace(".", ",")}
                 </span>
               </p>
