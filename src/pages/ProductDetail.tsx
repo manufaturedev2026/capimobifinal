@@ -21,6 +21,7 @@ export default function ProductDetail() {
   const carouselRef = useRef<HTMLDivElement>(null);
   const [dbItem, setDbItem] = useState<any>(null);
   const [dbSeller, setDbSeller] = useState<any>(null);
+  const [sellerTier, setSellerTier] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [isDb, setIsDb] = useState(false);
 
