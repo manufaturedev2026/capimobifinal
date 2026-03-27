@@ -95,6 +95,14 @@ export default function CompanyProfile() {
       } else {
         setTeamMember(null);
       }
+
+      // Always fetch all team members for WhatsApp picker
+      const { data: allMembers } = await supabase
+        .from("team_members")
+        .select("*")
+        .eq("company_id", profileId)
+        .eq("is_active", true);
+      setTeamMembers(allMembers || []);
     }
     setLoading(false);
 
