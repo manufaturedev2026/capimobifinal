@@ -56,6 +56,15 @@ export default function AdminPanel() {
   const [rejectAdId, setRejectAdId] = useState<string | null>(null);
   const [rejectReason, setRejectReason] = useState("");
 
+  // Manager edit dialog state
+  const [managerDialogOpen, setManagerDialogOpen] = useState(false);
+  const [managerEditSellerId, setManagerEditSellerId] = useState<string | null>(null);
+  const [managerName, setManagerName] = useState("");
+  const [managerPhoneVal, setManagerPhoneVal] = useState("");
+  const [managerPhotoUrl, setManagerPhotoUrl] = useState("");
+  const [managerPhotoUploading, setManagerPhotoUploading] = useState(false);
+  const managerPhotoRef = useRef<HTMLInputElement>(null);
+
   // Domain management state
   const [domains, setDomains] = useState<StoreDomain[]>([]);
   const [domainsLoading, setDomainsLoading] = useState(false);
