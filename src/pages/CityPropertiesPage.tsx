@@ -33,6 +33,13 @@ export default function CityPropertiesPage() {
   const [activeCategory, setActiveCategory] = useState<string | null>(categoriaParam);
   const [filterNeighborhood, setFilterNeighborhood] = useState("");
   const [showRentals, setShowRentals] = useState(true);
+  const [priceMin, setPriceMin] = useState("");
+  const [priceMax, setPriceMax] = useState("");
+  const [minBedrooms, setMinBedrooms] = useState("");
+  const [minArea, setMinArea] = useState("");
+  const [onlyFinancing, setOnlyFinancing] = useState(false);
+  const [onlyFurnished, setOnlyFurnished] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
   const itemsSectionRef = useRef<HTMLDivElement>(null);
 
   const scrollToItems = () => {
