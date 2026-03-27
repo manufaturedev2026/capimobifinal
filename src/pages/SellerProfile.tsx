@@ -93,6 +93,23 @@ export default function SellerProfile() {
 
     setSaving(true);
 
+    // Validate slug
+    const cleanSlug = form.slug.trim().toLowerCase().replace(/[^a-z0-9_-]/g, "");
+    if (cleanSlug) {
+      const { data: existing } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("slug", cleanSlug)
+        .neq("user_id", user.id)
+        .maybeSingle();
+      if (existing) {
+        setSlugError("Essa URL já está em uso. Escolha outra.");
+        setSaving(false);
+        return;
+      }
+    }
+    setSlugError("");
+
     const profileData: any = {
       ...form,
       user_id: user.id,
@@ -105,6 +122,7 @@ export default function SellerProfile() {
       instagram: form.instagram.trim() || null,
       bio: form.bio.trim() || null,
       logo_url: form.logo_url.trim() || null,
+      slug: cleanSlug || null,
       seller_type: "imoveis",
       state: "ES",
     };
