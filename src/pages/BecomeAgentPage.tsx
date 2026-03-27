@@ -120,7 +120,7 @@ const steps = [
     icon: GraduationCap,
     title: "Curso TTI",
     description: "Faça o curso de Técnico em Transações Imobiliárias (TTI) em uma escola credenciada. Duração de 6 a 12 meses.",
-    detail: "Investimento médio: R$ 800 a R$ 2.000",
+    detail: "Investimento médio acessível, podendo variar de acordo com a modalidade de estudo: presencial ou a distância (EAD)",
   },
   {
     icon: BookOpen,
