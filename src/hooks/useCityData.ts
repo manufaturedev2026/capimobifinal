@@ -6,6 +6,7 @@ export interface CityItem {
   sellerId: string;
   sellerName: string;
   sellerLogo: string;
+  sellerAddress: string;
   title: string;
   price: number;
   image: string;
@@ -19,6 +20,11 @@ export interface CityItem {
   bedrooms?: number;
   bathrooms?: number;
   area?: number;
+  sellerTier?: string;
+  furnished?: boolean;
+  accepts_financing?: boolean;
+  hasDestaque?: boolean;
+  hasBlackTag?: boolean;
 }
 
 export function useCityData(city: string, segment?: "imoveis") {
@@ -33,16 +39,43 @@ export function useCityData(city: string, segment?: "imoveis") {
 
       const { data: profiles } = await supabase
         .from("profiles")
-        .select("id, company_name, full_name, logo_url, seller_type")
+        .select("id, company_name, full_name, logo_url, seller_type, address, city, state")
         .eq("seller_type", "imoveis")
         .ilike("city", `%${normalizedCity}%`);
 
-      const sellerMap = new Map<string, { name: string; logo: string }>();
+      const sellerMap = new Map<string, { name: string; logo: string; address: string }>();
       (profiles || []).forEach((p: any) => {
         sellerMap.set(p.id, {
           name: p.company_name || p.full_name,
           logo: p.logo_url || "",
+          address: [p.address, p.city, p.state].filter(Boolean).join(", "),
         });
+      });
+
+      // Fetch subscriptions for tier info
+      const sellerIds = (profiles || []).map((p: any) => p.id);
+      const { data: subs } = sellerIds.length > 0
+        ? await supabase
+            .from("seller_subscriptions")
+            .select("seller_id, tier")
+            .in("seller_id", sellerIds)
+            .eq("is_active", true)
+        : { data: [] };
+      const tierMap = new Map<string, string>();
+      (subs || []).forEach((s: any) => tierMap.set(s.seller_id, s.tier));
+
+      // Fetch active destaque rewards
+      const { data: rewards } = sellerIds.length > 0
+        ? await supabase
+            .from("seller_rewards")
+            .select("seller_id, reward_type")
+            .in("seller_id", sellerIds)
+            .eq("is_active", true)
+            .eq("claimed", true)
+        : { data: [] };
+      const destaqueSet = new Set<string>();
+      (rewards || []).forEach((r: any) => {
+        if (r.reward_type === "destaque") destaqueSet.add(r.seller_id);
       });
 
       const { data: rawItems } = await supabase
@@ -61,6 +94,7 @@ export function useCityData(city: string, segment?: "imoveis") {
           sellerId: item.seller_id,
           sellerName: seller?.name || "",
           sellerLogo: seller?.logo || "",
+          sellerAddress: seller?.address || "",
           title: item.title,
           price: item.price || 0,
           image: photos[0] || "",
@@ -74,6 +108,11 @@ export function useCityData(city: string, segment?: "imoveis") {
           bedrooms: item.bedrooms,
           bathrooms: item.bathrooms,
           area: item.area,
+          sellerTier: tierMap.get(item.seller_id) || "basico",
+          furnished: item.furnished,
+          accepts_financing: item.accepts_financing,
+          hasDestaque: destaqueSet.has(item.seller_id),
+          hasBlackTag: false,
         };
       });
 

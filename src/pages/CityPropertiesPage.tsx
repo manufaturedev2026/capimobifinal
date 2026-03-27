@@ -33,6 +33,13 @@ export default function CityPropertiesPage() {
   const [activeCategory, setActiveCategory] = useState<string | null>(categoriaParam);
   const [filterNeighborhood, setFilterNeighborhood] = useState("");
   const [showRentals, setShowRentals] = useState(true);
+  const [priceMin, setPriceMin] = useState("");
+  const [priceMax, setPriceMax] = useState("");
+  const [minBedrooms, setMinBedrooms] = useState("");
+  const [minArea, setMinArea] = useState("");
+  const [onlyFinancing, setOnlyFinancing] = useState(false);
+  const [onlyFurnished, setOnlyFurnished] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
   const itemsSectionRef = useRef<HTMLDivElement>(null);
 
   const scrollToItems = () => {
@@ -106,8 +113,14 @@ export default function CityPropertiesPage() {
     if (!showRentals && activeCategory !== "aluguel") {
       list = list.filter((i) => !((i.tags || []).includes("aluguel_flex") || i.category === "aluguel"));
     }
+    if (priceMin) list = list.filter((i) => (i.price || 0) >= parseFloat(priceMin));
+    if (priceMax) list = list.filter((i) => (i.price || 0) <= parseFloat(priceMax));
+    if (minBedrooms) list = list.filter((i) => (i.bedrooms || 0) >= parseInt(minBedrooms));
+    if (minArea) list = list.filter((i) => (i.area || 0) >= parseFloat(minArea));
+    if (onlyFurnished) list = list.filter((i) => i.furnished);
+    if (onlyFinancing) list = list.filter((i) => i.accepts_financing);
     return list;
-  }, [items, activeCategory, filterNeighborhood, showRentals]);
+  }, [items, activeCategory, filterNeighborhood, showRentals, priceMin, priceMax, minBedrooms, minArea, onlyFurnished, onlyFinancing]);
 
   if (loading) {
     return (
@@ -152,13 +165,73 @@ export default function CityPropertiesPage() {
             <div className="flex items-center gap-2 text-muted-foreground text-sm px-2">
               <MapPin size={14} /> {cityName}, ES — {items.length} imóvel(is)
             </div>
-            <button
-              onClick={() => { setActiveCategory(null); setFilterNeighborhood(""); setShowRentals(true); }}
-              className="w-full px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#002F6C] to-[#00AEEF] text-white font-bold text-sm hover:opacity-90 transition-opacity shadow"
-            >
-              Limpar Filtros
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setShowAdvanced(!showAdvanced)}
+                className={`flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all ${showAdvanced ? "bg-primary text-primary-foreground" : "bg-secondary text-foreground hover:bg-secondary/80"}`}
+              >
+                {showAdvanced ? "▲ Filtros" : "▼ Mais Filtros"}
+              </button>
+              <button
+                onClick={() => { setActiveCategory(null); setFilterNeighborhood(""); setShowRentals(true); setPriceMin(""); setPriceMax(""); setMinBedrooms(""); setMinArea(""); setOnlyFinancing(false); setOnlyFurnished(false); }}
+                className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--accent))] text-white font-bold text-sm hover:opacity-90 transition-opacity shadow"
+              >
+                Limpar
+              </button>
+            </div>
           </div>
+
+          {/* Advanced Filters */}
+          {showAdvanced && (
+            <div className="mt-4 pt-4 border-t border-border space-y-3">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">Preço Mín (R$)</label>
+                  <input type="number" value={priceMin} onChange={(e) => setPriceMin(e.target.value)} placeholder="0"
+                    className="w-full px-3 py-2 rounded-xl bg-secondary text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" />
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">Preço Máx (R$)</label>
+                  <input type="number" value={priceMax} onChange={(e) => setPriceMax(e.target.value)} placeholder="Sem limite"
+                    className="w-full px-3 py-2 rounded-xl bg-secondary text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" />
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">Quartos (mín)</label>
+                  <select value={minBedrooms} onChange={(e) => setMinBedrooms(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-secondary text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
+                    <option value="">Qualquer</option>
+                    {[1,2,3,4,5].map(n => <option key={n} value={n}>{n}+</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">Área mín (m²)</label>
+                  <input type="number" value={minArea} onChange={(e) => setMinArea(e.target.value)} placeholder="0"
+                    className="w-full px-3 py-2 rounded-xl bg-secondary text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" />
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <button type="button" onClick={() => setOnlyFinancing(!onlyFinancing)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-xl border-2 text-xs font-semibold transition-all ${
+                    onlyFinancing ? "border-primary bg-primary/10 text-primary" : "border-input bg-background text-muted-foreground hover:border-primary/30"
+                  }`}>
+                  <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${onlyFinancing ? "border-primary bg-primary" : "border-muted-foreground"}`}>
+                    {onlyFinancing && <span className="text-primary-foreground text-[9px]">✓</span>}
+                  </div>
+                  Aceita Financiamento
+                </button>
+                <button type="button" onClick={() => setOnlyFurnished(!onlyFurnished)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-xl border-2 text-xs font-semibold transition-all ${
+                    onlyFurnished ? "border-primary bg-primary/10 text-primary" : "border-input bg-background text-muted-foreground hover:border-primary/30"
+                  }`}>
+                  <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${onlyFurnished ? "border-primary bg-primary" : "border-muted-foreground"}`}>
+                    {onlyFurnished && <span className="text-primary-foreground text-[9px]">✓</span>}
+                  </div>
+                  Mobiliado
+                </button>
+              </div>
+            </div>
+          )}
+
           {activeCategory !== "aluguel" && (
             <div className="mt-3 flex items-center gap-2">
               <button
@@ -194,22 +267,11 @@ export default function CityPropertiesPage() {
                   className={`w-full group rounded-2xl transition-all ${isActive ? "scale-95 brightness-110" : ""}`}
                 >
                   <div className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-lg">
-                    <img
-                      src={cat.img}
-                      alt={cat.name}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                      loading="lazy"
-                    />
-                    <div
-                      className={`absolute inset-0 bg-gradient-to-t ${cat.color} ${
-                        isActive ? "opacity-90" : "opacity-65 group-hover:opacity-80"
-                      } transition-opacity`}
-                    />
+                    <img src={cat.img} alt={cat.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
+                    <div className={`absolute inset-0 bg-gradient-to-t ${cat.color} ${isActive ? "opacity-90" : "opacity-65 group-hover:opacity-80"} transition-opacity`} />
                     <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
                       <Icon size={26} className="text-white drop-shadow-md" />
-                      <span className="font-display font-bold text-white text-sm md:text-base drop-shadow-lg">
-                        {cat.name}
-                      </span>
+                      <span className="font-display font-bold text-white text-sm md:text-base drop-shadow-lg">{cat.name}</span>
                     </div>
                   </div>
                 </button>
@@ -231,13 +293,7 @@ export default function CityPropertiesPage() {
             {featuredProducts.map((product, i) => {
               const seller = heroSellersMap[product.companyId];
               return (
-                <motion.div
-                  key={product.id}
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.05 }}
-                  className="flex-shrink-0 w-[200px] md:w-auto snap-start"
-                >
+                <motion.div key={product.id} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }} className="flex-shrink-0 w-[200px] md:w-auto snap-start">
                   <Link to={`/imoveis/produto/${product.id}`} className="group block">
                     <div className="relative aspect-[3/2] rounded-2xl overflow-hidden shadow-md">
                       <img src={product.image} alt={product.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
@@ -268,65 +324,62 @@ export default function CityPropertiesPage() {
               ? `${propertyCategories.find((c) => c.slug === activeCategory)?.name || "Imóveis"} em ${cityName}`
               : `Todos os Imóveis em ${cityName}`}
           </h2>
-          <span className="text-sm text-muted-foreground">
-            {filteredProducts.length} imóvel(is)
-          </span>
+          <span className="text-sm text-muted-foreground">{filteredProducts.length} imóvel(is)</span>
         </div>
 
         {filteredProducts.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
             {filteredProducts.map((item, i) => {
               const isAluguel = (item.tags || []).includes("aluguel_flex") || item.category === "aluguel";
+              const visibleTags = (item.tags || []).filter((t: string) => t !== "aluguel_flex");
               return (
-                <motion.div
-                  key={item.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.04 }}
-                >
+                <motion.div key={item.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}>
                   <Link to={`/imoveis/produto/${item.id}`}>
-                    <div className="group bg-card border border-border rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                    <div className={`group bg-card border rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 ${
+                      item.sellerTier === "vip" ? "border-purple-500/50 ring-1 ring-purple-500/20" :
+                      item.sellerTier === "premium" ? "border-amber-400/50 ring-1 ring-amber-400/20" : "border-border"
+                    }`}>
                       <div className="relative aspect-[4/3] overflow-hidden">
                         {item.image ? (
-                          <img
-                            src={item.image}
-                            alt={item.title}
-                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                            loading="lazy"
-                          />
+                          <img src={item.image} alt={item.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center bg-muted">
                             <Image size={32} className="text-muted-foreground" />
                           </div>
                         )}
-                        {(() => {
-                          const visibleTags = (item.tags || []).filter((t: string) => t !== "aluguel_flex");
-                          return visibleTags.length > 0 ? (
-                            <div className="absolute top-3 left-3 flex flex-wrap gap-1 max-w-[70%]">
-                              {visibleTags.slice(0, 3).map((t: string) => (
-                                <span key={t} className={`px-2 py-0.5 rounded-full text-[10px] font-bold shadow ${getTagStyle(t)}`}>
-                                  {getTagLabel(t)}
-                                </span>
-                              ))}
-                            </div>
-                          ) : null;
-                        })()}
-                        {isAluguel && (
-                          <span className="absolute bottom-3 left-3 px-3 py-1 rounded-full text-xs font-bold shadow bg-primary text-primary-foreground">
-                            🏠 Aluguel
-                          </span>
+                        {visibleTags.length > 0 && (
+                          <div className="absolute top-3 left-3 flex flex-wrap gap-1 max-w-[70%]">
+                            {visibleTags.slice(0, 3).map((t: string) => (
+                              <span key={t} className={`px-2 py-0.5 rounded-full text-[10px] font-bold shadow ${getTagStyle(t)}`}>
+                                {getTagLabel(t)}
+                              </span>
+                            ))}
+                          </div>
                         )}
+                        <div className="absolute top-3 right-3 flex flex-col items-end gap-1">
+                          {item.hasDestaque && (
+                            <span className="px-2.5 py-1 rounded-md text-[11px] font-bold bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg">⭐ DESTAQUE</span>
+                          )}
+                          {!item.hasDestaque && item.sellerTier && item.sellerTier !== "basico" && (
+                            <PackageBadge tier={item.sellerTier as any} />
+                          )}
+                        </div>
                       </div>
 
                       <div className="p-4">
-                        <h3 className="font-display font-bold text-base md:text-lg text-foreground line-clamp-1">
-                          {item.title}
-                        </h3>
+                        <h3 className="font-display font-bold text-base md:text-lg text-foreground line-clamp-1">{item.title}</h3>
                         {item.price > 0 && (
-                          <p className="text-xl font-bold text-emerald-500 mt-1">
-                            R$ {item.price.toLocaleString("pt-BR")}
-                            {isAluguel && <span className="text-sm font-normal text-muted-foreground"> /mês</span>}
-                          </p>
+                          <div className="flex items-center gap-2 mt-1">
+                            <p className="text-xl font-bold text-emerald-500">
+                              R$ {item.price.toLocaleString("pt-BR")}
+                              {isAluguel && <span className="text-sm font-normal text-muted-foreground"> /mês</span>}
+                            </p>
+                            {isAluguel && (
+                              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary text-primary-foreground">
+                                🏠 Aluguel
+                              </span>
+                            )}
+                          </div>
                         )}
                         {item.neighborhood && (
                           <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
@@ -336,9 +389,12 @@ export default function CityPropertiesPage() {
                         {item.sellerName && (
                           <div className="flex items-center gap-2 mt-3 pt-3 border-t border-border">
                             {item.sellerLogo && (
-                              <img src={item.sellerLogo} alt="" className="w-5 h-5 rounded-full object-cover" />
+                              <img src={item.sellerLogo} alt="" className="w-8 h-8 rounded-full object-cover" />
                             )}
-                            <span className="text-xs text-muted-foreground truncate">{item.sellerName}</span>
+                            <div className="min-w-0">
+                              <p className="text-sm font-medium text-foreground truncate">{item.sellerName}</p>
+                              <p className="text-xs text-muted-foreground truncate">{item.sellerAddress}</p>
+                            </div>
                           </div>
                         )}
                       </div>
