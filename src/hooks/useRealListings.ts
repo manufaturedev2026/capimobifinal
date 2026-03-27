@@ -90,14 +90,24 @@ export function useRealListings(segment?: "imoveis" | "automoveis") {
 
   useEffect(() => {
     const fetchData = async () => {
+      // Fetch active items + recently sold items (within 24h)
       const query = supabase
         .from("seller_items")
         .select("*")
         .eq("seller_type", "imoveis")
-        .eq("status", "ativo")
+        .in("status", ["ativo", "vendido"] as any)
         .order("created_at", { ascending: false });
 
       const { data: rawItems } = await query;
+
+      // Filter out sold items older than 24h
+      const cutoff = Date.now() - 24 * 60 * 60 * 1000;
+      const filteredItems = (rawItems || []).filter((item: any) => {
+        if (item.status === "vendido" && item.sold_at) {
+          return new Date(item.sold_at).getTime() > cutoff;
+        }
+        return true;
+      });
 
       const sellerIds = [...new Set((rawItems || []).map((i: any) => i.seller_id))];
 
