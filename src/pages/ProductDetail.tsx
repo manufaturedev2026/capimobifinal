@@ -527,10 +527,27 @@ export default function ProductDetail() {
                 </div>
               )}
 
-              {company.whatsapp && (
+              {dbItem?.status === "vendido" && (
+                <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-center">
+                  <p className="font-bold text-red-600 text-sm">❌ Este imóvel foi vendido</p>
+                  {dbItem.sold_at && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Será removido em {Math.max(0, Math.ceil((new Date(dbItem.sold_at).getTime() + 24*60*60*1000 - Date.now()) / (1000*60*60)))}h
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {company.whatsapp && dbItem?.status !== "vendido" && (
                 <button onClick={() => handleWhatsAppClick()}
                   className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-sm transition-colors shadow-lg">
                   <MessageCircle size={18} /> Chamar no WhatsApp
+                </button>
+              )}
+              {company.whatsapp && dbItem?.status === "vendido" && (
+                <button disabled
+                  className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-muted text-muted-foreground font-bold text-sm cursor-not-allowed">
+                  <MessageCircle size={18} /> Imóvel Vendido
                 </button>
               )}
 
