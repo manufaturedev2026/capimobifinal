@@ -89,6 +89,7 @@ const App = () => (
             <Sonner />
             <BrowserRouter>
               <ScrollToTop />
+              <CustomDomainRedirect />
               <AppLayout />
             </BrowserRouter>
           </TooltipProvider>
