@@ -892,8 +892,8 @@ export default function SellerDashboard() {
                       <CheckCircle2 size={16} className="text-green-500" /> Dicas importantes
                     </p>
                     <ul className="text-xs text-muted-foreground space-y-1.5">
-                      <li>• Use redirecionamento <strong>301 (Permanente)</strong> para melhor SEO</li>
-                      <li>• Redirecione também o <strong>www</strong> (ex: www.seudominio.com.br)</li>
+                      <li>• Configure tanto o <strong>@ (raiz)</strong> quanto o <strong>www</strong> no DNS</li>
+                      <li>• A propagação do DNS pode levar até <strong>48 horas</strong></li>
                       <li>• Compartilhe o seu domínio nas redes sociais e cartão de visita</li>
                       <li>• Se tiver dúvidas, fale com seu gerente clicando no botão abaixo</li>
                     </ul>
