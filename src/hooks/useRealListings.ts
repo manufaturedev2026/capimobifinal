@@ -162,9 +162,14 @@ export function useRealListings(segment?: "imoveis" | "automoveis") {
       // Higher tiers get higher scores on average, so they appear first more often
       // But lower tiers still have a chance to appear near the top
       const weightedItems = mapped.map((item: any) => {
-        const weight = tierWeight[item.sellerTier] ?? 10;
-        const randomFactor = Math.random(); // 0-1
-        const score = weight * (0.7 + randomFactor * 0.6); // weight * [0.7 - 1.3]
+        let weight = tierWeight[item.sellerTier] ?? 10;
+        // Gamification: Black Tag 24h gives same priority as prime_empresa (200)
+        if (blackTagSellers.has(item.sellerId)) {
+          weight = Math.max(weight, 200);
+          item.hasBlackTag = true;
+        }
+        const randomFactor = Math.random();
+        const score = weight * (0.7 + randomFactor * 0.6);
         return { ...item, _sortScore: score };
       });
 
