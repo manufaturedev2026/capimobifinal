@@ -515,26 +515,61 @@ export default function SellerItemForm() {
         {renderPropertyFields()}
 
         {/* Tags */}
-        <div className="bg-card border border-border rounded-2xl p-5">
-          <h2 className="font-display font-bold text-foreground mb-1">Tags de Destaque</h2>
-          {currentTier === "basico" && (
-            <p className="text-xs text-muted-foreground mb-3 flex items-center gap-1"><Lock size={10} /> Algumas tags são exclusivas para planos pagos</p>
-          )}
-          <div className="flex flex-wrap gap-2.5">
-            {availableTags.map((tag) => {
-              const selected = form.tags.includes(tag.value);
-              const siteStyle = getTagStyle(tag.value);
-              return (
-                <button key={tag.value} type="button" onClick={() => toggleTag(tag.value)}
-                  className={`relative px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-1.5 ${siteStyle} ${
-                    selected ? "shadow-lg scale-105 ring-2 ring-white/40" : "opacity-60 hover:opacity-100 hover:scale-105 hover:shadow-md"
-                  }`}>
-                  <span>{tag.emoji}</span>{tag.label}
-                  {selected && <span className="ml-1 w-4 h-4 rounded-full bg-white/25 flex items-center justify-center text-[10px]">✓</span>}
-                </button>
-              );
-            })}
+        <div className="bg-card border border-border rounded-2xl p-5 space-y-5">
+          <div>
+            <h2 className="font-display font-bold text-foreground mb-1">Tags de Destaque</h2>
+            <p className="text-xs text-muted-foreground">Selecione até {MAX_TAGS} tags. ({form.tags.length}/{MAX_TAGS})</p>
+            {currentTier === "basico" && (
+              <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1"><Lock size={10} /> Tags de valor são exclusivas para planos pagos</p>
+            )}
           </div>
+
+          {/* Auto-suggestions */}
+          {suggestedTags.length > 0 && form.tags.length < MAX_TAGS && (
+            <div className="bg-primary/5 border border-primary/20 rounded-xl p-3">
+              <p className="text-xs font-semibold text-primary mb-2">💡 Sugestões automáticas:</p>
+              <div className="flex flex-wrap gap-2">
+                {suggestedTags.slice(0, 3).map((tagValue) => (
+                  <button key={tagValue} type="button" onClick={() => toggleTag(tagValue as ItemTag)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold ${getTagStyle(tagValue)} opacity-80 hover:opacity-100 transition-all flex items-center gap-1 border border-white/20`}>
+                    {getTagEmoji(tagValue)} {getTagLabel(tagValue)}
+                    <span className="ml-1 text-[10px] opacity-70">+ Adicionar</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {Object.entries(TAG_CATEGORIES).map(([catKey, catConfig]) => {
+            const isLocked = currentTier === "basico" && catKey === "valor";
+            return (
+              <div key={catKey}>
+                <h3 className={`text-xs font-bold uppercase tracking-wider mb-2 ${categoryHeaderStyles[catKey] || "text-muted-foreground"}`}>
+                  {catConfig.label}
+                  {isLocked && <span className="ml-1 text-muted-foreground">🔒</span>}
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {catConfig.tags.map((tagValue) => {
+                    const selected = form.tags.includes(tagValue as ItemTag);
+                    const locked = isLocked;
+                    const disabled = locked || (!selected && form.tags.length >= MAX_TAGS);
+                    return (
+                      <button key={tagValue} type="button"
+                        onClick={() => !disabled && toggleTag(tagValue as ItemTag)}
+                        disabled={disabled}
+                        className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-1.5 shadow-sm ${getTagStyle(tagValue)} ${
+                          selected ? "ring-2 ring-white/40 scale-105 shadow-lg" : disabled ? "opacity-30 cursor-not-allowed" : "opacity-60 hover:opacity-100 hover:scale-105 hover:shadow-md"
+                        }`}>
+                        <span>{getTagEmoji(tagValue)}</span>
+                        {getTagLabel(tagValue)}
+                        {selected && <span className="ml-0.5 w-4 h-4 rounded-full bg-white/25 flex items-center justify-center text-[10px]">✓</span>}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
         </div>
 
         {/* Photos */}
