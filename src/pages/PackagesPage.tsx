@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 
 const tiers = ["basico", "start", "premium", "vip", "essencial_empresa", "premium_empresa"] as const;
 const tierIcons = { basico: Zap, start: Zap, premium: Star, vip: Crown, essencial_empresa: Building, premium_empresa: Building };
+const empresaTiers = ["essencial_empresa", "premium_empresa"];
 
 export default function PackagesPage() {
   const { user, profile } = useAuth();
@@ -79,6 +80,9 @@ export default function PackagesPage() {
             const Icon = tierIcons[tier];
             const isCurrent = currentTier === tier;
             const isPopular = tier === "premium";
+            const isEmpresaTier = empresaTiers.includes(tier);
+            const isImobiliaria = profile?.seller_category === "imobiliaria";
+            const isLocked = isEmpresaTier && !isImobiliaria;
 
             return (
               <motion.div
@@ -126,16 +130,24 @@ export default function PackagesPage() {
                     ))}
                   </ul>
 
+                  {isLocked && (
+                    <p className="text-xs text-muted-foreground mt-4 text-center italic">
+                      Exclusivo para Imobiliárias
+                    </p>
+                  )}
+
                   <button
                     onClick={() => handleSelect(tier)}
-                    disabled={isCurrent || selecting === tier}
-                    className={`w-full mt-6 py-3 rounded-xl font-bold text-sm transition-all ${
-                      isCurrent
+                    disabled={isCurrent || selecting === tier || isLocked}
+                    className={`w-full mt-3 py-3 rounded-xl font-bold text-sm transition-all ${
+                      isCurrent || isLocked
                         ? "bg-muted text-muted-foreground cursor-default"
                         : `bg-gradient-to-r ${config.color} text-white hover:opacity-90 shadow-lg`
                     }`}
                   >
-                    {selecting === tier
+                    {isLocked
+                      ? "Somente Imobiliárias"
+                      : selecting === tier
                       ? "Processando..."
                       : isCurrent
                       ? "Plano Atual"
