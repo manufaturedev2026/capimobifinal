@@ -119,6 +119,7 @@ export const PACKAGE_CONFIG = {
       "Gerente de conta dedicado",
       "Suporte VIP dedicado",
       "Instagram na loja",
+      "Até 10 Corretores vinculados",
     ],
   },
 } as const;
