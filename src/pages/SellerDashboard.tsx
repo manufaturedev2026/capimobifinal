@@ -917,7 +917,7 @@ export default function SellerDashboard() {
 
                   {/* CTA Gerente */}
                   <a
-                    href="https://wa.me/5527995055993?text=Olá%20Gabriel!%20Preciso%20de%20ajuda%20para%20configurar%20meu%20domínio%20personalizado."
+                    href={`https://wa.me/${((profile as any)?.manager_phone || "5527995055993").replace(/\D/g, "")}?text=Olá%20${encodeURIComponent(profile?.account_manager || "Gabriel")}!%20Preciso%20de%20ajuda%20para%20configurar%20meu%20domínio%20personalizado.`}
                     target="_blank" rel="noopener noreferrer"
                     className="mt-4 w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-green-500 text-white font-bold text-sm hover:bg-green-600 transition-colors"
                   >
