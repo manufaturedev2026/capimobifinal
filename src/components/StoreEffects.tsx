@@ -9,6 +9,7 @@ type EffectType = "chuva" | "raios" | "poeira" | "brasas" | "vento" | "neblina" 
 
 export default function StoreEffects({ sellerId }: StoreEffectsProps) {
   const [activeEffect, setActiveEffect] = useState<EffectType | null>(null);
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     const fetchEffect = async () => {
@@ -27,10 +28,22 @@ export default function StoreEffects({ sellerId }: StoreEffectsProps) {
     return () => clearInterval(interval);
   }, [sellerId]);
 
-  if (!activeEffect) return null;
+  // Show for 5 seconds then hide, repeat every 30s
+  useEffect(() => {
+    if (!activeEffect) { setVisible(false); return; }
+    setVisible(true);
+    const hideTimer = setTimeout(() => setVisible(false), 5000);
+    const loopInterval = setInterval(() => {
+      setVisible(true);
+      setTimeout(() => setVisible(false), 5000);
+    }, 30000);
+    return () => { clearTimeout(hideTimer); clearInterval(loopInterval); };
+  }, [activeEffect]);
+
+  if (!activeEffect || !visible) return null;
 
   return (
-    <div className="fixed inset-0 pointer-events-none z-[9999] overflow-hidden">
+    <div className="fixed inset-0 pointer-events-none z-[9999] overflow-hidden animate-[effectFadeOut_5s_ease-in-out_forwards]">
       {activeEffect === "chuva" && <RainEffect />}
       {activeEffect === "raios" && <LightningEffect />}
       {activeEffect === "poeira" && <DustEffect />}
@@ -43,6 +56,13 @@ export default function StoreEffects({ sellerId }: StoreEffectsProps) {
       {activeEffect === "estrelas" && <ShootingStarsEffect />}
       {activeEffect === "petalas" && <PetalsEffect />}
       {activeEffect === "confetti" && <ConfettiEffect />}
+      <style>{`
+        @keyframes effectFadeOut {
+          0% { opacity: 1; }
+          80% { opacity: 1; }
+          100% { opacity: 0; }
+        }
+      `}</style>
     </div>
   );
 }
