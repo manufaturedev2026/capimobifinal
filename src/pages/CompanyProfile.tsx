@@ -498,6 +498,21 @@ export default function CompanyProfile() {
                 <h3 className="font-display font-bold text-sm text-foreground mb-3 flex items-center gap-2">
                   <BadgeCheck size={14} className="text-primary" /> Sobre a empresa
                 </h3>
+                {teamMember && dbProfile?.logo_url && (
+                  <div className="flex items-center gap-3 mb-3 p-2 rounded-xl bg-secondary/50">
+                    <img src={dbProfile.logo_url} alt={dbProfile.company_name || dbProfile.full_name} className="w-10 h-10 rounded-lg object-cover border border-border" />
+                    <div>
+                      <p className="text-xs font-bold text-foreground">{dbProfile.company_name || dbProfile.full_name}</p>
+                      {dbProfile.cnpj && <p className="text-[10px] text-muted-foreground">CNPJ: {dbProfile.cnpj}</p>}
+                    </div>
+                  </div>
+                )}
+                {!teamMember && dbProfile?.cnpj && (
+                  <div className="flex items-center gap-2 mb-3 text-xs text-muted-foreground">
+                    <Shield size={13} className="flex-shrink-0 text-primary" />
+                    <span>CNPJ: {dbProfile.cnpj}</span>
+                  </div>
+                )}
                 {dbProfile?.bio && (
                   <p className="text-sm text-foreground mb-3 whitespace-pre-line">{dbProfile.bio}</p>
                 )}
