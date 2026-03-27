@@ -149,11 +149,11 @@ export default function CreateListing() {
         </div>
       </section>
 
-      {/* Plans Preview */}
+      {/* Plans Preview - Corretores */}
       <section className="py-16 md:py-24 bg-secondary/30">
         <div className="container max-w-6xl mx-auto px-4">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
-            <h2 className="font-display font-bold text-3xl md:text-4xl text-foreground mb-3">Planos para todos os perfis</h2>
+            <h2 className="font-display font-bold text-3xl md:text-4xl text-foreground mb-3">Planos para Corretores</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">Comece grátis e evolua conforme sua carteira cresce.</p>
           </motion.div>
 
@@ -164,6 +164,42 @@ export default function CreateListing() {
                 {plan.highlight && (
                   <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-primary/20 text-primary text-xs font-bold mb-4">
                     <Star size={12} /> Mais popular
+                  </span>
+                )}
+                <h3 className="font-display font-bold text-xl text-foreground">{plan.name}</h3>
+                <div className="font-display font-black text-3xl text-primary my-3">{plan.price}</div>
+                <p className="text-muted-foreground text-sm mb-4">{plan.items}</p>
+                <ul className="space-y-2 text-sm text-left">
+                  {plan.features.map((f) => (
+                    <li key={f} className="flex items-center gap-2 text-foreground/80">
+                      <CheckCircle2 size={14} className="text-accent shrink-0" /> {f}
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Plans Preview - Imobiliárias */}
+      <section className="py-16 md:py-24">
+        <div className="container max-w-6xl mx-auto px-4">
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
+            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/20 text-accent text-xs font-bold uppercase tracking-wider mb-4">
+              <Building size={14} /> Exclusivo para Imobiliárias
+            </span>
+            <h2 className="font-display font-bold text-3xl md:text-4xl text-foreground mb-3">Planos para Imobiliárias</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">Soluções completas para sua imobiliária crescer com tecnologia e marketing integrado.</p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+            {companyPlans.map((plan, i) => (
+              <motion.div key={plan.name} custom={i} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
+                className={`rounded-2xl p-6 border text-center ${plan.highlight ? "bg-gradient-to-b from-accent/10 to-primary/10 border-accent/30 shadow-xl scale-105" : "bg-card border-border"}`}>
+                {plan.highlight && (
+                  <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-accent/20 text-accent text-xs font-bold mb-4">
+                    <Star size={12} /> Mais completo
                   </span>
                 )}
                 <h3 className="font-display font-bold text-xl text-foreground">{plan.name}</h3>
