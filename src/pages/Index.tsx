@@ -9,7 +9,7 @@ import heroImoveis from "@/assets/hero-imoveis.jpg";
 import { slugToCity, cityToSlug } from "@/lib/citySlug";
 
 function getHeroBanners(city: string, prefix: string) {
-  const imoveisLink = prefix ? `/${prefix}/imoveis` : "/imoveis";
+  const imoveisLink = prefix ? `/imoveis/${prefix}` : "/imoveis";
   return [
     {
       image: heroImoveis,
@@ -22,7 +22,7 @@ function getHeroBanners(city: string, prefix: string) {
 }
 
 function getQuickActions(prefix: string) {
-  const i = prefix ? `/${prefix}/imoveis` : "/imoveis";
+  const i = prefix ? `/imoveis/${prefix}` : "/imoveis";
   return [
     { icon: Home, label: "Casas", desc: "Encontre a casa ideal", link: `${i}?categoria=casas`, color: "text-primary" },
     { icon: Building2, label: "Apartamentos", desc: "Aptos disponíveis", link: `${i}?categoria=apartamentos`, color: "text-primary" },
@@ -34,7 +34,7 @@ function getQuickActions(prefix: string) {
 }
 
 function getCategories(prefix: string) {
-  const i = prefix ? `/${prefix}/imoveis` : "/imoveis";
+  const i = prefix ? `/imoveis/${prefix}` : "/imoveis";
   return [
     { name: "Casas", img: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&h=400&fit=crop", link: `${i}?categoria=casas` },
     { name: "Apartamentos", img: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=400&fit=crop", link: `${i}?categoria=apartamentos` },
@@ -144,7 +144,7 @@ export default function Index() {
       {/* Promo Banners */}
       <section className="px-4 md:px-8 mt-6">
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Link to={citySlug ? `/${citySlug}/imoveis` : "/imoveis"} className="group relative overflow-hidden rounded-2xl h-[180px] md:h-[200px] block">
+          <Link to={citySlug ? `/imoveis/${citySlug}` : "/imoveis"} className="group relative overflow-hidden rounded-2xl h-[180px] md:h-[200px] block">
             <img src={heroImoveis} alt="Imóveis" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" width={1400} height={200} />
             <div className="absolute inset-0 bg-gradient-to-r from-[hsl(var(--primary)/0.9)] to-transparent" />
             <div className="absolute inset-0 flex flex-col justify-center px-6 md:px-8">
@@ -157,7 +157,7 @@ export default function Index() {
             </div>
           </Link>
 
-          <Link to={`${citySlug ? `/${citySlug}/imoveis` : "/imoveis"}?categoria=casas`} className="group relative overflow-hidden rounded-2xl h-[180px] md:h-[200px] block">
+          <Link to={`${citySlug ? `/imoveis/${citySlug}` : "/imoveis"}?categoria=casas`} className="group relative overflow-hidden rounded-2xl h-[180px] md:h-[200px] block">
             <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&h=400&fit=crop" alt="Casa Própria" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" width={800} height={400} />
             <div className="absolute inset-0 bg-gradient-to-r from-[hsl(var(--accent)/0.9)] to-transparent" />
             <div className="absolute inset-0 flex flex-col justify-center px-6 md:px-8">
