@@ -83,7 +83,7 @@ export default function PackagesPage() {
             const isPopular = tier === "premium";
             const isEmpresaTier = empresaTiers.includes(tier);
             const isImobiliaria = profile?.seller_category === "imobiliaria";
-            const isLocked = isEmpresaTier && !isImobiliaria;
+            const isLocked = (isEmpresaTier && !isImobiliaria) || (individualTiers.includes(tier) && isImobiliaria);
 
             return (
               <motion.div
