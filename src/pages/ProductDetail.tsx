@@ -386,10 +386,10 @@ export default function ProductDetail() {
               )}
 
               {company.whatsapp && (
-                <a href={whatsappUrl} onClick={handleWhatsAppClick} target="_blank" rel="noopener noreferrer"
+                <button onClick={() => handleWhatsAppClick()}
                   className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-green-500 hover:bg-green-600 text-white font-bold text-sm transition-colors shadow-lg">
                   <MessageCircle size={18} /> Chamar no WhatsApp
-                </a>
+                </button>
               )}
 
               <button onClick={async () => {
