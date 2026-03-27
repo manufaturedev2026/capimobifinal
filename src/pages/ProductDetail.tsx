@@ -121,9 +121,16 @@ export default function ProductDetail() {
     ? price ? `R$ ${Number(price).toLocaleString("pt-BR")}` : ""
     : formatPrice(price);
   const productUrl = window.location.href;
-  const whatsappUrl = `https://wa.me/${company.whatsapp}?text=${encodeURIComponent(`Olá ${company.name}! Tenho interesse: ${title} - ${formattedPrice}\n\n🔗 ${productUrl}`)}`;
-  const handleWhatsAppClick = () => {
+  const handleWhatsAppClick = (e?: React.MouseEvent) => {
+    if (e) e.preventDefault();
     if (isDb && dbItem) trackSellerEvent(dbItem.seller_id, "whatsapp_click", dbItem.id);
+    openWhatsApp({
+      sellerId: company.id,
+      sellerName: company.name,
+      sellerPhone: company.whatsapp,
+      title: `${title} - ${formattedPrice}`,
+      link: productUrl,
+    });
   };
   const mapAddress = isDb
     ? [product.address, product.neighborhood, product.city, product.state].filter(Boolean).join(", ") || company.address
