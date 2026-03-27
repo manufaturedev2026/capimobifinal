@@ -100,9 +100,18 @@ export default function CompanyProfile() {
         .from("seller_items")
         .select("*")
         .eq("seller_id", pid)
-        .eq("status", "ativo")
+        .in("status", ["ativo", "vendido"] as any)
         .order("created_at", { ascending: false });
-      setDbItems(items || []);
+      
+      // Filter out sold items older than 24h
+      const cutoff = Date.now() - 24 * 60 * 60 * 1000;
+      const filteredItems = (items || []).filter((item: any) => {
+        if (item.status === "vendido" && item.sold_at) {
+          return new Date(item.sold_at).getTime() > cutoff;
+        }
+        return true;
+      });
+      setDbItems(filteredItems);
 
       if (corretorSlug) {
         const { data: member } = await supabase
@@ -152,11 +161,14 @@ export default function CompanyProfile() {
     images: item.photos || [],
     price: item.price || 0,
     tag: item.tags?.[0] || null,
+    tags: item.tags || [],
     category: item.category,
     city: item.city,
     description: item.description,
     specs: {} as Record<string, string>,
     type: "imovel" as const,
+    status: item.status,
+    sold_at: item.sold_at,
   }));
 
   const products = isDbProfile ? dbDisplayItems : [];
@@ -663,10 +675,21 @@ export default function CompanyProfile() {
                       <Link to={productLink} className="group block bg-card border border-border rounded-2xl overflow-hidden hover:shadow-lg hover:border-primary/20 transition-all duration-300">
                         <div className="relative aspect-[4/3] overflow-hidden bg-muted">
                           {product.image ? (
-                            <img src={product.image} alt={product.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy" />
+                            <img src={product.image} alt={product.title} className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 ${product.status === "vendido" ? "brightness-50 blur-[1px]" : ""}`} loading="lazy" />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center">
                               <Image size={32} className="text-muted-foreground" />
+                            </div>
+                          )}
+                          {/* Sold overlay */}
+                          {product.status === "vendido" && (
+                            <div className="absolute inset-0 flex flex-col items-center justify-center z-10">
+                              <span className="px-4 py-2 rounded-xl bg-red-600/90 text-white font-bold text-sm shadow-lg">❌ Vendido</span>
+                              {product.sold_at && (
+                                <span className="mt-2 px-2.5 py-1 rounded-lg bg-black/70 backdrop-blur-sm text-white text-xs font-medium">
+                                  Removido em {Math.max(0, Math.ceil((new Date(product.sold_at).getTime() + 24*60*60*1000 - Date.now()) / (1000*60*60)))}h
+                                </span>
+                              )}
                             </div>
                           )}
                           {/* Gradient overlay on hover */}
@@ -677,8 +700,8 @@ export default function CompanyProfile() {
                               {getTagLabel(product.tag)}
                             </span>
                           )}
-                          {/* Quick WhatsApp on hover */}
-                          {company.whatsapp && (
+                          {/* Quick WhatsApp on hover - hide for sold */}
+                          {company.whatsapp && product.status !== "vendido" && (
                             <button
                               onClick={(e) => {
                                 e.preventDefault();
