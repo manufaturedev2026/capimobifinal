@@ -126,7 +126,7 @@ const steps = [
   {
     icon: BookOpen,
     title: "Estágio Obrigatório",
-    description: "Complete o estágio supervisionado em uma imobiliária para ganhar experiência prática no mercado real.",
+    description: "Temos uma lista de imobiliárias em sua cidade para lhe oferecer o estágio dentro de suas disponibilidades de tempo.",
     detail: "Duração: 128 horas mínimas",
   },
   {
