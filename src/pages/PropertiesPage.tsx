@@ -249,13 +249,73 @@ export default function PropertiesPage() {
               <option value="">Todos os tipos</option>
               {propertyTypes.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
             </select>
-            <button
-              onClick={() => { setFilterCity(""); setFilterType(""); setActiveCategory(null); setShowRentals(true); }}
-              className="w-full px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#002F6C] to-[#00AEEF] text-white font-bold text-sm hover:opacity-90 transition-opacity shadow"
-            >
-              Limpar Filtros
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setShowAdvanced(!showAdvanced)}
+                className={`flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all ${showAdvanced ? "bg-primary text-primary-foreground" : "bg-secondary text-foreground hover:bg-secondary/80"}`}
+              >
+                {showAdvanced ? "▲ Filtros" : "▼ Mais Filtros"}
+              </button>
+              <button
+                onClick={() => { setFilterCity(""); setFilterType(""); setActiveCategory(null); setShowRentals(true); setPriceMin(""); setPriceMax(""); setMinBedrooms(""); setMinArea(""); setOnlyFinancing(false); setOnlyFurnished(false); }}
+                className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--accent))] text-white font-bold text-sm hover:opacity-90 transition-opacity shadow"
+              >
+                Limpar
+              </button>
+            </div>
           </div>
+
+          {/* Advanced Filters */}
+          {showAdvanced && (
+            <div className="mt-4 pt-4 border-t border-border space-y-3">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">Preço Mín (R$)</label>
+                  <input type="number" value={priceMin} onChange={(e) => setPriceMin(e.target.value)} placeholder="0"
+                    className="w-full px-3 py-2 rounded-xl bg-secondary text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" />
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">Preço Máx (R$)</label>
+                  <input type="number" value={priceMax} onChange={(e) => setPriceMax(e.target.value)} placeholder="Sem limite"
+                    className="w-full px-3 py-2 rounded-xl bg-secondary text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" />
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">Quartos (mín)</label>
+                  <select value={minBedrooms} onChange={(e) => setMinBedrooms(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-secondary text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/50">
+                    <option value="">Qualquer</option>
+                    {[1,2,3,4,5].map(n => <option key={n} value={n}>{n}+</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">Área mín (m²)</label>
+                  <input type="number" value={minArea} onChange={(e) => setMinArea(e.target.value)} placeholder="0"
+                    className="w-full px-3 py-2 rounded-xl bg-secondary text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" />
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <button type="button" onClick={() => setOnlyFinancing(!onlyFinancing)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-xl border-2 text-xs font-semibold transition-all ${
+                    onlyFinancing ? "border-primary bg-primary/10 text-primary" : "border-input bg-background text-muted-foreground hover:border-primary/30"
+                  }`}>
+                  <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${onlyFinancing ? "border-primary bg-primary" : "border-muted-foreground"}`}>
+                    {onlyFinancing && <span className="text-primary-foreground text-[9px]">✓</span>}
+                  </div>
+                  Aceita Financiamento
+                </button>
+                <button type="button" onClick={() => setOnlyFurnished(!onlyFurnished)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-xl border-2 text-xs font-semibold transition-all ${
+                    onlyFurnished ? "border-primary bg-primary/10 text-primary" : "border-input bg-background text-muted-foreground hover:border-primary/30"
+                  }`}>
+                  <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${onlyFurnished ? "border-primary bg-primary" : "border-muted-foreground"}`}>
+                    {onlyFurnished && <span className="text-primary-foreground text-[9px]">✓</span>}
+                  </div>
+                  Mobiliado
+                </button>
+              </div>
+            </div>
+          )}
+
           {effectiveCategory !== "aluguel" && (
             <div className="mt-3 flex items-center gap-2">
               <button
