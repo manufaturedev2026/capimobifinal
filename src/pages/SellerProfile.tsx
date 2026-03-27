@@ -295,11 +295,11 @@ export default function SellerProfile() {
             value={form.bio}
             onChange={(e) => setForm((f) => ({ ...f, bio: e.target.value }))}
             rows={5}
-            maxLength={1000}
+            maxLength={80}
             className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none resize-none"
             placeholder="Ex: Somos uma empresa especializada em imóveis com mais de 10 anos de experiência..."
           />
-          <span className="text-xs text-muted-foreground">{form.bio.length}/1000</span>
+          <span className="text-xs text-muted-foreground">{form.bio.length}/80</span>
         </div>
         <div className="bg-card border border-border rounded-2xl p-5">
           <h2 className="font-display font-bold text-foreground mb-3">Tipo de vendedor</h2>
