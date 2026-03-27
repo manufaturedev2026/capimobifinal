@@ -305,6 +305,10 @@ export default function CompanyProfile() {
           </>
         )}
 
+  const shuffledTeamMembers = useMemo(() => {
+    return [...teamMembers].sort(() => Math.random() - 0.5);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [teamMembers.length, showTeamPicker]);
 
         {/* Company info overlay */}
         <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10 z-10">
