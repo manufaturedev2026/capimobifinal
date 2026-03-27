@@ -37,11 +37,21 @@ export function useCityData(city: string, segment?: "imoveis") {
     const fetchData = async () => {
       setLoading(true);
 
+      const { data: rawItems } = await supabase
+        .from("seller_items")
+        .select("*")
+        .ilike("city", `%${normalizedCity}%`)
+        .eq("seller_type", "imoveis")
+        .eq("status", "ativo")
+        .order("created_at", { ascending: false });
+
+      const sellerIds = [...new Set((rawItems || []).map((item: any) => item.seller_id).filter(Boolean))];
+
       const { data: profiles } = await supabase
         .from("profiles")
         .select("id, company_name, full_name, logo_url, seller_type, address, city, state")
         .eq("seller_type", "imoveis")
-        .ilike("city", `%${normalizedCity}%`);
+        .in("id", sellerIds.length > 0 ? sellerIds : ["00000000-0000-0000-0000-000000000000"]);
 
       const sellerMap = new Map<string, { name: string; logo: string; address: string }>();
       (profiles || []).forEach((p: any) => {
@@ -53,7 +63,6 @@ export function useCityData(city: string, segment?: "imoveis") {
       });
 
       // Fetch subscriptions for tier info
-      const sellerIds = (profiles || []).map((p: any) => p.id);
       const { data: subs } = sellerIds.length > 0
         ? await supabase
             .from("seller_subscriptions")
@@ -77,14 +86,6 @@ export function useCityData(city: string, segment?: "imoveis") {
       (rewards || []).forEach((r: any) => {
         if (r.reward_type === "destaque") destaqueSet.add(r.seller_id);
       });
-
-      const { data: rawItems } = await supabase
-        .from("seller_items")
-        .select("*")
-        .ilike("city", `%${normalizedCity}%`)
-        .eq("seller_type", "imoveis")
-        .eq("status", "ativo")
-        .order("created_at", { ascending: false });
 
       const mapped: CityItem[] = (rawItems || []).map((item: any) => {
         const seller = sellerMap.get(item.seller_id);
