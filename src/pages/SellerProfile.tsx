@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { ArrowLeft, Save, Upload, User, Instagram } from "lucide-react";
+import { ArrowLeft, Save, Upload, User, Instagram, Video } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useSellerSubscription } from "@/hooks/useSubscription";
 import type { Database } from "@/integrations/supabase/types";
 import { ES_CITIES } from "@/data/esCities";
 
@@ -15,6 +16,8 @@ export default function SellerProfile() {
   const { toast } = useToast();
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const sellerTier = useSellerSubscription(profile?.id);
+  const isEmpresa = sellerTier === "essencial_empresa" || sellerTier === "premium_empresa";
 
   const [form, setForm] = useState({
     full_name: "",
@@ -33,6 +36,7 @@ export default function SellerProfile() {
     creci: "",
     cnpj: "",
     cover_color: "",
+    video_url: "",
   });
 
   useEffect(() => {
@@ -58,6 +62,7 @@ export default function SellerProfile() {
         creci: (profile as any).creci || "",
         cnpj: (profile as any).cnpj || "",
         cover_color: (profile as any).cover_color || "",
+        video_url: (profile as any).video_url || "",
       });
     }
   }, [profile]);
@@ -301,6 +306,30 @@ export default function SellerProfile() {
           />
           <span className="text-xs text-muted-foreground">{form.bio.length}/80</span>
         </div>
+
+        {/* Video URL — only for empresa plans */}
+        {isEmpresa && (
+          <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
+            <div className="flex items-center gap-2">
+              <Video size={18} className="text-primary" />
+              <h2 className="font-display font-bold text-foreground">Vídeo da Loja</h2>
+            </div>
+            <p className="text-xs text-muted-foreground">Cole o link de um vídeo do YouTube. Um botão flutuante aparecerá na sua loja. Deixe vazio para desativar.</p>
+            <input
+              value={form.video_url}
+              onChange={(e) => setForm((f) => ({ ...f, video_url: e.target.value }))}
+              className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+              placeholder="https://www.youtube.com/watch?v=..."
+            />
+            {form.video_url && (
+              <div className="flex items-center gap-2 text-xs text-green-600">
+                <span className="w-2 h-2 rounded-full bg-green-500" />
+                Vídeo ativado — será exibido na loja
+              </div>
+            )}
+          </div>
+        )}
+
         <div className="bg-card border border-border rounded-2xl p-5">
           <h2 className="font-display font-bold text-foreground mb-3">Tipo de vendedor</h2>
           <div className="flex items-center gap-3 py-3 px-4 rounded-xl border-2 border-primary bg-primary/10">
