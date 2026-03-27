@@ -80,6 +80,9 @@ export default function PackagesPage() {
             const Icon = tierIcons[tier];
             const isCurrent = currentTier === tier;
             const isPopular = tier === "premium";
+            const isEmpresaTier = empresaTiers.includes(tier);
+            const isImobiliaria = profile?.seller_category === "imobiliaria";
+            const isLocked = isEmpresaTier && !isImobiliaria;
 
             return (
               <motion.div
