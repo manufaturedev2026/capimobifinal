@@ -8,6 +8,8 @@ import { useRealListings } from "@/hooks/useRealListings";
 import PackageBadge from "@/components/PackageBadge";
 import HeroBannerCarousel from "@/components/HeroBannerCarousel";
 import { useCityDetection } from "@/hooks/useCityDetection";
+import { ES_CITIES } from "@/data/esCities";
+import { ES_NEIGHBORHOODS } from "@/data/esNeighborhoods";
 
 const iconMap: Record<string, React.ElementType> = { Key, Home, Building2, Landmark, Store };
 
@@ -162,33 +164,22 @@ export default function PropertiesPage() {
     return ids;
   }, [realSellers]);
 
-  const availableCities = useMemo(() => {
-    const cities = new Set<string>();
-    realItems.forEach((item) => {
-      if (item.city) cities.add(item.city.trim());
-    });
-    propertyCompanies.forEach((company) => {
-      const city = company.address.split(" - ").pop()?.trim();
-      if (city) cities.add(city);
-    });
-    return Array.from(cities).sort();
-  }, [realItems]);
+  const availableCities = ES_CITIES;
 
   const availableNeighborhoods = useMemo(() => {
-    const set = new Set<string>();
-    realItems.forEach((item) => {
-      if (item.neighborhood) {
-        if (filterCity) {
-          if (normalizeCityValue(item.city) === normalizeCityValue(filterCity)) {
-            set.add(item.neighborhood.trim());
-          }
-        } else {
+    if (filterCity) {
+      const staticNeighborhoods = ES_NEIGHBORHOODS[filterCity] || [];
+      if (staticNeighborhoods.length > 0) return staticNeighborhoods;
+      const set = new Set<string>();
+      realItems.forEach((item) => {
+        if (item.neighborhood && normalizeCityValue(item.city) === normalizeCityValue(filterCity)) {
           set.add(item.neighborhood.trim());
         }
-      }
-    });
-    return Array.from(set).sort();
-  }, [realItems, filterCity]);
+      });
+      return Array.from(set).sort();
+    }
+    return [];
+  }, [filterCity, realItems]);
 
   const propertyTypes = [
     { value: "aluguel", label: "Aluguel" },
