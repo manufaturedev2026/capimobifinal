@@ -299,11 +299,18 @@ export default function CityPropertiesPage() {
                             <Image size={32} className="text-muted-foreground" />
                           </div>
                         )}
-                        {item.tags?.[0] && item.tags[0] !== "aluguel_flex" && (
-                          <span className={`absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-bold shadow ${getTagStyle(item.tags[0])}`}>
-                            {getTagLabel(item.tags[0])}
-                          </span>
-                        )}
+                        {(() => {
+                          const visibleTags = (item.tags || []).filter((t: string) => t !== "aluguel_flex");
+                          return visibleTags.length > 0 ? (
+                            <div className="absolute top-3 left-3 flex flex-wrap gap-1 max-w-[70%]">
+                              {visibleTags.slice(0, 3).map((t: string) => (
+                                <span key={t} className={`px-2 py-0.5 rounded-full text-[10px] font-bold shadow ${getTagStyle(t)}`}>
+                                  {getTagLabel(t)}
+                                </span>
+                              ))}
+                            </div>
+                          ) : null;
+                        })()}
                         {isAluguel && (
                           <span className="absolute bottom-3 left-3 px-3 py-1 rounded-full text-xs font-bold shadow bg-primary text-primary-foreground">
                             🏠 Aluguel
