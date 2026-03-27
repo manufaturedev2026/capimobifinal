@@ -61,9 +61,9 @@ const ACHIEVEMENTS_CONFIG = [
     icon: "💎",
     trigger_type: "listings_milestone",
     threshold: 50,
-    reward_type: "black_tag_1h",
-    reward_label: "Tag Black por 1 hora",
-    reward_duration_ms: 60 * 60 * 1000,
+    reward_type: "destaque_10min",
+    reward_label: "Destaque grátis por 10 min",
+    reward_duration_ms: 10 * 60 * 1000,
   },
 ];
 
