@@ -284,6 +284,15 @@ export default function TeamMembersTab({ profileId, userId, maxMembers }: Props)
                 placeholder="corretor@email.com"
               />
             </div>
+            <div>
+              <label className="block text-xs font-semibold text-muted-foreground mb-1">Instagram</label>
+              <input
+                value={form.instagram}
+                onChange={(e) => setForm((f) => ({ ...f, instagram: e.target.value }))}
+                className="w-full px-4 py-2.5 rounded-xl bg-secondary text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                placeholder="@corretor"
+              />
+            </div>
           </div>
           <div>
             <label className="block text-xs font-semibold text-muted-foreground mb-1">Bio</label>
