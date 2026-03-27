@@ -108,15 +108,19 @@ export function useRealListings(segment?: "imoveis" | "automoveis") {
       const tierMap = new Map<string, string>();
       (subs || []).forEach((s: any) => tierMap.set(s.seller_id, s.tier));
 
-      // Fetch active black_tag_24h rewards for gamification boost
+      // Fetch active gamification rewards (black_tag + destaque)
       const { data: activeRewards } = await supabase
         .from("seller_rewards" as any)
         .select("seller_id, reward_type, expires_at")
-        .eq("is_active", true)
-        .eq("reward_type", "black_tag_24h");
+        .eq("is_active", true);
       const blackTagSellers = new Set<string>();
+      const destaqueSellers = new Set<string>();
+      const now = new Date();
       (activeRewards || []).forEach((r: any) => {
-        if (new Date(r.expires_at) > new Date()) blackTagSellers.add(r.seller_id);
+        if (new Date(r.expires_at) > now) {
+          if (r.reward_type === "black_tag_24h") blackTagSellers.add(r.seller_id);
+          if (r.reward_type === "destaque_24h") destaqueSellers.add(r.seller_id);
+        }
       });
 
       let mappedSellers: RealSeller[] = [];
@@ -167,6 +171,11 @@ export function useRealListings(segment?: "imoveis" | "automoveis") {
         if (blackTagSellers.has(item.sellerId)) {
           weight = Math.max(weight, 200);
           item.hasBlackTag = true;
+        }
+        // Gamification: Destaque 24h boosts to essencial_empresa level (100)
+        if (destaqueSellers.has(item.sellerId)) {
+          weight = Math.max(weight, 100);
+          item.hasDestaque = true;
         }
         const randomFactor = Math.random();
         const score = weight * (0.7 + randomFactor * 0.6);
