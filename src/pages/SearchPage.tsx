@@ -15,7 +15,7 @@ export default function SearchPage() {
       setLoading(true);
       const { data } = await supabase
         .from("seller_items")
-        .select("id, title, price, photos, city, neighborhood, category")
+        .select("id, title, price, photos, city, neighborhood, category, status")
         .eq("status", "ativo")
         .ilike("title", `%${query}%`)
         .limit(30);
