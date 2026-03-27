@@ -445,6 +445,11 @@ export default function BecomeAgentPage() {
                       <span className="inline-flex items-center gap-2 text-xs text-accent font-semibold bg-accent/10 px-3 py-1.5 rounded-full">
                         <CheckCircle2 size={12} /> {step.detail}
                       </span>
+                      {(step as any).detailSub && (
+                        <span className="block text-xs text-white/50 mt-1.5 ml-1">
+                          {(step as any).detailSub}
+                        </span>
+                      )}
                     </div>
                   </div>
 
