@@ -43,6 +43,9 @@ export default function CompanyProfile() {
   const [gallerySlide, setGallerySlide] = useState(0);
   const [galleryPaused, setGalleryPaused] = useState(false);
   const [teamMember, setTeamMember] = useState<any>(null);
+  const [teamMembers, setTeamMembers] = useState<any[]>([]);
+  const [showTeamPicker, setShowTeamPicker] = useState(false);
+  const [pendingWhatsApp, setPendingWhatsApp] = useState<{ title: string; productId?: string } | null>(null);
 
   const searchParams = new URLSearchParams(location.search);
   const corretorSlug = searchParams.get("corretor");
