@@ -1,0 +1,1 @@
+ALTER TYPE public.package_tier ADD VALUE 'prime_empresa';

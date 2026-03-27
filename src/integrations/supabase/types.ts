@@ -496,6 +496,7 @@ export type Database = {
         | "vip"
         | "essencial_empresa"
         | "premium_empresa"
+        | "prime_empresa"
       seller_category:
         | "imobiliaria"
         | "corretor"
@@ -671,6 +672,7 @@ export const Constants = {
         "vip",
         "essencial_empresa",
         "premium_empresa",
+        "prime_empresa",
       ],
       seller_category: [
         "imobiliaria",
