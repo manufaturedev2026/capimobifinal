@@ -205,15 +205,18 @@ export default function SellerDashboard() {
   };
 
   const isFreePlan = currentTier === "basico";
+  const isEmpresaPlan = currentTier === "essencial_empresa" || currentTier === "premium_empresa";
+  const maxTeamMembers = currentTier === "premium_empresa" ? 10 : currentTier === "essencial_empresa" ? 5 : 0;
   const lockedTabs: DashboardTab[] = isFreePlan ? ["domain", "ads"] : [];
 
-  const sidebarNav = [
-    { id: "overview" as const, label: "Visão Geral", icon: Home },
-    { id: "items" as const, label: "Meus Anúncios", icon: Package },
-    { id: "stats" as const, label: "Estatísticas", icon: BarChart3 },
-    { id: "ads" as const, label: "Fazer ADS", icon: Megaphone, locked: lockedTabs.includes("ads") },
-    { id: "domain" as const, label: "Meu Domínio", icon: Globe, locked: lockedTabs.includes("domain") },
-    { id: "study" as const, label: "Material de Estudo", icon: BookOpen },
+  const sidebarNav: { id: DashboardTab; label: string; icon: any; locked?: boolean }[] = [
+    { id: "overview", label: "Visão Geral", icon: Home },
+    { id: "items", label: "Meus Anúncios", icon: Package },
+    { id: "stats", label: "Estatísticas", icon: BarChart3 },
+    { id: "ads", label: "Fazer ADS", icon: Megaphone, locked: lockedTabs.includes("ads") },
+    { id: "domain", label: "Meu Domínio", icon: Globe, locked: lockedTabs.includes("domain") },
+    ...(isEmpresaPlan ? [{ id: "team" as DashboardTab, label: "Empresa", icon: Users }] : []),
+    { id: "study", label: "Material de Estudo", icon: BookOpen },
   ];
 
   const handleTabClick = (tabId: DashboardTab) => {
