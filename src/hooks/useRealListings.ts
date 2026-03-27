@@ -108,6 +108,17 @@ export function useRealListings(segment?: "imoveis" | "automoveis") {
       const tierMap = new Map<string, string>();
       (subs || []).forEach((s: any) => tierMap.set(s.seller_id, s.tier));
 
+      // Fetch active black_tag_24h rewards for gamification boost
+      const { data: activeRewards } = await supabase
+        .from("seller_rewards" as any)
+        .select("seller_id, reward_type, expires_at")
+        .eq("is_active", true)
+        .eq("reward_type", "black_tag_24h");
+      const blackTagSellers = new Set<string>();
+      (activeRewards || []).forEach((r: any) => {
+        if (new Date(r.expires_at) > new Date()) blackTagSellers.add(r.seller_id);
+      });
+
       let mappedSellers: RealSeller[] = [];
       if (sellerIds.length > 0) {
         const { data: profiles } = await supabase
@@ -151,9 +162,14 @@ export function useRealListings(segment?: "imoveis" | "automoveis") {
       // Higher tiers get higher scores on average, so they appear first more often
       // But lower tiers still have a chance to appear near the top
       const weightedItems = mapped.map((item: any) => {
-        const weight = tierWeight[item.sellerTier] ?? 10;
-        const randomFactor = Math.random(); // 0-1
-        const score = weight * (0.7 + randomFactor * 0.6); // weight * [0.7 - 1.3]
+        let weight = tierWeight[item.sellerTier] ?? 10;
+        // Gamification: Black Tag 24h gives same priority as prime_empresa (200)
+        if (blackTagSellers.has(item.sellerId)) {
+          weight = Math.max(weight, 200);
+          item.hasBlackTag = true;
+        }
+        const randomFactor = Math.random();
+        const score = weight * (0.7 + randomFactor * 0.6);
         return { ...item, _sortScore: score };
       });
 
