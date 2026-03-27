@@ -367,6 +367,7 @@ export type Database = {
           email: string | null
           full_name: string
           id: string
+          instagram: string | null
           is_active: boolean
           phone: string | null
           photo_url: string | null
@@ -381,6 +382,7 @@ export type Database = {
           email?: string | null
           full_name: string
           id?: string
+          instagram?: string | null
           is_active?: boolean
           phone?: string | null
           photo_url?: string | null
@@ -395,6 +397,7 @@ export type Database = {
           email?: string | null
           full_name?: string
           id?: string
+          instagram?: string | null
           is_active?: boolean
           phone?: string | null
           photo_url?: string | null
