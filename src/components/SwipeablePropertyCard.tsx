@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { motion, useMotionValue, useTransform, PanInfo } from "framer-motion";
 import { Link } from "react-router-dom";
+import { Star } from "lucide-react";
 import { formatPrice, getTagStyle, getTagLabel, type Product } from "@/data/products";
 import FavoriteButton from "@/components/FavoriteButton";
 import CompareButton from "@/components/CompareButton";
