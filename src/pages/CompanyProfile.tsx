@@ -532,17 +532,6 @@ export default function CompanyProfile() {
         </div>
       </section>
 
-      {/* ═══════════ VIDEO HERO (Netflix-style) ═══════════ */}
-      {dbProfile?.video_url && sellerTier && sellerTier !== "basico" && sellerTier !== "start" && (
-        <div className="container max-w-7xl mx-auto px-4 pt-6">
-          <NetflixVideoHero
-            videoUrl={dbProfile.video_url}
-            storeName={company.name}
-            storeLogo={company.logo}
-            description={dbProfile.bio}
-          />
-        </div>
-      )}
 
       {/* ═══════════ MAIN LAYOUT ═══════════ */}
       <div className="container max-w-7xl mx-auto px-4 py-6">
