@@ -365,9 +365,9 @@ export default function CompanyProfile() {
         {/* Video background or sliding images */}
         {hasVideoHero ? (
           <iframe
-            src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&iv_load_policy=3&disablekb=1`}
+            src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&iv_load_policy=3&disablekb=1&enablejsapi=1`}
             title="Vídeo de fundo"
-            allow="autoplay; encrypted-media"
+            allow="autoplay; encrypted-media; playsinline"
             className="absolute pointer-events-none"
             style={{
               top: "50%",
