@@ -746,3 +746,152 @@ function ConfettiEffect() {
     </>
   );
 }
+
+/* ── Fireworks Effect ── */
+function FireworksEffect() {
+  const fireworks = useMemo(() => Array.from({ length: 8 }, (_, i) => {
+    const cx = 15 + Math.random() * 70;
+    const cy = 15 + Math.random() * 50;
+    const colors = ["#ff4444", "#ffaa00", "#44ff44", "#4488ff", "#ff44ff", "#ffff44", "#00ffcc", "#ff6622"];
+    const color = colors[i % colors.length];
+    const particles = Array.from({ length: 24 }, (_, j) => {
+      const angle = (j / 24) * Math.PI * 2;
+      const dist = 60 + Math.random() * 80;
+      return {
+        id: j,
+        dx: Math.cos(angle) * dist,
+        dy: Math.sin(angle) * dist,
+        size: 2 + Math.random() * 3,
+      };
+    });
+    return { id: i, cx, cy, color, delay: i * 0.5 + Math.random() * 0.5, particles };
+  }), []);
+
+  return (
+    <>
+      {fireworks.map(fw => (
+        <div key={fw.id} className="absolute" style={{ left: `${fw.cx}%`, top: `${fw.cy}%` }}>
+          {/* Trail going up */}
+          <div
+            className="absolute w-[2px] bg-white/80"
+            style={{
+              left: "0",
+              bottom: "0",
+              height: "0",
+              animation: `fwTrail 0.4s ease-out ${fw.delay}s forwards`,
+              boxShadow: `0 0 4px ${fw.color}`,
+            }}
+          />
+          {/* Explosion particles */}
+          {fw.particles.map(p => (
+            <div
+              key={p.id}
+              className="absolute rounded-full"
+              style={{
+                width: `${p.size}px`,
+                height: `${p.size}px`,
+                background: fw.color,
+                boxShadow: `0 0 6px ${fw.color}, 0 0 12px ${fw.color}80`,
+                animation: `fwBurst 1.2s ease-out ${fw.delay + 0.4}s forwards`,
+                "--dx": `${p.dx}px`,
+                "--dy": `${p.dy}px`,
+                opacity: 0,
+              } as any}
+            />
+          ))}
+        </div>
+      ))}
+      <style>{`
+        @keyframes fwTrail {
+          0% { height: 0; opacity: 1; transform: translateY(30vh); }
+          80% { opacity: 1; }
+          100% { height: 30vh; opacity: 0; transform: translateY(0); }
+        }
+        @keyframes fwBurst {
+          0% { transform: translate(0, 0) scale(1); opacity: 0; }
+          10% { opacity: 1; }
+          30% { opacity: 1; transform: translate(calc(var(--dx) * 0.5), calc(var(--dy) * 0.5)) scale(1.2); }
+          100% { transform: translate(var(--dx), calc(var(--dy) + 40px)) scale(0); opacity: 0; }
+        }
+      `}</style>
+    </>
+  );
+}
+
+/* ── Aurora Effect ── */
+function AuroraEffect() {
+  return (
+    <>
+      <div className="absolute inset-0">
+        <div className="absolute w-full h-[60%] top-0"
+          style={{
+            background: "linear-gradient(180deg, rgba(0,255,128,0.08) 0%, rgba(0,200,255,0.06) 30%, rgba(128,0,255,0.04) 60%, transparent 100%)",
+            animation: "auroraShift 4s ease-in-out infinite alternate",
+          }}
+        />
+        <div className="absolute w-full h-[50%] top-0"
+          style={{
+            background: "linear-gradient(180deg, rgba(128,0,255,0.06) 0%, rgba(0,255,200,0.05) 40%, transparent 100%)",
+            animation: "auroraShift 5s ease-in-out 1s infinite alternate-reverse",
+          }}
+        />
+        <div className="absolute w-full h-[40%] top-0"
+          style={{
+            background: "linear-gradient(180deg, rgba(0,200,255,0.05) 0%, rgba(255,0,128,0.03) 50%, transparent 100%)",
+            animation: "auroraShift 3.5s ease-in-out 0.5s infinite alternate",
+          }}
+        />
+      </div>
+      <style>{`
+        @keyframes auroraShift {
+          0% { transform: translateX(-5%) scaleY(1); filter: hue-rotate(0deg); }
+          50% { transform: translateX(5%) scaleY(1.15); filter: hue-rotate(30deg); }
+          100% { transform: translateX(-3%) scaleY(0.9); filter: hue-rotate(-20deg); }
+        }
+      `}</style>
+    </>
+  );
+}
+
+/* ── Bubbles Effect ── */
+function BubblesEffect() {
+  const bubbles = useMemo(() => Array.from({ length: 25 }, (_, i) => ({
+    id: i,
+    left: Math.random() * 100,
+    size: 8 + Math.random() * 30,
+    duration: 3 + Math.random() * 4,
+    delay: Math.random() * 4,
+    sway: (Math.random() - 0.5) * 60,
+  })), []);
+
+  return (
+    <>
+      {bubbles.map(b => (
+        <div
+          key={b.id}
+          className="absolute rounded-full"
+          style={{
+            left: `${b.left}%`,
+            bottom: "-40px",
+            width: `${b.size}px`,
+            height: `${b.size}px`,
+            background: `radial-gradient(circle at 30% 30%, rgba(255,255,255,0.4), rgba(100,200,255,0.15) 60%, rgba(100,200,255,0.05))`,
+            border: "1px solid rgba(255,255,255,0.25)",
+            boxShadow: "inset 0 -2px 4px rgba(255,255,255,0.1), 0 0 8px rgba(100,200,255,0.1)",
+            animation: `bubbleRise ${b.duration}s ease-out ${b.delay}s infinite`,
+            "--bsway": `${b.sway}px`,
+          } as any}
+        />
+      ))}
+      <style>{`
+        @keyframes bubbleRise {
+          0% { transform: translateY(0) translateX(0) scale(0.5); opacity: 0; }
+          10% { opacity: 0.7; transform: translateY(-10vh) translateX(calc(var(--bsway) * 0.2)) scale(0.8); }
+          50% { opacity: 0.5; transform: translateY(-50vh) translateX(var(--bsway)) scale(1); }
+          80% { opacity: 0.3; }
+          100% { transform: translateY(-105vh) translateX(calc(var(--bsway) * -0.5)) scale(1.1); opacity: 0; }
+        }
+      `}</style>
+    </>
+  );
+}
