@@ -59,6 +59,7 @@ export default function PropertiesPage() {
 
   const { sellers: realSellers, items: realItems, loading: listingsLoading } = useRealListings("imoveis");
   const { toggleFavorite, isFavorite } = useFavorites();
+  const { addItem, isInCompare } = useCompare();
 
   const scrollToItems = () => {
     setTimeout(() => {
