@@ -7,6 +7,9 @@ import { useState, useEffect, useRef } from "react";
 import { Helmet } from "react-helmet-async";
 import heroImoveis from "@/assets/hero-imoveis.jpg";
 import { slugToCity, cityToSlug } from "@/lib/citySlug";
+import StoriesBar from "@/components/StoriesBar";
+import StoryUploadDialog from "@/components/StoryUploadDialog";
+import { useAuth } from "@/hooks/useAuth";
 
 function getHeroBanners(city: string, prefix: string) {
   const imoveisLink = prefix ? `/imoveis/${prefix}` : "/imoveis";
@@ -53,6 +56,8 @@ export default function Index() {
   const displayCity = cityName || "Espírito Santo";
   const citySlug = cityName ? cityToSlug(cityName) : "";
   const [searchQuery, setSearchQuery] = useState("");
+  const [storyDialogOpen, setStoryDialogOpen] = useState(false);
+  const { user, profile } = useAuth();
   const quickActions = getQuickActions(citySlug);
   const categories = getCategories(citySlug);
   const heroBanners = getHeroBanners(displayCity, citySlug);
@@ -92,6 +97,14 @@ export default function Index() {
           </div>
         </Link>
       </section>
+
+      {/* Stories Bar */}
+      <StoriesBar onAddStory={() => setStoryDialogOpen(true)} />
+      <StoryUploadDialog
+        open={storyDialogOpen}
+        onOpenChange={setStoryDialogOpen}
+        sellerId={profile?.id}
+      />
 
       {/* Search Bar */}
       <section className="relative z-20 -mt-7 px-4 md:px-8">
