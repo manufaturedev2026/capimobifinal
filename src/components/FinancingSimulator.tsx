@@ -25,7 +25,7 @@ interface Bank {
 const BANKS: Bank[] = [
   {
     name: "Caixa Econômica",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Logo_Caixa_Econ%C3%B4mica_Federal_2024.svg/120px-Logo_Caixa_Econ%C3%B4mica_Federal_2024.svg.png",
+    logo: logoCaixa,
     programs: [
       { name: "SBPE (Taxa Referencial)", rateMin: 8.99, rateMax: 9.99, maxTermYears: 35, maxFinancingPct: 80 },
       { name: "Poupança CAIXA", rateMin: 8.49, rateMax: 9.49, maxTermYears: 35, maxFinancingPct: 80 },
