@@ -564,7 +564,7 @@ export default function CompanyProfile() {
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-                {hasVideoHero && (
+                {videoId && sellerTier && sellerTier !== "basico" && sellerTier !== "start" && (
                   <button
                     onClick={() => { setVideoMuted(false); setVideoModalOpen(true); }}
                     className="flex items-center justify-center gap-1.5 px-2.5 py-2 md:px-5 md:py-2.5 rounded-xl bg-destructive text-destructive-foreground font-bold text-[11px] md:text-sm hover:opacity-90 transition-opacity shadow-lg whitespace-nowrap flex-shrink-0 min-w-9 md:min-w-0"
