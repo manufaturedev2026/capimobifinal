@@ -382,7 +382,7 @@ export default function CompanyProfile() {
 
         {/* Company info overlay */}
         <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10 z-10">
-          <div className="container max-w-7xl mx-auto">
+          <div className="max-w-[1800px] mx-auto px-4 md:px-8">
             <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="max-w-3xl">
               <div className="flex items-center gap-4 mb-3">
                 {company.logo ? (
