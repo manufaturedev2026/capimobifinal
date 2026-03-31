@@ -23,6 +23,7 @@ export default function Header() {
   const navLinks = [
     { to: "/", label: "Início" },
     { to: "/imoveis", label: "Imóveis", icon: Building2 },
+    { to: "/blog", label: "Blog" },
     { to: "/seja-corretor", label: "Seja um Corretor", icon: GraduationCap },
     { to: "/anunciar", label: "Anunciar", icon: Plus },
   ];

@@ -573,6 +573,11 @@ export default function ProductDetail() {
                 className="mt-3 w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-accent text-accent-foreground font-bold text-sm hover:bg-accent/90 transition-colors shadow-md">
                 <Store size={16} /> Ver Loja Completa
               </Link>
+
+              {/* QR Code */}
+              <div className="mt-4 pt-4 border-t border-border">
+                <QRCodeDisplay url={window.location.href} size={120} />
+              </div>
             </motion.div>
           </div>
         </div>
