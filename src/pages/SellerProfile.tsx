@@ -37,6 +37,8 @@ export default function SellerProfile() {
     cnpj: "",
     cover_color: "",
     video_url: "",
+    video_title: "",
+    video_description: "",
     slug: "",
   });
   const [slugError, setSlugError] = useState("");
