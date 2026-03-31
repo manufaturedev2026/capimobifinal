@@ -95,6 +95,7 @@ export const PACKAGE_CONFIG = {
     benefits: [
       "Anúncios ilimitados",
       "Loja estilo Netflix",
+      "5 Stories por 24h",
       "Selo Empresa Verificada",
       "Destaque na homepage",
       "Destaque no topo da listagem",
