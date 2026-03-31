@@ -621,9 +621,9 @@ export default function SellerDashboard() {
                               className="p-2 rounded-lg bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors">
                               {item.status === "ativo" ? <ToggleRight size={14} /> : <ToggleLeft size={14} />}
                             </button>
-                            <button onClick={() => setFeatured(item.id)} title="Definir como destaque do banner"
-                              className={`p-2 rounded-lg transition-colors ${profile?.featured_item_id === item.id ? "bg-yellow-500/20 text-yellow-500" : "bg-secondary text-secondary-foreground hover:bg-secondary/80"}`}>
-                              <Star size={14} fill={profile?.featured_item_id === item.id ? "currentColor" : "none"} />
+                            <button onClick={() => toggleDestaque(item.id)} title="Destaque na loja (até 5)"
+                              className={`p-2 rounded-lg transition-colors ${((profile as any)?.destaque_item_ids || []).includes(item.id) ? "bg-amber-500/20 text-amber-500" : "bg-secondary text-secondary-foreground hover:bg-secondary/80"}`}>
+                              <Star size={14} fill={((profile as any)?.destaque_item_ids || []).includes(item.id) ? "currentColor" : "none"} />
                             </button>
                             <button onClick={() => toggleHeroCover(item.id)} title="Capa da Loja"
                               className={`p-2 rounded-lg transition-colors ${((profile as any)?.hero_item_ids || []).includes(item.id) ? "bg-primary/20 text-primary" : "bg-secondary text-secondary-foreground hover:bg-secondary/80"}`}>
