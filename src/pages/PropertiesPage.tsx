@@ -117,10 +117,14 @@ export default function PropertiesPage() {
   // Category mapping for filtering
   const categoryMap: Record<string, string[]> = {
     casas: ["casa"],
-    apartamentos: ["apartamento", "flat"],
+    apartamentos: ["apartamento"],
     terrenos: ["terreno"],
-    comerciais: ["comercial", "galpao"],
+    comerciais: ["comercial"],
+    alugueis: ["aluguel"],
     aluguel: ["aluguel"],
+    flats: ["flat"],
+    galpoes: ["galpao"],
+    coberturas: ["apartamento"],
   };
 
   const effectiveCategory = filterType || activeCategory;
@@ -131,7 +135,7 @@ export default function PropertiesPage() {
       : [...propertyProducts];
     // Filter by category
     if (effectiveCategory) {
-      if (effectiveCategory === "aluguel") {
+      if (effectiveCategory === "aluguel" || effectiveCategory === "alugueis") {
         base = base.filter((p) => (p as any).isAluguel);
       } else {
         const matchCats = categoryMap[effectiveCategory] || [];
@@ -177,18 +181,21 @@ export default function PropertiesPage() {
   }, [filterCity, realItems]);
 
   const propertyTypes = [
-    { value: "aluguel", label: "Aluguel" },
+    { value: "alugueis", label: "Aluguel" },
     { value: "casas", label: "Casas" },
     { value: "apartamentos", label: "Apartamentos" },
     { value: "terrenos", label: "Terrenos" },
     { value: "comerciais", label: "Comerciais" },
+    { value: "flats", label: "Flats" },
+    { value: "galpoes", label: "Galpões" },
+    { value: "coberturas", label: "Coberturas" },
   ];
 
   const filteredProducts = useMemo(() => {
     let list = !effectiveCategory
       ? [...propertyProducts]
       : propertyProducts.filter((p) => {
-          if (effectiveCategory === "aluguel") {
+          if (effectiveCategory === "aluguel" || effectiveCategory === "alugueis") {
             return (p as any).isAluguel;
           }
           const realCat = (p as any).realCategory;
