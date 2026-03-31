@@ -495,6 +495,36 @@ export type Database = {
         }
         Relationships: []
       }
+      seller_stories: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          image_url: string
+          is_active: boolean
+          seller_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          image_url: string
+          is_active?: boolean
+          seller_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          image_url?: string
+          is_active?: boolean
+          seller_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       seller_subscriptions: {
         Row: {
           created_at: string
