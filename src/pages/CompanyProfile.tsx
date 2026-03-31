@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
+import { Helmet } from "react-helmet-async";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { toast } from "@/hooks/use-toast";
 import { useParams, Link, useLocation } from "react-router-dom";
@@ -304,6 +305,59 @@ export default function CompanyProfile() {
         ["--store-border" as any]: storeTheme.border,
       }}
     >
+      {/* ═══════════ SEO META TAGS ═══════════ */}
+      {company && (
+        <Helmet>
+          <title>{company.name} — Imóveis em {dbProfile?.city || "ES"} | ES Corretores</title>
+          <meta name="description" content={`${company.name} — ${dbProfile?.bio ? dbProfile.bio.slice(0, 140) : `Encontre os melhores imóveis com ${company.name} em ${dbProfile?.city || "Espírito Santo"}`}.`} />
+          <link rel="canonical" href={`https://lojaes.lovable.app/empresa/${dbProfile?.slug || id}`} />
+
+          {/* Open Graph */}
+          <meta property="og:type" content="website" />
+          <meta property="og:title" content={`${company.name} — Imóveis em ${dbProfile?.city || "ES"}`} />
+          <meta property="og:description" content={dbProfile?.bio ? dbProfile.bio.slice(0, 200) : `Veja os ${products.length} anúncios de ${company.name}`} />
+          <meta property="og:url" content={`https://lojaes.lovable.app/empresa/${dbProfile?.slug || id}`} />
+          {company.logo && <meta property="og:image" content={company.logo} />}
+          <meta property="og:site_name" content="ES Corretores" />
+
+          {/* Twitter Card */}
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta name="twitter:title" content={`${company.name} — Imóveis em ${dbProfile?.city || "ES"}`} />
+          <meta name="twitter:description" content={dbProfile?.bio ? dbProfile.bio.slice(0, 200) : `Veja os ${products.length} anúncios de ${company.name}`} />
+          {company.logo && <meta name="twitter:image" content={company.logo} />}
+
+          {/* JSON-LD Structured Data */}
+          <script type="application/ld+json">
+            {JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "RealEstateAgent",
+              "name": company.name,
+              "url": `https://lojaes.lovable.app/empresa/${dbProfile?.slug || id}`,
+              "logo": company.logo || undefined,
+              "image": company.logo || undefined,
+              "description": dbProfile?.bio || `Imóveis em ${dbProfile?.city || "ES"}`,
+              "address": company.address ? {
+                "@type": "PostalAddress",
+                "streetAddress": dbProfile?.address || "",
+                "addressLocality": dbProfile?.city || "",
+                "addressRegion": dbProfile?.state || "ES",
+                "addressCountry": "BR",
+              } : undefined,
+              "telephone": company.whatsapp || undefined,
+              "numberOfEmployees": products.length > 0 ? undefined : undefined,
+              "makesOffer": {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Product",
+                  "name": `Imóveis de ${company.name}`,
+                  "description": `${products.length} imóveis disponíveis`,
+                },
+              },
+            })}
+          </script>
+        </Helmet>
+      )}
+
       {isDbProfile && dbProfile?.id && <StoreEffects sellerId={dbProfile.id} />}
       {/* ═══════════ HERO BANNER ═══════════ */}
       <section className={`relative overflow-hidden ${hasVideoHero ? "h-[55vh] md:h-[70vh]" : "h-[50vh] md:h-[60vh]"}`}>
