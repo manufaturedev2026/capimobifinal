@@ -133,6 +133,7 @@ export function useRealListings(segment?: "imoveis" | "automoveis") {
         }
       });
 
+      const destaqueItemIds = new Set<string>();
       let mappedSellers: RealSeller[] = [];
       if (sellerIds.length > 0) {
         const { data: profiles } = await supabase
