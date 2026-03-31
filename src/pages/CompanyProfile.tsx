@@ -525,7 +525,7 @@ export default function CompanyProfile() {
           <aside className="hidden lg:block w-[280px] flex-shrink-0">
             <div className="sticky top-20 space-y-4">
               {/* Company Card */}
-              <div className="bg-card border border-border rounded-2xl overflow-hidden">
+              <div className="rounded-2xl overflow-hidden" style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}>
                 {/* Mini banner */}
                 <div className="h-20 relative" style={{ background: dbProfile?.cover_color || 'linear-gradient(to right, hsl(var(--primary)), hsl(var(--primary) / 0.6))' }}>
                   {company.logo && (
