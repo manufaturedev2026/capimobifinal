@@ -439,6 +439,11 @@ export default function PropertiesPage() {
           </span>
         </div>
 
+        {listingsLoading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+            {Array.from({ length: 8 }).map((_, i) => <PropertyCardSkeleton key={i} />)}
+          </div>
+        ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
           {filteredProducts.map((product, i) => {
             const company = allSellers[product.companyId];
@@ -485,6 +490,10 @@ export default function PropertiesPage() {
                         </span>
                       ) : null}
                       <div className="absolute top-3 right-3 flex flex-col items-end gap-1">
+                        <FavoriteButton
+                          isFavorite={isFavorite(product.id)}
+                          onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleFavorite(product.id); }}
+                        />
                         {(product as any).hasDestaque && (
                           <span className="px-2.5 py-1 rounded-md text-[11px] font-bold bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg">⭐ DESTAQUE</span>
                         )}
@@ -537,6 +546,7 @@ export default function PropertiesPage() {
             );
           })}
         </div>
+        )}
 
         {filteredProducts.length === 0 && (
           <p className="text-center text-muted-foreground py-16">
