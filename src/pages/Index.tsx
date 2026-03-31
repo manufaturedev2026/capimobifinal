@@ -250,7 +250,7 @@ export default function Index() {
             </div>
             <Link
               to="/anunciar"
-              className="relative z-10 inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-white text-foreground font-bold text-sm hover:scale-105 transition-transform shadow-lg"
+              className="relative z-10 inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-white text-gray-900 font-bold text-sm hover:scale-105 transition-transform shadow-lg"
             >
               <Plus size={18} />
               Anunciar Grátis
