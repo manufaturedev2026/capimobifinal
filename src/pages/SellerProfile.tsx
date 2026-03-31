@@ -41,6 +41,7 @@ export default function SellerProfile() {
     video_title: "",
     video_description: "",
     slug: "",
+    store_theme: "default",
   });
   const [slugError, setSlugError] = useState("");
 
