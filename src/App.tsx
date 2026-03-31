@@ -96,8 +96,10 @@ const App = () => (
               <ScrollToTop />
               <CustomDomainRedirect />
               <AppLayout />
+              <CompareBar />
             </BrowserRouter>
           </TooltipProvider>
+          </CompareProvider>
         </WhatsAppTeamPickerProvider>
       </AuthProvider>
       </ThemeProvider>
