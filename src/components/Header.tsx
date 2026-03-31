@@ -5,6 +5,7 @@ import { useCityDetection } from "@/hooks/useCityDetection";
 import { ES_CITIES } from "@/data/esCities";
 import { cityToSlug } from "@/lib/citySlug";
 import { useAuth } from "@/hooks/useAuth";
+import ThemeToggle from "@/components/ThemeToggle";
 import {
   DropdownMenu,
   DropdownMenuContent,
