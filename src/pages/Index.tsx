@@ -98,6 +98,14 @@ export default function Index() {
         </Link>
       </section>
 
+      {/* Stories Bar */}
+      <StoriesBar onAddStory={() => setStoryDialogOpen(true)} />
+      <StoryUploadDialog
+        open={storyDialogOpen}
+        onOpenChange={setStoryDialogOpen}
+        sellerId={profile?.id}
+      />
+
       {/* Search Bar */}
       <section className="relative z-20 -mt-7 px-4 md:px-8">
         <div className="max-w-4xl mx-auto">
