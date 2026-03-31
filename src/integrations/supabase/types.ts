@@ -507,6 +507,7 @@ export type Database = {
           is_active: boolean
           item_id: string | null
           seller_id: string
+          team_member_id: string | null
           title: string | null
           user_id: string
         }
@@ -521,6 +522,7 @@ export type Database = {
           is_active?: boolean
           item_id?: string | null
           seller_id: string
+          team_member_id?: string | null
           title?: string | null
           user_id: string
         }
@@ -535,10 +537,19 @@ export type Database = {
           is_active?: boolean
           item_id?: string | null
           seller_id?: string
+          team_member_id?: string | null
           title?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "seller_stories_team_member_id_fkey"
+            columns: ["team_member_id"]
+            isOneToOne: false
+            referencedRelation: "team_members"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       seller_subscriptions: {
         Row: {
