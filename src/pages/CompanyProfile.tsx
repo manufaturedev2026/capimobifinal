@@ -314,8 +314,16 @@ export default function CompanyProfile() {
             src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&iv_load_policy=3&disablekb=1`}
             title="Vídeo de fundo"
             allow="autoplay; encrypted-media"
-            className="absolute inset-0 w-full h-full pointer-events-none"
-            style={{ transform: "scale(1.3)", transformOrigin: "center center" }}
+            className="absolute pointer-events-none"
+            style={{
+              top: "50%",
+              left: "50%",
+              width: "177.78vh",
+              height: "100vh",
+              minWidth: "100%",
+              minHeight: "100%",
+              transform: "translate(-50%, -50%)",
+            }}
           />
         ) : (
           <>
