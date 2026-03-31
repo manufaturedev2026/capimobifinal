@@ -1,0 +1,260 @@
+import { motion } from "framer-motion";
+import { Check, Sun, Moon, Palette } from "lucide-react";
+
+export interface StoreTheme {
+  id: string;
+  name: string;
+  icon: string;
+  bg: string;
+  card: string;
+  text: string;
+  textMuted: string;
+  primary: string;
+  accent: string;
+  border: string;
+  preview: {
+    heroBg: string;
+    cardBg: string;
+    btnBg: string;
+    btnText: string;
+  };
+}
+
+export const STORE_THEMES: StoreTheme[] = [
+  {
+    id: "default",
+    name: "Padrão",
+    icon: "🎨",
+    bg: "#f5f7fa",
+    card: "#ffffff",
+    text: "#0a1e3d",
+    textMuted: "#6b7a8d",
+    primary: "#00aeef",
+    accent: "#d4708f",
+    border: "#e5e8ec",
+    preview: { heroBg: "linear-gradient(135deg, #002F6C, #00AEEF)", cardBg: "#ffffff", btnBg: "#00aeef", btnText: "#fff" },
+  },
+  {
+    id: "dark",
+    name: "Escuro",
+    icon: "🌙",
+    bg: "#0f1623",
+    card: "#1a2236",
+    text: "#e8ecf1",
+    textMuted: "#7a8899",
+    primary: "#00aeef",
+    accent: "#d4708f",
+    border: "#2a3448",
+    preview: { heroBg: "linear-gradient(135deg, #0a0f1a, #1a2236)", cardBg: "#1a2236", btnBg: "#00aeef", btnText: "#fff" },
+  },
+  {
+    id: "rose",
+    name: "Rose Gold",
+    icon: "🌸",
+    bg: "#fdf2f4",
+    card: "#ffffff",
+    text: "#4a2030",
+    textMuted: "#9b7082",
+    primary: "#e8587a",
+    accent: "#f5a0b8",
+    border: "#f5d5dc",
+    preview: { heroBg: "linear-gradient(135deg, #8b2252, #e8587a)", cardBg: "#ffffff", btnBg: "#e8587a", btnText: "#fff" },
+  },
+  {
+    id: "emerald",
+    name: "Esmeralda",
+    icon: "🍀",
+    bg: "#f0faf5",
+    card: "#ffffff",
+    text: "#0f3d2a",
+    textMuted: "#5e8a74",
+    primary: "#10b981",
+    accent: "#6ee7b7",
+    border: "#d0efe0",
+    preview: { heroBg: "linear-gradient(135deg, #064e3b, #10b981)", cardBg: "#ffffff", btnBg: "#10b981", btnText: "#fff" },
+  },
+  {
+    id: "ocean",
+    name: "Oceano",
+    icon: "🌊",
+    bg: "#f0f5ff",
+    card: "#ffffff",
+    text: "#1a2744",
+    textMuted: "#6478a0",
+    primary: "#3b82f6",
+    accent: "#93c5fd",
+    border: "#d0dfff",
+    preview: { heroBg: "linear-gradient(135deg, #1e3a5f, #3b82f6)", cardBg: "#ffffff", btnBg: "#3b82f6", btnText: "#fff" },
+  },
+  {
+    id: "sunset",
+    name: "Pôr do Sol",
+    icon: "🌅",
+    bg: "#fff8f0",
+    card: "#ffffff",
+    text: "#3d2010",
+    textMuted: "#9a7560",
+    primary: "#f97316",
+    accent: "#fbbf24",
+    border: "#fde0c0",
+    preview: { heroBg: "linear-gradient(135deg, #7c2d12, #f97316, #fbbf24)", cardBg: "#ffffff", btnBg: "#f97316", btnText: "#fff" },
+  },
+  {
+    id: "luxury",
+    name: "Luxo",
+    icon: "👑",
+    bg: "#111111",
+    card: "#1c1c1c",
+    text: "#f0e6d3",
+    textMuted: "#9a8a70",
+    primary: "#d4a853",
+    accent: "#f0d78c",
+    border: "#333333",
+    preview: { heroBg: "linear-gradient(135deg, #0a0a0a, #2a2010, #d4a853)", cardBg: "#1c1c1c", btnBg: "#d4a853", btnText: "#111" },
+  },
+  {
+    id: "grape",
+    name: "Uva",
+    icon: "🍇",
+    bg: "#f5f0ff",
+    card: "#ffffff",
+    text: "#2d1b4e",
+    textMuted: "#7a5fa0",
+    primary: "#8b5cf6",
+    accent: "#c4b5fd",
+    border: "#ddd0ff",
+    preview: { heroBg: "linear-gradient(135deg, #3b0764, #8b5cf6)", cardBg: "#ffffff", btnBg: "#8b5cf6", btnText: "#fff" },
+  },
+];
+
+export function getStoreTheme(themeId: string | null | undefined): StoreTheme {
+  return STORE_THEMES.find((t) => t.id === themeId) || STORE_THEMES[0];
+}
+
+interface StoreThemePickerProps {
+  selected: string;
+  onChange: (themeId: string) => void;
+}
+
+export default function StoreThemePicker({ selected, onChange }: StoreThemePickerProps) {
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-2 mb-2">
+        <Palette size={18} className="text-primary" />
+        <h2 className="font-display font-bold text-foreground">Tema da Loja</h2>
+      </div>
+      <p className="text-xs text-muted-foreground">Escolha o tema visual da sua loja. Os visitantes verão sua loja com essas cores.</p>
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {STORE_THEMES.map((theme) => {
+          const isSelected = selected === theme.id;
+          return (
+            <motion.button
+              key={theme.id}
+              onClick={() => onChange(theme.id)}
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              className={`relative rounded-xl overflow-hidden border-2 transition-all ${
+                isSelected ? "border-primary ring-2 ring-primary/30" : "border-border hover:border-primary/40"
+              }`}
+            >
+              {/* Mini preview */}
+              <div className="flex flex-col">
+                {/* Hero preview */}
+                <div
+                  className="h-12 w-full relative"
+                  style={{ background: theme.preview.heroBg }}
+                >
+                  <div className="absolute bottom-1 left-2 flex items-center gap-1">
+                    <div className="w-4 h-4 rounded-md" style={{ background: theme.preview.btnBg }} />
+                    <div className="h-1.5 w-10 rounded-full bg-white/60" />
+                  </div>
+                </div>
+                {/* Card preview */}
+                <div className="p-2 space-y-1.5" style={{ background: theme.bg }}>
+                  <div className="flex gap-1.5">
+                    <div className="w-8 h-6 rounded" style={{ background: theme.preview.cardBg, border: `1px solid ${theme.border}` }} />
+                    <div className="flex-1 space-y-1">
+                      <div className="h-1.5 rounded-full w-3/4" style={{ background: theme.text, opacity: 0.7 }} />
+                      <div className="h-1 rounded-full w-1/2" style={{ background: theme.textMuted, opacity: 0.5 }} />
+                    </div>
+                  </div>
+                  <div
+                    className="h-4 rounded-md flex items-center justify-center"
+                    style={{ background: theme.preview.btnBg }}
+                  >
+                    <span className="text-[6px] font-bold" style={{ color: theme.preview.btnText }}>WhatsApp</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Selected check */}
+              {isSelected && (
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="absolute top-1 right-1 w-5 h-5 rounded-full bg-primary flex items-center justify-center"
+                >
+                  <Check size={12} className="text-primary-foreground" />
+                </motion.div>
+              )}
+
+              {/* Label */}
+              <div className="px-2 py-1.5 text-center border-t border-border bg-card">
+                <span className="text-[10px] font-semibold text-foreground">{theme.icon} {theme.name}</span>
+              </div>
+            </motion.button>
+          );
+        })}
+      </div>
+
+      {/* Bigger preview */}
+      {(() => {
+        const theme = getStoreTheme(selected);
+        return (
+          <div className="mt-4 rounded-2xl overflow-hidden border border-border">
+            <div className="text-[10px] font-bold text-muted-foreground px-3 py-1.5 bg-muted">
+              Preview — {theme.icon} {theme.name}
+            </div>
+            <div style={{ background: theme.bg }} className="p-0">
+              {/* Hero */}
+              <div className="h-28 relative" style={{ background: theme.preview.heroBg }}>
+                <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent" />
+                <div className="absolute bottom-3 left-4 z-10">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg" style={{ background: theme.primary, opacity: 0.8 }} />
+                    <div>
+                      <div className="h-2.5 w-24 rounded-full bg-white/90 mb-1" />
+                      <div className="h-1.5 w-16 rounded-full bg-white/50" />
+                    </div>
+                  </div>
+                  <div className="flex gap-1.5 mt-2">
+                    <div className="h-5 px-3 rounded-md flex items-center" style={{ background: "#25d366" }}>
+                      <span className="text-[7px] text-white font-bold">WhatsApp</span>
+                    </div>
+                    <div className="h-5 px-3 rounded-md flex items-center" style={{ background: theme.preview.btnBg }}>
+                      <span className="text-[7px] font-bold" style={{ color: theme.preview.btnText }}>Compartilhar</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {/* Cards grid */}
+              <div className="p-3 grid grid-cols-3 gap-2">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="rounded-lg overflow-hidden" style={{ background: theme.preview.cardBg, border: `1px solid ${theme.border}` }}>
+                    <div className="h-10" style={{ background: `${theme.primary}20` }} />
+                    <div className="p-1.5 space-y-1">
+                      <div className="h-1.5 rounded-full w-3/4" style={{ background: theme.text, opacity: 0.6 }} />
+                      <div className="h-1 rounded-full w-1/2" style={{ background: theme.textMuted, opacity: 0.4 }} />
+                      <div className="h-2 w-10 rounded" style={{ background: theme.primary, opacity: 0.8 }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+    </div>
+  );
+}
