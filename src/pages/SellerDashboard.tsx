@@ -154,11 +154,58 @@ export default function SellerDashboard() {
     }
   };
 
-  const filtered = items.filter((i) => {
+  // Sort items by saved order from profile
+  const itemOrder: string[] = (profile as any)?.item_order || [];
+  const sortedItems = [...items].sort((a, b) => {
+    const ai = itemOrder.indexOf(a.id);
+    const bi = itemOrder.indexOf(b.id);
+    if (ai === -1 && bi === -1) return 0;
+    if (ai === -1) return 1;
+    if (bi === -1) return -1;
+    return ai - bi;
+  });
+
+  const filtered = sortedItems.filter((i) => {
     const matchesSearch = i.title.toLowerCase().includes(filter.toLowerCase());
     const matchesStatus = statusFilter === "todos" || i.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
+
+  const saveItemOrder = async (newOrder: string[]) => {
+    if (!user) return;
+    await supabase.from("profiles").update({ item_order: newOrder } as any).eq("user_id", user.id);
+    await refreshProfile();
+  };
+
+  const handleDragStart = (itemId: string) => {
+    setDraggedItemId(itemId);
+  };
+
+  const handleDragOver = (e: React.DragEvent, itemId: string) => {
+    e.preventDefault();
+    if (itemId !== draggedItemId) setDragOverItemId(itemId);
+  };
+
+  const handleDrop = (targetItemId: string) => {
+    if (!draggedItemId || draggedItemId === targetItemId) {
+      setDraggedItemId(null);
+      setDragOverItemId(null);
+      return;
+    }
+    const currentOrder = sortedItems.map(i => i.id);
+    const fromIdx = currentOrder.indexOf(draggedItemId);
+    const toIdx = currentOrder.indexOf(targetItemId);
+    if (fromIdx === -1 || toIdx === -1) return;
+    currentOrder.splice(fromIdx, 1);
+    currentOrder.splice(toIdx, 0, draggedItemId);
+    // Update local items order immediately
+    const reordered = currentOrder.map(id => items.find(i => i.id === id)!).filter(Boolean);
+    setItems(reordered);
+    saveItemOrder(currentOrder);
+    setDraggedItemId(null);
+    setDragOverItemId(null);
+    toast({ title: "Ordem atualizada!", description: "A nova ordem será exibida na sua loja." });
+  };
 
   const totalActive = items.filter((i) => i.status === "ativo").length;
   const totalInactive = items.filter((i) => i.status === "inativo").length;
