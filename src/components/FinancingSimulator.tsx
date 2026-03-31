@@ -1,6 +1,11 @@
 import { useState, useMemo } from "react";
 import { Calculator, ChevronDown, ChevronUp } from "lucide-react";
 import { formatPrice } from "@/data/products";
+import logoCaixa from "@/assets/banks/caixa.png";
+import logoBradesco from "@/assets/banks/bradesco.png";
+import logoItau from "@/assets/banks/itau.png";
+import logoBB from "@/assets/banks/bb.png";
+import logoSantander from "@/assets/banks/santander.png";
 
 interface Program {
   name: string;
@@ -20,7 +25,7 @@ interface Bank {
 const BANKS: Bank[] = [
   {
     name: "Caixa Econômica",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Logo_Caixa_Econ%C3%B4mica_Federal_2024.svg/120px-Logo_Caixa_Econ%C3%B4mica_Federal_2024.svg.png",
+    logo: logoCaixa,
     programs: [
       { name: "SBPE (Taxa Referencial)", rateMin: 8.99, rateMax: 9.99, maxTermYears: 35, maxFinancingPct: 80 },
       { name: "Poupança CAIXA", rateMin: 8.49, rateMax: 9.49, maxTermYears: 35, maxFinancingPct: 80 },
@@ -31,7 +36,7 @@ const BANKS: Bank[] = [
   },
   {
     name: "Bradesco",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/Bradesco_logo_%28vertical%29.svg/80px-Bradesco_logo_%28vertical%29.svg.png",
+    logo: logoBradesco,
     programs: [
       { name: "Financiamento Imobiliário", rateMin: 9.50, rateMax: 10.99, maxTermYears: 30, maxFinancingPct: 80 },
       { name: "Poupança Bradesco", rateMin: 9.16, rateMax: 10.16, maxTermYears: 30, maxFinancingPct: 80 },
@@ -39,7 +44,7 @@ const BANKS: Bank[] = [
   },
   {
     name: "Itaú",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Banco_Ita%C3%BA_logo.svg/120px-Banco_Ita%C3%BA_logo.svg.png",
+    logo: logoItau,
     programs: [
       { name: "Crédito Imobiliário", rateMin: 9.50, rateMax: 10.99, maxTermYears: 30, maxFinancingPct: 80 },
       { name: "Poupança Itaú", rateMin: 9.16, rateMax: 10.49, maxTermYears: 30, maxFinancingPct: 80 },
@@ -47,14 +52,14 @@ const BANKS: Bank[] = [
   },
   {
     name: "Banco do Brasil",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Banco_do_Brasil_logo.svg/120px-Banco_do_Brasil_logo.svg.png",
+    logo: logoBB,
     programs: [
       { name: "BB Crédito Imobiliário", rateMin: 9.39, rateMax: 10.99, maxTermYears: 35, maxFinancingPct: 80 },
     ],
   },
   {
     name: "Santander",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Banco_Santander_Logotipo.svg/120px-Banco_Santander_Logotipo.svg.png",
+    logo: logoSantander,
     programs: [
       { name: "Crédito Imobiliário", rateMin: 9.49, rateMax: 10.99, maxTermYears: 35, maxFinancingPct: 80 },
       { name: "Pré-fixado Santander", rateMin: 10.99, rateMax: 11.99, maxTermYears: 20, maxFinancingPct: 80 },
