@@ -56,6 +56,9 @@ export default function StoreEffects({ sellerId }: StoreEffectsProps) {
       {activeEffect === "estrelas" && <ShootingStarsEffect />}
       {activeEffect === "petalas" && <PetalsEffect />}
       {activeEffect === "confetti" && <ConfettiEffect />}
+      {activeEffect === "fogos" && <FireworksEffect />}
+      {activeEffect === "aurora" && <AuroraEffect />}
+      {activeEffect === "bolhas" && <BubblesEffect />}
       <style>{`
         @keyframes effectFadeOut {
           0% { opacity: 1; }
