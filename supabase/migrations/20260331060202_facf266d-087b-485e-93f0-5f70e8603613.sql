@@ -1,0 +1,1 @@
+ALTER TABLE public.profiles ADD COLUMN destaque_item_ids text[] DEFAULT '{}'::text[];
