@@ -610,10 +610,23 @@ export default function SellerDashboard() {
                     </Link>
                   </div>
                 ) : (
+                  <div className="space-y-2 mb-2">
+                    <p className="text-xs text-muted-foreground flex items-center gap-1">
+                      <GripVertical size={12} /> Arraste os cards para reordenar a exibição na sua loja
+                    </p>
+                  </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 pb-10">
                     {filtered.map((item, i) => (
                       <motion.div key={item.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
-                        className="bg-card border border-border rounded-2xl overflow-hidden group hover:shadow-lg transition-shadow">
+                        draggable
+                        onDragStart={() => handleDragStart(item.id)}
+                        onDragOver={(e) => handleDragOver(e, item.id)}
+                        onDrop={() => handleDrop(item.id)}
+                        onDragEnd={() => { setDraggedItemId(null); setDragOverItemId(null); }}
+                        className={`bg-card border rounded-2xl overflow-hidden group hover:shadow-lg transition-all cursor-grab active:cursor-grabbing ${
+                          draggedItemId === item.id ? "opacity-50 scale-95 border-primary" :
+                          dragOverItemId === item.id ? "border-primary ring-2 ring-primary/30 scale-[1.02]" : "border-border"
+                        }`}>
                         <div className="relative aspect-video bg-muted">
                           {item.photos && item.photos.length > 0 ? (
                             <img src={item.photos[0]} alt={item.title} className={`w-full h-full object-cover ${item.status === "vendido" ? "brightness-50 blur-[1px]" : ""}`} />
