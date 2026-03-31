@@ -1190,6 +1190,18 @@ export default function CompanyProfile() {
         )}
       </AnimatePresence>
 
+      {/* Story Viewer */}
+      {storyViewerOpen && (() => {
+        const storySellerIndex = sellerStories.findIndex(s => s.sellerId === dbProfile?.id);
+        return storySellerIndex >= 0 ? (
+          <StoryViewer
+            sellers={sellerStories}
+            initialSellerIndex={storySellerIndex}
+            onClose={() => setStoryViewerOpen(false)}
+          />
+        ) : null;
+      })()}
+
     </div>
   );
 }
