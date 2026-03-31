@@ -59,7 +59,7 @@ const BANKS: Bank[] = [
   },
   {
     name: "Santander",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Banco_Santander_Logotipo.svg/120px-Banco_Santander_Logotipo.svg.png",
+    logo: logoSantander,
     programs: [
       { name: "Crédito Imobiliário", rateMin: 9.49, rateMax: 10.99, maxTermYears: 35, maxFinancingPct: 80 },
       { name: "Pré-fixado Santander", rateMin: 10.99, rateMax: 11.99, maxTermYears: 20, maxFinancingPct: 80 },
