@@ -22,28 +22,26 @@ function getHeroBanners(city: string, prefix: string) {
 }
 
 function getQuickActions(prefix: string) {
-  const i = prefix ? `/imoveis/${prefix}` : "/imoveis";
   return [
-    { icon: Home, label: "Casas", desc: "Encontre a casa ideal", link: `${i}?categoria=casas`, color: "text-primary" },
-    { icon: Building2, label: "Apartamentos", desc: "Aptos disponíveis", link: `${i}?categoria=apartamentos`, color: "text-primary" },
-    { icon: Key, label: "Aluguel", desc: "Imóveis para alugar", link: `${i}?categoria=alugueis`, color: "text-primary" },
-    { icon: Landmark, label: "Terrenos", desc: "Lotes e terrenos", link: `${i}?categoria=terrenos`, color: "text-primary" },
-    { icon: Store, label: "Comerciais", desc: "Salas e lojas", link: `${i}?categoria=comerciais`, color: "text-primary" },
-    { icon: Building2, label: "Flats", desc: "Flats e studios", link: `${i}?categoria=flats`, color: "text-primary" },
+    { icon: Home, label: "Casas", desc: "Encontre a casa ideal", link: `/imoveis?categoria=casas`, color: "text-primary" },
+    { icon: Building2, label: "Apartamentos", desc: "Aptos disponíveis", link: `/imoveis?categoria=apartamentos`, color: "text-primary" },
+    { icon: Key, label: "Aluguel", desc: "Imóveis para alugar", link: `/imoveis?categoria=alugueis`, color: "text-primary" },
+    { icon: Landmark, label: "Terrenos", desc: "Lotes e terrenos", link: `/imoveis?categoria=terrenos`, color: "text-primary" },
+    { icon: Store, label: "Comerciais", desc: "Salas e lojas", link: `/imoveis?categoria=comerciais`, color: "text-primary" },
+    { icon: Building2, label: "Flats", desc: "Flats e studios", link: `/imoveis?categoria=flats`, color: "text-primary" },
   ];
 }
 
 function getCategories(prefix: string) {
-  const i = prefix ? `/imoveis/${prefix}` : "/imoveis";
   return [
-    { name: "Casas", img: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&h=400&fit=crop", link: `${i}?categoria=casas` },
-    { name: "Apartamentos", img: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=400&fit=crop", link: `${i}?categoria=apartamentos` },
-    { name: "Terrenos", img: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400&h=400&fit=crop", link: `${i}?categoria=terrenos` },
-    { name: "Aluguel", img: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400&h=400&fit=crop", link: `${i}?categoria=alugueis` },
-    { name: "Comercial", img: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&h=400&fit=crop", link: `${i}?categoria=comerciais` },
-    { name: "Flats", img: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=400&fit=crop", link: `${i}?categoria=flats` },
-    { name: "Galpões", img: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=400&h=400&fit=crop", link: `${i}?categoria=galpoes` },
-    { name: "Cobertura", img: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400&h=400&fit=crop", link: `${i}?categoria=coberturas` },
+    { name: "Casas", img: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&h=400&fit=crop", link: `/imoveis?categoria=casas` },
+    { name: "Apartamentos", img: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=400&fit=crop", link: `/imoveis?categoria=apartamentos` },
+    { name: "Terrenos", img: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400&h=400&fit=crop", link: `/imoveis?categoria=terrenos` },
+    { name: "Aluguel", img: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400&h=400&fit=crop", link: `/imoveis?categoria=alugueis` },
+    { name: "Comercial", img: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&h=400&fit=crop", link: `/imoveis?categoria=comerciais` },
+    { name: "Flats", img: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=400&fit=crop", link: `/imoveis?categoria=flats` },
+    { name: "Galpões", img: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=400&h=400&fit=crop", link: `/imoveis?categoria=galpoes` },
+    { name: "Cobertura", img: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400&h=400&fit=crop", link: `/imoveis?categoria=coberturas` },
   ];
 }
 
