@@ -16,6 +16,7 @@ import FavoriteButton from "@/components/FavoriteButton";
 import { useFavorites } from "@/hooks/useFavorites";
 import CompareButton from "@/components/CompareButton";
 import { useCompare } from "@/hooks/useCompare";
+import SwipeablePropertyCard from "@/components/SwipeablePropertyCard";
 
 const iconMap: Record<string, React.ElementType> = { Key, Home, Building2, Landmark, Store };
 
@@ -451,107 +452,12 @@ export default function PropertiesPage() {
           {filteredProducts.map((product, i) => {
             const company = allSellers[product.companyId];
             return (
-              <motion.div
+              <SwipeablePropertyCard
                 key={product.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.04 }}
-              >
-                <Link to={`/imoveis/produto/${product.id}`}>
-                  <div className={`group bg-card border rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 ${
-                    (product as any).sellerTier === "vip" ? "border-purple-500/50 ring-1 ring-purple-500/20" :
-                    (product as any).sellerTier === "premium" ? "border-amber-400/50 ring-1 ring-amber-400/20" : "border-border"
-                  }`}>
-                    <div className="relative aspect-[4/3] overflow-hidden">
-                      <img
-                        src={product.image}
-                        alt={product.title}
-                        className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 ${(product as any).status === "vendido" ? "brightness-50 blur-[1px]" : ""}`}
-                        loading="lazy"
-                      />
-                      {(product as any).status === "vendido" && (
-                        <div className="absolute inset-0 flex flex-col items-center justify-center z-10">
-                          <span className="px-4 py-2 rounded-xl bg-red-600/90 text-white font-bold text-sm shadow-lg">❌ Vendido</span>
-                          {(product as any).sold_at && (
-                            <div className="mt-2">
-                              <SoldCountdown soldAt={(product as any).sold_at} />
-                            </div>
-                          )}
-                        </div>
-                      )}
-                      {(product as any).allTags?.length > 0 ? (
-                        <div className="absolute top-3 left-3 flex flex-wrap gap-1 max-w-[70%]">
-                          {(product as any).allTags.slice(0, 3).map((t: string) => (
-                            <span key={t} className={`px-2 py-0.5 rounded-full text-[10px] font-bold shadow ${getTagStyle(t)}`}>
-                              {getTagLabel(t)}
-                            </span>
-                          ))}
-                        </div>
-                      ) : product.tag ? (
-                        <span className={`absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-bold shadow ${getTagStyle(product.tag)}`}>
-                          {product.tag}
-                        </span>
-                      ) : null}
-                      <div className="absolute top-3 right-3 flex flex-col items-end gap-1">
-                        <div className="flex items-center gap-1">
-                          <CompareButton
-                            isInCompare={isInCompare(product.id)}
-                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); addItem({ id: product.id, title: product.title, image: product.image, price: product.price, bedrooms: (product as any).bedrooms, bathrooms: (product as any).bathrooms, area: (product as any).area, city: (product as any).city, neighborhood: (product as any).neighborhood, category: (product as any).category, suites: (product as any).suites, parking_spots: (product as any).parking_spots, pool: (product as any).pool, furnished: (product as any).furnished, accepts_financing: (product as any).accepts_financing, condo_fee: (product as any).condo_fee, iptu: (product as any).iptu }); }}
-                          />
-                          <FavoriteButton
-                            isFavorite={isFavorite(product.id)}
-                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleFavorite(product.id); }}
-                          />
-                        </div>
-                        {(product as any).hasDestaque && (
-                          <span className="px-2.5 py-1 rounded-md text-[11px] font-bold bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg">⭐ DESTAQUE</span>
-                        )}
-                        {!(product as any).hasDestaque && (product as any).sellerTier && (product as any).sellerTier !== "basico" && (
-                          <PackageBadge tier={(product as any).sellerTier} />
-                        )}
-                      </div>
-                      {(product as any).hasBlackTag && (
-                        <span className="absolute bottom-3 right-3 px-2.5 py-1 rounded-md text-[11px] font-bold bg-gradient-to-r from-zinc-900 to-black text-white shadow-lg ring-1 ring-white/20 z-10">BLACK</span>
-                      )}
-                    </div>
-
-                    <div className="p-4">
-                      <h3 className="font-display font-bold text-base md:text-lg text-foreground line-clamp-1">
-                        {product.title}
-                      </h3>
-                      <div className="flex items-center gap-2 mt-1">
-                        <p className="text-xl font-bold text-emerald-500">
-                          {formatPrice(product.price)}
-                          {(product as any).isAluguel && <span className="text-sm font-normal text-muted-foreground"> /mês</span>}
-                        </p>
-                        {(product as any).isAluguel && (
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary text-primary-foreground">
-                            🏠 Aluguel
-                          </span>
-                        )}
-                      </div>
-
-                      {company && (
-                        <div className="flex items-center gap-2 mt-3 pt-3 border-t border-border">
-                          <img
-                            src={company.logo}
-                            alt={company.name}
-                            className="w-8 h-8 rounded-full object-cover"
-                          />
-                          <div className="min-w-0">
-                            <p className="text-sm font-medium text-foreground truncate">
-                              {company.name}
-                            </p>
-                            <p className="text-xs text-muted-foreground truncate">
-                              {company.address}
-                            </p>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </Link>
-              </motion.div>
+                product={product as any}
+                company={company}
+                index={i}
+              />
             );
           })}
         </div>

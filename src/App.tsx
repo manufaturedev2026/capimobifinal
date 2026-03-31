@@ -37,6 +37,7 @@ import NotFound from "@/pages/NotFound";
 import BlogPage from "@/pages/BlogPage";
 import BlogArticlePage from "@/pages/BlogArticlePage";
 import FavoritesPage from "@/pages/FavoritesPage";
+import NeighborhoodPage from "@/pages/NeighborhoodPage";
 
 const queryClient = new QueryClient();
 
@@ -55,6 +56,7 @@ const AppLayout = () => {
           <Route path="/empresa/:id" element={<CompanyProfile />} />
           <Route path="/imoveis/empresa/:id" element={<CompanyProfile />} />
           <Route path="/imoveis/produto/:productId" element={<ProductDetail />} />
+          <Route path="/imoveis/:cidade/bairro/:bairro" element={<NeighborhoodPage />} />
 
           <Route path="/seja-corretor" element={<BecomeAgentPage />} />
           <Route path="/anunciar" element={<CreateListing />} />
