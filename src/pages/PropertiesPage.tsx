@@ -14,6 +14,8 @@ import { ES_NEIGHBORHOODS } from "@/data/esNeighborhoods";
 import PropertyCardSkeleton from "@/components/PropertyCardSkeleton";
 import FavoriteButton from "@/components/FavoriteButton";
 import { useFavorites } from "@/hooks/useFavorites";
+import CompareButton from "@/components/CompareButton";
+import { useCompare } from "@/hooks/useCompare";
 
 const iconMap: Record<string, React.ElementType> = { Key, Home, Building2, Landmark, Store };
 
@@ -57,6 +59,7 @@ export default function PropertiesPage() {
 
   const { sellers: realSellers, items: realItems, loading: listingsLoading } = useRealListings("imoveis");
   const { toggleFavorite, isFavorite } = useFavorites();
+  const { addItem, isInCompare } = useCompare();
 
   const scrollToItems = () => {
     setTimeout(() => {
@@ -490,10 +493,16 @@ export default function PropertiesPage() {
                         </span>
                       ) : null}
                       <div className="absolute top-3 right-3 flex flex-col items-end gap-1">
-                        <FavoriteButton
-                          isFavorite={isFavorite(product.id)}
-                          onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleFavorite(product.id); }}
-                        />
+                        <div className="flex items-center gap-1">
+                          <CompareButton
+                            isInCompare={isInCompare(product.id)}
+                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); addItem({ id: product.id, title: product.title, image: product.image, price: product.price, bedrooms: (product as any).bedrooms, bathrooms: (product as any).bathrooms, area: (product as any).area, city: (product as any).city, neighborhood: (product as any).neighborhood, category: (product as any).category, suites: (product as any).suites, parking_spots: (product as any).parking_spots, pool: (product as any).pool, furnished: (product as any).furnished, accepts_financing: (product as any).accepts_financing, condo_fee: (product as any).condo_fee, iptu: (product as any).iptu }); }}
+                          />
+                          <FavoriteButton
+                            isFavorite={isFavorite(product.id)}
+                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleFavorite(product.id); }}
+                          />
+                        </div>
                         {(product as any).hasDestaque && (
                           <span className="px-2.5 py-1 rounded-md text-[11px] font-bold bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg">⭐ DESTAQUE</span>
                         )}

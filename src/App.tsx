@@ -7,6 +7,8 @@ import { HelmetProvider } from "react-helmet-async";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ThemeProvider } from "next-themes";
 import { WhatsAppTeamPickerProvider } from "@/components/WhatsAppTeamPicker";
+import { CompareProvider } from "@/hooks/useCompare";
+import CompareBar from "@/components/CompareBar";
 import Header from "@/components/Header";
 import FooterSimple from "@/components/FooterSimple";
 import InstallPWA from "@/components/InstallPWA";
@@ -32,6 +34,8 @@ import AdminPanel from "@/pages/AdminPanel";
 import PrivacyPage from "@/pages/PrivacyPage";
 import TermsPage from "@/pages/TermsPage";
 import NotFound from "@/pages/NotFound";
+import BlogPage from "@/pages/BlogPage";
+import BlogArticlePage from "@/pages/BlogArticlePage";
 
 const queryClient = new QueryClient();
 
@@ -66,6 +70,8 @@ const AppLayout = () => {
           <Route path="/admin" element={<AdminPanel />} />
           <Route path="/privacidade" element={<PrivacyPage />} />
           <Route path="/termos" element={<TermsPage />} />
+          <Route path="/blog" element={<BlogPage />} />
+          <Route path="/blog/:slug" element={<BlogArticlePage />} />
           <Route path="/:cidade" element={<Index />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
@@ -82,6 +88,7 @@ const App = () => (
       <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
       <AuthProvider>
         <WhatsAppTeamPickerProvider>
+          <CompareProvider>
           <TooltipProvider>
             <Toaster />
             <Sonner />
@@ -89,8 +96,10 @@ const App = () => (
               <ScrollToTop />
               <CustomDomainRedirect />
               <AppLayout />
+              <CompareBar />
             </BrowserRouter>
           </TooltipProvider>
+          </CompareProvider>
         </WhatsAppTeamPickerProvider>
       </AuthProvider>
       </ThemeProvider>
