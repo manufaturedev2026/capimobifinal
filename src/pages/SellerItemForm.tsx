@@ -96,6 +96,7 @@ const INITIAL_FORM = {
   has_showcase: false,
   has_ac: false,
   foot_traffic: "",
+  ideal_for: "",
   show_financing: false,
 };
 
