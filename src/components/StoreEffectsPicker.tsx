@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, X, Clock, CloudRain, Zap, Wind, Flame, CloudFog, DollarSign, Egg, CircleDot, Star, Flower2, PartyPopper, Fireworks, Rainbow, Droplets } from "lucide-react";
+import { Sparkles, X, Clock, CloudRain, Zap, Wind, Flame, CloudFog, DollarSign, Egg, CircleDot, Star, Flower2, PartyPopper, Rainbow, Droplets } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
