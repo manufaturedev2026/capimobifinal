@@ -291,19 +291,17 @@ export default function CompanyProfile() {
     <div className="min-h-screen bg-background">
       {isDbProfile && dbProfile?.id && <StoreEffects sellerId={dbProfile.id} />}
       {/* ═══════════ HERO BANNER ═══════════ */}
-      <section className="relative h-[50vh] md:h-[60vh] overflow-hidden">
+      <section className={`relative overflow-hidden ${hasVideoHero ? "h-[55vh] md:h-[70vh]" : "h-[50vh] md:h-[60vh]"}`}>
 
         {/* Video background or sliding images */}
         {hasVideoHero ? (
-          <>
-            <iframe
-              src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1`}
-              title="Vídeo de fundo"
-              allow="autoplay; encrypted-media"
-              className="absolute inset-0 w-full h-full object-cover pointer-events-none"
-              style={{ transform: "scale(1.2)" }}
-            />
-          </>
+          <iframe
+            src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&iv_load_policy=3&disablekb=1`}
+            title="Vídeo de fundo"
+            allow="autoplay; encrypted-media"
+            className="absolute inset-0 w-full h-full pointer-events-none"
+            style={{ transform: "scale(1.3)", transformOrigin: "center center" }}
+          />
         ) : (
           <>
             <AnimatePresence mode="wait">
@@ -326,9 +324,18 @@ export default function CompanyProfile() {
           <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/80 to-accent" />
         )}
 
-        {/* Overlays */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-black/5" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
+        {/* Overlays — heavier on the left for video */}
+        {hasVideoHero ? (
+          <>
+            <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/60 to-black/10" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20" />
+          </>
+        ) : (
+          <>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-black/5" />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
+          </>
+        )}
 
         {/* Back button */}
         <div className="absolute top-4 left-4 z-20">
@@ -354,52 +361,6 @@ export default function CompanyProfile() {
               <ChevronRight size={20} />
             </button>
           </>
-        )}
-
-        {/* Video title + Assistir button */}
-        {hasVideoHero && (
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex flex-col items-center text-center">
-            <motion.p
-              className="text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] mb-2"
-              style={{ color: "hsl(0 84% 60%)" }}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.3 }}
-            >
-              ▶ {(dbProfile as any)?.video_title ? "" : "Lançamento"}
-            </motion.p>
-            {(dbProfile as any)?.video_title && (
-              <motion.h2
-                className="font-display font-bold text-2xl md:text-4xl text-white drop-shadow-lg mb-1"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-              >
-                {(dbProfile as any).video_title}
-              </motion.h2>
-            )}
-            {(dbProfile as any)?.video_description && (
-              <motion.p
-                className="text-white/70 text-xs md:text-sm max-w-md mb-4"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.5 }}
-              >
-                {(dbProfile as any).video_description}
-              </motion.p>
-            )}
-            <motion.button
-              onClick={() => setVideoModalOpen(true)}
-              className="flex items-center gap-2 px-6 py-3 rounded-xl bg-destructive text-destructive-foreground font-bold text-sm shadow-xl hover:opacity-90 transition-opacity"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.6 }}
-            >
-              <Play size={18} fill="currentColor" /> Assistir
-            </motion.button>
-          </div>
         )}
 
 
