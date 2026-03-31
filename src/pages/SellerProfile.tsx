@@ -72,6 +72,7 @@ export default function SellerProfile() {
         video_title: (profile as any).video_title || "",
         video_description: (profile as any).video_description || "",
         slug: (profile as any).slug || "",
+        store_theme: (profile as any).store_theme || "default",
       });
     }
   }, [profile]);
