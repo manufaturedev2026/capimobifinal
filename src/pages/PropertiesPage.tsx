@@ -55,7 +55,8 @@ export default function PropertiesPage() {
     }
   }, [cidade]);
 
-  const { sellers: realSellers, items: realItems } = useRealListings("imoveis");
+  const { sellers: realSellers, items: realItems, loading: listingsLoading } = useRealListings("imoveis");
+  const { toggleFavorite, isFavorite } = useFavorites();
 
   const scrollToItems = () => {
     setTimeout(() => {
