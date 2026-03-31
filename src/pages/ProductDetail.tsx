@@ -3,6 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ChevronLeft, ChevronRight, MessageCircle, Share2, Star, MapPin, Tag, Store, Image, X, ZoomIn, BadgeCheck, Video } from "lucide-react";
 import QRCodeDisplay from "@/components/QRCodeDisplay";
+import FinancingSimulator from "@/components/FinancingSimulator";
 import PackageBadge from "@/components/PackageBadge";
 import { useWhatsAppPicker } from "@/components/WhatsAppTeamPicker";
 import { formatPrice, getTagStyle, getTagLabel } from "@/data/products";
@@ -437,6 +438,13 @@ export default function ProductDetail() {
                   {isProperty ? "Localização do Imóvel" : "Localização da Loja"}
                 </h2>
                 <MapEmbed address={mapAddress} />
+              </motion.div>
+            )}
+
+            {/* Financing Simulator - only for non-rental properties */}
+            {isDb && !isAluguel && product.price > 0 && (
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
+                <FinancingSimulator propertyPrice={product.price} />
               </motion.div>
             )}
           </div>
