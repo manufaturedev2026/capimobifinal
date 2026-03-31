@@ -88,6 +88,7 @@ const App = () => (
       <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
       <AuthProvider>
         <WhatsAppTeamPickerProvider>
+          <CompareProvider>
           <TooltipProvider>
             <Toaster />
             <Sonner />
