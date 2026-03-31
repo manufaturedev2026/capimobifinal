@@ -135,7 +135,7 @@ export default function PropertiesPage() {
       : [...propertyProducts];
     // Filter by category
     if (effectiveCategory) {
-      if (effectiveCategory === "aluguel") {
+      if (effectiveCategory === "aluguel" || effectiveCategory === "alugueis") {
         base = base.filter((p) => (p as any).isAluguel);
       } else {
         const matchCats = categoryMap[effectiveCategory] || [];
