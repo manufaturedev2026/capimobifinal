@@ -1,0 +1,1 @@
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS video_title text, ADD COLUMN IF NOT EXISTS video_description text;
