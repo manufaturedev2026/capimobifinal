@@ -82,6 +82,9 @@ export default function Header() {
 
         <div className="hidden md:flex items-center gap-2">
           <ThemeToggle />
+          <Link to="/favoritos" className="p-2 rounded-xl hover:bg-secondary transition-colors" aria-label="Favoritos">
+            <Heart size={18} className="text-foreground" />
+          </Link>
           <Link
             to="/buscar"
             className="flex items-center gap-2 px-4 py-2 rounded-xl bg-secondary text-secondary-foreground text-sm hover:bg-secondary/80 transition-colors"
