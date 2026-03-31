@@ -293,21 +293,35 @@ export default function CompanyProfile() {
       {/* ═══════════ HERO BANNER ═══════════ */}
       <section className="relative h-[50vh] md:h-[60vh] overflow-hidden">
 
-        {/* Sliding background images */}
-        <AnimatePresence mode="wait">
-          {heroImages.length > 0 && (
-            <motion.img
-              key={heroSlide}
-              src={heroImages[heroSlide].image}
-              alt={heroImages[heroSlide].title}
-              initial={{ opacity: 0, scale: 1.05 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.8 }}
-              className="absolute inset-0 w-full h-full object-cover"
+        {/* Video background or sliding images */}
+        {hasVideoHero ? (
+          <>
+            <iframe
+              src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1`}
+              title="Vídeo de fundo"
+              allow="autoplay; encrypted-media"
+              className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+              style={{ transform: "scale(1.2)" }}
             />
-          )}
-        </AnimatePresence>
+          </>
+        ) : (
+          <>
+            <AnimatePresence mode="wait">
+              {heroImages.length > 0 && (
+                <motion.img
+                  key={heroSlide}
+                  src={heroImages[heroSlide].image}
+                  alt={heroImages[heroSlide].title}
+                  initial={{ opacity: 0, scale: 1.05 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.8 }}
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+              )}
+            </AnimatePresence>
+          </>
+        )}
         {heroImages.length === 0 && (
           <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/80 to-accent" />
         )}
