@@ -36,7 +36,7 @@ const BANKS: Bank[] = [
   },
   {
     name: "Bradesco",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/Bradesco_logo_%28vertical%29.svg/80px-Bradesco_logo_%28vertical%29.svg.png",
+    logo: logoBradesco,
     programs: [
       { name: "Financiamento Imobiliário", rateMin: 9.50, rateMax: 10.99, maxTermYears: 30, maxFinancingPct: 80 },
       { name: "Poupança Bradesco", rateMin: 9.16, rateMax: 10.16, maxTermYears: 30, maxFinancingPct: 80 },
