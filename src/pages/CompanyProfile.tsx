@@ -382,7 +382,7 @@ export default function CompanyProfile() {
 
         {/* Company info overlay */}
         <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10 z-10">
-          <div className="container max-w-7xl mx-auto">
+          <div className="max-w-[1800px] mx-auto px-4 md:px-8">
             <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="max-w-3xl">
               <div className="flex items-center gap-4 mb-3">
                 {company.logo ? (
@@ -474,7 +474,7 @@ export default function CompanyProfile() {
 
       {/* ═══════════ STATS BAR ═══════════ */}
       <section style={{ borderBottom: `1px solid ${storeTheme.border}`, background: storeTheme.card }}>
-        <div className="container max-w-7xl mx-auto px-4">
+        <div className="max-w-[1800px] mx-auto px-4 md:px-8">
           <div className="flex items-center gap-6 py-3 overflow-x-auto scrollbar-hide">
             <div className="flex items-center gap-2 text-sm flex-shrink-0">
               <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
@@ -519,8 +519,8 @@ export default function CompanyProfile() {
 
 
       {/* ═══════════ MAIN LAYOUT ═══════════ */}
-      <div className="container max-w-7xl mx-auto px-4 py-6">
-        <div className="flex gap-6">
+      <div className="max-w-[1800px] mx-auto px-4 md:px-8 py-6">
+        <div className="flex gap-8">
           {/* ═══════════ DESKTOP SIDEBAR ═══════════ */}
           <aside className="hidden lg:block w-[280px] flex-shrink-0">
             <div className="sticky top-20 space-y-4">
@@ -718,7 +718,7 @@ export default function CompanyProfile() {
 
             {/* Products Grid — Premium cards */}
             {filteredProducts.length > 0 ? (
-              <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-5">
                 {filteredProducts.map((product: any, i: number) => {
                   const productLink = `/${product.type === "veiculo" ? "veiculos" : "imoveis"}/produto/${product.id}`;
                   return (
