@@ -336,6 +336,7 @@ export default function SellerItemForm() {
       has_ac: boolOrNull(form.has_ac),
       foot_traffic: strOrNull(form.foot_traffic),
       ideal_for: strOrNull(form.ideal_for),
+      show_financing: form.show_financing || false,
     };
 
     let error;
