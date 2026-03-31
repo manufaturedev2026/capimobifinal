@@ -38,13 +38,14 @@ export default defineConfig(({ mode }) => ({
         name: "ES Corretores - Imóveis no Espírito Santo",
         short_name: "ESCorretores",
         description: "Marketplace de imóveis no Espírito Santo. Encontre casas, apartamentos, terrenos e mais.",
-        theme_color: "#ffffff",
+        theme_color: "#002F6C",
         background_color: "#002F6C",
         lang: "pt-BR",
         display: "standalone",
         orientation: "portrait",
         scope: "/",
         start_url: "/",
+        categories: ["business", "lifestyle"],
         icons: [
           {
             src: "/pwa-192x192.png",
@@ -62,6 +63,15 @@ export default defineConfig(({ mode }) => ({
             sizes: "512x512",
             type: "image/png",
             purpose: "maskable",
+          },
+        ],
+        screenshots: [
+          {
+            src: "/pwa-512x512.png",
+            sizes: "512x512",
+            type: "image/png",
+            form_factor: "narrow",
+            label: "ES Corretores - Tela inicial",
           },
         ],
       },
