@@ -44,7 +44,7 @@ const BANKS: Bank[] = [
   },
   {
     name: "Itaú",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Banco_Ita%C3%BA_logo.svg/120px-Banco_Ita%C3%BA_logo.svg.png",
+    logo: logoItau,
     programs: [
       { name: "Crédito Imobiliário", rateMin: 9.50, rateMax: 10.99, maxTermYears: 30, maxFinancingPct: 80 },
       { name: "Poupança Itaú", rateMin: 9.16, rateMax: 10.49, maxTermYears: 30, maxFinancingPct: 80 },
