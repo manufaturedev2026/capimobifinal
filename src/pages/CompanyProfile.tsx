@@ -702,6 +702,11 @@ export default function CompanyProfile() {
                               {getTagLabel(product.tag)}
                             </span>
                           )}
+                          {isDbProfile && ((product.tags || []).includes("aluguel_flex") || product.category === "aluguel") && (
+                            <span className="absolute top-2 right-2 px-2 py-0.5 rounded-lg text-[10px] font-bold shadow-md bg-primary text-primary-foreground">
+                              🏠 Aluguel
+                            </span>
+                          )}
                           {/* Quick WhatsApp on hover - hide for sold */}
                           {company.whatsapp && product.status !== "vendido" && (
                             <button
@@ -730,11 +735,6 @@ export default function CompanyProfile() {
                                   <span className="text-sm font-normal text-muted-foreground"> /mês</span>
                                 )}
                               </p>
-                              {isDbProfile && ((product.tags || []).includes("aluguel_flex") || product.category === "aluguel") && (
-                                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary text-primary-foreground">
-                                  🏠 Aluguel
-                                </span>
-                              )}
                             </div>
                           )}
                           {product.city && (
