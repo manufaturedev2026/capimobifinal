@@ -284,6 +284,8 @@ export default function CompanyProfile() {
   };
 
   const isPaid = sellerTier !== "basico";
+  const videoId = dbProfile?.video_url ? extractYouTubeId(dbProfile.video_url) : null;
+  const hasVideoHero = !!(videoId && sellerTier && sellerTier !== "basico" && sellerTier !== "start");
 
   return (
     <div className="min-h-screen bg-background">
