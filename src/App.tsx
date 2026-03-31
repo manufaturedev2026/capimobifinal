@@ -36,6 +36,7 @@ import TermsPage from "@/pages/TermsPage";
 import NotFound from "@/pages/NotFound";
 import BlogPage from "@/pages/BlogPage";
 import BlogArticlePage from "@/pages/BlogArticlePage";
+import FavoritesPage from "@/pages/FavoritesPage";
 
 const queryClient = new QueryClient();
 
