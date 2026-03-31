@@ -802,7 +802,7 @@ export default function CompanyProfile() {
                 })}
               </div>
             ) : (
-              <div className="text-center py-20 bg-card border border-border rounded-2xl">
+              <div className="text-center py-20 rounded-2xl" style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}>
                 <Image size={48} className="text-muted-foreground mx-auto mb-3" />
                 <p className="text-muted-foreground text-lg font-medium">Nenhum anúncio nesta categoria</p>
                 <button onClick={() => setActiveCategory("todos")} className="text-primary text-sm mt-2 hover:underline">Ver todos</button>
