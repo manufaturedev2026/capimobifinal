@@ -497,30 +497,45 @@ export type Database = {
       }
       seller_stories: {
         Row: {
+          button_text: string | null
+          button_url: string | null
           created_at: string
+          description: string | null
           expires_at: string
           id: string
           image_url: string
           is_active: boolean
+          item_id: string | null
           seller_id: string
+          title: string | null
           user_id: string
         }
         Insert: {
+          button_text?: string | null
+          button_url?: string | null
           created_at?: string
+          description?: string | null
           expires_at?: string
           id?: string
           image_url: string
           is_active?: boolean
+          item_id?: string | null
           seller_id: string
+          title?: string | null
           user_id: string
         }
         Update: {
+          button_text?: string | null
+          button_url?: string | null
           created_at?: string
+          description?: string | null
           expires_at?: string
           id?: string
           image_url?: string
           is_active?: boolean
+          item_id?: string | null
           seller_id?: string
+          title?: string | null
           user_id?: string
         }
         Relationships: []
