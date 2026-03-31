@@ -152,6 +152,10 @@ export function useRealListings(segment?: "imoveis" | "automoveis") {
           tier: tierMap.get(p.id) || "basico",
           featured_item_id: p.featured_item_id || null,
         }));
+        // Collect destaque_item_ids from all sellers
+        (profiles || []).forEach((p: any) => {
+          (p.destaque_item_ids || []).forEach((id: string) => destaqueItemIds.add(id));
+        });
       }
       setSellers(mappedSellers);
 
