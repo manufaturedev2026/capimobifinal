@@ -629,6 +629,9 @@ export default function SellerDashboard() {
                           dragOverItemId === item.id ? "border-primary ring-2 ring-primary/30 scale-[1.02]" : "border-border"
                         }`}>
                         <div className="relative aspect-video bg-muted">
+                          <div className="absolute top-2 left-2 z-10 p-1.5 rounded-lg bg-black/40 text-white cursor-grab active:cursor-grabbing">
+                            <GripVertical size={14} />
+                          </div>
                           {item.photos && item.photos.length > 0 ? (
                             <img src={item.photos[0]} alt={item.title} className={`w-full h-full object-cover ${item.status === "vendido" ? "brightness-50 blur-[1px]" : ""}`} />
                           ) : (

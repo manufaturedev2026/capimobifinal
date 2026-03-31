@@ -124,6 +124,20 @@ export default function CompanyProfile() {
         }
         return true;
       });
+
+      // Sort by seller's custom item_order if available
+      const savedOrder: string[] = profile.item_order || [];
+      if (savedOrder.length > 0) {
+        filteredItems.sort((a: any, b: any) => {
+          const ai = savedOrder.indexOf(a.id);
+          const bi = savedOrder.indexOf(b.id);
+          if (ai === -1 && bi === -1) return 0;
+          if (ai === -1) return 1;
+          if (bi === -1) return -1;
+          return ai - bi;
+        });
+      }
+
       setDbItems(filteredItems);
 
       if (corretorSlug) {
