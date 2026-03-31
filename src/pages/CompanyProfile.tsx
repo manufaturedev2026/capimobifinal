@@ -291,7 +291,8 @@ export default function CompanyProfile() {
 
   const isPaid = sellerTier !== "basico";
   const videoId = dbProfile?.video_url ? extractYouTubeId(dbProfile.video_url) : null;
-  const hasVideoHero = !!(videoId && sellerTier && sellerTier !== "basico" && sellerTier !== "start");
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const hasVideoHero = !!(videoId && sellerTier && sellerTier !== "basico" && sellerTier !== "start" && !isIOS);
   const storeTheme = getStoreTheme((dbProfile as any)?.store_theme);
 
   return (
