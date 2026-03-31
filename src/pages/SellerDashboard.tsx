@@ -114,6 +114,22 @@ export default function SellerDashboard() {
     }
   };
 
+  const toggleDestaque = async (itemId: string) => {
+    if (!user || !profile) return;
+    const current: string[] = (profile as any).destaque_item_ids || [];
+    const isSelected = current.includes(itemId);
+    if (!isSelected && current.length >= 5) {
+      toast({ title: "Máximo de 5 destaques", description: "Remova um destaque antes de adicionar outro", variant: "destructive" });
+      return;
+    }
+    const updated = isSelected ? current.filter((id: string) => id !== itemId) : [...current, itemId];
+    const { error } = await supabase.from("profiles").update({ destaque_item_ids: updated } as any).eq("user_id", user.id);
+    if (!error) {
+      await refreshProfile();
+      toast({ title: isSelected ? "Destaque removido" : `⭐ Destaque ativado! (${updated.length}/5)` });
+    }
+  };
+
   const toggleHeroCover = async (itemId: string) => {
     if (!user || !profile) return;
     const current: string[] = (profile as any).hero_item_ids || [];
