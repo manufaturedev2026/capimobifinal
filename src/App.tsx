@@ -7,6 +7,8 @@ import { HelmetProvider } from "react-helmet-async";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ThemeProvider } from "next-themes";
 import { WhatsAppTeamPickerProvider } from "@/components/WhatsAppTeamPicker";
+import { CompareProvider } from "@/hooks/useCompare";
+import CompareBar from "@/components/CompareBar";
 import Header from "@/components/Header";
 import FooterSimple from "@/components/FooterSimple";
 import InstallPWA from "@/components/InstallPWA";
