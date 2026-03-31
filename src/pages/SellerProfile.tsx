@@ -368,7 +368,7 @@ export default function SellerProfile() {
               <Video size={18} className="text-primary" />
               <h2 className="font-display font-bold text-foreground">Vídeo da Loja</h2>
             </div>
-            <p className="text-xs text-muted-foreground">Cole o link de um vídeo do YouTube. Um botão flutuante aparecerá na sua loja. Deixe vazio para desativar.</p>
+            <p className="text-xs text-muted-foreground">Cole o link de um vídeo do YouTube. O vídeo substituirá o banner principal da sua loja no estilo Netflix.</p>
             <input
               value={form.video_url}
               onChange={(e) => setForm((f) => ({ ...f, video_url: e.target.value }))}
@@ -376,10 +376,27 @@ export default function SellerProfile() {
               placeholder="https://www.youtube.com/watch?v=..."
             />
             {form.video_url && (
-              <div className="flex items-center gap-2 text-xs text-green-600">
-                <span className="w-2 h-2 rounded-full bg-green-500" />
-                Vídeo ativado — será exibido na loja
-              </div>
+              <>
+                <input
+                  value={form.video_title}
+                  onChange={(e) => setForm((f) => ({ ...f, video_title: e.target.value }))}
+                  className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+                  placeholder="Título do vídeo (ex: Tour Virtual Completo)"
+                  maxLength={60}
+                />
+                <textarea
+                  value={form.video_description}
+                  onChange={(e) => setForm((f) => ({ ...f, video_description: e.target.value }))}
+                  className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none resize-none"
+                  placeholder="Descrição curta do vídeo..."
+                  rows={2}
+                  maxLength={120}
+                />
+                <div className="flex items-center gap-2 text-xs text-green-600">
+                  <span className="w-2 h-2 rounded-full bg-green-500" />
+                  Vídeo ativado — substituirá o banner da loja
+                </div>
+              </>
             )}
           </div>
         )}
