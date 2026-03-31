@@ -13,6 +13,9 @@ export interface Story {
   button_text?: string | null;
   button_url?: string | null;
   item_id?: string | null;
+  team_member_id?: string | null;
+  team_member_name?: string | null;
+  team_member_photo?: string | null;
 }
 
 export interface SellerWithStories {
@@ -54,6 +57,7 @@ export function useStories() {
       return;
     }
 
+    // Get seller profiles
     const sellerIds = [...new Set(stories.map((s: any) => s.seller_id))];
     const { data: profiles } = await supabase
       .from("profiles")
@@ -61,22 +65,38 @@ export function useStories() {
       .in("id", sellerIds);
 
     const profileMap: Record<string, any> = {};
-    (profiles || []).forEach((p: any) => {
-      profileMap[p.id] = p;
-    });
+    (profiles || []).forEach((p: any) => { profileMap[p.id] = p; });
+
+    // Get team member info for stories that have team_member_id
+    const teamMemberIds = stories
+      .map((s: any) => s.team_member_id)
+      .filter(Boolean) as string[];
+    
+    const teamMemberMap: Record<string, any> = {};
+    if (teamMemberIds.length > 0) {
+      const { data: members } = await supabase
+        .from("team_members")
+        .select("id, full_name, photo_url")
+        .in("id", teamMemberIds);
+      (members || []).forEach((m: any) => { teamMemberMap[m.id] = m; });
+    }
 
     const grouped: Record<string, SellerWithStories> = {};
     stories.forEach((s: any) => {
-      if (!grouped[s.seller_id]) {
-        const profile = profileMap[s.seller_id];
-        grouped[s.seller_id] = {
+      // Group by team_member_id if present, else by seller_id
+      const groupKey = s.team_member_id ? `member_${s.team_member_id}` : `seller_${s.seller_id}`;
+      const member = s.team_member_id ? teamMemberMap[s.team_member_id] : null;
+      const profile = profileMap[s.seller_id];
+
+      if (!grouped[groupKey]) {
+        grouped[groupKey] = {
           sellerId: s.seller_id,
-          sellerName: profile?.company_name || profile?.full_name || "Vendedor",
-          sellerLogo: profile?.logo_url,
+          sellerName: member ? member.full_name : (profile?.company_name || profile?.full_name || "Vendedor"),
+          sellerLogo: member ? member.photo_url : profile?.logo_url,
           stories: [],
         };
       }
-      grouped[s.seller_id].stories.push({
+      grouped[groupKey].stories.push({
         id: s.id,
         seller_id: s.seller_id,
         user_id: s.user_id,
@@ -88,6 +108,9 @@ export function useStories() {
         button_text: s.button_text,
         button_url: s.button_url,
         item_id: s.item_id,
+        team_member_id: s.team_member_id,
+        team_member_name: member?.full_name,
+        team_member_photo: member?.photo_url,
       });
     });
 
