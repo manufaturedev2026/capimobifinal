@@ -1152,10 +1152,10 @@ export default function CompanyProfile() {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="w-full h-full">
-                <iframe
-                  src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=${videoMuted ? 1 : 0}&rel=0&modestbranding=1&controls=1`}
-                  title="Vídeo"
-                  allow="autoplay; encrypted-media; fullscreen"
+                 <iframe
+                   src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=${videoMuted ? 1 : 0}&rel=0&modestbranding=1&controls=1&playsinline=1`}
+                   title="Vídeo"
+                   allow="autoplay; encrypted-media; fullscreen; playsinline"
                   allowFullScreen
                   className="w-full h-full"
                 />
