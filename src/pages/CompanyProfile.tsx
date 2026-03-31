@@ -541,28 +541,28 @@ export default function CompanyProfile() {
                   )}
                 </div>
                 <div className="p-4 pt-8">
-                  <h3 className="font-display font-bold text-foreground text-sm">{company.name}</h3>
+                  <h3 className="font-display font-bold text-sm" style={{ color: storeTheme.text }}>{company.name}</h3>
                   {teamMember ? (
                     <>
-                      <p className="text-xs text-muted-foreground mt-0.5">Corretor(a) de Imóveis</p>
+                      <p className="text-xs mt-0.5" style={{ color: storeTheme.textMuted }}>Corretor(a) de Imóveis</p>
                       {teamMember.creci && (
-                        <p className="text-xs text-primary font-semibold mt-1 flex items-center gap-1">
+                        <p className="text-xs font-semibold mt-1 flex items-center gap-1" style={{ color: storeTheme.primary }}>
                           <Shield size={12} /> {teamMember.creci}
                         </p>
                       )}
-                      <p className="text-[10px] text-muted-foreground mt-1">
+                      <p className="text-[10px] mt-1" style={{ color: storeTheme.textMuted }}>
                         Vinculado a {dbProfile?.company_name || dbProfile?.full_name}
                       </p>
                     </>
                   ) : (
                     <>
-                      <p className="text-xs text-muted-foreground mt-0.5">
+                      <p className="text-xs mt-0.5" style={{ color: storeTheme.textMuted }}>
                         {dbProfile?.seller_category
                           ? ({ imobiliaria: "Imobiliária", corretor: "Corretor(a) de Imóveis", proprietario: "Proprietário" } as Record<string, string>)[dbProfile.seller_category] || "Imobiliária"
                           : "Imobiliária"}
                       </p>
                       {dbProfile?.seller_category === "corretor" && dbProfile?.creci && (
-                        <p className="text-xs text-primary font-semibold mt-1 flex items-center gap-1">
+                        <p className="text-xs font-semibold mt-1 flex items-center gap-1" style={{ color: storeTheme.primary }}>
                           <Shield size={12} /> {dbProfile.creci}
                         </p>
                       )}
@@ -570,8 +570,8 @@ export default function CompanyProfile() {
                   )}
                   
                   {company.address && (
-                    <div className="flex items-start gap-2 text-xs text-muted-foreground mt-3">
-                      <MapPin size={12} className="mt-0.5 flex-shrink-0 text-primary" />
+                    <div className="flex items-start gap-2 text-xs mt-3" style={{ color: storeTheme.textMuted }}>
+                      <MapPin size={12} className="mt-0.5 flex-shrink-0" style={{ color: storeTheme.primary }} />
                       <span>{company.address}</span>
                     </div>
                   )}
