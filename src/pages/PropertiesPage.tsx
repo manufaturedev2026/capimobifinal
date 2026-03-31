@@ -16,6 +16,7 @@ import FavoriteButton from "@/components/FavoriteButton";
 import { useFavorites } from "@/hooks/useFavorites";
 import CompareButton from "@/components/CompareButton";
 import { useCompare } from "@/hooks/useCompare";
+import SwipeablePropertyCard from "@/components/SwipeablePropertyCard";
 
 const iconMap: Record<string, React.ElementType> = { Key, Home, Building2, Landmark, Store };
 
