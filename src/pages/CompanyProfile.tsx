@@ -708,11 +708,11 @@ export default function CompanyProfile() {
 
             {/* Products Header */}
             <div className="flex items-center justify-between mb-4">
-              <h2 className="font-display font-bold text-lg md:text-xl text-foreground">
+              <h2 className="font-display font-bold text-lg md:text-xl" style={{ color: storeTheme.text }}>
                 {activeCategory === "todos"
                   ? `Todos os Anúncios`
                   : subcategories.find(c => c.slug === activeCategory)?.name}
-                <span className="text-muted-foreground font-normal text-sm ml-2">({filteredProducts.length})</span>
+                <span className="font-normal text-sm ml-2" style={{ color: storeTheme.textMuted }}>({filteredProducts.length})</span>
               </h2>
             </div>
 
