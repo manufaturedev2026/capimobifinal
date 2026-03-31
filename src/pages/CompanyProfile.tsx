@@ -421,6 +421,18 @@ export default function CompanyProfile() {
                 </div>
               </div>
 
+              {/* Video title & description */}
+              {hasVideoHero && ((dbProfile as any)?.video_title || (dbProfile as any)?.video_description) && (
+                <div className="mt-3">
+                  {(dbProfile as any)?.video_title && (
+                    <p className="text-white/90 font-display font-bold text-lg md:text-2xl drop-shadow-lg">{(dbProfile as any).video_title}</p>
+                  )}
+                  {(dbProfile as any)?.video_description && (
+                    <p className="text-white/60 text-sm md:text-base mt-1 max-w-xl line-clamp-2">{(dbProfile as any).video_description}</p>
+                  )}
+                </div>
+              )}
+
               {/* Action buttons */}
               <div className="flex flex-nowrap gap-1.5 md:gap-2 mt-4 overflow-x-auto scrollbar-hide">
                 {company.whatsapp && (
