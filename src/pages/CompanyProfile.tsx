@@ -318,11 +318,12 @@ export default function CompanyProfile() {
             style={{
               top: "50%",
               left: "50%",
-              width: "177.78vh",
-              height: "100vh",
-              minWidth: "100%",
-              minHeight: "100%",
-              transform: "translate(-50%, -50%)",
+              width: "100vw",
+              height: "56.25vw",
+              minWidth: "177.78vh",
+              minHeight: "100vh",
+              transform: "translate(-50%, -50%) scale(1.65)",
+              transformOrigin: "center center",
             }}
           />
         ) : (
