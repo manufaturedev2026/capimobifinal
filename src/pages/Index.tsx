@@ -56,6 +56,8 @@ export default function Index() {
   const displayCity = cityName || "Espírito Santo";
   const citySlug = cityName ? cityToSlug(cityName) : "";
   const [searchQuery, setSearchQuery] = useState("");
+  const [storyDialogOpen, setStoryDialogOpen] = useState(false);
+  const { user, profile } = useAuth();
   const quickActions = getQuickActions(citySlug);
   const categories = getCategories(citySlug);
   const heroBanners = getHeroBanners(displayCity, citySlug);
