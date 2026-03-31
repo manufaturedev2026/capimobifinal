@@ -34,6 +34,8 @@ import AdminPanel from "@/pages/AdminPanel";
 import PrivacyPage from "@/pages/PrivacyPage";
 import TermsPage from "@/pages/TermsPage";
 import NotFound from "@/pages/NotFound";
+import BlogPage from "@/pages/BlogPage";
+import BlogArticlePage from "@/pages/BlogArticlePage";
 
 const queryClient = new QueryClient();
 
