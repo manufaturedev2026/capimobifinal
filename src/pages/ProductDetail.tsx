@@ -539,11 +539,6 @@ export default function ProductDetail() {
               {dbItem?.status === "vendido" && (
                 <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-center">
                   <p className="font-bold text-red-600 text-sm">❌ Este imóvel foi vendido</p>
-                  {dbItem.sold_at && (
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Será removido em {Math.max(0, Math.ceil((new Date(dbItem.sold_at).getTime() + 24*60*60*1000 - Date.now()) / (1000*60*60)))}h
-                    </p>
-                  )}
                 </div>
               )}
 

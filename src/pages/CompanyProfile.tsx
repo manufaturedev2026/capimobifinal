@@ -760,11 +760,6 @@ export default function CompanyProfile() {
                           {product.status === "vendido" && (
                             <div className="absolute inset-0 flex flex-col items-center justify-center z-10">
                               <span className="px-4 py-2 rounded-xl bg-red-600/90 text-white font-bold text-sm shadow-lg">❌ Vendido</span>
-                              {product.sold_at && (
-                                <span className="mt-2 px-2.5 py-1 rounded-lg bg-black/70 backdrop-blur-sm text-white text-xs font-medium">
-                                  Removido em {Math.max(0, Math.ceil((new Date(product.sold_at).getTime() + 24*60*60*1000 - Date.now()) / (1000*60*60)))}h
-                                </span>
-                              )}
                             </div>
                           )}
                           {/* Gradient overlay on hover */}
