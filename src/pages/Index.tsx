@@ -7,6 +7,9 @@ import { useState, useEffect, useRef } from "react";
 import { Helmet } from "react-helmet-async";
 import heroImoveis from "@/assets/hero-imoveis.jpg";
 import { slugToCity, cityToSlug } from "@/lib/citySlug";
+import StoriesBar from "@/components/StoriesBar";
+import StoryUploadDialog from "@/components/StoryUploadDialog";
+import { useAuth } from "@/hooks/useAuth";
 
 function getHeroBanners(city: string, prefix: string) {
   const imoveisLink = prefix ? `/imoveis/${prefix}` : "/imoveis";
