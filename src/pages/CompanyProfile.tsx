@@ -1050,7 +1050,12 @@ export default function CompanyProfile() {
                 {company.logo && <img src={company.logo} alt="" className="w-8 h-8 rounded-lg object-cover border border-white/20" />}
                 <div>
                   <p className="text-white font-display font-bold text-sm md:text-base">{(dbProfile as any)?.video_title || company.name}</p>
-                  <p className="text-white/50 text-[10px]">Apresentação exclusiva</p>
+                  {(dbProfile as any)?.video_description && (
+                    <p className="text-white/60 text-[10px] md:text-xs max-w-md line-clamp-2">{(dbProfile as any).video_description}</p>
+                  )}
+                  {!(dbProfile as any)?.video_description && (
+                    <p className="text-white/50 text-[10px]">Apresentação exclusiva</p>
+                  )}
                 </div>
               </div>
               <div className="flex items-center gap-2">
