@@ -117,10 +117,14 @@ export default function PropertiesPage() {
   // Category mapping for filtering
   const categoryMap: Record<string, string[]> = {
     casas: ["casa"],
-    apartamentos: ["apartamento", "flat"],
+    apartamentos: ["apartamento"],
     terrenos: ["terreno"],
-    comerciais: ["comercial", "galpao"],
+    comerciais: ["comercial"],
+    alugueis: ["aluguel"],
     aluguel: ["aluguel"],
+    flats: ["flat"],
+    galpoes: ["galpao"],
+    coberturas: ["apartamento"],
   };
 
   const effectiveCategory = filterType || activeCategory;
