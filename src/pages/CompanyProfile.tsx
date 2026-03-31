@@ -600,29 +600,29 @@ export default function CompanyProfile() {
               </div>
 
               {/* About Section */}
-              <div className="bg-card border border-border rounded-2xl p-4">
-                <h3 className="font-display font-bold text-sm text-foreground mb-3 flex items-center gap-2">
-                  <BadgeCheck size={14} className="text-primary" /> Sobre a empresa
+              <div className="rounded-2xl p-4" style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}>
+                <h3 className="font-display font-bold text-sm mb-3 flex items-center gap-2" style={{ color: storeTheme.text }}>
+                  <BadgeCheck size={14} style={{ color: storeTheme.primary }} /> Sobre a empresa
                 </h3>
                 {teamMember && dbProfile?.logo_url && (
-                  <div className="flex items-center gap-3 mb-3 p-2 rounded-xl bg-secondary/50">
-                    <img src={dbProfile.logo_url} alt={dbProfile.company_name || dbProfile.full_name} className="w-10 h-10 rounded-lg object-cover border border-border" />
+                  <div className="flex items-center gap-3 mb-3 p-2 rounded-xl" style={{ background: `${storeTheme.primary}10` }}>
+                    <img src={dbProfile.logo_url} alt={dbProfile.company_name || dbProfile.full_name} className="w-10 h-10 rounded-lg object-cover" style={{ border: `1px solid ${storeTheme.border}` }} />
                     <div>
-                      <p className="text-xs font-bold text-foreground">{dbProfile.company_name || dbProfile.full_name}</p>
-                      {dbProfile.cnpj && <p className="text-[10px] text-muted-foreground">CNPJ: {dbProfile.cnpj}</p>}
+                      <p className="text-xs font-bold" style={{ color: storeTheme.text }}>{dbProfile.company_name || dbProfile.full_name}</p>
+                      {dbProfile.cnpj && <p className="text-[10px]" style={{ color: storeTheme.textMuted }}>CNPJ: {dbProfile.cnpj}</p>}
                     </div>
                   </div>
                 )}
                 {!teamMember && dbProfile?.cnpj && (
-                  <div className="flex items-center gap-2 mb-3 text-xs text-muted-foreground">
-                    <Shield size={13} className="flex-shrink-0 text-primary" />
+                  <div className="flex items-center gap-2 mb-3 text-xs" style={{ color: storeTheme.textMuted }}>
+                    <Shield size={13} className="flex-shrink-0" style={{ color: storeTheme.primary }} />
                     <span>CNPJ: {dbProfile.cnpj}</span>
                   </div>
                 )}
                 {dbProfile?.bio && (
-                  <p className="text-sm text-foreground mb-3 whitespace-pre-line">{dbProfile.bio}</p>
+                  <p className="text-sm mb-3 whitespace-pre-line" style={{ color: storeTheme.text }}>{dbProfile.bio}</p>
                 )}
-                <div className="space-y-3 text-xs text-muted-foreground">
+                <div className="space-y-3 text-xs" style={{ color: storeTheme.textMuted }}>
                   <div className="flex items-center gap-2">
                     <Store size={13} className="flex-shrink-0" />
                     <span>
@@ -633,8 +633,8 @@ export default function CompanyProfile() {
                   </div>
                   {dbProfile?.seller_category === "corretor" && dbProfile?.creci && (
                     <div className="flex items-center gap-2">
-                      <Shield size={13} className="flex-shrink-0 text-primary" />
-                      <span className="font-semibold text-primary">{dbProfile.creci}</span>
+                      <Shield size={13} className="flex-shrink-0" style={{ color: storeTheme.primary }} />
+                      <span className="font-semibold" style={{ color: storeTheme.primary }}>{dbProfile.creci}</span>
                     </div>
                   )}
                   <div className="flex items-center gap-2">
@@ -653,8 +653,8 @@ export default function CompanyProfile() {
               </div>
 
               {/* Category Navigation */}
-              <div className="bg-card border border-border rounded-2xl p-4">
-                <h3 className="font-display font-bold text-sm text-foreground mb-3">Categorias</h3>
+              <div className="rounded-2xl p-4" style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}>
+                <h3 className="font-display font-bold text-sm mb-3" style={{ color: storeTheme.text }}>Categorias</h3>
                 <nav className="space-y-1">
                   {subcategories.map((cat) => {
                     const Icon = cat.icon;
@@ -664,18 +664,19 @@ export default function CompanyProfile() {
                       <button
                         key={cat.slug}
                         onClick={() => setActiveCategory(cat.slug)}
-                        className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-medium transition-all ${
-                          isActive
-                            ? "bg-primary text-primary-foreground shadow-md"
-                            : "text-muted-foreground hover:text-foreground hover:bg-secondary"
-                        }`}
+                        className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-medium transition-all`}
+                        style={{
+                          background: isActive ? storeTheme.primary : "transparent",
+                          color: isActive ? "#fff" : storeTheme.textMuted,
+                          boxShadow: isActive ? "0 4px 12px rgba(0,0,0,0.15)" : "none",
+                        }}
                       >
                         <Icon size={14} />
                         <span className="flex-1 text-left">{cat.name}</span>
                         {cat.slug === "todos" ? (
-                          <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${isActive ? "bg-white/20" : "bg-muted"}`}>{products.length}</span>
+                          <span className="text-[10px] px-1.5 py-0.5 rounded-full" style={{ background: isActive ? "rgba(255,255,255,0.2)" : `${storeTheme.border}` }}>{products.length}</span>
                         ) : count > 0 ? (
-                          <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${isActive ? "bg-white/20" : "bg-muted"}`}>{count}</span>
+                          <span className="text-[10px] px-1.5 py-0.5 rounded-full" style={{ background: isActive ? "rgba(255,255,255,0.2)" : `${storeTheme.border}` }}>{count}</span>
                         ) : null}
                       </button>
                     );
