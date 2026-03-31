@@ -49,6 +49,8 @@ export default function CompanyProfile() {
   const [gallerySlide, setGallerySlide] = useState(0);
   const [galleryPaused, setGalleryPaused] = useState(false);
   const [teamMember, setTeamMember] = useState<any>(null);
+  const [videoModalOpen, setVideoModalOpen] = useState(false);
+  const [videoMuted, setVideoMuted] = useState(true);
   const { openWhatsApp: openWhatsAppPicker } = useWhatsAppPicker();
 
   const searchParams = new URLSearchParams(location.search);
