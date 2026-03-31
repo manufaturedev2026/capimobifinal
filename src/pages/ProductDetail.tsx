@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ChevronLeft, ChevronRight, MessageCircle, Share2, Star, MapPin, Tag, Store, Image, X, ZoomIn, BadgeCheck, Video, Calculator } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, MessageCircle, Share2, Star, MapPin, Tag, Store, Image, X, ZoomIn, BadgeCheck, Video } from "lucide-react";
 import QRCodeDisplay from "@/components/QRCodeDisplay";
 import FinancingSimulator from "@/components/FinancingSimulator";
 import PackageBadge from "@/components/PackageBadge";
@@ -28,7 +28,6 @@ export default function ProductDetail() {
   const [sellerTier, setSellerTier] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [isDb, setIsDb] = useState(false);
-  const [showFinancing, setShowFinancing] = useState(false);
 
   useEffect(() => {
     if (productId && isUUID(productId)) {
@@ -442,25 +441,11 @@ export default function ProductDetail() {
               </motion.div>
             )}
 
-            {/* Financing Simulator - only for non-rental properties */}
-            {isDb && !isAluguel && product.price > 0 && (
-              <div>
-                <button
-                  onClick={() => setShowFinancing(!showFinancing)}
-                  className="w-full flex items-center justify-between gap-2 bg-card border border-border rounded-2xl px-5 py-3.5 hover:border-primary/30 transition-all"
-                >
-                  <span className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                    <Calculator size={16} className="text-primary" />
-                    Simular Financiamento
-                  </span>
-                  <ChevronRight size={16} className={`text-muted-foreground transition-transform ${showFinancing ? "rotate-90" : ""}`} />
-                </button>
-                {showFinancing && (
-                  <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} transition={{ duration: 0.3 }} className="mt-3">
-                    <FinancingSimulator propertyPrice={product.price} />
-                  </motion.div>
-                )}
-              </div>
+            {/* Financing Simulator - only when seller enabled it */}
+            {isDb && !isAluguel && product.price > 0 && product.show_financing && (
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
+                <FinancingSimulator propertyPrice={product.price} />
+              </motion.div>
             )}
           </div>
 

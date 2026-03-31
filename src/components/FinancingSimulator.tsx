@@ -1,13 +1,6 @@
 import { useState, useMemo } from "react";
-import { Building2, Calculator, ChevronDown, ChevronUp } from "lucide-react";
+import { Calculator, ChevronDown, ChevronUp } from "lucide-react";
 import { formatPrice } from "@/data/products";
-
-interface Bank {
-  name: string;
-  logo: string;
-  color: string;
-  programs: Program[];
-}
 
 interface Program {
   name: string;
@@ -15,15 +8,19 @@ interface Program {
   rateMax: number;
   maxTermYears: number;
   maxFinancingPct: number;
-  minIncome?: number;
   maxPropertyValue?: number;
+}
+
+interface Bank {
+  name: string;
+  logo: string;
+  programs: Program[];
 }
 
 const BANKS: Bank[] = [
   {
     name: "Caixa Econômica",
-    logo: "🏦",
-    color: "bg-blue-600",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Logo_Caixa_Econ%C3%B4mica_Federal_2024.svg/120px-Logo_Caixa_Econ%C3%B4mica_Federal_2024.svg.png",
     programs: [
       { name: "SBPE (Taxa Referencial)", rateMin: 8.99, rateMax: 9.99, maxTermYears: 35, maxFinancingPct: 80 },
       { name: "Poupança CAIXA", rateMin: 8.49, rateMax: 9.49, maxTermYears: 35, maxFinancingPct: 80 },
@@ -34,8 +31,7 @@ const BANKS: Bank[] = [
   },
   {
     name: "Bradesco",
-    logo: "🔴",
-    color: "bg-red-600",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/Bradesco_logo_%28vertical%29.svg/80px-Bradesco_logo_%28vertical%29.svg.png",
     programs: [
       { name: "Financiamento Imobiliário", rateMin: 9.50, rateMax: 10.99, maxTermYears: 30, maxFinancingPct: 80 },
       { name: "Poupança Bradesco", rateMin: 9.16, rateMax: 10.16, maxTermYears: 30, maxFinancingPct: 80 },
@@ -43,8 +39,7 @@ const BANKS: Bank[] = [
   },
   {
     name: "Itaú",
-    logo: "🟠",
-    color: "bg-orange-500",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Banco_Ita%C3%BA_logo.svg/120px-Banco_Ita%C3%BA_logo.svg.png",
     programs: [
       { name: "Crédito Imobiliário", rateMin: 9.50, rateMax: 10.99, maxTermYears: 30, maxFinancingPct: 80 },
       { name: "Poupança Itaú", rateMin: 9.16, rateMax: 10.49, maxTermYears: 30, maxFinancingPct: 80 },
@@ -52,16 +47,14 @@ const BANKS: Bank[] = [
   },
   {
     name: "Banco do Brasil",
-    logo: "🟡",
-    color: "bg-yellow-500",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Banco_do_Brasil_logo.svg/120px-Banco_do_Brasil_logo.svg.png",
     programs: [
       { name: "BB Crédito Imobiliário", rateMin: 9.39, rateMax: 10.99, maxTermYears: 35, maxFinancingPct: 80 },
     ],
   },
   {
     name: "Santander",
-    logo: "🔴",
-    color: "bg-red-700",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Banco_Santander_Logotipo.svg/120px-Banco_Santander_Logotipo.svg.png",
     programs: [
       { name: "Crédito Imobiliário", rateMin: 9.49, rateMax: 10.99, maxTermYears: 35, maxFinancingPct: 80 },
       { name: "Pré-fixado Santander", rateMin: 10.99, rateMax: 11.99, maxTermYears: 20, maxFinancingPct: 80 },
@@ -91,14 +84,11 @@ export default function FinancingSimulator({ propertyPrice }: Props) {
     const results: {
       bank: string;
       logo: string;
-      color: string;
       program: string;
       rateMin: number;
       rateMax: number;
       monthlyMin: number;
       monthlyMax: number;
-      totalMin: number;
-      totalMax: number;
       termMonths: number;
       eligible: boolean;
       reason?: string;
@@ -122,14 +112,11 @@ export default function FinancingSimulator({ propertyPrice }: Props) {
         results.push({
           bank: bank.name,
           logo: bank.logo,
-          color: bank.color,
           program: prog.name,
           rateMin: prog.rateMin,
           rateMax: prog.rateMax,
           monthlyMin,
           monthlyMax,
-          totalMin: monthlyMin * termMonths,
-          totalMax: monthlyMax * termMonths,
           termMonths,
           eligible,
           reason,
@@ -214,7 +201,10 @@ export default function FinancingSimulator({ propertyPrice }: Props) {
         {/* Best option highlight */}
         {bestRate && (
           <div className="bg-primary/10 border border-primary/20 rounded-xl p-4">
-            <p className="text-xs font-semibold text-primary mb-1">💡 Melhor opção encontrada</p>
+            <div className="flex items-center gap-2 mb-1">
+              <img src={bestRate.logo} alt={bestRate.bank} className="h-5 w-auto object-contain" />
+              <p className="text-xs font-semibold text-primary">💡 Melhor opção encontrada</p>
+            </div>
             <p className="font-display font-bold text-xl text-foreground">
               {formatPrice(bestRate.monthlyMin)}<span className="text-sm font-normal text-muted-foreground">/mês</span>
             </p>
@@ -240,8 +230,8 @@ export default function FinancingSimulator({ propertyPrice }: Props) {
                 }`}
               >
                 <div className="flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-2 min-w-0">
-                    <span className="text-lg flex-shrink-0">{sim.logo}</span>
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <img src={sim.logo} alt={sim.bank} className="h-6 w-auto object-contain flex-shrink-0" />
                     <div className="min-w-0">
                       <p className="text-sm font-semibold text-foreground truncate">{sim.bank}</p>
                       <p className="text-[11px] text-muted-foreground truncate">{sim.program}</p>
@@ -284,7 +274,7 @@ export default function FinancingSimulator({ propertyPrice }: Props) {
         </div>
 
         <p className="text-[10px] text-muted-foreground text-center leading-relaxed">
-          * Simulação meramente ilustrativa. Taxas de referência atualizadas em mar/2026. Valores reais podem variar conforme análise de crédito, relacionamento com o banco e condições de mercado. Consulte o banco para valores exatos.
+          * Simulação meramente ilustrativa. Taxas de referência atualizadas em mar/2026. Valores reais podem variar conforme análise de crédito, relacionamento com o banco e condições de mercado.
         </p>
       </div>
     </div>

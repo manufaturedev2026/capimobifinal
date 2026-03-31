@@ -1,0 +1,1 @@
+ALTER TABLE public.seller_items ADD COLUMN show_financing boolean DEFAULT false;

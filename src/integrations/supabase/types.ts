@@ -273,6 +273,7 @@ export type Database = {
           seller_id: string
           seller_type: Database["public"]["Enums"]["seller_type"]
           service_area: boolean | null
+          show_financing: boolean | null
           sold_at: string | null
           state: string | null
           status: Database["public"]["Enums"]["item_status"]
@@ -342,6 +343,7 @@ export type Database = {
           seller_id: string
           seller_type: Database["public"]["Enums"]["seller_type"]
           service_area?: boolean | null
+          show_financing?: boolean | null
           sold_at?: string | null
           state?: string | null
           status?: Database["public"]["Enums"]["item_status"]
@@ -411,6 +413,7 @@ export type Database = {
           seller_id?: string
           seller_type?: Database["public"]["Enums"]["seller_type"]
           service_area?: boolean | null
+          show_financing?: boolean | null
           sold_at?: string | null
           state?: string | null
           status?: Database["public"]["Enums"]["item_status"]

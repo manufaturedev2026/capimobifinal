@@ -97,6 +97,7 @@ const INITIAL_FORM = {
   has_ac: false,
   foot_traffic: "",
   ideal_for: "",
+  show_financing: false,
 };
 
 export default function SellerItemForm() {
@@ -168,6 +169,7 @@ export default function SellerItemForm() {
               garden: !!d.garden,
               furnished: !!d.furnished,
               accepts_financing: !!d.accepts_financing,
+              show_financing: !!d.show_financing,
               documentation: d.documentation || "",
               condo_fee: d.condo_fee?.toString() || "",
               iptu: d.iptu?.toString() || "",
@@ -335,6 +337,7 @@ export default function SellerItemForm() {
       has_ac: boolOrNull(form.has_ac),
       foot_traffic: strOrNull(form.foot_traffic),
       ideal_for: strOrNull(form.ideal_for),
+      show_financing: form.show_financing || false,
     };
 
     let error;
@@ -598,6 +601,24 @@ export default function SellerItemForm() {
           <input value={form.video_url} onChange={(e) => setForm((f) => ({ ...f, video_url: e.target.value }))}
             className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="https://www.youtube.com/watch?v=..." />
         </div>
+
+        {/* Financing Simulator Toggle */}
+        {!isAluguel && (
+          <div className="bg-card border border-border rounded-2xl p-5">
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={form.show_financing}
+                onChange={(e) => setForm((f) => ({ ...f, show_financing: e.target.checked }))}
+                className="w-5 h-5 rounded border-border text-primary focus:ring-primary"
+              />
+              <div>
+                <p className="font-display font-bold text-foreground text-sm">💰 Simular Financiamento</p>
+                <p className="text-xs text-muted-foreground">Exibir simulador de financiamento bancário na página do imóvel</p>
+              </div>
+            </label>
+          </div>
+        )}
 
         {/* Submit */}
         <button type="submit" disabled={saving || (isAtLimit && !isEdit) || (isExpired && !!subscription)}
