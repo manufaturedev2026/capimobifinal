@@ -93,6 +93,7 @@ const App = () => (
           </TooltipProvider>
         </WhatsAppTeamPickerProvider>
       </AuthProvider>
+      </ThemeProvider>
     </HelmetProvider>
   </QueryClientProvider>
 );
