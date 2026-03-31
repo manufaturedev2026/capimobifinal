@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
-import { X, ChevronLeft, ChevronRight } from "lucide-react";
+import { X, ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Link } from "react-router-dom";
 import type { SellerWithStories } from "@/hooks/useStories";
 
 interface StoryViewerProps {
@@ -9,7 +10,7 @@ interface StoryViewerProps {
   onClose: () => void;
 }
 
-const STORY_DURATION = 5000; // 5 seconds
+const STORY_DURATION = 6000;
 
 export default function StoryViewer({ sellers, initialSellerIndex, onClose }: StoryViewerProps) {
   const [sellerIdx, setSellerIdx] = useState(initialSellerIndex);
@@ -46,7 +47,7 @@ export default function StoryViewer({ sellers, initialSellerIndex, onClose }: St
     }
   }, [storyIdx, sellerIdx, sellers]);
 
-  // Auto-advance timer
+  // Auto-advance
   useEffect(() => {
     if (paused) return;
     const interval = setInterval(() => {
@@ -62,12 +63,10 @@ export default function StoryViewer({ sellers, initialSellerIndex, onClose }: St
     return () => clearInterval(interval);
   }, [paused, goNextStory]);
 
-  // Reset progress on story change
   useEffect(() => {
     setProgress(0);
   }, [sellerIdx, storyIdx]);
 
-  // Close on Escape
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -86,35 +85,27 @@ export default function StoryViewer({ sellers, initialSellerIndex, onClose }: St
     return `${Math.floor(mins / 60)}h`;
   };
 
+  const hasOverlay = currentStory.title || currentStory.description || currentStory.button_text;
+  const ctaUrl = currentStory.button_url || (currentStory.item_id ? `/imoveis/produto/${currentStory.item_id}` : null);
+
   return (
-    <div className="fixed inset-0 z-[9999] bg-black flex items-center justify-center">
-      {/* Close button */}
-      <button
-        onClick={onClose}
-        className="absolute top-4 right-4 z-50 text-white/80 hover:text-white transition-colors"
-      >
+    <div className="fixed inset-0 z-[9999] bg-black/95 flex items-center justify-center">
+      {/* Close */}
+      <button onClick={onClose} className="absolute top-4 right-4 z-50 text-white/80 hover:text-white">
         <X className="w-7 h-7" />
       </button>
 
-      {/* Previous seller nav */}
+      {/* Nav arrows */}
       {(sellerIdx > 0 || storyIdx > 0) && (
-        <button
-          onClick={goPrevStory}
-          className="absolute left-2 md:left-6 top-1/2 -translate-y-1/2 z-50 text-white/60 hover:text-white transition-colors"
-        >
+        <button onClick={goPrevStory} className="absolute left-2 md:left-6 top-1/2 -translate-y-1/2 z-50 text-white/60 hover:text-white">
           <ChevronLeft className="w-8 h-8" />
         </button>
       )}
-
-      {/* Next seller nav */}
-      <button
-        onClick={goNextStory}
-        className="absolute right-2 md:right-6 top-1/2 -translate-y-1/2 z-50 text-white/60 hover:text-white transition-colors"
-      >
+      <button onClick={goNextStory} className="absolute right-2 md:right-6 top-1/2 -translate-y-1/2 z-50 text-white/60 hover:text-white">
         <ChevronRight className="w-8 h-8" />
       </button>
 
-      {/* Story content */}
+      {/* Story container */}
       <div
         className="relative w-full max-w-[420px] h-full max-h-[90vh] md:max-h-[85vh] md:rounded-2xl overflow-hidden bg-black"
         onMouseDown={() => setPaused(true)}
@@ -127,9 +118,10 @@ export default function StoryViewer({ sellers, initialSellerIndex, onClose }: St
           {Array.from({ length: totalStories }).map((_, i) => (
             <div key={i} className="flex-1 h-[3px] bg-white/30 rounded-full overflow-hidden">
               <div
-                className="h-full bg-white rounded-full transition-none"
+                className="h-full bg-white rounded-full"
                 style={{
                   width: `${i < storyIdx ? 100 : i === storyIdx ? progress : 0}%`,
+                  transition: "none",
                 }}
               />
             </div>
@@ -138,7 +130,7 @@ export default function StoryViewer({ sellers, initialSellerIndex, onClose }: St
 
         {/* Header */}
         <div className="absolute top-6 left-0 right-0 z-40 flex items-center gap-3 px-4">
-          <div className="w-9 h-9 rounded-full overflow-hidden bg-white/20 shrink-0">
+          <div className="w-9 h-9 rounded-full overflow-hidden bg-white/20 shrink-0 ring-2 ring-white/30">
             {currentSeller.sellerLogo ? (
               <img src={currentSeller.sellerLogo} alt="" className="w-full h-full object-cover" />
             ) : (
@@ -148,7 +140,7 @@ export default function StoryViewer({ sellers, initialSellerIndex, onClose }: St
             )}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-white text-sm font-semibold truncate">{currentSeller.sellerName}</p>
+            <p className="text-white text-sm font-semibold truncate drop-shadow">{currentSeller.sellerName}</p>
             <p className="text-white/60 text-xs">{timeAgo(currentStory.created_at)}</p>
           </div>
         </div>
@@ -167,12 +159,38 @@ export default function StoryViewer({ sellers, initialSellerIndex, onClose }: St
             src={currentStory.image_url}
             alt="Story"
             className="absolute inset-0 w-full h-full object-contain"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            initial={{ opacity: 0, scale: 1.02 }}
+            animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={{ duration: 0.25 }}
           />
         </AnimatePresence>
+
+        {/* Bottom overlay: title, description, CTA button */}
+        {hasOverlay && (
+          <div className="absolute bottom-0 left-0 right-0 z-40 bg-gradient-to-t from-black/90 via-black/50 to-transparent pt-16 pb-6 px-5">
+            {currentStory.title && (
+              <h3 className="text-white font-bold text-lg leading-tight drop-shadow-lg">
+                {currentStory.title}
+              </h3>
+            )}
+            {currentStory.description && (
+              <p className="text-white/85 text-sm mt-1.5 leading-snug drop-shadow">
+                {currentStory.description}
+              </p>
+            )}
+            {currentStory.button_text && ctaUrl && (
+              <Link
+                to={ctaUrl}
+                onClick={(e) => e.stopPropagation()}
+                className="inline-flex items-center gap-1.5 mt-3 px-5 py-2.5 bg-white text-gray-900 font-bold text-sm rounded-full shadow-xl hover:scale-105 transition-transform"
+              >
+                {currentStory.button_text}
+                <ExternalLink className="w-3.5 h-3.5" />
+              </Link>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

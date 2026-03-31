@@ -8,6 +8,11 @@ export interface Story {
   image_url: string;
   created_at: string;
   expires_at: string;
+  title?: string | null;
+  description?: string | null;
+  button_text?: string | null;
+  button_url?: string | null;
+  item_id?: string | null;
 }
 
 export interface SellerWithStories {
@@ -78,6 +83,11 @@ export function useStories() {
         image_url: s.image_url,
         created_at: s.created_at,
         expires_at: s.expires_at,
+        title: s.title,
+        description: s.description,
+        button_text: s.button_text,
+        button_url: s.button_url,
+        item_id: s.item_id,
       });
     });
 
