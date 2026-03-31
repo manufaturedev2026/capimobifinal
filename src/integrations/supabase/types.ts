@@ -121,6 +121,7 @@ export type Database = {
           show_location: boolean
           slug: string | null
           state: string | null
+          store_theme: string | null
           updated_at: string
           user_id: string
           video_description: string | null
@@ -155,6 +156,7 @@ export type Database = {
           show_location?: boolean
           slug?: string | null
           state?: string | null
+          store_theme?: string | null
           updated_at?: string
           user_id: string
           video_description?: string | null
@@ -189,6 +191,7 @@ export type Database = {
           show_location?: boolean
           slug?: string | null
           state?: string | null
+          store_theme?: string | null
           updated_at?: string
           user_id?: string
           video_description?: string | null
