@@ -193,6 +193,11 @@ export function useRealListings(segment?: "imoveis" | "automoveis") {
           weight = Math.max(weight, 100);
           item.hasDestaque = true;
         }
+        // Manual destaque from seller profile (up to 5 items)
+        if (destaqueItemIds.has(item.id)) {
+          weight = Math.max(weight, 100);
+          item.hasDestaque = true;
+        }
         const randomFactor = Math.random();
         const score = weight * (0.7 + randomFactor * 0.6);
         return { ...item, _sortScore: score };
