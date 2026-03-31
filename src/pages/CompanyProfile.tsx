@@ -474,7 +474,7 @@ export default function CompanyProfile() {
 
       {/* ═══════════ STATS BAR ═══════════ */}
       <section style={{ borderBottom: `1px solid ${storeTheme.border}`, background: storeTheme.card }}>
-        <div className="container max-w-7xl mx-auto px-4">
+        <div className="max-w-[1800px] mx-auto px-4 md:px-8">
           <div className="flex items-center gap-6 py-3 overflow-x-auto scrollbar-hide">
             <div className="flex items-center gap-2 text-sm flex-shrink-0">
               <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
