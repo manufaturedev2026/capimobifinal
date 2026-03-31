@@ -371,7 +371,13 @@ export default function SellerProfile() {
               <Video size={18} className="text-primary" />
               <h2 className="font-display font-bold text-foreground">Vídeo da Loja</h2>
             </div>
-            <p className="text-xs text-muted-foreground">Cole o link de um vídeo do YouTube. O vídeo substituirá o banner principal da sua loja no estilo Netflix.</p>
+            <p className="text-xs text-muted-foreground">
+              Cole o link de um vídeo do YouTube. O vídeo substituirá o banner principal da sua loja no estilo Netflix.
+            </p>
+            <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-3 text-xs text-amber-700 dark:text-amber-400 space-y-1">
+              <p className="font-semibold">📱 Nota sobre iPhones:</p>
+              <p>O iOS não permite autoplay de vídeos. No iPhone, o banner exibirá automaticamente as <strong>fotos dos seus anúncios em destaque</strong> como slideshow. Para escolher quais fotos aparecem, marque os anúncios desejados como "Capa do Banner" no painel de anúncios.</p>
+            </div>
             <input
               value={form.video_url}
               onChange={(e) => setForm((f) => ({ ...f, video_url: e.target.value }))}
@@ -397,7 +403,7 @@ export default function SellerProfile() {
                 />
                 <div className="flex items-center gap-2 text-xs text-green-600">
                   <span className="w-2 h-2 rounded-full bg-green-500" />
-                  Vídeo ativado — substituirá o banner da loja
+                  Vídeo ativado — substituirá o banner da loja (em PCs e Android)
                 </div>
               </>
             )}
