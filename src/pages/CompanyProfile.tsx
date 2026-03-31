@@ -477,37 +477,37 @@ export default function CompanyProfile() {
         <div className="max-w-[1800px] mx-auto px-4 md:px-8">
           <div className="flex items-center gap-6 py-3 overflow-x-auto scrollbar-hide">
             <div className="flex items-center gap-2 text-sm flex-shrink-0">
-              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                <Store size={16} className="text-primary" />
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: `${storeTheme.primary}18` }}>
+                <Store size={16} style={{ color: storeTheme.primary }} />
               </div>
               <div>
-                <p className="font-bold text-foreground">{products.length}</p>
-                <p className="text-[10px] text-muted-foreground">Anúncios</p>
+                <p className="font-bold" style={{ color: storeTheme.text }}>{products.length}</p>
+                <p className="text-[10px]" style={{ color: storeTheme.textMuted }}>Anúncios</p>
               </div>
             </div>
-            <div className="w-px h-8 bg-border flex-shrink-0" />
+            <div className="w-px h-8 flex-shrink-0" style={{ background: storeTheme.border }} />
             <div className="flex items-center gap-2 text-sm flex-shrink-0">
               <div className="w-8 h-8 rounded-lg bg-[#25d366]/10 flex items-center justify-center">
                 <MessageCircle size={16} className="text-[#25d366]" />
               </div>
               <div>
-                <p className="font-bold text-foreground">Direto</p>
-                <p className="text-[10px] text-muted-foreground">WhatsApp</p>
+                <p className="font-bold" style={{ color: storeTheme.text }}>Direto</p>
+                <p className="text-[10px]" style={{ color: storeTheme.textMuted }}>WhatsApp</p>
               </div>
             </div>
-            <div className="w-px h-8 bg-border flex-shrink-0" />
+            <div className="w-px h-8 flex-shrink-0" style={{ background: storeTheme.border }} />
             <div className="flex items-center gap-2 text-sm flex-shrink-0">
-              <div className="w-8 h-8 rounded-lg bg-accent/20 flex items-center justify-center">
-                <Shield size={16} className="text-accent-foreground" />
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: `${storeTheme.accent}30` }}>
+                <Shield size={16} style={{ color: storeTheme.accent }} />
               </div>
               <div>
-                <p className="font-bold text-foreground">{isPaid ? "Verificado" : "Ativo"}</p>
-                <p className="text-[10px] text-muted-foreground">Vendedor</p>
+                <p className="font-bold" style={{ color: storeTheme.text }}>{isPaid ? "Verificado" : "Ativo"}</p>
+                <p className="text-[10px]" style={{ color: storeTheme.textMuted }}>Vendedor</p>
               </div>
             </div>
             {isPaid && (
               <>
-                <div className="w-px h-8 bg-border flex-shrink-0" />
+                <div className="w-px h-8 flex-shrink-0" style={{ background: storeTheme.border }} />
                 <div className="flex items-center gap-2 text-sm flex-shrink-0">
                   <PackageBadge tier={sellerTier} size="sm" />
                 </div>
@@ -1050,7 +1050,12 @@ export default function CompanyProfile() {
                 {company.logo && <img src={company.logo} alt="" className="w-8 h-8 rounded-lg object-cover border border-white/20" />}
                 <div>
                   <p className="text-white font-display font-bold text-sm md:text-base">{(dbProfile as any)?.video_title || company.name}</p>
-                  <p className="text-white/50 text-[10px]">Apresentação exclusiva</p>
+                  {(dbProfile as any)?.video_description && (
+                    <p className="text-white/60 text-[10px] md:text-xs max-w-md line-clamp-2">{(dbProfile as any).video_description}</p>
+                  )}
+                  {!(dbProfile as any)?.video_description && (
+                    <p className="text-white/50 text-[10px]">Apresentação exclusiva</p>
+                  )}
                 </div>
               </div>
               <div className="flex items-center gap-2">
