@@ -775,7 +775,7 @@ export default function CompanyProfile() {
                           )}
                         </div>
                         <div className="p-3 md:p-4">
-                          <h3 className="font-display font-semibold text-foreground text-sm leading-tight line-clamp-2 group-hover:text-primary transition-colors">
+                          <h3 className="font-display font-semibold text-sm leading-tight line-clamp-2 transition-colors" style={{ color: storeTheme.text }}>
                             {product.title}
                           </h3>
                           {product.price > 0 && (
