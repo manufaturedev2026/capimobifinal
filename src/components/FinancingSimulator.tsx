@@ -1,6 +1,11 @@
 import { useState, useMemo } from "react";
 import { Calculator, ChevronDown, ChevronUp } from "lucide-react";
 import { formatPrice } from "@/data/products";
+import logoCaixa from "@/assets/banks/caixa.png";
+import logoBradesco from "@/assets/banks/bradesco.png";
+import logoItau from "@/assets/banks/itau.png";
+import logoBB from "@/assets/banks/bb.png";
+import logoSantander from "@/assets/banks/santander.png";
 
 interface Program {
   name: string;
