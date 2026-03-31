@@ -287,9 +287,23 @@ export default function CompanyProfile() {
   const isPaid = sellerTier !== "basico";
   const videoId = dbProfile?.video_url ? extractYouTubeId(dbProfile.video_url) : null;
   const hasVideoHero = !!(videoId && sellerTier && sellerTier !== "basico" && sellerTier !== "start");
+  const storeTheme = getStoreTheme((dbProfile as any)?.store_theme);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div
+      className="min-h-screen"
+      style={{
+        background: storeTheme.bg,
+        color: storeTheme.text,
+        ["--store-bg" as any]: storeTheme.bg,
+        ["--store-card" as any]: storeTheme.card,
+        ["--store-text" as any]: storeTheme.text,
+        ["--store-text-muted" as any]: storeTheme.textMuted,
+        ["--store-primary" as any]: storeTheme.primary,
+        ["--store-accent" as any]: storeTheme.accent,
+        ["--store-border" as any]: storeTheme.border,
+      }}
+    >
       {isDbProfile && dbProfile?.id && <StoreEffects sellerId={dbProfile.id} />}
       {/* ═══════════ HERO BANNER ═══════════ */}
       <section className={`relative overflow-hidden ${hasVideoHero ? "h-[55vh] md:h-[70vh]" : "h-[50vh] md:h-[60vh]"}`}>
