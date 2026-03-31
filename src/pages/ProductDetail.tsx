@@ -440,6 +440,13 @@ export default function ProductDetail() {
                 <MapEmbed address={mapAddress} />
               </motion.div>
             )}
+
+            {/* Financing Simulator - only for non-rental properties */}
+            {isDb && !isAluguel && product.price > 0 && (
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
+                <FinancingSimulator propertyPrice={product.price} />
+              </motion.div>
+            )}
           </div>
 
           <div className="space-y-4">
