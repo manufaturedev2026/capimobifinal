@@ -79,6 +79,7 @@ const AppLayout = () => {
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <HelmetProvider>
+      <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
       <AuthProvider>
         <WhatsAppTeamPickerProvider>
           <TooltipProvider>
