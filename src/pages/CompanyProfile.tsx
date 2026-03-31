@@ -344,8 +344,8 @@ export default function CompanyProfile() {
           </div>
         )}
 
-        {/* Hero slide arrows */}
-        {heroImages.length > 1 && (
+        {/* Hero slide arrows (only when no video) */}
+        {!hasVideoHero && heroImages.length > 1 && (
           <>
             <button onClick={() => setHeroSlide((p) => (p - 1 + heroImages.length) % heroImages.length)} className="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/50 transition-colors">
               <ChevronLeft size={20} />
@@ -354,6 +354,52 @@ export default function CompanyProfile() {
               <ChevronRight size={20} />
             </button>
           </>
+        )}
+
+        {/* Video title + Assistir button */}
+        {hasVideoHero && (
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex flex-col items-center text-center">
+            <motion.p
+              className="text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] mb-2"
+              style={{ color: "hsl(0 84% 60%)" }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+            >
+              ▶ {(dbProfile as any)?.video_title ? "" : "Lançamento"}
+            </motion.p>
+            {(dbProfile as any)?.video_title && (
+              <motion.h2
+                className="font-display font-bold text-2xl md:text-4xl text-white drop-shadow-lg mb-1"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+              >
+                {(dbProfile as any).video_title}
+              </motion.h2>
+            )}
+            {(dbProfile as any)?.video_description && (
+              <motion.p
+                className="text-white/70 text-xs md:text-sm max-w-md mb-4"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+              >
+                {(dbProfile as any).video_description}
+              </motion.p>
+            )}
+            <motion.button
+              onClick={() => setVideoModalOpen(true)}
+              className="flex items-center gap-2 px-6 py-3 rounded-xl bg-destructive text-destructive-foreground font-bold text-sm shadow-xl hover:opacity-90 transition-opacity"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.6 }}
+            >
+              <Play size={18} fill="currentColor" /> Assistir
+            </motion.button>
+          </div>
         )}
 
 
