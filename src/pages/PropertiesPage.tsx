@@ -14,6 +14,8 @@ import { ES_NEIGHBORHOODS } from "@/data/esNeighborhoods";
 import PropertyCardSkeleton from "@/components/PropertyCardSkeleton";
 import FavoriteButton from "@/components/FavoriteButton";
 import { useFavorites } from "@/hooks/useFavorites";
+import CompareButton from "@/components/CompareButton";
+import { useCompare } from "@/hooks/useCompare";
 
 const iconMap: Record<string, React.ElementType> = { Key, Home, Building2, Landmark, Store };
 
