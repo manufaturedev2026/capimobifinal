@@ -32,6 +32,9 @@ const EFFECTS: EffectOption[] = [
   { type: "estrelas", label: "Estrelas Cadentes", emoji: "✨", icon: Star, description: "Estrelas cruzando o céu" },
   { type: "petalas", label: "Pétalas de Rosa", emoji: "🌸", icon: Flower2, description: "Pétalas voando ao vento" },
   { type: "confetti", label: "Confetti", emoji: "🎉", icon: PartyPopper, description: "Confete colorido em festa" },
+  { type: "fogos", label: "Fogos de Artifício", emoji: "🎆", icon: Sparkles, description: "Fogos explodindo no céu" },
+  { type: "aurora", label: "Aurora Boreal", emoji: "🌌", icon: Rainbow, description: "Luzes coloridas no topo" },
+  { type: "bolhas", label: "Bolhas de Sabão", emoji: "🫧", icon: Droplets, description: "Bolhas flutuando pela tela" },
 ];
 
 export default function StoreEffectsPicker({ userId, sellerId }: StoreEffectsPickerProps) {
