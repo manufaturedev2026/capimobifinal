@@ -72,7 +72,6 @@ export default function SwipeablePropertyCard({ product, company, index }: Swipe
             {product.status === "vendido" && (
               <div className="absolute inset-0 flex flex-col items-center justify-center z-10">
                 <span className="px-4 py-2 rounded-xl bg-red-600/90 text-white font-bold text-sm shadow-lg">❌ Vendido</span>
-                {product.sold_at && <div className="mt-2"><SoldCountdown soldAt={product.sold_at} /></div>}
               </div>
             )}
             {product.allTags?.length > 0 && (
