@@ -86,7 +86,7 @@ export default function SwipeablePropertyCard({ product, company, index }: Swipe
                 <CompareButton isInCompare={isInCompare(product.id)} onClick={(e) => { e.preventDefault(); e.stopPropagation(); addItem({ id: product.id, title: product.title, image: product.image, price: product.price, bedrooms: product.bedrooms, bathrooms: product.bathrooms, area: product.area, city: product.city, neighborhood: product.neighborhood, category: product.category }); }} />
                 <FavoriteButton isFavorite={isFavorite(product.id)} onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleFavorite(product.id); }} />
               </div>
-              {product.hasDestaque && <span className="px-2.5 py-1 rounded-md text-[11px] font-bold bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg">⭐ DESTAQUE</span>}
+              {product.hasDestaque && <span className="w-6 h-6 flex items-center justify-center rounded-full bg-amber-500/90 shadow-lg shadow-amber-500/30"><Star size={12} className="text-white" fill="white" /></span>}
               {!product.hasDestaque && product.sellerTier && product.sellerTier !== "basico" && <PackageBadge tier={product.sellerTier} />}
             </div>
             {product.hasBlackTag && <span className="absolute bottom-3 right-3 px-2.5 py-1 rounded-md text-[11px] font-bold bg-gradient-to-r from-zinc-900 to-black text-white shadow-lg ring-1 ring-white/20 z-10">BLACK</span>}
