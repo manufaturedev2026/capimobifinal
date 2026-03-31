@@ -105,6 +105,7 @@ export type Database = {
           cover_color: string | null
           created_at: string
           creci: string | null
+          destaque_item_ids: string[] | null
           email: string
           featured_item_id: string | null
           full_name: string
@@ -134,6 +135,7 @@ export type Database = {
           cover_color?: string | null
           created_at?: string
           creci?: string | null
+          destaque_item_ids?: string[] | null
           email: string
           featured_item_id?: string | null
           full_name: string
@@ -165,6 +167,7 @@ export type Database = {
           cover_color?: string | null
           created_at?: string
           creci?: string | null
+          destaque_item_ids?: string[] | null
           email?: string
           featured_item_id?: string | null
           full_name?: string

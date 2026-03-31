@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { motion, useMotionValue, useTransform, PanInfo } from "framer-motion";
 import { Link } from "react-router-dom";
+import { Star } from "lucide-react";
 import { formatPrice, getTagStyle, getTagLabel, type Product } from "@/data/products";
 import FavoriteButton from "@/components/FavoriteButton";
 import CompareButton from "@/components/CompareButton";
@@ -56,6 +57,7 @@ export default function SwipeablePropertyCard({ product, company, index }: Swipe
     >
       <Link to={`/imoveis/produto/${product.id}`} draggable={false}>
         <div className={`group bg-card border rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 relative ${
+          product.hasDestaque ? "border-amber-400/60 ring-2 ring-amber-400/40 shadow-[0_0_24px_rgba(251,191,36,0.18)]" :
           product.sellerTier === "vip" ? "border-purple-500/50 ring-1 ring-purple-500/20" :
           product.sellerTier === "premium" ? "border-amber-400/50 ring-1 ring-amber-400/20" : "border-border"
         } ${swiped === "right" ? "ring-2 ring-red-400" : swiped === "left" ? "ring-2 ring-primary" : ""}`}>
@@ -85,7 +87,7 @@ export default function SwipeablePropertyCard({ product, company, index }: Swipe
                 <CompareButton isInCompare={isInCompare(product.id)} onClick={(e) => { e.preventDefault(); e.stopPropagation(); addItem({ id: product.id, title: product.title, image: product.image, price: product.price, bedrooms: product.bedrooms, bathrooms: product.bathrooms, area: product.area, city: product.city, neighborhood: product.neighborhood, category: product.category }); }} />
                 <FavoriteButton isFavorite={isFavorite(product.id)} onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleFavorite(product.id); }} />
               </div>
-              {product.hasDestaque && <span className="px-2.5 py-1 rounded-md text-[11px] font-bold bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg">⭐ DESTAQUE</span>}
+              {product.hasDestaque && <span className="w-6 h-6 flex items-center justify-center rounded-full bg-amber-500/90 shadow-lg shadow-amber-500/30"><Star size={12} className="text-white" fill="white" /></span>}
               {!product.hasDestaque && product.sellerTier && product.sellerTier !== "basico" && <PackageBadge tier={product.sellerTier} />}
             </div>
             {product.hasBlackTag && <span className="absolute bottom-3 right-3 px-2.5 py-1 rounded-md text-[11px] font-bold bg-gradient-to-r from-zinc-900 to-black text-white shadow-lg ring-1 ring-white/20 z-10">BLACK</span>}

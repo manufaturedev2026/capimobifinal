@@ -133,6 +133,7 @@ export function useRealListings(segment?: "imoveis" | "automoveis") {
         }
       });
 
+      const destaqueItemIds = new Set<string>();
       let mappedSellers: RealSeller[] = [];
       if (sellerIds.length > 0) {
         const { data: profiles } = await supabase
@@ -152,6 +153,10 @@ export function useRealListings(segment?: "imoveis" | "automoveis") {
           tier: tierMap.get(p.id) || "basico",
           featured_item_id: p.featured_item_id || null,
         }));
+        // Collect destaque_item_ids from all sellers
+        (profiles || []).forEach((p: any) => {
+          (p.destaque_item_ids || []).forEach((id: string) => destaqueItemIds.add(id));
+        });
       }
       setSellers(mappedSellers);
 
@@ -185,6 +190,11 @@ export function useRealListings(segment?: "imoveis" | "automoveis") {
         }
         // Gamification: Destaque 24h boosts to essencial_empresa level (100)
         if (destaqueSellers.has(item.sellerId)) {
+          weight = Math.max(weight, 100);
+          item.hasDestaque = true;
+        }
+        // Manual destaque from seller profile (up to 5 items)
+        if (destaqueItemIds.has(item.id)) {
           weight = Math.max(weight, 100);
           item.hasDestaque = true;
         }

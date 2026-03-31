@@ -114,6 +114,22 @@ export default function SellerDashboard() {
     }
   };
 
+  const toggleDestaque = async (itemId: string) => {
+    if (!user || !profile) return;
+    const current: string[] = (profile as any).destaque_item_ids || [];
+    const isSelected = current.includes(itemId);
+    if (!isSelected && current.length >= 5) {
+      toast({ title: "Máximo de 5 destaques", description: "Remova um destaque antes de adicionar outro", variant: "destructive" });
+      return;
+    }
+    const updated = isSelected ? current.filter((id: string) => id !== itemId) : [...current, itemId];
+    const { error } = await supabase.from("profiles").update({ destaque_item_ids: updated } as any).eq("user_id", user.id);
+    if (!error) {
+      await refreshProfile();
+      toast({ title: isSelected ? "Destaque removido" : `⭐ Destaque ativado! (${updated.length}/5)` });
+    }
+  };
+
   const toggleHeroCover = async (itemId: string) => {
     if (!user || !profile) return;
     const current: string[] = (profile as any).hero_item_ids || [];
@@ -605,9 +621,9 @@ export default function SellerDashboard() {
                               className="p-2 rounded-lg bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors">
                               {item.status === "ativo" ? <ToggleRight size={14} /> : <ToggleLeft size={14} />}
                             </button>
-                            <button onClick={() => setFeatured(item.id)} title="Definir como destaque do banner"
-                              className={`p-2 rounded-lg transition-colors ${profile?.featured_item_id === item.id ? "bg-yellow-500/20 text-yellow-500" : "bg-secondary text-secondary-foreground hover:bg-secondary/80"}`}>
-                              <Star size={14} fill={profile?.featured_item_id === item.id ? "currentColor" : "none"} />
+                            <button onClick={() => toggleDestaque(item.id)} title="Destaque na loja (até 5)"
+                              className={`p-2 rounded-lg transition-colors ${((profile as any)?.destaque_item_ids || []).includes(item.id) ? "bg-amber-500/20 text-amber-500" : "bg-secondary text-secondary-foreground hover:bg-secondary/80"}`}>
+                              <Star size={14} fill={((profile as any)?.destaque_item_ids || []).includes(item.id) ? "currentColor" : "none"} />
                             </button>
                             <button onClick={() => toggleHeroCover(item.id)} title="Capa da Loja"
                               className={`p-2 rounded-lg transition-colors ${((profile as any)?.hero_item_ids || []).includes(item.id) ? "bg-primary/20 text-primary" : "bg-secondary text-secondary-foreground hover:bg-secondary/80"}`}>
