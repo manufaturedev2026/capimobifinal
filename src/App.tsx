@@ -36,6 +36,7 @@ import TermsPage from "@/pages/TermsPage";
 import NotFound from "@/pages/NotFound";
 import BlogPage from "@/pages/BlogPage";
 import BlogArticlePage from "@/pages/BlogArticlePage";
+import FavoritesPage from "@/pages/FavoritesPage";
 
 const queryClient = new QueryClient();
 
@@ -67,6 +68,7 @@ const AppLayout = () => {
           <Route path="/painel/estudo" element={<StudyMaterial />} />
           <Route path="/painel/estudo/:slug" element={<ArticleReader />} />
           <Route path="/pacotes" element={<PackagesPage />} />
+          <Route path="/favoritos" element={<FavoritesPage />} />
           <Route path="/admin" element={<AdminPanel />} />
           <Route path="/privacidade" element={<PrivacyPage />} />
           <Route path="/termos" element={<TermsPage />} />
