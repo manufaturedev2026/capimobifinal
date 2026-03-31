@@ -181,11 +181,14 @@ export default function PropertiesPage() {
   }, [filterCity, realItems]);
 
   const propertyTypes = [
-    { value: "aluguel", label: "Aluguel" },
+    { value: "alugueis", label: "Aluguel" },
     { value: "casas", label: "Casas" },
     { value: "apartamentos", label: "Apartamentos" },
     { value: "terrenos", label: "Terrenos" },
     { value: "comerciais", label: "Comerciais" },
+    { value: "flats", label: "Flats" },
+    { value: "galpoes", label: "Galpões" },
+    { value: "coberturas", label: "Coberturas" },
   ];
 
   const filteredProducts = useMemo(() => {
