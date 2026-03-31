@@ -53,7 +53,8 @@ export default function SellerDashboard() {
   const [adSubmitting, setAdSubmitting] = useState(false);
   const [adHistory, setAdHistory] = useState<any[]>([]);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
+  const [draggedItemId, setDraggedItemId] = useState<string | null>(null);
+  const [dragOverItemId, setDragOverItemId] = useState<string | null>(null);
   useEffect(() => {
     if (!authLoading && !user) navigate("/entrar");
   }, [user, authLoading, navigate]);
