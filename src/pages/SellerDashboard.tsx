@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { getStoreUrl, getStoreFullUrl } from "@/lib/storeUrl";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Package, Eye, Plus, Settings, Edit, Trash2, Copy, ToggleLeft, ToggleRight, Search, Image, LogOut, BarChart3, Star, Crown, Zap, AlertTriangle, Shield, MessageCircle, Home, UserCircle, Headphones, Globe, ExternalLink, CheckCircle2, ClipboardCopy, Megaphone, Send, Calculator, Lock, Clapperboard, Menu, X, Building2, BookOpen, Users, Trophy, BadgeCheck } from "lucide-react";
+import { Package, Eye, Plus, Settings, Edit, Trash2, Copy, ToggleLeft, ToggleRight, Search, Image, LogOut, BarChart3, Star, Crown, Zap, AlertTriangle, Shield, MessageCircle, Home, UserCircle, Headphones, Globe, ExternalLink, CheckCircle2, ClipboardCopy, Megaphone, Send, Calculator, Lock, Clapperboard, Menu, X, Building2, BookOpen, Users, Trophy, BadgeCheck, GripVertical } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import SoldCountdown from "@/components/SoldCountdown";
 import TeamMembersTab from "@/components/TeamMembersTab";
@@ -53,7 +53,8 @@ export default function SellerDashboard() {
   const [adSubmitting, setAdSubmitting] = useState(false);
   const [adHistory, setAdHistory] = useState<any[]>([]);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
+  const [draggedItemId, setDraggedItemId] = useState<string | null>(null);
+  const [dragOverItemId, setDragOverItemId] = useState<string | null>(null);
   useEffect(() => {
     if (!authLoading && !user) navigate("/entrar");
   }, [user, authLoading, navigate]);
@@ -153,11 +154,58 @@ export default function SellerDashboard() {
     }
   };
 
-  const filtered = items.filter((i) => {
+  // Sort items by saved order from profile
+  const itemOrder: string[] = (profile as any)?.item_order || [];
+  const sortedItems = [...items].sort((a, b) => {
+    const ai = itemOrder.indexOf(a.id);
+    const bi = itemOrder.indexOf(b.id);
+    if (ai === -1 && bi === -1) return 0;
+    if (ai === -1) return 1;
+    if (bi === -1) return -1;
+    return ai - bi;
+  });
+
+  const filtered = sortedItems.filter((i) => {
     const matchesSearch = i.title.toLowerCase().includes(filter.toLowerCase());
     const matchesStatus = statusFilter === "todos" || i.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
+
+  const saveItemOrder = async (newOrder: string[]) => {
+    if (!user) return;
+    await supabase.from("profiles").update({ item_order: newOrder } as any).eq("user_id", user.id);
+    await refreshProfile();
+  };
+
+  const handleDragStart = (itemId: string) => {
+    setDraggedItemId(itemId);
+  };
+
+  const handleDragOver = (e: React.DragEvent, itemId: string) => {
+    e.preventDefault();
+    if (itemId !== draggedItemId) setDragOverItemId(itemId);
+  };
+
+  const handleDrop = (targetItemId: string) => {
+    if (!draggedItemId || draggedItemId === targetItemId) {
+      setDraggedItemId(null);
+      setDragOverItemId(null);
+      return;
+    }
+    const currentOrder = sortedItems.map(i => i.id);
+    const fromIdx = currentOrder.indexOf(draggedItemId);
+    const toIdx = currentOrder.indexOf(targetItemId);
+    if (fromIdx === -1 || toIdx === -1) return;
+    currentOrder.splice(fromIdx, 1);
+    currentOrder.splice(toIdx, 0, draggedItemId);
+    // Update local items order immediately
+    const reordered = currentOrder.map(id => items.find(i => i.id === id)!).filter(Boolean);
+    setItems(reordered);
+    saveItemOrder(currentOrder);
+    setDraggedItemId(null);
+    setDragOverItemId(null);
+    toast({ title: "Ordem atualizada!", description: "A nova ordem será exibida na sua loja." });
+  };
 
   const totalActive = items.filter((i) => i.status === "ativo").length;
   const totalInactive = items.filter((i) => i.status === "inativo").length;
@@ -562,11 +610,28 @@ export default function SellerDashboard() {
                     </Link>
                   </div>
                 ) : (
+                  <>
+                  <div className="space-y-2 mb-2">
+                    <p className="text-xs text-muted-foreground flex items-center gap-1">
+                      <GripVertical size={12} /> Arraste os cards para reordenar a exibição na sua loja
+                    </p>
+                  </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 pb-10">
                     {filtered.map((item, i) => (
                       <motion.div key={item.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
-                        className="bg-card border border-border rounded-2xl overflow-hidden group hover:shadow-lg transition-shadow">
+                        draggable
+                        onDragStart={() => handleDragStart(item.id)}
+                        onDragOver={(e) => handleDragOver(e, item.id)}
+                        onDrop={() => handleDrop(item.id)}
+                        onDragEnd={() => { setDraggedItemId(null); setDragOverItemId(null); }}
+                        className={`bg-card border rounded-2xl overflow-hidden group hover:shadow-lg transition-all cursor-grab active:cursor-grabbing ${
+                          draggedItemId === item.id ? "opacity-50 scale-95 border-primary" :
+                          dragOverItemId === item.id ? "border-primary ring-2 ring-primary/30 scale-[1.02]" : "border-border"
+                        }`}>
                         <div className="relative aspect-video bg-muted">
+                          <div className="absolute top-2 left-2 z-10 p-1.5 rounded-lg bg-black/40 text-white cursor-grab active:cursor-grabbing">
+                            <GripVertical size={14} />
+                          </div>
                           {item.photos && item.photos.length > 0 ? (
                             <img src={item.photos[0]} alt={item.title} className={`w-full h-full object-cover ${item.status === "vendido" ? "brightness-50 blur-[1px]" : ""}`} />
                           ) : (
@@ -662,6 +727,7 @@ export default function SellerDashboard() {
                       </motion.div>
                     ))}
                   </div>
+                  </>
                 )}
               </div>
             )}

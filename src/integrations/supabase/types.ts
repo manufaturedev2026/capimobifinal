@@ -112,6 +112,7 @@ export type Database = {
           hero_item_ids: string[] | null
           id: string
           instagram: string | null
+          item_order: string[] | null
           logo_url: string | null
           manager_phone: string | null
           manager_photo: string | null
@@ -145,6 +146,7 @@ export type Database = {
           hero_item_ids?: string[] | null
           id?: string
           instagram?: string | null
+          item_order?: string[] | null
           logo_url?: string | null
           manager_phone?: string | null
           manager_photo?: string | null
@@ -180,6 +182,7 @@ export type Database = {
           hero_item_ids?: string[] | null
           id?: string
           instagram?: string | null
+          item_order?: string[] | null
           logo_url?: string | null
           manager_phone?: string | null
           manager_photo?: string | null
