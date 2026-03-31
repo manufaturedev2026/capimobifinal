@@ -4,7 +4,7 @@ import { toast } from "@/hooks/use-toast";
 import { useParams, Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Star, MapPin, MessageCircle, Share2, Key, Home, Building2, Landmark, Store, Warehouse, MoreHorizontal, Image, Eye, Instagram, Phone, ExternalLink, Clock, Shield, Zap, ChevronLeft, ChevronRight, Heart, BadgeCheck, Clapperboard } from "lucide-react";
-import FloatingVideoButton from "@/components/FloatingVideoButton";
+import NetflixVideoHero from "@/components/NetflixVideoHero";
 import StoreEffects from "@/components/StoreEffects";
 import { formatPrice, getTagStyle, getTagLabel } from "@/data/products";
 import { supabase } from "@/integrations/supabase/client";
@@ -463,6 +463,18 @@ export default function CompanyProfile() {
           </div>
         </div>
       </section>
+
+      {/* ═══════════ VIDEO HERO (Netflix-style) ═══════════ */}
+      {dbProfile?.video_url && (sellerTier === "essencial_empresa" || sellerTier === "premium_empresa") && (
+        <div className="container max-w-7xl mx-auto px-4 pt-6">
+          <NetflixVideoHero
+            videoUrl={dbProfile.video_url}
+            storeName={company.name}
+            storeLogo={company.logo}
+            description={dbProfile.bio}
+          />
+        </div>
+      )}
 
       {/* ═══════════ MAIN LAYOUT ═══════════ */}
       <div className="container max-w-7xl mx-auto px-4 py-6">
@@ -980,10 +992,6 @@ export default function CompanyProfile() {
         </section>
       )}
 
-      {/* Floating video button for empresa plans */}
-      {dbProfile?.video_url && (sellerTier === "essencial_empresa" || sellerTier === "premium_empresa") && (
-        <FloatingVideoButton videoUrl={dbProfile.video_url} />
-      )}
     </div>
   );
 }
