@@ -1,0 +1,1 @@
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS item_order text[] DEFAULT '{}'::text[];
