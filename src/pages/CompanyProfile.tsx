@@ -730,9 +730,9 @@ export default function CompanyProfile() {
                     >
                       <Link to={productLink} className={`group block rounded-2xl overflow-hidden hover:shadow-lg transition-all duration-300 ${
                         isDbProfile && ((dbProfile as any)?.destaque_item_ids || []).includes(product.id)
-                          ? "bg-card ring-2 ring-amber-400/60 shadow-[0_0_20px_rgba(251,191,36,0.15)] border-amber-400/40"
-                          : "bg-card border border-border hover:border-primary/20"
-                      }`}>
+                          ? "ring-2 ring-amber-400/60 shadow-[0_0_20px_rgba(251,191,36,0.15)] border-amber-400/40"
+                          : ""
+                      }`} style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}>
                         <div className="relative aspect-[4/3] overflow-hidden bg-muted">
                           {product.image ? (
                             <img src={product.image} alt={product.title} className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 ${product.status === "vendido" ? "brightness-50 blur-[1px]" : ""}`} loading="lazy" />
