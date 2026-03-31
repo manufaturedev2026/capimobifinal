@@ -465,7 +465,7 @@ export default function CompanyProfile() {
       </section>
 
       {/* ═══════════ VIDEO HERO (Netflix-style) ═══════════ */}
-      {dbProfile?.video_url && (sellerTier === "essencial_empresa" || sellerTier === "premium_empresa") && (
+      {dbProfile?.video_url && sellerTier && sellerTier !== "basico" && sellerTier !== "start" && (
         <div className="container max-w-7xl mx-auto px-4 pt-6">
           <NetflixVideoHero
             videoUrl={dbProfile.video_url}

@@ -357,8 +357,8 @@ export default function SellerProfile() {
           <span className="text-xs text-muted-foreground">{form.bio.length}/80</span>
         </div>
 
-        {/* Video URL — only for empresa plans */}
-        {isEmpresa && (
+        {/* Video URL — VIP+ plans */}
+        {sellerTier && sellerTier !== "basico" && sellerTier !== "start" && (
           <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
             <div className="flex items-center gap-2">
               <Video size={18} className="text-primary" />
