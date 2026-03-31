@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useSellerSubscription } from "@/hooks/useSubscription";
 import type { Database } from "@/integrations/supabase/types";
 import { ES_CITIES } from "@/data/esCities";
+import StoreThemePicker from "@/components/StoreThemePicker";
 
 type SellerType = Database["public"]["Enums"]["seller_type"];
 
@@ -40,6 +41,7 @@ export default function SellerProfile() {
     video_title: "",
     video_description: "",
     slug: "",
+    store_theme: "default",
   });
   const [slugError, setSlugError] = useState("");
 
@@ -70,6 +72,7 @@ export default function SellerProfile() {
         video_title: (profile as any).video_title || "",
         video_description: (profile as any).video_description || "",
         slug: (profile as any).slug || "",
+        store_theme: (profile as any).store_theme || "default",
       });
     }
   }, [profile]);
@@ -400,6 +403,14 @@ export default function SellerProfile() {
             )}
           </div>
         )}
+
+        {/* Store Theme Picker */}
+        <div className="bg-card border border-border rounded-2xl p-5">
+          <StoreThemePicker
+            selected={form.store_theme}
+            onChange={(themeId) => setForm((f) => ({ ...f, store_theme: themeId }))}
+          />
+        </div>
 
         <div className="bg-card border border-border rounded-2xl p-5">
           <h2 className="font-display font-bold text-foreground mb-3">Tipo de vendedor</h2>

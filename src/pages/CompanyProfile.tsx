@@ -5,6 +5,7 @@ import { useParams, Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Star, MapPin, MessageCircle, Share2, Key, Home, Building2, Landmark, Store, Warehouse, MoreHorizontal, Image, Eye, Instagram, Phone, ExternalLink, Clock, Shield, Zap, ChevronLeft, ChevronRight, Heart, BadgeCheck, Clapperboard, Play, X, Volume2, VolumeX } from "lucide-react";
 import StoreEffects from "@/components/StoreEffects";
+import { getStoreTheme } from "@/components/StoreThemePicker";
 import { formatPrice, getTagStyle, getTagLabel } from "@/data/products";
 import { supabase } from "@/integrations/supabase/client";
 import { trackSellerEvent } from "@/hooks/useSellerAnalytics";
@@ -286,9 +287,23 @@ export default function CompanyProfile() {
   const isPaid = sellerTier !== "basico";
   const videoId = dbProfile?.video_url ? extractYouTubeId(dbProfile.video_url) : null;
   const hasVideoHero = !!(videoId && sellerTier && sellerTier !== "basico" && sellerTier !== "start");
+  const storeTheme = getStoreTheme((dbProfile as any)?.store_theme);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div
+      className="min-h-screen"
+      style={{
+        background: storeTheme.bg,
+        color: storeTheme.text,
+        ["--store-bg" as any]: storeTheme.bg,
+        ["--store-card" as any]: storeTheme.card,
+        ["--store-text" as any]: storeTheme.text,
+        ["--store-text-muted" as any]: storeTheme.textMuted,
+        ["--store-primary" as any]: storeTheme.primary,
+        ["--store-accent" as any]: storeTheme.accent,
+        ["--store-border" as any]: storeTheme.border,
+      }}
+    >
       {isDbProfile && dbProfile?.id && <StoreEffects sellerId={dbProfile.id} />}
       {/* ═══════════ HERO BANNER ═══════════ */}
       <section className={`relative overflow-hidden ${hasVideoHero ? "h-[55vh] md:h-[70vh]" : "h-[50vh] md:h-[60vh]"}`}>
@@ -458,7 +473,7 @@ export default function CompanyProfile() {
       </section>
 
       {/* ═══════════ STATS BAR ═══════════ */}
-      <section className="border-b border-border bg-card">
+      <section style={{ borderBottom: `1px solid ${storeTheme.border}`, background: storeTheme.card }}>
         <div className="container max-w-7xl mx-auto px-4">
           <div className="flex items-center gap-6 py-3 overflow-x-auto scrollbar-hide">
             <div className="flex items-center gap-2 text-sm flex-shrink-0">
@@ -510,9 +525,9 @@ export default function CompanyProfile() {
           <aside className="hidden lg:block w-[280px] flex-shrink-0">
             <div className="sticky top-20 space-y-4">
               {/* Company Card */}
-              <div className="bg-card border border-border rounded-2xl overflow-hidden">
+              <div className="rounded-2xl overflow-hidden" style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}>
                 {/* Mini banner */}
-                <div className="h-20 relative" style={{ background: dbProfile?.cover_color || 'linear-gradient(to right, hsl(var(--primary)), hsl(var(--primary) / 0.6))' }}>
+                <div className="h-20 relative" style={{ background: dbProfile?.cover_color || storeTheme.preview.heroBg }}>
                   {company.logo && (
                     <img src={company.logo} alt="" className="absolute -bottom-6 left-4 w-14 h-14 rounded-xl object-cover border-3 border-card shadow-lg" />
                   )}
@@ -693,11 +708,11 @@ export default function CompanyProfile() {
 
             {/* Products Header */}
             <div className="flex items-center justify-between mb-4">
-              <h2 className="font-display font-bold text-lg md:text-xl text-foreground">
+              <h2 className="font-display font-bold text-lg md:text-xl" style={{ color: storeTheme.text }}>
                 {activeCategory === "todos"
                   ? `Todos os Anúncios`
                   : subcategories.find(c => c.slug === activeCategory)?.name}
-                <span className="text-muted-foreground font-normal text-sm ml-2">({filteredProducts.length})</span>
+                <span className="font-normal text-sm ml-2" style={{ color: storeTheme.textMuted }}>({filteredProducts.length})</span>
               </h2>
             </div>
 
@@ -715,9 +730,9 @@ export default function CompanyProfile() {
                     >
                       <Link to={productLink} className={`group block rounded-2xl overflow-hidden hover:shadow-lg transition-all duration-300 ${
                         isDbProfile && ((dbProfile as any)?.destaque_item_ids || []).includes(product.id)
-                          ? "bg-card ring-2 ring-amber-400/60 shadow-[0_0_20px_rgba(251,191,36,0.15)] border-amber-400/40"
-                          : "bg-card border border-border hover:border-primary/20"
-                      }`}>
+                          ? "ring-2 ring-amber-400/60 shadow-[0_0_20px_rgba(251,191,36,0.15)] border-amber-400/40"
+                          : ""
+                      }`} style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}>
                         <div className="relative aspect-[4/3] overflow-hidden bg-muted">
                           {product.image ? (
                             <img src={product.image} alt={product.title} className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 ${product.status === "vendido" ? "brightness-50 blur-[1px]" : ""}`} loading="lazy" />
@@ -760,7 +775,7 @@ export default function CompanyProfile() {
                           )}
                         </div>
                         <div className="p-3 md:p-4">
-                          <h3 className="font-display font-semibold text-foreground text-sm leading-tight line-clamp-2 group-hover:text-primary transition-colors">
+                          <h3 className="font-display font-semibold text-sm leading-tight line-clamp-2 transition-colors" style={{ color: storeTheme.text }}>
                             {product.title}
                           </h3>
                           {product.price > 0 && (
@@ -776,7 +791,7 @@ export default function CompanyProfile() {
                             </div>
                           )}
                           {product.city && (
-                            <p className="text-[11px] text-muted-foreground mt-1.5 flex items-center gap-1">
+                            <p className="text-[11px] mt-1.5 flex items-center gap-1" style={{ color: storeTheme.textMuted }}>
                               <MapPin size={10} /> {product.city}
                             </p>
                           )}
@@ -787,7 +802,7 @@ export default function CompanyProfile() {
                 })}
               </div>
             ) : (
-              <div className="text-center py-20 bg-card border border-border rounded-2xl">
+              <div className="text-center py-20 rounded-2xl" style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}>
                 <Image size={48} className="text-muted-foreground mx-auto mb-3" />
                 <p className="text-muted-foreground text-lg font-medium">Nenhum anúncio nesta categoria</p>
                 <button onClick={() => setActiveCategory("todos")} className="text-primary text-sm mt-2 hover:underline">Ver todos</button>
