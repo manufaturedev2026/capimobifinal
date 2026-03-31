@@ -70,6 +70,8 @@ const AppLayout = () => {
           <Route path="/admin" element={<AdminPanel />} />
           <Route path="/privacidade" element={<PrivacyPage />} />
           <Route path="/termos" element={<TermsPage />} />
+          <Route path="/blog" element={<BlogPage />} />
+          <Route path="/blog/:slug" element={<BlogArticlePage />} />
           <Route path="/:cidade" element={<Index />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
