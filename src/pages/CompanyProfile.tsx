@@ -342,8 +342,8 @@ export default function CompanyProfile() {
         {/* Overlays — heavier on the left for video */}
         {hasVideoHero ? (
           <>
-            <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/60 to-black/10" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20" />
+            <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-black/5" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-black/10" />
           </>
         ) : (
           <>
