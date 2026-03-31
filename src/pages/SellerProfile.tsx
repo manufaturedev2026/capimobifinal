@@ -67,6 +67,8 @@ export default function SellerProfile() {
         cnpj: (profile as any).cnpj || "",
         cover_color: (profile as any).cover_color || "",
         video_url: (profile as any).video_url || "",
+        video_title: (profile as any).video_title || "",
+        video_description: (profile as any).video_description || "",
         slug: (profile as any).slug || "",
       });
     }
