@@ -601,6 +601,24 @@ export default function SellerItemForm() {
             className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="https://www.youtube.com/watch?v=..." />
         </div>
 
+        {/* Financing Simulator Toggle */}
+        {!isAluguel && (
+          <div className="bg-card border border-border rounded-2xl p-5">
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={form.show_financing}
+                onChange={(e) => setForm((f) => ({ ...f, show_financing: e.target.checked }))}
+                className="w-5 h-5 rounded border-border text-primary focus:ring-primary"
+              />
+              <div>
+                <p className="font-display font-bold text-foreground text-sm">💰 Simular Financiamento</p>
+                <p className="text-xs text-muted-foreground">Exibir simulador de financiamento bancário na página do imóvel</p>
+              </div>
+            </label>
+          </div>
+        )}
+
         {/* Submit */}
         <button type="submit" disabled={saving || (isAtLimit && !isEdit) || (isExpired && !!subscription)}
           className="w-full py-4 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg">
