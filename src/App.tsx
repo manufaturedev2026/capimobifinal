@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { AuthProvider } from "@/hooks/useAuth";
+import { ThemeProvider } from "next-themes";
 import { WhatsAppTeamPickerProvider } from "@/components/WhatsAppTeamPicker";
 import Header from "@/components/Header";
 import FooterSimple from "@/components/FooterSimple";
@@ -78,6 +79,7 @@ const AppLayout = () => {
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <HelmetProvider>
+      <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
       <AuthProvider>
         <WhatsAppTeamPickerProvider>
           <TooltipProvider>
@@ -91,6 +93,7 @@ const App = () => (
           </TooltipProvider>
         </WhatsAppTeamPickerProvider>
       </AuthProvider>
+      </ThemeProvider>
     </HelmetProvider>
   </QueryClientProvider>
 );
