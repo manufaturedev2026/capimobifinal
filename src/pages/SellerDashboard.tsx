@@ -610,6 +610,7 @@ export default function SellerDashboard() {
                     </Link>
                   </div>
                 ) : (
+                  <>
                   <div className="space-y-2 mb-2">
                     <p className="text-xs text-muted-foreground flex items-center gap-1">
                       <GripVertical size={12} /> Arraste os cards para reordenar a exibição na sua loja
