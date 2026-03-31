@@ -724,6 +724,7 @@ export default function SellerDashboard() {
                       </motion.div>
                     ))}
                   </div>
+                  </>
                 )}
               </div>
             )}
