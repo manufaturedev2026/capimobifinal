@@ -89,6 +89,11 @@ export default function SwipeablePropertyCard({ product, company, index }: Swipe
               {!product.hasDestaque && product.sellerTier && product.sellerTier !== "basico" && <PackageBadge tier={product.sellerTier} />}
             </div>
             {product.hasBlackTag && <span className="absolute bottom-3 right-3 px-2.5 py-1 rounded-md text-[11px] font-bold bg-gradient-to-r from-zinc-900 to-black text-white shadow-lg ring-1 ring-white/20 z-10">BLACK</span>}
+            {product.isAluguel && (
+              <span className="absolute bottom-3 left-3 px-2 py-0.5 rounded-lg text-[10px] font-bold shadow-md bg-primary text-primary-foreground z-10">
+                🏠 Aluguel
+              </span>
+            )}
           </div>
 
           <div className="p-4">
@@ -98,7 +103,6 @@ export default function SwipeablePropertyCard({ product, company, index }: Swipe
                 {formatPrice(product.price)}
                 {product.isAluguel && <span className="text-sm font-normal text-muted-foreground"> /mês</span>}
               </p>
-              {product.isAluguel && <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary text-primary-foreground">🏠 Aluguel</span>}
             </div>
             {company && (
               <div className="flex items-center gap-2 mt-3 pt-3 border-t border-border">
