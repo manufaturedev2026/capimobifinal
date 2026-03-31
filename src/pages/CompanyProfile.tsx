@@ -519,8 +519,8 @@ export default function CompanyProfile() {
 
 
       {/* ═══════════ MAIN LAYOUT ═══════════ */}
-      <div className="container max-w-7xl mx-auto px-4 py-6">
-        <div className="flex gap-6">
+      <div className="max-w-[1800px] mx-auto px-4 md:px-8 py-6">
+        <div className="flex gap-8">
           {/* ═══════════ DESKTOP SIDEBAR ═══════════ */}
           <aside className="hidden lg:block w-[280px] flex-shrink-0">
             <div className="sticky top-20 space-y-4">
