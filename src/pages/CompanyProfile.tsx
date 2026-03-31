@@ -791,7 +791,7 @@ export default function CompanyProfile() {
                             </div>
                           )}
                           {product.city && (
-                            <p className="text-[11px] text-muted-foreground mt-1.5 flex items-center gap-1">
+                            <p className="text-[11px] mt-1.5 flex items-center gap-1" style={{ color: storeTheme.textMuted }}>
                               <MapPin size={10} /> {product.city}
                             </p>
                           )}
