@@ -14,6 +14,8 @@ import { useSellerSubscription } from "@/hooks/useSubscription";
 import MapEmbed from "@/components/MapEmbed";
 import PackageBadge from "@/components/PackageBadge";
 import { useWhatsAppPicker } from "@/components/WhatsAppTeamPicker";
+import StoryViewer from "@/components/StoryViewer";
+import { useStories } from "@/hooks/useStories";
 
 const propertySubcategories = [
   { slug: "todos", name: "Todos", icon: Store, img: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=300&h=200&fit=crop" },
@@ -54,6 +56,8 @@ export default function CompanyProfile() {
   const [videoModalOpen, setVideoModalOpen] = useState(false);
   const [videoMuted, setVideoMuted] = useState(true);
   const { openWhatsApp: openWhatsAppPicker } = useWhatsAppPicker();
+  const { sellerStories } = useStories();
+  const [storyViewerOpen, setStoryViewerOpen] = useState(false);
 
   const searchParams = new URLSearchParams(location.search);
   const corretorSlug = searchParams.get("corretor");
@@ -448,13 +452,34 @@ export default function CompanyProfile() {
           <div className="max-w-[1800px] mx-auto px-4 md:px-8">
             <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="max-w-3xl">
               <div className="flex items-center gap-4 mb-3">
-                {company.logo ? (
-                  <img src={company.logo} alt={company.name} className="w-16 h-16 md:w-20 md:h-20 rounded-2xl object-cover border-2 border-white/30 shadow-2xl" />
-                ) : (
-                  <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center border-2 border-white/30">
-                    <span className="text-white font-bold text-2xl">{company.name?.charAt(0)}</span>
-                  </div>
-                )}
+                {(() => {
+                  const sellerStoryData = sellerStories.find(s => s.sellerId === dbProfile?.id);
+                  const hasActiveStory = !!sellerStoryData;
+                  const storySellerIndex = sellerStories.findIndex(s => s.sellerId === dbProfile?.id);
+                  
+                  const logoContent = company.logo ? (
+                    <img src={company.logo} alt={company.name} className="w-full h-full rounded-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center">
+                      <span className="text-white font-bold text-2xl">{company.name?.charAt(0)}</span>
+                    </div>
+                  );
+
+                  return hasActiveStory ? (
+                    <button
+                      onClick={() => { setStoryViewerOpen(true); }}
+                      className="w-16 h-16 md:w-20 md:h-20 rounded-full p-[3px] bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 shrink-0 cursor-pointer hover:scale-105 transition-transform"
+                    >
+                      <div className="w-full h-full rounded-full bg-black p-[2px]">
+                        {logoContent}
+                      </div>
+                    </button>
+                  ) : (
+                    <div className="w-16 h-16 md:w-20 md:h-20 rounded-full border-2 border-white/30 shadow-2xl overflow-hidden shrink-0">
+                      {logoContent}
+                    </div>
+                  );
+                })()}
                 <div>
                   <div className="flex items-center gap-2">
                     <h1 className="font-display font-bold text-2xl md:text-4xl text-white leading-tight">{company.name}</h1>
@@ -1164,6 +1189,18 @@ export default function CompanyProfile() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Story Viewer */}
+      {storyViewerOpen && (() => {
+        const storySellerIndex = sellerStories.findIndex(s => s.sellerId === dbProfile?.id);
+        return storySellerIndex >= 0 ? (
+          <StoryViewer
+            sellers={sellerStories}
+            initialSellerIndex={storySellerIndex}
+            onClose={() => setStoryViewerOpen(false)}
+          />
+        ) : null;
+      })()}
 
     </div>
   );
