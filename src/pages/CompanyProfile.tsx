@@ -3,8 +3,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { toast } from "@/hooks/use-toast";
 import { useParams, Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Star, MapPin, MessageCircle, Share2, Key, Home, Building2, Landmark, Store, Warehouse, MoreHorizontal, Image, Eye, Instagram, Phone, ExternalLink, Clock, Shield, Zap, ChevronLeft, ChevronRight, Heart, BadgeCheck, Clapperboard } from "lucide-react";
-import NetflixVideoHero from "@/components/NetflixVideoHero";
+import { ArrowLeft, Star, MapPin, MessageCircle, Share2, Key, Home, Building2, Landmark, Store, Warehouse, MoreHorizontal, Image, Eye, Instagram, Phone, ExternalLink, Clock, Shield, Zap, ChevronLeft, ChevronRight, Heart, BadgeCheck, Clapperboard, Play, X, Volume2, VolumeX } from "lucide-react";
 import StoreEffects from "@/components/StoreEffects";
 import { formatPrice, getTagStyle, getTagLabel } from "@/data/products";
 import { supabase } from "@/integrations/supabase/client";
@@ -27,6 +26,11 @@ const propertySubcategories = [
 
 
 
+function extractYouTubeId(url: string): string | null {
+  const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([a-zA-Z0-9_-]{11})/);
+  return match ? match[1] : null;
+}
+
 
 function isUUID(str: string) {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
@@ -45,6 +49,8 @@ export default function CompanyProfile() {
   const [gallerySlide, setGallerySlide] = useState(0);
   const [galleryPaused, setGalleryPaused] = useState(false);
   const [teamMember, setTeamMember] = useState<any>(null);
+  const [videoModalOpen, setVideoModalOpen] = useState(false);
+  const [videoMuted, setVideoMuted] = useState(true);
   const { openWhatsApp: openWhatsAppPicker } = useWhatsAppPicker();
 
   const searchParams = new URLSearchParams(location.search);
@@ -278,6 +284,8 @@ export default function CompanyProfile() {
   };
 
   const isPaid = sellerTier !== "basico";
+  const videoId = dbProfile?.video_url ? extractYouTubeId(dbProfile.video_url) : null;
+  const hasVideoHero = !!(videoId && sellerTier && sellerTier !== "basico" && sellerTier !== "start");
 
   return (
     <div className="min-h-screen bg-background">
@@ -285,22 +293,36 @@ export default function CompanyProfile() {
       {/* ═══════════ HERO BANNER ═══════════ */}
       <section className="relative h-[50vh] md:h-[60vh] overflow-hidden">
 
-        {/* Sliding background images */}
-        <AnimatePresence mode="wait">
-          {heroImages.length > 0 && (
-            <motion.img
-              key={heroSlide}
-              src={heroImages[heroSlide].image}
-              alt={heroImages[heroSlide].title}
-              initial={{ opacity: 0, scale: 1.05 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.8 }}
-              className="absolute inset-0 w-full h-full object-cover"
+        {/* Video background or sliding images */}
+        {hasVideoHero ? (
+          <>
+            <iframe
+              src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1`}
+              title="Vídeo de fundo"
+              allow="autoplay; encrypted-media"
+              className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+              style={{ transform: "scale(1.2)" }}
             />
-          )}
-        </AnimatePresence>
-        {heroImages.length === 0 && (
+          </>
+        ) : (
+          <>
+            <AnimatePresence mode="wait">
+              {heroImages.length > 0 && (
+                <motion.img
+                  key={heroSlide}
+                  src={heroImages[heroSlide].image}
+                  alt={heroImages[heroSlide].title}
+                  initial={{ opacity: 0, scale: 1.05 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.8 }}
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+              )}
+            </AnimatePresence>
+          </>
+        )}
+        {heroImages.length === 0 && !hasVideoHero && (
           <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/80 to-accent" />
         )}
 
@@ -322,8 +344,8 @@ export default function CompanyProfile() {
           </div>
         )}
 
-        {/* Hero slide arrows */}
-        {heroImages.length > 1 && (
+        {/* Hero slide arrows (only when no video) */}
+        {!hasVideoHero && heroImages.length > 1 && (
           <>
             <button onClick={() => setHeroSlide((p) => (p - 1 + heroImages.length) % heroImages.length)} className="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/50 transition-colors">
               <ChevronLeft size={20} />
@@ -332,6 +354,52 @@ export default function CompanyProfile() {
               <ChevronRight size={20} />
             </button>
           </>
+        )}
+
+        {/* Video title + Assistir button */}
+        {hasVideoHero && (
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex flex-col items-center text-center">
+            <motion.p
+              className="text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] mb-2"
+              style={{ color: "hsl(0 84% 60%)" }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+            >
+              ▶ {(dbProfile as any)?.video_title ? "" : "Lançamento"}
+            </motion.p>
+            {(dbProfile as any)?.video_title && (
+              <motion.h2
+                className="font-display font-bold text-2xl md:text-4xl text-white drop-shadow-lg mb-1"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+              >
+                {(dbProfile as any).video_title}
+              </motion.h2>
+            )}
+            {(dbProfile as any)?.video_description && (
+              <motion.p
+                className="text-white/70 text-xs md:text-sm max-w-md mb-4"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+              >
+                {(dbProfile as any).video_description}
+              </motion.p>
+            )}
+            <motion.button
+              onClick={() => setVideoModalOpen(true)}
+              className="flex items-center gap-2 px-6 py-3 rounded-xl bg-destructive text-destructive-foreground font-bold text-sm shadow-xl hover:opacity-90 transition-opacity"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.6 }}
+            >
+              <Play size={18} fill="currentColor" /> Assistir
+            </motion.button>
+          </div>
         )}
 
 
@@ -464,17 +532,6 @@ export default function CompanyProfile() {
         </div>
       </section>
 
-      {/* ═══════════ VIDEO HERO (Netflix-style) ═══════════ */}
-      {dbProfile?.video_url && sellerTier && sellerTier !== "basico" && sellerTier !== "start" && (
-        <div className="container max-w-7xl mx-auto px-4 pt-6">
-          <NetflixVideoHero
-            videoUrl={dbProfile.video_url}
-            storeName={company.name}
-            storeLogo={company.logo}
-            description={dbProfile.bio}
-          />
-        </div>
-      )}
 
       {/* ═══════════ MAIN LAYOUT ═══════════ */}
       <div className="container max-w-7xl mx-auto px-4 py-6">
@@ -991,6 +1048,61 @@ export default function CompanyProfile() {
           </div>
         </section>
       )}
+
+      {/* ═══════════ VIDEO FULLSCREEN MODAL ═══════════ */}
+      <AnimatePresence>
+        {videoModalOpen && videoId && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[200] bg-black flex flex-col"
+            onClick={() => setVideoModalOpen(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="absolute top-0 left-0 right-0 z-50 flex items-center justify-between p-4 md:p-6 bg-gradient-to-b from-black/80 to-transparent"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center gap-3">
+                {company.logo && <img src={company.logo} alt="" className="w-8 h-8 rounded-lg object-cover border border-white/20" />}
+                <div>
+                  <p className="text-white font-display font-bold text-sm md:text-base">{(dbProfile as any)?.video_title || company.name}</p>
+                  <p className="text-white/50 text-[10px]">Apresentação exclusiva</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <button onClick={() => setVideoMuted(!videoMuted)} className="w-9 h-9 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white hover:bg-white/20 transition-colors">
+                  {videoMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
+                </button>
+                <button onClick={() => setVideoModalOpen(false)} className="w-9 h-9 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white hover:bg-white/20 transition-colors">
+                  <X size={18} />
+                </button>
+              </div>
+            </motion.div>
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              transition={{ type: "spring", damping: 30, stiffness: 200 }}
+              className="flex-1 flex items-center justify-center"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="w-full h-full">
+                <iframe
+                  src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=${videoMuted ? 1 : 0}&rel=0&modestbranding=1&controls=1`}
+                  title="Vídeo"
+                  allow="autoplay; encrypted-media; fullscreen"
+                  allowFullScreen
+                  className="w-full h-full"
+                />
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
     </div>
   );
