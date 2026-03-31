@@ -317,7 +317,7 @@ export default function CompanyProfile() {
             className="absolute pointer-events-none"
             style={{
               top: "50%",
-              left: "50%",
+              left: "60%",
               width: "100vw",
               height: "56.25vw",
               minWidth: "177.78vh",
