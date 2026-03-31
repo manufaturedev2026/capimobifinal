@@ -52,7 +52,7 @@ const BANKS: Bank[] = [
   },
   {
     name: "Banco do Brasil",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Banco_do_Brasil_logo.svg/120px-Banco_do_Brasil_logo.svg.png",
+    logo: logoBB,
     programs: [
       { name: "BB Crédito Imobiliário", rateMin: 9.39, rateMax: 10.99, maxTermYears: 35, maxFinancingPct: 80 },
     ],
