@@ -527,7 +527,7 @@ export default function CompanyProfile() {
               {/* Company Card */}
               <div className="rounded-2xl overflow-hidden" style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}>
                 {/* Mini banner */}
-                <div className="h-20 relative" style={{ background: dbProfile?.cover_color || 'linear-gradient(to right, hsl(var(--primary)), hsl(var(--primary) / 0.6))' }}>
+                <div className="h-20 relative" style={{ background: dbProfile?.cover_color || storeTheme.preview.heroBg }}>
                   {company.logo && (
                     <img src={company.logo} alt="" className="absolute -bottom-6 left-4 w-14 h-14 rounded-xl object-cover border-3 border-card shadow-lg" />
                   )}
