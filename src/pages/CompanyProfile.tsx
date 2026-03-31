@@ -365,9 +365,9 @@ export default function CompanyProfile() {
         {/* Video background or sliding images */}
         {hasVideoHero ? (
           <iframe
-            src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&iv_load_policy=3&disablekb=1`}
+            src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&iv_load_policy=3&disablekb=1&enablejsapi=1`}
             title="Vídeo de fundo"
-            allow="autoplay; encrypted-media"
+            allow="autoplay; encrypted-media; playsinline"
             className="absolute pointer-events-none"
             style={{
               top: "50%",
@@ -526,7 +526,7 @@ export default function CompanyProfile() {
                 </DropdownMenu>
                 {hasVideoHero && (
                   <button
-                    onClick={() => setVideoModalOpen(true)}
+                    onClick={() => { setVideoMuted(false); setVideoModalOpen(true); }}
                     className="flex items-center justify-center gap-1.5 px-2.5 py-2 md:px-5 md:py-2.5 rounded-xl bg-destructive text-destructive-foreground font-bold text-[11px] md:text-sm hover:opacity-90 transition-opacity shadow-lg whitespace-nowrap flex-shrink-0 min-w-9 md:min-w-0"
                   >
                     <Play size={14} fill="currentColor" />
@@ -1152,10 +1152,10 @@ export default function CompanyProfile() {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="w-full h-full">
-                <iframe
-                  src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=${videoMuted ? 1 : 0}&rel=0&modestbranding=1&controls=1`}
-                  title="Vídeo"
-                  allow="autoplay; encrypted-media; fullscreen"
+                 <iframe
+                   src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=${videoMuted ? 1 : 0}&rel=0&modestbranding=1&controls=1&playsinline=1`}
+                   title="Vídeo"
+                   allow="autoplay; encrypted-media; fullscreen; playsinline"
                   allowFullScreen
                   className="w-full h-full"
                 />
