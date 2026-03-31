@@ -168,6 +168,7 @@ export default function SellerItemForm() {
               garden: !!d.garden,
               furnished: !!d.furnished,
               accepts_financing: !!d.accepts_financing,
+              show_financing: !!d.show_financing,
               documentation: d.documentation || "",
               condo_fee: d.condo_fee?.toString() || "",
               iptu: d.iptu?.toString() || "",
