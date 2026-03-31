@@ -404,6 +404,14 @@ export default function SellerProfile() {
           </div>
         )}
 
+        {/* Store Theme Picker */}
+        <div className="bg-card border border-border rounded-2xl p-5">
+          <StoreThemePicker
+            selected={form.store_theme}
+            onChange={(themeId) => setForm((f) => ({ ...f, store_theme: themeId }))}
+          />
+        </div>
+
         <div className="bg-card border border-border rounded-2xl p-5">
           <h2 className="font-display font-bold text-foreground mb-3">Tipo de vendedor</h2>
           <div className="flex items-center gap-3 py-3 px-4 rounded-xl border-2 border-primary bg-primary/10">
