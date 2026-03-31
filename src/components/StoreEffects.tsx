@@ -43,7 +43,7 @@ export default function StoreEffects({ sellerId }: StoreEffectsProps) {
   if (!activeEffect || !visible) return null;
 
   return (
-    <div className="fixed inset-0 pointer-events-none z-[9999] overflow-hidden animate-[effectFadeOut_5s_ease-in-out_forwards]">
+    <div className="fixed inset-0 pointer-events-none z-[100] overflow-hidden animate-[effectFadeOut_5s_ease-in-out_forwards]">
       {activeEffect === "chuva" && <RainEffect />}
       {activeEffect === "raios" && <LightningEffect />}
       {activeEffect === "poeira" && <DustEffect />}
