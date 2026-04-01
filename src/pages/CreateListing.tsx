@@ -206,12 +206,12 @@ export default function CreateListing() {
                 <img src={lojaPreviewImg} alt="Loja estilo Netflix" loading="lazy" className="w-full h-auto" width={1280} height={800} />
               </div>
               <motion.div animate={{ y: [0, -8, 0] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute -bottom-4 -left-4 md:bottom-4 md:left-4 bg-card/90 backdrop-blur-xl rounded-2xl p-4 border border-border shadow-xl">
-                <div className="flex items-center gap-3">
-                  <img src={avatarCorretorImg} alt="Corretor" className="w-11 h-11 rounded-xl object-cover shadow-md" />
+                className="absolute bottom-2 left-2 sm:-bottom-4 sm:-left-4 md:bottom-4 md:left-4 bg-card/90 backdrop-blur-xl rounded-xl sm:rounded-2xl p-2.5 sm:p-4 border border-border shadow-xl max-w-[200px] sm:max-w-none">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <img src={avatarCorretorImg} alt="Corretor" className="w-8 h-8 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl object-cover shadow-md" />
                   <div>
-                    <div className="text-xs text-muted-foreground">Corretor verificado</div>
-                    <div className="font-display font-bold text-sm text-foreground">Sua loja pronta 24/7</div>
+                    <div className="text-[10px] sm:text-xs text-muted-foreground">Corretor verificado</div>
+                    <div className="font-display font-bold text-xs sm:text-sm text-foreground">Sua loja pronta 24/7</div>
                   </div>
                 </div>
               </motion.div>
