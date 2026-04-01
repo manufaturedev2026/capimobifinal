@@ -6,6 +6,11 @@ import { useParams, Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Star, MapPin, MessageCircle, Share2, Key, Home, Building2, Landmark, Store, Warehouse, MoreHorizontal, Image, Eye, Instagram, Phone, ExternalLink, Clock, Shield, Zap, ChevronLeft, ChevronRight, Heart, BadgeCheck, Clapperboard, Play, X, Volume2, VolumeX } from "lucide-react";
 import StoreEffects from "@/components/StoreEffects";
+import {
+  StoreLayoutNetflix, StoreLayoutMinimal, StoreLayoutMagazine,
+  StoreLayoutGallery, StoreLayoutElegant, StoreLayoutShowcase,
+} from "@/components/store-layouts";
+import type { StoreLayoutProps } from "@/components/store-layouts";
 import { getStoreTheme } from "@/components/StoreThemePicker";
 import { formatPrice, getTagStyle, getTagLabel } from "@/data/products";
 import { supabase } from "@/integrations/supabase/client";
