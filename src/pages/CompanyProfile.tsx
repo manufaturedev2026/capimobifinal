@@ -293,7 +293,18 @@ export default function CompanyProfile() {
   const handleWhatsApp = (title: string, productId?: string) => {
     if (isDbProfile && id) trackSellerEvent(id, "whatsapp_click");
     const seg = "imoveis";
-    const link = productId ? `${window.location.origin}/${seg}/produto/${productId}` : window.location.href;
+    const link = productId 
+      ? `${window.location.origin}/${seg}/produto/${productId}${corretorSlug ? `?corretor=${corretorSlug}` : ""}` 
+      : window.location.href;
+    
+    // If on a broker's mirror store, go directly to broker's WhatsApp
+    if (teamMember && teamMember.phone) {
+      const phone = teamMember.phone.replace(/\D/g, "");
+      const msg = encodeURIComponent(`Olá ${teamMember.full_name}! Vi "${title}" e gostaria de mais informações.\n${link}`);
+      window.open(`https://wa.me/55${phone}?text=${msg}`, "_blank");
+      return;
+    }
+    
     openWhatsAppPicker({
       sellerId: company.id,
       sellerName: company.name,
