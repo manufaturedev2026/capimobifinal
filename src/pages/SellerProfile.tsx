@@ -43,7 +43,7 @@ export default function SellerProfile() {
     video_title: "",
     video_description: "",
     slug: "",
-    store_theme: "default",
+    store_theme: "dark",
     store_layout: "netflix",
     store_video_url: "",
     store_video_title: "",
