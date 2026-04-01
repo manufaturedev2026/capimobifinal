@@ -742,6 +742,10 @@ export default function AdminPanel() {
             )}
           </div>
         )}
+
+        {tab === "referrals" && (
+          <AdminReferralTab />
+        )}
         </main>
       </div>
 
