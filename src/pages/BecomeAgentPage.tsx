@@ -258,21 +258,29 @@ export default function BecomeAgentPage() {
                 profissional ilimitado.
               </p>
 
-              <div className="flex gap-3">
+              <div className="flex flex-wrap gap-3">
+                <a
+                  href="/entrar?trial=7"
+                  className="group inline-flex items-center gap-2 px-5 py-3 md:px-8 md:py-4 rounded-2xl bg-accent text-accent-foreground font-bold text-xs md:text-sm hover:bg-accent/90 transition-all shadow-2xl shadow-accent/30 hover:shadow-accent/50 hover:scale-105"
+                >
+                  <Sparkles size={16} />
+                  <span className="hidden sm:inline">7 Dias Grátis — Cadastre-se</span>
+                  <span className="sm:hidden">7 Dias Grátis</span>
+                  <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
+                </a>
                 <a
                   href={whatsappUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group inline-flex items-center gap-2 px-5 py-3 md:px-8 md:py-4 rounded-2xl bg-accent text-accent-foreground font-bold text-xs md:text-sm hover:bg-accent/90 transition-all shadow-2xl shadow-accent/30 hover:shadow-accent/50 hover:scale-105"
+                  className="inline-flex items-center gap-2 px-5 py-3 md:px-8 md:py-4 rounded-2xl bg-white/10 text-white font-bold text-xs md:text-sm hover:bg-white/20 transition-all border border-white/10 backdrop-blur-sm"
                 >
                   <Phone size={16} />
                   <span className="hidden sm:inline">Quero Ser Corretor</span>
-                  <span className="sm:hidden">Ser Corretor</span>
-                  <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
+                  <span className="sm:hidden">WhatsApp</span>
                 </a>
                 <a
                   href="#por-que"
-                  className="inline-flex items-center gap-2 px-5 py-3 md:px-8 md:py-4 rounded-2xl bg-white/10 text-white font-bold text-xs md:text-sm hover:bg-white/20 transition-all border border-white/10 backdrop-blur-sm"
+                  className="inline-flex items-center gap-2 px-5 py-3 md:px-6 md:py-4 rounded-2xl bg-white/5 text-white/70 font-bold text-xs md:text-sm hover:bg-white/10 transition-all border border-white/5"
                 >
                   Saiba Mais
                   <ChevronDown size={14} className="animate-bounce" />
