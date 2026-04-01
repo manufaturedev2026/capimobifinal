@@ -781,7 +781,7 @@ export default function CompanyProfile() {
                     <>
                       <p className="text-xs mt-0.5" style={{ color: storeTheme.textMuted }}>
                         {dbProfile?.seller_category
-                          ? ({ imobiliaria: "Imobiliária", corretor: "Corretor(a) de Imóveis", proprietario: "Proprietário" } as Record<string, string>)[dbProfile.seller_category] || "Imobiliária"
+                          ? ({ imobiliaria: "Imobiliária", corretor: "Corretor(a) de Imóveis", proprietario: "Proprietário", construtora: "Construtora" } as Record<string, string>)[dbProfile.seller_category] || "Imobiliária"
                           : "Imobiliária"}
                       </p>
                       {dbProfile?.seller_category === "corretor" && dbProfile?.creci && (
