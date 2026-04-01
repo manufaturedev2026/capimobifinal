@@ -44,7 +44,7 @@ const FEATURES = [
 
 const PLANS_PREVIEW = [
   { name: "Básico", price: "Grátis", items: "5 anúncios", highlight: false },
-  { name: "Start", price: "R$ 24,99", items: "25 anúncios + Stories", highlight: true },
+  { name: "Start", price: "R$ 24,99", items: "25 anúncios", highlight: true },
   { name: "VIP", price: "R$ 59,99", items: "100 anúncios + Analytics", highlight: false },
 ];
 
