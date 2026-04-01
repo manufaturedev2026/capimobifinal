@@ -312,20 +312,20 @@ export default function CreateListing() {
       </section>
 
       {/* Plans Preview - Imobiliárias */}
-      <section className="py-16 md:py-24">
+      <section className="py-10 sm:py-16 md:py-24">
         <div className="container max-w-6xl mx-auto px-4">
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
-            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/20 text-accent text-xs font-bold uppercase tracking-wider mb-4">
-              <Building size={14} /> Exclusivo para Imobiliárias
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-8 sm:mb-12">
+            <span className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-accent/20 text-accent text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-4">
+              <Building size={12} /> Exclusivo para Imobiliárias
             </span>
-            <h2 className="font-display font-bold text-3xl md:text-4xl text-foreground mb-3">Planos para Imobiliárias</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">Soluções completas para sua imobiliária crescer com tecnologia e marketing integrado.</p>
+            <h2 className="font-display font-bold text-2xl sm:text-3xl md:text-4xl text-foreground mb-3">Planos para Imobiliárias</h2>
+            <p className="text-muted-foreground text-sm sm:text-base max-w-2xl mx-auto">Soluções completas para sua imobiliária crescer com tecnologia e marketing integrado.</p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 max-w-3xl mx-auto">
             {companyPlans.map((plan, i) => (
               <motion.div key={plan.name} custom={i} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
-                className={`rounded-2xl p-6 border text-center ${plan.highlight ? "bg-gradient-to-b from-accent/10 to-primary/10 border-accent/30 shadow-xl scale-105" : "bg-card border-border"}`}>
+                className={`rounded-2xl p-5 sm:p-6 border text-center ${plan.highlight ? "bg-gradient-to-b from-accent/10 to-primary/10 border-accent/30 shadow-xl sm:scale-105" : "bg-card border-border"}`}>
                 {plan.highlight && (
                   <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-accent/20 text-accent text-xs font-bold mb-4">
                     <Star size={12} /> Mais completo
