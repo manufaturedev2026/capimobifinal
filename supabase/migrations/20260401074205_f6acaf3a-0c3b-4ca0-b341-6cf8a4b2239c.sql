@@ -1,0 +1,1 @@
+UPDATE seller_items SET video_url = 'https://www.youtube.com/watch?v=iX43MJByoPU' WHERE id = '35a0a19b-9f50-4635-986d-4495bfc3542d';
