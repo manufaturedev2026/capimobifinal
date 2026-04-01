@@ -150,8 +150,8 @@ export default function ProductDetail() {
     // When a specific broker is selected, go directly to their WhatsApp
     if (teamMember && teamMember.phone) {
       const phone = teamMember.phone.replace(/\D/g, "");
-      const msg = encodeURIComponent(`Olá ${teamMember.full_name}! Vi o imóvel "${title} - ${formattedPrice}" e gostaria de mais informações.\n${productUrl}`);
-      window.open(`https://wa.me/55${phone}?text=${msg}`, "_blank");
+      const msg = `Olá ${teamMember.full_name}! 🏠 Vi o imóvel *${title}* - ${formattedPrice} na sua loja e gostaria de mais informações.\n\n🔗 ${productUrl}`;
+      window.open(`https://wa.me/55${phone}?text=${encodeURIComponent(msg)}`, "_blank");
       return;
     }
     openWhatsApp({

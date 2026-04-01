@@ -300,8 +300,10 @@ export default function CompanyProfile() {
     // If on a broker's mirror store, go directly to broker's WhatsApp
     if (teamMember && teamMember.phone) {
       const phone = teamMember.phone.replace(/\D/g, "");
-      const msg = encodeURIComponent(`Olá ${teamMember.full_name}! Vi "${title}" e gostaria de mais informações.\n${link}`);
-      window.open(`https://wa.me/55${phone}?text=${msg}`, "_blank");
+      const msg = productId
+        ? `Olá ${teamMember.full_name}! 🏠 Vi o imóvel *${title}* na sua loja e gostaria de mais informações.\n\n🔗 ${link}`
+        : `Olá ${teamMember.full_name}! 🏠 Vim da sua loja ES Corretores e gostaria de mais informações sobre seus imóveis.\n\n🔗 ${link}`;
+      window.open(`https://wa.me/55${phone}?text=${encodeURIComponent(msg)}`, "_blank");
       return;
     }
     
