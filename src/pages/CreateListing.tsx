@@ -227,7 +227,7 @@ export default function CreateListing() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <motion.div initial={{ opacity: 0, x: -60 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 1 }} className="relative order-2 lg:order-1">
               <div className="absolute -inset-6 bg-gradient-to-br from-accent/15 via-primary/10 to-accent/15 rounded-[2rem] blur-3xl opacity-50" />
-              <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-accent/20 border border-white/10">
+              <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-accent/20 border border-border">
                 <img src={painelPreviewImg} alt="Painel de estatísticas" loading="lazy" className="w-full h-auto" width={1280} height={800} />
               </div>
               <motion.div animate={{ y: [0, -8, 0] }} transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
