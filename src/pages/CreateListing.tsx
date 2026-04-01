@@ -71,7 +71,7 @@ const stats = [
   { value: "10.000+", label: "Visitantes mensais" },
   { value: "500+", label: "Corretores cadastrados" },
   { value: "2.000+", label: "Imóveis anunciados" },
-  { value: "78+", label: "Cidades no ES" },
+  { value: "78+", label: "Cidades atendidas" },
 ];
 
 const plans = [
