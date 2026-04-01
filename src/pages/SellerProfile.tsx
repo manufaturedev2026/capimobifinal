@@ -465,13 +465,25 @@ export default function SellerProfile() {
         <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
           <h2 className="font-display font-bold text-foreground">Localização</h2>
           <div className="grid grid-cols-2 gap-3">
-            <select value={form.city} onChange={(e) => setForm((f) => ({ ...f, city: e.target.value }))} className="px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none">
-              <option value="">Selecione a cidade</option>
-              {ES_CITIES.map((city) => (
-                <option key={city} value={city}>{city}</option>
-              ))}
-            </select>
-            <input value={form.state} disabled className="px-4 py-3 rounded-xl border border-input bg-muted text-muted-foreground text-sm" placeholder="Estado" />
+            <div>
+              <label className="text-xs text-muted-foreground mb-1 block">Estado</label>
+              <select value={form.state} onChange={(e) => setForm((f) => ({ ...f, state: e.target.value, city: "" }))}
+                className="px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none">
+                <option value="">Selecione o estado</option>
+                {BRAZIL_STATES.map((s) => <option key={s.uf} value={s.uf}>{s.name}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="text-xs text-muted-foreground mb-1 block">Cidade</label>
+              <select value={form.city} onChange={(e) => setForm((f) => ({ ...f, city: e.target.value }))}
+                className="px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+                disabled={!form.state || citiesLoading}>
+                <option value="">{citiesLoading ? "Carregando..." : "Selecione a cidade"}</option>
+                {(form.state === "ES" ? ES_CITIES : ibgeCities).map((city) => (
+                  <option key={city} value={city}>{city}</option>
+                ))}
+              </select>
+            </div>
           </div>
           <input value={form.address} onChange={(e) => setForm((f) => ({ ...f, address: e.target.value }))} className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="Endereço completo" />
           <label className="flex items-center gap-3 cursor-pointer select-none">
