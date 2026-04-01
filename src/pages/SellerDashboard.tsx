@@ -322,12 +322,12 @@ export default function SellerDashboard() {
 
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
-      {/* Mobile Header */}
-      <div className="gradient-hero py-6 lg:py-4">
+      {/* Mobile Header — Premium Gradient */}
+      <div className="dashboard-header-gradient py-6 lg:py-4">
         <div className="container max-w-6xl mx-auto px-4 lg:hidden">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center overflow-hidden">
+              <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center overflow-hidden ring-2 ring-white/20">
                 {profile?.logo_url ? (
                   <img src={profile.logo_url} alt="" className="w-full h-full object-cover" />
                 ) : (
@@ -336,20 +336,20 @@ export default function SellerDashboard() {
               </div>
               <div>
                 <h1 className="font-display font-bold text-lg text-white">Olá, {profile?.full_name || "Vendedor"}!</h1>
-                <p className="text-white/70 text-xs">{profile?.company_name || profile?.email}</p>
+                <p className="text-white/60 text-xs">{profile?.company_name || profile?.email}</p>
               </div>
             </div>
             <div className="flex items-center gap-1.5">
               {profile?.id && (
                 <Link to={getStoreUrl(profile)}
-                  className="p-2.5 rounded-xl bg-white/20 text-white hover:bg-white/30 transition-colors">
+                  className="p-2.5 rounded-xl bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 transition-colors">
                   <Eye size={16} />
                 </Link>
               )}
-              <Link to="/painel/perfil" className="p-2.5 rounded-xl bg-white/20 text-white hover:bg-white/30 transition-colors">
+              <Link to="/painel/perfil" className="p-2.5 rounded-xl bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 transition-colors">
                 <Settings size={16} />
               </Link>
-              <button onClick={() => { signOut(); navigate("/"); }} className="p-2.5 rounded-xl bg-white/20 text-white hover:bg-white/30 transition-colors">
+              <button onClick={() => { signOut(); navigate("/"); }} className="p-2.5 rounded-xl bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 transition-colors">
                 <LogOut size={16} />
               </button>
             </div>
@@ -358,25 +358,31 @@ export default function SellerDashboard() {
       </div>
 
       <div className="flex">
-        {/* Desktop Sidebar */}
-        <aside className="hidden lg:flex flex-col w-[260px] min-h-[calc(100vh-64px)] bg-card border-r border-border sticky top-16 flex-shrink-0">
-          {/* Profile */}
+        {/* Desktop Sidebar — Premium */}
+        <aside className="hidden lg:flex flex-col w-[280px] min-h-[calc(100vh-64px)] sidebar-premium border-r border-border sticky top-16 flex-shrink-0">
+          {/* Profile Card */}
           <div className="p-5 border-b border-border">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-muted flex items-center justify-center overflow-hidden">
-                {profile?.logo_url ? (
-                  <img src={profile.logo_url} alt="" className="w-full h-full object-cover" />
-                ) : (
-                  <span className="text-foreground font-bold text-lg">{profile?.full_name?.charAt(0) || "V"}</span>
-                )}
+              <div className="relative">
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center overflow-hidden ring-2 ring-primary/20">
+                  {profile?.logo_url ? (
+                    <img src={profile.logo_url} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-foreground font-bold text-xl">{profile?.full_name?.charAt(0) || "V"}</span>
+                  )}
+                </div>
+                <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-green-500 border-2 border-card" />
               </div>
               <div className="flex-1 min-w-0">
                 <h2 className="font-display font-bold text-sm text-foreground truncate">{profile?.full_name || "Vendedor"}</h2>
                 <p className="text-xs text-muted-foreground truncate">{profile?.company_name || profile?.email}</p>
               </div>
             </div>
-            <div className="mt-3">
+            <div className="mt-3 flex items-center gap-2">
               <PackageBadge tier={currentTier} />
+              {isExpired && (
+                <span className="px-2 py-0.5 rounded-full bg-destructive/10 text-destructive text-[10px] font-bold">Expirado</span>
+              )}
             </div>
           </div>
 
@@ -384,45 +390,46 @@ export default function SellerDashboard() {
           <nav className="flex-1 p-3 space-y-1">
             {sidebarNav.map((nav) => (
               <button key={nav.id} onClick={() => handleTabClick(nav.id)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${nav.locked ? "text-muted-foreground/50 cursor-not-allowed" : activeTab === nav.id ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground hover:bg-secondary"}`}>
+                className={`sidebar-nav-item ${nav.locked ? "text-muted-foreground/40 cursor-not-allowed" : activeTab === nav.id ? "active" : ""}`}>
                 <nav.icon size={18} /> {nav.label}
-                {nav.locked && <Lock size={14} className="ml-auto text-muted-foreground/50" />}
+                {nav.locked && <Lock size={14} className="ml-auto text-muted-foreground/40" />}
               </button>
             ))}
 
-            <div className="pt-2 border-t border-border mt-3">
+            <div className="pt-3 mt-3 border-t border-border space-y-0.5">
               <Link to="/painel/novo"
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-all">
+                className="sidebar-nav-item text-muted-foreground hover:text-foreground hover:bg-secondary">
                 <Plus size={18} /> Novo Anúncio
               </Link>
               {profile?.id && (
                 <Link to={getStoreUrl(profile)}
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-all">
+                  className="sidebar-nav-item text-muted-foreground hover:text-foreground hover:bg-secondary">
                   <Eye size={18} /> Ver Minha Loja
                 </Link>
               )}
               <Link to="/painel/perfil"
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-all">
+                className="sidebar-nav-item text-muted-foreground hover:text-foreground hover:bg-secondary">
                 <UserCircle size={18} /> Meu Perfil
               </Link>
               <Link to="/pacotes"
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-all">
+                className="sidebar-nav-item text-muted-foreground hover:text-foreground hover:bg-secondary">
                 <Package size={18} /> Pacotes
               </Link>
               {isAdmin && (
                 <Link to="/admin"
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-purple-500 hover:bg-purple-500/10 transition-all">
+                  className="sidebar-nav-item text-purple-500 hover:bg-purple-500/10">
                   <Shield size={18} /> Painel Admin
                 </Link>
               )}
             </div>
           </nav>
 
-          {/* Gerente Card */}
+          {/* Gerente Card — Premium */}
           <div className="p-4 border-t border-border">
-            <div className="bg-gradient-to-br from-primary/10 to-accent/10 rounded-2xl p-4">
-              <div className="flex items-center gap-3 mb-3">
-                <img src={(profile as any)?.manager_photo || gabrielImg} alt={profile?.account_manager || "Gabriel"} className="w-10 h-10 rounded-full object-cover ring-2 ring-primary/30" width={40} height={40} />
+            <div className="relative overflow-hidden rounded-2xl p-4" style={{ background: 'linear-gradient(135deg, hsl(var(--primary) / 0.08) 0%, hsl(var(--accent) / 0.08) 100%)' }}>
+              <div className="absolute top-0 right-0 w-20 h-20 rounded-full bg-primary/5 -translate-y-1/2 translate-x-1/2" />
+              <div className="flex items-center gap-3 mb-3 relative">
+                <img src={(profile as any)?.manager_photo || gabrielImg} alt={profile?.account_manager || "Gabriel"} className="w-11 h-11 rounded-full object-cover ring-2 ring-primary/30 shadow-lg" width={44} height={44} />
                 <div>
                   <p className="text-xs font-bold text-foreground">{profile?.account_manager || "Gabriel"}</p>
                   <p className="text-[10px] text-muted-foreground">Seu Gerente de Conta</p>
@@ -432,7 +439,7 @@ export default function SellerDashboard() {
                 href={`https://wa.me/${((profile as any)?.manager_phone || "5527995055993").replace(/\D/g, "")}?text=Olá%20${encodeURIComponent(profile?.account_manager || "Gabriel")}!%20Preciso%20de%20ajuda%20com%20minha%20loja.`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-green-500 text-white text-xs font-bold hover:bg-green-600 transition-colors"
+                className="relative w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-green-500 text-white text-xs font-bold hover:bg-green-600 transition-colors shadow-md"
               >
                 <Headphones size={14} /> Falar com seu Gerente
               </a>
@@ -442,7 +449,7 @@ export default function SellerDashboard() {
           {/* Logout */}
           <div className="p-3 border-t border-border">
             <button onClick={() => { signOut(); navigate("/"); }}
-              className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-destructive hover:bg-destructive/10 transition-all">
+              className="sidebar-nav-item text-destructive hover:bg-destructive/10">
               <LogOut size={18} /> Sair
             </button>
           </div>
