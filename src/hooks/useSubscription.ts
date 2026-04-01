@@ -19,12 +19,12 @@ export const PACKAGE_CONFIG = {
   start: {
     name: "Start",
     price: 24.99,
-    maxItems: 10,
+    maxItems: 25,
     color: "from-emerald-500 to-teal-600",
     borderColor: "border-emerald-400",
     badgeColor: "bg-gradient-to-r from-emerald-500 to-teal-500 text-white",
     benefits: [
-      "Até 10 anúncios ativos",
+      "Até 25 anúncios ativos",
       "Loja estilo Netflix",
       "2 Stories por 24h",
       "Destaque normal na listagem",
@@ -35,12 +35,12 @@ export const PACKAGE_CONFIG = {
   basico: {
     name: "Básico",
     price: 0,
-    maxItems: 3,
+    maxItems: 5,
     color: "from-slate-500 to-slate-600",
     borderColor: "border-slate-400",
     badgeColor: "bg-slate-500 text-white",
     benefits: [
-      "Até 3 anúncios ativos",
+      "Até 5 anúncios ativos",
       "Loja estilo Netflix",
       "1 Story por 24h",
       "Painel do vendedor completo",
