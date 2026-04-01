@@ -78,8 +78,9 @@ const TARGET_AUDIENCE = [
 const PLANS_PREVIEW = [
   {
     name: "Start",
-    price: "R$ 24,99",
-    setupFee: "R$ 299",
+    totalPrice: "R$ 49,91",
+    monthlyAfter: "R$ 24,99",
+    installmentNote: "12x implementação inclusa",
     items: "25 anúncios",
     layouts: "1 Layout (Netflix)",
     highlight: false,
@@ -88,8 +89,9 @@ const PLANS_PREVIEW = [
   },
   {
     name: "VIP",
-    price: "R$ 59,99",
-    setupFee: "R$ 719",
+    totalPrice: "R$ 119,91",
+    monthlyAfter: "R$ 59,99",
+    installmentNote: "12x implementação inclusa",
     items: "60 anúncios",
     layouts: "4 Layouts",
     highlight: true,
@@ -99,8 +101,9 @@ const PLANS_PREVIEW = [
   },
   {
     name: "Premium",
-    price: "R$ 114,99",
-    setupFee: "R$ 1.379",
+    totalPrice: "R$ 229,91",
+    monthlyAfter: "R$ 114,99",
+    installmentNote: "12x implementação inclusa",
     items: "115 anúncios",
     layouts: "7 Layouts (todos)",
     highlight: false,
@@ -675,12 +678,12 @@ export default function Index() {
                     <Icon size={28} className="mb-2" />
                     <h3 className="font-display font-extrabold text-xl">{plan.name}</h3>
                     <div className="mt-2">
-                      <span className="font-display font-bold text-3xl">{plan.price}</span>
+                      <span className="font-display font-bold text-3xl">{plan.totalPrice}</span>
                       <span className="text-white/70 text-sm">/mês</span>
                     </div>
                     <div className="mt-2 px-3 py-1.5 bg-white/15 rounded-xl text-center">
-                      <span className="text-white/80 text-xs">Implementação: </span>
-                      <span className="text-white font-bold text-sm">{plan.setupFee}</span>
+                      <span className="text-white/90 text-xs font-semibold">{plan.installmentNote}</span>
+                      <span className="text-white/50 text-[10px] block mt-0.5">Após 12 meses: {plan.monthlyAfter}/mês</span>
                     </div>
                   </div>
 
