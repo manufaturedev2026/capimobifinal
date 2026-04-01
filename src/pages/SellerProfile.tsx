@@ -8,6 +8,7 @@ import { useSellerSubscription } from "@/hooks/useSubscription";
 import type { Database } from "@/integrations/supabase/types";
 import { ES_CITIES } from "@/data/esCities";
 import StoreThemePicker from "@/components/StoreThemePicker";
+import { STORE_LAYOUTS } from "@/components/store-layouts";
 
 type SellerType = Database["public"]["Enums"]["seller_type"];
 
