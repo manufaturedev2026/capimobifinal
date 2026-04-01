@@ -10,6 +10,21 @@ import { BRAZIL_STATES } from "@/data/brazilStates";
 import { useCitiesByState } from "@/hooks/useCitiesByState";
 import StoreThemePicker from "@/components/StoreThemePicker";
 import { STORE_LAYOUTS } from "@/components/store-layouts";
+import layoutNetflix from "@/assets/layout-previews/layout-netflix.jpg";
+import layoutMinimal from "@/assets/layout-previews/layout-minimal.jpg";
+import layoutMagazine from "@/assets/layout-previews/layout-magazine.jpg";
+import layoutGallery from "@/assets/layout-previews/layout-gallery.jpg";
+import layoutElegant from "@/assets/layout-previews/layout-elegant.jpg";
+import layoutShowcase from "@/assets/layout-previews/layout-showcase.jpg";
+
+const LAYOUT_PREVIEWS: Record<string, string> = {
+  netflix: layoutNetflix,
+  minimal: layoutMinimal,
+  magazine: layoutMagazine,
+  gallery: layoutGallery,
+  elegant: layoutElegant,
+  showcase: layoutShowcase,
+};
 
 type SellerType = Database["public"]["Enums"]["seller_type"];
 
@@ -490,15 +505,31 @@ export default function SellerProfile() {
                   key={layout.id}
                   type="button"
                   onClick={() => setForm((f) => ({ ...f, store_layout: layout.id }))}
-                  className={`p-4 rounded-2xl text-left transition-all border-2 ${
+                  className={`rounded-2xl text-left transition-all border-2 overflow-hidden ${
                     isActive
-                      ? "border-primary bg-primary/10 shadow-lg shadow-primary/10"
+                      ? "border-primary shadow-lg shadow-primary/10 ring-2 ring-primary/30"
                       : "border-border hover:border-primary/30"
                   }`}
                 >
-                  <span className="text-2xl block mb-2">{layout.preview}</span>
-                  <h3 className="font-display font-bold text-sm text-foreground">{layout.name}</h3>
-                  <p className="text-[10px] text-muted-foreground mt-0.5 leading-relaxed">{layout.desc}</p>
+                  <div className="relative aspect-[9/16] w-full bg-muted overflow-hidden">
+                    <img
+                      src={LAYOUT_PREVIEWS[layout.id]}
+                      alt={`Preview ${layout.name}`}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                    {isActive && (
+                      <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+                        <svg className="w-3.5 h-3.5 text-primary-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                    )}
+                  </div>
+                  <div className="p-3">
+                    <h3 className="font-display font-bold text-sm text-foreground">{layout.preview} {layout.name}</h3>
+                    <p className="text-[10px] text-muted-foreground mt-0.5 leading-relaxed">{layout.desc}</p>
+                  </div>
                 </button>
               );
             })}
