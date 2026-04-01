@@ -176,7 +176,7 @@ export default function CreateListing() {
               <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/15 text-accent text-xs font-bold uppercase tracking-widest mb-6 border border-accent/20">
                 <Sparkles size={14} /> Exclusivo
               </span>
-              <h2 className="font-display font-black text-3xl md:text-5xl leading-tight mb-5">
+              <h2 className="font-display font-black text-3xl md:text-5xl leading-tight mb-5 text-foreground">
                 Sua Loja Estilo
                 <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">Netflix</span>
