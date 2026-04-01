@@ -663,19 +663,19 @@ export default function SellerDashboard() {
                             <GripVertical size={14} />
                           </div>
                           {item.photos && item.photos.length > 0 ? (
-                            <img src={item.photos[0]} alt={item.title} className={`w-full h-full object-cover ${item.status === "vendido" ? "brightness-50 blur-[1px]" : ""}`} />
+                            <img src={item.photos[0]} alt={item.title} className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 ${item.status === "vendido" ? "brightness-50 blur-[1px]" : ""}`} />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center">
-                              <Image size={32} className="text-muted-foreground" />
+                            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-muted to-muted/50">
+                              <Image size={36} className="text-muted-foreground/40" />
                             </div>
                           )}
-                          <div className="absolute top-2 right-2 flex gap-1">
-                            <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
+                          <div className="absolute top-2 right-2 flex gap-1.5">
+                            <span className={`px-2.5 py-1 rounded-lg text-[11px] font-bold shadow-sm backdrop-blur-sm ${
                               item.status === "ativo" ? "bg-green-500/90 text-white" 
                               : item.status === "vendido" ? "bg-red-500/90 text-white"
-                              : "bg-muted-foreground/80 text-white"
+                              : "bg-muted-foreground/70 text-white"
                             }`}>
-                              {item.status === "ativo" ? "Ativo" : item.status === "vendido" ? "❌ Vendido" : "Inativo"}
+                              {item.status === "ativo" ? "● Ativo" : item.status === "vendido" ? "❌ Vendido" : "● Inativo"}
                             </span>
                           </div>
                           {item.status === "vendido" && item.sold_at && (
@@ -684,9 +684,9 @@ export default function SellerDashboard() {
                             </div>
                           )}
                           {item.tags && item.tags.length > 0 && (
-                            <div className="absolute top-2 left-2 flex gap-1 flex-wrap">
+                            <div className="absolute top-2 left-12 flex gap-1 flex-wrap">
                               {item.tags.slice(0, 2).map((tag) => (
-                                <span key={tag} className={`px-2 py-0.5 rounded-full text-xs font-bold ${getTagStyle(tag)}`}>
+                                <span key={tag} className={`px-2.5 py-1 rounded-lg text-[11px] font-bold shadow-sm ${getTagStyle(tag)}`}>
                                   {getTagLabel(tag)}
                                 </span>
                               ))}
@@ -695,9 +695,9 @@ export default function SellerDashboard() {
                         </div>
                         <div className="p-4">
                           <div className="flex items-start justify-between gap-2">
-                            <div>
-                              <h3 className="font-display font-bold text-foreground line-clamp-1">{item.title}</h3>
-                              <p className="text-xs text-muted-foreground mt-0.5">{item.category} • {item.city || "Sem cidade"}</p>
+                            <div className="min-w-0">
+                              <h3 className="font-display font-bold text-foreground line-clamp-1 text-sm">{item.title}</h3>
+                              <p className="text-[11px] text-muted-foreground mt-0.5">{item.category} • {item.city || "Sem cidade"}</p>
                             </div>
                             {item.price && (
                               <span className="font-bold text-green-600 text-sm whitespace-nowrap">R$ {item.price.toLocaleString("pt-BR")}</span>
