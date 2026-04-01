@@ -155,8 +155,8 @@ export default function TeamMembersTab({ profileId, userId, maxMembers }: Props)
       });
 
       if (error) {
-        if (error.message.includes("unique")) {
-          toast({ title: "Já existe um corretor com esse nome", variant: "destructive" });
+        if (error.message.includes("unique") || error.message.includes("duplicate")) {
+          toast({ title: "Essa URL já está em uso por outro corretor", variant: "destructive" });
         } else {
           toast({ title: "Erro ao adicionar", description: error.message, variant: "destructive" });
         }
