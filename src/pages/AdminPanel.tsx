@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Shield, Users, Package, DollarSign, Search, Check, X, RefreshCw, ArrowLeft, Crown, Star, Zap, Globe, Plus, Trash2, ExternalLink, Copy, Megaphone, LayoutDashboard, Building2, Rocket, FileText, UserCog, Filter, Camera, Phone } from "lucide-react";
+import { Shield, Users, Package, DollarSign, Search, Check, X, RefreshCw, ArrowLeft, Crown, Star, Zap, Globe, Plus, Trash2, ExternalLink, Copy, Megaphone, LayoutDashboard, Building2, Rocket, FileText, UserCog, Filter, Camera, Phone, Ban, ShieldOff, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsAdmin, PACKAGE_CONFIG } from "@/hooks/useSubscription";
@@ -49,6 +49,13 @@ export default function AdminPanel() {
   const [rejectAdId, setRejectAdId] = useState<string | null>(null);
   const [rejectReason, setRejectReason] = useState("");
 
+  // Ban dialog state
+  const [banDialogOpen, setBanDialogOpen] = useState(false);
+  const [banSeller, setBanSeller] = useState<SellerWithSub | null>(null);
+  const [banReason, setBanReason] = useState("");
+  const [banDuration, setBanDuration] = useState<"7" | "30" | "90" | "permanent">("7");
+  const [bans, setBans] = useState<Record<string, { id: string; reason: string | null; expires_at: string | null; is_permanent: boolean }>>({});
+
   // Manager edit dialog state
   const [managerDialogOpen, setManagerDialogOpen] = useState(false);
   const [managerEditSellerId, setManagerEditSellerId] = useState<string | null>(null);
@@ -69,8 +76,59 @@ export default function AdminPanel() {
     if (isAdmin) {
       fetchSellers();
       fetchAdRequests();
+      fetchBans();
     }
   }, [isAdmin]);
+
+  const fetchBans = async () => {
+    const { data } = await supabase.from("user_bans").select("*").eq("is_active", true);
+    const bansMap: Record<string, { id: string; reason: string | null; expires_at: string | null; is_permanent: boolean }> = {};
+    (data || []).forEach((b: any) => {
+      bansMap[b.user_id] = { id: b.id, reason: b.reason, expires_at: b.expires_at, is_permanent: b.is_permanent };
+    });
+    setBans(bansMap);
+  };
+
+  const openBanDialog = (seller: SellerWithSub) => {
+    setBanSeller(seller);
+    setBanReason("");
+    setBanDuration("7");
+    setBanDialogOpen(true);
+  };
+
+  const confirmBan = async () => {
+    if (!banSeller || !user) return;
+    const isPermanent = banDuration === "permanent";
+    const expiresAt = isPermanent ? null : new Date(Date.now() + parseInt(banDuration) * 24 * 60 * 60 * 1000).toISOString();
+
+    const { error } = await supabase.from("user_bans").insert({
+      user_id: banSeller.user_id,
+      banned_by: user.id,
+      reason: banReason || null,
+      expires_at: expiresAt,
+      is_permanent: isPermanent,
+    } as any);
+
+    if (error) {
+      toast({ title: "Erro ao banir", variant: "destructive" });
+    } else {
+      toast({ title: `Usuário banido ${isPermanent ? "permanentemente" : `por ${banDuration} dias`}!` });
+      fetchBans();
+    }
+    setBanDialogOpen(false);
+  };
+
+  const unbanUser = async (userId: string) => {
+    const ban = bans[userId];
+    if (!ban) return;
+    const { error } = await supabase.from("user_bans").update({ is_active: false } as any).eq("id", ban.id);
+    if (error) {
+      toast({ title: "Erro ao desbanir", variant: "destructive" });
+    } else {
+      toast({ title: "Usuário desbanido!" });
+      fetchBans();
+    }
+  };
 
   const fetchAdRequests = async () => {
     setAdsLoading(true);
@@ -421,10 +479,16 @@ export default function AdminPanel() {
 
               return (
                 <div key={seller.id} className="bg-card border border-border rounded-2xl p-4">
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
                         <h3 className="font-display font-bold text-foreground">{seller.company_name || seller.full_name}</h3>
+                        {bans[seller.user_id] && (
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-destructive/20 text-destructive">
+                            <Ban size={10} className="inline mr-0.5" />
+                            {bans[seller.user_id].is_permanent ? "BANIDO PERMANENTE" : `BANIDO até ${new Date(bans[seller.user_id].expires_at!).toLocaleDateString("pt-BR")}`}
+                          </span>
+                        )}
                         {sub && (
                           <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${tierConfig?.badgeColor}`}>
                             <TierIcon size={10} className="inline mr-0.5" />
@@ -468,7 +532,7 @@ export default function AdminPanel() {
                           <Check size={12} /> Aprovar
                         </button>
                       )}
-                      {sub && (
+                       {sub && (
                         <>
                           <button onClick={() => renewSubscription(sub.id)}
                             className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-semibold hover:bg-primary/20">
@@ -479,6 +543,17 @@ export default function AdminPanel() {
                             <X size={12} /> Cancelar
                           </button>
                         </>
+                      )}
+                      {bans[seller.user_id] ? (
+                        <button onClick={() => unbanUser(seller.user_id)}
+                          className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-green-500/10 text-green-600 text-xs font-semibold hover:bg-green-500/20">
+                          <ShieldOff size={12} /> Desbanir
+                        </button>
+                      ) : (
+                        <button onClick={() => openBanDialog(seller)}
+                          className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-red-900/10 text-red-500 text-xs font-semibold hover:bg-red-900/20">
+                          <Ban size={12} /> Banir
+                        </button>
                       )}
                     </div>
                   </div>
@@ -757,6 +832,76 @@ export default function AdminPanel() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Ban Dialog */}
+      {banDialogOpen && banSeller && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="bg-card border border-border rounded-2xl p-6 w-full max-w-md mx-4 shadow-xl">
+            <div className="flex items-center gap-2 mb-2">
+              <Ban size={20} className="text-destructive" />
+              <h3 className="font-display font-bold text-lg text-foreground">Banir Usuário</h3>
+            </div>
+            <p className="text-sm text-muted-foreground mb-4">
+              Banir <strong>{banSeller.company_name || banSeller.full_name}</strong> ({banSeller.email})
+            </p>
+
+            <div className="space-y-4">
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-foreground">Duração do banimento</label>
+                <div className="grid grid-cols-2 gap-2">
+                  {([
+                    { value: "7", label: "7 dias" },
+                    { value: "30", label: "30 dias" },
+                    { value: "90", label: "90 dias" },
+                    { value: "permanent", label: "Permanente" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.value}
+                      onClick={() => setBanDuration(opt.value)}
+                      className={`px-3 py-2 rounded-xl text-sm font-semibold transition-all ${
+                        banDuration === opt.value
+                          ? opt.value === "permanent" ? "bg-destructive text-destructive-foreground" : "bg-primary text-primary-foreground"
+                          : "bg-secondary text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      {opt.value === "permanent" && <Ban size={12} className="inline mr-1" />}
+                      {opt.value !== "permanent" && <Clock size={12} className="inline mr-1" />}
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-foreground">Motivo (opcional)</label>
+                <textarea
+                  value={banReason}
+                  onChange={(e) => setBanReason(e.target.value)}
+                  placeholder="Ex: Violação dos termos de uso, conteúdo impróprio..."
+                  className="w-full px-4 py-3 rounded-xl bg-secondary text-foreground text-sm border border-border focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none h-24"
+                  maxLength={500}
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 mt-4">
+              <button
+                onClick={() => setBanDialogOpen(false)}
+                className="px-4 py-2 rounded-xl text-sm font-medium text-muted-foreground hover:bg-secondary transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={confirmBan}
+                className="px-4 py-2 rounded-xl bg-destructive text-destructive-foreground text-sm font-bold hover:opacity-90 transition-opacity"
+              >
+                <Ban size={14} className="inline mr-1" />
+                Confirmar Banimento
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

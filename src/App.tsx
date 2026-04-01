@@ -1,10 +1,11 @@
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
+import BannedScreen from "@/components/BannedScreen";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
-import { AuthProvider } from "@/hooks/useAuth";
+import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import { ThemeProvider } from "next-themes";
 import { WhatsAppTeamPickerProvider } from "@/components/WhatsAppTeamPicker";
 import { CompareProvider } from "@/hooks/useCompare";
@@ -43,7 +44,16 @@ const queryClient = new QueryClient();
 
 const AppLayout = () => {
   const location = useLocation();
+  const { banInfo } = useAuth();
   const isStorePage = location.pathname.includes("/empresa/");
+  const isProtectedRoute = ["/painel", "/admin", "/pacotes"].some(
+    (r) => location.pathname.startsWith(r)
+  );
+
+  // Block banned users from protected routes
+  if (isProtectedRoute && banInfo?.is_banned) {
+    return <BannedScreen />;
+  }
 
   return (
     <div className="min-h-screen flex flex-col">

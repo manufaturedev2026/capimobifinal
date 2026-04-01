@@ -6,11 +6,19 @@ import type { Database } from "@/integrations/supabase/types";
 type Profile = Database["public"]["Tables"]["profiles"]["Row"];
 type ProfileInsert = Database["public"]["Tables"]["profiles"]["Insert"];
 
+interface BanInfo {
+  is_banned: boolean;
+  reason: string | null;
+  expires_at: string | null;
+  is_permanent: boolean;
+}
+
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   profile: Profile | null;
   loading: boolean;
+  banInfo: BanInfo | null;
   signUp: (email: string, password: string, fullName: string, phone?: string) => Promise<{ error: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
@@ -24,6 +32,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [banInfo, setBanInfo] = useState<BanInfo | null>(null);
+
+  const checkBan = async (userId: string) => {
+    const { data } = await supabase
+      .from("user_bans")
+      .select("*")
+      .eq("user_id", userId)
+      .eq("is_active", true)
+      .order("created_at", { ascending: false })
+      .limit(1);
+
+    if (data && data.length > 0) {
+      const ban = data[0] as any;
+      // Check if temporary ban has expired
+      if (!ban.is_permanent && ban.expires_at && new Date(ban.expires_at) < new Date()) {
+        setBanInfo(null);
+        return;
+      }
+      setBanInfo({
+        is_banned: true,
+        reason: ban.reason,
+        expires_at: ban.expires_at,
+        is_permanent: ban.is_permanent,
+      });
+    } else {
+      setBanInfo(null);
+    }
+  };
 
   const fetchProfile = async (userId: string) => {
     const { data, error } = await supabase
@@ -82,6 +118,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (nextSession?.user) {
           setTimeout(() => {
             void ensureProfile(nextSession.user);
+            void checkBan(nextSession.user.id);
           }, 0);
         } else {
           setProfile(null);
@@ -97,8 +134,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (currentSession?.user) {
         await ensureProfile(currentSession.user);
+        await checkBan(currentSession.user.id);
       } else {
         setProfile(null);
+        setBanInfo(null);
       }
 
       setLoading(false);
@@ -137,7 +176,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, profile, loading, signUp, signIn, signOut, refreshProfile }}>
+    <AuthContext.Provider value={{ user, session, profile, loading, banInfo, signUp, signIn, signOut, refreshProfile }}>
       {children}
     </AuthContext.Provider>
   );
