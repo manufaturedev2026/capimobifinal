@@ -535,7 +535,7 @@ export default function Index() {
 
           <div className="grid md:grid-cols-3 gap-6">
             {[
-              { icon: Globe, title: "URL Única", desc: "Você compra a sua URL e implementa como quiser — domínio próprio 100% seu" },
+              { icon: Globe, title: "URL Única", desc: "Compre o seu domínio e implemente como quiser — 100% seu, 100% profissional" },
               { icon: Share2, title: "Multiplataforma", desc: "Funciona perfeitamente no Instagram, TikTok, Facebook, LinkedIn e qualquer rede" },
               { icon: Users, title: "Equipe Completa", desc: "Imobiliárias podem ter lojas individuais para cada corretor da equipe" },
             ].map((item, i) => (
