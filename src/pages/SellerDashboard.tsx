@@ -249,7 +249,7 @@ export default function SellerDashboard() {
   const isEmpresaPlan = ["essencial_empresa", "premium_empresa", "prime_empresa"].includes(currentTier);
   const showTeamTab = isEmpresaPlan || isImobiliaria;
   const maxTeamMembers = currentTier === ("prime_empresa" as any) ? 30 : currentTier === "premium_empresa" ? 15 : currentTier === "essencial_empresa" ? 6 : isImobiliaria ? 3 : 0;
-  const lockedTabs: DashboardTab[] = isFreePlan ? ["domain", "ads"] : [];
+  const lockedTabs: DashboardTab[] = isFreePlan ? ["domain"] : [];
 
   const sidebarNav: { id: DashboardTab; label: string; icon: any; locked?: boolean }[] = [
     { id: "overview", label: "Visão Geral", icon: Home },
