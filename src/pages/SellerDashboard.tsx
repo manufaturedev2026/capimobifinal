@@ -641,25 +641,25 @@ export default function SellerDashboard() {
                   </div>
                 ) : (
                   <>
-                  <div className="space-y-2 mb-2">
-                    <p className="text-xs text-muted-foreground flex items-center gap-1">
-                      <GripVertical size={12} /> Arraste os cards para reordenar a exibição na sua loja
+                  <div className="space-y-2 mb-3">
+                    <p className="text-xs text-muted-foreground flex items-center gap-1.5 bg-card border border-border rounded-xl px-3 py-2">
+                      <GripVertical size={14} className="text-primary" /> Arraste os cards para reordenar a exibição na sua loja
                     </p>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 pb-10">
                     {filtered.map((item, i) => (
-                      <motion.div key={item.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
+                      <motion.div key={item.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}
                         draggable
                         onDragStart={() => handleDragStart(item.id)}
                         onDragOver={(e) => handleDragOver(e, item.id)}
                         onDrop={() => handleDrop(item.id)}
                         onDragEnd={() => { setDraggedItemId(null); setDragOverItemId(null); }}
-                        className={`bg-card border rounded-2xl overflow-hidden group hover:shadow-lg transition-all cursor-grab active:cursor-grabbing ${
-                          draggedItemId === item.id ? "opacity-50 scale-95 border-primary" :
-                          dragOverItemId === item.id ? "border-primary ring-2 ring-primary/30 scale-[1.02]" : "border-border"
+                        className={`bg-card border rounded-2xl overflow-hidden group hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-grab active:cursor-grabbing ${
+                          draggedItemId === item.id ? "opacity-50 scale-95 border-primary shadow-2xl" :
+                          dragOverItemId === item.id ? "border-primary ring-2 ring-primary/30 scale-[1.02] shadow-xl" : "border-border"
                         }`}>
-                        <div className="relative aspect-video bg-muted">
-                          <div className="absolute top-2 left-2 z-10 p-1.5 rounded-lg bg-black/40 text-white cursor-grab active:cursor-grabbing">
+                        <div className="relative aspect-video bg-muted overflow-hidden">
+                          <div className="absolute top-2 left-2 z-10 p-1.5 rounded-lg bg-black/50 backdrop-blur-sm text-white cursor-grab active:cursor-grabbing">
                             <GripVertical size={14} />
                           </div>
                           {item.photos && item.photos.length > 0 ? (
