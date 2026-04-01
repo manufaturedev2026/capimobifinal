@@ -1,18 +1,33 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { MapPin, Image, Search, Truck, Star, ShieldCheck, ChevronRight, Bed, Bath, Ruler } from "lucide-react";
+import {
+  MapPin, Image, Search, Bed, Bath, Ruler, Home, Building2, Landmark,
+  Store, Trees, Key, Warehouse, ChevronRight, SlidersHorizontal, X,
+} from "lucide-react";
 import type { StoreLayoutProps } from "./types";
 
+const CATEGORY_ICONS: Record<string, any> = {
+  todos: SlidersHorizontal,
+  casa: Home,
+  apartamento: Building2,
+  terreno: Trees,
+  comercial: Store,
+  galpao: Warehouse,
+  flat: Landmark,
+  aluguel: Key,
+};
+
 /**
- * Marketplace Layout — Inspired by Mercado Livre: search bar, horizontal category chips,
- * product cards with badges, location info, and trust signals.
+ * Marketplace Layout — ESCorretores / Mercado Livre inspired:
+ * Big search bar, category cards with icons + descriptions, product grid cards
  */
 export default function StoreLayoutMarketplace({
   filteredProducts, subcategories, activeCategory, setActiveCategory,
   categoryCounts, storeTheme, corretorSlug, getTagStyle, getTagLabel,
 }: StoreLayoutProps) {
   const [searchTerm, setSearchTerm] = useState("");
+  const [showAllCats, setShowAllCats] = useState(false);
 
   const visibleProducts = searchTerm
     ? filteredProducts.filter((p: any) =>
@@ -22,52 +37,82 @@ export default function StoreLayoutMarketplace({
       )
     : filteredProducts;
 
+  const activeCats = subcategories.filter(c => c.slug === "todos" || (categoryCounts[c.slug] || 0) > 0);
+
   return (
     <div>
-      {/* ── Search bar (ML style) ── */}
-      <div className="mb-4">
+      {/* ── Search bar ── */}
+      <div className="mb-5">
         <div
-          className="flex items-center gap-2 rounded-lg px-3.5 py-2.5 shadow-sm"
+          className="flex items-center gap-2 rounded-2xl px-4 py-3 shadow-md"
           style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}
         >
-          <Search size={16} style={{ color: storeTheme.textMuted }} />
+          <Search size={18} style={{ color: storeTheme.textMuted }} />
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Buscar nesta loja..."
-            className="flex-1 bg-transparent text-sm outline-none"
+            placeholder="Buscar imóveis..."
+            className="flex-1 bg-transparent text-sm outline-none placeholder:opacity-50"
             style={{ color: storeTheme.text }}
           />
+          {searchTerm && (
+            <button onClick={() => setSearchTerm("")}>
+              <X size={16} style={{ color: storeTheme.textMuted }} />
+            </button>
+          )}
         </div>
       </div>
 
-      {/* ── Horizontal category chips ── */}
-      <div className="mb-5 flex gap-2 overflow-x-auto scrollbar-hide pb-1 -mx-1 px-1">
-        {subcategories.map((cat) => {
-          const isActive = activeCategory === cat.slug;
-          const count = categoryCounts[cat.slug] || 0;
-          const isDisabled = cat.slug !== "todos" && count === 0;
-          return (
+      {/* ── Category cards with icons (scrollable) ── */}
+      <div className="mb-6">
+        <div className="flex gap-2.5 overflow-x-auto scrollbar-hide pb-2 -mx-1 px-1">
+          {(showAllCats ? activeCats : activeCats.slice(0, 6)).map((cat) => {
+            const isActive = activeCategory === cat.slug;
+            const count = categoryCounts[cat.slug] || 0;
+            const Icon = CATEGORY_ICONS[cat.slug] || Home;
+            return (
+              <button
+                key={cat.slug}
+                onClick={() => setActiveCategory(cat.slug)}
+                className="flex-shrink-0 flex flex-col items-center gap-1.5 px-4 py-3 rounded-2xl transition-all min-w-[80px]"
+                style={{
+                  background: isActive ? `${storeTheme.primary}15` : storeTheme.card,
+                  border: `1.5px solid ${isActive ? storeTheme.primary : storeTheme.border}`,
+                  boxShadow: isActive ? `0 4px 12px ${storeTheme.primary}20` : "0 1px 3px rgba(0,0,0,0.06)",
+                }}
+              >
+                <div
+                  className="w-9 h-9 rounded-xl flex items-center justify-center"
+                  style={{
+                    background: isActive ? `${storeTheme.primary}25` : `${storeTheme.border}`,
+                    color: isActive ? storeTheme.primary : storeTheme.textMuted,
+                  }}
+                >
+                  <Icon size={18} />
+                </div>
+                <span className="text-[11px] font-semibold whitespace-nowrap" style={{ color: isActive ? storeTheme.primary : storeTheme.text }}>
+                  {cat.name}
+                </span>
+                {count > 0 && cat.slug !== "todos" && (
+                  <span className="text-[9px] opacity-50" style={{ color: storeTheme.textMuted }}>{count} imóveis</span>
+                )}
+              </button>
+            );
+          })}
+          {!showAllCats && activeCats.length > 6 && (
             <button
-              key={cat.slug}
-              onClick={() => setActiveCategory(cat.slug)}
-              disabled={isDisabled}
-              className="flex-shrink-0 px-4 py-2 rounded-lg text-xs font-semibold transition-all whitespace-nowrap"
-              style={{
-                background: isActive ? storeTheme.primary : storeTheme.card,
-                color: isActive ? "#fff" : storeTheme.textMuted,
-                border: `1px solid ${isActive ? storeTheme.primary : storeTheme.border}`,
-                opacity: isDisabled ? 0.35 : 1,
-              }}
+              onClick={() => setShowAllCats(true)}
+              className="flex-shrink-0 flex flex-col items-center justify-center gap-1.5 px-4 py-3 rounded-2xl min-w-[80px]"
+              style={{ background: storeTheme.card, border: `1.5px solid ${storeTheme.border}` }}
             >
-              {cat.name}
-              {count > 0 && !isActive && (
-                <span className="ml-1 opacity-50">({count})</span>
-              )}
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: storeTheme.border }}>
+                <ChevronRight size={18} style={{ color: storeTheme.textMuted }} />
+              </div>
+              <span className="text-[11px] font-semibold" style={{ color: storeTheme.textMuted }}>Mais</span>
             </button>
-          );
-        })}
+          )}
+        </div>
       </div>
 
       {/* ── Results count ── */}
@@ -75,30 +120,35 @@ export default function StoreLayoutMarketplace({
         <p className="text-xs font-medium" style={{ color: storeTheme.textMuted }}>
           {visibleProducts.length} {visibleProducts.length === 1 ? "resultado" : "resultados"}
         </p>
+        {searchTerm && (
+          <button onClick={() => setSearchTerm("")} className="text-xs font-semibold" style={{ color: storeTheme.primary }}>
+            Limpar busca
+          </button>
+        )}
       </div>
 
-      {/* ── Product cards (ML style) ── */}
+      {/* ── Product grid (2 columns, card style with big image) ── */}
       {visibleProducts.length > 0 ? (
-        <div className="flex flex-col gap-3">
+        <div className="grid grid-cols-2 gap-3">
           {visibleProducts.map((product: any, i: number) => {
             const productLink = `/imoveis/produto/${product.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`;
             return (
               <motion.div
                 key={product.id}
-                initial={{ opacity: 0, y: 12 }}
+                initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.03 }}
               >
                 <Link
                   to={productLink}
-                  className="flex gap-3 rounded-lg overflow-hidden group transition-shadow hover:shadow-lg"
+                  className="block rounded-2xl overflow-hidden group transition-shadow hover:shadow-xl"
                   style={{
                     background: storeTheme.card,
                     border: `1px solid ${storeTheme.border}`,
                   }}
                 >
                   {/* Image */}
-                  <div className="relative w-[140px] h-[140px] flex-shrink-0 overflow-hidden">
+                  <div className="relative aspect-[4/3] overflow-hidden">
                     {product.image ? (
                       <img
                         src={product.image}
@@ -112,59 +162,59 @@ export default function StoreLayoutMarketplace({
                       </div>
                     )}
                     {product.tag && (
-                      <span className={`absolute top-2 left-2 px-2 py-0.5 rounded text-[9px] font-bold shadow ${getTagStyle(product.tag)}`}>
+                      <span className={`absolute top-2 left-2 px-2 py-0.5 rounded-lg text-[9px] font-bold shadow ${getTagStyle(product.tag)}`}>
                         {getTagLabel(product.tag)}
+                      </span>
+                    )}
+                    {product.isAluguel && (
+                      <span className="absolute bottom-2 left-2 px-2 py-0.5 rounded-lg text-[9px] font-bold shadow-md"
+                        style={{ background: storeTheme.primary, color: "#fff" }}>
+                        🏠 Aluguel
                       </span>
                     )}
                   </div>
 
                   {/* Info */}
-                  <div className="flex-1 flex flex-col justify-between py-2.5 pr-3 min-w-0">
-                    <div>
-                      <h3 className="text-[13px] font-normal line-clamp-2 leading-snug" style={{ color: storeTheme.text }}>
-                        {product.title}
-                      </h3>
-                      {product.price > 0 && (
-                        <p className="text-lg font-semibold mt-1.5" style={{ color: storeTheme.text }}>
-                          R$ {product.price.toLocaleString("pt-BR")}
-                          {product.isAluguel && (
-                            <span className="text-xs font-normal ml-1" style={{ color: storeTheme.textMuted }}>/mês</span>
-                          )}
-                        </p>
+                  <div className="p-3">
+                    <h3 className="text-xs font-semibold line-clamp-2 leading-snug mb-1.5" style={{ color: storeTheme.text }}>
+                      {product.title}
+                    </h3>
+
+                    {product.price > 0 && (
+                      <p className="text-base font-bold text-emerald-500">
+                        R$ {product.price.toLocaleString("pt-BR")}
+                        {product.isAluguel && (
+                          <span className="text-[10px] font-normal ml-0.5" style={{ color: storeTheme.textMuted }}>/mês</span>
+                        )}
+                      </p>
+                    )}
+
+                    {product.accepts_financing && (
+                      <p className="text-[9px] mt-0.5 font-medium" style={{ color: "#00a650" }}>
+                        ✓ Aceita financiamento
+                      </p>
+                    )}
+
+                    {/* Specs */}
+                    <div className="flex items-center gap-2 mt-2 text-[10px]" style={{ color: storeTheme.textMuted }}>
+                      {product.bedrooms > 0 && (
+                        <span className="flex items-center gap-0.5"><Bed size={10} /> {product.bedrooms}</span>
                       )}
-                      {product.accepts_financing && (
-                        <p className="text-[10px] mt-0.5" style={{ color: "#00a650" }}>
-                          Aceita financiamento
-                        </p>
+                      {product.bathrooms > 0 && (
+                        <span className="flex items-center gap-0.5"><Bath size={10} /> {product.bathrooms}</span>
+                      )}
+                      {product.area > 0 && (
+                        <span className="flex items-center gap-0.5"><Ruler size={10} /> {product.area}m²</span>
                       )}
                     </div>
 
-                    <div className="flex flex-col gap-1 mt-1.5">
-                      {/* Specs row */}
-                      <div className="flex items-center gap-3 text-[10px]" style={{ color: storeTheme.textMuted }}>
-                        {product.bedrooms > 0 && (
-                          <span className="flex items-center gap-0.5"><Bed size={10} /> {product.bedrooms}q</span>
-                        )}
-                        {product.bathrooms > 0 && (
-                          <span className="flex items-center gap-0.5"><Bath size={10} /> {product.bathrooms}b</span>
-                        )}
-                        {product.area > 0 && (
-                          <span className="flex items-center gap-0.5"><Ruler size={10} /> {product.area}m²</span>
-                        )}
-                      </div>
-                      {/* Location */}
-                      {product.city && (
-                        <p className="text-[10px] flex items-center gap-1" style={{ color: storeTheme.textMuted }}>
-                          <MapPin size={9} />
-                          {product.neighborhood ? `${product.neighborhood}, ${product.city}` : product.city}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Arrow */}
-                  <div className="flex items-center pr-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <ChevronRight size={16} style={{ color: storeTheme.textMuted }} />
+                    {/* Location */}
+                    {product.city && (
+                      <p className="text-[10px] mt-1.5 flex items-center gap-1 truncate" style={{ color: storeTheme.textMuted }}>
+                        <MapPin size={9} className="flex-shrink-0" />
+                        {product.neighborhood ? `${product.neighborhood}, ${product.city}` : product.city}
+                      </p>
+                    )}
                   </div>
                 </Link>
               </motion.div>
@@ -172,11 +222,16 @@ export default function StoreLayoutMarketplace({
           })}
         </div>
       ) : (
-        <div className="text-center py-16 rounded-lg" style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}>
-          <Search size={32} className="mx-auto mb-3 opacity-30" style={{ color: storeTheme.textMuted }} />
+        <div className="text-center py-16 rounded-2xl" style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}>
+          <Search size={36} className="mx-auto mb-3 opacity-20" style={{ color: storeTheme.textMuted }} />
           <p className="text-sm font-medium" style={{ color: storeTheme.textMuted }}>
             {searchTerm ? "Nenhum resultado para essa busca" : "Nenhum anúncio encontrado"}
           </p>
+          {searchTerm && (
+            <button onClick={() => setSearchTerm("")} className="mt-2 text-xs font-semibold" style={{ color: storeTheme.primary }}>
+              Limpar busca
+            </button>
+          )}
         </div>
       )}
     </div>
