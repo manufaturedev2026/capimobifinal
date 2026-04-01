@@ -334,9 +334,9 @@ export default function Index() {
                 <h3 className="font-display font-extrabold text-xl text-white drop-shadow-lg leading-tight">
                   Casa 3 quartos com piscina
                 </h3>
-                <p className="text-white/60 text-xs mt-1 flex items-center gap-1">
-                  📍 Vila Velha, ES
-                </p>
+                 <p className="text-white/60 text-xs mt-1 flex items-center gap-1">
+                   📍 São Paulo, SP
+                 </p>
                 <p className="font-display font-extrabold text-2xl text-emerald-400 mt-2 drop-shadow-lg">
                   R$ 450.000
                 </p>

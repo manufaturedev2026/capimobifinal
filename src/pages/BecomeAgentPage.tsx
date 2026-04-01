@@ -327,7 +327,7 @@ export default function BecomeAgentPage() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={scaleIn}>
               <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/15 text-accent text-xs font-bold uppercase tracking-widest mb-6 border border-accent/20">
-                <Sparkles size={14} /> Exclusivo ES Corretores
+                <Sparkles size={14} /> Exclusivo Brokers Bio
               </span>
               <h2 className="font-display font-black text-4xl md:text-5xl mt-2 mb-5">
                 Sua <span className="text-accent">Loja</span> Estilo

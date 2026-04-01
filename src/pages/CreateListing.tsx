@@ -90,7 +90,7 @@ export default function CreateListing() {
     <div className="min-h-screen bg-background">
       {/* Hero */}
       <div className="relative h-[55vh] sm:h-[65vh] md:h-[80vh] overflow-hidden">
-        <img src={heroImg} alt="Anuncie no ES Corretores" className="absolute inset-0 w-full h-full object-cover" />
+        <img src={heroImg} alt="Anuncie no Brokers Bio" className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-r from-background/80 to-transparent" />
 
