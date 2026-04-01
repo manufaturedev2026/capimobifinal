@@ -211,8 +211,8 @@ export default function CreateListing() {
                     <Monitor size={20} className="text-accent" />
                   </div>
                   <div>
-                    <div className="text-xs text-white/50">Sua vitrine online</div>
-                    <div className="font-display font-bold text-sm text-white">Sempre ativa 24/7</div>
+                    <div className="text-xs text-muted-foreground">Sua vitrine online</div>
+                    <div className="font-display font-bold text-sm text-foreground">Sempre ativa 24/7</div>
                   </div>
                 </div>
               </motion.div>
