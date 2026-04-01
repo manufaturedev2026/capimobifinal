@@ -562,9 +562,11 @@ export default function CompanyProfile() {
         
         {/* Back + Badge */}
         <div className="relative z-10 flex items-center justify-between px-4 pt-4">
-          <Link to="/imoveis" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-white text-xs font-medium">
-            <ArrowLeft size={14} /> Voltar
-          </Link>
+          {user && (
+            <Link to="/painel" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-white text-xs font-medium">
+              <LayoutDashboard size={14} /> Painel
+            </Link>
+          )}
           {isPaid && <PackageBadge tier={sellerTier} size="sm" />}
         </div>
 
