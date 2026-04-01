@@ -596,7 +596,7 @@ export async function generateProposalPdf(data: ProposalData) {
   // Footer
   final.setFont("helvetica", "normal"); final.setFontSize(7);
   final.setTextColor(156, 163, 175);
-  final.text(`Proposta gerada em ${new Date().toLocaleDateString("pt-BR")}  •  LojaES`, W / 2, H - 8, { align: "center" });
+  final.text(`Proposta gerada em ${new Date().toLocaleDateString("pt-BR")}  •  ES Corretores`, W / 2, H - 8, { align: "center" });
 
   final.save(`proposta-${data.id}.pdf`);
 }
