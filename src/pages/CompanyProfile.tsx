@@ -1413,11 +1413,12 @@ export default function CompanyProfile() {
           </AnimatePresence>
         );
       })()}
+      {/* Mobile "Sobre" section - simplified since bio is in hero */}
       <section className="lg:hidden px-4 mt-6 mb-6">
         <div className="max-w-[1800px] mx-auto">
           <div className="rounded-2xl p-5" style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}>
             <h3 className="font-display font-bold text-base mb-3 flex items-center gap-2" style={{ color: storeTheme.text }}>
-              <BadgeCheck size={16} style={{ color: storeTheme.primary }} /> Sobre a empresa
+              <BadgeCheck size={16} style={{ color: storeTheme.primary }} /> Mais informações
             </h3>
             {teamMember && dbProfile?.logo_url && (
               <div className="flex items-center gap-3 mb-3 p-2 rounded-xl" style={{ background: `${storeTheme.primary}10` }}>
@@ -1434,16 +1435,13 @@ export default function CompanyProfile() {
                 <span>CNPJ: {dbProfile.cnpj}</span>
               </div>
             )}
-            {dbProfile?.bio && (
-              <p className="text-sm mb-3 whitespace-pre-line" style={{ color: storeTheme.text }}>{dbProfile.bio}</p>
-            )}
             <div className="space-y-3 text-xs" style={{ color: storeTheme.textMuted }}>
               <div className="flex items-center gap-2">
                 <Store size={13} className="flex-shrink-0" />
                 <span>
                   {dbProfile?.seller_category
-                    ? ({ imobiliaria: "Imobiliária", corretor: "Corretor(a) de Imóveis", proprietario: "Proprietário", construtora: "Construtora", loja_veiculos: "Loja de Veículos", autonomo: "Vendedor Autônomo", concessionaria: "Concessionária" } as Record<string, string>)[dbProfile.seller_category] || (isProperty ? "Especialista em imóveis" : "Especialista em veículos")
-                    : isProperty ? "Especialista em imóveis" : "Especialista em veículos"}
+                    ? ({ imobiliaria: "Imobiliária", corretor: "Corretor(a) de Imóveis", proprietario: "Proprietário", construtora: "Construtora", loja_veiculos: "Loja de Veículos", autonomo: "Vendedor Autônomo", concessionaria: "Concessionária" } as Record<string, string>)[dbProfile.seller_category] || "Especialista em imóveis"
+                    : "Especialista em imóveis"}
                 </span>
               </div>
               {dbProfile?.seller_category === "corretor" && dbProfile?.creci && (
@@ -1460,14 +1458,33 @@ export default function CompanyProfile() {
                 <Shield size={13} className="flex-shrink-0" />
                 <span>{isPaid ? "Vendedor verificado e premium" : "Vendedor ativo na plataforma"}</span>
               </div>
-              <div className="flex items-center gap-2">
-                <Clock size={13} className="flex-shrink-0" />
-                <span>Atendimento em horário comercial</span>
-              </div>
             </div>
           </div>
         </div>
       </section>
+
+      {/* ═══ STICKY MOBILE BOTTOM BAR ═══ */}
+      {company.whatsapp && (
+        <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-card/95 backdrop-blur-xl border-t border-border px-4 py-3 safe-area-pb">
+          <div className="flex gap-2">
+            <button
+              onClick={() => handleWhatsApp(heroProduct?.title || company.name)}
+              className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl bg-[#25d366] text-white font-bold text-sm shadow-lg active:scale-95 transition-transform"
+            >
+              <MessageCircle size={18} /> Falar no WhatsApp
+            </button>
+            <button
+              onClick={() => {
+                const phone = (teamMember?.phone || company.whatsapp || "").replace(/\D/g, "");
+                if (phone) window.open(`tel:+55${phone}`, "_self");
+              }}
+              className="w-12 flex items-center justify-center rounded-2xl border border-border text-foreground active:scale-95 transition-transform"
+            >
+              <Phone size={18} />
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* ═══════════ LOCATION ═══════════ */}
       {company.address && (!isDbProfile || (company as any).show_location) && (
