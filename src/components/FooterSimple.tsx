@@ -22,10 +22,7 @@ export default function FooterSimple() {
             <h3 className="font-display font-bold text-sm text-foreground mb-3">Proprietários</h3>
             <nav className="flex flex-col gap-2.5 text-sm text-muted-foreground">
               <Link to="/anunciar-proprietario" className="flex items-center gap-2 hover:text-foreground transition-colors">
-                <Plus size={14} className="text-primary" /> Anunciar Grátis
-              </Link>
-              <Link to="/meus-imoveis" className="flex items-center gap-2 hover:text-foreground transition-colors">
-                <Home size={14} className="text-primary" /> Meus Imóveis
+                <Plus size={14} className="text-primary" /> Criar Loja
               </Link>
             </nav>
           </div>
