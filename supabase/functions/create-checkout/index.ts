@@ -8,6 +8,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+// Monthly recurring price IDs (just the monthly fee)
 const TIER_PRICES: Record<string, string> = {
   start: "price_1THCtiA3teTHF5ONpr1FStDh",
   premium: "price_1THCuCA3teTHF5ONI7IKoAdr",
@@ -16,6 +17,18 @@ const TIER_PRICES: Record<string, string> = {
   premium_empresa: "price_1THDqLA3teTHF5ON7B1e6zlI",
   prime_empresa: "price_1THDqhA3teTHF5ONtDLVuFVT",
 };
+
+// Setup fee (implementação) in centavos - split into 12 installments
+const SETUP_FEES: Record<string, number> = {
+  start: 29900,       // R$ 299 / 12 = R$ 24,92/mês
+  premium: 71900,     // R$ 719 / 12 = R$ 59,92/mês
+  vip: 137900,        // R$ 1.379 / 12 = R$ 114,92/mês
+  essencial_empresa: 0,
+  premium_empresa: 0,
+  prime_empresa: 0,
+};
+
+const INSTALLMENTS = 12;
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -43,30 +56,91 @@ serve(async (req) => {
       apiVersion: "2025-08-27.basil",
     });
 
-    // Check for existing customer
+    // Find or create customer
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
-    let customerId: string | undefined;
+    let customerId: string;
     if (customers.data.length > 0) {
       customerId = customers.data[0].id;
+    } else {
+      const customer = await stripe.customers.create({
+        email: user.email,
+        metadata: { user_id: user.id },
+      });
+      customerId = customer.id;
     }
 
-    const session = await stripe.checkout.sessions.create({
-      customer: customerId,
-      customer_email: customerId ? undefined : user.email,
-      line_items: [{ price: TIER_PRICES[tier], quantity: 1 }],
-      mode: "subscription",
-      success_url: `${req.headers.get("origin")}/painel?checkout=success&tier=${tier}`,
-      cancel_url: `${req.headers.get("origin")}/pacotes?checkout=cancelled`,
-      metadata: {
-        user_id: user.id,
-        tier,
-      },
-    });
+    const setupFee = SETUP_FEES[tier] || 0;
 
-    return new Response(JSON.stringify({ url: session.url }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 200,
-    });
+    if (setupFee > 0) {
+      // Use Checkout with setup fee as a separate line item (12x installment price)
+      const installmentAmount = Math.ceil(setupFee / INSTALLMENTS); // per month in centavos
+
+      // Create an inline price for the installment
+      const setupPrice = await stripe.prices.create({
+        currency: "brl",
+        unit_amount: installmentAmount,
+        recurring: {
+          interval: "month",
+        },
+        product_data: {
+          name: `Implementação ${tier.charAt(0).toUpperCase() + tier.slice(1)} (${INSTALLMENTS}x)`,
+        },
+        metadata: {
+          type: "setup_fee",
+          tier,
+          total_installments: String(INSTALLMENTS),
+        },
+      });
+
+      const session = await stripe.checkout.sessions.create({
+        customer: customerId,
+        line_items: [
+          { price: TIER_PRICES[tier], quantity: 1 },
+          { price: setupPrice.id, quantity: 1 },
+        ],
+        mode: "subscription",
+        success_url: `${req.headers.get("origin")}/painel?checkout=success&tier=${tier}`,
+        cancel_url: `${req.headers.get("origin")}/pacotes?checkout=cancelled`,
+        metadata: {
+          user_id: user.id,
+          tier,
+          has_setup_fee: "true",
+          setup_installments: String(INSTALLMENTS),
+        },
+        subscription_data: {
+          metadata: {
+            user_id: user.id,
+            tier,
+            has_setup_fee: "true",
+            setup_price_id: setupPrice.id,
+            setup_installments_remaining: String(INSTALLMENTS),
+          },
+        },
+      });
+
+      return new Response(JSON.stringify({ url: session.url }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 200,
+      });
+    } else {
+      // No setup fee - simple subscription
+      const session = await stripe.checkout.sessions.create({
+        customer: customerId,
+        line_items: [{ price: TIER_PRICES[tier], quantity: 1 }],
+        mode: "subscription",
+        success_url: `${req.headers.get("origin")}/painel?checkout=success&tier=${tier}`,
+        cancel_url: `${req.headers.get("origin")}/pacotes?checkout=cancelled`,
+        metadata: {
+          user_id: user.id,
+          tier,
+        },
+      });
+
+      return new Response(JSON.stringify({ url: session.url }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 200,
+      });
+    }
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
     return new Response(JSON.stringify({ error: msg }), {
