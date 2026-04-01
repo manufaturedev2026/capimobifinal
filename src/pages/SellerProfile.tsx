@@ -778,7 +778,3 @@ function ChangePasswordSection() {
     </form>
   );
 }
-      </form>
-    </div>
-  );
-}
