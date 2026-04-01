@@ -489,7 +489,7 @@ export default function CompanyProfile() {
 
           {/* Twitter Card */}
           <meta name="twitter:card" content="summary_large_image" />
-          <meta name="twitter:title" content={`${company.name} — Imóveis em ${dbProfile?.city || "ES"}`} />
+          <meta name="twitter:title" content={`${company.name} — Imóveis em ${dbProfile?.city || "Brasil"}`} />
           <meta name="twitter:description" content={dbProfile?.bio ? dbProfile.bio.slice(0, 200) : `Veja os ${products.length} anúncios de ${company.name}`} />
           {company.logo && <meta name="twitter:image" content={company.logo} />}
 

@@ -15,7 +15,7 @@ export default function PrivacyPage() {
         <div className="prose prose-sm max-w-none text-foreground space-y-6">
           <section>
             <h2 className="font-display font-bold text-xl mb-3">1. Introdução</h2>
-            <p className="text-muted-foreground leading-relaxed">A ES Corretores ("nós", "nosso") opera o site redeimoveisgb.lovable.app. Esta política descreve como coletamos, usamos e protegemos suas informações pessoais quando você utiliza nosso marketplace de imóveis e veículos.</p>
+            <p className="text-muted-foreground leading-relaxed">A Brokers Bio ("nós", "nosso") opera o site redeimoveisgb.lovable.app. Esta política descreve como coletamos, usamos e protegemos suas informações pessoais quando você utiliza nosso marketplace de imóveis.</p>
           </section>
 
           <section>

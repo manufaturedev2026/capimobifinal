@@ -20,7 +20,7 @@ export default function TermsPage() {
 
           <section>
             <h2 className="font-display font-bold text-xl mb-3">2. Descrição do Serviço</h2>
-            <p className="text-muted-foreground leading-relaxed">O ES Corretores é um marketplace que conecta vendedores e compradores de imóveis e veículos no Espírito Santo. Atuamos como intermediários, fornecendo a plataforma para publicação e busca de anúncios.</p>
+            <p className="text-muted-foreground leading-relaxed">O Brokers Bio é uma plataforma que conecta vendedores e compradores de imóveis em todo o Brasil. Atuamos como intermediários, fornecendo a plataforma para publicação e busca de anúncios.</p>
           </section>
 
           <section>

@@ -152,11 +152,11 @@ export default function NeighborhoodPage() {
           </h2>
           <div className="prose prose-sm dark:prose-invert max-w-none text-muted-foreground">
             <p>
-              O bairro {neighborhoodName} está localizado em {cityName}, no estado do Espírito Santo.
+              O bairro {neighborhoodName} está localizado em {cityName}.
               {stats && stats.count > 0 ? ` Atualmente há ${stats.count} imóveis disponíveis nesta região, com preços variando de ${formatPrice(stats.minPrice)} a ${formatPrice(stats.maxPrice)}.` : " Fique de olho nas novas oportunidades que surgem constantemente."}
             </p>
             <p>
-              O ES Corretores é o marketplace imobiliário líder do Espírito Santo, conectando compradores diretamente com corretores e imobiliárias da região. Encontre seu imóvel ideal em {neighborhoodName} com contato direto via WhatsApp.
+              O Brokers Bio é a plataforma que conecta compradores diretamente com corretores e imobiliárias de todo o Brasil. Encontre seu imóvel ideal em {neighborhoodName} com contato direto via WhatsApp.
             </p>
           </div>
         </div>
