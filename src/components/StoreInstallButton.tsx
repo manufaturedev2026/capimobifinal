@@ -73,13 +73,16 @@ export default function StoreInstallButton({ variant = "default" }: StoreInstall
     }
   };
 
+  const btnClass = variant === "hero-light"
+    ? "flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-white/15 text-white text-xs font-medium active:scale-95 transition-transform"
+    : variant === "hero-dark"
+    ? "flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/10 backdrop-blur-md text-white text-xs font-medium active:scale-95 transition-transform"
+    : "w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary text-primary-foreground font-bold text-xs hover:bg-primary/90 transition-colors";
+
   return (
     <>
-      <button
-        onClick={handleClick}
-        className="flex items-center gap-2 px-5 py-3 rounded-2xl bg-primary text-primary-foreground font-bold text-sm shadow-lg hover:bg-primary/90 active:scale-95 transition-all"
-      >
-        <Download size={18} />
+      <button onClick={handleClick} className={btnClass}>
+        <Download size={variant === "default" ? 14 : 13} />
         Instalar APP
       </button>
 
