@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Users, DollarSign, Banknote, Check, X, CreditCard, Search } from "lucide-react";
+import { Users, DollarSign, Banknote, Check, X, CreditCard, Search, Settings, Save } from "lucide-react";
 
 interface UserWithReferral {
   id: string;
