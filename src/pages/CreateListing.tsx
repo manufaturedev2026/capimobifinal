@@ -41,7 +41,7 @@ const benefits = [
   {
     icon: TrendingUp,
     title: "Mais Vendas",
-    description: "Corretores que anunciam no Brokers Bio vendem até 3x mais rápido que em plataformas tradicionais.",
+    description: "Corretores que anunciam no Brokers App vendem até 3x mais rápido que em plataformas tradicionais.",
     accent: true,
   },
   {
@@ -90,7 +90,7 @@ export default function CreateListing() {
     <div className="min-h-screen bg-background">
       {/* Hero */}
       <div className="relative h-[55vh] sm:h-[65vh] md:h-[80vh] overflow-hidden">
-        <img src={heroImg} alt="Anuncie no Brokers Bio" className="absolute inset-0 w-full h-full object-cover" />
+        <img src={heroImg} alt="Anuncie no Brokers App" className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-r from-background/80 to-transparent" />
 
@@ -147,7 +147,7 @@ export default function CreateListing() {
         <div className="container max-w-6xl mx-auto px-4">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-8 sm:mb-12">
             <h2 className="font-display font-bold text-2xl sm:text-3xl md:text-4xl text-foreground mb-3">
-              Por que anunciar no <span className="text-accent">Brokers Bio</span>?
+              Por que anunciar no <span className="text-accent">Brokers App</span>?
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">Tudo que você precisa para vender mais imóveis em um só lugar.</p>
           </motion.div>
@@ -360,7 +360,7 @@ export default function CreateListing() {
               Pronto para vender <span className="text-accent">mais</span>?
             </h2>
             <p className="text-muted-foreground text-sm sm:text-base mb-6 sm:mb-8 max-w-lg mx-auto">
-              Cadastre-se gratuitamente e teste por 7 dias grátis no Brokers Bio.
+              Cadastre-se gratuitamente e teste por 7 dias grátis no Brokers App.
             </p>
             <Link to="/entrar" className="inline-flex items-center justify-center gap-2 px-6 sm:px-10 py-3 sm:py-4 rounded-xl bg-accent text-accent-foreground font-bold text-xs sm:text-sm hover:bg-accent/90 transition-all shadow-lg shadow-accent/20 w-full sm:w-auto">
               Cadastrar e Testar 7 Dias Grátis <ArrowRight size={14} />

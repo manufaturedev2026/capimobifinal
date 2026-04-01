@@ -528,7 +528,7 @@ export default function AdminPanel() {
                         </button>
                         {seller.phone && (
                           <a
-                            href={`https://wa.me/55${seller.phone.replace(/\D/g, '')}?text=${encodeURIComponent(`Olá ${seller.company_name || seller.full_name}! 👋 Seja bem-vindo(a) ao Brokers Bio! Sou da equipe de suporte e estou aqui para te ajudar com qualquer dúvida sobre a plataforma. Como posso te ajudar?`)}`}
+                            href={`https://wa.me/55${seller.phone.replace(/\D/g, '')}?text=${encodeURIComponent(`Olá ${seller.company_name || seller.full_name}! 👋 Seja bem-vindo(a) ao Brokers App! Sou da equipe de suporte e estou aqui para te ajudar com qualquer dúvida sobre a plataforma. Como posso te ajudar?`)}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-green-500/10 text-green-600 text-xs font-medium hover:bg-green-500/20 transition-colors border border-green-500/20"

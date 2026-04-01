@@ -441,7 +441,7 @@ export default function CompanyProfile() {
       const phone = teamMember.phone.replace(/\D/g, "");
       const msg = productId
         ? `Olá ${teamMember.full_name}! 🏠 Vi o imóvel *${title}* na sua loja e gostaria de mais informações.\n\n🔗 ${link}`
-        : `Olá ${teamMember.full_name}! 🏠 Vim da sua loja Brokers Bio e gostaria de mais informações sobre seus imóveis.\n\n🔗 ${link}`;
+        : `Olá ${teamMember.full_name}! 🏠 Vim da sua loja Brokers App e gostaria de mais informações sobre seus imóveis.\n\n🔗 ${link}`;
       window.open(`https://wa.me/55${phone}?text=${encodeURIComponent(msg)}`, "_blank");
       return;
     }
@@ -490,7 +490,7 @@ export default function CompanyProfile() {
       {/* ═══════════ SEO META TAGS ═══════════ */}
       {company && (
         <Helmet>
-          <title>{company.name} — Imóveis em {dbProfile?.city || "Brasil"} | Brokers Bio</title>
+          <title>{company.name} — Imóveis em {dbProfile?.city || "Brasil"} | Brokers App</title>
           <meta name="description" content={`${company.name} — ${dbProfile?.bio ? dbProfile.bio.slice(0, 140) : `Encontre os melhores imóveis com ${company.name} em ${dbProfile?.city || "Brasil"}`}.`} />
           <link rel="canonical" href={`https://redeimoveisgb.lovable.app/empresa/${dbProfile?.slug || id}`} />
 
@@ -500,7 +500,7 @@ export default function CompanyProfile() {
           <meta property="og:description" content={dbProfile?.bio ? dbProfile.bio.slice(0, 200) : `Veja os ${products.length} anúncios de ${company.name}`} />
           <meta property="og:url" content={`https://redeimoveisgb.lovable.app/empresa/${dbProfile?.slug || id}`} />
           {company.logo && <meta property="og:image" content={company.logo} />}
-          <meta property="og:site_name" content="Brokers Bio" />
+          <meta property="og:site_name" content="Brokers App" />
 
           {/* Twitter Card */}
           <meta name="twitter:card" content="summary_large_image" />
@@ -620,7 +620,7 @@ export default function CompanyProfile() {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="center" className="w-48">
                     <DropdownMenuItem onClick={() => {
-                      const text = `Confira ${company.name} no Brokers Bio: ${window.location.href}`;
+                      const text = `Confira ${company.name} no Brokers App: ${window.location.href}`;
                       window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
                     }}>
                       <MessageCircle size={16} className="mr-2 text-[#25d366]" /> Enviar via WhatsApp
@@ -780,7 +780,7 @@ export default function CompanyProfile() {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="center" className="w-48">
                 <DropdownMenuItem onClick={() => {
-                  const text = `Confira ${company.name} no Brokers Bio: ${window.location.href}`;
+                  const text = `Confira ${company.name} no Brokers App: ${window.location.href}`;
                   window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
                 }}>
                   <MessageCircle size={16} className="mr-2 text-[#25d366]" /> Enviar via WhatsApp
@@ -1016,7 +1016,7 @@ export default function CompanyProfile() {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-48">
                     <DropdownMenuItem onClick={() => {
-                      const text = `Confira ${company.name} no Brokers Bio: ${window.location.href}`;
+                      const text = `Confira ${company.name} no Brokers App: ${window.location.href}`;
                       window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
                     }}>
                       <MessageCircle size={16} className="mr-2 text-[#25d366]" /> Enviar via WhatsApp

@@ -35,9 +35,9 @@ export default defineConfig(({ mode }) => ({
         ],
       },
       manifest: {
-        name: "ES Corretores - Imóveis no Espírito Santo",
-        short_name: "ESCorretores",
-        description: "Marketplace de imóveis no Espírito Santo. Encontre casas, apartamentos, terrenos e mais.",
+        name: "Brokers App - Seu App de Imóveis",
+        short_name: "BrokersApp",
+        description: "Crie seu próprio app de imóveis. Perfeito para corretores, imobiliárias e construtoras.",
         theme_color: "#002F6C",
         background_color: "#002F6C",
         lang: "pt-BR",

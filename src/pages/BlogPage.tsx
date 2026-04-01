@@ -91,7 +91,7 @@ export default function BlogPage() {
   return (
     <div className="min-h-screen bg-background">
       <Helmet>
-        <title>Blog | Brokers Bio - Dicas e Notícias do Mercado Imobiliário</title>
+        <title>Blog | Brokers App - Dicas e Notícias do Mercado Imobiliário</title>
         <meta
           name="description"
           content="Blog sobre mercado imobiliário no Brasil. Dicas de compra, investimento, decoração e tendências."
