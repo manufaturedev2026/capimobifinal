@@ -265,7 +265,7 @@ export default function ProductDetail() {
     if (p.color) specs["Cor"] = p.color;
   }
   const displaySpecs = isDb ? specs : product.specs;
-  const relatedProducts: any[] = [];
+  const relatedProducts = relatedItems;
 
   const scrollCarousel = (dir: "left" | "right") => {
     if (!carouselRef.current) return;
