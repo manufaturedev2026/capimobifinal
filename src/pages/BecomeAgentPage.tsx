@@ -319,6 +319,85 @@ export default function BecomeAgentPage() {
         </div>
       </section>
 
+      {/* ═══════════ NETFLIX STORE PREVIEW ═══════════ */}
+      <section className="py-20 md:py-28 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent pointer-events-none" />
+        <div className="container max-w-6xl mx-auto px-4 relative">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={scaleIn}>
+              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/15 text-accent text-xs font-bold uppercase tracking-widest mb-6 border border-accent/20">
+                <Sparkles size={14} /> Exclusivo ES Corretores
+              </span>
+              <h2 className="font-display font-black text-4xl md:text-5xl mt-2 mb-5">
+                Sua <span className="text-accent">Loja</span> Estilo
+                <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">Netflix</span>
+              </h2>
+              <p className="text-white/60 text-lg leading-relaxed mb-8">
+                Cada corretor ganha uma loja personalizada com visual moderno e profissional.
+                Seus imóveis exibidos em carrosséis elegantes, stories interativos e modo cinema.
+              </p>
+              <div className="space-y-4 mb-8">
+                {[
+                  "Carrosséis de imóveis com fotos em alta qualidade",
+                  "Stories interativos com destaque para seus melhores anúncios",
+                  "Modo Cinema para apresentação imersiva",
+                  "Link exclusivo para compartilhar com clientes",
+                  "Painel com estatísticas de visualizações e contatos",
+                ].map((benefit, i) => (
+                  <motion.div key={i} custom={i} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
+                    className="flex items-center gap-3"
+                  >
+                    <div className="w-6 h-6 rounded-full bg-accent/20 flex items-center justify-center shrink-0">
+                      <CheckCircle2 size={14} className="text-accent" />
+                    </div>
+                    <span className="text-white/70 text-sm">{benefit}</span>
+                  </motion.div>
+                ))}
+              </div>
+              <a
+                href="/entrar?trial=7"
+                className="group inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-accent text-accent-foreground font-bold text-sm hover:bg-accent/90 transition-all shadow-2xl shadow-accent/30 hover:shadow-accent/50 hover:scale-105"
+              >
+                <Sparkles size={16} />
+                Começar Grátis por 7 Dias
+                <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
+              </a>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: 60 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 1, ease: "easeOut" }}
+              className="relative"
+            >
+              {/* Glow behind mockup */}
+              <div className="absolute -inset-6 bg-gradient-to-br from-primary/20 via-accent/10 to-primary/20 rounded-[2rem] blur-3xl opacity-60" />
+              <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-primary/20 border border-white/10">
+                <img src={lojaNetflixImg} alt="Loja estilo Netflix do ES Corretores" loading="lazy" className="w-full h-auto" width={1440} height={960} />
+              </div>
+              {/* Floating badge */}
+              <motion.div
+                animate={{ y: [0, -8, 0] }}
+                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute -bottom-4 -right-4 md:bottom-4 md:right-4 bg-white/10 backdrop-blur-xl rounded-2xl p-4 border border-white/15 shadow-xl"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center">
+                    <TrendingUp size={20} className="text-accent" />
+                  </div>
+                  <div>
+                    <div className="text-xs text-white/50">Visualizações hoje</div>
+                    <div className="font-display font-black text-xl text-white">+247</div>
+                  </div>
+                </div>
+              </motion.div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
       {/* ═══════════ WHY SECTION ═══════════ */}
       <section id="por-que" className="py-20 md:py-32">
         <div className="container max-w-6xl mx-auto px-4">
