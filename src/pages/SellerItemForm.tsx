@@ -484,14 +484,19 @@ export default function SellerItemForm() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="text-xs text-muted-foreground mb-1 block">Estado</label>
-              <input value="Espírito Santo" readOnly className="w-full px-4 py-3 rounded-xl border border-input bg-muted text-muted-foreground text-sm cursor-not-allowed" />
+              <select value={form.state} onChange={(e) => setForm((f) => ({ ...f, state: e.target.value, city: "", neighborhood: "" }))}
+                className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none">
+                <option value="">Selecione o estado</option>
+                {BRAZIL_STATES.map((s) => <option key={s.uf} value={s.uf}>{s.name}</option>)}
+              </select>
             </div>
             <div>
               <label className="text-xs text-muted-foreground mb-1 block">Cidade</label>
               <select value={form.city} onChange={(e) => setForm((f) => ({ ...f, city: e.target.value, neighborhood: "" }))}
-                className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none">
-                <option value="">Selecione a cidade</option>
-                {ES_CITIES.map((c) => <option key={c} value={c}>{c}</option>)}
+                className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+                disabled={!form.state || citiesLoading}>
+                <option value="">{citiesLoading ? "Carregando..." : "Selecione a cidade"}</option>
+                {(form.state === "ES" ? ES_CITIES : ibgeCities).map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
           </div>
