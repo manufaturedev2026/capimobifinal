@@ -51,11 +51,19 @@ const PLANS_PREVIEW = [
 export default function Index() {
   const { user } = useAuth();
   const [activeScreen, setActiveScreen] = useState(0);
+  const [phoneScreen, setPhoneScreen] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveScreen((p) => (p + 1) % SHOWCASE_SCREENS.length);
     }, 3500);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPhoneScreen((p) => (p + 1) % 4);
+    }, 4000);
     return () => clearInterval(interval);
   }, []);
 
@@ -311,101 +319,176 @@ export default function Index() {
             </motion.div>
           </div>
 
-          {/* Mock store preview — Showcase style */}
+          {/* Phone frame with auto-rotating store screens */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="bg-card border border-border rounded-3xl overflow-hidden shadow-2xl shadow-black/10 max-w-sm mx-auto"
+            className="relative max-w-[320px] mx-auto"
           >
-            {/* Showcase Hero Banner */}
-            <div className="relative aspect-[3/4] overflow-hidden">
-              <img
-                src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&h=1000&fit=crop"
-                alt="Casa premium"
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-              <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-transparent" />
+            {/* Phone frame */}
+            <div className="relative rounded-[3rem] border-[6px] border-foreground/20 bg-black shadow-2xl shadow-black/30 overflow-hidden">
+              {/* Notch */}
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-28 h-6 bg-black rounded-b-2xl z-20" />
 
-              {/* Profile badge */}
-              <div className="absolute top-4 left-4 flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/30 backdrop-blur-md">
-                <div className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center border border-white/20">
-                  <span className="text-white font-display font-bold text-[10px]">JR</span>
+              {/* Screen content — carousel */}
+              <div className="relative aspect-[9/19.5] overflow-hidden bg-[#0a0f1a]">
+                <AnimatePresence mode="wait">
+                  {(() => {
+                    const screens = [
+                      // Screen 1: Showcase hero
+                      <motion.div key="screen-1" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.6 }} className="absolute inset-0">
+                        <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&h=1200&fit=crop" alt="Loja showcase" className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
+                        <div className="absolute top-10 left-4 flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-md">
+                          <div className="w-6 h-6 rounded-full bg-primary/40 flex items-center justify-center border border-white/20">
+                            <span className="text-white font-bold text-[8px]">JR</span>
+                          </div>
+                          <span className="text-white text-[10px] font-semibold">João Imóveis</span>
+                          <Badge className="bg-primary text-[7px] px-1 py-0">Premium</Badge>
+                        </div>
+                        <div className="absolute bottom-0 left-0 right-0 p-4 pb-5">
+                          <h3 className="font-display font-extrabold text-lg text-white leading-tight">Casa 3 Quartos com Piscina</h3>
+                          <p className="text-white/50 text-[10px] mt-1">📍 São Paulo, SP</p>
+                          <p className="font-display font-extrabold text-xl text-emerald-400 mt-1">R$ 450.000</p>
+                          <div className="flex gap-2 mt-3">
+                            <span className="flex-1 flex items-center justify-center gap-1 py-2.5 rounded-xl bg-primary text-white font-bold text-[11px]"><Eye size={12} /> Ver</span>
+                            <span className="flex items-center justify-center gap-1 px-4 py-2.5 rounded-xl bg-[#25d366] text-white font-bold text-[11px]"><MessageCircle size={12} /></span>
+                          </div>
+                        </div>
+                        <div className="absolute bottom-[5.5rem] left-1/2 -translate-x-1/2 flex gap-1">
+                          <span className="h-0.5 w-4 rounded-full bg-white" />
+                          <span className="h-0.5 w-1 rounded-full bg-white/40" />
+                          <span className="h-0.5 w-1 rounded-full bg-white/40" />
+                        </div>
+                      </motion.div>,
+
+                      // Screen 2: Grid catalog
+                      <motion.div key="screen-2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.6 }} className="absolute inset-0 bg-[#0a0f1a] pt-10 px-3">
+                        <div className="flex items-center gap-2 mb-3">
+                          <div className="w-8 h-8 rounded-full bg-primary/30 flex items-center justify-center border border-primary/40">
+                            <span className="text-white font-bold text-[9px]">JR</span>
+                          </div>
+                          <div>
+                            <p className="text-white font-display font-bold text-xs">João Imóveis</p>
+                            <p className="text-white/40 text-[9px]">6 imóveis</p>
+                          </div>
+                        </div>
+                        <div className="flex gap-1.5 mb-3 overflow-hidden">
+                          {["Todos", "Casas", "Aptos", "Terrenos"].map((f, i) => (
+                            <span key={f} className={`px-2.5 py-1 rounded-lg text-[9px] font-medium whitespace-nowrap ${i === 0 ? "bg-primary text-white" : "bg-white/10 text-white/60"}`}>{f}</span>
+                          ))}
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          {[
+                            { img: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=300&h=250&fit=crop", title: "Casa 3 quartos", price: "R$ 450.000" },
+                            { img: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=300&h=250&fit=crop", title: "Apto 2 quartos", price: "R$ 320.000" },
+                            { img: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=300&h=250&fit=crop", title: "Cobertura Duplex", price: "R$ 890.000" },
+                            { img: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=300&h=250&fit=crop", title: "Terreno 300m²", price: "R$ 180.000" },
+                            { img: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=300&h=250&fit=crop", title: "Sala Comercial", price: "R$ 210.000" },
+                            { img: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=300&h=250&fit=crop", title: "Casa c/ Jardim", price: "R$ 520.000" },
+                          ].map((item) => (
+                            <div key={item.title} className="rounded-lg overflow-hidden bg-white/5 border border-white/10">
+                              <img src={item.img} alt={item.title} className="w-full aspect-[4/3] object-cover" loading="lazy" />
+                              <div className="p-1.5">
+                                <p className="text-white font-semibold text-[9px] truncate">{item.title}</p>
+                                <p className="text-emerald-400 font-bold text-[10px]">{item.price}</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </motion.div>,
+
+                      // Screen 3: Property detail
+                      <motion.div key="screen-3" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.6 }} className="absolute inset-0">
+                        <img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600&h=400&fit=crop" alt="Detalhe imóvel" className="w-full aspect-[16/10] object-cover" />
+                        <div className="bg-[#0a0f1a] px-4 pt-3 pb-4">
+                          <Badge className="bg-accent/20 text-accent text-[8px] border-accent/30 mb-2">Premium</Badge>
+                          <h3 className="font-display font-bold text-sm text-white">Cobertura Duplex 4 Suítes</h3>
+                          <p className="text-white/40 text-[10px] mt-0.5">📍 Rio de Janeiro, RJ</p>
+                          <p className="font-display font-extrabold text-lg text-emerald-400 mt-1">R$ 890.000</p>
+                          <div className="flex gap-3 mt-3 text-white/60 text-[9px]">
+                            <span>🛏 4 quartos</span>
+                            <span>🚿 3 banheiros</span>
+                            <span>📐 180m²</span>
+                          </div>
+                          <div className="flex gap-2 mt-3">
+                            <span className="flex-1 flex items-center justify-center gap-1 py-2.5 rounded-xl bg-[#25d366] text-white font-bold text-[10px]"><MessageCircle size={11} /> WhatsApp</span>
+                            <span className="flex-1 flex items-center justify-center gap-1 py-2.5 rounded-xl bg-primary text-white font-bold text-[10px]"><Share2 size={11} /> Compartilhar</span>
+                          </div>
+                          <div className="mt-3 p-2.5 rounded-lg bg-white/5 border border-white/10">
+                            <p className="text-white/80 text-[9px] leading-relaxed">Cobertura espetacular com vista panorâmica, 4 suítes sendo 1 master com closet e hidro. Ampla sala com pé-direito duplo...</p>
+                          </div>
+                        </div>
+                      </motion.div>,
+
+                      // Screen 4: Stories + profile
+                      <motion.div key="screen-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.6 }} className="absolute inset-0 bg-[#0a0f1a] pt-10 px-4">
+                        <div className="flex items-center gap-3 mb-4">
+                          <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary to-accent p-[2px]">
+                            <div className="w-full h-full rounded-full bg-[#0a0f1a] flex items-center justify-center">
+                              <span className="text-white font-display font-bold text-sm">JR</span>
+                            </div>
+                          </div>
+                          <div>
+                            <p className="text-white font-display font-bold text-sm">João Imóveis</p>
+                            <p className="text-white/40 text-[10px]">CRECI 12345-ES · São Paulo</p>
+                            <div className="flex gap-2 mt-1">
+                              <Badge className="bg-primary/20 text-primary text-[7px] border-primary/30">Premium</Badge>
+                              <Badge className="bg-white/10 text-white/60 text-[7px]">⭐ 4.9</Badge>
+                            </div>
+                          </div>
+                        </div>
+                        {/* Stories circles */}
+                        <div className="flex gap-3 mb-4">
+                          {[
+                            "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=100&h=100&fit=crop",
+                            "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=100&h=100&fit=crop",
+                            "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=100&h=100&fit=crop",
+                          ].map((src, i) => (
+                            <div key={i} className="flex flex-col items-center gap-1">
+                              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-accent p-[2px]">
+                                <img src={src} alt="" className="w-full h-full rounded-full object-cover" />
+                              </div>
+                              <span className="text-white/40 text-[8px]">Novo</span>
+                            </div>
+                          ))}
+                        </div>
+                        {/* Stats */}
+                        <div className="grid grid-cols-3 gap-2 mb-4">
+                          {[
+                            { label: "Imóveis", value: "6" },
+                            { label: "Visualizações", value: "1.2k" },
+                            { label: "Contatos", value: "48" },
+                          ].map((s) => (
+                            <div key={s.label} className="bg-white/5 border border-white/10 rounded-lg p-2 text-center">
+                              <p className="text-white font-display font-bold text-sm">{s.value}</p>
+                              <p className="text-white/40 text-[8px]">{s.label}</p>
+                            </div>
+                          ))}
+                        </div>
+                        <p className="text-white/60 text-[10px] leading-relaxed">Corretor especializado em imóveis de alto padrão em São Paulo. Mais de 10 anos de experiência no mercado imobiliário.</p>
+                      </motion.div>,
+                    ];
+                    return screens[phoneScreen];
+                  })()}
+                </AnimatePresence>
+
+                {/* Screen indicator dots */}
+                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+                  {[0, 1, 2, 3].map((i) => (
+                    <button
+                      key={i}
+                      onClick={() => setPhoneScreen(i)}
+                      className={`h-1.5 rounded-full transition-all duration-300 ${phoneScreen === i ? "w-5 bg-primary" : "w-1.5 bg-white/30"}`}
+                    />
+                  ))}
                 </div>
-                <span className="text-white text-xs font-semibold">João Imóveis</span>
-              </div>
-
-              {/* Tag */}
-              <Badge className="absolute top-4 right-4 bg-primary text-primary-foreground text-[10px] shadow-lg">
-                Destaque
-              </Badge>
-
-              {/* Content overlay */}
-              <div className="absolute bottom-0 left-0 right-0 p-5 pb-6">
-                <h3 className="font-display font-extrabold text-xl text-white drop-shadow-lg leading-tight">
-                  Casa 3 quartos com piscina
-                </h3>
-                 <p className="text-white/60 text-xs mt-1 flex items-center gap-1">
-                   📍 São Paulo, SP
-                 </p>
-                <p className="font-display font-extrabold text-2xl text-emerald-400 mt-2 drop-shadow-lg">
-                  R$ 450.000
-                </p>
-                <div className="flex gap-2 mt-4">
-                  <span className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl bg-primary text-primary-foreground font-bold text-sm">
-                    <Eye size={16} /> Ver Detalhes
-                  </span>
-                  <span className="flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-[#25d366] text-white font-bold text-sm">
-                    <MessageCircle size={16} />
-                  </span>
-                </div>
-              </div>
-
-              {/* Navigation arrows */}
-              <div className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/30 backdrop-blur flex items-center justify-center text-white">
-                <ChevronRight size={16} className="rotate-180" />
-              </div>
-              <div className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/30 backdrop-blur flex items-center justify-center text-white">
-                <ChevronRight size={16} />
-              </div>
-
-              {/* Progress dots */}
-              <div className="absolute bottom-[6.5rem] left-1/2 -translate-x-1/2 flex gap-1.5">
-                <span className="h-1 w-5 rounded-full bg-white" />
-                <span className="h-1 w-1.5 rounded-full bg-white/40" />
-                <span className="h-1 w-1.5 rounded-full bg-white/40" />
-                <span className="h-1 w-1.5 rounded-full bg-white/40" />
               </div>
             </div>
 
-            {/* Grid of other properties */}
-            <div className="p-3">
-              <p className="font-display font-bold text-xs text-foreground mb-2 px-1">Todos os Imóveis <span className="font-normal text-muted-foreground">(6)</span></p>
-              <div className="grid grid-cols-2 gap-2">
-                {[
-                  { title: "Apto 2 quartos", price: "R$ 320.000", tag: "Novo", img: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=300&fit=crop" },
-                  { title: "Terreno 300m²", price: "R$ 180.000", tag: null, img: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400&h=300&fit=crop" },
-                  { title: "Cobertura Duplex", price: "R$ 890.000", tag: "Premium", img: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400&h=300&fit=crop" },
-                  { title: "Sala Comercial", price: "R$ 210.000", tag: null, img: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&h=300&fit=crop" },
-                ].map((item) => (
-                  <div key={item.title} className="rounded-xl overflow-hidden bg-secondary/50 border border-border">
-                    <div className="relative aspect-[4/3] overflow-hidden">
-                      <img src={item.img} alt={item.title} className="w-full h-full object-cover" loading="lazy" />
-                      {item.tag && (
-                        <Badge className="absolute top-1.5 left-1.5 bg-primary text-primary-foreground text-[8px] px-1.5 py-0.5">
-                          {item.tag}
-                        </Badge>
-                      )}
-                    </div>
-                    <div className="p-2">
-                      <p className="font-display font-semibold text-[11px] text-foreground truncate">{item.title}</p>
-                      <p className="text-emerald-500 font-display font-bold text-xs mt-0.5">{item.price}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+            {/* Glow effect behind phone */}
+            <div className="absolute -inset-8 -z-10 rounded-full bg-primary/10 blur-3xl" />
           </motion.div>
 
           <div className="text-center mt-8">
