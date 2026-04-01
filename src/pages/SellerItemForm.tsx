@@ -115,6 +115,7 @@ export default function SellerItemForm() {
   const { subscription, currentTier, config: pkgConfig, isExpired } = useSubscription(user?.id);
 
   const [form, setForm] = useState(INITIAL_FORM);
+  const { cities: ibgeCities, loading: citiesLoading } = useCitiesByState(form.state);
 
   useEffect(() => {
     if (!authLoading && !user) navigate("/entrar");
