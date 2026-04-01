@@ -43,6 +43,8 @@ export default function SellerCrmTab({ userId, sellerId }: SellerCrmTabProps) {
   const [expandedContact, setExpandedContact] = useState<string | null>(null);
   const [editingNotes, setEditingNotes] = useState<string | null>(null);
   const [notesValue, setNotesValue] = useState("");
+  const [editingName, setEditingName] = useState<string | null>(null);
+  const [nameValue, setNameValue] = useState("");
 
   // Add contact form
   const [showAddForm, setShowAddForm] = useState(false);
