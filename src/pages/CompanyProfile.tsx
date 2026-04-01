@@ -850,7 +850,7 @@ export default function CompanyProfile() {
                     <Store size={13} className="flex-shrink-0" />
                     <span>
                       {dbProfile?.seller_category
-                        ? ({ imobiliaria: "Imobiliária", corretor: "Corretor(a) de Imóveis", proprietario: "Proprietário" } as Record<string, string>)[dbProfile.seller_category] || "Especialista em imóveis"
+                        ? ({ imobiliaria: "Imobiliária", corretor: "Corretor(a) de Imóveis", proprietario: "Proprietário", construtora: "Construtora" } as Record<string, string>)[dbProfile.seller_category] || "Especialista em imóveis"
                         : "Especialista em imóveis"}
                     </span>
                   </div>
