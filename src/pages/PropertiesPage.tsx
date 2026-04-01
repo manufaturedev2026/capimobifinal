@@ -9,7 +9,7 @@ import { useRealListings } from "@/hooks/useRealListings";
 import PackageBadge from "@/components/PackageBadge";
 import HeroBannerCarousel from "@/components/HeroBannerCarousel";
 import { useCityDetection } from "@/hooks/useCityDetection";
-import { ES_CITIES } from "@/data/esCities";
+
 import { ES_NEIGHBORHOODS } from "@/data/esNeighborhoods";
 import PropertyCardSkeleton from "@/components/PropertyCardSkeleton";
 import FavoriteButton from "@/components/FavoriteButton";
@@ -168,8 +168,7 @@ export default function PropertiesPage() {
     realItems.forEach((item) => {
       if (item.city) citiesFromItems.add(item.city.trim());
     });
-    // Merge with ES_CITIES for backward compatibility
-    ES_CITIES.forEach((c) => citiesFromItems.add(c));
+    
     return Array.from(citiesFromItems).sort();
   }, [realItems]);
 

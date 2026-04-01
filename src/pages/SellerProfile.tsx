@@ -6,7 +6,6 @@ import { ArrowLeft, Save, Upload, User, Instagram, Video, Link as LinkIcon } fro
 import { useToast } from "@/hooks/use-toast";
 import { useSellerSubscription } from "@/hooks/useSubscription";
 import type { Database } from "@/integrations/supabase/types";
-import { ES_CITIES } from "@/data/esCities";
 import { BRAZIL_STATES } from "@/data/brazilStates";
 import { useCitiesByState } from "@/hooks/useCitiesByState";
 import StoreThemePicker from "@/components/StoreThemePicker";
@@ -65,7 +64,7 @@ export default function SellerProfile() {
         logo_url: profile.logo_url || "",
         address: profile.address || "",
         city: profile.city || "",
-        state: profile.state || "ES",
+        state: profile.state || "",
         show_location: profile.show_location ?? true,
         instagram: (profile as any).instagram || "",
         bio: (profile as any).bio || "",
@@ -137,7 +136,7 @@ export default function SellerProfile() {
       logo_url: form.logo_url.trim() || null,
       slug: cleanSlug || null,
       seller_type: "imoveis",
-      state: "ES",
+      state: form.state || null,
     };
 
     if (!profileData.seller_category) delete profileData.seller_category;
@@ -479,7 +478,7 @@ export default function SellerProfile() {
                 className="px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
                 disabled={!form.state || citiesLoading}>
                 <option value="">{citiesLoading ? "Carregando..." : "Selecione a cidade"}</option>
-                {(form.state === "ES" ? ES_CITIES : ibgeCities).map((city) => (
+                {ibgeCities.map((city) => (
                   <option key={city} value={city}>{city}</option>
                 ))}
               </select>

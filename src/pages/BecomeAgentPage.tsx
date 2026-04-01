@@ -110,7 +110,7 @@ const whyItems = [
   {
     icon: MapPin,
     title: "Atuação Local",
-    description: "Conheça cada bairro, cada oportunidade. Torne-se referência na sua cidade no Espírito Santo.",
+    description: "Conheça cada bairro, cada oportunidade. Torne-se referência na sua cidade em qualquer estado do Brasil.",
   },
   {
     icon: Zap,
@@ -217,7 +217,7 @@ export default function BecomeAgentPage() {
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       {/* ═══════════ HERO ═══════════ */}
       <div className="relative h-screen min-h-[600px] overflow-hidden">
-        <img src={heroImg} alt="Mercado imobiliário do Espírito Santo" className="absolute inset-0 w-full h-full object-cover" width={1920} height={1080} />
+        <img src={heroImg} alt="Mercado imobiliário do Brasil" className="absolute inset-0 w-full h-full object-cover" width={1920} height={1080} />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/20" />
         <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-transparent to-transparent" />
 
@@ -256,7 +256,7 @@ export default function BecomeAgentPage() {
 
               <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mb-10 leading-relaxed">
                 Descubra como iniciar uma carreira de sucesso no mercado imobiliário
-                do Espírito Santo. Liberdade financeira, flexibilidade e crescimento
+                brasileiro. Liberdade financeira, flexibilidade e crescimento
                 profissional ilimitado.
               </p>
 
@@ -407,7 +407,7 @@ export default function BecomeAgentPage() {
             <h2 className="font-display font-black text-4xl md:text-5xl mt-3 mb-4">
               Por que ser <span className="text-primary">Corretor</span>?
             </h2>
-            <p className="text-muted-foreground max-w-xl mx-auto">A profissão que mais cresce no Espírito Santo oferece oportunidades únicas.</p>
+            <p className="text-muted-foreground max-w-xl mx-auto">A profissão que mais cresce no Brasil oferece oportunidades únicas.</p>
           </motion.div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -449,7 +449,7 @@ export default function BecomeAgentPage() {
               </h2>
               <p className="text-muted-foreground mb-8">
                 Compare o potencial de renda de um corretor de imóveis com um emprego tradicional.
-                Os valores são baseados em médias do mercado do Espírito Santo.
+                Os valores são baseados em médias do mercado imobiliário brasileiro.
               </p>
               <div className="space-y-5">
                 {incomeComparison.map((item, i) => (
@@ -715,7 +715,7 @@ export default function BecomeAgentPage() {
               </h2>
               <p className="text-muted-foreground text-lg mb-10 max-w-lg mx-auto">
                 Fale conosco pelo WhatsApp e descubra como se tornar um corretor de
-                imóveis de sucesso no Espírito Santo.
+                imóveis de sucesso em todo o Brasil.
               </p>
 
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">

@@ -49,7 +49,7 @@ export default function CitySEO({ city, segment = "imoveis", itemCount, items = 
       address: {
         "@type": "PostalAddress",
         addressLocality: cityName,
-        addressRegion: "ES",
+        addressRegion: "",
         addressCountry: "BR",
       },
     },

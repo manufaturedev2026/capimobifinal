@@ -7,7 +7,6 @@ import { useToast } from "@/hooks/use-toast";
 import { getTagStyle, getTagLabel, getTagEmoji, TAG_CATEGORIES } from "@/data/products";
 import type { Database } from "@/integrations/supabase/types";
 import { useSubscription, PACKAGE_CONFIG } from "@/hooks/useSubscription";
-import { ES_CITIES } from "@/data/esCities";
 import { ES_NEIGHBORHOODS } from "@/data/esNeighborhoods";
 import { BRAZIL_STATES } from "@/data/brazilStates";
 import { useCitiesByState } from "@/hooks/useCitiesByState";
@@ -140,7 +139,7 @@ export default function SellerItemForm() {
               category: d.category,
               price: d.price?.toString() || "",
               city: d.city || "",
-              state: d.state || "ES",
+              state: d.state || "",
               neighborhood: d.neighborhood || "",
               address: d.address?.replace(/,\s*\d+$/, '') || "",
               addressNumber: d.address?.match(/,\s*(\d+)$/)?.[1] || "",
@@ -496,7 +495,7 @@ export default function SellerItemForm() {
                 className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
                 disabled={!form.state || citiesLoading}>
                 <option value="">{citiesLoading ? "Carregando..." : "Selecione a cidade"}</option>
-                {(form.state === "ES" ? ES_CITIES : ibgeCities).map((c) => <option key={c} value={c}>{c}</option>)}
+                {ibgeCities.map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
           </div>
