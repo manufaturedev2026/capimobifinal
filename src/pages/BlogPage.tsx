@@ -77,77 +77,127 @@ export default function BlogPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("Todos");
 
-  const filtered = blogArticles.filter(a => {
-    const matchesSearch = !searchQuery || a.title.toLowerCase().includes(searchQuery.toLowerCase()) || a.description.toLowerCase().includes(searchQuery.toLowerCase());
+  const filtered = blogArticles.filter((a) => {
+    const matchesSearch =
+      !searchQuery ||
+      a.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      a.description.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCat = activeCategory === "Todos" || a.category === activeCategory;
     return matchesSearch && matchesCat;
   });
 
+  const hero = blogArticles[0];
+
   return (
-    <div className="min-h-screen bg-secondary/50">
+    <div className="min-h-screen bg-background">
       <Helmet>
         <title>Blog | ES Corretores - Dicas e Notícias do Mercado Imobiliário</title>
-        <meta name="description" content="Blog sobre mercado imobiliário do Espírito Santo. Dicas de compra, investimento, decoração e tendências." />
+        <meta
+          name="description"
+          content="Blog sobre mercado imobiliário do Espírito Santo. Dicas de compra, investimento, decoração e tendências."
+        />
       </Helmet>
 
-      {/* Hero */}
-      <section className="relative bg-gradient-to-r from-primary to-primary/80 py-16 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="font-display font-bold text-3xl md:text-5xl text-primary-foreground">Blog Imobiliário</h1>
-          <p className="text-primary-foreground/80 mt-3 text-sm md:text-lg">Dicas, tendências e guias do mercado imobiliário do Espírito Santo</p>
-          <div className="mt-6 max-w-xl mx-auto flex bg-card rounded-2xl shadow-xl overflow-hidden">
-            <div className="flex-1 flex items-center px-4 gap-3">
-              <Search size={20} className="text-muted-foreground" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                placeholder="Buscar artigos..."
-                className="w-full py-3 bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none text-sm"
-              />
-            </div>
+      {/* Hero - Netflix style */}
+      <div className="relative h-[55vh] md:h-[70vh] overflow-hidden">
+        <img
+          src={hero.cover}
+          alt={hero.title}
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-background/80 to-transparent" />
+
+        <div className="absolute bottom-0 left-0 right-0 pb-10 md:pb-16">
+          <div className="container max-w-6xl mx-auto px-4">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/20 text-accent text-xs font-bold uppercase tracking-wider mb-4">
+                <BookOpen size={12} /> {hero.category}
+              </span>
+              <h1 className="font-display font-black text-3xl md:text-5xl text-foreground leading-tight mb-3 max-w-2xl">
+                {hero.title}
+              </h1>
+              <p className="text-muted-foreground max-w-xl mb-6">{hero.description}</p>
+
+              {/* Search bar */}
+              <div className="max-w-md flex bg-card/80 backdrop-blur-sm rounded-2xl border border-border shadow-xl overflow-hidden">
+                <div className="flex-1 flex items-center px-4 gap-3">
+                  <Search size={18} className="text-muted-foreground" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Buscar artigos..."
+                    className="w-full py-3 bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none text-sm"
+                  />
+                </div>
+              </div>
+            </motion.div>
           </div>
         </div>
-      </section>
+      </div>
 
       {/* Categories */}
-      <section className="px-4 md:px-8 mt-6">
-        <div className="max-w-6xl mx-auto flex gap-2 overflow-x-auto scrollbar-hide pb-1">
-          {categories.map(cat => (
+      <div className="container max-w-6xl mx-auto px-4 py-6">
+        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+          {categories.map((cat) => (
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
-              className={`px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-colors ${
-                activeCategory === cat ? "bg-primary text-primary-foreground" : "bg-card border border-border text-muted-foreground hover:text-foreground"
+              className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
+                activeCategory === cat
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground"
               }`}
             >
               {cat}
             </button>
           ))}
         </div>
-      </section>
+      </div>
 
       {/* Articles Grid */}
-      <section className="px-4 md:px-8 mt-6 pb-12">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="container max-w-6xl mx-auto px-4 pb-20">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filtered.map((article, i) => (
             <motion.div
               key={article.slug}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.05 }}
             >
-              <Link to={`/blog/${article.slug}`} className="group block bg-card border border-border rounded-2xl overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-                <div className="relative aspect-[16/9] overflow-hidden">
-                  <img src={article.cover} alt={article.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
-                  <span className="absolute top-3 left-3 px-3 py-1 rounded-full bg-primary text-primary-foreground text-xs font-bold">{article.category}</span>
+              <Link
+                to={`/blog/${article.slug}`}
+                className="group block rounded-2xl overflow-hidden bg-card border border-border hover:border-primary/40 transition-all hover:shadow-xl hover:-translate-y-1 duration-300"
+              >
+                <div className="relative aspect-video overflow-hidden">
+                  <img
+                    src={article.cover}
+                    alt={article.title}
+                    loading="lazy"
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                  <span className="absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-primary/80 text-primary-foreground text-xs font-bold">
+                    {article.category}
+                  </span>
                 </div>
                 <div className="p-5">
-                  <h2 className="font-display font-bold text-lg text-foreground line-clamp-2 group-hover:text-primary transition-colors">{article.title}</h2>
-                  <p className="text-sm text-muted-foreground mt-2 line-clamp-2">{article.description}</p>
-                  <div className="flex items-center justify-between mt-4">
+                  <h2 className="font-display font-bold text-foreground text-lg mb-2 group-hover:text-primary transition-colors line-clamp-2">
+                    {article.title}
+                  </h2>
+                  <p className="text-muted-foreground text-sm line-clamp-2 mb-3">
+                    {article.description}
+                  </p>
+                  <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                      <span className="flex items-center gap-1"><Clock size={12} />{article.readTime}</span>
+                      <span className="flex items-center gap-1">
+                        <Clock size={12} /> {article.readTime}
+                      </span>
                       <span>{new Date(article.date).toLocaleDateString("pt-BR")}</span>
                     </div>
                     <span className="text-primary text-sm font-semibold flex items-center gap-1 group-hover:gap-2 transition-all">
@@ -162,7 +212,7 @@ export default function BlogPage() {
         {filtered.length === 0 && (
           <p className="text-center text-muted-foreground py-16">Nenhum artigo encontrado</p>
         )}
-      </section>
+      </div>
     </div>
   );
 }
