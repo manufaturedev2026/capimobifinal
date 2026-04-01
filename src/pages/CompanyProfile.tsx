@@ -1156,6 +1156,7 @@ export default function CompanyProfile() {
                         <Instagram size={14} /> Instagram
                       </a>
                     )}
+                    <StoreInstallButton />
                   </div>
                 </div>
               </div>
