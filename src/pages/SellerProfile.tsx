@@ -9,7 +9,7 @@ import type { Database } from "@/integrations/supabase/types";
 import { BRAZIL_STATES } from "@/data/brazilStates";
 import { useCitiesByState } from "@/hooks/useCitiesByState";
 import StoreThemePicker from "@/components/StoreThemePicker";
-import { STORE_LAYOUTS } from "@/components/store-layouts";
+import { STORE_LAYOUTS, isLayoutAllowed, getMinTierForLayout } from "@/components/store-layouts";
 import layoutNetflix from "@/assets/layout-previews/layout-netflix.jpg";
 import layoutMinimal from "@/assets/layout-previews/layout-minimal.jpg";
 import layoutMagazine from "@/assets/layout-previews/layout-magazine.jpg";
