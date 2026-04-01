@@ -195,8 +195,8 @@ export default function CreateListing() {
                   </motion.div>
                 ))}
               </div>
-              <Link to="/entrar?trial=7" className="group inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-accent text-accent-foreground font-bold text-sm hover:bg-accent/90 transition-all shadow-2xl shadow-accent/30 hover:scale-105">
-                <Sparkles size={16} /> Testar Grátis por 7 Dias <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
+              <Link to="/entrar?trial=7" className="group inline-flex items-center justify-center gap-2 px-5 sm:px-8 py-3 sm:py-4 rounded-2xl bg-accent text-accent-foreground font-bold text-xs sm:text-sm hover:bg-accent/90 transition-all shadow-2xl shadow-accent/30 hover:scale-105 w-full sm:w-auto">
+                <Sparkles size={14} /> Testar Grátis por 7 Dias <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
               </Link>
             </motion.div>
 
