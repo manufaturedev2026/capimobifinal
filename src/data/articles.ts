@@ -848,13 +848,13 @@ O Modo Cinema adiciona um vídeo hero no estilo Netflix no topo da sua loja virt
 
 ### Requisitos
 
-- Plano **Start** ou superior (todos os planos pagos incluem)
-- Um vídeo publicado no **YouTube**
+- Plano **VIP** ou superior
+- Um vídeo publicado no **YouTube** (Público ou Não listado)
 
 ### Como Configurar
 
 1. Acesse **"Editar Perfil"** no menu do Painel
-2. Role até a seção **"Vídeo de Apresentação"** (disponível para VIP+)
+2. Role até a seção **"Vídeo de Apresentação"** (disponível a partir do plano VIP)
 3. Preencha os campos:
    - **URL do YouTube** – Cole o link do seu vídeo
    - **Título do Vídeo** – Ex: "Conheça nosso trabalho"
