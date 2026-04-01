@@ -63,7 +63,7 @@ const blogArticles: BlogArticle[] = [
   {
     slug: "documentacao-compra-imovel",
     title: "Documentação para Compra de Imóvel: Checklist Completo",
-    description: "Lista completa de todos os documentos necessários para comprar um imóvel com segurança no Espírito Santo.",
+    description: "Lista completa de todos os documentos necessários para comprar um imóvel com segurança no Brasil.",
     cover: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800&h=400&fit=crop",
     category: "Legal",
     readTime: "6 min",
