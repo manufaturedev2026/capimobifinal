@@ -937,9 +937,6 @@ export default function CompanyProfile() {
                       <img src={categoryCardImages[cat.slug] || cat.img} alt={cat.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/10" />
                       {isActive && <div className="absolute inset-0 bg-primary/20" />}
-                      <div className="absolute left-2 top-2 rounded-full bg-black/45 px-1.5 py-1 backdrop-blur-sm">
-                        <span className="text-[8px] font-semibold uppercase tracking-[0.14em] text-white/75">Categoria</span>
-                      </div>
                       <div className="absolute bottom-0 left-0 right-0 p-2 text-left">
                         <div className="flex items-center gap-1">
                           <Icon size={11} className="text-white/80" />
