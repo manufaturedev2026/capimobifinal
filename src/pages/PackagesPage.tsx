@@ -13,7 +13,7 @@ const tierIcons = { basico: Zap, start: Zap, premium: Star, vip: Crown };
 
 export default function PackagesPage() {
   const { user, profile } = useAuth();
-  const { subscription, currentTier, refetch } = useSubscription(user?.id);
+  const { subscription, currentTier, config: activeConfig, refetch } = useSubscription(user?.id);
   const navigate = useNavigate();
   const { toast } = useToast();
   const [selecting, setSelecting] = useState<string | null>(null);
