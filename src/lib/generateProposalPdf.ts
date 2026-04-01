@@ -317,16 +317,20 @@ export async function generateProposalPdf(data: ProposalData) {
 
   // ── WhatsApp button ──
   if (data.sellerPhone) {
-    const whatsMsg = encodeURIComponent(`Olá! Tenho interesse no imóvel: ${data.title}`);
+    const whatsMsg = encodeURIComponent(`Ola! Tenho interesse no imovel: ${data.title}`);
     const whatsPhone = data.sellerPhone.replace(/\D/g, "");
     const whatsUrl = `https://wa.me/55${whatsPhone}?text=${whatsMsg}`;
+    const whatsLabel = "Chamar no WhatsApp";
+    const buttonX = cX + 6;
+    const buttonW = cW - 12;
 
     pdf.setFillColor(37, 211, 102);
-    drawRoundedRect(pdf, cX + 6, y, cW - 12, 11, 3, "F");
+    drawRoundedRect(pdf, buttonX, y, buttonW, 11, 3, "F");
     pdf.setFont("helvetica", "bold");
     pdf.setFontSize(10);
     pdf.setTextColor(255, 255, 255);
-    pdf.textWithLink("Chamar no WhatsApp", cX + cW / 2 - 18, y + 7.5, { url: whatsUrl });
+    pdf.text(whatsLabel, buttonX + (buttonW - pdf.getTextWidth(whatsLabel)) / 2, y + 7.5);
+    pdf.link(buttonX, y, buttonW, 11, { url: whatsUrl });
     y += 15;
   }
 
@@ -561,14 +565,18 @@ export async function generateProposalPdf(data: ProposalData) {
 
   // WhatsApp
   if (data.sellerPhone) {
-    const whatsMsg = encodeURIComponent(`Olá! Tenho interesse no imóvel: ${data.title}`);
+    const whatsMsg = encodeURIComponent(`Ola! Tenho interesse no imovel: ${data.title}`);
     const whatsPhone = data.sellerPhone.replace(/\D/g, "");
     const whatsUrl = `https://wa.me/55${whatsPhone}?text=${whatsMsg}`;
+    const whatsLabel = "Chamar no WhatsApp";
+    const buttonX = cX + 6;
+    const buttonW = cW - 12;
     final.setFillColor(37, 211, 102);
-    drawRoundedRect(final, cX + 6, fy, cW - 12, 11, 3, "F");
+    drawRoundedRect(final, buttonX, fy, buttonW, 11, 3, "F");
     final.setFont("helvetica", "bold"); final.setFontSize(10);
     final.setTextColor(255, 255, 255);
-    final.textWithLink("Chamar no WhatsApp", cX + cW / 2 - 18, fy + 7.5, { url: whatsUrl });
+    final.text(whatsLabel, buttonX + (buttonW - final.getTextWidth(whatsLabel)) / 2, fy + 7.5);
+    final.link(buttonX, fy, buttonW, 11, { url: whatsUrl });
     fy += 15;
   }
 
