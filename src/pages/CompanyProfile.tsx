@@ -985,7 +985,7 @@ export default function CompanyProfile() {
                         <MessageCircle size={14} /> Falar no WhatsApp
                       </button>
                     )}
-                    {(company as any).instagram && ["vip", "essencial_empresa", "premium_empresa"].includes(sellerTier || "") && (
+                    {(company as any).instagram && ["start", "vip", "premium", "essencial_empresa", "premium_empresa", "prime_empresa"].includes(sellerTier || "") && (
                       <a
                         href={`https://instagram.com/${(company as any).instagram.replace(/^@/, "")}`}
                         target="_blank"
