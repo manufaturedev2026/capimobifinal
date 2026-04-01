@@ -14,8 +14,13 @@ import {
   Globe,
   Award,
   Building,
+  Sparkles,
+  Monitor,
+  Smartphone,
 } from "lucide-react";
 import heroImg from "@/assets/hero-anunciar.jpg";
+import lojaPreviewImg from "@/assets/loja-preview-anunciar.jpg";
+import painelPreviewImg from "@/assets/painel-preview-anunciar.jpg";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
