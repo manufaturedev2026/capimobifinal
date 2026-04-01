@@ -165,10 +165,9 @@ export default function ProductDetail() {
     ? price ? `R$ ${Number(price).toLocaleString("pt-BR")}` : ""
     : formatPrice(price);
   const productUrl = window.location.href;
-  const handleWhatsAppClick = (e?: React.MouseEvent) => {
+  const doWhatsAppRedirect = (e?: React.MouseEvent) => {
     if (e) e.preventDefault();
     if (isDb && dbItem) trackSellerEvent(dbItem.seller_id, "whatsapp_click", dbItem.id, teamMember?.id);
-    // When a specific broker is selected, go directly to their WhatsApp
     if (teamMember && teamMember.phone) {
       const phone = teamMember.phone.replace(/\D/g, "");
       const msg = `Olá ${teamMember.full_name}! 🏠 Vi o imóvel *${title}* - ${formattedPrice} na sua loja e gostaria de mais informações.\n\n🔗 ${productUrl}`;
@@ -182,6 +181,15 @@ export default function ProductDetail() {
       title: `${title} - ${formattedPrice}`,
       link: productUrl,
     });
+  };
+  const handleWhatsAppClick = (e?: React.MouseEvent) => {
+    if (e) e.preventDefault();
+    if (isDb && dbSeller) {
+      setPendingWhatsAppAction(() => () => doWhatsAppRedirect());
+      setLeadCaptureOpen(true);
+    } else {
+      doWhatsAppRedirect(e);
+    }
   };
   const mapAddress = isDb
     ? [product.address, product.neighborhood, product.city, product.state].filter(Boolean).join(", ") || company.address
