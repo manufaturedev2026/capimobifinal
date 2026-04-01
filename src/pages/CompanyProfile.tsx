@@ -502,7 +502,7 @@ export default function CompanyProfile() {
               "url": `https://redeimoveisgb.lovable.app/empresa/${dbProfile?.slug || id}`,
               "logo": company.logo || undefined,
               "image": company.logo || undefined,
-              "description": dbProfile?.bio || `Imóveis em ${dbProfile?.city || "ES"}`,
+              "description": dbProfile?.bio || `Imóveis em ${dbProfile?.city || "Brasil"}`,
               "address": company.address ? {
                 "@type": "PostalAddress",
                 "streetAddress": dbProfile?.address || "",
