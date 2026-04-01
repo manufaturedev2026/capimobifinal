@@ -542,7 +542,7 @@ export default function CompanyProfile() {
 
       {isDbProfile && dbProfile?.id && <StoreEffects sellerId={dbProfile.id} />}
       {/* ═══════════ MOBILE PROFILE HERO ═══════════ */}
-      <section className="md:hidden relative overflow-hidden">
+      <section className="lg:hidden relative overflow-hidden">
         {isMarketplace ? (
           /* ── Marketplace-style compact hero ── */
           <>
