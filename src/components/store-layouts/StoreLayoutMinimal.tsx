@@ -18,7 +18,7 @@ export default function StoreLayoutMinimal({
       {/* Top bar: scrollable pills + hamburger */}
       <div className="lg:hidden mb-5 flex items-center gap-2">
         <div className="flex-1 flex gap-2 overflow-x-auto scrollbar-hide -mx-1 px-1 pb-1">
-          {subcategories.filter(c => c.slug === "todos" || (categoryCounts[c.slug] || 0) > 0).slice(0, 4).map((cat) => {
+          {subcategories.filter(c => ["todos", "casa", "apartamento"].includes(c.slug)).map((cat) => {
             const isActive = activeCategory === cat.slug;
             return (
               <button
@@ -35,15 +35,13 @@ export default function StoreLayoutMinimal({
             );
           })}
         </div>
-        {subcategories.length > 4 && (
-          <button
-            onClick={() => setMenuOpen(!menuOpen)}
-            className="flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center transition-colors"
-            style={{ background: `${storeTheme.border}`, color: storeTheme.text }}
-          >
-            {menuOpen ? <X size={18} /> : <Menu size={18} />}
-          </button>
-        )}
+        <button
+          onClick={() => setMenuOpen(!menuOpen)}
+          className="flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center transition-colors"
+          style={{ background: `${storeTheme.border}`, color: storeTheme.text }}
+        >
+          {menuOpen ? <X size={18} /> : <Menu size={18} />}
+        </button>
       </div>
 
       {/* Hamburger dropdown */}
