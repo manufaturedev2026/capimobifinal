@@ -1140,6 +1140,11 @@ export default function SellerDashboard() {
               <ReferralTab />
             )}
 
+            {/* CRM Tab */}
+            {activeTab === "crm" && user?.id && profile?.id && (
+              <SellerCrmTab userId={user.id} sellerId={profile.id} />
+            )}
+
             {/* Team Tab */}
             {activeTab === "team" && showTeamTab && profile?.id && (
               <TeamMembersTab
