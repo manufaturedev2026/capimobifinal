@@ -52,14 +52,16 @@ export default function AdminReferralTab() {
 
   const fetchAll = async () => {
     setLoading(true);
-    const [{ data: profiles }, { data: comms }, { data: wds }] = await Promise.all([
+    const [{ data: profiles }, { data: comms }, { data: wds }, { data: settings }] = await Promise.all([
       supabase.from("profiles").select("id, user_id, full_name, email, referral_code, referral_balance, referral_total_earned, referred_by") as any,
       supabase.from("commissions").select("*").order("created_at", { ascending: false }) as any,
       supabase.from("withdrawals").select("*").order("created_at", { ascending: false }) as any,
+      supabase.from("platform_settings").select("*").eq("key", "referral_commission_rate").maybeSingle() as any,
     ]);
     setUsers(profiles || []);
     setCommissions(comms || []);
     setWithdrawals(wds || []);
+    if (settings?.value) setCommissionRate(settings.value);
     setLoading(false);
   };
 
