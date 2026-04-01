@@ -461,43 +461,56 @@ export default function SellerDashboard() {
             {/* Overview Tab */}
             {activeTab === "overview" && (
               <div className="space-y-6">
-                {/* Stats */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {/* Welcome Banner - Desktop */}
+                <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
+                  className="hidden lg:block dashboard-header-gradient rounded-2xl p-6 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-40 h-40 rounded-full bg-white/5 -translate-y-1/2 translate-x-1/4" />
+                  <div className="absolute bottom-0 left-1/3 w-24 h-24 rounded-full bg-white/5 translate-y-1/2" />
+                  <div className="relative">
+                    <h1 className="font-display font-bold text-2xl text-white">Bem-vindo, {profile?.full_name?.split(" ")[0] || "Vendedor"}! 👋</h1>
+                    <p className="text-white/60 text-sm mt-1">Gerencie seus imóveis e acompanhe seu desempenho.</p>
+                  </div>
+                </motion.div>
+
+                {/* Stats Grid — Premium Cards */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
                   {[
-                    { label: "Total", value: items.length, icon: Package, color: "text-primary" },
-                    { label: "Ativos", value: totalActive, icon: ToggleRight, color: "text-green-500" },
-                    { label: "Inativos", value: totalInactive, icon: ToggleLeft, color: "text-muted-foreground" },
-                    { label: "Visualizações", value: totalViews, icon: Eye, color: "text-accent" },
+                    { label: "Total de Imóveis", value: items.length, icon: Package, gradient: "from-primary/10 to-primary/5", iconBg: "bg-primary/15", iconColor: "text-primary", borderColor: "border-primary/20" },
+                    { label: "Ativos", value: totalActive, icon: ToggleRight, gradient: "from-green-500/10 to-green-500/5", iconBg: "bg-green-500/15", iconColor: "text-green-500", borderColor: "border-green-500/20" },
+                    { label: "Inativos", value: totalInactive, icon: ToggleLeft, gradient: "from-muted/50 to-muted/30", iconBg: "bg-muted", iconColor: "text-muted-foreground", borderColor: "border-border" },
+                    { label: "Visualizações", value: totalViews, icon: Eye, gradient: "from-accent/10 to-accent/5", iconBg: "bg-accent/15", iconColor: "text-accent", borderColor: "border-accent/20" },
                   ].map((s, i) => (
-                    <motion.div key={s.label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}
-                      className="bg-card border border-border rounded-2xl p-4">
-                      <div className="flex items-center gap-2 mb-1">
-                        <s.icon size={16} className={s.color} />
-                        <span className="text-xs text-muted-foreground">{s.label}</span>
+                    <motion.div key={s.label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }}
+                      className={`stat-card-premium bg-gradient-to-br ${s.gradient} border ${s.borderColor}`}>
+                      <div className={`w-10 h-10 rounded-xl ${s.iconBg} flex items-center justify-center mb-3`}>
+                        <s.icon size={20} className={s.iconColor} />
                       </div>
-                      <p className="font-display font-bold text-2xl text-foreground">{s.value}</p>
+                      <p className="font-display font-extrabold text-3xl text-foreground tracking-tight">{s.value}</p>
+                      <p className="text-xs text-muted-foreground font-medium mt-1">{s.label}</p>
                     </motion.div>
                   ))}
                 </div>
 
-                {/* Package Info */}
-                <div className={`rounded-2xl border-2 p-4 ${isExpired ? "border-destructive bg-destructive/5" : isExpiringSoon ? "border-amber-400 bg-amber-400/5" : "border-border bg-card"}`}>
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${pkgConfig.color} flex items-center justify-center`}>
-                        {currentTier === "vip" ? <Crown size={20} className="text-white" /> : currentTier === "premium" ? <Star size={20} className="text-white" /> : <Zap size={20} className="text-white" />}
+                {/* Package Info — Premium */}
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
+                  className={`rounded-2xl border-2 p-5 relative overflow-hidden ${isExpired ? "border-destructive bg-destructive/5" : isExpiringSoon ? "border-amber-400 bg-amber-400/5" : "border-primary/20 bg-gradient-to-r from-primary/5 via-card to-accent/5"}`}>
+                  <div className="absolute top-0 right-0 w-32 h-32 rounded-full bg-primary/5 -translate-y-1/2 translate-x-1/2" />
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 relative">
+                    <div className="flex items-center gap-4">
+                      <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${pkgConfig.color} flex items-center justify-center shadow-lg`}>
+                        {currentTier === "vip" ? <Crown size={22} className="text-white" /> : currentTier === "premium" ? <Star size={22} className="text-white" /> : <Zap size={22} className="text-white" />}
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="font-display font-bold text-foreground">Pacote {pkgConfig.name}</span>
+                          <span className="font-display font-bold text-foreground text-lg">Pacote {pkgConfig.name}</span>
                           <PackageBadge tier={currentTier} />
                         </div>
                         {subscription ? (
-                          <p className="text-xs text-muted-foreground">
+                          <p className="text-xs text-muted-foreground mt-0.5">
                             {isExpired ? (
-                              <span className="text-destructive font-semibold">Expirado!</span>
+                              <span className="text-destructive font-semibold">⚠️ Expirado — renove agora!</span>
                             ) : (
-                              <>Expira em {daysUntilExpiry} dias • {totalActive}/{pkgConfig.maxItems >= 9999 ? "∞" : pkgConfig.maxItems} anúncios</>
+                              <>Expira em <strong>{daysUntilExpiry} dias</strong> • {totalActive}/{pkgConfig.maxItems >= 9999 ? "∞" : pkgConfig.maxItems} anúncios</>
                             )}
                           </p>
                         ) : (
@@ -507,16 +520,16 @@ export default function SellerDashboard() {
                     </div>
                     <div className="flex gap-2">
                       {(isExpired || isExpiringSoon) && (
-                        <Link to="/pacotes" className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-500 text-white text-xs font-bold hover:bg-amber-600 transition-colors">
+                        <Link to="/pacotes" className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-amber-500 text-white text-xs font-bold hover:bg-amber-600 transition-colors shadow-md">
                           <AlertTriangle size={14} /> Renovar
                         </Link>
                       )}
-                      <Link to="/pacotes" className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary/10 text-primary text-xs font-bold hover:bg-primary/20 transition-colors">
+                      <Link to="/pacotes" className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-primary/10 text-primary text-xs font-bold hover:bg-primary/20 transition-colors">
                         <Package size={14} /> {subscription ? "Alterar Plano" : "Ver Pacotes"}
                       </Link>
                     </div>
                   </div>
-                </div>
+                </motion.div>
 
                 {/* Admin Link - mobile */}
                 {isAdmin && (
@@ -525,51 +538,59 @@ export default function SellerDashboard() {
                   </Link>
                 )}
 
-                {/* Quick Actions */}
+                {/* Quick Actions — Premium */}
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Link to="/painel/novo"
-                    className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:bg-primary/90 transition-colors shadow-md">
-                    <Plus size={16} /> Adicionar Novo Item
+                    className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-bold text-sm hover:shadow-lg hover:shadow-primary/25 transition-all">
+                    <Plus size={18} /> Adicionar Novo Imóvel
                   </Link>
                   <button onClick={() => setActiveTab("items")}
-                    className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-secondary text-secondary-foreground font-bold text-sm hover:bg-secondary/80 transition-colors">
-                    <Package size={16} /> Ver Meus Anúncios
+                    className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl bg-card border border-border text-foreground font-bold text-sm hover:bg-secondary hover:shadow-md transition-all">
+                    <Package size={18} /> Ver Meus Anúncios
                   </button>
                 </div>
 
-                {/* Mini Chart */}
-                <div className="bg-card border border-border rounded-2xl p-5">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2">
-                      <BarChart3 size={18} className="text-primary" />
-                      <h3 className="font-display font-bold text-foreground">Resumo Rápido</h3>
+                {/* Mini Chart — Premium */}
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
+                  className="bg-card border border-border rounded-2xl p-5 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-24 h-24 rounded-full bg-primary/3 -translate-y-1/2 translate-x-1/2" />
+                  <div className="flex items-center justify-between mb-5 relative">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                        <BarChart3 size={20} className="text-primary" />
+                      </div>
+                      <div>
+                        <h3 className="font-display font-bold text-foreground">Resumo Rápido</h3>
+                        <p className="text-[11px] text-muted-foreground">Últimos 30 dias</p>
+                      </div>
                     </div>
-                    <button onClick={() => setActiveTab("stats")} className="text-xs text-primary font-semibold hover:underline">
-                      Ver completo →
+                    <button onClick={() => setActiveTab("stats")} className="text-xs text-primary font-semibold hover:underline flex items-center gap-1">
+                      Ver completo <ChevronRight size={14} />
                     </button>
                   </div>
                   <div className="grid grid-cols-2 gap-4 mb-4">
-                    <div className="p-3 rounded-xl bg-secondary/50">
-                      <div className="flex items-center gap-1.5 mb-1">
-                        <Eye size={14} className="text-primary" />
-                        <span className="text-xs text-muted-foreground">Visitas</span>
+                    <div className="p-4 rounded-xl bg-gradient-to-br from-primary/8 to-primary/3 border border-primary/10">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Eye size={16} className="text-primary" />
+                        <span className="text-xs text-muted-foreground font-medium">Visitas</span>
                       </div>
-                      <p className="font-display font-bold text-xl text-foreground">{analyticsTotals.views}</p>
+                      <p className="font-display font-extrabold text-2xl text-foreground">{analyticsTotals.views}</p>
                     </div>
-                    <div className="p-3 rounded-xl bg-secondary/50">
-                      <div className="flex items-center gap-1.5 mb-1">
-                        <MessageCircle size={14} className="text-green-500" />
-                        <span className="text-xs text-muted-foreground">WhatsApp</span>
+                    <div className="p-4 rounded-xl bg-gradient-to-br from-green-500/8 to-green-500/3 border border-green-500/10">
+                      <div className="flex items-center gap-2 mb-2">
+                        <MessageCircle size={16} className="text-green-500" />
+                        <span className="text-xs text-muted-foreground font-medium">WhatsApp</span>
                       </div>
-                      <p className="font-display font-bold text-xl text-foreground">{analyticsTotals.whatsapp_clicks}</p>
+                      <p className="font-display font-extrabold text-2xl text-foreground">{analyticsTotals.whatsapp_clicks}</p>
                     </div>
                   </div>
-                </div>
+                </motion.div>
 
-                {/* Mobile Gerente Card */}
-                <div className="lg:hidden bg-gradient-to-br from-primary/10 to-accent/10 rounded-2xl p-4">
-                  <div className="flex items-center gap-3 mb-3">
-                    <img src={(profile as any)?.manager_photo || gabrielImg} alt={profile?.account_manager || "Gabriel"} className="w-10 h-10 rounded-full object-cover ring-2 ring-primary/30" width={40} height={40} />
+                {/* Mobile Gerente Card — Premium */}
+                <div className="lg:hidden relative overflow-hidden rounded-2xl p-5" style={{ background: 'linear-gradient(135deg, hsl(var(--primary) / 0.08) 0%, hsl(var(--accent) / 0.08) 100%)' }}>
+                  <div className="absolute top-0 right-0 w-20 h-20 rounded-full bg-primary/5 -translate-y-1/2 translate-x-1/2" />
+                  <div className="flex items-center gap-3 mb-3 relative">
+                    <img src={(profile as any)?.manager_photo || gabrielImg} alt={profile?.account_manager || "Gabriel"} className="w-12 h-12 rounded-full object-cover ring-2 ring-primary/30 shadow-lg" width={48} height={48} />
                     <div>
                       <p className="text-sm font-bold text-foreground">{profile?.account_manager || "Gabriel"}</p>
                       <p className="text-xs text-muted-foreground">Seu Gerente de Conta</p>
@@ -578,8 +599,8 @@ export default function SellerDashboard() {
                   <a
                     href={`https://wa.me/${((profile as any)?.manager_phone || "5527995055993").replace(/\D/g, "")}?text=Olá%20${encodeURIComponent(profile?.account_manager || "Gabriel")}!%20Preciso%20de%20ajuda%20com%20minha%20loja.`}
                     target="_blank" rel="noopener noreferrer"
-                    className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-green-500 text-white text-xs font-bold hover:bg-green-600 transition-colors">
-                    <Headphones size={14} /> Falar com seu Gerente
+                    className="relative w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-green-500 text-white text-sm font-bold hover:bg-green-600 transition-colors shadow-md">
+                    <Headphones size={16} /> Falar com seu Gerente
                   </a>
                 </div>
               </div>
