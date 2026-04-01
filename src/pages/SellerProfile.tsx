@@ -32,7 +32,7 @@ export default function SellerProfile() {
     logo_url: "",
     address: "",
     city: "",
-    state: "ES",
+    state: "",
     show_location: true,
     instagram: "",
     bio: "",
