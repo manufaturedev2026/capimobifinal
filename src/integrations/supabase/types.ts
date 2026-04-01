@@ -65,6 +65,36 @@ export type Database = {
         }
         Relationships: []
       }
+      commissions: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          referred_id: string
+          status: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          id?: string
+          referred_id: string
+          status?: string
+          type?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          referred_id?: string
+          status?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       favorites: {
         Row: {
           created_at: string
@@ -117,6 +147,10 @@ export type Database = {
           manager_phone: string | null
           manager_photo: string | null
           phone: string | null
+          referral_balance: number
+          referral_code: string | null
+          referral_total_earned: number
+          referred_by: string | null
           seller_category: Database["public"]["Enums"]["seller_category"] | null
           seller_type: Database["public"]["Enums"]["seller_type"]
           show_location: boolean
@@ -151,6 +185,10 @@ export type Database = {
           manager_phone?: string | null
           manager_photo?: string | null
           phone?: string | null
+          referral_balance?: number
+          referral_code?: string | null
+          referral_total_earned?: number
+          referred_by?: string | null
           seller_category?:
             | Database["public"]["Enums"]["seller_category"]
             | null
@@ -187,6 +225,10 @@ export type Database = {
           manager_phone?: string | null
           manager_photo?: string | null
           phone?: string | null
+          referral_balance?: number
+          referral_code?: string | null
+          referral_total_earned?: number
+          referred_by?: string | null
           seller_category?:
             | Database["public"]["Enums"]["seller_category"]
             | null
@@ -782,6 +824,33 @@ export type Database = {
         Update: {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      withdrawals: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          pix_key: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          pix_key: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          pix_key?: string
+          status?: string
           user_id?: string
         }
         Relationships: []

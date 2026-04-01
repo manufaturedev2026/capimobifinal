@@ -1,14 +1,15 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Eye, EyeOff, LogIn, UserPlus, Building2, Shield, KeyRound, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
+import { supabase } from "@/integrations/supabase/client";
 import heroImg from "@/assets/hero-auth.jpg";
 import logoImg from "@/assets/logo-es-corretores.png";
 
 export default function AuthPage() {
-  const [isLogin, setIsLogin] = useState(true);
+  const [isLogin, setIsLogin] = useState(!new URLSearchParams(window.location.search).get("ref"));
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
@@ -17,6 +18,8 @@ export default function AuthPage() {
   const [loading, setLoading] = useState(false);
   const { user, signIn, signUp } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const refCode = searchParams.get("ref") || "";
   const { toast } = useToast();
 
   useEffect(() => {
@@ -39,6 +42,27 @@ export default function AuthPage() {
       if (error) {
         toast({ title: "Erro ao cadastrar", description: error.message, variant: "destructive" });
       } else {
+        // Save referral code if present (after profile is created)
+        if (refCode.trim()) {
+          // Wait a bit for profile to be created by trigger/hook
+          setTimeout(async () => {
+            const { data: { user: newUser } } = await supabase.auth.getUser();
+            if (newUser) {
+              // Check it's not self-referral
+              const { data: referrer } = await supabase
+                .from("profiles")
+                .select("user_id")
+                .eq("referral_code", refCode.trim().toUpperCase())
+                .maybeSingle();
+              if (referrer && referrer.user_id !== newUser.id) {
+                await supabase
+                  .from("profiles")
+                  .update({ referred_by: refCode.trim().toUpperCase() } as any)
+                  .eq("user_id", newUser.id);
+              }
+            }
+          }, 2000);
+        }
         toast({ title: "Cadastro realizado!", description: "Complete seu perfil para começar!" });
         navigate("/painel");
       }
