@@ -118,6 +118,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (nextSession?.user) {
           setTimeout(() => {
             void ensureProfile(nextSession.user);
+            void checkBan(nextSession.user.id);
           }, 0);
         } else {
           setProfile(null);
