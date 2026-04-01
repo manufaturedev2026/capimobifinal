@@ -4,8 +4,8 @@ export default function TermsPage() {
   return (
     <>
       <Helmet>
-        <title>Termos de Uso | ES Corretores</title>
-        <meta name="description" content="Termos de Uso do ES Corretores. Conheça as condições de uso da nossa plataforma de anúncios de imóveis e veículos." />
+        <title>Termos de Uso | Brokers Bio</title>
+        <meta name="description" content="Termos de Uso do Brokers Bio. Conheça as condições de uso da nossa plataforma de anúncios de imóveis." />
         <link rel="canonical" href="https://redeimoveisgb.lovable.app/termos" />
       </Helmet>
       <div className="container max-w-3xl mx-auto px-4 py-12">
