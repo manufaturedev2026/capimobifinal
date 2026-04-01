@@ -248,7 +248,7 @@ export default function CreateListing() {
               <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/15 text-primary text-xs font-bold uppercase tracking-widest mb-6 border border-primary/20">
                 <BarChart3 size={14} /> Painel Completo
               </span>
-              <h2 className="font-display font-black text-3xl md:text-5xl leading-tight mb-5">
+              <h2 className="font-display font-black text-3xl md:text-5xl leading-tight mb-5 text-foreground">
                 Acompanhe seus
                 <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-primary">resultados</span>
