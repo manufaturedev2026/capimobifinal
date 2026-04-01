@@ -43,6 +43,8 @@ export default function AdminReferralTab() {
   const [withdrawals, setWithdrawals] = useState<WithdrawalItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [commissionRate, setCommissionRate] = useState("10");
+  const [savingRate, setSavingRate] = useState(false);
 
   useEffect(() => {
     fetchAll();
