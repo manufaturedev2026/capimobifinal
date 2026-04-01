@@ -629,14 +629,21 @@ export default function BecomeAgentPage() {
 
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <a
+                  href="/entrar?trial=7"
+                  className="group inline-flex items-center gap-3 px-10 py-5 rounded-2xl bg-accent text-accent-foreground font-bold text-base hover:bg-accent/90 transition-all shadow-2xl shadow-accent/30 hover:shadow-accent/50 hover:scale-105"
+                >
+                  <Sparkles size={20} />
+                  Cadastre-se e Ganhe 7 Dias Grátis
+                  <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
+                </a>
+                <a
                   href={whatsappUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group inline-flex items-center gap-3 px-10 py-5 rounded-2xl bg-accent text-accent-foreground font-bold text-base hover:bg-accent/90 transition-all shadow-2xl shadow-accent/30 hover:shadow-accent/50 hover:scale-105"
+                  className="group inline-flex items-center gap-3 px-8 py-4 rounded-2xl bg-white/10 text-white font-bold text-sm hover:bg-white/20 transition-all border border-white/10 backdrop-blur-sm"
                 >
-                  <MessageCircle size={20} />
-                  Quero Ser um Corretor de Imóveis
-                  <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
+                  <MessageCircle size={18} />
+                  Falar pelo WhatsApp
                 </a>
               </div>
 
