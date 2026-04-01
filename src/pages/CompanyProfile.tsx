@@ -10,6 +10,7 @@ import StoreEffects from "@/components/StoreEffects";
 import {
   StoreLayoutNetflix, StoreLayoutMinimal, StoreLayoutMagazine,
   StoreLayoutGallery, StoreLayoutElegant, StoreLayoutShowcase,
+  StoreLayoutMarketplace,
 } from "@/components/store-layouts";
 import type { StoreLayoutProps } from "@/components/store-layouts";
 import { getStoreTheme } from "@/components/StoreThemePicker";
@@ -1124,6 +1125,7 @@ export default function CompanyProfile() {
                 case "gallery": return <StoreLayoutGallery {...layoutProps} />;
                 case "elegant": return <StoreLayoutElegant {...layoutProps} />;
                 case "showcase": return <StoreLayoutShowcase {...layoutProps} />;
+                case "marketplace": return <StoreLayoutMarketplace {...layoutProps} />;
                 default: return <StoreLayoutNetflix {...layoutProps} />;
               }
             })()}

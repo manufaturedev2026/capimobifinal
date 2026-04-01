@@ -25,6 +25,7 @@ export const STORE_LAYOUTS = [
   { id: "gallery", name: "Galeria", desc: "Mosaico estilo Pinterest", preview: "🖼️" },
   { id: "elegant", name: "Elegant", desc: "Escuro com glassmorphism premium", preview: "💎" },
   { id: "showcase", name: "Showcase", desc: "Foco em um imóvel por vez", preview: "🏆" },
+  { id: "marketplace", name: "Marketplace", desc: "Estilo Mercado Livre com busca e badges", preview: "🛒" },
 ] as const;
 
 export type StoreLayoutId = typeof STORE_LAYOUTS[number]["id"];
