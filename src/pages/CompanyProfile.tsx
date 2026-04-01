@@ -519,9 +519,161 @@ export default function CompanyProfile() {
       )}
 
       {isDbProfile && dbProfile?.id && <StoreEffects sellerId={dbProfile.id} />}
-      {/* ═══════════ HERO BANNER ═══════════ */}
-      <section className={`relative overflow-hidden ${hasVideoHero ? "h-[55vh] md:h-[70vh]" : "h-[50vh] md:h-[60vh]"}`}>
+      {/* ═══════════ MOBILE PROFILE HERO (Instagram-style) ═══════════ */}
+      <section className="md:hidden relative overflow-hidden">
+        {/* Background image or gradient */}
+        {heroImages.length > 0 ? (
+          <>
+            <AnimatePresence mode="wait">
+              <motion.img
+                key={heroSlide}
+                src={heroImages[heroSlide].image}
+                alt=""
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.6 }}
+                className="absolute inset-0 w-full h-full object-cover scale-110 blur-xl brightness-[0.3]"
+              />
+            </AnimatePresence>
+          </>
+        ) : (
+          <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/80 to-accent" />
+        )}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/60 to-black/90" />
+        
+        {/* Back + Badge */}
+        <div className="relative z-10 flex items-center justify-between px-4 pt-4">
+          <Link to="/imoveis" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-white text-xs font-medium">
+            <ArrowLeft size={14} /> Voltar
+          </Link>
+          {isPaid && <PackageBadge tier={sellerTier} size="sm" />}
+        </div>
 
+        {/* Centered profile */}
+        <div className="relative z-10 flex flex-col items-center text-center px-6 pt-6 pb-8">
+          {(() => {
+            const sellerStoryData = sellerStories.find(s => s.sellerId === dbProfile?.id);
+            const hasActiveStory = !!sellerStoryData;
+            
+            const logoContent = company.logo ? (
+              <img src={company.logo} alt={company.name} className="w-full h-full rounded-full object-cover" />
+            ) : (
+              <div className="w-full h-full rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center">
+                <span className="text-white font-bold text-3xl">{company.name?.charAt(0)}</span>
+              </div>
+            );
+
+            return hasActiveStory ? (
+              <button
+                onClick={() => setStoryViewerOpen(true)}
+                className="w-24 h-24 rounded-full p-[3px] bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 shrink-0 cursor-pointer hover:scale-105 transition-transform mb-4"
+              >
+                <div className="w-full h-full rounded-full bg-black p-[2px]">
+                  {logoContent}
+                </div>
+              </button>
+            ) : (
+              <div className="w-24 h-24 rounded-full border-3 border-white/30 shadow-2xl overflow-hidden shrink-0 mb-4">
+                {logoContent}
+              </div>
+            );
+          })()}
+
+          <div className="flex items-center gap-2 mb-1">
+            <h1 className="font-display font-bold text-xl text-white leading-tight">{company.name}</h1>
+            {isPaid && <BadgeCheck size={18} className="text-primary" />}
+          </div>
+
+          {dbProfile?.seller_category && (
+            <span className="text-white/70 text-xs font-medium mb-2">
+              {({ imobiliaria: "🏢 Imobiliária", corretor: "📋 Corretor(a)", proprietario: "🏠 Proprietário", construtora: "🏗️ Construtora" } as Record<string, string>)[dbProfile.seller_category]}
+              {dbProfile.seller_category === "corretor" && dbProfile.creci && ` • ${dbProfile.creci}`}
+            </span>
+          )}
+
+          {company.address && (
+            <span className="flex items-center gap-1 text-white/50 text-[11px] mb-3">
+              <MapPin size={10} /> {company.address}
+            </span>
+          )}
+
+          {dbProfile?.bio && (
+            <p className="text-white/70 text-xs leading-relaxed line-clamp-3 max-w-sm mb-4">{dbProfile.bio}</p>
+          )}
+
+          {/* Stats row */}
+          <div className="flex items-center gap-6 mb-5">
+            <div className="text-center">
+              <p className="font-bold text-white text-lg">{products.length}</p>
+              <p className="text-white/50 text-[10px]">Imóveis</p>
+            </div>
+            <div className="w-px h-8 bg-white/20" />
+            <div className="text-center">
+              <p className="font-bold text-white text-lg">{isPaid ? "✓" : "—"}</p>
+              <p className="text-white/50 text-[10px]">{isPaid ? "Verificado" : "Ativo"}</p>
+            </div>
+            {availableCities.length > 0 && (
+              <>
+                <div className="w-px h-8 bg-white/20" />
+                <div className="text-center">
+                  <p className="font-bold text-white text-lg">{availableCities.length}</p>
+                  <p className="text-white/50 text-[10px]">Cidades</p>
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* Big action buttons */}
+          <div className="flex gap-2 w-full max-w-sm">
+            {company.whatsapp && (
+              <button onClick={() => handleWhatsApp(heroProduct?.title || company.name)} className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl bg-[#25d366] text-white font-bold text-sm shadow-lg active:scale-95 transition-transform">
+                <MessageCircle size={18} /> WhatsApp
+              </button>
+            )}
+            {(company as any).instagram && ["vip", "premium", "essencial_empresa", "premium_empresa", "prime_empresa"].includes(sellerTier || "") && (
+              <a href={`https://instagram.com/${(company as any).instagram.replace(/^@/, "")}`} target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl bg-gradient-to-r from-[#833AB4] via-[#E1306C] to-[#F77737] text-white font-bold text-sm shadow-lg active:scale-95 transition-transform">
+                <Instagram size={18} /> Instagram
+              </a>
+            )}
+          </div>
+
+          <div className="flex gap-2 mt-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/10 backdrop-blur-md text-white text-xs font-medium">
+                  <Share2 size={13} /> Compartilhar
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="center" className="w-48">
+                <DropdownMenuItem onClick={() => {
+                  const text = `Confira ${company.name} no ES Corretores: ${window.location.href}`;
+                  window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
+                }}>
+                  <MessageCircle size={16} className="mr-2 text-[#25d366]" /> Enviar via WhatsApp
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => {
+                  navigator.clipboard.writeText(window.location.href);
+                  toast({ title: "Link copiado!", description: "O link da loja foi copiado." });
+                }}>
+                  <ExternalLink size={16} className="mr-2" /> Copiar link
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            {videoId && sellerTier && sellerTier !== "basico" && sellerTier !== "start" && (
+              <button onClick={() => { setVideoMuted(false); setVideoModalOpen(true); }} className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/10 backdrop-blur-md text-white text-xs font-medium">
+                <Play size={13} fill="currentColor" /> Vídeo
+              </button>
+            )}
+            <button onClick={() => setGalleryLightbox(0)} className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/10 backdrop-blur-md text-white text-xs font-medium">
+              <Clapperboard size={13} /> Cinema
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════ DESKTOP HERO BANNER (unchanged) ═══════════ */}
+      <section className={`hidden md:block relative overflow-hidden ${hasVideoHero ? "h-[70vh]" : "h-[60vh]"}`}>
         {/* Video background or sliding images */}
         {hasVideoHero ? (
           <iframe
@@ -541,28 +693,26 @@ export default function CompanyProfile() {
             }}
           />
         ) : (
-          <>
-            <AnimatePresence mode="wait">
-              {heroImages.length > 0 && (
-                <motion.img
-                  key={heroSlide}
-                  src={heroImages[heroSlide].image}
-                  alt={heroImages[heroSlide].title}
-                  initial={{ opacity: 0, scale: 1.05 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.8 }}
-                  className="absolute inset-0 w-full h-full object-cover"
-                />
-              )}
-            </AnimatePresence>
-          </>
+          <AnimatePresence mode="wait">
+            {heroImages.length > 0 && (
+              <motion.img
+                key={heroSlide}
+                src={heroImages[heroSlide].image}
+                alt={heroImages[heroSlide].title}
+                initial={{ opacity: 0, scale: 1.05 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.8 }}
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+            )}
+          </AnimatePresence>
         )}
         {heroImages.length === 0 && !hasVideoHero && (
           <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/80 to-accent" />
         )}
 
-        {/* Overlays — heavier on the left for video */}
+        {/* Overlays */}
         {hasVideoHero ? (
           <>
             <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-black/5" />
@@ -589,7 +739,7 @@ export default function CompanyProfile() {
           </div>
         )}
 
-        {/* Hero slide arrows (only when no video) */}
+        {/* Hero slide arrows */}
         {!hasVideoHero && heroImages.length > 1 && (
           <>
             <button onClick={() => setHeroSlide((p) => (p - 1 + heroImages.length) % heroImages.length)} className="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center text-white hover:bg-black/50 transition-colors">
@@ -601,17 +751,14 @@ export default function CompanyProfile() {
           </>
         )}
 
-
-
         {/* Company info overlay */}
-        <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10 z-10">
-          <div className="max-w-[1800px] mx-auto px-4 md:px-8">
+        <div className="absolute bottom-0 left-0 right-0 p-10 z-10">
+          <div className="max-w-[1800px] mx-auto px-8">
             <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="max-w-3xl">
               <div className="flex items-center gap-4 mb-3">
                 {(() => {
                   const sellerStoryData = sellerStories.find(s => s.sellerId === dbProfile?.id);
                   const hasActiveStory = !!sellerStoryData;
-                  const storySellerIndex = sellerStories.findIndex(s => s.sellerId === dbProfile?.id);
                   
                   const logoContent = company.logo ? (
                     <img src={company.logo} alt={company.name} className="w-full h-full rounded-full object-cover" />
@@ -623,22 +770,22 @@ export default function CompanyProfile() {
 
                   return hasActiveStory ? (
                     <button
-                      onClick={() => { setStoryViewerOpen(true); }}
-                      className="w-16 h-16 md:w-20 md:h-20 rounded-full p-[3px] bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 shrink-0 cursor-pointer hover:scale-105 transition-transform"
+                      onClick={() => setStoryViewerOpen(true)}
+                      className="w-20 h-20 rounded-full p-[3px] bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 shrink-0 cursor-pointer hover:scale-105 transition-transform"
                     >
                       <div className="w-full h-full rounded-full bg-black p-[2px]">
                         {logoContent}
                       </div>
                     </button>
                   ) : (
-                    <div className="w-16 h-16 md:w-20 md:h-20 rounded-full border-2 border-white/30 shadow-2xl overflow-hidden shrink-0">
+                    <div className="w-20 h-20 rounded-full border-2 border-white/30 shadow-2xl overflow-hidden shrink-0">
                       {logoContent}
                     </div>
                   );
                 })()}
                 <div>
                   <div className="flex items-center gap-2">
-                    <h1 className="font-display font-bold text-2xl md:text-4xl text-white leading-tight">{company.name}</h1>
+                    <h1 className="font-display font-bold text-4xl text-white leading-tight">{company.name}</h1>
                     {isPaid && <BadgeCheck size={22} className="text-primary" />}
                   </div>
                   <div className="flex items-center gap-3 mt-1 flex-wrap">
@@ -661,33 +808,30 @@ export default function CompanyProfile() {
               {hasVideoHero && ((dbProfile as any)?.video_title || (dbProfile as any)?.video_description) && (
                 <div className="mt-3">
                   {(dbProfile as any)?.video_title && (
-                    <p className="text-white/90 font-display font-bold text-lg md:text-2xl drop-shadow-lg">{(dbProfile as any).video_title}</p>
+                    <p className="text-white/90 font-display font-bold text-2xl drop-shadow-lg">{(dbProfile as any).video_title}</p>
                   )}
                   {(dbProfile as any)?.video_description && (
-                    <p className="text-white/60 text-sm md:text-base mt-1 max-w-xl line-clamp-2">{(dbProfile as any).video_description}</p>
+                    <p className="text-white/60 text-base mt-1 max-w-xl line-clamp-2">{(dbProfile as any).video_description}</p>
                   )}
                 </div>
               )}
 
               {/* Action buttons */}
-              <div className="flex flex-nowrap gap-1.5 md:gap-2 mt-4 overflow-x-auto scrollbar-hide">
+              <div className="flex flex-nowrap gap-2 mt-4 overflow-x-auto scrollbar-hide">
                 {company.whatsapp && (
-                  <button onClick={() => handleWhatsApp(heroProduct?.title || company.name)} className="flex items-center justify-center gap-1.5 px-2.5 py-2 md:px-5 md:py-2.5 rounded-xl bg-[#25d366] text-white font-bold text-[11px] md:text-sm hover:bg-[#22c55e] transition-colors shadow-lg whitespace-nowrap flex-shrink-0 min-w-9 md:min-w-0">
-                    <MessageCircle size={14} />
-                    <span className="hidden md:inline">WhatsApp</span>
+                  <button onClick={() => handleWhatsApp(heroProduct?.title || company.name)} className="flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl bg-[#25d366] text-white font-bold text-sm hover:bg-[#22c55e] transition-colors shadow-lg whitespace-nowrap flex-shrink-0">
+                    <MessageCircle size={14} /> WhatsApp
                   </button>
                 )}
                 {(company as any).instagram && ["vip", "premium", "essencial_empresa", "premium_empresa", "prime_empresa"].includes(sellerTier || "") && (
-                  <a href={`https://instagram.com/${(company as any).instagram.replace(/^@/, "")}`} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-1.5 px-2.5 py-2 md:px-5 md:py-2.5 rounded-xl bg-gradient-to-r from-[#833AB4] via-[#E1306C] to-[#F77737] text-white font-bold text-[11px] md:text-sm hover:opacity-90 transition-opacity shadow-lg whitespace-nowrap flex-shrink-0 min-w-9 md:min-w-0">
-                    <Instagram size={14} />
-                    <span className="hidden md:inline">Instagram</span>
+                  <a href={`https://instagram.com/${(company as any).instagram.replace(/^@/, "")}`} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#833AB4] via-[#E1306C] to-[#F77737] text-white font-bold text-sm hover:opacity-90 transition-opacity shadow-lg whitespace-nowrap flex-shrink-0">
+                    <Instagram size={14} /> Instagram
                   </a>
                 )}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <button className="flex items-center justify-center gap-1.5 px-2.5 py-2 md:px-4 md:py-2.5 rounded-xl bg-white/10 backdrop-blur-md text-white text-[11px] md:text-sm font-medium hover:bg-white/20 transition-colors whitespace-nowrap flex-shrink-0 min-w-9 md:min-w-0">
-                      <Share2 size={13} />
-                      <span className="hidden sm:inline">Compartilhar</span>
+                    <button className="flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-white/10 backdrop-blur-md text-white text-sm font-medium hover:bg-white/20 transition-colors whitespace-nowrap flex-shrink-0">
+                      <Share2 size={13} /> Compartilhar
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-48">
@@ -706,21 +850,12 @@ export default function CompanyProfile() {
                   </DropdownMenuContent>
                 </DropdownMenu>
                 {videoId && sellerTier && sellerTier !== "basico" && sellerTier !== "start" && (
-                  <button
-                    onClick={() => { setVideoMuted(false); setVideoModalOpen(true); }}
-                    className="flex items-center justify-center gap-1.5 px-2.5 py-2 md:px-5 md:py-2.5 rounded-xl bg-destructive text-destructive-foreground font-bold text-[11px] md:text-sm hover:opacity-90 transition-opacity shadow-lg whitespace-nowrap flex-shrink-0 min-w-9 md:min-w-0"
-                  >
-                    <Play size={14} fill="currentColor" />
-                    <span className="hidden md:inline">Assistir</span>
+                  <button onClick={() => { setVideoMuted(false); setVideoModalOpen(true); }} className="flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl bg-destructive text-destructive-foreground font-bold text-sm hover:opacity-90 transition-opacity shadow-lg whitespace-nowrap flex-shrink-0">
+                    <Play size={14} fill="currentColor" /> Assistir
                   </button>
                 )}
-                <button
-                  onClick={() => setGalleryLightbox(0)}
-                  className="flex items-center justify-center gap-1.5 px-2.5 py-2 md:px-4 md:py-2.5 rounded-xl bg-white/10 backdrop-blur-md text-white text-[11px] md:text-sm font-medium hover:bg-white/20 transition-colors whitespace-nowrap flex-shrink-0 min-w-9 md:min-w-0"
-                  title="Modo Cinema"
-                >
-                  <Clapperboard size={13} />
-                  <span className="hidden sm:inline">Modo Cinema</span>
+                <button onClick={() => setGalleryLightbox(0)} className="flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-white/10 backdrop-blur-md text-white text-sm font-medium hover:bg-white/20 transition-colors whitespace-nowrap flex-shrink-0" title="Modo Cinema">
+                  <Clapperboard size={13} /> Modo Cinema
                 </button>
               </div>
             </motion.div>
