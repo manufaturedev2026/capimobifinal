@@ -342,7 +342,8 @@ export default function Index() {
                 { title: "Terreno 300m²", price: "R$ 180.000", tag: null, img: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400&h=300&fit=crop" },
               ].map((item) => (
                 <div key={item.title} className="bg-secondary/50 rounded-2xl overflow-hidden border border-border">
-                  <div className="aspect-[4/3] bg-gradient-to-br from-primary/20 to-accent/10 relative">
+                  <div className="aspect-[4/3] relative overflow-hidden">
+                    <img src={item.img} alt={item.title} className="w-full h-full object-cover" loading="lazy" />
                     {item.tag && (
                       <Badge className="absolute top-2 left-2 bg-primary text-primary-foreground text-[10px]">
                         {item.tag}
