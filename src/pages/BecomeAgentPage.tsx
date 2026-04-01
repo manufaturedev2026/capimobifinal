@@ -142,7 +142,7 @@ const steps = [
   {
     icon: Briefcase,
     title: "Comece a Atuar",
-    description: "Cadastre-se no ES Corretores, crie seu perfil profissional e comece a captar clientes e fechar negócios.",
+    description: "Cadastre-se no Brokers Bio, crie seu perfil profissional e comece a captar clientes e fechar negócios.",
     detail: "Cadastro gratuito na plataforma",
   },
 ];
