@@ -12,7 +12,7 @@ export const articles: Article[] = [
   {
     slug: "como-criar-seu-primeiro-anuncio",
     title: "Como Criar Seu Primeiro Anúncio",
-    description: "Passo a passo completo para publicar seu primeiro imóvel ou veículo na plataforma e começar a receber contatos.",
+    description: "Passo a passo completo para publicar seu primeiro imóvel na plataforma e começar a receber contatos.",
     cover: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=400&fit=crop",
     category: "Primeiros Passos",
     readTime: "5 min",
