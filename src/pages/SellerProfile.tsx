@@ -625,7 +625,6 @@ export default function SellerProfile() {
             </span>
           </label>
         </div>
-        </div>
           <button
           disabled={saving}
           className="w-full py-4 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg"
