@@ -2,6 +2,10 @@ import { useState, useEffect } from "react";
 import { Download, X, Smartphone } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
+interface StoreInstallButtonProps {
+  variant?: "default" | "hero-light" | "hero-dark";
+}
+
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
