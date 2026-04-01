@@ -170,19 +170,19 @@ export default function CreateListing() {
       </section>
 
       {/* Store Preview - Netflix Style */}
-      <section className="py-16 md:py-24 bg-secondary/40 overflow-hidden">
+      <section className="py-10 sm:py-16 md:py-24 bg-secondary/40 overflow-hidden">
         <div className="container max-w-6xl mx-auto px-4">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 items-center">
             <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.7 }}>
-              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/15 text-accent text-xs font-bold uppercase tracking-widest mb-6 border border-accent/20">
-                <Sparkles size={14} /> Exclusivo
+              <span className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-accent/15 text-accent text-[10px] sm:text-xs font-bold uppercase tracking-widest mb-4 sm:mb-6 border border-accent/20">
+                <Sparkles size={12} /> Exclusivo
               </span>
-              <h2 className="font-display font-black text-3xl md:text-5xl leading-tight mb-5 text-foreground">
+              <h2 className="font-display font-black text-2xl sm:text-3xl md:text-5xl leading-tight mb-4 sm:mb-5 text-foreground">
                 Sua Loja Estilo
                 <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">Netflix</span>
               </h2>
-              <p className="text-muted-foreground text-lg leading-relaxed mb-8">
+              <p className="text-muted-foreground text-sm sm:text-lg leading-relaxed mb-6 sm:mb-8">
                 Cada corretor ganha uma loja personalizada com visual moderno. Seus imóveis exibidos em carrosséis elegantes, stories e modo cinema.
               </p>
               <div className="space-y-3 mb-8">
