@@ -607,10 +607,7 @@ export default function AdminPanel() {
                   R$ {(
                     totalByTier.start * PACKAGE_CONFIG.start.price +
                     totalByTier.premium * PACKAGE_CONFIG.premium.price +
-                    totalByTier.vip * PACKAGE_CONFIG.vip.price +
-                    totalByTier.essencial_empresa * PACKAGE_CONFIG.essencial_empresa.price +
-                    totalByTier.premium_empresa * PACKAGE_CONFIG.premium_empresa.price +
-                    totalByTier.prime_empresa * PACKAGE_CONFIG.prime_empresa.price
+                    totalByTier.vip * PACKAGE_CONFIG.vip.price
                   ).toFixed(2).replace(".", ",")}
                 </span>
               </p>
