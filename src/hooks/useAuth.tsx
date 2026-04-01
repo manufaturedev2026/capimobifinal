@@ -60,6 +60,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setBanInfo(null);
     }
   };
+
+  const fetchProfile = async (userId: string) => {
     const { data, error } = await supabase
       .from("profiles")
       .select("*")
