@@ -529,8 +529,6 @@ export default function CompanyProfile() {
       )}
 
       {isDbProfile && dbProfile?.id && <StoreEffects sellerId={dbProfile.id} />}
-      {/* ═══════════ MOBILE PROFILE HERO (Instagram-style) ═══════════ */}
-      <section className="md:hidden relative overflow-hidden">
       {/* ═══════════ MOBILE PROFILE HERO ═══════════ */}
       <section className="md:hidden relative overflow-hidden">
         {isMarketplace ? (
