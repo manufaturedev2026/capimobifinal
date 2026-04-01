@@ -147,6 +147,13 @@ export default function ProductDetail() {
   const handleWhatsAppClick = (e?: React.MouseEvent) => {
     if (e) e.preventDefault();
     if (isDb && dbItem) trackSellerEvent(dbItem.seller_id, "whatsapp_click", dbItem.id);
+    // When a specific broker is selected, go directly to their WhatsApp
+    if (teamMember && teamMember.phone) {
+      const phone = teamMember.phone.replace(/\D/g, "");
+      const msg = encodeURIComponent(`Olá ${teamMember.full_name}! Vi o imóvel "${title} - ${formattedPrice}" e gostaria de mais informações.\n${productUrl}`);
+      window.open(`https://wa.me/55${phone}?text=${msg}`, "_blank");
+      return;
+    }
     openWhatsApp({
       sellerId: company.id,
       sellerName: company.name,
