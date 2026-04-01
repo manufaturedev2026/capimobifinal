@@ -57,7 +57,7 @@ async function fetchTeamMembers(sellerId: string): Promise<TeamMember[]> {
 }
 
 function sendToWhatsApp(phone: string, name: string, title: string, link: string) {
-  const msg = `Olá ${name}! Tenho interesse: ${title}${link ? `\n\n🔗 ${link}` : ""}`;
+  const msg = `Olá ${name}! 🏠 Vi o imóvel *${title}* na ES Corretores e gostaria de mais informações.\n\n🔗 ${link}`;
   window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, "_blank");
 }
 
