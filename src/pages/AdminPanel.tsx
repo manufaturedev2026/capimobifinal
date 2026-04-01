@@ -76,10 +76,59 @@ export default function AdminPanel() {
     if (isAdmin) {
       fetchSellers();
       fetchAdRequests();
+      fetchBans();
     }
   }, [isAdmin]);
 
-  const fetchAdRequests = async () => {
+  const fetchBans = async () => {
+    const { data } = await supabase.from("user_bans").select("*").eq("is_active", true);
+    const bansMap: Record<string, { id: string; reason: string | null; expires_at: string | null; is_permanent: boolean }> = {};
+    (data || []).forEach((b: any) => {
+      bansMap[b.user_id] = { id: b.id, reason: b.reason, expires_at: b.expires_at, is_permanent: b.is_permanent };
+    });
+    setBans(bansMap);
+  };
+
+  const openBanDialog = (seller: SellerWithSub) => {
+    setBanSeller(seller);
+    setBanReason("");
+    setBanDuration("7");
+    setBanDialogOpen(true);
+  };
+
+  const confirmBan = async () => {
+    if (!banSeller || !user) return;
+    const isPermanent = banDuration === "permanent";
+    const expiresAt = isPermanent ? null : new Date(Date.now() + parseInt(banDuration) * 24 * 60 * 60 * 1000).toISOString();
+
+    const { error } = await supabase.from("user_bans").insert({
+      user_id: banSeller.user_id,
+      banned_by: user.id,
+      reason: banReason || null,
+      expires_at: expiresAt,
+      is_permanent: isPermanent,
+    } as any);
+
+    if (error) {
+      toast({ title: "Erro ao banir", variant: "destructive" });
+    } else {
+      toast({ title: `Usuário banido ${isPermanent ? "permanentemente" : `por ${banDuration} dias`}!` });
+      fetchBans();
+    }
+    setBanDialogOpen(false);
+  };
+
+  const unbanUser = async (userId: string) => {
+    const ban = bans[userId];
+    if (!ban) return;
+    const { error } = await supabase.from("user_bans").update({ is_active: false } as any).eq("id", ban.id);
+    if (error) {
+      toast({ title: "Erro ao desbanir", variant: "destructive" });
+    } else {
+      toast({ title: "Usuário desbanido!" });
+      fetchBans();
+    }
+  };
     setAdsLoading(true);
     const { data } = await supabase.from("ad_requests").select("*").order("created_at", { ascending: false });
     setAdRequests(data || []);
