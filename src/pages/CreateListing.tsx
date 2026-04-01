@@ -190,6 +190,9 @@ export default function CreateListing() {
                     </li>
                   ))}
                 </ul>
+                <Link to="/entrar" className="block mt-5 w-full py-3 rounded-xl bg-accent text-accent-foreground text-center font-bold text-sm hover:bg-accent/90 transition-all">
+                  Testar 7 Dias Grátis
+                </Link>
               </motion.div>
             ))}
           </div>
