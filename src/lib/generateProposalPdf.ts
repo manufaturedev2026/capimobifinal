@@ -99,7 +99,7 @@ export async function generateProposalPdf(data: ProposalData) {
   pdf.setFont("helvetica", "bold");
   pdf.setFontSize(16);
   pdf.setTextColor(255, 255, 255);
-  pdf.text("Brokers Bio", M + 2, 16);
+  pdf.text("Brokers App", M + 2, 16);
 
   pdf.setFont("helvetica", "normal");
   pdf.setFontSize(8);
@@ -388,7 +388,7 @@ export async function generateProposalPdf(data: ProposalData) {
   final.setFont("helvetica", "bold");
   final.setFontSize(16);
   final.setTextColor(255, 255, 255);
-  final.text("Brokers Bio", M + 2, 16);
+  final.text("Brokers App", M + 2, 16);
   final.setFont("helvetica", "normal");
   final.setFontSize(8);
   final.setTextColor(148, 163, 184);
@@ -605,7 +605,7 @@ export async function generateProposalPdf(data: ProposalData) {
   // Footer
   final.setFont("helvetica", "normal"); final.setFontSize(7);
   final.setTextColor(156, 163, 175);
-  final.text(`Proposta gerada em ${new Date().toLocaleDateString("pt-BR")}  •  Brokers Bio`, W / 2, H - 8, { align: "center" });
+  final.text(`Proposta gerada em ${new Date().toLocaleDateString("pt-BR")}  •  Brokers App`, W / 2, H - 8, { align: "center" });
 
   // ── Gallery pages (extra photos) ──
   const allPhotos = (data.images || []).filter(Boolean);
@@ -630,7 +630,7 @@ export async function generateProposalPdf(data: ProposalData) {
       final.setFont("helvetica", "bold");
       final.setFontSize(11);
       final.setTextColor(255, 255, 255);
-      final.text("Brokers Bio", M + 2, 12);
+      final.text("Brokers App", M + 2, 12);
 
       final.setFont("helvetica", "normal");
       final.setFontSize(8);
@@ -698,7 +698,7 @@ export async function generateProposalPdf(data: ProposalData) {
       final.setFont("helvetica", "normal");
       final.setFontSize(7);
       final.setTextColor(156, 163, 175);
-      final.text(`Proposta gerada em ${new Date().toLocaleDateString("pt-BR")}  •  Brokers Bio`, W / 2, H - 8, { align: "center" });
+      final.text(`Proposta gerada em ${new Date().toLocaleDateString("pt-BR")}  •  Brokers App`, W / 2, H - 8, { align: "center" });
     }
   }
 
@@ -717,7 +717,7 @@ export async function generateProposalPdf(data: ProposalData) {
     final.rect(0, 18, W, 0.8, "F");
     final.setFont("helvetica", "bold"); final.setFontSize(11);
     final.setTextColor(255, 255, 255);
-    final.text("Brokers Bio", M + 2, 12);
+    final.text("Brokers App", M + 2, 12);
     final.setFont("helvetica", "normal"); final.setFontSize(8);
     final.setTextColor(148, 163, 184);
     final.text("Localização", W - M - 2, 12, { align: "right" });
@@ -797,7 +797,7 @@ export async function generateProposalPdf(data: ProposalData) {
     // Footer
     final.setFont("helvetica", "normal"); final.setFontSize(7);
     final.setTextColor(156, 163, 175);
-    final.text(`Proposta gerada em ${new Date().toLocaleDateString("pt-BR")}  •  Brokers Bio`, W / 2, H - 8, { align: "center" });
+    final.text(`Proposta gerada em ${new Date().toLocaleDateString("pt-BR")}  •  Brokers App`, W / 2, H - 8, { align: "center" });
   }
 
   final.save(`proposta-${data.id}.pdf`);
