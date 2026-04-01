@@ -32,7 +32,7 @@ interface OwnerListing {
 }
 
 const CATEGORIES = [
-  { value: "", label: "Todos os tipos" },
+  { value: "all", label: "Todos os tipos" },
   { value: "casa", label: "Casa" },
   { value: "apartamento", label: "Apartamento" },
   { value: "terreno", label: "Terreno" },
