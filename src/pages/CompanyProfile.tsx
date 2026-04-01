@@ -452,7 +452,7 @@ export default function CompanyProfile() {
 
   return (
     <div
-      className="min-h-screen"
+      className="min-h-screen pb-20 md:pb-0"
       style={{
         background: storeTheme.bg,
         color: storeTheme.text,
