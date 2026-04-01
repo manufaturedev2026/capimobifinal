@@ -74,6 +74,7 @@ function isUUID(str: string) {
 export default function CompanyProfile() {
   const { id } = useParams();
   const location = useLocation();
+  const { user } = useAuth();
   const [activeCategory, setActiveCategory] = useState("todos");
   const [filterCity, setFilterCity] = useState("");
   const [dbProfile, setDbProfile] = useState<any>(null);
