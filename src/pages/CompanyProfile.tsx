@@ -305,7 +305,7 @@ export default function CompanyProfile() {
     : products[0];
 
   const handleWhatsApp = (title: string, productId?: string) => {
-    if (isDbProfile && id) trackSellerEvent(id, "whatsapp_click");
+    if (isDbProfile && id) trackSellerEvent(id, "whatsapp_click", productId, teamMember?.id);
     const seg = "imoveis";
     const link = productId 
       ? `${window.location.origin}/${seg}/produto/${productId}${corretorSlug ? `?corretor=${corretorSlug}` : ""}` 
