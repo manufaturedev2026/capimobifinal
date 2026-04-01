@@ -429,7 +429,7 @@ export default function CompanyProfile() {
     ? products.find((p: any) => p.id === featuredItemId) || products[0]
     : products[0];
 
-  const doWhatsAppRedirect = useCallback((title: string, productId?: string) => {
+  const doWhatsAppRedirect = (title: string, productId?: string) => {
     if (isDbProfile && id) trackSellerEvent(id, "whatsapp_click", productId, teamMember?.id);
     const seg = "imoveis";
     const link = productId 
@@ -452,7 +452,7 @@ export default function CompanyProfile() {
       title,
       link,
     });
-  }, [isDbProfile, id, teamMember, corretorSlug, company, openWhatsAppPicker]);
+  };
 
   const handleWhatsApp = (title: string, productId?: string) => {
     if (isDbProfile && dbProfile) {
