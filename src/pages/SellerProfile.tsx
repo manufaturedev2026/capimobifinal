@@ -6,7 +6,7 @@ import { ArrowLeft, Save, Upload, User, Instagram, Video, Link as LinkIcon } fro
 import { useToast } from "@/hooks/use-toast";
 import { useSellerSubscription } from "@/hooks/useSubscription";
 import type { Database } from "@/integrations/supabase/types";
-import { ES_CITIES } from "@/data/esCities";
+import { BRAZIL_STATES } from "@/data/brazilStates";
 import { BRAZIL_STATES } from "@/data/brazilStates";
 import { useCitiesByState } from "@/hooks/useCitiesByState";
 import StoreThemePicker from "@/components/StoreThemePicker";

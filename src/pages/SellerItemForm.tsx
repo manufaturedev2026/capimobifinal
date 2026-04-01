@@ -7,7 +7,6 @@ import { useToast } from "@/hooks/use-toast";
 import { getTagStyle, getTagLabel, getTagEmoji, TAG_CATEGORIES } from "@/data/products";
 import type { Database } from "@/integrations/supabase/types";
 import { useSubscription, PACKAGE_CONFIG } from "@/hooks/useSubscription";
-import { ES_CITIES } from "@/data/esCities";
 import { ES_NEIGHBORHOODS } from "@/data/esNeighborhoods";
 import { BRAZIL_STATES } from "@/data/brazilStates";
 import { useCitiesByState } from "@/hooks/useCitiesByState";

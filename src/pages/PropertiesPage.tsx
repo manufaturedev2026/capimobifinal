@@ -9,7 +9,7 @@ import { useRealListings } from "@/hooks/useRealListings";
 import PackageBadge from "@/components/PackageBadge";
 import HeroBannerCarousel from "@/components/HeroBannerCarousel";
 import { useCityDetection } from "@/hooks/useCityDetection";
-import { ES_CITIES } from "@/data/esCities";
+
 import { ES_NEIGHBORHOODS } from "@/data/esNeighborhoods";
 import PropertyCardSkeleton from "@/components/PropertyCardSkeleton";
 import FavoriteButton from "@/components/FavoriteButton";
