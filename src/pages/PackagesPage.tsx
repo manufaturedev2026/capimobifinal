@@ -68,7 +68,7 @@ export default function PackagesPage() {
   return (
     <div className="min-h-screen bg-background">
       <div className="gradient-hero py-12">
-        <div className="container max-w-5xl mx-auto px-4">
+        <div className="container max-w-6xl mx-auto px-4">
           <Link to="/painel" className="inline-flex items-center gap-2 text-white/70 text-sm mb-4 hover:text-white transition-colors">
             <ArrowLeft size={16} /> Voltar ao Painel
           </Link>
