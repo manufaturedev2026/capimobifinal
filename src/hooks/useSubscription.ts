@@ -19,6 +19,7 @@ export const PACKAGE_CONFIG = {
   start: {
     name: "Start",
     price: 24.99,
+    setupFee: 299,
     maxItems: 25,
     color: "from-emerald-500 to-teal-600",
     borderColor: "border-emerald-400",
@@ -35,6 +36,7 @@ export const PACKAGE_CONFIG = {
   basico: {
     name: "Básico",
     price: 0,
+    setupFee: 0,
     maxItems: 5,
     color: "from-slate-500 to-slate-600",
     borderColor: "border-slate-400",
@@ -50,6 +52,7 @@ export const PACKAGE_CONFIG = {
   premium: {
     name: "VIP",
     price: 59.99,
+    setupFee: 719,
     maxItems: 60,
     color: "from-amber-500 to-orange-600",
     borderColor: "border-amber-400",
@@ -68,6 +71,7 @@ export const PACKAGE_CONFIG = {
   vip: {
     name: "Premium",
     price: 114.99,
+    setupFee: 1379,
     maxItems: 115,
     color: "from-purple-600 to-indigo-700",
     borderColor: "border-purple-500",
