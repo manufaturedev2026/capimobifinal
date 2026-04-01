@@ -1781,6 +1781,20 @@ export default function CompanyProfile() {
         ) : null;
       })()}
 
+      {isDbProfile && dbProfile && (
+        <WhatsAppLeadCapture
+          open={leadCaptureOpen}
+          onOpenChange={setLeadCaptureOpen}
+          sellerId={id!}
+          sellerUserId={dbProfile.user_id}
+          onComplete={() => {
+            if (pendingWhatsAppAction) {
+              pendingWhatsAppAction();
+              setPendingWhatsAppAction(null);
+            }
+          }}
+        />
+      )}
     </div>
   );
 }
