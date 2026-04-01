@@ -19,7 +19,7 @@ import {
   Smartphone,
 } from "lucide-react";
 import heroImg from "@/assets/hero-anunciar.jpg";
-import lojaPreviewImg from "@/assets/loja-preview-anunciar.png";
+import lojaPreviewImg from "@/assets/loja-preview-anunciar.jpg";
 import painelPreviewImg from "@/assets/painel-preview-anunciar.jpg";
 import avatarCorretorImg from "@/assets/avatar-corretor.png";
 
