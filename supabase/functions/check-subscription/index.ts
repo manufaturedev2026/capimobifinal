@@ -87,15 +87,40 @@ serve(async (req) => {
         .maybeSingle();
 
       if (profile) {
+        // Deactivate all paid subscriptions
         await supabaseAdmin
           .from("seller_subscriptions")
           .update({ is_active: false })
           .eq("user_id", user.id)
           .eq("is_active", true)
           .neq("tier", "basico");
+
+        // Check if user already has an active basico plan
+        const { data: existingBasico } = await supabaseAdmin
+          .from("seller_subscriptions")
+          .select("id")
+          .eq("user_id", user.id)
+          .eq("tier", "basico")
+          .eq("is_active", true)
+          .limit(1);
+
+        // Auto-create basico plan if none exists
+        if (!existingBasico || existingBasico.length === 0) {
+          await supabaseAdmin.from("seller_subscriptions").insert({
+            user_id: user.id,
+            seller_id: profile.id,
+            tier: "basico",
+            max_items: 3,
+            is_active: true,
+            expires_at: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+            payment_method: "gratis",
+            payment_status: "confirmado",
+          });
+          logStep("Auto-downgraded to basico");
+        }
       }
 
-      return new Response(JSON.stringify({ subscribed: false }), {
+      return new Response(JSON.stringify({ subscribed: false, tier: "basico" }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 200,
       });
