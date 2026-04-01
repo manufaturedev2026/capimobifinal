@@ -119,10 +119,14 @@ export function useGamification(userId?: string, sellerId?: string) {
 
   const fetchRewards = useCallback(async () => {
     if (!sellerId) return;
+    // Monthly reset: only consider rewards from current month
+    const now = new Date();
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
     const { data } = await supabase
       .from("seller_rewards" as any)
       .select("*")
       .eq("seller_id", sellerId)
+      .gte("created_at", monthStart)
       .order("created_at", { ascending: false });
     if (data) setRewards(data as any[]);
   }, [sellerId]);
