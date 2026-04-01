@@ -49,6 +49,7 @@ export default function TeamMembersTab({ profileId, userId, maxMembers }: Props)
     bio: "",
     photo_url: "",
     instagram: "",
+    slug: "",
   });
 
   const fetchMembers = async () => {
@@ -66,7 +67,7 @@ export default function TeamMembersTab({ profileId, userId, maxMembers }: Props)
   }, [profileId]);
 
   const resetForm = () => {
-    setForm({ full_name: "", phone: "", creci: "", email: "", bio: "", photo_url: "", instagram: "" });
+    setForm({ full_name: "", phone: "", creci: "", email: "", bio: "", photo_url: "", instagram: "", slug: "" });
     setEditing(null);
     setShowForm(false);
   };
@@ -100,7 +101,7 @@ export default function TeamMembersTab({ profileId, userId, maxMembers }: Props)
       return;
     }
 
-    const slug = slugify(form.full_name);
+    const slug = form.slug.trim() ? slugify(form.slug.trim()) : slugify(form.full_name);
 
     if (editing) {
       const { error } = await supabase
@@ -165,6 +166,7 @@ export default function TeamMembersTab({ profileId, userId, maxMembers }: Props)
       bio: m.bio || "",
       photo_url: m.photo_url || "",
       instagram: (m as any).instagram || "",
+      slug: m.slug || "",
     });
     setEditing(m.id);
     setShowForm(true);
@@ -292,6 +294,19 @@ export default function TeamMembersTab({ profileId, userId, maxMembers }: Props)
                 className="w-full px-4 py-2.5 rounded-xl bg-secondary text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
                 placeholder="@corretor"
               />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-muted-foreground mb-1">URL personalizada (slug)</label>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-muted-foreground whitespace-nowrap">?corretor=</span>
+                <input
+                  value={form.slug}
+                  onChange={(e) => setForm((f) => ({ ...f, slug: e.target.value }))}
+                  className="w-full px-4 py-2.5 rounded-xl bg-secondary text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  placeholder={form.full_name ? slugify(form.full_name) : "joao-silva"}
+                />
+              </div>
+              <p className="text-[10px] text-muted-foreground mt-1">Deixe vazio para gerar automaticamente pelo nome</p>
             </div>
           </div>
           <div>
