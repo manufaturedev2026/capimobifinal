@@ -160,7 +160,7 @@ const testimonials = [
   {
     name: "Marcos Oliveira",
     role: "Corretor há 3 anos • Vitória",
-    text: "Comecei do zero e hoje faturo mais de R$ 20 mil por mês. O mercado do ES é incrível para quem se dedica. O ES Corretores me deu visibilidade que eu não teria sozinho.",
+    text: "Comecei do zero e hoje faturo mais de R$ 20 mil por mês. O Brokers Bio me deu visibilidade que eu não teria sozinho.",
     stars: 5,
   },
   {
