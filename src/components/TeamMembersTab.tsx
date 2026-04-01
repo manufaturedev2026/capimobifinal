@@ -101,7 +101,7 @@ export default function TeamMembersTab({ profileId, userId, maxMembers }: Props)
       return;
     }
 
-    const slug = slugify(form.full_name);
+    const slug = form.slug.trim() ? slugify(form.slug.trim()) : slugify(form.full_name);
 
     if (editing) {
       const { error } = await supabase
