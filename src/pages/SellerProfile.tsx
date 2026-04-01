@@ -8,6 +8,7 @@ import { useSellerSubscription } from "@/hooks/useSubscription";
 import type { Database } from "@/integrations/supabase/types";
 import { ES_CITIES } from "@/data/esCities";
 import StoreThemePicker from "@/components/StoreThemePicker";
+import { STORE_LAYOUTS } from "@/components/store-layouts";
 
 type SellerType = Database["public"]["Enums"]["seller_type"];
 
@@ -42,6 +43,7 @@ export default function SellerProfile() {
     video_description: "",
     slug: "",
     store_theme: "default",
+    store_layout: "netflix",
   });
   const [slugError, setSlugError] = useState("");
 
@@ -73,6 +75,7 @@ export default function SellerProfile() {
         video_description: (profile as any).video_description || "",
         slug: (profile as any).slug || "",
         store_theme: (profile as any).store_theme || "default",
+        store_layout: (profile as any).store_layout || "netflix",
       });
     }
   }, [profile]);
@@ -431,6 +434,33 @@ export default function SellerProfile() {
             selected={form.store_theme}
             onChange={(themeId) => setForm((f) => ({ ...f, store_theme: themeId }))}
           />
+        </div>
+
+        {/* Store Layout Picker */}
+        <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
+          <h2 className="font-display font-bold text-foreground">Layout da Loja (Mobile)</h2>
+          <p className="text-xs text-muted-foreground">Escolha como seus imóveis são exibidos no celular.</p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {STORE_LAYOUTS.map((layout) => {
+              const isActive = form.store_layout === layout.id;
+              return (
+                <button
+                  key={layout.id}
+                  type="button"
+                  onClick={() => setForm((f) => ({ ...f, store_layout: layout.id }))}
+                  className={`p-4 rounded-2xl text-left transition-all border-2 ${
+                    isActive
+                      ? "border-primary bg-primary/10 shadow-lg shadow-primary/10"
+                      : "border-border hover:border-primary/30"
+                  }`}
+                >
+                  <span className="text-2xl block mb-2">{layout.preview}</span>
+                  <h3 className="font-display font-bold text-sm text-foreground">{layout.name}</h3>
+                  <p className="text-[10px] text-muted-foreground mt-0.5 leading-relaxed">{layout.desc}</p>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         <div className="bg-card border border-border rounded-2xl p-5">

@@ -6,6 +6,11 @@ import { useParams, Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Star, MapPin, MessageCircle, Share2, Key, Home, Building2, Landmark, Store, Warehouse, MoreHorizontal, Image, Eye, Instagram, Phone, ExternalLink, Clock, Shield, Zap, ChevronLeft, ChevronRight, Heart, BadgeCheck, Clapperboard, Play, X, Volume2, VolumeX } from "lucide-react";
 import StoreEffects from "@/components/StoreEffects";
+import {
+  StoreLayoutNetflix, StoreLayoutMinimal, StoreLayoutMagazine,
+  StoreLayoutGallery, StoreLayoutElegant, StoreLayoutShowcase,
+} from "@/components/store-layouts";
+import type { StoreLayoutProps } from "@/components/store-layouts";
 import { getStoreTheme } from "@/components/StoreThemePicker";
 import { formatPrice, getTagStyle, getTagLabel } from "@/data/products";
 import { supabase } from "@/integrations/supabase/client";
@@ -1085,50 +1090,40 @@ export default function CompanyProfile() {
 
           {/* ═══════════ MAIN CONTENT ═══════════ */}
           <div className="flex-1 min-w-0">
-            {/* Mobile Category Carousel — Netflix-style tall cards */}
-            <div className="lg:hidden mb-6">
-              <div className="flex items-center gap-2 mb-3 px-1">
-                <Store size={16} style={{ color: storeTheme.primary }} />
-                <h3 className="font-display font-bold text-sm" style={{ color: storeTheme.text }}>Categorias</h3>
-              </div>
-              <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-3 snap-x snap-mandatory -mx-4 px-4">
-                {subcategories.map((cat) => {
-                  const Icon = cat.icon;
-                  const isActive = activeCategory === cat.slug;
-                  const count = categoryCounts[cat.slug] || 0;
-                  const isDisabled = cat.slug !== "todos" && count === 0;
-                  return (
-                    <button
-                      key={cat.slug}
-                      onClick={() => setActiveCategory(cat.slug)}
-                      disabled={isDisabled}
-                      className="flex-shrink-0 snap-start relative w-[120px] h-[170px] rounded-2xl overflow-hidden transition-all duration-300 group"
-                      style={{
-                        boxShadow: isActive ? `0 0 24px ${storeTheme.primary}50, 0 8px 20px rgba(0,0,0,0.4)` : "0 4px 12px rgba(0,0,0,0.2)",
-                        border: isActive ? `2.5px solid ${storeTheme.primary}` : "2.5px solid transparent",
-                        opacity: isDisabled ? 0.4 : 1,
-                        cursor: isDisabled ? "not-allowed" : "pointer",
-                      }}
-                    >
-                      <img src={categoryCardImages[cat.slug] || cat.img} alt={cat.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 group-active:scale-105" loading="lazy" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
-                      {isActive && <div className="absolute inset-0 bg-primary/15 ring-1 ring-inset ring-white/20 rounded-2xl" />}
-                      <div className="absolute bottom-0 left-0 right-0 p-3 text-left">
-                        <div className="flex items-center gap-1.5 mb-1">
-                          <div className="w-7 h-7 rounded-lg bg-white/15 backdrop-blur-sm flex items-center justify-center">
-                            <Icon size={14} className="text-white" />
-                          </div>
-                        </div>
-                        <span className="text-[13px] font-bold text-white leading-tight block">{cat.name}</span>
-                        {(count > 0 || cat.slug === "todos") && (
-                          <span className="text-[10px] text-white/60 font-medium mt-0.5 block">{count} imóveis</span>
-                        )}
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
+            {/* ═══ DYNAMIC MOBILE LAYOUT ═══ */}
+            {(() => {
+              const layoutProps: StoreLayoutProps = {
+                products,
+                filteredProducts,
+                subcategories,
+                activeCategory,
+                setActiveCategory,
+                categoryCounts,
+                categoryCardImages,
+                storeTheme,
+                corretorSlug,
+                isDbProfile,
+                dbProfile,
+                handleWhatsApp,
+                formatPrice: (p: number) => `R$ ${p.toLocaleString("pt-BR")}`,
+                getTagStyle,
+                getTagLabel,
+              };
+
+              const layout = (dbProfile as any)?.store_layout || "netflix";
+
+              switch (layout) {
+                case "minimal": return <StoreLayoutMinimal {...layoutProps} />;
+                case "magazine": return <StoreLayoutMagazine {...layoutProps} />;
+                case "gallery": return <StoreLayoutGallery {...layoutProps} />;
+                case "elegant": return <StoreLayoutElegant {...layoutProps} />;
+                case "showcase": return <StoreLayoutShowcase {...layoutProps} />;
+                default: return <StoreLayoutNetflix {...layoutProps} />;
+              }
+            })()}
+
+            {/* Desktop: keep original grid */}
+            <div className="hidden lg:block">
             {/* Products Header */}
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-display font-bold text-lg md:text-xl" style={{ color: storeTheme.text }}>
@@ -1140,11 +1135,11 @@ export default function CompanyProfile() {
               </h2>
             </div>
 
-            {/* Products Grid — Premium cards */}
+            {/* Products Grid — Desktop only */}
             {filteredProducts.length > 0 ? (
               <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-5">
                 {filteredProducts.map((product: any, i: number) => {
-                  const productLink = `/${product.type === "veiculo" ? "veiculos" : "imoveis"}/produto/${product.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`;
+                  const productLink = `/imoveis/produto/${product.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`;
                   return (
                     <motion.div
                       key={product.id}
@@ -1165,15 +1160,12 @@ export default function CompanyProfile() {
                               <Image size={32} className="text-muted-foreground" />
                             </div>
                           )}
-                          {/* Sold overlay */}
                           {product.status === "vendido" && (
                             <div className="absolute inset-0 flex flex-col items-center justify-center z-10">
                               <span className="px-4 py-2 rounded-xl bg-red-600/90 text-white font-bold text-sm shadow-lg">❌ Vendido</span>
                             </div>
                           )}
-                          {/* Gradient overlay on hover */}
                           <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                          {/* Tag */}
                           {product.tag && (
                             <span className={`absolute top-2 left-2 px-2.5 py-1 rounded-lg text-[10px] font-bold shadow-md ${getTagStyle(product.tag)}`}>
                               {getTagLabel(product.tag)}
@@ -1184,19 +1176,6 @@ export default function CompanyProfile() {
                               🏠 Aluguel
                             </span>
                           )}
-                          {/* Quick WhatsApp on hover - hide for sold */}
-                          {company.whatsapp && product.status !== "vendido" && (
-                            <button
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                handleWhatsApp(product.title, product.id);
-                              }}
-                              className="absolute bottom-2 right-2 w-9 h-9 rounded-full bg-[#25d366] text-white flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110"
-                            >
-                              <MessageCircle size={16} />
-                            </button>
-                          )}
                         </div>
                         <div className="p-3 md:p-4">
                           <h3 className="font-display font-semibold text-sm leading-tight line-clamp-2 transition-colors" style={{ color: storeTheme.text }}>
@@ -1205,9 +1184,7 @@ export default function CompanyProfile() {
                           {product.price > 0 && (
                             <div className="flex items-center gap-2 mt-1.5">
                               <p className="font-display font-bold text-emerald-500 text-base md:text-lg">
-                                {isDbProfile
-                                  ? `R$ ${product.price.toLocaleString("pt-BR")}`
-                                  : formatPrice(product.price)}
+                                R$ {product.price.toLocaleString("pt-BR")}
                                 {isDbProfile && ((product.tags || []).includes("aluguel_flex") || product.category === "aluguel") && (
                                   <span className="text-sm font-normal text-muted-foreground"> /mês</span>
                                 )}
@@ -1232,6 +1209,7 @@ export default function CompanyProfile() {
                 <button onClick={() => setActiveCategory("todos")} className="text-primary text-sm mt-2 hover:underline">Ver todos</button>
               </div>
             )}
+            </div>
           </div>
         </div>
       </div>
