@@ -475,9 +475,9 @@ export default function CompanyProfile() {
       {/* ═══════════ SEO META TAGS ═══════════ */}
       {company && (
         <Helmet>
-          <title>{company.name} — Imóveis em {dbProfile?.city || "ES"} | ES Corretores</title>
-          <meta name="description" content={`${company.name} — ${dbProfile?.bio ? dbProfile.bio.slice(0, 140) : `Encontre os melhores imóveis com ${company.name} em ${dbProfile?.city || "Espírito Santo"}`}.`} />
-          <link rel="canonical" href={`https://lojaes.lovable.app/empresa/${dbProfile?.slug || id}`} />
+          <title>{company.name} — Imóveis em {dbProfile?.city || "Brasil"} | Brokers Bio</title>
+          <meta name="description" content={`${company.name} — ${dbProfile?.bio ? dbProfile.bio.slice(0, 140) : `Encontre os melhores imóveis com ${company.name} em ${dbProfile?.city || "Brasil"}`}.`} />
+          <link rel="canonical" href={`https://redeimoveisgb.lovable.app/empresa/${dbProfile?.slug || id}`} />
 
           {/* Open Graph */}
           <meta property="og:type" content="website" />
