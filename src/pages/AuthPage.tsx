@@ -103,7 +103,7 @@ export default function AuthPage() {
     <div className="min-h-screen flex flex-col lg:flex-row bg-background">
       {/* Left Panel - Hero Image + Blue Overlay */}
       <div className="relative w-full lg:w-1/2 h-[40vh] lg:h-auto lg:min-h-screen overflow-hidden">
-        <img src={heroImg} alt="ES Corretores" className="absolute inset-0 w-full h-full object-cover" />
+        <img src={heroImg} alt="Brokers Bio" className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-br from-[hsl(212,100%,15%)/85%] via-[hsl(197,100%,25%)/70%] to-[hsl(212,100%,20%)/80%]" />
         <div className="absolute inset-0 bg-gradient-to-b lg:bg-gradient-to-r from-transparent via-transparent to-background" />
         
