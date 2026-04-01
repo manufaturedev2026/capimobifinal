@@ -1110,7 +1110,7 @@ export default function CompanyProfile() {
                 getTagLabel,
               };
 
-              const layout = (dbProfile as any)?.store_layout || "netflix";
+              const layout = (dbProfile as any)?.store_layout || "showcase";
 
               switch (layout) {
                 case "minimal": return <StoreLayoutMinimal {...layoutProps} />;
