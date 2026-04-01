@@ -51,11 +51,19 @@ const PLANS_PREVIEW = [
 export default function Index() {
   const { user } = useAuth();
   const [activeScreen, setActiveScreen] = useState(0);
+  const [phoneScreen, setPhoneScreen] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveScreen((p) => (p + 1) % SHOWCASE_SCREENS.length);
     }, 3500);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPhoneScreen((p) => (p + 1) % 4);
+    }, 4000);
     return () => clearInterval(interval);
   }, []);
 
