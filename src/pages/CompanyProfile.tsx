@@ -457,6 +457,8 @@ export default function CompanyProfile() {
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
   const hasVideoHero = !!(videoId && sellerTier && sellerTier !== "basico" && sellerTier !== "start" && !isIOS);
   const storeTheme = getStoreTheme((dbProfile as any)?.store_theme);
+  const currentLayout = (dbProfile as any)?.store_layout || "showcase";
+  const isMarketplace = currentLayout === "marketplace";
 
   return (
     <div
@@ -527,8 +529,104 @@ export default function CompanyProfile() {
       )}
 
       {isDbProfile && dbProfile?.id && <StoreEffects sellerId={dbProfile.id} />}
-      {/* ═══════════ MOBILE PROFILE HERO (Instagram-style) ═══════════ */}
+      {/* ═══════════ MOBILE PROFILE HERO ═══════════ */}
       <section className="md:hidden relative overflow-hidden">
+        {isMarketplace ? (
+          /* ── Marketplace-style compact hero ── */
+          <>
+            <div className="px-4 pt-4 pb-5" style={{ background: storeTheme.primary }}>
+              {/* Top bar */}
+              <div className="flex items-center justify-between mb-4">
+                {user && (
+                  <Link to="/painel" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/15 text-white text-xs font-medium">
+                    <LayoutDashboard size={14} /> Painel
+                  </Link>
+                )}
+                {isPaid && <PackageBadge tier={sellerTier} size="sm" />}
+              </div>
+
+              {/* Profile row */}
+              <div className="flex items-center gap-3">
+                {(() => {
+                  const sellerStoryData = sellerStories.find(s => s.sellerId === dbProfile?.id);
+                  const hasActiveStory = !!sellerStoryData;
+                  const logoEl = company.logo ? (
+                    <img src={company.logo} alt={company.name} className="w-full h-full rounded-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full rounded-full bg-white/20 flex items-center justify-center">
+                      <span className="text-white font-bold text-xl">{company.name?.charAt(0)}</span>
+                    </div>
+                  );
+                  return hasActiveStory ? (
+                    <button onClick={() => setStoryViewerOpen(true)} className="w-14 h-14 rounded-full p-[2px] bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 shrink-0">
+                      <div className="w-full h-full rounded-full bg-black p-[2px]">{logoEl}</div>
+                    </button>
+                  ) : (
+                    <div className="w-14 h-14 rounded-full border-2 border-white/30 overflow-hidden shrink-0">{logoEl}</div>
+                  );
+                })()}
+
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1.5">
+                    <h1 className="font-display font-bold text-lg text-white truncate">{company.name}</h1>
+                    {isPaid && <BadgeCheck size={16} className="text-white/80 flex-shrink-0" />}
+                  </div>
+                  {dbProfile?.seller_category && (
+                    <span className="text-white/70 text-[11px]">
+                      {({ imobiliaria: "🏢 Imobiliária", corretor: "📋 Corretor(a)", proprietario: "🏠 Proprietário", construtora: "🏗️ Construtora" } as Record<string, string>)[dbProfile.seller_category]}
+                    </span>
+                  )}
+                  {company.show_location && company.address && (
+                    <span className="flex items-center gap-1 text-white/50 text-[10px] mt-0.5">
+                      <MapPin size={9} /> {company.address}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Stats */}
+              <div className="flex items-center gap-5 mt-4 text-white/90 text-xs">
+                <span className="font-bold">{products.length} <span className="font-normal text-white/60">imóveis</span></span>
+                {availableCities.length > 0 && (
+                  <span className="font-bold">{availableCities.length} <span className="font-normal text-white/60">cidades</span></span>
+                )}
+                <span className="font-bold">{isPaid ? "✓" : "—"} <span className="font-normal text-white/60">{isPaid ? "Verificado" : "Ativo"}</span></span>
+              </div>
+
+              {/* Action buttons */}
+              <div className="flex gap-2 mt-4">
+                {company.whatsapp && (
+                  <button onClick={() => handleWhatsApp(heroProduct?.title || company.name)} className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-white text-xs font-bold active:scale-95 transition-transform" style={{ color: storeTheme.primary }}>
+                    <MessageCircle size={16} /> WhatsApp
+                  </button>
+                )}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-white/15 text-white text-xs font-medium">
+                      <Share2 size={13} /> Compartilhar
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="center" className="w-48">
+                    <DropdownMenuItem onClick={() => {
+                      const text = `Confira ${company.name} no Brokers Bio: ${window.location.href}`;
+                      window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
+                    }}>
+                      <MessageCircle size={16} className="mr-2 text-[#25d366]" /> Enviar via WhatsApp
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => {
+                      navigator.clipboard.writeText(window.location.href);
+                      toast({ title: "Link copiado!", description: "O link da loja foi copiado." });
+                    }}>
+                      <ExternalLink size={16} className="mr-2" /> Copiar link
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </div>
+          </>
+        ) : (
+          /* ── Default Instagram-style hero ── */
+          <>
         {/* Sliding hero images behind profile */}
         {heroImages.length > 0 ? (
           <>
@@ -692,6 +790,8 @@ export default function CompanyProfile() {
             </button>
           </div>
         </div>
+          </>
+        )}
       </section>
 
       {/* ═══════════ DESKTOP HERO BANNER (unchanged) ═══════════ */}
@@ -1521,20 +1621,34 @@ export default function CompanyProfile() {
 
       {/* ═══ STICKY MOBILE BOTTOM BAR ═══ */}
       {company.whatsapp && (
-        <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-card/95 backdrop-blur-xl border-t border-border px-4 py-3 safe-area-pb">
+        <div
+          className="md:hidden fixed bottom-0 left-0 right-0 z-40 backdrop-blur-xl px-4 py-3 safe-area-pb"
+          style={isMarketplace ? {
+            background: storeTheme.primary,
+            borderTop: "none",
+          } : {
+            background: "hsl(var(--card) / 0.95)",
+            borderTop: "1px solid hsl(var(--border))",
+          }}
+        >
           <div className="flex gap-2">
             <button
               onClick={() => handleWhatsApp(heroProduct?.title || company.name)}
-              className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl bg-[#25d366] text-white font-bold text-sm shadow-lg active:scale-95 transition-transform"
+              className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl font-bold text-sm shadow-lg active:scale-95 transition-transform ${
+                isMarketplace ? "bg-white" : "bg-[#25d366] text-white"
+              }`}
+              style={isMarketplace ? { color: storeTheme.primary } : {}}
             >
-              <MessageCircle size={18} /> Falar no WhatsApp
+              <MessageCircle size={18} /> {isMarketplace ? "Falar com Corretor" : "Falar no WhatsApp"}
             </button>
             <button
               onClick={() => {
                 const phone = (teamMember?.phone || company.whatsapp || "").replace(/\D/g, "");
                 if (phone) window.open(`tel:+55${phone}`, "_self");
               }}
-              className="w-12 flex items-center justify-center rounded-2xl border border-border text-foreground active:scale-95 transition-transform"
+              className={`w-12 flex items-center justify-center rounded-2xl active:scale-95 transition-transform ${
+                isMarketplace ? "bg-white/20 text-white" : "border border-border text-foreground"
+              }`}
             >
               <Phone size={18} />
             </button>
