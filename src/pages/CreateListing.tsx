@@ -222,7 +222,7 @@ export default function CreateListing() {
       </section>
 
       {/* Dashboard Preview */}
-      <section className="py-16 md:py-24 bg-[hsl(212,80%,6%)] text-white overflow-hidden border-t border-white/5">
+      <section className="py-16 md:py-24 overflow-hidden">
         <div className="container max-w-6xl mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <motion.div initial={{ opacity: 0, x: -60 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 1 }} className="relative order-2 lg:order-1">
