@@ -2,11 +2,12 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 // Track an event (view or whatsapp_click) for a seller
-export async function trackSellerEvent(sellerId: string, eventType: "view" | "whatsapp_click", itemId?: string) {
+export async function trackSellerEvent(sellerId: string, eventType: "view" | "whatsapp_click", itemId?: string, teamMemberId?: string) {
   await supabase.from("seller_analytics").insert({
     seller_id: sellerId,
     event_type: eventType,
     item_id: itemId || null,
+    team_member_id: teamMemberId || null,
   } as any);
 }
 
