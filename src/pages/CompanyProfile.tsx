@@ -859,12 +859,51 @@ export default function CompanyProfile() {
             </div>
 
 
+            {/* City Filter */}
+            {availableCities.length > 1 && (
+              <div className="mb-4">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <MapPin size={16} style={{ color: storeTheme.textMuted }} className="flex-shrink-0" />
+                  <button
+                    onClick={() => setFilterCity("")}
+                    className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
+                      !filterCity
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-card border-border hover:border-primary/30"
+                    }`}
+                    style={!filterCity ? {} : { color: storeTheme.textMuted }}
+                  >
+                    Todas ({products.length})
+                  </button>
+                  {availableCities.map((city) => {
+                    const count = products.filter((p: any) => p.city === city).length;
+                    const isActive = filterCity === city;
+                    return (
+                      <button
+                        key={city}
+                        onClick={() => setFilterCity(isActive ? "" : city)}
+                        className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
+                          isActive
+                            ? "bg-primary text-primary-foreground border-primary"
+                            : "bg-card border-border hover:border-primary/30"
+                        }`}
+                        style={isActive ? {} : { color: storeTheme.textMuted }}
+                      >
+                        {city} ({count})
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
             {/* Products Header */}
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-display font-bold text-lg md:text-xl" style={{ color: storeTheme.text }}>
                 {activeCategory === "todos"
                   ? `Todos os Anúncios`
                   : subcategories.find(c => c.slug === activeCategory)?.name}
+                {filterCity && <span className="font-normal text-sm ml-2" style={{ color: storeTheme.textMuted }}>em {filterCity}</span>}
                 <span className="font-normal text-sm ml-2" style={{ color: storeTheme.textMuted }}>({filteredProducts.length})</span>
               </h2>
             </div>
