@@ -176,16 +176,48 @@ export default function PackagesPage() {
         </div>
 
         {subscription && currentTier !== "basico" && (
-          <div className="mt-6 flex justify-center">
-            <button
-              onClick={handleManageSubscription}
-              disabled={openingPortal}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-card border border-border rounded-xl text-foreground font-semibold text-sm hover:bg-muted transition-all"
-            >
-              <Settings size={18} />
-              {openingPortal ? "Abrindo..." : "Gerenciar Assinatura (Upgrade, Cancelar, Pagamento)"}
-            </button>
-          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-8 bg-card border-2 border-primary/30 rounded-2xl p-6 shadow-lg"
+          >
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <div className={`p-3 rounded-xl bg-gradient-to-br ${config.color}`}>
+                  {(() => { const ActiveIcon = tierIcons[currentTier as keyof typeof tierIcons] || Zap; return <ActiveIcon size={24} className="text-white" />; })()}
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Plano Ativo</p>
+                  <h3 className="font-display font-extrabold text-xl text-foreground">{config.name}</h3>
+                  <p className="text-sm text-muted-foreground">
+                    R$ {config.price.toFixed(2).replace(".", ",")}/mês
+                    {subscription.expires_at && (
+                      <span className="ml-2">
+                        · Renova em {new Date(subscription.expires_at).toLocaleDateString("pt-BR")}
+                      </span>
+                    )}
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-3 w-full md:w-auto">
+                <button
+                  onClick={handleManageSubscription}
+                  disabled={openingPortal}
+                  className="flex-1 md:flex-none inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-muted border border-border rounded-xl text-foreground font-semibold text-sm hover:bg-accent transition-all"
+                >
+                  <Settings size={16} />
+                  {openingPortal ? "Abrindo..." : "Gerenciar"}
+                </button>
+                <button
+                  onClick={handleManageSubscription}
+                  disabled={openingPortal}
+                  className="flex-1 md:flex-none inline-flex items-center justify-center gap-2 px-5 py-2.5 border border-destructive/30 rounded-xl text-destructive font-semibold text-sm hover:bg-destructive/10 transition-all"
+                >
+                  {openingPortal ? "Abrindo..." : "Cancelar Plano"}
+                </button>
+              </div>
+            </div>
+          </motion.div>
         )}
 
         <div className="mt-10 bg-card border border-border rounded-2xl p-6">
