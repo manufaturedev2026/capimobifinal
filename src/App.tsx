@@ -44,14 +44,19 @@ const queryClient = new QueryClient();
 
 const AppLayout = () => {
   const location = useLocation();
+  const { banInfo } = useAuth();
   const isStorePage = location.pathname.includes("/empresa/");
-  const isProtectedRoute = ["/painel", "/admin", "/pacotes", "/painel/novo", "/painel/perfil"].some(
+  const isProtectedRoute = ["/painel", "/admin", "/pacotes"].some(
     (r) => location.pathname.startsWith(r)
   );
 
+  // Block banned users from protected routes
+  if (isProtectedRoute && banInfo?.is_banned) {
+    return <BannedScreen />;
+  }
+
   return (
     <div className="min-h-screen flex flex-col">
-      {isProtectedRoute && <BannedScreen />}
       {!isStorePage && <Header />}
       <main className="flex-1">
         <Routes>
