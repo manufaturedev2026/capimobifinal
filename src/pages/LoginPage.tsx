@@ -49,7 +49,7 @@ export default function LoginPage() {
     <div className="min-h-screen flex flex-col lg:flex-row bg-background">
       {/* Image Panel */}
       <div className="relative w-full lg:w-1/2 h-[40vh] lg:h-auto lg:min-h-screen overflow-hidden">
-        <img src={heroImg} alt="ES Corretores" className="absolute inset-0 w-full h-full object-cover" />
+        <img src={heroImg} alt="Brokers Bio" className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-b lg:bg-gradient-to-r from-transparent via-transparent to-background" />
         <div className="absolute inset-0 bg-black/30" />
         <div className="absolute bottom-0 left-0 right-0 p-6 lg:p-12 lg:bottom-auto lg:top-1/2 lg:-translate-y-1/2">
