@@ -152,10 +152,10 @@ export default function CreateListing() {
             <p className="text-muted-foreground max-w-2xl mx-auto">Tudo que você precisa para vender mais imóveis em um só lugar.</p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {benefits.map((item, i) => (
               <motion.div key={item.title} custom={i} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
-                className={`rounded-2xl p-6 border transition-all hover:shadow-xl ${
+                className={`rounded-2xl p-4 sm:p-6 border transition-all hover:shadow-xl ${
                   item.accent ? "bg-gradient-to-br from-accent/10 to-accent/5 border-accent/20" : "bg-card border-border hover:border-primary/30"
                 }`}>
                 <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 ${item.accent ? "bg-accent/20 text-accent" : "bg-primary/10 text-primary"}`}>
