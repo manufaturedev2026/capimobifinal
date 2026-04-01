@@ -5,6 +5,7 @@ interface ProposalData {
   title: string;
   price: number;
   image: string;
+  images?: string[];
   location: string;
   description: string;
   tags: string[];
