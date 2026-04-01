@@ -3,7 +3,7 @@ import { getStoreUrl, getStoreFullUrl } from "@/lib/storeUrl";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Package, Eye, Plus, Settings, Edit, Trash2, Copy, ToggleLeft, ToggleRight, Search, Image, LogOut, BarChart3, Star, Crown, Zap, AlertTriangle, Shield, MessageCircle, Home, UserCircle, Headphones, Globe, ExternalLink, CheckCircle2, ClipboardCopy, Megaphone, Send, Calculator, Lock, Clapperboard, Menu, X, Building2, BookOpen, Users, Trophy, BadgeCheck, GripVertical } from "lucide-react";
+import { Package, Eye, Plus, Settings, Edit, Trash2, Copy, ToggleLeft, ToggleRight, Search, Image, LogOut, BarChart3, Star, Crown, Zap, AlertTriangle, Shield, MessageCircle, Home, UserCircle, Headphones, Globe, ExternalLink, CheckCircle2, ClipboardCopy, Megaphone, Send, Calculator, Lock, Clapperboard, Menu, X, Building2, BookOpen, Users, Trophy, BadgeCheck, GripVertical, ChevronRight } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import SoldCountdown from "@/components/SoldCountdown";
 import TeamMembersTab from "@/components/TeamMembersTab";
@@ -322,12 +322,12 @@ export default function SellerDashboard() {
 
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
-      {/* Mobile Header */}
-      <div className="gradient-hero py-6 lg:py-4">
+      {/* Mobile Header — Premium Gradient */}
+      <div className="dashboard-header-gradient py-6 lg:py-4">
         <div className="container max-w-6xl mx-auto px-4 lg:hidden">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center overflow-hidden">
+              <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center overflow-hidden ring-2 ring-white/20">
                 {profile?.logo_url ? (
                   <img src={profile.logo_url} alt="" className="w-full h-full object-cover" />
                 ) : (
@@ -336,20 +336,20 @@ export default function SellerDashboard() {
               </div>
               <div>
                 <h1 className="font-display font-bold text-lg text-white">Olá, {profile?.full_name || "Vendedor"}!</h1>
-                <p className="text-white/70 text-xs">{profile?.company_name || profile?.email}</p>
+                <p className="text-white/60 text-xs">{profile?.company_name || profile?.email}</p>
               </div>
             </div>
             <div className="flex items-center gap-1.5">
               {profile?.id && (
                 <Link to={getStoreUrl(profile)}
-                  className="p-2.5 rounded-xl bg-white/20 text-white hover:bg-white/30 transition-colors">
+                  className="p-2.5 rounded-xl bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 transition-colors">
                   <Eye size={16} />
                 </Link>
               )}
-              <Link to="/painel/perfil" className="p-2.5 rounded-xl bg-white/20 text-white hover:bg-white/30 transition-colors">
+              <Link to="/painel/perfil" className="p-2.5 rounded-xl bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 transition-colors">
                 <Settings size={16} />
               </Link>
-              <button onClick={() => { signOut(); navigate("/"); }} className="p-2.5 rounded-xl bg-white/20 text-white hover:bg-white/30 transition-colors">
+              <button onClick={() => { signOut(); navigate("/"); }} className="p-2.5 rounded-xl bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 transition-colors">
                 <LogOut size={16} />
               </button>
             </div>
@@ -358,25 +358,31 @@ export default function SellerDashboard() {
       </div>
 
       <div className="flex">
-        {/* Desktop Sidebar */}
-        <aside className="hidden lg:flex flex-col w-[260px] min-h-[calc(100vh-64px)] bg-card border-r border-border sticky top-16 flex-shrink-0">
-          {/* Profile */}
+        {/* Desktop Sidebar — Premium */}
+        <aside className="hidden lg:flex flex-col w-[280px] min-h-[calc(100vh-64px)] sidebar-premium border-r border-border sticky top-16 flex-shrink-0">
+          {/* Profile Card */}
           <div className="p-5 border-b border-border">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-muted flex items-center justify-center overflow-hidden">
-                {profile?.logo_url ? (
-                  <img src={profile.logo_url} alt="" className="w-full h-full object-cover" />
-                ) : (
-                  <span className="text-foreground font-bold text-lg">{profile?.full_name?.charAt(0) || "V"}</span>
-                )}
+              <div className="relative">
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center overflow-hidden ring-2 ring-primary/20">
+                  {profile?.logo_url ? (
+                    <img src={profile.logo_url} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-foreground font-bold text-xl">{profile?.full_name?.charAt(0) || "V"}</span>
+                  )}
+                </div>
+                <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-green-500 border-2 border-card" />
               </div>
               <div className="flex-1 min-w-0">
                 <h2 className="font-display font-bold text-sm text-foreground truncate">{profile?.full_name || "Vendedor"}</h2>
                 <p className="text-xs text-muted-foreground truncate">{profile?.company_name || profile?.email}</p>
               </div>
             </div>
-            <div className="mt-3">
+            <div className="mt-3 flex items-center gap-2">
               <PackageBadge tier={currentTier} />
+              {isExpired && (
+                <span className="px-2 py-0.5 rounded-full bg-destructive/10 text-destructive text-[10px] font-bold">Expirado</span>
+              )}
             </div>
           </div>
 
@@ -384,45 +390,46 @@ export default function SellerDashboard() {
           <nav className="flex-1 p-3 space-y-1">
             {sidebarNav.map((nav) => (
               <button key={nav.id} onClick={() => handleTabClick(nav.id)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${nav.locked ? "text-muted-foreground/50 cursor-not-allowed" : activeTab === nav.id ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground hover:bg-secondary"}`}>
+                className={`sidebar-nav-item ${nav.locked ? "text-muted-foreground/40 cursor-not-allowed" : activeTab === nav.id ? "active" : ""}`}>
                 <nav.icon size={18} /> {nav.label}
-                {nav.locked && <Lock size={14} className="ml-auto text-muted-foreground/50" />}
+                {nav.locked && <Lock size={14} className="ml-auto text-muted-foreground/40" />}
               </button>
             ))}
 
-            <div className="pt-2 border-t border-border mt-3">
+            <div className="pt-3 mt-3 border-t border-border space-y-0.5">
               <Link to="/painel/novo"
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-all">
+                className="sidebar-nav-item text-muted-foreground hover:text-foreground hover:bg-secondary">
                 <Plus size={18} /> Novo Anúncio
               </Link>
               {profile?.id && (
                 <Link to={getStoreUrl(profile)}
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-all">
+                  className="sidebar-nav-item text-muted-foreground hover:text-foreground hover:bg-secondary">
                   <Eye size={18} /> Ver Minha Loja
                 </Link>
               )}
               <Link to="/painel/perfil"
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-all">
+                className="sidebar-nav-item text-muted-foreground hover:text-foreground hover:bg-secondary">
                 <UserCircle size={18} /> Meu Perfil
               </Link>
               <Link to="/pacotes"
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-all">
+                className="sidebar-nav-item text-muted-foreground hover:text-foreground hover:bg-secondary">
                 <Package size={18} /> Pacotes
               </Link>
               {isAdmin && (
                 <Link to="/admin"
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-purple-500 hover:bg-purple-500/10 transition-all">
+                  className="sidebar-nav-item text-purple-500 hover:bg-purple-500/10">
                   <Shield size={18} /> Painel Admin
                 </Link>
               )}
             </div>
           </nav>
 
-          {/* Gerente Card */}
+          {/* Gerente Card — Premium */}
           <div className="p-4 border-t border-border">
-            <div className="bg-gradient-to-br from-primary/10 to-accent/10 rounded-2xl p-4">
-              <div className="flex items-center gap-3 mb-3">
-                <img src={(profile as any)?.manager_photo || gabrielImg} alt={profile?.account_manager || "Gabriel"} className="w-10 h-10 rounded-full object-cover ring-2 ring-primary/30" width={40} height={40} />
+            <div className="relative overflow-hidden rounded-2xl p-4" style={{ background: 'linear-gradient(135deg, hsl(var(--primary) / 0.08) 0%, hsl(var(--accent) / 0.08) 100%)' }}>
+              <div className="absolute top-0 right-0 w-20 h-20 rounded-full bg-primary/5 -translate-y-1/2 translate-x-1/2" />
+              <div className="flex items-center gap-3 mb-3 relative">
+                <img src={(profile as any)?.manager_photo || gabrielImg} alt={profile?.account_manager || "Gabriel"} className="w-11 h-11 rounded-full object-cover ring-2 ring-primary/30 shadow-lg" width={44} height={44} />
                 <div>
                   <p className="text-xs font-bold text-foreground">{profile?.account_manager || "Gabriel"}</p>
                   <p className="text-[10px] text-muted-foreground">Seu Gerente de Conta</p>
@@ -432,7 +439,7 @@ export default function SellerDashboard() {
                 href={`https://wa.me/${((profile as any)?.manager_phone || "5527995055993").replace(/\D/g, "")}?text=Olá%20${encodeURIComponent(profile?.account_manager || "Gabriel")}!%20Preciso%20de%20ajuda%20com%20minha%20loja.`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-green-500 text-white text-xs font-bold hover:bg-green-600 transition-colors"
+                className="relative w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-green-500 text-white text-xs font-bold hover:bg-green-600 transition-colors shadow-md"
               >
                 <Headphones size={14} /> Falar com seu Gerente
               </a>
@@ -442,7 +449,7 @@ export default function SellerDashboard() {
           {/* Logout */}
           <div className="p-3 border-t border-border">
             <button onClick={() => { signOut(); navigate("/"); }}
-              className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-destructive hover:bg-destructive/10 transition-all">
+              className="sidebar-nav-item text-destructive hover:bg-destructive/10">
               <LogOut size={18} /> Sair
             </button>
           </div>
@@ -454,43 +461,56 @@ export default function SellerDashboard() {
             {/* Overview Tab */}
             {activeTab === "overview" && (
               <div className="space-y-6">
-                {/* Stats */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {/* Welcome Banner - Desktop */}
+                <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
+                  className="hidden lg:block dashboard-header-gradient rounded-2xl p-6 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-40 h-40 rounded-full bg-white/5 -translate-y-1/2 translate-x-1/4" />
+                  <div className="absolute bottom-0 left-1/3 w-24 h-24 rounded-full bg-white/5 translate-y-1/2" />
+                  <div className="relative">
+                    <h1 className="font-display font-bold text-2xl text-white">Bem-vindo, {profile?.full_name?.split(" ")[0] || "Vendedor"}! 👋</h1>
+                    <p className="text-white/60 text-sm mt-1">Gerencie seus imóveis e acompanhe seu desempenho.</p>
+                  </div>
+                </motion.div>
+
+                {/* Stats Grid — Premium Cards */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
                   {[
-                    { label: "Total", value: items.length, icon: Package, color: "text-primary" },
-                    { label: "Ativos", value: totalActive, icon: ToggleRight, color: "text-green-500" },
-                    { label: "Inativos", value: totalInactive, icon: ToggleLeft, color: "text-muted-foreground" },
-                    { label: "Visualizações", value: totalViews, icon: Eye, color: "text-accent" },
+                    { label: "Total de Imóveis", value: items.length, icon: Package, gradient: "from-primary/10 to-primary/5", iconBg: "bg-primary/15", iconColor: "text-primary", borderColor: "border-primary/20" },
+                    { label: "Ativos", value: totalActive, icon: ToggleRight, gradient: "from-green-500/10 to-green-500/5", iconBg: "bg-green-500/15", iconColor: "text-green-500", borderColor: "border-green-500/20" },
+                    { label: "Inativos", value: totalInactive, icon: ToggleLeft, gradient: "from-muted/50 to-muted/30", iconBg: "bg-muted", iconColor: "text-muted-foreground", borderColor: "border-border" },
+                    { label: "Visualizações", value: totalViews, icon: Eye, gradient: "from-accent/10 to-accent/5", iconBg: "bg-accent/15", iconColor: "text-accent", borderColor: "border-accent/20" },
                   ].map((s, i) => (
-                    <motion.div key={s.label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}
-                      className="bg-card border border-border rounded-2xl p-4">
-                      <div className="flex items-center gap-2 mb-1">
-                        <s.icon size={16} className={s.color} />
-                        <span className="text-xs text-muted-foreground">{s.label}</span>
+                    <motion.div key={s.label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }}
+                      className={`stat-card-premium bg-gradient-to-br ${s.gradient} border ${s.borderColor}`}>
+                      <div className={`w-10 h-10 rounded-xl ${s.iconBg} flex items-center justify-center mb-3`}>
+                        <s.icon size={20} className={s.iconColor} />
                       </div>
-                      <p className="font-display font-bold text-2xl text-foreground">{s.value}</p>
+                      <p className="font-display font-extrabold text-3xl text-foreground tracking-tight">{s.value}</p>
+                      <p className="text-xs text-muted-foreground font-medium mt-1">{s.label}</p>
                     </motion.div>
                   ))}
                 </div>
 
-                {/* Package Info */}
-                <div className={`rounded-2xl border-2 p-4 ${isExpired ? "border-destructive bg-destructive/5" : isExpiringSoon ? "border-amber-400 bg-amber-400/5" : "border-border bg-card"}`}>
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${pkgConfig.color} flex items-center justify-center`}>
-                        {currentTier === "vip" ? <Crown size={20} className="text-white" /> : currentTier === "premium" ? <Star size={20} className="text-white" /> : <Zap size={20} className="text-white" />}
+                {/* Package Info — Premium */}
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
+                  className={`rounded-2xl border-2 p-5 relative overflow-hidden ${isExpired ? "border-destructive bg-destructive/5" : isExpiringSoon ? "border-amber-400 bg-amber-400/5" : "border-primary/20 bg-gradient-to-r from-primary/5 via-card to-accent/5"}`}>
+                  <div className="absolute top-0 right-0 w-32 h-32 rounded-full bg-primary/5 -translate-y-1/2 translate-x-1/2" />
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 relative">
+                    <div className="flex items-center gap-4">
+                      <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${pkgConfig.color} flex items-center justify-center shadow-lg`}>
+                        {currentTier === "vip" ? <Crown size={22} className="text-white" /> : currentTier === "premium" ? <Star size={22} className="text-white" /> : <Zap size={22} className="text-white" />}
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="font-display font-bold text-foreground">Pacote {pkgConfig.name}</span>
+                          <span className="font-display font-bold text-foreground text-lg">Pacote {pkgConfig.name}</span>
                           <PackageBadge tier={currentTier} />
                         </div>
                         {subscription ? (
-                          <p className="text-xs text-muted-foreground">
+                          <p className="text-xs text-muted-foreground mt-0.5">
                             {isExpired ? (
-                              <span className="text-destructive font-semibold">Expirado!</span>
+                              <span className="text-destructive font-semibold">⚠️ Expirado — renove agora!</span>
                             ) : (
-                              <>Expira em {daysUntilExpiry} dias • {totalActive}/{pkgConfig.maxItems >= 9999 ? "∞" : pkgConfig.maxItems} anúncios</>
+                              <>Expira em <strong>{daysUntilExpiry} dias</strong> • {totalActive}/{pkgConfig.maxItems >= 9999 ? "∞" : pkgConfig.maxItems} anúncios</>
                             )}
                           </p>
                         ) : (
@@ -500,16 +520,16 @@ export default function SellerDashboard() {
                     </div>
                     <div className="flex gap-2">
                       {(isExpired || isExpiringSoon) && (
-                        <Link to="/pacotes" className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-500 text-white text-xs font-bold hover:bg-amber-600 transition-colors">
+                        <Link to="/pacotes" className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-amber-500 text-white text-xs font-bold hover:bg-amber-600 transition-colors shadow-md">
                           <AlertTriangle size={14} /> Renovar
                         </Link>
                       )}
-                      <Link to="/pacotes" className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary/10 text-primary text-xs font-bold hover:bg-primary/20 transition-colors">
+                      <Link to="/pacotes" className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-primary/10 text-primary text-xs font-bold hover:bg-primary/20 transition-colors">
                         <Package size={14} /> {subscription ? "Alterar Plano" : "Ver Pacotes"}
                       </Link>
                     </div>
                   </div>
-                </div>
+                </motion.div>
 
                 {/* Admin Link - mobile */}
                 {isAdmin && (
@@ -518,51 +538,59 @@ export default function SellerDashboard() {
                   </Link>
                 )}
 
-                {/* Quick Actions */}
+                {/* Quick Actions — Premium */}
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Link to="/painel/novo"
-                    className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:bg-primary/90 transition-colors shadow-md">
-                    <Plus size={16} /> Adicionar Novo Item
+                    className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-bold text-sm hover:shadow-lg hover:shadow-primary/25 transition-all">
+                    <Plus size={18} /> Adicionar Novo Imóvel
                   </Link>
                   <button onClick={() => setActiveTab("items")}
-                    className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-secondary text-secondary-foreground font-bold text-sm hover:bg-secondary/80 transition-colors">
-                    <Package size={16} /> Ver Meus Anúncios
+                    className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl bg-card border border-border text-foreground font-bold text-sm hover:bg-secondary hover:shadow-md transition-all">
+                    <Package size={18} /> Ver Meus Anúncios
                   </button>
                 </div>
 
-                {/* Mini Chart */}
-                <div className="bg-card border border-border rounded-2xl p-5">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2">
-                      <BarChart3 size={18} className="text-primary" />
-                      <h3 className="font-display font-bold text-foreground">Resumo Rápido</h3>
+                {/* Mini Chart — Premium */}
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
+                  className="bg-card border border-border rounded-2xl p-5 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-24 h-24 rounded-full bg-primary/3 -translate-y-1/2 translate-x-1/2" />
+                  <div className="flex items-center justify-between mb-5 relative">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                        <BarChart3 size={20} className="text-primary" />
+                      </div>
+                      <div>
+                        <h3 className="font-display font-bold text-foreground">Resumo Rápido</h3>
+                        <p className="text-[11px] text-muted-foreground">Últimos 30 dias</p>
+                      </div>
                     </div>
-                    <button onClick={() => setActiveTab("stats")} className="text-xs text-primary font-semibold hover:underline">
-                      Ver completo →
+                    <button onClick={() => setActiveTab("stats")} className="text-xs text-primary font-semibold hover:underline flex items-center gap-1">
+                      Ver completo <ChevronRight size={14} />
                     </button>
                   </div>
                   <div className="grid grid-cols-2 gap-4 mb-4">
-                    <div className="p-3 rounded-xl bg-secondary/50">
-                      <div className="flex items-center gap-1.5 mb-1">
-                        <Eye size={14} className="text-primary" />
-                        <span className="text-xs text-muted-foreground">Visitas</span>
+                    <div className="p-4 rounded-xl bg-gradient-to-br from-primary/8 to-primary/3 border border-primary/10">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Eye size={16} className="text-primary" />
+                        <span className="text-xs text-muted-foreground font-medium">Visitas</span>
                       </div>
-                      <p className="font-display font-bold text-xl text-foreground">{analyticsTotals.views}</p>
+                      <p className="font-display font-extrabold text-2xl text-foreground">{analyticsTotals.views}</p>
                     </div>
-                    <div className="p-3 rounded-xl bg-secondary/50">
-                      <div className="flex items-center gap-1.5 mb-1">
-                        <MessageCircle size={14} className="text-green-500" />
-                        <span className="text-xs text-muted-foreground">WhatsApp</span>
+                    <div className="p-4 rounded-xl bg-gradient-to-br from-green-500/8 to-green-500/3 border border-green-500/10">
+                      <div className="flex items-center gap-2 mb-2">
+                        <MessageCircle size={16} className="text-green-500" />
+                        <span className="text-xs text-muted-foreground font-medium">WhatsApp</span>
                       </div>
-                      <p className="font-display font-bold text-xl text-foreground">{analyticsTotals.whatsapp_clicks}</p>
+                      <p className="font-display font-extrabold text-2xl text-foreground">{analyticsTotals.whatsapp_clicks}</p>
                     </div>
                   </div>
-                </div>
+                </motion.div>
 
-                {/* Mobile Gerente Card */}
-                <div className="lg:hidden bg-gradient-to-br from-primary/10 to-accent/10 rounded-2xl p-4">
-                  <div className="flex items-center gap-3 mb-3">
-                    <img src={(profile as any)?.manager_photo || gabrielImg} alt={profile?.account_manager || "Gabriel"} className="w-10 h-10 rounded-full object-cover ring-2 ring-primary/30" width={40} height={40} />
+                {/* Mobile Gerente Card — Premium */}
+                <div className="lg:hidden relative overflow-hidden rounded-2xl p-5" style={{ background: 'linear-gradient(135deg, hsl(var(--primary) / 0.08) 0%, hsl(var(--accent) / 0.08) 100%)' }}>
+                  <div className="absolute top-0 right-0 w-20 h-20 rounded-full bg-primary/5 -translate-y-1/2 translate-x-1/2" />
+                  <div className="flex items-center gap-3 mb-3 relative">
+                    <img src={(profile as any)?.manager_photo || gabrielImg} alt={profile?.account_manager || "Gabriel"} className="w-12 h-12 rounded-full object-cover ring-2 ring-primary/30 shadow-lg" width={48} height={48} />
                     <div>
                       <p className="text-sm font-bold text-foreground">{profile?.account_manager || "Gabriel"}</p>
                       <p className="text-xs text-muted-foreground">Seu Gerente de Conta</p>
@@ -571,8 +599,8 @@ export default function SellerDashboard() {
                   <a
                     href={`https://wa.me/${((profile as any)?.manager_phone || "5527995055993").replace(/\D/g, "")}?text=Olá%20${encodeURIComponent(profile?.account_manager || "Gabriel")}!%20Preciso%20de%20ajuda%20com%20minha%20loja.`}
                     target="_blank" rel="noopener noreferrer"
-                    className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-green-500 text-white text-xs font-bold hover:bg-green-600 transition-colors">
-                    <Headphones size={14} /> Falar com seu Gerente
+                    className="relative w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-green-500 text-white text-sm font-bold hover:bg-green-600 transition-colors shadow-md">
+                    <Headphones size={16} /> Falar com seu Gerente
                   </a>
                 </div>
               </div>
@@ -580,19 +608,20 @@ export default function SellerDashboard() {
 
             {/* Items Tab */}
             {activeTab === "items" && (
-              <div className="space-y-4">
+              <div className="space-y-5">
+                {/* Header + Search — Premium */}
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Link to="/painel/novo"
-                    className="flex items-center justify-center gap-2 py-3 px-6 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:bg-primary/90 transition-colors shadow-md">
-                    <Plus size={16} /> Novo Item
+                    className="flex items-center justify-center gap-2 py-3 px-6 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-bold text-sm hover:shadow-lg hover:shadow-primary/25 transition-all">
+                    <Plus size={16} /> Novo Imóvel
                   </Link>
                   <div className="flex-1 relative">
-                    <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                    <input type="text" value={filter} onChange={(e) => setFilter(e.target.value)} placeholder="Buscar itens..."
-                      className="w-full pl-10 pr-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" />
+                    <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                    <input type="text" value={filter} onChange={(e) => setFilter(e.target.value)} placeholder="Buscar imóveis..."
+                      className="w-full pl-11 pr-4 py-3 rounded-xl border border-input bg-card text-foreground text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary/50 focus:outline-none transition-all" />
                   </div>
                   <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}
-                    className="px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none">
+                    className="px-4 py-3 rounded-xl border border-input bg-card text-foreground text-sm focus:ring-2 focus:ring-primary/30 focus:outline-none">
                     <option value="todos">Todos</option>
                     <option value="ativo">Ativos</option>
                     <option value="inativo">Inativos</option>
@@ -601,51 +630,52 @@ export default function SellerDashboard() {
                 </div>
 
                 {filtered.length === 0 ? (
-                  <div className="bg-card border border-border rounded-2xl p-12 text-center">
-                    <Package size={48} className="mx-auto text-muted-foreground mb-4" />
-                    <h3 className="font-display font-bold text-lg text-foreground mb-2">Nenhum item encontrado</h3>
-                    <p className="text-muted-foreground text-sm mb-4">Comece adicionando seu primeiro item!</p>
-                    <Link to="/painel/novo" className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-sm">
-                      <Plus size={16} /> Adicionar Item
+                  <div className="bg-card border border-border rounded-2xl p-16 text-center relative overflow-hidden">
+                    <div className="absolute top-0 left-1/2 w-40 h-40 rounded-full bg-primary/5 -translate-x-1/2 -translate-y-1/2" />
+                    <Package size={56} className="mx-auto text-muted-foreground/30 mb-4 relative" />
+                    <h3 className="font-display font-bold text-xl text-foreground mb-2 relative">Nenhum imóvel encontrado</h3>
+                    <p className="text-muted-foreground text-sm mb-6 relative">Comece adicionando seu primeiro imóvel!</p>
+                    <Link to="/painel/novo" className="relative inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-bold text-sm shadow-lg shadow-primary/20">
+                      <Plus size={16} /> Adicionar Imóvel
                     </Link>
                   </div>
                 ) : (
                   <>
-                  <div className="space-y-2 mb-2">
-                    <p className="text-xs text-muted-foreground flex items-center gap-1">
-                      <GripVertical size={12} /> Arraste os cards para reordenar a exibição na sua loja
+                  <div className="space-y-2 mb-3">
+                    <p className="text-xs text-muted-foreground flex items-center gap-1.5 bg-card border border-border rounded-xl px-3 py-2">
+                      <GripVertical size={14} className="text-primary" /> Arraste os cards para reordenar a exibição na sua loja
                     </p>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 pb-10">
                     {filtered.map((item, i) => (
-                      <motion.div key={item.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
+                      <motion.div key={item.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}
                         draggable
                         onDragStart={() => handleDragStart(item.id)}
                         onDragOver={(e) => handleDragOver(e, item.id)}
                         onDrop={() => handleDrop(item.id)}
                         onDragEnd={() => { setDraggedItemId(null); setDragOverItemId(null); }}
-                        className={`bg-card border rounded-2xl overflow-hidden group hover:shadow-lg transition-all cursor-grab active:cursor-grabbing ${
-                          draggedItemId === item.id ? "opacity-50 scale-95 border-primary" :
-                          dragOverItemId === item.id ? "border-primary ring-2 ring-primary/30 scale-[1.02]" : "border-border"
+                        className={`bg-card border rounded-2xl overflow-hidden group hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-grab active:cursor-grabbing ${
+                          draggedItemId === item.id ? "opacity-50 scale-95 border-primary shadow-2xl" :
+                          dragOverItemId === item.id ? "border-primary ring-2 ring-primary/30 scale-[1.02] shadow-xl" : "border-border"
                         }`}>
-                        <div className="relative aspect-video bg-muted">
-                          <div className="absolute top-2 left-2 z-10 p-1.5 rounded-lg bg-black/40 text-white cursor-grab active:cursor-grabbing">
+                        <div className="relative aspect-video bg-muted overflow-hidden">
+                          <div className="absolute top-2 left-2 z-10 p-1.5 rounded-lg bg-black/50 backdrop-blur-sm text-white cursor-grab active:cursor-grabbing">
                             <GripVertical size={14} />
                           </div>
                           {item.photos && item.photos.length > 0 ? (
-                            <img src={item.photos[0]} alt={item.title} className={`w-full h-full object-cover ${item.status === "vendido" ? "brightness-50 blur-[1px]" : ""}`} />
+                            <img src={item.photos[0]} alt={item.title} className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 ${item.status === "vendido" ? "brightness-50 blur-[1px]" : ""}`} />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center">
-                              <Image size={32} className="text-muted-foreground" />
+                            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-muted to-muted/50">
+                              <Image size={36} className="text-muted-foreground/40" />
                             </div>
                           )}
-                          <div className="absolute top-2 right-2 flex gap-1">
-                            <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
+                          <div className="absolute top-2 right-2 flex gap-1.5">
+                            <span className={`px-2.5 py-1 rounded-lg text-[11px] font-bold shadow-sm backdrop-blur-sm ${
                               item.status === "ativo" ? "bg-green-500/90 text-white" 
                               : item.status === "vendido" ? "bg-red-500/90 text-white"
-                              : "bg-muted-foreground/80 text-white"
+                              : "bg-muted-foreground/70 text-white"
                             }`}>
-                              {item.status === "ativo" ? "Ativo" : item.status === "vendido" ? "❌ Vendido" : "Inativo"}
+                              {item.status === "ativo" ? "● Ativo" : item.status === "vendido" ? "❌ Vendido" : "● Inativo"}
                             </span>
                           </div>
                           {item.status === "vendido" && item.sold_at && (
@@ -654,9 +684,9 @@ export default function SellerDashboard() {
                             </div>
                           )}
                           {item.tags && item.tags.length > 0 && (
-                            <div className="absolute top-2 left-2 flex gap-1 flex-wrap">
+                            <div className="absolute top-2 left-12 flex gap-1 flex-wrap">
                               {item.tags.slice(0, 2).map((tag) => (
-                                <span key={tag} className={`px-2 py-0.5 rounded-full text-xs font-bold ${getTagStyle(tag)}`}>
+                                <span key={tag} className={`px-2.5 py-1 rounded-lg text-[11px] font-bold shadow-sm ${getTagStyle(tag)}`}>
                                   {getTagLabel(tag)}
                                 </span>
                               ))}
@@ -665,40 +695,46 @@ export default function SellerDashboard() {
                         </div>
                         <div className="p-4">
                           <div className="flex items-start justify-between gap-2">
-                            <div>
-                              <h3 className="font-display font-bold text-foreground line-clamp-1">{item.title}</h3>
-                              <p className="text-xs text-muted-foreground mt-0.5">{item.category} • {item.city || "Sem cidade"}</p>
+                            <div className="min-w-0">
+                              <h3 className="font-display font-bold text-foreground line-clamp-1 text-sm">{item.title}</h3>
+                              <p className="text-[11px] text-muted-foreground mt-0.5">{item.category} • {item.city || "Sem cidade"}</p>
                             </div>
                             {item.price && (
-                              <span className="font-bold text-green-600 text-sm whitespace-nowrap">R$ {item.price.toLocaleString("pt-BR")}</span>
+                              <span className="font-display font-extrabold text-green-600 text-sm whitespace-nowrap bg-green-500/8 px-2.5 py-1 rounded-lg">R$ {item.price.toLocaleString("pt-BR")}</span>
                             )}
                           </div>
+                          {/* Views count */}
+                          {item.views_count != null && item.views_count > 0 && (
+                            <div className="flex items-center gap-1.5 mt-2 text-[11px] text-muted-foreground">
+                              <Eye size={12} /> {item.views_count} visualizações
+                            </div>
+                          )}
                           <div className="flex items-center gap-1 mt-3 pt-3 border-t border-border flex-wrap">
                             <Link to={`/painel/editar/${item.id}`}
-                              className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors">
+                              className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg bg-primary/10 text-primary text-xs font-semibold hover:bg-primary/20 transition-all">
                               <Edit size={12} /> Editar
                             </Link>
                             <button onClick={() => duplicateItem(item)}
-                              className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg bg-secondary text-secondary-foreground text-xs font-medium hover:bg-secondary/80 transition-colors">
+                              className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg bg-secondary text-secondary-foreground text-xs font-medium hover:bg-secondary/80 transition-all">
                               <Copy size={12} /> Duplicar
                             </button>
                             <button onClick={() => toggleStatus(item.id, item.status)}
-                              className="p-2 rounded-lg bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors">
+                              className={`p-2 rounded-lg transition-all ${item.status === "ativo" ? "bg-green-500/10 text-green-600 hover:bg-green-500/20" : "bg-secondary text-secondary-foreground hover:bg-secondary/80"}`}>
                               {item.status === "ativo" ? <ToggleRight size={14} /> : <ToggleLeft size={14} />}
                             </button>
                             <button onClick={() => toggleDestaque(item.id)} title="Destaque na loja (até 5)"
-                              className={`p-2 rounded-lg transition-colors ${((profile as any)?.destaque_item_ids || []).includes(item.id) ? "bg-amber-500/20 text-amber-500" : "bg-secondary text-secondary-foreground hover:bg-secondary/80"}`}>
+                              className={`p-2 rounded-lg transition-all ${((profile as any)?.destaque_item_ids || []).includes(item.id) ? "bg-amber-500/20 text-amber-500 shadow-sm shadow-amber-500/10" : "bg-secondary text-secondary-foreground hover:bg-secondary/80"}`}>
                               <Star size={14} fill={((profile as any)?.destaque_item_ids || []).includes(item.id) ? "currentColor" : "none"} />
                             </button>
                             <button onClick={() => toggleHeroCover(item.id)} title="Capa da Loja"
-                              className={`p-2 rounded-lg transition-colors ${((profile as any)?.hero_item_ids || []).includes(item.id) ? "bg-primary/20 text-primary" : "bg-secondary text-secondary-foreground hover:bg-secondary/80"}`}>
+                              className={`p-2 rounded-lg transition-all ${((profile as any)?.hero_item_ids || []).includes(item.id) ? "bg-primary/20 text-primary shadow-sm shadow-primary/10" : "bg-secondary text-secondary-foreground hover:bg-secondary/80"}`}>
                               <Clapperboard size={14} />
                             </button>
                             {item.status === "ativo" && (
                               <AlertDialog>
                                 <AlertDialogTrigger asChild>
                                   <button title="Marcar como vendido"
-                                    className="p-2 rounded-lg bg-green-500/10 text-green-600 hover:bg-green-500/20 transition-colors">
+                                    className="p-2 rounded-lg bg-green-500/10 text-green-600 hover:bg-green-500/20 transition-all">
                                     <BadgeCheck size={14} />
                                   </button>
                                 </AlertDialogTrigger>
@@ -719,7 +755,7 @@ export default function SellerDashboard() {
                               </AlertDialog>
                             )}
                             <button onClick={() => deleteItem(item.id)}
-                              className="p-2 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors">
+                              className="p-2 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 transition-all">
                               <Trash2 size={14} />
                             </button>
                           </div>
@@ -1087,31 +1123,34 @@ export default function SellerDashboard() {
         </main>
       </div>
 
-      {/* Mobile Bottom Nav */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-xl border-t border-border safe-area-bottom">
-        <div className="flex items-center justify-around h-16">
+      {/* Mobile Bottom Nav — Premium */}
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-xl border-t border-border safe-area-bottom shadow-[0_-4px_20px_-4px_rgba(0,0,0,0.1)]">
+        <div className="flex items-center justify-around h-[68px]">
           {sidebarNav.slice(0, 3).map((nav) => (
             <button
               key={nav.id}
               onClick={() => { handleTabClick(nav.id); setMobileMenuOpen(false); }}
-              className={`flex flex-col items-center justify-center gap-0.5 px-2 py-1 rounded-lg transition-colors min-w-0 ${
+              className={`flex flex-col items-center justify-center gap-0.5 px-3 py-1.5 rounded-xl transition-all duration-200 min-w-0 ${
                 nav.locked
                   ? "text-muted-foreground/40"
                   : activeTab === nav.id
-                    ? "text-primary"
+                    ? "text-primary scale-105"
                     : "text-muted-foreground"
               }`}
             >
               {nav.locked ? <Lock size={20} /> : <nav.icon size={20} />}
-              <span className="text-[10px] font-medium truncate">{nav.label}</span>
+              <span className="text-[10px] font-semibold truncate">{nav.label}</span>
+              {activeTab === nav.id && (
+                <div className="w-1.5 h-1.5 rounded-full bg-primary mt-0.5" />
+              )}
             </button>
           ))}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className={`flex flex-col items-center justify-center gap-0.5 px-2 py-1 rounded-lg transition-colors ${mobileMenuOpen ? "text-primary" : "text-muted-foreground"}`}
+            className={`flex flex-col items-center justify-center gap-0.5 px-3 py-1.5 rounded-xl transition-all duration-200 ${mobileMenuOpen ? "text-primary scale-105" : "text-muted-foreground"}`}
           >
             {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
-            <span className="text-[10px] font-medium">Mais</span>
+            <span className="text-[10px] font-semibold">Mais</span>
           </button>
         </div>
       </nav>
