@@ -279,7 +279,7 @@ export default function ReferralTab() {
               <div key={c.id} className="flex items-center justify-between bg-secondary rounded-xl p-3">
                 <div>
                   <p className="text-sm font-bold text-foreground">R$ {Number(c.amount).toFixed(2).replace(".", ",")}</p>
-                  <p className="text-[10px] text-muted-foreground">{c.type}</p>
+                  <p className="text-[10px] text-muted-foreground">recorrente</p>
                 </div>
                 <div className="text-right">
                   <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${statusColors[c.status] || "bg-secondary text-muted-foreground"}`}>
