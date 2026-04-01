@@ -1,233 +1,492 @@
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { motion } from "framer-motion";
-import { Home, Users, Search, Shield, Zap, ArrowRight, Building2, Plus, Star, TrendingUp, Key } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect } from "react";
+import {
+  Instagram, Smartphone, Globe, Sparkles, ArrowRight, Star, Zap, Shield,
+  Layout, Palette, BarChart3, Share2, ChevronRight, Play, Check, Crown
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
 
+const SHOWCASE_SCREENS = [
+  {
+    title: "Hero Banner Épico",
+    desc: "Carrossel cinematográfico com seus melhores imóveis",
+    gradient: "from-sky-500 to-blue-600",
+  },
+  {
+    title: "Catálogo Netflix",
+    desc: "Cards premium com filtros por categoria e cidade",
+    gradient: "from-violet-500 to-purple-600",
+  },
+  {
+    title: "Perfil Profissional",
+    desc: "Logo, CRECI, Instagram e contato direto",
+    gradient: "from-emerald-500 to-teal-600",
+  },
+  {
+    title: "Stories Imersivos",
+    desc: "Poste fotos e vídeos que expiram em 24h",
+    gradient: "from-amber-500 to-orange-600",
+  },
+];
+
+const FEATURES = [
+  { icon: Smartphone, title: "Mobile-First", desc: "Design 100% otimizado para celular — feito para o Instagram" },
+  { icon: Palette, title: "8 Temas Premium", desc: "Escolha entre Rose Gold, Esmeralda, Midnight e mais" },
+  { icon: Layout, title: "Catálogo Estilo Netflix", desc: "Cards verticais, filtros por categoria, modo cinema" },
+  { icon: BarChart3, title: "Analytics Completo", desc: "Visualizações, cliques no WhatsApp, imóveis mais vistos" },
+  { icon: Share2, title: "Link na Bio Perfeito", desc: "URL única para Instagram, TikTok, Facebook e qualquer rede" },
+  { icon: Shield, title: "CRM Integrado", desc: "Gerencie seus leads com funil de vendas profissional" },
+];
+
+const PLANS_PREVIEW = [
+  { name: "Básico", price: "Grátis", items: "5 anúncios", highlight: false },
+  { name: "Start", price: "R$ 24,99", items: "25 anúncios + Stories", highlight: true },
+  { name: "VIP", price: "R$ 59,99", items: "100 anúncios + Analytics", highlight: false },
+];
+
 export default function Index() {
   const { user } = useAuth();
+  const [activeScreen, setActiveScreen] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveScreen((p) => (p + 1) % SHOWCASE_SCREENS.length);
+    }, 3500);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
-    <div className="min-h-screen bg-secondary/50">
+    <div className="min-h-screen bg-background">
       <Helmet>
-        <title>ES Corretores | Marketplace de Captação de Imóveis</title>
-        <meta name="description" content="Plataforma de captação de imóveis. Proprietários anunciam grátis, corretores captam e vendem." />
+        <title>ES Corretores | Sua Loja de Imóveis no Instagram</title>
+        <meta name="description" content="Crie sua loja de imóveis estilo Netflix e compartilhe no Instagram. Link na Bio profissional para corretores e imobiliárias." />
         <link rel="canonical" href="https://redeimoveisgb.lovable.app/" />
       </Helmet>
 
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[hsl(var(--navy))] via-primary to-[hsl(var(--navy))] py-16 md:py-24 px-4">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(255,255,255,0.08),transparent_50%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(255,255,255,0.05),transparent_40%)]" />
+      {/* ═══════════ HERO — ÉPICO ═══════════ */}
+      <section className="relative min-h-[90vh] md:min-h-screen overflow-hidden flex items-center">
+        {/* BG layers */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--navy))] via-[hsl(212,80%,14%)] to-[hsl(var(--navy))]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,hsl(var(--primary)/0.35),transparent)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_80%,hsl(var(--accent)/0.18),transparent_50%)]" />
 
-        <div className="max-w-6xl mx-auto relative z-10">
-          <div className="grid md:grid-cols-2 gap-10 items-center">
-            <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }}>
-              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 text-white/90 text-xs font-semibold mb-6 backdrop-blur-sm border border-white/10">
-                <Star size={14} className="text-amber-400" /> Marketplace de Captação
-              </span>
-              <h1 className="font-display font-bold text-3xl md:text-5xl text-white leading-tight">
-                Conectamos <span className="text-accent">proprietários</span> a <span className="text-accent">corretores</span>
-              </h1>
-              <p className="text-white/70 text-base md:text-lg mt-4 leading-relaxed">
-                Proprietários cadastram seus imóveis gratuitamente. Corretores qualificados captam e vendem com agilidade.
-              </p>
-              <div className="flex flex-wrap gap-3 mt-8">
-                <Button asChild size="lg" className="gap-2 h-12 px-8 text-base font-bold rounded-xl">
-                  <Link to="/anunciar-proprietario">
-                    <Plus size={18} /> Anunciar Grátis
-                  </Link>
-                </Button>
-                <Button asChild size="lg" variant="outline" className="gap-2 h-12 px-8 text-base font-bold rounded-xl border-white/20 text-white hover:bg-white/10">
-                  <Link to="/captacao">
-                    <Search size={18} /> Área do Corretor
-                  </Link>
-                </Button>
-              </div>
-            </motion.div>
+        {/* Floating orbs */}
+        <motion.div
+          animate={{ y: [0, -30, 0], x: [0, 15, 0] }}
+          transition={{ duration: 8, repeat: Infinity }}
+          className="absolute top-20 right-[15%] w-64 h-64 rounded-full bg-primary/10 blur-3xl"
+        />
+        <motion.div
+          animate={{ y: [0, 20, 0], x: [0, -10, 0] }}
+          transition={{ duration: 6, repeat: Infinity }}
+          className="absolute bottom-20 left-[10%] w-48 h-48 rounded-full bg-accent/10 blur-3xl"
+        />
 
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="hidden md:block"
-            >
-              <div className="grid grid-cols-2 gap-4">
-                {[
-                  { icon: Home, label: "Imóveis cadastrados", value: "500+", color: "from-primary to-sky-400" },
-                  { icon: Users, label: "Corretores ativos", value: "120+", color: "from-accent to-pink-400" },
-                  { icon: TrendingUp, label: "Vendas este mês", value: "35+", color: "from-emerald-500 to-teal-400" },
-                  { icon: Key, label: "Captações realizadas", value: "200+", color: "from-amber-500 to-orange-400" },
-                ].map((stat, i) => (
-                  <motion.div
-                    key={stat.label}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.4 + i * 0.1 }}
-                    className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-5"
-                  >
-                    <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center mb-3`}>
-                      <stat.icon size={20} className="text-white" />
-                    </div>
-                    <p className="font-display font-bold text-2xl text-white">{stat.value}</p>
-                    <p className="text-white/50 text-xs mt-1">{stat.label}</p>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* How it works */}
-      <section className="px-4 py-12 md:py-16">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="font-display font-bold text-2xl md:text-3xl text-foreground text-center mb-10">
-            Como funciona
-          </h2>
-
-          <div className="grid md:grid-cols-2 gap-8">
-            {/* Owner flow */}
-            <div className="bg-card border border-border rounded-2xl p-6 md:p-8">
-              <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
-                <Home size={24} className="text-primary" />
-              </div>
-              <h3 className="font-display font-bold text-xl text-foreground mb-2">Para Proprietários</h3>
-              <p className="text-muted-foreground text-sm mb-6">Cadastre seu imóvel gratuitamente e receba propostas de corretores.</p>
-              <ol className="space-y-4">
-                {[
-                  "Cadastre seu imóvel com fotos e descrição",
-                  "Seu imóvel fica visível para corretores qualificados",
-                  "Corretores interessados captam e entram em contato",
-                  "Acompanhe o status da venda pelo painel",
-                ].map((step, i) => (
-                  <li key={i} className="flex items-start gap-3">
-                    <span className="w-7 h-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold flex-shrink-0">
-                      {i + 1}
-                    </span>
-                    <span className="text-sm text-foreground pt-0.5">{step}</span>
-                  </li>
-                ))}
-              </ol>
-              <Button asChild className="w-full mt-6 gap-2">
-                <Link to="/anunciar-proprietario">
-                  <Plus size={16} /> Anunciar Grátis
-                </Link>
-              </Button>
-            </div>
-
-            {/* Broker flow */}
-            <div className="bg-card border border-border rounded-2xl p-6 md:p-8">
-              <div className="w-12 h-12 rounded-2xl bg-accent/10 flex items-center justify-center mb-4">
-                <Users size={24} className="text-accent" />
-              </div>
-              <h3 className="font-display font-bold text-xl text-foreground mb-2">Para Corretores</h3>
-              <p className="text-muted-foreground text-sm mb-6">Capte imóveis e amplie seu portfólio com planos acessíveis.</p>
-              <ol className="space-y-4">
-                {[
-                  "Cadastre-se e escolha seu plano",
-                  "Navegue pelos imóveis disponíveis com filtros",
-                  "Clique em \"Quero vender este imóvel\" para captar",
-                  "Receba o contato do proprietário e feche o negócio",
-                ].map((step, i) => (
-                  <li key={i} className="flex items-start gap-3">
-                    <span className="w-7 h-7 rounded-full bg-accent text-accent-foreground flex items-center justify-center text-sm font-bold flex-shrink-0">
-                      {i + 1}
-                    </span>
-                    <span className="text-sm text-foreground pt-0.5">{step}</span>
-                  </li>
-                ))}
-              </ol>
-              <Button asChild variant="outline" className="w-full mt-6 gap-2">
-                <Link to="/captacao">
-                  <Search size={16} /> Ver Imóveis Disponíveis
-                </Link>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Plans preview */}
-      <section className="px-4 py-12 bg-card border-y border-border">
-        <div className="max-w-6xl mx-auto text-center">
-          <h2 className="font-display font-bold text-2xl md:text-3xl text-foreground mb-3">
-            Planos para Corretores
-          </h2>
-          <p className="text-muted-foreground mb-8">Escolha o plano ideal para o seu volume de captação</p>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto">
-            {[
-              { name: "Básico", price: "Grátis", captures: "1 captação/mês", highlight: false },
-              { name: "Start", price: "R$ 24,99/mês", captures: "20 captações/mês", highlight: true },
-              { name: "VIP", price: "R$ 59,99/mês", captures: "50 captações/mês", highlight: false },
-            ].map((plan) => (
+        <div className="container max-w-6xl mx-auto px-4 relative z-10 py-16">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Left — Copy */}
+            <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
               <motion.div
-                key={plan.name}
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                className={`rounded-2xl p-6 border ${plan.highlight ? "border-primary bg-primary/5 shadow-lg shadow-primary/10" : "border-border bg-card"}`}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.2 }}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-md mb-6"
               >
-                {plan.highlight && (
-                  <Badge className="bg-primary text-primary-foreground mb-3">Mais Popular</Badge>
-                )}
-                <h3 className="font-display font-bold text-lg text-foreground">{plan.name}</h3>
-                <p className="font-display font-bold text-2xl text-foreground mt-2">{plan.price}</p>
-                <p className="text-sm text-muted-foreground mt-2">{plan.captures}</p>
-                <p className="text-sm text-muted-foreground">+ Loja própria</p>
+                <Instagram size={16} className="text-accent" />
+                <span className="text-white/80 text-xs font-semibold tracking-wide">LINK NA BIO PROFISSIONAL</span>
+              </motion.div>
+
+              <h1 className="font-display font-extrabold text-4xl md:text-6xl lg:text-7xl text-white leading-[1.05] tracking-tight">
+                Sua loja de
+                <br />
+                <span className="bg-gradient-to-r from-primary via-sky-400 to-accent bg-clip-text text-transparent">
+                  imóveis épica
+                </span>
+                <br />
+                no Instagram
+              </h1>
+
+              <p className="text-white/60 text-base md:text-lg mt-6 leading-relaxed max-w-lg">
+                Crie uma vitrine profissional estilo Netflix, compartilhe o link na bio e
+                transforme seguidores em clientes. Tudo pelo celular.
+              </p>
+
+              <div className="flex flex-wrap gap-3 mt-8">
+                <Button asChild size="lg" className="gap-2 h-13 px-8 text-base font-bold rounded-xl shadow-lg shadow-primary/30">
+                  <Link to="/entrar">
+                    <Sparkles size={18} /> Criar Minha Loja Grátis
+                  </Link>
+                </Button>
+                <Button asChild size="lg" variant="ghost" className="gap-2 h-13 px-6 text-white/70 hover:text-white hover:bg-white/10">
+                  <Link to="/pacotes">
+                    Ver Planos <ArrowRight size={16} />
+                  </Link>
+                </Button>
+              </div>
+
+              {/* Social proof */}
+              <div className="flex items-center gap-6 mt-10 pt-8 border-t border-white/10">
+                <div>
+                  <p className="font-display font-bold text-2xl text-white">500+</p>
+                  <p className="text-white/40 text-xs">Lojas criadas</p>
+                </div>
+                <div className="w-px h-10 bg-white/10" />
+                <div>
+                  <p className="font-display font-bold text-2xl text-white">120+</p>
+                  <p className="text-white/40 text-xs">Corretores ativos</p>
+                </div>
+                <div className="w-px h-10 bg-white/10" />
+                <div className="flex items-center gap-1">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} size={14} className="text-amber-400 fill-amber-400" />
+                  ))}
+                  <span className="text-white/40 text-xs ml-1">4.9</span>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Right — Phone mockup showcase */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="hidden lg:flex justify-center"
+            >
+              <div className="relative">
+                {/* Phone frame */}
+                <div className="w-[280px] h-[560px] bg-gradient-to-b from-white/10 to-white/5 rounded-[3rem] border-2 border-white/15 backdrop-blur-sm p-3 shadow-2xl shadow-black/50">
+                  <div className="w-full h-full rounded-[2.2rem] bg-[hsl(var(--navy))] overflow-hidden relative">
+                    {/* Notch */}
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-28 h-6 bg-black rounded-b-2xl z-20" />
+
+                    {/* Screen content */}
+                    <AnimatePresence mode="wait">
+                      <motion.div
+                        key={activeScreen}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ duration: 0.5 }}
+                        className="absolute inset-0 flex flex-col items-center justify-center p-6"
+                      >
+                        <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${SHOWCASE_SCREENS[activeScreen].gradient} flex items-center justify-center mb-4 shadow-lg`}>
+                          <Play size={24} className="text-white" />
+                        </div>
+                        <h4 className="text-white font-display font-bold text-lg text-center">
+                          {SHOWCASE_SCREENS[activeScreen].title}
+                        </h4>
+                        <p className="text-white/50 text-xs text-center mt-2 leading-relaxed">
+                          {SHOWCASE_SCREENS[activeScreen].desc}
+                        </p>
+                      </motion.div>
+                    </AnimatePresence>
+
+                    {/* Bottom indicator */}
+                    <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-1.5">
+                      {SHOWCASE_SCREENS.map((_, i) => (
+                        <button
+                          key={i}
+                          onClick={() => setActiveScreen(i)}
+                          className={`h-1.5 rounded-full transition-all duration-300 ${
+                            i === activeScreen ? "w-6 bg-primary" : "w-1.5 bg-white/20"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Floating badges */}
+                <motion.div
+                  animate={{ y: [0, -8, 0] }}
+                  transition={{ duration: 3, repeat: Infinity }}
+                  className="absolute -right-12 top-16 bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl px-4 py-3 shadow-xl"
+                >
+                  <div className="flex items-center gap-2">
+                    <Crown size={18} className="text-amber-400" />
+                    <div>
+                      <p className="text-white text-xs font-bold">Plano VIP</p>
+                      <p className="text-white/40 text-[10px]">100 anúncios</p>
+                    </div>
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  animate={{ y: [0, 8, 0] }}
+                  transition={{ duration: 4, repeat: Infinity }}
+                  className="absolute -left-16 bottom-28 bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl px-4 py-3 shadow-xl"
+                >
+                  <div className="flex items-center gap-2">
+                    <Globe size={18} className="text-primary" />
+                    <div>
+                      <p className="text-white text-xs font-bold">Link na Bio</p>
+                      <p className="text-white/40 text-[10px]">escoretores.app/loja</p>
+                    </div>
+                  </div>
+                </motion.div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════ COMO FUNCIONA ═══════════ */}
+      <section className="px-4 py-16 md:py-24 bg-secondary/50">
+        <div className="max-w-5xl mx-auto text-center">
+          <Badge variant="outline" className="mb-4 text-primary border-primary/30">3 passos simples</Badge>
+          <h2 className="font-display font-bold text-2xl md:text-4xl text-foreground">
+            Monte sua loja em <span className="text-primary">minutos</span>
+          </h2>
+
+          <div className="grid md:grid-cols-3 gap-6 mt-12">
+            {[
+              {
+                step: "01",
+                title: "Cadastre-se",
+                desc: "Crie sua conta grátis e preencha seu perfil profissional com logo, CRECI e dados de contato.",
+                icon: Sparkles,
+                gradient: "from-primary/20 to-primary/5",
+              },
+              {
+                step: "02",
+                title: "Adicione seus imóveis",
+                desc: "Cadastre seus imóveis com fotos, vídeos e detalhes. Sua loja estilo Netflix é criada automaticamente.",
+                icon: Layout,
+                gradient: "from-accent/20 to-accent/5",
+              },
+              {
+                step: "03",
+                title: "Compartilhe o link",
+                desc: "Coloque o link na bio do Instagram e comece a receber contatos pelo WhatsApp integrado.",
+                icon: Instagram,
+                gradient: "from-emerald-500/20 to-emerald-500/5",
+              },
+            ].map((item, i) => (
+              <motion.div
+                key={item.step}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.15 }}
+                className={`relative bg-gradient-to-b ${item.gradient} border border-border rounded-3xl p-8 text-left group hover:border-primary/30 transition-colors`}
+              >
+                <span className="font-display font-black text-5xl text-primary/15 absolute top-4 right-4">{item.step}</span>
+                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-5">
+                  <item.icon size={22} className="text-primary" />
+                </div>
+                <h3 className="font-display font-bold text-lg text-foreground">{item.title}</h3>
+                <p className="text-muted-foreground text-sm mt-2 leading-relaxed">{item.desc}</p>
               </motion.div>
             ))}
           </div>
-
-          <Button asChild variant="outline" className="mt-8 gap-2">
-            <Link to="/pacotes">Ver todos os planos <ArrowRight size={16} /></Link>
-          </Button>
         </div>
       </section>
 
-      {/* Benefits */}
-      <section className="px-4 py-12">
-        <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[
-            { icon: Shield, title: "Seguro e Confiável", desc: "Dados protegidos" },
-            { icon: Zap, title: "Captação Rápida", desc: "Contato imediato" },
-            { icon: Building2, title: "Todos os Tipos", desc: "Casas, aptos, terrenos" },
-            { icon: Star, title: "Corretores Premium", desc: "Profissionais verificados" },
-          ].map((item, i) => (
-            <motion.div
-              key={item.title}
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 + i * 0.08 }}
-              className="bg-card border border-border rounded-2xl p-4 flex items-start gap-3"
-            >
-              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                <item.icon size={20} className="text-primary" />
-              </div>
-              <div>
-                <p className="font-display font-semibold text-sm text-foreground">{item.title}</p>
-                <p className="text-xs text-muted-foreground mt-0.5">{item.desc}</p>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="px-4 pb-10">
-        <div className="max-w-6xl mx-auto gradient-hero rounded-2xl p-6 md:p-10 flex flex-col md:flex-row items-center justify-between gap-4 relative overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(255,255,255,0.12),transparent_50%)]" />
-          <div className="relative z-10 text-center md:text-left">
-            <h2 className="font-display font-bold text-xl md:text-3xl text-white">Tem um imóvel para vender?</h2>
-            <p className="text-white/80 text-sm md:text-base mt-1">Cadastre gratuitamente e receba propostas de corretores</p>
+      {/* ═══════════ EXEMPLO DE LOJA ═══════════ */}
+      <section className="px-4 py-16 md:py-24">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <Badge variant="outline" className="mb-4 text-accent border-accent/30">Exemplo real</Badge>
+            <h2 className="font-display font-bold text-2xl md:text-4xl text-foreground">
+              Assim fica a sua <span className="text-accent">loja épica</span>
+            </h2>
+            <p className="text-muted-foreground mt-3 max-w-lg mx-auto">
+              Uma vitrine profissional que impressiona seus clientes e gera contatos no WhatsApp
+            </p>
           </div>
-          <Button asChild size="lg" variant="secondary" className="relative z-10 gap-2 font-bold">
-            <Link to="/anunciar-proprietario">
-              <Plus size={18} /> Anunciar Grátis
-            </Link>
-          </Button>
+
+          {/* Mock store preview */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="bg-card border border-border rounded-3xl overflow-hidden shadow-2xl shadow-black/10 max-w-4xl mx-auto"
+          >
+            {/* Fake store header */}
+            <div className="bg-gradient-to-r from-[hsl(var(--navy))] to-primary h-48 md:h-56 relative flex items-end p-6">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(255,255,255,0.1),transparent)]" />
+              <div className="relative z-10 flex items-end gap-4">
+                <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/20">
+                  <span className="text-white font-display font-bold text-xl">JR</span>
+                </div>
+                <div>
+                  <h3 className="text-white font-display font-bold text-xl">João Imóveis</h3>
+                  <p className="text-white/60 text-sm">CRECI 12345-ES · Vila Velha, ES</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Fake categories */}
+            <div className="p-4 border-b border-border flex gap-3 overflow-x-auto">
+              {["Todos", "Casas", "Apartamentos", "Terrenos"].map((cat, i) => (
+                <span
+                  key={cat}
+                  className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-semibold transition-colors ${
+                    i === 0 ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"
+                  }`}
+                >
+                  {cat}
+                </span>
+              ))}
+            </div>
+
+            {/* Fake property cards */}
+            <div className="p-4 grid grid-cols-2 md:grid-cols-3 gap-3">
+              {[
+                { title: "Casa 3 quartos", price: "R$ 450.000", tag: "Destaque" },
+                { title: "Apto 2 quartos", price: "R$ 320.000", tag: "Novo" },
+                { title: "Terreno 300m²", price: "R$ 180.000", tag: null },
+              ].map((item) => (
+                <div key={item.title} className="bg-secondary/50 rounded-2xl overflow-hidden border border-border">
+                  <div className="aspect-[4/3] bg-gradient-to-br from-primary/20 to-accent/10 relative">
+                    {item.tag && (
+                      <Badge className="absolute top-2 left-2 bg-primary text-primary-foreground text-[10px]">
+                        {item.tag}
+                      </Badge>
+                    )}
+                  </div>
+                  <div className="p-3">
+                    <p className="font-display font-semibold text-sm text-foreground truncate">{item.title}</p>
+                    <p className="text-emerald-500 font-display font-bold text-sm mt-1">{item.price}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+
+          <div className="text-center mt-8">
+            <Button asChild size="lg" className="gap-2 font-bold rounded-xl shadow-lg shadow-primary/20">
+              <Link to="/entrar">
+                <Sparkles size={18} /> Quero Criar a Minha
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════ FEATURES GRID ═══════════ */}
+      <section className="px-4 py-16 md:py-24 bg-secondary/50">
+        <div className="max-w-6xl mx-auto text-center">
+          <Badge variant="outline" className="mb-4 text-primary border-primary/30">Tudo incluso</Badge>
+          <h2 className="font-display font-bold text-2xl md:text-4xl text-foreground">
+            Uma loja <span className="text-primary">completa</span> no seu bolso
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mt-12">
+            {FEATURES.map((feature, i) => (
+              <motion.div
+                key={feature.title}
+                initial={{ opacity: 0, y: 15 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.08 }}
+                className="bg-card border border-border rounded-2xl p-6 text-left hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 transition-all group"
+              >
+                <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
+                  <feature.icon size={20} className="text-primary" />
+                </div>
+                <h3 className="font-display font-bold text-foreground">{feature.title}</h3>
+                <p className="text-muted-foreground text-sm mt-2 leading-relaxed">{feature.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════ PLANOS ═══════════ */}
+      <section className="px-4 py-16 md:py-24">
+        <div className="max-w-4xl mx-auto text-center">
+          <Badge variant="outline" className="mb-4 text-accent border-accent/30">Preços simples</Badge>
+          <h2 className="font-display font-bold text-2xl md:text-4xl text-foreground">
+            Comece grátis, <span className="text-accent">cresça</span> quando quiser
+          </h2>
+
+          <div className="grid md:grid-cols-3 gap-5 mt-12">
+            {PLANS_PREVIEW.map((plan, i) => (
+              <motion.div
+                key={plan.name}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+                className={`rounded-3xl p-6 border-2 transition-all ${
+                  plan.highlight
+                    ? "border-primary bg-primary/5 shadow-xl shadow-primary/10 scale-105"
+                    : "border-border bg-card hover:border-primary/20"
+                }`}
+              >
+                {plan.highlight && (
+                  <Badge className="bg-primary text-primary-foreground mb-3">
+                    <Star size={12} className="mr-1" /> Mais Popular
+                  </Badge>
+                )}
+                <h3 className="font-display font-bold text-lg text-foreground">{plan.name}</h3>
+                <p className="font-display font-extrabold text-3xl text-foreground mt-2">
+                  {plan.price}
+                  {plan.price !== "Grátis" && <span className="text-sm font-normal text-muted-foreground">/mês</span>}
+                </p>
+                <p className="text-sm text-muted-foreground mt-3">{plan.items}</p>
+                <ul className="mt-4 space-y-2 text-left">
+                  {["Loja estilo Netflix", "Link na Bio", "WhatsApp integrado"].map((f) => (
+                    <li key={f} className="flex items-center gap-2 text-sm text-foreground">
+                      <Check size={14} className="text-emerald-500 flex-shrink-0" /> {f}
+                    </li>
+                  ))}
+                </ul>
+                <Button
+                  asChild
+                  className="w-full mt-6"
+                  variant={plan.highlight ? "default" : "outline"}
+                >
+                  <Link to="/pacotes">
+                    {plan.highlight ? "Começar Agora" : "Ver Detalhes"}
+                    <ChevronRight size={16} />
+                  </Link>
+                </Button>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════ CTA FINAL ═══════════ */}
+      <section className="px-4 py-16 md:py-24">
+        <div className="max-w-4xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.97 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[hsl(var(--navy))] via-primary to-[hsl(var(--navy))] p-8 md:p-14 text-center"
+          >
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.15),transparent_60%)]" />
+            <div className="relative z-10">
+              <motion.div
+                animate={{ rotate: [0, 5, -5, 0] }}
+                transition={{ duration: 4, repeat: Infinity }}
+                className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 mb-6"
+              >
+                <Instagram size={28} className="text-white" />
+              </motion.div>
+              <h2 className="font-display font-extrabold text-2xl md:text-4xl text-white">
+                Seu link na bio merece ser <span className="text-accent">épico</span>
+              </h2>
+              <p className="text-white/60 mt-3 max-w-lg mx-auto text-sm md:text-base">
+                Pare de perder clientes com perfis amadores. Crie sua loja profissional agora e
+                comece a receber contatos pelo WhatsApp hoje mesmo.
+              </p>
+              <div className="flex flex-wrap justify-center gap-3 mt-8">
+                <Button asChild size="lg" variant="secondary" className="gap-2 font-bold rounded-xl shadow-lg">
+                  <Link to="/entrar">
+                    <Sparkles size={18} /> Criar Minha Loja Grátis
+                  </Link>
+                </Button>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </section>
     </div>

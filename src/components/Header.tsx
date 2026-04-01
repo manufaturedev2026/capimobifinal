@@ -11,15 +11,11 @@ export default function Header() {
 
   const navLinks = [
     { to: "/", label: "Início", icon: Home },
-    { to: "/captacao", label: "Captar Imóveis", icon: Key },
-    { to: "/anunciar-proprietario", label: "Anunciar Grátis", icon: Plus },
     { to: "/pacotes", label: "Planos", icon: Package },
   ];
 
   const userLinks = user
     ? [
-        { to: "/minhas-captacoes", label: "Minhas Captações", icon: FolderOpen },
-        { to: "/meus-imoveis", label: "Meus Imóveis", icon: Home },
         { to: "/painel", label: "Painel", icon: LayoutDashboard },
       ]
     : [];
