@@ -758,6 +758,10 @@ export default function AdminPanel() {
         {tab === "referrals" && (
           <AdminReferralTab />
         )}
+
+        {tab === "crm" && (
+          <AdminCrmTab />
+        )}
         </main>
       </div>
 
