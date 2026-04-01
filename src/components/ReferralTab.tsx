@@ -67,6 +67,15 @@ export default function ReferralTab() {
       .eq("user_id", user!.id)
       .order("created_at", { ascending: false }) as any;
 
+    // Fetch commission rate
+    const { data: rateSetting } = await supabase
+      .from("platform_settings")
+      .select("value")
+      .eq("key", "referral_commission_rate")
+      .maybeSingle() as any;
+
+    if (rateSetting?.value) setCommissionRate(parseFloat(rateSetting.value));
+
     setCommissions(comms || []);
     setReferredCount(count || 0);
     setWithdrawals(wds || []);
