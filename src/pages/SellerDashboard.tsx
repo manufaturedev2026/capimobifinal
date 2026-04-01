@@ -700,35 +700,41 @@ export default function SellerDashboard() {
                               <p className="text-[11px] text-muted-foreground mt-0.5">{item.category} • {item.city || "Sem cidade"}</p>
                             </div>
                             {item.price && (
-                              <span className="font-bold text-green-600 text-sm whitespace-nowrap">R$ {item.price.toLocaleString("pt-BR")}</span>
+                              <span className="font-display font-extrabold text-green-600 text-sm whitespace-nowrap bg-green-500/8 px-2.5 py-1 rounded-lg">R$ {item.price.toLocaleString("pt-BR")}</span>
                             )}
                           </div>
+                          {/* Views count */}
+                          {item.views_count != null && item.views_count > 0 && (
+                            <div className="flex items-center gap-1.5 mt-2 text-[11px] text-muted-foreground">
+                              <Eye size={12} /> {item.views_count} visualizações
+                            </div>
+                          )}
                           <div className="flex items-center gap-1 mt-3 pt-3 border-t border-border flex-wrap">
                             <Link to={`/painel/editar/${item.id}`}
-                              className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors">
+                              className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg bg-primary/10 text-primary text-xs font-semibold hover:bg-primary/20 transition-all">
                               <Edit size={12} /> Editar
                             </Link>
                             <button onClick={() => duplicateItem(item)}
-                              className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg bg-secondary text-secondary-foreground text-xs font-medium hover:bg-secondary/80 transition-colors">
+                              className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg bg-secondary text-secondary-foreground text-xs font-medium hover:bg-secondary/80 transition-all">
                               <Copy size={12} /> Duplicar
                             </button>
                             <button onClick={() => toggleStatus(item.id, item.status)}
-                              className="p-2 rounded-lg bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors">
+                              className={`p-2 rounded-lg transition-all ${item.status === "ativo" ? "bg-green-500/10 text-green-600 hover:bg-green-500/20" : "bg-secondary text-secondary-foreground hover:bg-secondary/80"}`}>
                               {item.status === "ativo" ? <ToggleRight size={14} /> : <ToggleLeft size={14} />}
                             </button>
                             <button onClick={() => toggleDestaque(item.id)} title="Destaque na loja (até 5)"
-                              className={`p-2 rounded-lg transition-colors ${((profile as any)?.destaque_item_ids || []).includes(item.id) ? "bg-amber-500/20 text-amber-500" : "bg-secondary text-secondary-foreground hover:bg-secondary/80"}`}>
+                              className={`p-2 rounded-lg transition-all ${((profile as any)?.destaque_item_ids || []).includes(item.id) ? "bg-amber-500/20 text-amber-500 shadow-sm shadow-amber-500/10" : "bg-secondary text-secondary-foreground hover:bg-secondary/80"}`}>
                               <Star size={14} fill={((profile as any)?.destaque_item_ids || []).includes(item.id) ? "currentColor" : "none"} />
                             </button>
                             <button onClick={() => toggleHeroCover(item.id)} title="Capa da Loja"
-                              className={`p-2 rounded-lg transition-colors ${((profile as any)?.hero_item_ids || []).includes(item.id) ? "bg-primary/20 text-primary" : "bg-secondary text-secondary-foreground hover:bg-secondary/80"}`}>
+                              className={`p-2 rounded-lg transition-all ${((profile as any)?.hero_item_ids || []).includes(item.id) ? "bg-primary/20 text-primary shadow-sm shadow-primary/10" : "bg-secondary text-secondary-foreground hover:bg-secondary/80"}`}>
                               <Clapperboard size={14} />
                             </button>
                             {item.status === "ativo" && (
                               <AlertDialog>
                                 <AlertDialogTrigger asChild>
                                   <button title="Marcar como vendido"
-                                    className="p-2 rounded-lg bg-green-500/10 text-green-600 hover:bg-green-500/20 transition-colors">
+                                    className="p-2 rounded-lg bg-green-500/10 text-green-600 hover:bg-green-500/20 transition-all">
                                     <BadgeCheck size={14} />
                                   </button>
                                 </AlertDialogTrigger>
@@ -749,7 +755,7 @@ export default function SellerDashboard() {
                               </AlertDialog>
                             )}
                             <button onClick={() => deleteItem(item.id)}
-                              className="p-2 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors">
+                              className="p-2 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 transition-all">
                               <Trash2 size={14} />
                             </button>
                           </div>
