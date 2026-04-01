@@ -24,6 +24,7 @@ import { useWhatsAppPicker } from "@/components/WhatsAppTeamPicker";
 import StoryViewer from "@/components/StoryViewer";
 import { useStories } from "@/hooks/useStories";
 import WhatsAppLeadCapture from "@/components/WhatsAppLeadCapture";
+import StoreInstallButton from "@/components/StoreInstallButton";
 
 const propertySubcategories = [
   { slug: "todos", name: "Todos", icon: Store, img: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=300&h=200&fit=crop" },
@@ -632,6 +633,7 @@ export default function CompanyProfile() {
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
+                <StoreInstallButton variant="hero-light" />
               </div>
             </div>
           </>
@@ -799,6 +801,7 @@ export default function CompanyProfile() {
             <button onClick={() => setGalleryLightbox(0)} className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/10 backdrop-blur-md text-white text-xs font-medium">
               <Clapperboard size={13} /> Cinema
             </button>
+            <StoreInstallButton variant="hero-dark" />
           </div>
         </div>
           </>
@@ -1155,6 +1158,7 @@ export default function CompanyProfile() {
                         <Instagram size={14} /> Instagram
                       </a>
                     )}
+                    <StoreInstallButton />
                   </div>
                 </div>
               </div>
