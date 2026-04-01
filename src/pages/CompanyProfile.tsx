@@ -1422,17 +1422,12 @@ export default function CompanyProfile() {
         return (
           <section className="px-4 md:px-8 lg:px-12 py-10">
             <div className="max-w-4xl mx-auto">
-              <h3 className="font-display font-bold text-xl md:text-2xl mb-2 flex items-center gap-2" style={{ color: storeTheme.text }}>
+              <h3 className="font-display font-bold text-xl md:text-2xl mb-4 flex items-center gap-2" style={{ color: storeTheme.text }}>
                 <span className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: `${storeTheme.primary}20` }}>
                   <Play size={18} style={{ color: storeTheme.primary }} />
                 </span>
                 {svTitle}
               </h3>
-              {svDescription && (
-                <p className="text-sm mb-5 leading-relaxed max-w-2xl" style={{ color: storeTheme.textMuted }}>
-                  {svDescription}
-                </p>
-              )}
               <div className="relative aspect-video rounded-2xl overflow-hidden shadow-2xl" style={{ border: `1px solid ${storeTheme.border}` }}>
                 <iframe
                   src={`https://www.youtube.com/embed/${ytId}?rel=0`}
@@ -1442,6 +1437,11 @@ export default function CompanyProfile() {
                   className="w-full h-full"
                 />
               </div>
+              {svDescription && (
+                <p className="text-sm mt-4 leading-relaxed max-w-2xl" style={{ color: storeTheme.textMuted }}>
+                  {svDescription}
+                </p>
+              )}
               <div className="flex flex-wrap gap-3 mt-5">
                 {svButtonText && svButtonUrl && (
                   <a
