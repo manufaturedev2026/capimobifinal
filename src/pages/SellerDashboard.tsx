@@ -608,19 +608,20 @@ export default function SellerDashboard() {
 
             {/* Items Tab */}
             {activeTab === "items" && (
-              <div className="space-y-4">
+              <div className="space-y-5">
+                {/* Header + Search — Premium */}
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Link to="/painel/novo"
-                    className="flex items-center justify-center gap-2 py-3 px-6 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:bg-primary/90 transition-colors shadow-md">
-                    <Plus size={16} /> Novo Item
+                    className="flex items-center justify-center gap-2 py-3 px-6 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-bold text-sm hover:shadow-lg hover:shadow-primary/25 transition-all">
+                    <Plus size={16} /> Novo Imóvel
                   </Link>
                   <div className="flex-1 relative">
-                    <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                    <input type="text" value={filter} onChange={(e) => setFilter(e.target.value)} placeholder="Buscar itens..."
-                      className="w-full pl-10 pr-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" />
+                    <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                    <input type="text" value={filter} onChange={(e) => setFilter(e.target.value)} placeholder="Buscar imóveis..."
+                      className="w-full pl-11 pr-4 py-3 rounded-xl border border-input bg-card text-foreground text-sm focus:ring-2 focus:ring-primary/30 focus:border-primary/50 focus:outline-none transition-all" />
                   </div>
                   <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}
-                    className="px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none">
+                    className="px-4 py-3 rounded-xl border border-input bg-card text-foreground text-sm focus:ring-2 focus:ring-primary/30 focus:outline-none">
                     <option value="todos">Todos</option>
                     <option value="ativo">Ativos</option>
                     <option value="inativo">Inativos</option>
@@ -629,12 +630,13 @@ export default function SellerDashboard() {
                 </div>
 
                 {filtered.length === 0 ? (
-                  <div className="bg-card border border-border rounded-2xl p-12 text-center">
-                    <Package size={48} className="mx-auto text-muted-foreground mb-4" />
-                    <h3 className="font-display font-bold text-lg text-foreground mb-2">Nenhum item encontrado</h3>
-                    <p className="text-muted-foreground text-sm mb-4">Comece adicionando seu primeiro item!</p>
-                    <Link to="/painel/novo" className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-sm">
-                      <Plus size={16} /> Adicionar Item
+                  <div className="bg-card border border-border rounded-2xl p-16 text-center relative overflow-hidden">
+                    <div className="absolute top-0 left-1/2 w-40 h-40 rounded-full bg-primary/5 -translate-x-1/2 -translate-y-1/2" />
+                    <Package size={56} className="mx-auto text-muted-foreground/30 mb-4 relative" />
+                    <h3 className="font-display font-bold text-xl text-foreground mb-2 relative">Nenhum imóvel encontrado</h3>
+                    <p className="text-muted-foreground text-sm mb-6 relative">Comece adicionando seu primeiro imóvel!</p>
+                    <Link to="/painel/novo" className="relative inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-gradient-to-r from-primary to-primary/80 text-primary-foreground font-bold text-sm shadow-lg shadow-primary/20">
+                      <Plus size={16} /> Adicionar Imóvel
                     </Link>
                   </div>
                 ) : (
