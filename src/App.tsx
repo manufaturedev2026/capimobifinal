@@ -45,9 +45,13 @@ const queryClient = new QueryClient();
 const AppLayout = () => {
   const location = useLocation();
   const isStorePage = location.pathname.includes("/empresa/");
+  const isProtectedRoute = ["/painel", "/admin", "/pacotes", "/painel/novo", "/painel/perfil"].some(
+    (r) => location.pathname.startsWith(r)
+  );
 
   return (
     <div className="min-h-screen flex flex-col">
+      {isProtectedRoute && <BannedScreen />}
       {!isStorePage && <Header />}
       <main className="flex-1">
         <Routes>
