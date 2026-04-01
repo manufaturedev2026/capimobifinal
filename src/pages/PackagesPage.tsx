@@ -175,12 +175,12 @@ export default function PackagesPage() {
               <p className="mt-1">Selecione o pacote que melhor atende suas necessidades.</p>
             </div>
             <div>
-              <strong className="text-foreground">2. Pagamento</strong>
-              <p className="mt-1">Para planos pagos, realize o pagamento via Pix ou boleto. O admin aprovará manualmente.</p>
+              <strong className="text-foreground">2. Pagamento seguro</strong>
+              <p className="mt-1">Para planos pagos, você será redirecionado ao checkout seguro do Stripe para pagamento com cartão.</p>
             </div>
             <div>
-              <strong className="text-foreground">3. Anuncie!</strong>
-              <p className="mt-1">Após a confirmação, seus anúncios ganham destaque e mais visibilidade.</p>
+              <strong className="text-foreground">3. Ativação instantânea</strong>
+              <p className="mt-1">Após o pagamento, seu plano é ativado automaticamente e você já pode anunciar!</p>
             </div>
           </div>
         </div>
