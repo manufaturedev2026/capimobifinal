@@ -41,7 +41,7 @@ export default function FavoritesPage() {
   return (
     <div className="min-h-screen bg-secondary/50">
       <Helmet>
-        <title>Meus Favoritos | ES Corretores</title>
+        <title>Meus Favoritos | Brokers Bio</title>
       </Helmet>
 
       <div className="max-w-6xl mx-auto px-4 py-8">

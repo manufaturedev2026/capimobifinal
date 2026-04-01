@@ -48,9 +48,9 @@ export default function NeighborhoodPage() {
   return (
     <div className="min-h-screen bg-secondary/50">
       <Helmet>
-        <title>{`Imóveis em ${neighborhoodName}, ${cityName} - ES | ES Corretores`}</title>
-        <meta name="description" content={`Encontre imóveis em ${neighborhoodName}, ${cityName} - ES. ${stats ? `${stats.count} imóveis a partir de ${formatPrice(stats.minPrice)}.` : "Casas, apartamentos e terrenos disponíveis."}`} />
-        <link rel="canonical" href={`https://lojaes.lovable.app/imoveis/${cidade}/bairro/${bairro}`} />
+        <title>{`Imóveis em ${neighborhoodName}, ${cityName} | Brokers Bio`}</title>
+        <meta name="description" content={`Encontre imóveis em ${neighborhoodName}, ${cityName}. ${stats ? `${stats.count} imóveis a partir de ${formatPrice(stats.minPrice)}.` : "Casas, apartamentos e terrenos disponíveis."}`} />
+        <link rel="canonical" href={`https://redeimoveisgb.lovable.app/imoveis/${cidade}/bairro/${bairro}`} />
       </Helmet>
 
       {/* Hero */}

@@ -859,7 +859,7 @@ export default function CompanyProfile() {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-48">
                     <DropdownMenuItem onClick={() => {
-                      const text = `Confira ${company.name} no ES Corretores: ${window.location.href}`;
+                      const text = `Confira ${company.name} no Brokers Bio: ${window.location.href}`;
                       window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
                     }}>
                       <MessageCircle size={16} className="mr-2 text-[#25d366]" /> Enviar via WhatsApp
