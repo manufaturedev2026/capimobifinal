@@ -1267,6 +1267,54 @@ export default function CompanyProfile() {
         );
       })()}
 
+      {/* ═══ STORE VIDEO SECTION (separate from hero video) ═══ */}
+      {isDbProfile && (dbProfile as any)?.store_video_url && (() => {
+        const ytId = extractYouTubeId((dbProfile as any).store_video_url);
+        if (!ytId) return null;
+        const svTitle = (dbProfile as any)?.store_video_title || "Vídeo";
+        const svButtonText = (dbProfile as any)?.store_video_button_text;
+        const svButtonUrl = (dbProfile as any)?.store_video_button_url;
+        return (
+          <section className="px-4 md:px-8 lg:px-12 py-8">
+            <div className="max-w-4xl mx-auto">
+              <h3 className="font-display font-bold text-lg md:text-xl mb-4" style={{ color: storeTheme.text }}>
+                <Play size={20} className="inline mr-2" style={{ color: storeTheme.primary }} />
+                {svTitle}
+              </h3>
+              <div className="relative aspect-video rounded-2xl overflow-hidden shadow-xl" style={{ border: `1px solid ${storeTheme.border}` }}>
+                <iframe
+                  src={`https://www.youtube.com/embed/${ytId}?rel=0`}
+                  title={svTitle}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="w-full h-full"
+                />
+              </div>
+              <div className="flex gap-3 mt-4">
+                {svButtonText && svButtonUrl && (
+                  <a
+                    href={svButtonUrl}
+                    target={svButtonUrl.startsWith("http") ? "_blank" : undefined}
+                    rel={svButtonUrl.startsWith("http") ? "noopener noreferrer" : undefined}
+                    className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm text-white shadow-lg active:scale-95 transition-transform"
+                    style={{ background: storeTheme.primary }}
+                  >
+                    <ExternalLink size={16} /> {svButtonText}
+                  </a>
+                )}
+                {company.whatsapp && (
+                  <button
+                    onClick={() => handleWhatsApp("Vídeo: " + svTitle)}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#25d366] text-white font-bold text-sm shadow-lg active:scale-95 transition-transform"
+                  >
+                    <MessageCircle size={16} /> WhatsApp
+                  </button>
+                )}
+              </div>
+            </div>
+          </section>
+        );
+      })()}
 
       {(() => {
         const galleryProducts = products.filter((p: any) => p.image || p.images?.length);
