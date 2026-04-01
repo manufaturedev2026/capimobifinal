@@ -69,7 +69,7 @@ export default function ProductDetail() {
         .order("created_at", { ascending: false })
         .limit(1);
       if (subData && subData.length > 0) setSellerTier(subData[0].tier);
-      trackSellerEvent(item.seller_id, "view", item.id);
+      trackSellerEvent(item.seller_id, "view", item.id, teamMember?.id);
     }
     setLoading(false);
   };
