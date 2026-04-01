@@ -110,7 +110,7 @@ const whyItems = [
   {
     icon: MapPin,
     title: "Atuação Local",
-    description: "Conheça cada bairro, cada oportunidade. Torne-se referência na sua cidade no Espírito Santo.",
+    description: "Conheça cada bairro, cada oportunidade. Torne-se referência na sua cidade em qualquer estado do Brasil.",
   },
   {
     icon: Zap,
