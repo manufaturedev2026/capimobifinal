@@ -28,6 +28,31 @@ const propertySubcategories = [
   { slug: "galpao", name: "Galpões", icon: Warehouse, img: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=300&h=200&fit=crop" },
 ];
 
+const CITY_CARD_IMAGES = [
+  "https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=400&h=300&fit=crop",
+  "https://images.unsplash.com/photo-1444723121867-7a241cacace9?w=400&h=300&fit=crop",
+  "https://images.unsplash.com/photo-1514565131-fce0801e5785?w=400&h=300&fit=crop",
+  "https://images.unsplash.com/photo-1519501025264-65ba15a82390?w=400&h=300&fit=crop",
+  "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=400&h=300&fit=crop",
+  "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=400&h=300&fit=crop",
+  "https://images.unsplash.com/photo-1500916434205-0c77489c6cf7?w=400&h=300&fit=crop",
+  "https://images.unsplash.com/photo-1518391846015-55a9cc003b25?w=400&h=300&fit=crop",
+];
+
+const matchesCityFilter = (product: any, city: string) => !city || product.city === city;
+
+const matchesCategoryFilter = (product: any, category: string) => {
+  if (category === "todos") return true;
+
+  const tags: string[] = product.tags || [];
+
+  if (category === "aluguel") {
+    return tags.includes("aluguel_flex") || product.category === "aluguel";
+  }
+
+  return product.category === category;
+};
+
 
 
 function extractYouTubeId(url: string): string | null {
