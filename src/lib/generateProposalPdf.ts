@@ -607,5 +607,100 @@ export async function generateProposalPdf(data: ProposalData) {
   final.setTextColor(156, 163, 175);
   final.text(`Proposta gerada em ${new Date().toLocaleDateString("pt-BR")}  •  ES Corretores`, W / 2, H - 8, { align: "center" });
 
+  // ── Gallery pages (extra photos) ──
+  const allPhotos = (data.images || []).filter(Boolean);
+  if (allPhotos.length > 1) {
+    // Skip first photo (already on main page), show rest in gallery pages
+    const galleryPhotos = allPhotos.slice(1);
+    const photosPerPage = 2;
+
+    for (let p = 0; p < galleryPhotos.length; p += photosPerPage) {
+      final.addPage();
+
+      // Page bg
+      final.setFillColor(240, 242, 245);
+      final.rect(0, 0, W, H, "F");
+
+      // Mini header
+      final.setFillColor(15, 23, 42);
+      final.rect(0, 0, W, 18, "F");
+      final.setFillColor(16, 185, 129);
+      final.rect(0, 18, W, 0.8, "F");
+
+      final.setFont("helvetica", "bold");
+      final.setFontSize(11);
+      final.setTextColor(255, 255, 255);
+      final.text("ES Corretores", M + 2, 12);
+
+      final.setFont("helvetica", "normal");
+      final.setFontSize(8);
+      final.setTextColor(148, 163, 184);
+      const pageNum = Math.floor(p / photosPerPage) + 1;
+      const totalPages = Math.ceil(galleryPhotos.length / photosPerPage);
+      final.text(`Galeria de Fotos  ${pageNum}/${totalPages}`, W - M - 2, 12, { align: "right" });
+
+      // Title strip
+      let gy = 24;
+      final.setFillColor(255, 255, 255);
+      drawRoundedRect(final, cX, gy, cW, 14, 3, "F");
+      final.setDrawColor(203, 213, 225);
+      final.setLineWidth(0.2);
+      drawRoundedRect(final, cX, gy, cW, 14, 3, "S");
+
+      final.setFont("helvetica", "bold");
+      final.setFontSize(10);
+      final.setTextColor(15, 23, 42);
+      const shortTitle = data.title.length > 60 ? data.title.slice(0, 57) + "..." : data.title;
+      final.text(shortTitle, cX + 5, gy + 9);
+
+      gy += 20;
+
+      // Render up to 2 photos per page
+      const batch = galleryPhotos.slice(p, p + photosPerPage);
+      for (let i = 0; i < batch.length; i++) {
+        const photoUrl = batch[i];
+        const photoImg = await loadImg(photoUrl);
+
+        const photoH = 115;
+        const photoW = cW - 8;
+        const photoX = cX + 4;
+
+        // White card for photo
+        final.setFillColor(255, 255, 255);
+        drawRoundedRect(final, cX, gy, cW, photoH + 12, 4, "F");
+        final.setDrawColor(203, 213, 225);
+        final.setLineWidth(0.2);
+        drawRoundedRect(final, cX, gy, cW, photoH + 12, 4, "S");
+
+        if (photoImg) {
+          try {
+            final.addImage(photoImg, "JPEG", photoX, gy + 4, photoW, photoH, undefined, "MEDIUM");
+          } catch { /* skip */ }
+        } else {
+          final.setFillColor(226, 232, 240);
+          drawRoundedRect(final, photoX, gy + 4, photoW, photoH, 3, "F");
+          final.setFont("helvetica", "normal");
+          final.setFontSize(9);
+          final.setTextColor(148, 163, 184);
+          final.text("Foto indisponivel", photoX + photoW / 2, gy + 4 + photoH / 2, { align: "center" });
+        }
+
+        // Photo counter label
+        final.setFont("helvetica", "normal");
+        final.setFontSize(7);
+        final.setTextColor(100, 116, 139);
+        final.text(`Foto ${p + i + 2} de ${allPhotos.length}`, photoX + 2, gy + photoH + 10);
+
+        gy += photoH + 18;
+      }
+
+      // Footer
+      final.setFont("helvetica", "normal");
+      final.setFontSize(7);
+      final.setTextColor(156, 163, 175);
+      final.text(`Proposta gerada em ${new Date().toLocaleDateString("pt-BR")}  •  ES Corretores`, W / 2, H - 8, { align: "center" });
+    }
+  }
+
   final.save(`proposta-${data.id}.pdf`);
 }
