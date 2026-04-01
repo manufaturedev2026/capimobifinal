@@ -132,14 +132,27 @@ export function useAvailableCities() {
 
   useEffect(() => {
     const fetchCities = async () => {
-      const { data } = await supabase
-        .from("seller_items")
-        .select("city")
-        .eq("status", "ativo")
-        .eq("seller_type", "imoveis");
-
+      let allData: any[] = [];
+      let page = 0;
+      const pageSize = 1000;
+      let hasMore = true;
+      while (hasMore) {
+        const { data } = await supabase
+          .from("seller_items")
+          .select("city")
+          .eq("status", "ativo")
+          .eq("seller_type", "imoveis")
+          .range(page * pageSize, (page + 1) * pageSize - 1);
+        if (data && data.length > 0) {
+          allData = [...allData, ...data];
+          hasMore = data.length === pageSize;
+          page++;
+        } else {
+          hasMore = false;
+        }
+      }
       const unique = new Set<string>();
-      (data || []).forEach((item: any) => {
+      allData.forEach((item: any) => {
         if (item.city) unique.add(item.city.trim());
       });
       setCities(Array.from(unique).sort());
