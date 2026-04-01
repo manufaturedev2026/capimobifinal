@@ -142,7 +142,20 @@ export default function PackagesPage() {
                       </div>
                     )}
                   </div>
-                </div>
+        </div>
+
+        {subscription && currentTier !== "basico" && (
+          <div className="mt-6 flex justify-center">
+            <button
+              onClick={handleManageSubscription}
+              disabled={openingPortal}
+              className="inline-flex items-center gap-2 px-6 py-3 bg-card border border-border rounded-xl text-foreground font-semibold text-sm hover:bg-muted transition-all"
+            >
+              <Settings size={18} />
+              {openingPortal ? "Abrindo..." : "Gerenciar Assinatura (Upgrade, Cancelar, Pagamento)"}
+            </button>
+          </div>
+        )
 
                 <div className="p-6">
                   <ul className="space-y-3">
