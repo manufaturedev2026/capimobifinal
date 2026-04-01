@@ -832,6 +832,76 @@ export default function AdminPanel() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Ban Dialog */}
+      {banDialogOpen && banSeller && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="bg-card border border-border rounded-2xl p-6 w-full max-w-md mx-4 shadow-xl">
+            <div className="flex items-center gap-2 mb-2">
+              <Ban size={20} className="text-destructive" />
+              <h3 className="font-display font-bold text-lg text-foreground">Banir Usuário</h3>
+            </div>
+            <p className="text-sm text-muted-foreground mb-4">
+              Banir <strong>{banSeller.company_name || banSeller.full_name}</strong> ({banSeller.email})
+            </p>
+
+            <div className="space-y-4">
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-foreground">Duração do banimento</label>
+                <div className="grid grid-cols-2 gap-2">
+                  {([
+                    { value: "7", label: "7 dias" },
+                    { value: "30", label: "30 dias" },
+                    { value: "90", label: "90 dias" },
+                    { value: "permanent", label: "Permanente" },
+                  ] as const).map((opt) => (
+                    <button
+                      key={opt.value}
+                      onClick={() => setBanDuration(opt.value)}
+                      className={`px-3 py-2 rounded-xl text-sm font-semibold transition-all ${
+                        banDuration === opt.value
+                          ? opt.value === "permanent" ? "bg-destructive text-destructive-foreground" : "bg-primary text-primary-foreground"
+                          : "bg-secondary text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      {opt.value === "permanent" && <Ban size={12} className="inline mr-1" />}
+                      {opt.value !== "permanent" && <Clock size={12} className="inline mr-1" />}
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-foreground">Motivo (opcional)</label>
+                <textarea
+                  value={banReason}
+                  onChange={(e) => setBanReason(e.target.value)}
+                  placeholder="Ex: Violação dos termos de uso, conteúdo impróprio..."
+                  className="w-full px-4 py-3 rounded-xl bg-secondary text-foreground text-sm border border-border focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none h-24"
+                  maxLength={500}
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2 mt-4">
+              <button
+                onClick={() => setBanDialogOpen(false)}
+                className="px-4 py-2 rounded-xl text-sm font-medium text-muted-foreground hover:bg-secondary transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={confirmBan}
+                className="px-4 py-2 rounded-xl bg-destructive text-destructive-foreground text-sm font-bold hover:opacity-90 transition-opacity"
+              >
+                <Ban size={14} className="inline mr-1" />
+                Confirmar Banimento
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
