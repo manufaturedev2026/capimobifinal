@@ -836,7 +836,7 @@ export default function CompanyProfile() {
             {filteredProducts.length > 0 ? (
               <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-5">
                 {filteredProducts.map((product: any, i: number) => {
-                  const productLink = `/${product.type === "veiculo" ? "veiculos" : "imoveis"}/produto/${product.id}`;
+                  const productLink = `/${product.type === "veiculo" ? "veiculos" : "imoveis"}/produto/${product.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`;
                   return (
                     <motion.div
                       key={product.id}
