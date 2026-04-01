@@ -71,6 +71,23 @@ export default function ProductDetail() {
         .limit(1);
       if (subData && subData.length > 0) setSellerTier(subData[0].tier);
       trackSellerEvent(item.seller_id, "view", item.id, teamMember?.id);
+      // Fetch related items from the same seller
+      const { data: related } = await supabase
+        .from("seller_items")
+        .select("id, title, price, photos, city, neighborhood, category")
+        .eq("seller_id", item.seller_id)
+        .eq("status", "ativo")
+        .neq("id", id)
+        .order("created_at", { ascending: false })
+        .limit(8);
+      setRelatedItems((related || []).map((r: any) => ({
+        id: r.id,
+        title: r.title,
+        price: r.price || 0,
+        image: r.photos?.[0] || "",
+        city: r.city,
+        neighborhood: r.neighborhood,
+      })));
     }
     setLoading(false);
   };
