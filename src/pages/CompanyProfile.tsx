@@ -883,22 +883,24 @@ export default function CompanyProfile() {
                     const Icon = cat.icon;
                     const isActive = activeCategory === cat.slug;
                     const count = categoryCounts[cat.slug] || 0;
+                    const isDisabled = cat.slug !== "todos" && count === 0;
                     return (
                       <button
                         key={cat.slug}
                         onClick={() => setActiveCategory(cat.slug)}
+                        disabled={isDisabled}
                         className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-medium transition-all`}
                         style={{
                           background: isActive ? storeTheme.primary : "transparent",
                           color: isActive ? "#fff" : storeTheme.textMuted,
                           boxShadow: isActive ? "0 4px 12px rgba(0,0,0,0.15)" : "none",
+                          opacity: isDisabled ? 0.45 : 1,
+                          cursor: isDisabled ? "not-allowed" : "pointer",
                         }}
                       >
                         <Icon size={14} />
                         <span className="flex-1 text-left">{cat.name}</span>
-                        {cat.slug === "todos" ? (
-                          <span className="text-[10px] px-1.5 py-0.5 rounded-full" style={{ background: isActive ? "rgba(255,255,255,0.2)" : `${storeTheme.border}` }}>{products.length}</span>
-                        ) : count > 0 ? (
+                        {count > 0 || cat.slug === "todos" ? (
                           <span className="text-[10px] px-1.5 py-0.5 rounded-full" style={{ background: isActive ? "rgba(255,255,255,0.2)" : `${storeTheme.border}` }}>{count}</span>
                         ) : null}
                       </button>
@@ -917,26 +919,33 @@ export default function CompanyProfile() {
                 {subcategories.map((cat) => {
                   const Icon = cat.icon;
                   const isActive = activeCategory === cat.slug;
-                  const count = cat.slug === "todos" ? products.length : (categoryCounts[cat.slug] || 0);
+                  const count = categoryCounts[cat.slug] || 0;
+                  const isDisabled = cat.slug !== "todos" && count === 0;
                   return (
                     <button
                       key={cat.slug}
                       onClick={() => setActiveCategory(cat.slug)}
+                      disabled={isDisabled}
                       className="flex-shrink-0 snap-start relative w-28 h-20 rounded-2xl overflow-hidden transition-all duration-300 group"
                       style={{
                         boxShadow: isActive ? `0 0 20px ${storeTheme.primary}40, 0 4px 15px rgba(0,0,0,0.3)` : "0 2px 8px rgba(0,0,0,0.15)",
                         border: isActive ? `2px solid ${storeTheme.primary}` : "2px solid transparent",
+                        opacity: isDisabled ? 0.45 : 1,
+                        cursor: isDisabled ? "not-allowed" : "pointer",
                       }}
                     >
-                      <img src={cat.img} alt={cat.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                      <img src={categoryCardImages[cat.slug] || cat.img} alt={cat.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/10" />
                       {isActive && <div className="absolute inset-0 bg-primary/20" />}
+                      <div className="absolute left-2 top-2 rounded-full bg-black/45 px-1.5 py-1 backdrop-blur-sm">
+                        <span className="text-[8px] font-semibold uppercase tracking-[0.14em] text-white/75">Categoria</span>
+                      </div>
                       <div className="absolute bottom-0 left-0 right-0 p-2 text-left">
                         <div className="flex items-center gap-1">
                           <Icon size={11} className="text-white/80" />
                           <span className="text-[11px] font-bold text-white leading-tight">{cat.name}</span>
                         </div>
-                        {count > 0 && <span className="text-[9px] text-white/70 font-medium">{count} imóveis</span>}
+                        {(count > 0 || cat.slug === "todos") && <span className="text-[9px] text-white/70 font-medium">{count} imóveis</span>}
                       </div>
                     </button>
                   );
@@ -966,24 +975,13 @@ export default function CompanyProfile() {
                     {!filterCity && <div className="absolute inset-0 bg-primary/20" />}
                     <div className="absolute bottom-0 left-0 right-0 p-2.5">
                       <span className="text-xs font-bold text-white block leading-tight">Todas as Cidades</span>
-                      <span className="text-[10px] text-white/70 font-medium">{products.length} imóveis</span>
+                      <span className="text-[10px] text-white/70 font-medium">{productsForSelectedCategory.length} imóveis</span>
                     </div>
                   </button>
                   {availableCities.map((city, idx) => {
-                    const count = products.filter((p: any) => p.city === city).length;
+                    const count = cityCounts[city] || 0;
                     const isActive = filterCity === city;
-                    // Rotate through different city images
-                    const cityImages = [
-                      "https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=400&h=300&fit=crop",
-                      "https://images.unsplash.com/photo-1444723121867-7a241cacace9?w=400&h=300&fit=crop",
-                      "https://images.unsplash.com/photo-1514565131-fce0801e5785?w=400&h=300&fit=crop",
-                      "https://images.unsplash.com/photo-1519501025264-65ba15a82390?w=400&h=300&fit=crop",
-                      "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=400&h=300&fit=crop",
-                      "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=400&h=300&fit=crop",
-                      "https://images.unsplash.com/photo-1500916434205-0c77489c6cf7?w=400&h=300&fit=crop",
-                      "https://images.unsplash.com/photo-1518391846015-55a9cc003b25?w=400&h=300&fit=crop",
-                    ];
-                    const img = cityImages[idx % cityImages.length];
+                    const img = CITY_CARD_IMAGES[idx % CITY_CARD_IMAGES.length];
                     return (
                       <button
                         key={city}
