@@ -33,6 +33,7 @@ export default function ReferralTab() {
   const [pixKey, setPixKey] = useState("");
   const [showWithdrawForm, setShowWithdrawForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [commissionRate, setCommissionRate] = useState(10);
 
   const referralCode = (profile as any)?.referral_code || "";
   const balance = Number((profile as any)?.referral_balance) || 0;
