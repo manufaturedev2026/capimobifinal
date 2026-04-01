@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { trackSellerEvent } from "@/hooks/useSellerAnalytics";
 import { useToast } from "@/hooks/use-toast";
 import MapEmbed from "@/components/MapEmbed";
+import WhatsAppLeadCapture from "@/components/WhatsAppLeadCapture";
 
 function isUUID(str: string) {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
