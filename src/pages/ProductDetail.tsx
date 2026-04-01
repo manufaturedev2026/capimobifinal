@@ -658,7 +658,7 @@ export default function ProductDetail() {
                   toast({ title: "Link copiado!" });
                 }
               }}
-                className="mt-3 w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-white border border-border text-foreground font-medium text-sm hover:bg-secondary transition-colors">
+                className="mt-3 w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-secondary border border-border text-foreground font-medium text-sm hover:bg-secondary/80 transition-colors">
                 <Share2 size={16} /> Compartilhar
               </button>
 
