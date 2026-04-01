@@ -818,7 +818,7 @@ export default function CompanyProfile() {
                         {["corretor", "imobiliaria", "construtora"].includes(dbProfile.seller_category) && dbProfile.creci && ` • ${dbProfile.creci}`}
                       </span>
                     )}
-                    {company.address && (
+                    {company.show_location && company.address && (
                       <span className="flex items-center gap-1 text-white/70 text-xs">
                         <MapPin size={12} /> {company.address}
                       </span>
