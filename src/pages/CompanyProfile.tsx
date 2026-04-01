@@ -542,7 +542,7 @@ export default function CompanyProfile() {
 
       {isDbProfile && dbProfile?.id && <StoreEffects sellerId={dbProfile.id} />}
       {/* ═══════════ MOBILE PROFILE HERO ═══════════ */}
-      <section className="md:hidden relative overflow-hidden">
+      <section className="lg:hidden relative overflow-hidden">
         {isMarketplace ? (
           /* ── Marketplace-style compact hero ── */
           <>
@@ -810,7 +810,7 @@ export default function CompanyProfile() {
 
       {/* ═══ MARKETPLACE SCROLLING PROPERTY BANNER ═══ */}
       {isMarketplace && products.length > 0 && (
-        <div className="md:hidden overflow-hidden" style={{ background: `${storeTheme.primary}e6` }}>
+        <div className="lg:hidden overflow-hidden" style={{ background: `${storeTheme.primary}e6` }}>
           <motion.div
             className="flex gap-3 py-3 px-4"
             animate={{ x: ["0%", "-50%"] }}
@@ -851,7 +851,7 @@ export default function CompanyProfile() {
         </div>
       )}
 
-      <section className={`hidden md:block relative overflow-hidden ${hasVideoHero ? "h-[70vh]" : "h-[60vh]"}`}>
+      <section className={`hidden lg:block relative overflow-hidden ${hasVideoHero ? "h-[70vh]" : "h-[60vh]"}`}>
         {/* Video background or sliding images */}
         {hasVideoHero ? (
           <iframe
@@ -1044,7 +1044,7 @@ export default function CompanyProfile() {
       </section>
 
       {/* ═══════════ STATS BAR ═══════════ */}
-      <section className="hidden md:block" style={{ borderBottom: `1px solid ${storeTheme.border}`, background: storeTheme.card }}>
+      <section className="hidden lg:block" style={{ borderBottom: `1px solid ${storeTheme.border}`, background: storeTheme.card }}>
         <div className="max-w-[1800px] mx-auto px-4 md:px-8">
           <div className="flex items-center gap-6 py-3 overflow-x-auto scrollbar-hide">
             <div className="flex items-center gap-2 text-sm flex-shrink-0">
@@ -1679,7 +1679,7 @@ export default function CompanyProfile() {
       {/* ═══ STICKY MOBILE BOTTOM BAR ═══ */}
       {company.whatsapp && (
         <div
-          className="md:hidden fixed bottom-0 left-0 right-0 z-40 backdrop-blur-xl px-4 py-3 safe-area-pb"
+          className="lg:hidden fixed bottom-0 left-0 right-0 z-40 backdrop-blur-xl px-4 py-3 safe-area-pb"
           style={isMarketplace ? {
             background: storeTheme.primary,
             borderTop: "none",
