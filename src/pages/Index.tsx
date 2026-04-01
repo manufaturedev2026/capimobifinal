@@ -224,7 +224,7 @@ export default function Index() {
                     <Globe size={18} className="text-primary" />
                     <div>
                       <p className="text-white text-xs font-bold">Link na Bio</p>
-                      <p className="text-white/40 text-[10px]">escoretores.app/loja</p>
+                      <p className="text-white/40 text-[10px]">brokersbio.app/loja</p>
                     </div>
                   </div>
                 </motion.div>
