@@ -62,8 +62,8 @@ export default function Index() {
   return (
     <div className="min-h-screen bg-background">
       <Helmet>
-        <title>ES Corretores | Sua Loja de Imóveis no Instagram</title>
-        <meta name="description" content="Crie sua loja de imóveis estilo Netflix e compartilhe no Instagram. Link na Bio profissional para corretores e imobiliárias." />
+        <title>Brokers Bio | Sua Loja de Imóveis no Instagram</title>
+        <meta name="description" content="Crie sua loja de imóveis estilo Netflix e compartilhe no Instagram. Link na Bio profissional para corretores e imobiliárias de todo o Brasil." />
         <link rel="canonical" href="https://redeimoveisgb.lovable.app/" />
       </Helmet>
 
