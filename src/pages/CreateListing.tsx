@@ -108,9 +108,9 @@ export default function CreateListing() {
               </p>
 
               {/* 7 dias grátis badge */}
-              <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-500/30 mb-8">
-                <Star size={18} className="text-green-400" />
-                <span className="text-green-400 font-bold text-sm">7 Dias Grátis</span>
+              <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-primary/15 border border-primary/30 mb-8">
+                <Star size={18} className="text-primary" />
+                <span className="text-primary font-bold text-sm">7 Dias Grátis</span>
                 <span className="text-muted-foreground text-xs">em todos os planos pagos</span>
               </div>
 
@@ -169,19 +169,19 @@ export default function CreateListing() {
       </section>
 
       {/* Store Preview - Netflix Style */}
-      <section className="py-16 md:py-24 bg-[hsl(212,80%,6%)] text-white overflow-hidden">
+      <section className="py-16 md:py-24 bg-secondary/40 overflow-hidden">
         <div className="container max-w-6xl mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.7 }}>
               <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/15 text-accent text-xs font-bold uppercase tracking-widest mb-6 border border-accent/20">
                 <Sparkles size={14} /> Exclusivo
               </span>
-              <h2 className="font-display font-black text-3xl md:text-5xl leading-tight mb-5">
+              <h2 className="font-display font-black text-3xl md:text-5xl leading-tight mb-5 text-foreground">
                 Sua Loja Estilo
                 <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">Netflix</span>
               </h2>
-              <p className="text-white/60 text-lg leading-relaxed mb-8">
+              <p className="text-muted-foreground text-lg leading-relaxed mb-8">
                 Cada corretor ganha uma loja personalizada com visual moderno. Seus imóveis exibidos em carrosséis elegantes, stories e modo cinema.
               </p>
               <div className="space-y-3 mb-8">
@@ -190,7 +190,7 @@ export default function CreateListing() {
                     <div className="w-5 h-5 rounded-full bg-accent/20 flex items-center justify-center shrink-0">
                       <CheckCircle2 size={12} className="text-accent" />
                     </div>
-                    <span className="text-white/70 text-sm">{b}</span>
+                    <span className="text-muted-foreground text-sm">{b}</span>
                   </motion.div>
                 ))}
               </div>
@@ -201,18 +201,18 @@ export default function CreateListing() {
 
             <motion.div initial={{ opacity: 0, x: 60 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 1 }} className="relative">
               <div className="absolute -inset-6 bg-gradient-to-br from-primary/20 via-accent/10 to-primary/20 rounded-[2rem] blur-3xl opacity-50" />
-              <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-primary/20 border border-white/10">
+              <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-primary/20 border border-border">
                 <img src={lojaPreviewImg} alt="Loja estilo Netflix" loading="lazy" className="w-full h-auto" width={1280} height={800} />
               </div>
               <motion.div animate={{ y: [0, -8, 0] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute -bottom-4 -left-4 md:bottom-4 md:left-4 bg-white/10 backdrop-blur-xl rounded-2xl p-4 border border-white/15 shadow-xl">
+                className="absolute -bottom-4 -left-4 md:bottom-4 md:left-4 bg-card/90 backdrop-blur-xl rounded-2xl p-4 border border-border shadow-xl">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center">
                     <Monitor size={20} className="text-accent" />
                   </div>
                   <div>
-                    <div className="text-xs text-white/50">Sua vitrine online</div>
-                    <div className="font-display font-bold text-sm text-white">Sempre ativa 24/7</div>
+                    <div className="text-xs text-muted-foreground">Sua vitrine online</div>
+                    <div className="font-display font-bold text-sm text-foreground">Sempre ativa 24/7</div>
                   </div>
                 </div>
               </motion.div>
@@ -222,23 +222,23 @@ export default function CreateListing() {
       </section>
 
       {/* Dashboard Preview */}
-      <section className="py-16 md:py-24 bg-[hsl(212,80%,6%)] text-white overflow-hidden border-t border-white/5">
+      <section className="py-16 md:py-24 overflow-hidden">
         <div className="container max-w-6xl mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <motion.div initial={{ opacity: 0, x: -60 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 1 }} className="relative order-2 lg:order-1">
               <div className="absolute -inset-6 bg-gradient-to-br from-accent/15 via-primary/10 to-accent/15 rounded-[2rem] blur-3xl opacity-50" />
-              <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-accent/20 border border-white/10">
+              <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-accent/20 border border-border">
                 <img src={painelPreviewImg} alt="Painel de estatísticas" loading="lazy" className="w-full h-auto" width={1280} height={800} />
               </div>
               <motion.div animate={{ y: [0, -8, 0] }} transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-                className="absolute -bottom-4 -right-4 md:bottom-4 md:right-4 bg-white/10 backdrop-blur-xl rounded-2xl p-4 border border-white/15 shadow-xl">
+                className="absolute -bottom-4 -right-4 md:bottom-4 md:right-4 bg-card/90 backdrop-blur-xl rounded-2xl p-4 border border-border shadow-xl">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
                     <TrendingUp size={20} className="text-primary" />
                   </div>
                   <div>
-                    <div className="text-xs text-white/50">Visualizações hoje</div>
-                    <div className="font-display font-black text-xl text-white">+578</div>
+                    <div className="text-xs text-muted-foreground">Visualizações hoje</div>
+                    <div className="font-display font-black text-xl text-foreground">+578</div>
                   </div>
                 </div>
               </motion.div>
@@ -248,12 +248,12 @@ export default function CreateListing() {
               <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/15 text-primary text-xs font-bold uppercase tracking-widest mb-6 border border-primary/20">
                 <BarChart3 size={14} /> Painel Completo
               </span>
-              <h2 className="font-display font-black text-3xl md:text-5xl leading-tight mb-5">
+              <h2 className="font-display font-black text-3xl md:text-5xl leading-tight mb-5 text-foreground">
                 Acompanhe seus
                 <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-primary">resultados</span>
               </h2>
-              <p className="text-white/60 text-lg leading-relaxed mb-8">
+              <p className="text-muted-foreground text-lg leading-relaxed mb-8">
                 Painel profissional com estatísticas em tempo real. Saiba quais anúncios performam melhor e otimize sua estratégia.
               </p>
               <div className="grid grid-cols-2 gap-4 mb-8">
@@ -264,10 +264,10 @@ export default function CreateListing() {
                   { icon: TrendingUp, label: "Performance", value: "Por anúncio" },
                 ].map((stat, i) => (
                   <motion.div key={i} custom={i} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
-                    className="bg-white/5 rounded-xl p-4 border border-white/10">
+                    className="bg-secondary/50 rounded-xl p-4 border border-border">
                     <stat.icon size={20} className="text-primary mb-2" />
-                    <div className="text-white/80 text-sm font-bold">{stat.label}</div>
-                    <div className="text-white/40 text-xs">{stat.value}</div>
+                    <div className="text-foreground text-sm font-bold">{stat.label}</div>
+                    <div className="text-muted-foreground text-xs">{stat.value}</div>
                   </motion.div>
                 ))}
               </div>
