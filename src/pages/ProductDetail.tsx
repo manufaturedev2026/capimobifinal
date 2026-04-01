@@ -32,6 +32,7 @@ export default function ProductDetail() {
   const [sellerTier, setSellerTier] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [isDb, setIsDb] = useState(false);
+  const [relatedItems, setRelatedItems] = useState<any[]>([]);
 
   useEffect(() => {
     if (productId && isUUID(productId)) {
@@ -70,6 +71,23 @@ export default function ProductDetail() {
         .limit(1);
       if (subData && subData.length > 0) setSellerTier(subData[0].tier);
       trackSellerEvent(item.seller_id, "view", item.id, teamMember?.id);
+      // Fetch related items from the same seller
+      const { data: related } = await supabase
+        .from("seller_items")
+        .select("id, title, price, photos, city, neighborhood, category")
+        .eq("seller_id", item.seller_id)
+        .eq("status", "ativo")
+        .neq("id", id)
+        .order("created_at", { ascending: false })
+        .limit(8);
+      setRelatedItems((related || []).map((r: any) => ({
+        id: r.id,
+        title: r.title,
+        price: r.price || 0,
+        image: r.photos?.[0] || "",
+        city: r.city,
+        neighborhood: r.neighborhood,
+      })));
     }
     setLoading(false);
   };
@@ -247,7 +265,7 @@ export default function ProductDetail() {
     if (p.color) specs["Cor"] = p.color;
   }
   const displaySpecs = isDb ? specs : product.specs;
-  const relatedProducts: any[] = [];
+  const relatedProducts = relatedItems;
 
   const scrollCarousel = (dir: "left" | "right") => {
     if (!carouselRef.current) return;
@@ -687,17 +705,26 @@ export default function ProductDetail() {
         </div>
 
         {relatedProducts.length > 0 && (
-          <motion.section initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="mt-16">
-            <h2 className="font-display font-bold text-xl text-foreground mb-6">Mais de {company.name}</h2>
+          <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="mt-16">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-1 h-8 bg-primary rounded-full" />
+              <h2 className="font-display font-bold text-xl text-foreground">Mais Imóveis de {company.name}</h2>
+            </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
               {relatedProducts.map((rp: any) => (
-                <Link key={rp.id} to={`/imoveis/produto/${rp.id}`} className="card-epic bg-card border border-border group">
-                  <div className="relative aspect-[4/3] overflow-hidden rounded-t-2xl">
+                <Link key={rp.id} to={`/imoveis/produto/${rp.id}`} className="bg-card border border-border rounded-2xl overflow-hidden group hover:shadow-lg hover:border-primary/30 transition-all duration-300">
+                  <div className="relative aspect-[4/3] overflow-hidden">
                     <img src={rp.image} alt={rp.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
                   </div>
                   <div className="p-3">
                     <h3 className="font-display font-semibold text-foreground text-sm leading-tight line-clamp-2">{rp.title}</h3>
-                    <p className="font-display font-bold text-emerald-500 text-base mt-1">{formatPrice(rp.price)}</p>
+                    <p className="font-display font-bold text-primary text-base mt-1">{formatPrice(rp.price)}</p>
+                    {(rp.neighborhood || rp.city) && (
+                      <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+                        <MapPin size={11} className="flex-shrink-0" />
+                        {[rp.neighborhood, rp.city].filter(Boolean).join(", ")}
+                      </p>
+                    )}
                   </div>
                 </Link>
               ))}
