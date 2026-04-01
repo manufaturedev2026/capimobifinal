@@ -110,29 +110,15 @@ export default function PackagesPage() {
                   <Icon size={32} className="mb-3" />
                   <h2 className="font-display font-extrabold text-2xl">{config.name}</h2>
                   <div className="mt-2">
-                    {config.setupFee > 0 ? (
-                      <>
-                        <span className="font-display font-bold text-3xl">
-                          R$ {((config.price + config.setupFee / 12)).toFixed(2).replace(".", ",")}
+                    <span className="font-display font-bold text-3xl">R$ {config.price.toFixed(2).replace(".", ",")}</span>
+                    <span className="text-white/70 text-sm">/mês</span>
+                    {config.setupFee > 0 && (
+                      <div className="mt-2 px-3 py-1.5 bg-white/15 rounded-xl text-center">
+                        <span className="text-white/90 text-xs font-semibold">
+                          Implementação: R$ {config.setupFee.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
                         </span>
-                        <span className="text-white/70 text-sm">/mês</span>
-                        <div className="mt-2 px-3 py-1.5 bg-white/15 rounded-xl text-center">
-                          <span className="text-white/90 text-xs font-semibold">
-                            R$ {config.price.toFixed(2).replace(".", ",")}/mês + Implementação em 12x
-                          </span>
-                          <span className="text-white/60 text-xs block">
-                            12x de R$ {(config.setupFee / 12).toFixed(2).replace(".", ",")} (total R$ {config.setupFee.toLocaleString("pt-BR", { minimumFractionDigits: 2 })})
-                          </span>
-                          <span className="text-white/50 text-[10px] block mt-0.5">
-                            Após 12 meses: R$ {config.price.toFixed(2).replace(".", ",")}/mês
-                          </span>
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <span className="font-display font-bold text-3xl">R$ {config.price.toFixed(2).replace(".", ",")}</span>
-                        <span className="text-white/70 text-sm">/mês</span>
-                      </>
+                        <span className="text-white/60 text-xs block">cobrado à vista no primeiro pagamento</span>
+                      </div>
                     )}
                   </div>
                 </div>
