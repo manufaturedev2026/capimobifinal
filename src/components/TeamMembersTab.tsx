@@ -295,6 +295,19 @@ export default function TeamMembersTab({ profileId, userId, maxMembers }: Props)
                 placeholder="@corretor"
               />
             </div>
+            <div>
+              <label className="block text-xs font-semibold text-muted-foreground mb-1">URL personalizada (slug)</label>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-muted-foreground whitespace-nowrap">?corretor=</span>
+                <input
+                  value={form.slug}
+                  onChange={(e) => setForm((f) => ({ ...f, slug: e.target.value }))}
+                  className="w-full px-4 py-2.5 rounded-xl bg-secondary text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  placeholder={form.full_name ? slugify(form.full_name) : "joao-silva"}
+                />
+              </div>
+              <p className="text-[10px] text-muted-foreground mt-1">Deixe vazio para gerar automaticamente pelo nome</p>
+            </div>
           </div>
           <div>
             <label className="block text-xs font-semibold text-muted-foreground mb-1">Bio</label>
