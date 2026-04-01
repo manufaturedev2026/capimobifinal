@@ -8,7 +8,7 @@ import { useSubscription, PACKAGE_CONFIG } from "@/hooks/useSubscription";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
-const tiers = ["basico", "start", "premium", "vip"] as const;
+const tiers = ["start", "premium", "vip"] as const;
 const tierIcons = { basico: Zap, start: Zap, premium: Star, vip: Crown };
 
 export default function PackagesPage() {
