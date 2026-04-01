@@ -292,17 +292,17 @@ export default function CreateListing() {
                     <Star size={12} /> Mais popular
                   </span>
                 )}
-                <h3 className="font-display font-bold text-xl text-foreground">{plan.name}</h3>
-                <div className="font-display font-black text-3xl text-primary my-3">{plan.price}</div>
-                <p className="text-muted-foreground text-sm mb-4">{plan.items}</p>
-                <ul className="space-y-2 text-sm text-left">
+                <h3 className="font-display font-bold text-lg sm:text-xl text-foreground">{plan.name}</h3>
+                <div className="font-display font-black text-2xl sm:text-3xl text-primary my-2 sm:my-3">{plan.price}</div>
+                <p className="text-muted-foreground text-xs sm:text-sm mb-3 sm:mb-4">{plan.items}</p>
+                <ul className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm text-left">
                   {plan.features.map((f) => (
                     <li key={f} className="flex items-center gap-2 text-foreground/80">
-                      <CheckCircle2 size={14} className="text-accent shrink-0" /> {f}
+                      <CheckCircle2 size={12} className="text-accent shrink-0 sm:w-3.5 sm:h-3.5" /> {f}
                     </li>
                   ))}
                 </ul>
-                <Link to="/entrar" className="block mt-5 w-full py-3 rounded-xl bg-accent text-accent-foreground text-center font-bold text-sm hover:bg-accent/90 transition-all">
+                <Link to="/entrar" className="block mt-4 sm:mt-5 w-full py-2.5 sm:py-3 rounded-xl bg-accent text-accent-foreground text-center font-bold text-xs sm:text-sm hover:bg-accent/90 transition-all">
                   Testar 7 Dias Grátis
                 </Link>
               </motion.div>
