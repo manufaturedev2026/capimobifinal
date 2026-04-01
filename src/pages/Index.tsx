@@ -4,33 +4,58 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import {
   Instagram, Smartphone, Globe, Sparkles, ArrowRight, Star, Zap, Shield,
-  Layout, Palette, BarChart3, Share2, ChevronRight, Play, Check, Crown, Eye, MessageCircle
+  Layout, Palette, BarChart3, Share2, ChevronRight, Check, Crown, Eye, MessageCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
+import storePreviewApartment from "@/assets/store-preview-apartment.jpg";
+import storePreviewHouse from "@/assets/store-preview-house.jpg";
+import storePreviewLot from "@/assets/store-preview-lot.jpg";
+import storePreviewPenthouse from "@/assets/store-preview-penthouse.jpg";
 
-const SHOWCASE_SCREENS = [
+const HERO_PHONE_SLIDES = [
   {
-    title: "Hero Banner Épico",
-    desc: "Carrossel cinematográfico com seus melhores imóveis",
-    gradient: "from-sky-500 to-blue-600",
+    title: "Casa com piscina e gourmet",
+    location: "Florianópolis, SC",
+    price: "R$ 1.250.000",
+    details: "4 quartos • 320m²",
+    label: "Showcase",
+    image: storePreviewHouse,
   },
   {
-    title: "Catálogo Netflix",
-    desc: "Cards premium com filtros por categoria e cidade",
-    gradient: "from-violet-500 to-purple-600",
+    title: "Apartamento alto padrão",
+    location: "Belo Horizonte, MG",
+    price: "R$ 890.000",
+    details: "3 suítes • vista livre",
+    label: "Premium",
+    image: storePreviewApartment,
   },
   {
-    title: "Perfil Profissional",
-    desc: "Logo, CRECI, Instagram e contato direto",
-    gradient: "from-emerald-500 to-teal-600",
+    title: "Cobertura com vista panorâmica",
+    location: "Rio de Janeiro, RJ",
+    price: "R$ 2.490.000",
+    details: "Piscina privativa • 280m²",
+    label: "Épico",
+    image: storePreviewPenthouse,
   },
   {
-    title: "Stories Imersivos",
-    desc: "Poste fotos e vídeos que expiram em 24h",
-    gradient: "from-amber-500 to-orange-600",
+    title: "Terreno em condomínio fechado",
+    location: "Goiânia, GO",
+    price: "R$ 320.000",
+    details: "420m² • pronto para construir",
+    label: "Novo",
+    image: storePreviewLot,
   },
+];
+
+const STORE_GRID_ITEMS = [
+  { img: storePreviewHouse, title: "Casa com piscina", price: "R$ 1.250.000" },
+  { img: storePreviewApartment, title: "Apto alto padrão", price: "R$ 890.000" },
+  { img: storePreviewPenthouse, title: "Cobertura premium", price: "R$ 2.490.000" },
+  { img: storePreviewLot, title: "Terreno fechado", price: "R$ 320.000" },
+  { img: storePreviewHouse, title: "Casa térrea moderna", price: "R$ 980.000" },
+  { img: storePreviewApartment, title: "Living panorâmico", price: "R$ 760.000" },
 ];
 
 const FEATURES = [
@@ -55,7 +80,7 @@ export default function Index() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setActiveScreen((p) => (p + 1) % SHOWCASE_SCREENS.length);
+      setActiveScreen((p) => (p + 1) % HERO_PHONE_SLIDES.length);
     }, 3500);
     return () => clearInterval(interval);
   }, []);
@@ -162,11 +187,11 @@ export default function Index() {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.3 }}
-              className="hidden lg:flex justify-center"
+              className="flex justify-center"
             >
               <div className="relative">
                 {/* Phone frame */}
-                <div className="w-[280px] h-[560px] bg-gradient-to-b from-white/10 to-white/5 rounded-[3rem] border-2 border-white/15 backdrop-blur-sm p-3 shadow-2xl shadow-black/50">
+                <div className="w-[248px] h-[500px] md:w-[280px] md:h-[560px] bg-gradient-to-b from-white/10 to-white/5 rounded-[3rem] border-2 border-white/15 backdrop-blur-sm p-3 shadow-2xl shadow-black/50">
                   <div className="w-full h-full rounded-[2.2rem] bg-[hsl(var(--navy))] overflow-hidden relative">
                     {/* Notch */}
                     <div className="absolute top-0 left-1/2 -translate-x-1/2 w-28 h-6 bg-black rounded-b-2xl z-20" />
@@ -175,27 +200,72 @@ export default function Index() {
                     <AnimatePresence mode="wait">
                       <motion.div
                         key={activeScreen}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
+                        initial={{ opacity: 0, scale: 1.03 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.98 }}
                         transition={{ duration: 0.5 }}
-                        className="absolute inset-0 flex flex-col items-center justify-center p-6"
+                        className="absolute inset-0"
                       >
-                        <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${SHOWCASE_SCREENS[activeScreen].gradient} flex items-center justify-center mb-4 shadow-lg`}>
-                          <Play size={24} className="text-white" />
+                        <img
+                          src={HERO_PHONE_SLIDES[activeScreen].image}
+                          alt={HERO_PHONE_SLIDES[activeScreen].title}
+                          className="w-full h-full object-cover"
+                          width={768}
+                          height={1344}
+                          loading={activeScreen === 0 ? "eager" : "lazy"}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-black/5" />
+
+                        <div className="absolute top-10 left-4 right-4 flex items-center justify-between gap-2">
+                          <div className="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-black/35 border border-white/10 backdrop-blur-md max-w-[11rem]">
+                            <div className="w-7 h-7 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center shrink-0">
+                              <span className="text-primary-foreground text-[9px] font-bold">BB</span>
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-white text-[10px] font-semibold truncate">BrokersBio</p>
+                              <p className="text-white/60 text-[8px] truncate">Loja em tempo real</p>
+                            </div>
+                          </div>
+                          <Badge className="bg-primary/90 text-primary-foreground border-0 text-[9px] px-2.5 py-1">
+                            {HERO_PHONE_SLIDES[activeScreen].label}
+                          </Badge>
                         </div>
-                        <h4 className="text-white font-display font-bold text-lg text-center">
-                          {SHOWCASE_SCREENS[activeScreen].title}
-                        </h4>
-                        <p className="text-white/50 text-xs text-center mt-2 leading-relaxed">
-                          {SHOWCASE_SCREENS[activeScreen].desc}
-                        </p>
+
+                        <div className="absolute bottom-5 left-4 right-4 glass-card rounded-[1.6rem] p-4">
+                          <p className="text-white/55 text-[9px] font-semibold uppercase tracking-[0.24em]">
+                            Showcase da sua loja
+                          </p>
+                          <h4 className="text-white font-display font-extrabold text-lg leading-tight mt-2">
+                            {HERO_PHONE_SLIDES[activeScreen].title}
+                          </h4>
+                          <div className="flex items-center gap-2 mt-2 text-white/70 text-[10px]">
+                            <span>{HERO_PHONE_SLIDES[activeScreen].location}</span>
+                            <span className="h-1 w-1 rounded-full bg-white/40" />
+                            <span>{HERO_PHONE_SLIDES[activeScreen].details}</span>
+                          </div>
+                          <div className="flex items-end justify-between gap-3 mt-4">
+                            <div>
+                              <p className="font-display font-black text-xl text-white">
+                                {HERO_PHONE_SLIDES[activeScreen].price}
+                              </p>
+                              <p className="text-white/55 text-[10px] mt-0.5">Link direto pro WhatsApp</p>
+                            </div>
+                            <div className="flex gap-2 shrink-0">
+                              <span className="flex items-center justify-center gap-1 rounded-xl bg-primary px-3 py-2 text-[10px] font-bold text-primary-foreground">
+                                <Eye size={11} /> Ver
+                              </span>
+                              <span className="flex items-center justify-center rounded-xl bg-white/10 px-3 py-2 text-[10px] font-bold text-white">
+                                <MessageCircle size={11} />
+                              </span>
+                            </div>
+                          </div>
+                        </div>
                       </motion.div>
                     </AnimatePresence>
 
                     {/* Bottom indicator */}
                     <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-1.5">
-                      {SHOWCASE_SCREENS.map((_, i) => (
+                      {HERO_PHONE_SLIDES.map((_, i) => (
                         <button
                           key={i}
                           onClick={() => setActiveScreen(i)}
@@ -338,7 +408,7 @@ export default function Index() {
                     const screens = [
                       // Screen 1: Showcase hero
                       <motion.div key="screen-1" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.6 }} className="absolute inset-0">
-                        <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&h=1200&fit=crop" alt="Loja showcase" className="w-full h-full object-cover" />
+                        <img src={storePreviewHouse} alt="Loja showcase" className="w-full h-full object-cover" width={768} height={1344} />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
                         <div className="absolute top-10 left-4 flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-md">
                           <div className="w-6 h-6 rounded-full bg-primary/40 flex items-center justify-center border border-white/20">
@@ -380,16 +450,9 @@ export default function Index() {
                           ))}
                         </div>
                         <div className="grid grid-cols-2 gap-2">
-                          {[
-                            { img: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=300&h=250&fit=crop", title: "Casa 3 quartos", price: "R$ 450.000" },
-                            { img: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=300&h=250&fit=crop", title: "Apto 2 quartos", price: "R$ 320.000" },
-                            { img: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=300&h=250&fit=crop", title: "Cobertura Duplex", price: "R$ 890.000" },
-                            { img: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=300&h=250&fit=crop", title: "Terreno 300m²", price: "R$ 180.000" },
-                            { img: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=300&h=250&fit=crop", title: "Sala Comercial", price: "R$ 210.000" },
-                            { img: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=300&h=250&fit=crop", title: "Casa c/ Jardim", price: "R$ 520.000" },
-                          ].map((item) => (
+                          {STORE_GRID_ITEMS.map((item) => (
                             <div key={item.title} className="rounded-lg overflow-hidden bg-white/5 border border-white/10">
-                              <img src={item.img} alt={item.title} className="w-full aspect-[4/3] object-cover" loading="lazy" />
+                              <img src={item.img} alt={item.title} className="w-full aspect-[4/3] object-cover" loading="lazy" width={768} height={1344} />
                               <div className="p-1.5">
                                 <p className="text-white font-semibold text-[9px] truncate">{item.title}</p>
                                 <p className="text-emerald-400 font-bold text-[10px]">{item.price}</p>
@@ -401,7 +464,7 @@ export default function Index() {
 
                       // Screen 3: Property detail
                       <motion.div key="screen-3" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.6 }} className="absolute inset-0">
-                        <img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600&h=400&fit=crop" alt="Detalhe imóvel" className="w-full aspect-[16/10] object-cover" />
+                        <img src={storePreviewPenthouse} alt="Detalhe imóvel" className="w-full aspect-[16/10] object-cover" width={768} height={1344} />
                         <div className="bg-[#0a0f1a] px-4 pt-3 pb-4">
                           <Badge className="bg-accent/20 text-accent text-[8px] border-accent/30 mb-2">Premium</Badge>
                           <h3 className="font-display font-bold text-sm text-white">Cobertura Duplex 4 Suítes</h3>
@@ -442,13 +505,13 @@ export default function Index() {
                         {/* Stories circles */}
                         <div className="flex gap-3 mb-4">
                           {[
-                            "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=100&h=100&fit=crop",
-                            "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=100&h=100&fit=crop",
-                            "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=100&h=100&fit=crop",
+                            storePreviewHouse,
+                            storePreviewApartment,
+                            storePreviewPenthouse,
                           ].map((src, i) => (
                             <div key={i} className="flex flex-col items-center gap-1">
                               <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-accent p-[2px]">
-                                <img src={src} alt="" className="w-full h-full rounded-full object-cover" />
+                                <img src={src} alt="Story da loja" className="w-full h-full rounded-full object-cover" width={768} height={1344} />
                               </div>
                               <span className="text-white/40 text-[8px]">Novo</span>
                             </div>
