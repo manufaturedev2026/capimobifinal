@@ -67,7 +67,7 @@ export default function TeamMembersTab({ profileId, userId, maxMembers }: Props)
   }, [profileId]);
 
   const resetForm = () => {
-    setForm({ full_name: "", phone: "", creci: "", email: "", bio: "", photo_url: "", instagram: "" });
+    setForm({ full_name: "", phone: "", creci: "", email: "", bio: "", photo_url: "", instagram: "", slug: "" });
     setEditing(null);
     setShowForm(false);
   };
