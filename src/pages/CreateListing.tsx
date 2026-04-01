@@ -98,12 +98,20 @@ export default function CreateListing() {
                 Anuncie seus<br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">imóveis</span>
               </h1>
-              <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mb-8">
+              <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mb-4">
                 O maior marketplace de imóveis do Espírito Santo. Alcance milhares de compradores e acelere suas vendas.
               </p>
+
+              {/* 7 dias grátis badge */}
+              <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-500/30 mb-8">
+                <Star size={18} className="text-green-400" />
+                <span className="text-green-400 font-bold text-sm">7 Dias Grátis</span>
+                <span className="text-muted-foreground text-xs">em todos os planos pagos</span>
+              </div>
+
               <div className="flex flex-wrap gap-4">
-                <Link to="/login" className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-accent text-accent-foreground font-bold text-sm hover:bg-accent/90 transition-all shadow-lg shadow-accent/20">
-                  Começar Agora <ArrowRight size={16} />
+                <Link to="/entrar" className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-accent text-accent-foreground font-bold text-sm hover:bg-accent/90 transition-all shadow-lg shadow-accent/20">
+                  Cadastrar e Testar 7 Dias Grátis <ArrowRight size={16} />
                 </Link>
                 <a href="#beneficios" className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-secondary text-foreground font-bold text-sm hover:bg-secondary/80 transition-all border border-border">
                   Ver Benefícios
