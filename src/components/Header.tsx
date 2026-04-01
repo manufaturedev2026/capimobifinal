@@ -25,7 +25,7 @@ export default function Header() {
       <div className="container max-w-6xl mx-auto flex items-center justify-between h-16 px-4">
         <Link to="/" className="flex items-center gap-2.5">
           <img src="/pwa-icon-512.png" alt="Brokers Bio" className="w-9 h-9 rounded-xl shadow-md object-contain" />
-          <span className="font-display font-extrabold text-xl tracking-tight uppercase">
+          <span className="text-xl tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700 }}>
             <span className="text-primary">Brokers</span><span className="text-accent">Bio</span>
           </span>
         </Link>

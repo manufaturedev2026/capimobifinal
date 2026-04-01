@@ -9,7 +9,7 @@ export default function FooterSimple() {
           <div className="col-span-2 md:col-span-1">
             <Link to="/" className="flex items-center gap-2.5 mb-3">
               <img src="/pwa-icon-512.png" alt="Brokers Bio" className="w-9 h-9 rounded-xl shadow-md object-contain" />
-              <span className="font-display font-extrabold text-lg tracking-tight uppercase">
+              <span className="text-lg tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700 }}>
                 <span className="text-primary">Brokers</span><span className="text-accent">Bio</span>
               </span>
             </Link>
