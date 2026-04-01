@@ -61,11 +61,6 @@ const AppLayout = () => {
           <Route path="/imoveis/produto/:productId" element={<ProductDetail />} />
           <Route path="/imoveis/:cidade/bairro/:bairro" element={<NeighborhoodPage />} />
 
-          {/* Marketplace de Captação */}
-          <Route path="/captacao" element={<CaptacaoPage />} />
-          <Route path="/anunciar-proprietario" element={<OwnerListingForm />} />
-          <Route path="/meus-imoveis" element={<MyListingsPage />} />
-          <Route path="/minhas-captacoes" element={<MyCapturesPage />} />
 
           <Route path="/anunciar" element={<CreateListing />} />
           <Route path="/login" element={<LoginPage />} />

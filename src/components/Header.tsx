@@ -16,8 +16,6 @@ export default function Header() {
 
   const userLinks = user
     ? [
-        { to: "/minhas-captacoes", label: "Minhas Captações", icon: FolderOpen },
-        { to: "/meus-imoveis", label: "Meus Imóveis", icon: Home },
         { to: "/painel", label: "Painel", icon: LayoutDashboard },
       ]
     : [];
