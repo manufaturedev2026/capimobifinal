@@ -87,10 +87,19 @@ export default function ReferralTab() {
     toast({ title: "Link copiado!", description: "Compartilhe com seus amigos!" });
   };
 
+  const accountAgeDays = profile?.created_at
+    ? Math.floor((Date.now() - new Date((profile as any).created_at).getTime()) / (1000 * 60 * 60 * 24))
+    : 0;
+  const canWithdraw = accountAgeDays >= 7;
+
   const handleWithdraw = async () => {
+    if (!canWithdraw) {
+      toast({ title: "Saque disponível após 7 dias de conta", description: `Faltam ${7 - accountAgeDays} dia(s).`, variant: "destructive" });
+      return;
+    }
     const amount = parseFloat(withdrawAmount);
-    if (!amount || amount < 50) {
-      toast({ title: "Valor mínimo de R$ 50,00", variant: "destructive" });
+    if (!amount || amount < 100) {
+      toast({ title: "Valor mínimo de R$ 100,00", variant: "destructive" });
       return;
     }
     if (amount > balance) {
@@ -208,9 +217,10 @@ export default function ReferralTab() {
             <Banknote size={16} className="text-green-500" /> Solicitar Saque
           </h3>
           {!showWithdrawForm && (
-            <button onClick={() => setShowWithdrawForm(true)}
-              className="px-4 py-2 rounded-xl bg-green-500 text-white text-xs font-bold hover:bg-green-600 transition-colors flex items-center gap-1">
-              <ArrowRight size={14} /> Solicitar
+            <button onClick={() => setShowWithdrawForm(true)} disabled={!canWithdraw}
+              className="px-4 py-2 rounded-xl bg-green-500 text-white text-xs font-bold hover:bg-green-600 transition-colors flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+              title={!canWithdraw ? `Disponível após 7 dias (faltam ${7 - accountAgeDays})` : ""}>
+              <ArrowRight size={14} /> {canWithdraw ? "Solicitar" : `Aguarde ${7 - accountAgeDays}d`}
             </button>
           )}
         </div>
@@ -218,10 +228,10 @@ export default function ReferralTab() {
         {showWithdrawForm && (
           <div className="space-y-3">
             <div>
-              <label className="text-xs font-semibold text-foreground mb-1 block">Valor (mínimo R$ 50,00)</label>
+              <label className="text-xs font-semibold text-foreground mb-1 block">Valor (mínimo R$ 100,00)</label>
               <input
                 type="number"
-                min="50"
+                min="100"
                 step="0.01"
                 value={withdrawAmount}
                 onChange={(e) => setWithdrawAmount(e.target.value)}
