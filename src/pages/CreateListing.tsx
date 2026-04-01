@@ -36,7 +36,7 @@ const benefits = [
   {
     icon: Eye,
     title: "Máxima Visibilidade",
-    description: "Seus imóveis são exibidos para milhares de compradores ativos no Espírito Santo todos os dias.",
+    description: "Seus imóveis são exibidos para milhares de compradores ativos em todo o Brasil.",
   },
   {
     icon: TrendingUp,
