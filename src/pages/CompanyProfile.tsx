@@ -1679,7 +1679,7 @@ export default function CompanyProfile() {
       {/* ═══ STICKY MOBILE BOTTOM BAR ═══ */}
       {company.whatsapp && (
         <div
-          className="md:hidden fixed bottom-0 left-0 right-0 z-40 backdrop-blur-xl px-4 py-3 safe-area-pb"
+          className="lg:hidden fixed bottom-0 left-0 right-0 z-40 backdrop-blur-xl px-4 py-3 safe-area-pb"
           style={isMarketplace ? {
             background: storeTheme.primary,
             borderTop: "none",
