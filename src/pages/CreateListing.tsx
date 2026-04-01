@@ -115,7 +115,7 @@ export default function CreateListing() {
               </div>
 
               <div className="flex flex-wrap gap-4">
-                <Link to="/entrar" className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-accent text-accent-foreground font-bold text-sm hover:bg-accent/90 transition-all shadow-lg shadow-accent/20">
+                <Link to="/entrar?trial=7" className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-accent text-accent-foreground font-bold text-sm hover:bg-accent/90 transition-all shadow-lg shadow-accent/20">
                   Cadastrar e Testar 7 Dias Grátis <ArrowRight size={16} />
                 </Link>
                 <a href="#beneficios" className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-secondary text-foreground font-bold text-sm hover:bg-secondary/80 transition-all border border-border">
