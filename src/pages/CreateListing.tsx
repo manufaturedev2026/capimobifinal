@@ -89,37 +89,37 @@ export default function CreateListing() {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero */}
-      <div className="relative h-[70vh] md:h-[80vh] overflow-hidden">
+      <div className="relative h-[55vh] sm:h-[65vh] md:h-[80vh] overflow-hidden">
         <img src={heroImg} alt="Anuncie no ES Corretores" className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-r from-background/80 to-transparent" />
 
-        <div className="absolute bottom-0 left-0 right-0 pb-16 md:pb-24">
+        <div className="absolute bottom-0 left-0 right-0 pb-8 sm:pb-12 md:pb-24">
           <div className="container max-w-6xl mx-auto px-4">
             <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
-              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/20 text-accent text-xs font-bold uppercase tracking-wider mb-6">
-                <Zap size={14} /> Plataforma #1 do ES
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 sm:px-4 sm:py-1.5 rounded-full bg-accent/20 text-accent text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-4 sm:mb-6">
+                <Zap size={12} className="sm:w-3.5 sm:h-3.5" /> Plataforma #1 do ES
               </span>
-              <h1 className="font-display font-black text-4xl md:text-6xl lg:text-7xl text-foreground leading-[1.1] mb-4">
+              <h1 className="font-display font-black text-3xl sm:text-4xl md:text-6xl lg:text-7xl text-foreground leading-[1.1] mb-3 sm:mb-4">
                 Anuncie seus<br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">imóveis</span>
               </h1>
-              <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mb-4">
+              <p className="text-muted-foreground text-sm sm:text-lg md:text-xl max-w-2xl mb-3 sm:mb-4">
                 O maior marketplace de imóveis do Espírito Santo. Alcance milhares de compradores e acelere suas vendas.
               </p>
 
               {/* 7 dias grátis badge */}
-              <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-primary/15 border border-primary/30 mb-8">
-                <Star size={18} className="text-primary" />
-                <span className="text-primary font-bold text-sm">7 Dias Grátis</span>
-                <span className="text-muted-foreground text-xs">em todos os planos pagos</span>
+              <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-2xl bg-primary/15 border border-primary/30 mb-5 sm:mb-8">
+                <Star size={14} className="text-primary sm:w-[18px] sm:h-[18px]" />
+                <span className="text-primary font-bold text-xs sm:text-sm">7 Dias Grátis</span>
+                <span className="text-muted-foreground text-[10px] sm:text-xs">em todos os planos pagos</span>
               </div>
 
-              <div className="flex flex-wrap gap-4">
-                <Link to="/entrar?trial=7" className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-accent text-accent-foreground font-bold text-sm hover:bg-accent/90 transition-all shadow-lg shadow-accent/20">
-                  Cadastrar e Testar 7 Dias Grátis <ArrowRight size={16} />
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+                <Link to="/entrar?trial=7" className="inline-flex items-center justify-center gap-2 px-5 sm:px-8 py-3 sm:py-4 rounded-xl bg-accent text-accent-foreground font-bold text-xs sm:text-sm hover:bg-accent/90 transition-all shadow-lg shadow-accent/20">
+                  Cadastrar e Testar 7 Dias Grátis <ArrowRight size={14} />
                 </Link>
-                <a href="#beneficios" className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-secondary text-foreground font-bold text-sm hover:bg-secondary/80 transition-all border border-border">
+                <a href="#beneficios" className="inline-flex items-center justify-center gap-2 px-5 sm:px-8 py-3 sm:py-4 rounded-xl bg-secondary text-foreground font-bold text-xs sm:text-sm hover:bg-secondary/80 transition-all border border-border">
                   Ver Benefícios
                 </a>
               </div>
