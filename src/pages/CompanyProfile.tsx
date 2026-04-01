@@ -1214,7 +1214,54 @@ export default function CompanyProfile() {
         </div>
       </div>
 
-      {/* ═══ FULLSCREEN CINEMA MODE ═══ */}
+      {/* ═══ VIDEO SECTION ═══ */}
+      {isDbProfile && dbProfile?.video_url && (() => {
+        const ytId = extractYouTubeId(dbProfile.video_url);
+        if (!ytId) return null;
+        return (
+          <section className="px-4 md:px-8 lg:px-12 py-8">
+            <div className="max-w-4xl mx-auto">
+              <h3 className="font-display font-bold text-lg md:text-xl mb-4" style={{ color: storeTheme.text }}>
+                <Play size={20} className="inline mr-2" style={{ color: storeTheme.primary }} />
+                {(dbProfile as any)?.video_title || "Vídeo"}
+              </h3>
+              {(dbProfile as any)?.video_description && (
+                <p className="text-sm mb-4 max-w-2xl" style={{ color: storeTheme.textMuted }}>{(dbProfile as any).video_description}</p>
+              )}
+              <div className="relative aspect-video rounded-2xl overflow-hidden shadow-xl" style={{ border: `1px solid ${storeTheme.border}` }}>
+                <iframe
+                  src={`https://www.youtube.com/embed/${ytId}?rel=0`}
+                  title={(dbProfile as any)?.video_title || "Vídeo"}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="w-full h-full"
+                />
+              </div>
+              <div className="flex gap-3 mt-4">
+                <a
+                  href={dbProfile.video_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm text-white shadow-lg active:scale-95 transition-transform"
+                  style={{ background: storeTheme.primary }}
+                >
+                  <ExternalLink size={16} /> Assistir no YouTube
+                </a>
+                {company.whatsapp && (
+                  <button
+                    onClick={() => handleWhatsApp("Vídeo: " + ((dbProfile as any)?.video_title || company.name))}
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#25d366] text-white font-bold text-sm shadow-lg active:scale-95 transition-transform"
+                  >
+                    <MessageCircle size={16} /> Falar sobre
+                  </button>
+                )}
+              </div>
+            </div>
+          </section>
+        );
+      })()}
+
+
       {(() => {
         const galleryProducts = products.filter((p: any) => p.image || p.images?.length);
         if (galleryProducts.length < 1) return null;
