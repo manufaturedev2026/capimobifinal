@@ -9,7 +9,7 @@ import type { Database } from "@/integrations/supabase/types";
 import { BRAZIL_STATES } from "@/data/brazilStates";
 import { useCitiesByState } from "@/hooks/useCitiesByState";
 import StoreThemePicker from "@/components/StoreThemePicker";
-import { STORE_LAYOUTS } from "@/components/store-layouts";
+import { STORE_LAYOUTS, isLayoutAllowed, getMinTierForLayout } from "@/components/store-layouts";
 import layoutNetflix from "@/assets/layout-previews/layout-netflix.jpg";
 import layoutMinimal from "@/assets/layout-previews/layout-minimal.jpg";
 import layoutMagazine from "@/assets/layout-previews/layout-magazine.jpg";
@@ -514,13 +514,23 @@ export default function SellerProfile() {
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {STORE_LAYOUTS.map((layout) => {
               const isActive = form.store_layout === layout.id;
+              const allowed = isLayoutAllowed(layout.id, sellerTier);
+              const minTier = getMinTierForLayout(layout.id);
               return (
                 <button
                   key={layout.id}
                   type="button"
-                  onClick={() => setForm((f) => ({ ...f, store_layout: layout.id }))}
-                  className={`rounded-2xl text-left transition-all border-2 overflow-hidden ${
-                    isActive
+                  onClick={() => {
+                    if (allowed) {
+                      setForm((f) => ({ ...f, store_layout: layout.id }));
+                    } else {
+                      toast({ title: `Layout exclusivo do plano ${minTier}`, description: "Faça upgrade para desbloquear este layout.", variant: "destructive" });
+                    }
+                  }}
+                  className={`rounded-2xl text-left transition-all border-2 overflow-hidden relative ${
+                    !allowed
+                      ? "border-border opacity-60 grayscale"
+                      : isActive
                       ? "border-primary shadow-lg shadow-primary/10 ring-2 ring-primary/30"
                       : "border-border hover:border-primary/30"
                   }`}
@@ -532,11 +542,16 @@ export default function SellerProfile() {
                       className="w-full h-full object-cover"
                       loading="lazy"
                     />
-                    {isActive && (
+                    {isActive && allowed && (
                       <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-primary flex items-center justify-center">
                         <svg className="w-3.5 h-3.5 text-primary-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                         </svg>
+                      </div>
+                    )}
+                    {!allowed && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+                        <span className="text-white text-xs font-bold bg-black/60 px-3 py-1.5 rounded-full">🔒 {minTier}</span>
                       </div>
                     )}
                   </div>
