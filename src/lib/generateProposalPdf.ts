@@ -98,7 +98,7 @@ export async function generateProposalPdf(data: ProposalData) {
   pdf.setFont("helvetica", "bold");
   pdf.setFontSize(16);
   pdf.setTextColor(255, 255, 255);
-  pdf.text("LojaES", M + 2, 16);
+  pdf.text("ES Corretores", M + 2, 16);
 
   pdf.setFont("helvetica", "normal");
   pdf.setFontSize(8);
@@ -383,7 +383,7 @@ export async function generateProposalPdf(data: ProposalData) {
   final.setFont("helvetica", "bold");
   final.setFontSize(16);
   final.setTextColor(255, 255, 255);
-  final.text("LojaES", M + 2, 16);
+  final.text("ES Corretores", M + 2, 16);
   final.setFont("helvetica", "normal");
   final.setFontSize(8);
   final.setTextColor(148, 163, 184);
@@ -596,7 +596,7 @@ export async function generateProposalPdf(data: ProposalData) {
   // Footer
   final.setFont("helvetica", "normal"); final.setFontSize(7);
   final.setTextColor(156, 163, 175);
-  final.text(`Proposta gerada em ${new Date().toLocaleDateString("pt-BR")}  •  LojaES`, W / 2, H - 8, { align: "center" });
+  final.text(`Proposta gerada em ${new Date().toLocaleDateString("pt-BR")}  •  ES Corretores`, W / 2, H - 8, { align: "center" });
 
   final.save(`proposta-${data.id}.pdf`);
 }
