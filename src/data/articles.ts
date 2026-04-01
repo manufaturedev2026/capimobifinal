@@ -492,4 +492,400 @@ Use apps gratuitos como **Snapseed** ou **Lightroom Mobile** para:
 
 Se seu plano permitir, adicione um **vídeo tour** do YouTube ao anúncio. Vídeos geram até 3x mais engajamento que apenas fotos.`,
   },
+  {
+    slug: "como-usar-crm-contatos",
+    title: "Como Usar o CRM de Contatos",
+    description: "Gerencie seus leads e clientes com o funil de vendas integrado para nunca perder uma oportunidade.",
+    cover: "https://images.unsplash.com/photo-1552581234-26160f608093?w=800&h=400&fit=crop",
+    category: "Ferramentas",
+    readTime: "5 min",
+    content: `## Como Usar o CRM de Contatos
+
+O CRM (Gestão de Relacionamento com Clientes) integrado ajuda você a organizar seus leads e acompanhar cada negociação do início ao fechamento.
+
+### O que é o CRM?
+
+É um sistema de funil de vendas onde você cadastra seus contatos e os move por etapas conforme avança a negociação. Isso evita que você perca oportunidades por esquecimento.
+
+### Acessando o CRM
+
+1. No **Painel**, clique na aba **"CRM"** no menu lateral
+2. Você verá o painel de funil com as etapas configuradas
+
+### Etapas do Funil
+
+O funil possui etapas personalizáveis pelo administrador. Exemplo padrão:
+
+- **Novo** – Lead recém-chegado
+- **Contato Feito** – Você já entrou em contato
+- **Visita Agendada** – Visita marcada ao imóvel
+- **Proposta Enviada** – Proposta formalizada
+- **Negociação** – Em fase de negociação
+- **Fechado** – Negócio concretizado
+
+### Cadastrando um Contato
+
+Clique em **"Novo Contato"** e preencha:
+
+- **Nome completo**
+- **E-mail**
+- **Telefone/WhatsApp**
+- **Etapa do funil** (em qual fase está)
+- **Notas** – Observações sobre o cliente (o que procura, orçamento, preferências)
+
+### Movendo Contatos no Funil
+
+Para avançar um contato de etapa, basta editar o contato e alterar a etapa. Isso permite acompanhar visualmente onde cada lead está.
+
+### Templates de Mensagem
+
+Use os templates pré-prontos para enviar mensagens padronizadas via WhatsApp em cada etapa:
+
+1. Selecione o contato
+2. Clique em **"Enviar Mensagem"**
+3. Escolha o template da etapa atual
+4. A mensagem será aberta no WhatsApp com o texto preenchido
+
+### Dicas de Uso
+
+- **Atualize diariamente** – Registre cada interação
+- **Use as notas** – Anote preferências e detalhes importantes
+- **Não acumule leads sem contato** – Entre em contato em até 24h
+- **Registre a última data de contato** – Para saber quando fazer follow-up`,
+  },
+  {
+    slug: "como-solicitar-anuncios-pagos",
+    title: "Como Solicitar Anúncios Pagos (Google e Meta)",
+    description: "Impulsione seus imóveis com campanhas pagas no Google e Instagram/Facebook diretamente pelo painel.",
+    cover: "https://images.unsplash.com/photo-1563986768609-322da13575f2?w=800&h=400&fit=crop",
+    category: "Marketing",
+    readTime: "4 min",
+    content: `## Como Solicitar Anúncios Pagos
+
+Quer mais visibilidade para seus imóveis? Solicite campanhas pagas no Google Ads ou Meta (Instagram/Facebook) diretamente pelo painel.
+
+### Como Funciona
+
+Você solicita uma campanha e nossa equipe configura e gerencia o anúncio para você. Sem complicação técnica!
+
+### Acessando
+
+1. No **Painel**, clique na aba **"Anúncios"** no menu lateral
+2. Clique em **"Solicitar Campanha"**
+
+### Preenchendo a Solicitação
+
+- **Plataforma:** Escolha entre Google Ads ou Meta (Instagram/Facebook)
+- **Orçamento diário:** Defina quanto quer investir por dia (mínimo sugerido: R$ 10/dia)
+- **Duração:** Por quantos dias a campanha rodará
+- **Detalhes:** Descreva o que quer anunciar (qual imóvel, público-alvo, região)
+
+### Custos
+
+O valor total é calculado automaticamente:
+
+- **Investimento:** Orçamento diário × dias
+- **Taxa de serviço:** Taxa pela gestão da campanha
+- **Impostos:** Calculados automaticamente
+
+### Acompanhamento
+
+Após enviar a solicitação:
+
+1. Nossa equipe analisará e aprovará
+2. A campanha será configurada e ativada
+3. Você acompanha o status em **"Histórico de Anúncios"**
+
+### Status da Campanha
+
+- **Pendente** – Aguardando aprovação
+- **Aprovado** – Campanha ativa e rodando
+- **Rejeitado** – Não aprovada (com motivo)
+
+### Dicas para Campanhas Eficazes
+
+- **Comece com R$ 15-20/dia** para ter dados relevantes
+- **Rode por pelo menos 7 dias** para otimizar
+- **Foque em 1-3 imóveis** por campanha
+- **Use fotos profissionais** nos anúncios`,
+  },
+  {
+    slug: "como-usar-efeitos-de-loja",
+    title: "Como Usar Efeitos Visuais na Sua Loja",
+    description: "Ative efeitos especiais como partículas, confete e neve para deixar sua loja mais atrativa em datas especiais.",
+    cover: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800&h=400&fit=crop",
+    category: "Personalização",
+    readTime: "3 min",
+    content: `## Como Usar Efeitos Visuais na Sua Loja
+
+Surpreenda seus visitantes com efeitos visuais temporários na sua loja virtual!
+
+### O que são Efeitos de Loja?
+
+São animações visuais que aparecem sobre a sua loja, criando uma experiência diferenciada. Perfeitos para:
+
+- **Promoções especiais**
+- **Datas comemorativas** (Natal, Ano Novo, Black Friday)
+- **Lançamentos de empreendimentos**
+- **Chamadas de atenção**
+
+### Efeitos Disponíveis
+
+- ✨ **Partículas** – Pontos de luz flutuantes
+- 🎊 **Confete** – Chuva de confetes coloridos
+- ❄️ **Neve** – Flocos de neve caindo
+- 🔥 **Faíscas** – Efeito de brilho intenso
+
+### Como Ativar
+
+1. No **Painel**, vá à aba **"Eventos"**
+2. Na seção **"Efeitos da Loja"**, escolha o efeito desejado
+3. Clique em **"Ativar"**
+4. O efeito ficará ativo por **1 hora**
+
+### Efeito Grátis
+
+Cada vendedor tem direito a **1 ativação gratuita**. Após isso, os efeitos ficam disponíveis conforme o plano.
+
+### Dicas
+
+- **Não abuse** – Use com moderação para não cansar os visitantes
+- **Combine com promoções** – Ative quando tiver algo especial para oferecer
+- **Avise nas redes sociais** – "Visite minha loja agora e veja o efeito especial!"`,
+  },
+  {
+    slug: "como-funciona-gamificacao",
+    title: "Como Funciona a Gamificação e Recompensas",
+    description: "Complete metas mensais para ganhar destaque grátis e outros benefícios na plataforma.",
+    cover: "https://images.unsplash.com/photo-1533750516457-a7f992034fec?w=800&h=400&fit=crop",
+    category: "Ferramentas",
+    readTime: "4 min",
+    content: `## Como Funciona a Gamificação e Recompensas
+
+A plataforma gamifica sua experiência com metas e recompensas mensais para incentivar o uso ativo.
+
+### Acessando
+
+No **Painel**, clique na aba **"Eventos"**. Você verá suas estatísticas, progresso e conquistas disponíveis.
+
+### Como Funciona
+
+Cada mês, novas metas são definidas automaticamente. Ao atingir uma meta, você desbloqueia uma recompensa!
+
+### Metas de Anúncios
+
+| Meta | Recompensa |
+|------|-----------|
+| 10 anúncios ativos | Destaque grátis por 10 min |
+| 25 anúncios ativos | Destaque grátis por 10 min |
+| 50 anúncios ativos | Destaque grátis por 10 min |
+
+### Metas de Visualizações
+
+| Meta | Recompensa |
+|------|-----------|
+| 100 visualizações | Destaque grátis por 10 min |
+| 350 visualizações | Destaque grátis por 10 min |
+| 700 visualizações | Destaque grátis por 10 min |
+| 1.500 visualizações | Destaque grátis por 10 min |
+
+### Resgate de Recompensas
+
+1. Quando uma meta for atingida, o botão **"Resgatar"** ficará disponível
+2. Clique para ativar sua recompensa
+3. O destaque será ativado **imediatamente** por 10 minutos
+4. Seus anúncios ficarão em posição privilegiada durante esse período
+
+### Regras Importantes
+
+- ⏰ **Reset mensal** – As metas reiniciam todo mês
+- 🚫 **Um de cada vez** – Só é possível ter 1 recompensa ativa por vez
+- 📊 **Progresso em tempo real** – Acompanhe a barra de progresso de cada meta
+
+### Recompensas Ativas
+
+Na seção "Recompensas Ativas" você vê:
+- Qual recompensa está ativa
+- Quanto tempo falta para expirar
+- Histórico de recompensas resgatadas no mês`,
+  },
+  {
+    slug: "como-usar-simulador-financiamento",
+    title: "Como Usar o Simulador de Financiamento",
+    description: "Ofereça aos clientes uma calculadora de financiamento integrada nos seus anúncios de imóveis.",
+    cover: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&h=400&fit=crop",
+    category: "Ferramentas",
+    readTime: "3 min",
+    content: `## Como Usar o Simulador de Financiamento
+
+O simulador de financiamento é uma ferramenta poderosa para ajudar seus clientes a entenderem as parcelas de um imóvel.
+
+### O que é?
+
+É uma calculadora integrada que aparece nos anúncios de imóveis, permitindo que o visitante simule o financiamento com diferentes valores de entrada e prazos.
+
+### Como Ativar
+
+1. Ao criar ou editar um anúncio de imóvel, marque a opção **"Aceita Financiamento"**
+2. Ative o campo **"Mostrar Simulador"**
+3. O simulador aparecerá automaticamente na página do anúncio
+
+### O que o Cliente Vê
+
+O simulador mostra:
+
+- **Valor do imóvel** (preenchido automaticamente)
+- **Valor da entrada** (ajustável pelo cliente)
+- **Prazo** (até 420 meses / 35 anos)
+- **Taxa de juros** estimada
+- **Valor da parcela** calculado automaticamente
+
+### Benefícios
+
+- 💰 **Reduz objeções de preço** – O cliente vê que a parcela cabe no bolso
+- 📊 **Profissionalismo** – Mostra que você entende de financiamento
+- 🎯 **Qualifica leads** – Clientes que simulam estão mais propensos a comprar
+- ⚡ **Agiliza o processo** – O cliente já chega com expectativa de valores
+
+### Importante
+
+O simulador fornece **valores estimados**. Sempre oriente o cliente a consultar o banco para condições reais de financiamento.`,
+  },
+  {
+    slug: "como-usar-qrcode-da-loja",
+    title: "Como Usar o QR Code da Sua Loja",
+    description: "Gere e compartilhe um QR Code exclusivo para direcionar clientes diretamente à sua loja virtual.",
+    cover: "https://images.unsplash.com/photo-1595079676339-1534801ad6cf?w=800&h=400&fit=crop",
+    category: "Marketing",
+    readTime: "2 min",
+    content: `## Como Usar o QR Code da Sua Loja
+
+O QR Code é uma forma rápida e moderna de compartilhar sua loja virtual com clientes presenciais.
+
+### O que é?
+
+É um código visual que, ao ser escaneado pela câmera do celular, leva o cliente diretamente para sua loja na plataforma.
+
+### Onde Encontrar
+
+1. No **Painel**, acesse as **ações rápidas**
+2. Clique em **"QR Code"**
+3. O QR Code da sua loja será gerado automaticamente
+
+### Como Usar
+
+- **Cartão de visita** – Imprima o QR Code no verso do seu cartão
+- **Placas de venda** – Coloque nos imóveis à venda
+- **Material impresso** – Folders, panfletos, banners
+- **Stand de eventos** – Em feiras e exposições imobiliárias
+- **Assinatura de e-mail** – Adicione como imagem
+- **Redes sociais** – Publique para que seguidores acessem facilmente
+
+### Vantagens
+
+- 📱 **Acesso instantâneo** – Um toque e o cliente está na sua loja
+- 🖨️ **Fácil de imprimir** – Funciona em qualquer tamanho
+- 📊 **Moderno** – Passa imagem de profissionalismo e tecnologia
+- 🔗 **Sempre atualizado** – O link por trás do QR Code não muda
+
+### Dica
+
+Imprima o QR Code em tamanho grande (pelo menos 3x3 cm) para facilitar a leitura pela câmera do celular.`,
+  },
+  {
+    slug: "como-marcar-imovel-vendido",
+    title: "Como Marcar um Imóvel como Vendido",
+    description: "Registre suas vendas e ative o countdown de celebração para mostrar seu sucesso aos visitantes.",
+    cover: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&h=400&fit=crop",
+    category: "Primeiros Passos",
+    readTime: "2 min",
+    content: `## Como Marcar um Imóvel como Vendido
+
+Quando fechar uma venda, marque o imóvel como vendido para celebrar e mostrar credibilidade na sua loja.
+
+### Como Fazer
+
+1. No **Painel**, vá até a lista de **"Meus Anúncios"**
+2. Encontre o imóvel vendido
+3. Clique no menu de ações (⋯) do anúncio
+4. Selecione **"Marcar como Vendido"**
+
+### O que Acontece
+
+- O anúncio recebe um selo de **"VENDIDO"**
+- Um **countdown de celebração** é ativado na sua loja
+- O imóvel permanece visível por um período para mostrar seu histórico de vendas
+- Após o período, ele é automaticamente arquivado
+
+### Por que Marcar como Vendido?
+
+- 🏆 **Credibilidade** – Mostra que você realmente vende
+- 📈 **Prova social** – Visitantes veem seu histórico de sucesso
+- 🎉 **Celebração** – O countdown cria um momento especial
+- 📊 **Estatísticas** – Acompanhe quantos imóveis vendeu
+
+### Desfazendo
+
+Se marcou por engano, você pode reativar o anúncio alterando o status de volta para **"Ativo"** no menu de ações.
+
+### Dica
+
+Tire uma foto da entrega das chaves e publique como **Story** na sua loja! Isso gera confiança e engajamento.`,
+  },
+  {
+    slug: "como-configurar-modo-cinema",
+    title: "Como Configurar o Modo Cinema (Vídeo Netflix)",
+    description: "Adicione um vídeo de apresentação estilo Netflix no topo da sua loja para impressionar visitantes.",
+    cover: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=800&h=400&fit=crop",
+    category: "Personalização",
+    readTime: "3 min",
+    content: `## Como Configurar o Modo Cinema
+
+O Modo Cinema adiciona um vídeo hero no estilo Netflix no topo da sua loja virtual, criando uma experiência imersiva e profissional.
+
+### Requisitos
+
+- Plano **Start** ou superior (todos os planos pagos incluem)
+- Um vídeo publicado no **YouTube**
+
+### Como Configurar
+
+1. Acesse **"Editar Perfil"** no menu do Painel
+2. Role até a seção **"Vídeo de Apresentação"** (disponível para VIP+)
+3. Preencha os campos:
+   - **URL do YouTube** – Cole o link do seu vídeo
+   - **Título do Vídeo** – Ex: "Conheça nosso trabalho"
+   - **Descrição** – Breve texto sobre o que o visitante verá
+
+### O que o Visitante Vê
+
+No topo da sua loja, um banner estilo Netflix aparece com:
+
+- **Thumbnail do vídeo** como fundo
+- **Título e descrição** sobrepostos
+- **Botão de play** para assistir
+- **Gradiente escuro** para legibilidade
+
+### Dicas para o Vídeo
+
+- **Duração ideal:** 1 a 3 minutos
+- **Conteúdo sugerido:**
+  - Apresentação pessoal/da empresa
+  - Tour por imóveis em destaque
+  - Depoimentos de clientes
+  - Bastidores do seu trabalho
+- **Qualidade:** Grave em HD (1080p) ou superior
+- **Thumbnail:** Configure uma thumbnail atrativa no YouTube
+
+### Ideias de Vídeo
+
+1. **"Quem somos"** – Apresente sua história e equipe
+2. **"Tour pelo bairro"** – Mostre a região onde atua
+3. **"Imóvel em destaque"** – Faça um tour virtual do seu melhor imóvel
+4. **"Processo de compra"** – Explique como funciona comprar com você
+
+### Importante
+
+O vídeo deve estar como **"Público"** ou **"Não listado"** no YouTube para funcionar na plataforma.`,
+  },
 ];
