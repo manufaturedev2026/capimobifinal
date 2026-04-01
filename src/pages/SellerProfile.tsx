@@ -43,6 +43,7 @@ export default function SellerProfile() {
     video_description: "",
     slug: "",
     store_theme: "default",
+    store_layout: "netflix",
   });
   const [slugError, setSlugError] = useState("");
 
