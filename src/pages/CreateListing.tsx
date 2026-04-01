@@ -331,17 +331,17 @@ export default function CreateListing() {
                     <Star size={12} /> Mais completo
                   </span>
                 )}
-                <h3 className="font-display font-bold text-xl text-foreground">{plan.name}</h3>
-                <div className="font-display font-black text-3xl text-primary my-3">{plan.price}</div>
-                <p className="text-muted-foreground text-sm mb-4">{plan.items}</p>
-                <ul className="space-y-2 text-sm text-left">
+                <h3 className="font-display font-bold text-lg sm:text-xl text-foreground">{plan.name}</h3>
+                <div className="font-display font-black text-2xl sm:text-3xl text-primary my-2 sm:my-3">{plan.price}</div>
+                <p className="text-muted-foreground text-xs sm:text-sm mb-3 sm:mb-4">{plan.items}</p>
+                <ul className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm text-left">
                   {plan.features.map((f) => (
                     <li key={f} className="flex items-center gap-2 text-foreground/80">
-                      <CheckCircle2 size={14} className="text-accent shrink-0" /> {f}
+                      <CheckCircle2 size={12} className="text-accent shrink-0 sm:w-3.5 sm:h-3.5" /> {f}
                     </li>
                   ))}
                 </ul>
-                <Link to="/entrar" className="block mt-5 w-full py-3 rounded-xl bg-accent text-accent-foreground text-center font-bold text-sm hover:bg-accent/90 transition-all">
+                <Link to="/entrar" className="block mt-4 sm:mt-5 w-full py-2.5 sm:py-3 rounded-xl bg-accent text-accent-foreground text-center font-bold text-xs sm:text-sm hover:bg-accent/90 transition-all">
                   Testar 7 Dias Grátis
                 </Link>
               </motion.div>
@@ -351,19 +351,19 @@ export default function CreateListing() {
       </section>
 
       {/* CTA */}
-      <section className="py-20">
+      <section className="py-12 sm:py-20">
         <div className="container max-w-4xl mx-auto px-4 text-center">
           <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
-            className="bg-gradient-to-br from-primary/20 via-card to-accent/20 rounded-3xl p-10 md:p-16 border border-border">
-            <Award size={48} className="text-accent mx-auto mb-6" />
-            <h2 className="font-display font-bold text-3xl md:text-4xl text-foreground mb-4">
+            className="bg-gradient-to-br from-primary/20 via-card to-accent/20 rounded-2xl sm:rounded-3xl p-6 sm:p-10 md:p-16 border border-border">
+            <Award size={36} className="text-accent mx-auto mb-4 sm:mb-6 sm:w-12 sm:h-12" />
+            <h2 className="font-display font-bold text-2xl sm:text-3xl md:text-4xl text-foreground mb-3 sm:mb-4">
               Pronto para vender <span className="text-accent">mais</span>?
             </h2>
-            <p className="text-muted-foreground mb-8 max-w-lg mx-auto">
+            <p className="text-muted-foreground text-sm sm:text-base mb-6 sm:mb-8 max-w-lg mx-auto">
               Cadastre-se gratuitamente e teste por 7 dias grátis no maior marketplace do Espírito Santo.
             </p>
-            <Link to="/entrar" className="inline-flex items-center gap-2 px-10 py-4 rounded-xl bg-accent text-accent-foreground font-bold hover:bg-accent/90 transition-all shadow-lg shadow-accent/20">
-              Cadastrar e Testar 7 Dias Grátis <ArrowRight size={16} />
+            <Link to="/entrar" className="inline-flex items-center justify-center gap-2 px-6 sm:px-10 py-3 sm:py-4 rounded-xl bg-accent text-accent-foreground font-bold text-xs sm:text-sm hover:bg-accent/90 transition-all shadow-lg shadow-accent/20 w-full sm:w-auto">
+              Cadastrar e Testar 7 Dias Grátis <ArrowRight size={14} />
             </Link>
           </motion.div>
         </div>
