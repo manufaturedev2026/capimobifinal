@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Users, DollarSign, Banknote, Check, X, CreditCard, Search } from "lucide-react";
+import { Users, DollarSign, Banknote, Check, X, CreditCard, Search, Settings, Save } from "lucide-react";
 
 interface UserWithReferral {
   id: string;
@@ -43,6 +43,8 @@ export default function AdminReferralTab() {
   const [withdrawals, setWithdrawals] = useState<WithdrawalItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [commissionRate, setCommissionRate] = useState("10");
+  const [savingRate, setSavingRate] = useState(false);
 
   useEffect(() => {
     fetchAll();
@@ -50,14 +52,16 @@ export default function AdminReferralTab() {
 
   const fetchAll = async () => {
     setLoading(true);
-    const [{ data: profiles }, { data: comms }, { data: wds }] = await Promise.all([
+    const [{ data: profiles }, { data: comms }, { data: wds }, { data: settings }] = await Promise.all([
       supabase.from("profiles").select("id, user_id, full_name, email, referral_code, referral_balance, referral_total_earned, referred_by") as any,
       supabase.from("commissions").select("*").order("created_at", { ascending: false }) as any,
       supabase.from("withdrawals").select("*").order("created_at", { ascending: false }) as any,
+      supabase.from("platform_settings").select("*").eq("key", "referral_commission_rate").maybeSingle() as any,
     ]);
     setUsers(profiles || []);
     setCommissions(comms || []);
     setWithdrawals(wds || []);
+    if (settings?.value) setCommissionRate(settings.value);
     setLoading(false);
   };
 
@@ -109,11 +113,49 @@ export default function AdminReferralTab() {
     u.referral_code?.toLowerCase().includes(search.toLowerCase())
   );
 
+  const saveCommissionRate = async () => {
+    const rate = parseFloat(commissionRate);
+    if (isNaN(rate) || rate < 0 || rate > 100) {
+      toast({ title: "Porcentagem inválida (0-100)", variant: "destructive" });
+      return;
+    }
+    setSavingRate(true);
+    const { error } = await supabase.from("platform_settings").update({ value: rate.toString(), updated_at: new Date().toISOString() } as any).eq("key", "referral_commission_rate");
+    if (error) {
+      toast({ title: "Erro ao salvar", variant: "destructive" });
+    } else {
+      toast({ title: `Comissão atualizada para ${rate}%!` });
+    }
+    setSavingRate(false);
+  };
+
   return (
     <div className="space-y-4">
-      <h2 className="font-display font-bold text-lg text-foreground flex items-center gap-2">
-        <DollarSign size={20} className="text-primary" /> Sistema de Indicação
-      </h2>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <h2 className="font-display font-bold text-lg text-foreground flex items-center gap-2">
+          <DollarSign size={20} className="text-primary" /> Sistema de Indicação
+        </h2>
+
+        {/* Commission Rate Editor */}
+        <div className="flex items-center gap-2 bg-card border border-border rounded-xl px-3 py-2">
+          <Settings size={14} className="text-muted-foreground" />
+          <span className="text-xs font-semibold text-foreground">Comissão:</span>
+          <input
+            type="number"
+            min="0"
+            max="100"
+            step="0.5"
+            value={commissionRate}
+            onChange={(e) => setCommissionRate(e.target.value)}
+            className="w-16 px-2 py-1 rounded-lg bg-secondary text-foreground text-sm text-center border border-border focus:ring-2 focus:ring-primary/50 focus:outline-none"
+          />
+          <span className="text-xs text-muted-foreground font-bold">%</span>
+          <button onClick={saveCommissionRate} disabled={savingRate}
+            className="px-2.5 py-1 rounded-lg bg-primary text-primary-foreground text-xs font-bold hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center gap-1">
+            <Save size={12} /> {savingRate ? "..." : "Salvar"}
+          </button>
+        </div>
+      </div>
 
       {/* Sub tabs */}
       <div className="flex gap-2 flex-wrap">

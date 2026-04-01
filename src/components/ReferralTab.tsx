@@ -33,6 +33,7 @@ export default function ReferralTab() {
   const [pixKey, setPixKey] = useState("");
   const [showWithdrawForm, setShowWithdrawForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [commissionRate, setCommissionRate] = useState(10);
 
   const referralCode = (profile as any)?.referral_code || "";
   const balance = Number((profile as any)?.referral_balance) || 0;
@@ -65,6 +66,15 @@ export default function ReferralTab() {
       .select("*")
       .eq("user_id", user!.id)
       .order("created_at", { ascending: false }) as any;
+
+    // Fetch commission rate
+    const { data: rateSetting } = await supabase
+      .from("platform_settings")
+      .select("value")
+      .eq("key", "referral_commission_rate")
+      .maybeSingle() as any;
+
+    if (rateSetting?.value) setCommissionRate(parseFloat(rateSetting.value));
 
     setCommissions(comms || []);
     setReferredCount(count || 0);
@@ -143,7 +153,7 @@ export default function ReferralTab() {
           <h2 className="font-display font-bold text-xl text-foreground flex items-center gap-2">
             <Gift size={22} className="text-primary" /> Indique e Ganhe
           </h2>
-          <p className="text-sm text-muted-foreground mt-1">Ganhe 10% de comissão recorrente por cada indicação!</p>
+          <p className="text-sm text-muted-foreground mt-1">Ganhe {commissionRate}% de comissão recorrente por cada indicação!</p>
         </div>
         {badge && (
           <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full ${badge.bg}`}>

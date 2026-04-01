@@ -7,7 +7,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const COMMISSION_RATE = 0.10; // 10%
+const DEFAULT_COMMISSION_RATE = 0.10; // fallback 10%
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -95,7 +95,19 @@ serve(async (req) => {
       return new Response(JSON.stringify({ received: true }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
-    const commission = amountPaid * COMMISSION_RATE;
+    // Read commission rate from platform_settings
+    let commissionRate = DEFAULT_COMMISSION_RATE;
+    const { data: rateSetting } = await supabaseAdmin
+      .from("platform_settings")
+      .select("value")
+      .eq("key", "referral_commission_rate")
+      .maybeSingle();
+    if (rateSetting?.value) {
+      commissionRate = parseFloat(rateSetting.value) / 100;
+    }
+    console.log(`[REFERRAL-WEBHOOK] Commission rate: ${(commissionRate * 100).toFixed(1)}%`);
+
+    const commission = amountPaid * commissionRate;
 
     // Insert commission
     await supabaseAdmin.from("commissions").insert({
