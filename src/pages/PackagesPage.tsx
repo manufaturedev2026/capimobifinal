@@ -17,6 +17,27 @@ export default function PackagesPage() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [selecting, setSelecting] = useState<string | null>(null);
+  const [openingPortal, setOpeningPortal] = useState(false);
+
+  const handleManageSubscription = async () => {
+    if (!user) {
+      navigate("/entrar");
+      return;
+    }
+    setOpeningPortal(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("customer-portal");
+      if (error) throw error;
+      if (data?.url) {
+        window.open(data.url, "_blank");
+      } else {
+        throw new Error("URL do portal não retornada");
+      }
+    } catch (err: any) {
+      toast({ title: "Erro ao abrir portal", description: err.message || "Tente novamente.", variant: "destructive" });
+    }
+    setOpeningPortal(false);
+  };
 
   const handleSelect = async (tier: "basico" | "start" | "premium" | "vip") => {
     if (!user || !profile) {
