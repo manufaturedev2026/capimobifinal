@@ -20,6 +20,7 @@ export default function AuthPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const refCode = searchParams.get("ref") || "";
+  const trialDays = searchParams.get("trial");
   const { toast } = useToast();
 
   useEffect(() => {
