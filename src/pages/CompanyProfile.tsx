@@ -836,7 +836,7 @@ export default function CompanyProfile() {
             {filteredProducts.length > 0 ? (
               <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-5">
                 {filteredProducts.map((product: any, i: number) => {
-                  const productLink = `/${product.type === "veiculo" ? "veiculos" : "imoveis"}/produto/${product.id}`;
+                  const productLink = `/${product.type === "veiculo" ? "veiculos" : "imoveis"}/produto/${product.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`;
                   return (
                     <motion.div
                       key={product.id}
@@ -1031,7 +1031,7 @@ export default function CompanyProfile() {
 
                         <div className="flex items-center gap-2 mt-4 flex-wrap">
                           <Link
-                            to={`/${seg}/produto/${lbProduct.id}`}
+                            to={`/${seg}/produto/${lbProduct.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`}
                             className="inline-flex items-center gap-1.5 px-3 py-2 md:px-6 md:py-3.5 rounded-lg md:rounded-xl bg-white text-black font-bold text-[11px] md:text-sm hover:bg-white/90 transition-all shadow-lg hover:scale-105"
                           >
                             <Eye size={12} className="md:w-4 md:h-4" /> Ver Produto

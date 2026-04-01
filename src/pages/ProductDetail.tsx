@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ChevronLeft, ChevronRight, MessageCircle, Share2, Star, MapPin, Tag, Store, Image, X, ZoomIn, BadgeCheck, Video, FileDown } from "lucide-react";
 import { generateProposalPdf } from "@/lib/generateProposalPdf";
@@ -19,6 +19,8 @@ function isUUID(str: string) {
 
 export default function ProductDetail() {
   const { productId } = useParams();
+  const [searchParams] = useSearchParams();
+  const corretorSlug = searchParams.get("corretor");
   const { toast } = useToast();
   const { openWhatsApp } = useWhatsAppPicker();
   const [activeImage, setActiveImage] = useState(0);
@@ -26,6 +28,7 @@ export default function ProductDetail() {
   const carouselRef = useRef<HTMLDivElement>(null);
   const [dbItem, setDbItem] = useState<any>(null);
   const [dbSeller, setDbSeller] = useState<any>(null);
+  const [teamMember, setTeamMember] = useState<any>(null);
   const [sellerTier, setSellerTier] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [isDb, setIsDb] = useState(false);
@@ -46,6 +49,17 @@ export default function ProductDetail() {
       setDbItem(item);
       const { data: seller } = await supabase.from("profiles").select("*").eq("id", item.seller_id).maybeSingle();
       setDbSeller(seller);
+      // Fetch team member if corretor slug is present
+      if (corretorSlug) {
+        const { data: member } = await supabase
+          .from("team_members")
+          .select("*")
+          .eq("company_id", item.seller_id)
+          .eq("slug", corretorSlug)
+          .eq("is_active", true)
+          .maybeSingle();
+        if (member) setTeamMember(member);
+      }
       // Fetch seller subscription tier
       const { data: subData } = await supabase
         .from("seller_subscriptions")
@@ -97,6 +111,13 @@ export default function ProductDetail() {
       : null
     : null;
 
+  // Override with team member data when ?corretor= is present
+  if (teamMember && company) {
+    company.name = teamMember.full_name;
+    company.whatsapp = teamMember.phone || company.whatsapp;
+    if (teamMember.photo_url) company.logo = teamMember.photo_url;
+  }
+
   if (!product || !company) {
     return (
       <div className="container max-w-6xl mx-auto px-4 py-20 text-center">
@@ -116,7 +137,9 @@ export default function ProductDetail() {
   const price = product.price;
   const description = product.description;
   const tags: string[] = isDb ? (product.tags || []).filter((t: string) => t !== "aluguel_flex") : (product.tag ? [product.tag] : []);
-  const companyUrl = `/empresa/${company.id}`;
+  const companyUrl = teamMember 
+    ? `/empresa/${dbSeller?.slug || dbSeller?.id}?corretor=${teamMember.slug}` 
+    : `/empresa/${company.id}`;
   const formattedPrice = isDb
     ? price ? `R$ ${Number(price).toLocaleString("pt-BR")}` : ""
     : formatPrice(price);
@@ -124,6 +147,13 @@ export default function ProductDetail() {
   const handleWhatsAppClick = (e?: React.MouseEvent) => {
     if (e) e.preventDefault();
     if (isDb && dbItem) trackSellerEvent(dbItem.seller_id, "whatsapp_click", dbItem.id);
+    // When a specific broker is selected, go directly to their WhatsApp
+    if (teamMember && teamMember.phone) {
+      const phone = teamMember.phone.replace(/\D/g, "");
+      const msg = encodeURIComponent(`Olá ${teamMember.full_name}! Vi o imóvel "${title} - ${formattedPrice}" e gostaria de mais informações.\n${productUrl}`);
+      window.open(`https://wa.me/55${phone}?text=${msg}`, "_blank");
+      return;
+    }
     openWhatsApp({
       sellerId: company.id,
       sellerName: company.name,
@@ -475,58 +505,99 @@ export default function ProductDetail() {
                 </div>
               </Link>
 
-              {/* Sobre o vendedor */}
+              {/* Sobre o vendedor / corretor */}
               {isDb && dbSeller && (
                 <div className="border-t border-border pt-4 mb-4 space-y-2">
-                  <h3 className="font-display font-semibold text-foreground text-sm">Sobre {(company as any).sellerCategory === "corretor" ? "o Corretor" : (company as any).sellerCategory === "imobiliaria" ? "a Imobiliária" : "o Vendedor"}</h3>
+                  <h3 className="font-display font-semibold text-foreground text-sm">
+                    {teamMember ? "Sobre o Corretor" : (company as any).sellerCategory === "corretor" ? "o Corretor" : (company as any).sellerCategory === "imobiliaria" ? "Sobre a Imobiliária" : "Sobre o Vendedor"}
+                  </h3>
                   
-                  {dbSeller.bio && (
-                    <p className="text-xs text-muted-foreground leading-relaxed">{dbSeller.bio}</p>
+                  {teamMember ? (
+                    <>
+                      {teamMember.bio && (
+                        <p className="text-xs text-muted-foreground leading-relaxed">{teamMember.bio}</p>
+                      )}
+                      <div className="space-y-1.5">
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <BadgeCheck size={13} className="text-primary flex-shrink-0" />
+                          <span>Corretor(a) de Imóveis</span>
+                        </div>
+                        {teamMember.creci && (
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <BadgeCheck size={13} className="text-primary flex-shrink-0" />
+                            <span>CRECI {teamMember.creci}</span>
+                          </div>
+                        )}
+                        {teamMember.email && (
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <BadgeCheck size={13} className="text-primary flex-shrink-0" />
+                            <span>{teamMember.email}</span>
+                          </div>
+                        )}
+                        {teamMember.instagram && (
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <span className="flex-shrink-0">📸</span>
+                            <a href={`https://instagram.com/${teamMember.instagram.replace("@", "")}`} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">{teamMember.instagram}</a>
+                          </div>
+                        )}
+                        {/* Show parent company info */}
+                        <div className="mt-3 pt-3 border-t border-border">
+                          <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider mb-1">Empresa</p>
+                          <div className="flex items-center gap-2">
+                            {dbSeller.logo_url && <img src={dbSeller.logo_url} alt="" className="w-6 h-6 rounded object-cover" />}
+                            <span className="text-xs text-muted-foreground">{dbSeller.company_name || dbSeller.full_name}</span>
+                          </div>
+                          {dbSeller.cnpj && (
+                            <p className="text-[10px] text-muted-foreground mt-1">CNPJ {dbSeller.cnpj}</p>
+                          )}
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      {dbSeller.bio && (
+                        <p className="text-xs text-muted-foreground leading-relaxed">{dbSeller.bio}</p>
+                      )}
+                      <div className="space-y-1.5">
+                        {(company as any).sellerCategory && (
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <BadgeCheck size={13} className="text-primary flex-shrink-0" />
+                            <span>{({ imobiliaria: "Imobiliária", corretor: "Corretor(a) de Imóveis", proprietario: "Proprietário", loja_veiculos: "Loja de Veículos", autonomo: "Autônomo", concessionaria: "Concessionária" } as any)[(company as any).sellerCategory] || (company as any).sellerCategory}</span>
+                          </div>
+                        )}
+                        {dbSeller.creci && (company as any).sellerCategory !== "imobiliaria" && (
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <BadgeCheck size={13} className="text-primary flex-shrink-0" />
+                            <span>CRECI {dbSeller.creci}</span>
+                          </div>
+                        )}
+                        {dbSeller.cnpj && (
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <BadgeCheck size={13} className="text-primary flex-shrink-0" />
+                            <span>CNPJ {dbSeller.cnpj}</span>
+                          </div>
+                        )}
+                        {company.whatsapp && (
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <MessageCircle size={13} className="text-green-500 flex-shrink-0" />
+                            <span>Contato direto via WhatsApp</span>
+                          </div>
+                        )}
+                        {sellerTier && sellerTier !== "basico" && (
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <Star size={13} className="text-accent fill-accent flex-shrink-0" />
+                            <span>Vendedor verificado e {sellerTier === "start" ? "start" : sellerTier === "premium" ? "VIP" : sellerTier === "vip" ? "premium" : sellerTier === "essencial_empresa" ? "essencial" : sellerTier === "premium_empresa" ? "premium empresa" : sellerTier === "prime_empresa" ? "black" : sellerTier}</span>
+                          </div>
+                        )}
+                        {dbSeller.instagram && (
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <span className="flex-shrink-0">📸</span>
+                            <a href={`https://instagram.com/${dbSeller.instagram.replace("@", "")}`} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">{dbSeller.instagram}</a>
+                          </div>
+                        )}
+                      </div>
+                    </>
                   )}
-
-                  <div className="space-y-1.5">
-                    {(company as any).sellerCategory && (
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <BadgeCheck size={13} className="text-primary flex-shrink-0" />
-                        <span>{({ imobiliaria: "Imobiliária", corretor: "Corretor(a) de Imóveis", proprietario: "Proprietário", loja_veiculos: "Loja de Veículos", autonomo: "Autônomo", concessionaria: "Concessionária" } as any)[(company as any).sellerCategory] || (company as any).sellerCategory}</span>
-                      </div>
-                    )}
-
-                    {dbSeller.creci && (company as any).sellerCategory !== "imobiliaria" && (
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <BadgeCheck size={13} className="text-primary flex-shrink-0" />
-                        <span>CRECI {dbSeller.creci}</span>
-                      </div>
-                    )}
-
-                    {dbSeller.cnpj && (
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <BadgeCheck size={13} className="text-primary flex-shrink-0" />
-                        <span>CNPJ {dbSeller.cnpj}</span>
-                      </div>
-                    )}
-
-                    {company.whatsapp && (
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <MessageCircle size={13} className="text-green-500 flex-shrink-0" />
-                        <span>Contato direto via WhatsApp</span>
-                      </div>
-                    )}
-
-                    {sellerTier && sellerTier !== "basico" && (
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <Star size={13} className="text-accent fill-accent flex-shrink-0" />
-                        <span>Vendedor verificado e {sellerTier === "start" ? "start" : sellerTier === "premium" ? "VIP" : sellerTier === "vip" ? "premium" : sellerTier === "essencial_empresa" ? "essencial" : sellerTier === "premium_empresa" ? "premium empresa" : sellerTier === "prime_empresa" ? "black" : sellerTier}</span>
-                      </div>
-                    )}
-
-                    {dbSeller.instagram && (
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <span className="flex-shrink-0">📸</span>
-                        <a href={`https://instagram.com/${dbSeller.instagram.replace("@", "")}`} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">{dbSeller.instagram}</a>
-                      </div>
-                    )}
-                  </div>
                 </div>
               )}
 
