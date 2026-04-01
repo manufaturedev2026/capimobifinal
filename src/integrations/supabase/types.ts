@@ -399,6 +399,48 @@ export type Database = {
           },
         ]
       }
+      seller_crm_contacts: {
+        Row: {
+          created_at: string
+          email: string | null
+          full_name: string
+          funnel_stage: string
+          id: string
+          last_contacted_at: string | null
+          notes: string | null
+          phone: string | null
+          seller_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          full_name: string
+          funnel_stage?: string
+          id?: string
+          last_contacted_at?: string | null
+          notes?: string | null
+          phone?: string | null
+          seller_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          full_name?: string
+          funnel_stage?: string
+          id?: string
+          last_contacted_at?: string | null
+          notes?: string | null
+          phone?: string | null
+          seller_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       seller_items: {
         Row: {
           accepts_financing: boolean | null

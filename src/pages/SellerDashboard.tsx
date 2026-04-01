@@ -10,6 +10,7 @@ import TeamMembersTab from "@/components/TeamMembersTab";
 import GamificationTab from "@/components/GamificationTab";
 import BrokerAnalytics from "@/components/BrokerAnalytics";
 import ReferralTab from "@/components/ReferralTab";
+import SellerCrmTab from "@/components/SellerCrmTab";
 import { getTagStyle, getTagLabel } from "@/data/products";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
@@ -34,7 +35,7 @@ type SellerItem = {
   sold_at: string | null;
 };
 
-type DashboardTab = "overview" | "items" | "stats" | "domain" | "ads" | "study" | "team" | "events" | "referral";
+type DashboardTab = "overview" | "items" | "stats" | "domain" | "ads" | "study" | "team" | "events" | "referral" | "crm";
 
 export default function SellerDashboard() {
   const { user, profile, signOut, refreshProfile, loading: authLoading } = useAuth();
@@ -314,6 +315,7 @@ export default function SellerDashboard() {
     { id: "stats", label: "Estatísticas", icon: BarChart3 },
     { id: "events", label: "Eventos", icon: Trophy },
     { id: "referral" as DashboardTab, label: "Indique e Ganhe", icon: Gift },
+    { id: "crm" as DashboardTab, label: "Meu CRM", icon: MessageCircle },
     { id: "ads", label: "Fazer ADS", icon: Megaphone, locked: lockedTabs.includes("ads") },
     { id: "domain", label: "Meu Domínio", icon: Globe, locked: lockedTabs.includes("domain") },
     ...(showTeamTab ? [{ id: "team" as DashboardTab, label: "Empresa", icon: Users }] : []),
@@ -1136,6 +1138,11 @@ export default function SellerDashboard() {
             {/* Referral Tab */}
             {activeTab === "referral" && (
               <ReferralTab />
+            )}
+
+            {/* CRM Tab */}
+            {activeTab === "crm" && user?.id && profile?.id && (
+              <SellerCrmTab userId={user.id} sellerId={profile.id} />
             )}
 
             {/* Team Tab */}
