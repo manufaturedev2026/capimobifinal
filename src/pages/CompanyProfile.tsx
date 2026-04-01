@@ -93,6 +93,8 @@ export default function CompanyProfile() {
   const { openWhatsApp: openWhatsAppPicker } = useWhatsAppPicker();
   const { sellerStories } = useStories();
   const [storyViewerOpen, setStoryViewerOpen] = useState(false);
+  const [leadCaptureOpen, setLeadCaptureOpen] = useState(false);
+  const [pendingWhatsAppAction, setPendingWhatsAppAction] = useState<(() => void) | null>(null);
 
   const searchParams = new URLSearchParams(location.search);
   const corretorSlug = searchParams.get("corretor");
