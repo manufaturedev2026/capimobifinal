@@ -98,6 +98,17 @@ export default function SellerCrmTab({ userId, sellerId }: SellerCrmTabProps) {
     toast({ title: "Notas salvas!" });
   };
 
+  const saveName = async (contactId: string) => {
+    if (!nameValue.trim()) {
+      toast({ title: "Nome é obrigatório", variant: "destructive" });
+      return;
+    }
+    await supabase.from("seller_crm_contacts" as any).update({ full_name: nameValue.trim(), updated_at: new Date().toISOString() } as any).eq("id", contactId);
+    setContacts((prev) => prev.map((c) => c.id === contactId ? { ...c, full_name: nameValue.trim() } : c));
+    setEditingName(null);
+    toast({ title: "Nome atualizado!" });
+  };
+
   const markContacted = async (contactId: string) => {
     const now = new Date().toISOString();
     await supabase.from("seller_crm_contacts" as any).update({ last_contacted_at: now, updated_at: now } as any).eq("id", contactId);
