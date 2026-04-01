@@ -633,6 +633,7 @@ export default function CompanyProfile() {
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
+                <StoreInstallButton />
               </div>
             </div>
           </>
