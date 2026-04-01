@@ -678,12 +678,12 @@ export default function Index() {
                     <Icon size={28} className="mb-2" />
                     <h3 className="font-display font-extrabold text-xl">{plan.name}</h3>
                     <div className="mt-2">
-                      <span className="font-display font-bold text-3xl">{plan.price}</span>
+                      <span className="font-display font-bold text-3xl">{plan.totalPrice}</span>
                       <span className="text-white/70 text-sm">/mês</span>
                     </div>
                     <div className="mt-2 px-3 py-1.5 bg-white/15 rounded-xl text-center">
-                      <span className="text-white/80 text-xs">Implementação: </span>
-                      <span className="text-white font-bold text-sm">{plan.setupFee}</span>
+                      <span className="text-white/90 text-xs font-semibold">{plan.installmentNote}</span>
+                      <span className="text-white/50 text-[10px] block mt-0.5">Após 12 meses: {plan.monthlyAfter}/mês</span>
                     </div>
                   </div>
 
