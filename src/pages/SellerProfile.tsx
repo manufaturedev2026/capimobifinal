@@ -47,6 +47,7 @@ export default function SellerProfile() {
     store_theme: "default",
     store_layout: "netflix",
   });
+  const { cities: ibgeCities, loading: citiesLoading } = useCitiesByState(form.state);
   const [slugError, setSlugError] = useState("");
 
   useEffect(() => {
