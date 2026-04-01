@@ -62,6 +62,7 @@ export default function SellerProfile() {
     store_layout: "netflix",
     store_video_url: "",
     store_video_title: "",
+    store_video_description: "",
     store_video_button_text: "",
     store_video_button_url: "",
   });
@@ -99,6 +100,7 @@ export default function SellerProfile() {
         store_layout: (profile as any).store_layout || "netflix",
         store_video_url: (profile as any).store_video_url || "",
         store_video_title: (profile as any).store_video_title || "",
+        store_video_description: (profile as any).store_video_description || "",
         store_video_button_text: (profile as any).store_video_button_text || "",
         store_video_button_url: (profile as any).store_video_button_url || "",
       });
@@ -457,12 +459,20 @@ export default function SellerProfile() {
           />
           {form.store_video_url && (
             <>
-              <input
+               <input
                 value={form.store_video_title}
                 onChange={(e) => setForm((f) => ({ ...f, store_video_title: e.target.value }))}
                 className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
                 placeholder="Título do vídeo (ex: Conheça nosso empreendimento)"
                 maxLength={80}
+              />
+              <textarea
+                value={form.store_video_description}
+                onChange={(e) => setForm((f) => ({ ...f, store_video_description: e.target.value }))}
+                className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none resize-none"
+                placeholder="Descrição do vídeo (opcional — aparece abaixo do player)"
+                rows={3}
+                maxLength={300}
               />
               <input
                 value={form.store_video_button_text}
