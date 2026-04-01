@@ -1210,6 +1210,9 @@ export default function CompanyProfile() {
               </div>
             )}
             </div>
+          </div>
+        </div>
+      </div>
 
       {/* ═══ FULLSCREEN CINEMA MODE ═══ */}
       {(() => {
