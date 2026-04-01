@@ -18,6 +18,8 @@ export default function AuthPage() {
   const [loading, setLoading] = useState(false);
   const { user, signIn, signUp } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const refCode = searchParams.get("ref") || "";
   const { toast } = useToast();
 
   useEffect(() => {
