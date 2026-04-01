@@ -130,6 +130,10 @@ export function useGamification(userId?: string, sellerId?: string) {
   const fetchStats = useCallback(async () => {
     if (!userId || !sellerId) return;
 
+    // Monthly reset: only count current month
+    const now = new Date();
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+
     // Count active listings
     const { data: items } = await supabase
       .from("seller_items")
@@ -138,12 +142,13 @@ export function useGamification(userId?: string, sellerId?: string) {
       .eq("status", "ativo");
     const totalListings = (items || []).length;
 
-    // Count views from seller_analytics (the actual source of truth)
+    // Count views from seller_analytics for current month only
     const { count } = await supabase
       .from("seller_analytics")
       .select("id", { count: "exact", head: true })
       .eq("seller_id", sellerId)
-      .eq("event_type", "view");
+      .eq("event_type", "view")
+      .gte("created_at", monthStart);
     const totalViews = count || 0;
 
     setStats({ totalViews, totalListings, profileComplete: false });
