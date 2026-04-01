@@ -156,7 +156,21 @@ export default function CompanyProfile() {
     setLoading(false);
 
     if (profile) {
-      trackSellerEvent(profile.id, "view");
+      trackSellerEvent(profile.id, "view", undefined, corretorSlug ? undefined : undefined);
+    }
+    // Track with team member if resolved
+    if (profile && corretorSlug) {
+      const { data: memberForTracking } = await supabase
+        .from("team_members")
+        .select("id")
+        .eq("company_id", profile.id)
+        .eq("slug", corretorSlug)
+        .eq("is_active", true)
+        .maybeSingle();
+      if (memberForTracking) {
+        // Re-track with team_member_id (the first track was without it)
+        trackSellerEvent(profile.id, "view", undefined, memberForTracking.id);
+      }
     }
   };
 
