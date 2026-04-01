@@ -46,8 +46,11 @@ No painel, clique no botão **"Novo Anúncio"** (ícone de +). Você será direc
 
 Dependendo da categoria, preencha os campos específicos:
 
-- **Imóveis:** Quartos, banheiros, suítes, vagas, área, condomínio, IPTU
-- **Veículos:** Marca, modelo, ano, quilometragem, câmbio, combustível
+- **Quartos, banheiros, suítes, vagas** de garagem
+- **Área total e construída**
+- **Condomínio e IPTU**
+- **Tipo do imóvel:** Casa, Apartamento, Terreno, Comercial, Galpão, Flat
+- **Finalidade:** Venda ou Aluguel
 
 ### 6. Adicione Tags (Opcional)
 
