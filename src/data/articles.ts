@@ -306,7 +306,7 @@ Na aba de Indicação você vê:
     slug: "como-escolher-plano-ideal",
     title: "Como Escolher o Plano Ideal Para Você",
     description: "Compare os planos disponíveis e descubra qual se encaixa melhor no seu perfil e necessidades.",
-    cover: "https://images.unsplash.com/photo-1553484771-047a44eee27b?w=800&h=400&fit=crop",
+    cover: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800&h=400&fit=crop",
     category: "Planos",
     readTime: "4 min",
     content: `## Como Escolher o Plano Ideal Para Você
