@@ -69,7 +69,7 @@ export default function ProductDetail() {
         .order("created_at", { ascending: false })
         .limit(1);
       if (subData && subData.length > 0) setSellerTier(subData[0].tier);
-      trackSellerEvent(item.seller_id, "view", item.id);
+      trackSellerEvent(item.seller_id, "view", item.id, teamMember?.id);
     }
     setLoading(false);
   };
@@ -146,7 +146,7 @@ export default function ProductDetail() {
   const productUrl = window.location.href;
   const handleWhatsAppClick = (e?: React.MouseEvent) => {
     if (e) e.preventDefault();
-    if (isDb && dbItem) trackSellerEvent(dbItem.seller_id, "whatsapp_click", dbItem.id);
+    if (isDb && dbItem) trackSellerEvent(dbItem.seller_id, "whatsapp_click", dbItem.id, teamMember?.id);
     // When a specific broker is selected, go directly to their WhatsApp
     if (teamMember && teamMember.phone) {
       const phone = teamMember.phone.replace(/\D/g, "");

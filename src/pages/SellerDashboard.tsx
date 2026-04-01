@@ -8,6 +8,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import SoldCountdown from "@/components/SoldCountdown";
 import TeamMembersTab from "@/components/TeamMembersTab";
 import GamificationTab from "@/components/GamificationTab";
+import BrokerAnalytics from "@/components/BrokerAnalytics";
 import { getTagStyle, getTagLabel } from "@/data/products";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
@@ -55,6 +56,7 @@ export default function SellerDashboard() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [draggedItemId, setDraggedItemId] = useState<string | null>(null);
   const [dragOverItemId, setDragOverItemId] = useState<string | null>(null);
+  const [teamMembers, setTeamMembers] = useState<{ id: string; full_name: string; photo_url: string | null; phone: string | null; is_active: boolean }[]>([]);
   useEffect(() => {
     if (!authLoading && !user) navigate("/entrar");
   }, [user, authLoading, navigate]);
@@ -76,6 +78,19 @@ export default function SellerDashboard() {
   useEffect(() => {
     if (user) fetchAdHistory();
   }, [user]);
+
+  useEffect(() => {
+    if (profile?.id) {
+      supabase
+        .from("team_members")
+        .select("id, full_name, photo_url, phone, is_active")
+        .eq("company_id", profile.id)
+        .order("created_at", { ascending: true })
+        .then(({ data }) => {
+          if (data) setTeamMembers(data as any);
+        });
+    }
+  }, [profile?.id]);
 
   const fetchItems = async () => {
     const { data, error } = await supabase
@@ -840,6 +855,11 @@ export default function SellerDashboard() {
                     </div>
                   )}
                 </div>
+
+                {/* Broker Analytics - only for companies with team members */}
+                {teamMembers.length > 0 && profile?.id && (
+                  <BrokerAnalytics sellerId={profile.id} teamMembers={teamMembers} />
+                )}
               </div>
             )}
 

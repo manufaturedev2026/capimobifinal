@@ -156,7 +156,18 @@ export default function CompanyProfile() {
     setLoading(false);
 
     if (profile) {
-      trackSellerEvent(profile.id, "view");
+      // teamMember was already resolved above via corretorSlug
+      const resolvedMemberId = corretorSlug
+        ? await supabase
+            .from("team_members")
+            .select("id")
+            .eq("company_id", profile.id)
+            .eq("slug", corretorSlug)
+            .eq("is_active", true)
+            .maybeSingle()
+            .then(r => r.data?.id || null)
+        : null;
+      trackSellerEvent(profile.id, "view", undefined, resolvedMemberId || undefined);
     }
   };
 
@@ -291,7 +302,7 @@ export default function CompanyProfile() {
     : products[0];
 
   const handleWhatsApp = (title: string, productId?: string) => {
-    if (isDbProfile && id) trackSellerEvent(id, "whatsapp_click");
+    if (isDbProfile && id) trackSellerEvent(id, "whatsapp_click", productId, teamMember?.id);
     const seg = "imoveis";
     const link = productId 
       ? `${window.location.origin}/${seg}/produto/${productId}${corretorSlug ? `?corretor=${corretorSlug}` : ""}` 
