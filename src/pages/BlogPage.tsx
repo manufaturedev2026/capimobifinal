@@ -17,8 +17,8 @@ interface BlogArticle {
 const blogArticles: BlogArticle[] = [
   {
     slug: "como-comprar-primeiro-imovel",
-    title: "Como Comprar Seu Primeiro Imóvel no ES",
-    description: "Guia completo para quem quer realizar o sonho da casa própria no Espírito Santo, desde o planejamento até a entrega das chaves.",
+    title: "Como Comprar Seu Primeiro Imóvel",
+    description: "Guia completo para quem quer realizar o sonho da casa própria, desde o planejamento até a entrega das chaves.",
     cover: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&h=400&fit=crop",
     category: "Guias",
     readTime: "8 min",
