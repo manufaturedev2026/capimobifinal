@@ -383,7 +383,7 @@ export async function generateProposalPdf(data: ProposalData) {
   final.setFont("helvetica", "bold");
   final.setFontSize(16);
   final.setTextColor(255, 255, 255);
-  final.text("LojaES", M + 2, 16);
+  final.text("ES Corretores", M + 2, 16);
   final.setFont("helvetica", "normal");
   final.setFontSize(8);
   final.setTextColor(148, 163, 184);
