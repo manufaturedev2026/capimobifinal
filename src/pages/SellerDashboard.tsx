@@ -10,6 +10,7 @@ import TeamMembersTab from "@/components/TeamMembersTab";
 import GamificationTab from "@/components/GamificationTab";
 import BrokerAnalytics from "@/components/BrokerAnalytics";
 import ReferralTab from "@/components/ReferralTab";
+import SellerCrmTab from "@/components/SellerCrmTab";
 import { getTagStyle, getTagLabel } from "@/data/products";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
