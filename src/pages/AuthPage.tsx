@@ -130,7 +130,7 @@ export default function AuthPage() {
               <span className="text-accent">anúncios</span> em<br />um só lugar
             </h1>
             <p className="text-white/70 text-sm lg:text-base max-w-md mb-8">
-              Cadastre imóveis, acompanhe visualizações e destaque seus melhores anúncios no maior marketplace do ES.
+              Cadastre imóveis, acompanhe visualizações e destaque seus melhores anúncios no Brokers Bio.
             </p>
 
             <div className="hidden lg:block space-y-4">
