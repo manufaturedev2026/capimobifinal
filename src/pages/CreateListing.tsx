@@ -244,10 +244,10 @@ export default function CreateListing() {
             </motion.div>
 
             <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.7 }} className="order-1 lg:order-2">
-              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/15 text-primary text-xs font-bold uppercase tracking-widest mb-6 border border-primary/20">
-                <BarChart3 size={14} /> Painel Completo
+              <span className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-primary/15 text-primary text-[10px] sm:text-xs font-bold uppercase tracking-widest mb-4 sm:mb-6 border border-primary/20">
+                <BarChart3 size={12} /> Painel Completo
               </span>
-              <h2 className="font-display font-black text-3xl md:text-5xl leading-tight mb-5 text-foreground">
+              <h2 className="font-display font-black text-2xl sm:text-3xl md:text-5xl leading-tight mb-4 sm:mb-5 text-foreground">
                 Acompanhe seus
                 <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-primary">resultados</span>
