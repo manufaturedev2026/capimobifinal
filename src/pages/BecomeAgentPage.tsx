@@ -407,7 +407,7 @@ export default function BecomeAgentPage() {
             <h2 className="font-display font-black text-4xl md:text-5xl mt-3 mb-4">
               Por que ser <span className="text-primary">Corretor</span>?
             </h2>
-            <p className="text-muted-foreground max-w-xl mx-auto">A profissão que mais cresce no Espírito Santo oferece oportunidades únicas.</p>
+            <p className="text-muted-foreground max-w-xl mx-auto">A profissão que mais cresce no Brasil oferece oportunidades únicas.</p>
           </motion.div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
