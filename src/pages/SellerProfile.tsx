@@ -7,7 +7,6 @@ import { useToast } from "@/hooks/use-toast";
 import { useSellerSubscription } from "@/hooks/useSubscription";
 import type { Database } from "@/integrations/supabase/types";
 import { BRAZIL_STATES } from "@/data/brazilStates";
-import { BRAZIL_STATES } from "@/data/brazilStates";
 import { useCitiesByState } from "@/hooks/useCitiesByState";
 import StoreThemePicker from "@/components/StoreThemePicker";
 import { STORE_LAYOUTS } from "@/components/store-layouts";
