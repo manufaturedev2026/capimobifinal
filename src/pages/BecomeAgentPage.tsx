@@ -214,12 +214,12 @@ export default function BecomeAgentPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   return (
-    <div className="min-h-screen bg-[hsl(212,100%,6%)] text-white overflow-x-hidden">
+    <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       {/* ═══════════ HERO ═══════════ */}
       <div className="relative h-screen min-h-[600px] overflow-hidden">
         <img src={heroImg} alt="Mercado imobiliário do Espírito Santo" className="absolute inset-0 w-full h-full object-cover" width={1920} height={1080} />
-        <div className="absolute inset-0 bg-gradient-to-t from-[hsl(212,100%,6%)] via-[hsl(212,100%,6%)]/70 to-[hsl(212,100%,6%)]/20" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[hsl(212,100%,6%)]/90 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/20" />
+        <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-transparent to-transparent" />
 
         {/* Animated particles effect */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -254,7 +254,7 @@ export default function BecomeAgentPage() {
                 </span>
               </h1>
 
-              <p className="text-white/70 text-lg md:text-xl max-w-2xl mb-10 leading-relaxed">
+              <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mb-10 leading-relaxed">
                 Descubra como iniciar uma carreira de sucesso no mercado imobiliário
                 do Espírito Santo. Liberdade financeira, flexibilidade e crescimento
                 profissional ilimitado.
@@ -274,7 +274,7 @@ export default function BecomeAgentPage() {
                   href={whatsappUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-5 py-3 md:px-8 md:py-4 rounded-2xl bg-white/10 text-white font-bold text-xs md:text-sm hover:bg-white/20 transition-all border border-white/10 backdrop-blur-sm"
+                  className="inline-flex items-center gap-2 px-5 py-3 md:px-8 md:py-4 rounded-2xl bg-secondary text-foreground font-bold text-xs md:text-sm hover:bg-secondary/80 transition-all border border-border backdrop-blur-sm"
                 >
                   <Phone size={16} />
                   <span className="hidden sm:inline">Quero Ser Corretor</span>
@@ -282,7 +282,7 @@ export default function BecomeAgentPage() {
                 </a>
                 <a
                   href="#por-que"
-                  className="inline-flex items-center gap-2 px-5 py-3 md:px-6 md:py-4 rounded-2xl bg-white/5 text-white/70 font-bold text-xs md:text-sm hover:bg-white/10 transition-all border border-white/5"
+                  className="inline-flex items-center gap-2 px-5 py-3 md:px-6 md:py-4 rounded-2xl bg-secondary/50 text-muted-foreground font-bold text-xs md:text-sm hover:bg-secondary transition-all border border-border/50"
                 >
                   Saiba Mais
                   <ChevronDown size={14} className="animate-bounce" />
@@ -307,13 +307,13 @@ export default function BecomeAgentPage() {
       {/* ═══════════ STATS BAR ═══════════ */}
       <section className="relative -mt-1 z-10">
         <div className="container max-w-6xl mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 p-6 md:p-10">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-secondary/50 backdrop-blur-xl rounded-3xl border border-border p-6 md:p-10">
             {stats.map((stat, i) => (
               <motion.div key={stat.label} custom={i} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="text-center">
                 <div className="font-display font-black text-3xl md:text-4xl lg:text-5xl text-primary">
                   <AnimatedNumber target={stat.value} suffix={stat.suffix} />
                 </div>
-                <div className="text-white/50 text-xs md:text-sm mt-2">{stat.label}</div>
+                <div className="text-muted-foreground text-xs md:text-sm mt-2">{stat.label}</div>
               </motion.div>
             ))}
           </div>
@@ -334,7 +334,7 @@ export default function BecomeAgentPage() {
                 <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">Netflix</span>
               </h2>
-              <p className="text-white/60 text-lg leading-relaxed mb-8">
+              <p className="text-muted-foreground text-lg leading-relaxed mb-8">
                 Cada corretor ganha uma loja personalizada com visual moderno e profissional.
                 Seus imóveis exibidos em carrosséis elegantes, stories interativos e modo cinema.
               </p>
@@ -352,7 +352,7 @@ export default function BecomeAgentPage() {
                     <div className="w-6 h-6 rounded-full bg-accent/20 flex items-center justify-center shrink-0">
                       <CheckCircle2 size={14} className="text-accent" />
                     </div>
-                    <span className="text-white/70 text-sm">{benefit}</span>
+                    <span className="text-muted-foreground text-sm">{benefit}</span>
                   </motion.div>
                 ))}
               </div>
@@ -375,22 +375,22 @@ export default function BecomeAgentPage() {
             >
               {/* Glow behind mockup */}
               <div className="absolute -inset-6 bg-gradient-to-br from-primary/20 via-accent/10 to-primary/20 rounded-[2rem] blur-3xl opacity-60" />
-              <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-primary/20 border border-white/10">
+              <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-primary/20 border border-border">
                 <img src={lojaNetflixImg} alt="Loja estilo Netflix do ES Corretores" loading="lazy" className="w-full h-auto" width={1440} height={960} />
               </div>
               {/* Floating badge */}
               <motion.div
                 animate={{ y: [0, -8, 0] }}
                 transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute -bottom-4 -right-4 md:bottom-4 md:right-4 bg-white/10 backdrop-blur-xl rounded-2xl p-4 border border-white/15 shadow-xl"
+                className="absolute -bottom-4 -right-4 md:bottom-4 md:right-4 bg-secondary backdrop-blur-xl rounded-2xl p-4 border border-border shadow-xl"
               >
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center">
                     <TrendingUp size={20} className="text-accent" />
                   </div>
                   <div>
-                    <div className="text-xs text-white/50">Visualizações hoje</div>
-                    <div className="font-display font-black text-xl text-white">+247</div>
+                    <div className="text-xs text-muted-foreground">Visualizações hoje</div>
+                    <div className="font-display font-black text-xl  text-foreground">+247</div>
                   </div>
                 </div>
               </motion.div>
@@ -407,7 +407,7 @@ export default function BecomeAgentPage() {
             <h2 className="font-display font-black text-4xl md:text-5xl mt-3 mb-4">
               Por que ser <span className="text-primary">Corretor</span>?
             </h2>
-            <p className="text-white/50 max-w-xl mx-auto">A profissão que mais cresce no Espírito Santo oferece oportunidades únicas.</p>
+            <p className="text-muted-foreground max-w-xl mx-auto">A profissão que mais cresce no Espírito Santo oferece oportunidades únicas.</p>
           </motion.div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -422,7 +422,7 @@ export default function BecomeAgentPage() {
                 className={`group rounded-2xl p-7 border transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 ${
                   item.accent
                     ? "bg-gradient-to-br from-accent/15 to-accent/5 border-accent/25 hover:border-accent/50"
-                    : "bg-white/[0.03] border-white/10 hover:border-primary/40 hover:bg-white/[0.06]"
+                    : "bg-white/[0.03] border-border hover:border-primary/40 hover:bg-white/[0.06]"
                 }`}
               >
                 <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-5 transition-transform group-hover:scale-110 ${
@@ -430,8 +430,8 @@ export default function BecomeAgentPage() {
                 }`}>
                   <item.icon size={26} />
                 </div>
-                <h3 className="font-display font-bold text-xl text-white mb-2">{item.title}</h3>
-                <p className="text-white/60 text-sm leading-relaxed">{item.description}</p>
+                <h3 className="font-display font-bold text-xl text-foreground mb-2">{item.title}</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">{item.description}</p>
               </motion.div>
             ))}
           </div>
@@ -447,7 +447,7 @@ export default function BecomeAgentPage() {
               <h2 className="font-display font-black text-4xl md:text-5xl mt-3 mb-4">
                 Quanto ganha um <span className="text-accent">Corretor</span>?
               </h2>
-              <p className="text-white/50 mb-8">
+              <p className="text-muted-foreground mb-8">
                 Compare o potencial de renda de um corretor de imóveis com um emprego tradicional.
                 Os valores são baseados em médias do mercado do Espírito Santo.
               </p>
@@ -455,10 +455,10 @@ export default function BecomeAgentPage() {
                 {incomeComparison.map((item, i) => (
                   <motion.div key={item.role} custom={i} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
                     <div className="flex justify-between text-sm mb-2">
-                      <span className="text-white/80">{item.role}</span>
-                      <span className="font-bold text-white">{item.value}</span>
+                      <span className="text-foreground/80">{item.role}</span>
+                      <span className="font-bold  text-foreground">{item.value}</span>
                     </div>
-                    <div className="h-3 rounded-full bg-white/10 overflow-hidden">
+                    <div className="h-3 rounded-full bg-secondary overflow-hidden">
                       <motion.div
                         className={`h-full rounded-full ${item.bar === 100 ? "bg-gradient-to-r from-primary to-accent" : "bg-primary/60"}`}
                         initial={{ width: 0 }}
@@ -475,15 +475,15 @@ export default function BecomeAgentPage() {
             <motion.div initial={{ opacity: 0, x: 40 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }}>
               <div className="relative rounded-3xl overflow-hidden shadow-2xl">
                 <img src={successImg} alt="Corretor de sucesso" loading="lazy" className="w-full h-[500px] object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-[hsl(212,100%,6%)] via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-8">
-                  <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-5 border border-white/10">
+                  <div className="bg-secondary backdrop-blur-xl rounded-2xl p-5 border border-border">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center">
                         <DollarSign size={20} className="text-accent" />
                       </div>
                       <div>
-                        <div className="text-sm text-white/60">Comissão em uma venda de R$ 500 mil</div>
+                        <div className="text-sm text-muted-foreground">Comissão em uma venda de R$ 500 mil</div>
                         <div className="font-display font-black text-2xl text-accent">R$ 25.000</div>
                       </div>
                     </div>
@@ -503,7 +503,7 @@ export default function BecomeAgentPage() {
             <h2 className="font-display font-black text-4xl md:text-5xl mt-3 mb-4">
               Como se tornar um <span className="text-primary">Corretor</span>
             </h2>
-            <p className="text-white/50 max-w-xl mx-auto">Siga estes 4 passos para iniciar sua carreira no mercado imobiliário.</p>
+            <p className="text-muted-foreground max-w-xl mx-auto">Siga estes 4 passos para iniciar sua carreira no mercado imobiliário.</p>
           </motion.div>
 
           <div className="relative">
@@ -524,20 +524,20 @@ export default function BecomeAgentPage() {
                 >
                   {/* Content */}
                   <div className={`flex-1 ${i % 2 === 0 ? "md:pr-16 md:text-right" : "md:pl-16"}`}>
-                    <div className={`bg-white/[0.04] rounded-2xl p-6 md:p-8 border border-white/10 hover:border-primary/30 transition-all hover:shadow-xl ${i % 2 === 0 ? "md:ml-auto" : ""} max-w-lg`}>
+                    <div className={`bg-white/[0.04] rounded-2xl p-6 md:p-8 border border-border hover:border-primary/30 transition-all hover:shadow-xl ${i % 2 === 0 ? "md:ml-auto" : ""} max-w-lg`}>
                       <div className="flex items-center gap-3 mb-3">
                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${i === 0 ? "bg-accent/20 text-accent" : "bg-primary/15 text-primary"} md:hidden`}>
                           <step.icon size={20} />
                         </div>
                         <span className="text-xs font-bold text-primary uppercase tracking-wider">Passo {i + 1}</span>
                       </div>
-                      <h3 className="font-display font-bold text-xl text-white mb-2">{step.title}</h3>
-                      <p className="text-white/60 text-sm leading-relaxed mb-3">{step.description}</p>
+                      <h3 className="font-display font-bold text-xl text-foreground mb-2">{step.title}</h3>
+                      <p className="text-muted-foreground text-sm leading-relaxed mb-3">{step.description}</p>
                       <span className="inline-flex items-center gap-2 text-xs text-accent font-semibold bg-accent/10 px-3 py-1.5 rounded-full">
                         <CheckCircle2 size={12} /> {step.detail}
                       </span>
                       {(step as any).detailSub && (
-                        <span className="block text-xs text-white/50 mt-1.5 ml-1">
+                        <span className="block text-xs text-muted-foreground mt-1.5 ml-1">
                           {(step as any).detailSub}
                         </span>
                       )}
@@ -546,7 +546,7 @@ export default function BecomeAgentPage() {
 
                   {/* Center circle */}
                   <div className="hidden md:flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-primary to-accent shadow-lg shadow-primary/30 shrink-0 z-10 -ml-8 md:ml-0">
-                    <step.icon size={24} className="text-white" />
+                    <step.icon size={24} className=" text-foreground" />
                   </div>
 
                   {/* Spacer */}
@@ -566,7 +566,7 @@ export default function BecomeAgentPage() {
             <motion.div initial={{ opacity: 0, x: -40 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.8 }}>
               <div className="relative rounded-3xl overflow-hidden shadow-2xl">
                 <img src={teamImg} alt="Equipe de corretores" loading="lazy" className="w-full h-[450px] object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-r from-[hsl(212,100%,6%)]/50 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-r from-background/50 to-transparent" />
               </div>
             </motion.div>
 
@@ -576,7 +576,7 @@ export default function BecomeAgentPage() {
                 <h2 className="font-display font-black text-4xl md:text-5xl mt-3 mb-4">
                   Habilidades <span className="text-accent">Essenciais</span>
                 </h2>
-                <p className="text-white/50 mb-8">O que diferencia um corretor de sucesso dos demais.</p>
+                <p className="text-muted-foreground mb-8">O que diferencia um corretor de sucesso dos demais.</p>
               </motion.div>
 
               <div className="space-y-4">
@@ -591,15 +591,15 @@ export default function BecomeAgentPage() {
                     className={`flex items-start gap-4 p-4 rounded-xl border transition-all hover:-translate-y-0.5 ${
                       skill.accent
                         ? "bg-accent/10 border-accent/20 hover:border-accent/40"
-                        : "bg-white/[0.03] border-white/10 hover:border-primary/30"
+                        : "bg-white/[0.03] border-border hover:border-primary/30"
                     }`}
                   >
                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${skill.accent ? "bg-accent/20 text-accent" : "bg-primary/15 text-primary"}`}>
                       <skill.icon size={20} />
                     </div>
                     <div>
-                      <h3 className="font-display font-bold text-white mb-1">{skill.title}</h3>
-                      <p className="text-white/55 text-sm leading-relaxed">{skill.description}</p>
+                      <h3 className="font-display font-bold text-foreground mb-1">{skill.title}</h3>
+                      <p className="text-muted-foreground text-sm leading-relaxed">{skill.description}</p>
                     </div>
                   </motion.div>
                 ))}
@@ -617,7 +617,7 @@ export default function BecomeAgentPage() {
             <h2 className="font-display font-black text-4xl md:text-5xl mt-3 mb-4">
               Histórias de <span className="text-accent">Sucesso</span>
             </h2>
-            <p className="text-white/50 max-w-xl mx-auto">Corretores que transformaram suas vidas no mercado imobiliário do ES.</p>
+            <p className="text-muted-foreground max-w-xl mx-auto">Corretores que transformaram suas vidas no mercado imobiliário do ES.</p>
           </motion.div>
 
           <div className="grid md:grid-cols-3 gap-6">
@@ -629,7 +629,7 @@ export default function BecomeAgentPage() {
                 whileInView="visible"
                 viewport={{ once: true }}
                 variants={fadeUp}
-                className="bg-white/[0.04] rounded-2xl p-7 border border-white/10 hover:border-primary/30 transition-all hover:shadow-xl relative"
+                className="bg-white/[0.04] rounded-2xl p-7 border border-border hover:border-primary/30 transition-all hover:shadow-xl relative"
               >
                 <Quote size={32} className="text-primary/20 absolute top-5 right-5" />
                 <div className="flex gap-1 mb-4">
@@ -637,9 +637,9 @@ export default function BecomeAgentPage() {
                     <Star key={s} size={16} className="fill-accent text-accent" />
                   ))}
                 </div>
-                <p className="text-white/70 text-sm leading-relaxed mb-6 italic">"{t.text}"</p>
+                <p className="text-muted-foreground text-sm leading-relaxed mb-6 italic">"{t.text}"</p>
                 <div>
-                  <div className="font-display font-bold text-white">{t.name}</div>
+                  <div className="font-display font-bold  text-foreground">{t.name}</div>
                   <div className="text-white/40 text-xs">{t.role}</div>
                 </div>
               </motion.div>
@@ -663,10 +663,10 @@ export default function BecomeAgentPage() {
               <motion.div key={i} custom={i} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
                 <button
                   onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                  className="w-full text-left bg-white/[0.04] hover:bg-white/[0.07] border border-white/10 rounded-2xl p-5 transition-all"
+                  className="w-full text-left bg-white/[0.04] hover:bg-white/[0.07] border border-border rounded-2xl p-5 transition-all"
                 >
                   <div className="flex items-center justify-between gap-4">
-                    <span className="font-display font-bold text-white text-sm md:text-base">{faq.q}</span>
+                    <span className="font-display font-bold text-foreground text-sm md:text-base">{faq.q}</span>
                     <ChevronDown
                       size={18}
                       className={`text-white/40 shrink-0 transition-transform duration-300 ${openFaq === i ? "rotate-180" : ""}`}
@@ -676,7 +676,7 @@ export default function BecomeAgentPage() {
                     <motion.p
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: "auto" }}
-                      className="text-white/60 text-sm mt-3 leading-relaxed"
+                      className="text-muted-foreground text-sm mt-3 leading-relaxed"
                     >
                       {faq.a}
                     </motion.p>
@@ -701,7 +701,7 @@ export default function BecomeAgentPage() {
             <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-[hsl(212,100%,12%)] to-accent/30" />
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,hsl(var(--primary)/0.2),transparent_60%)]" />
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,hsl(var(--accent)/0.15),transparent_50%)]" />
-            <div className="absolute inset-0 border border-white/10 rounded-[2rem]" />
+            <div className="absolute inset-0 border border-border rounded-[2rem]" />
 
             <div className="relative p-10 md:p-20 text-center">
               <motion.div animate={{ rotate: [0, 5, -5, 0] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}>
@@ -713,7 +713,7 @@ export default function BecomeAgentPage() {
                 <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">carreira</span>?
               </h2>
-              <p className="text-white/60 text-lg mb-10 max-w-lg mx-auto">
+              <p className="text-muted-foreground text-lg mb-10 max-w-lg mx-auto">
                 Fale conosco pelo WhatsApp e descubra como se tornar um corretor de
                 imóveis de sucesso no Espírito Santo.
               </p>
@@ -731,7 +731,7 @@ export default function BecomeAgentPage() {
                   href={whatsappUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group inline-flex items-center gap-3 px-8 py-4 rounded-2xl bg-white/10 text-white font-bold text-sm hover:bg-white/20 transition-all border border-white/10 backdrop-blur-sm"
+                  className="group inline-flex items-center gap-3 px-8 py-4 rounded-2xl bg-secondary text-foreground font-bold text-sm hover:bg-secondary/80 transition-all border border-border backdrop-blur-sm"
                 >
                   <MessageCircle size={18} />
                   Falar pelo WhatsApp
