@@ -100,6 +100,7 @@ export default function SellerProfile() {
         store_layout: (profile as any).store_layout || "netflix",
         store_video_url: (profile as any).store_video_url || "",
         store_video_title: (profile as any).store_video_title || "",
+        store_video_description: (profile as any).store_video_description || "",
         store_video_button_text: (profile as any).store_video_button_text || "",
         store_video_button_url: (profile as any).store_video_button_url || "",
       });
