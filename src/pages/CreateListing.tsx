@@ -108,9 +108,9 @@ export default function CreateListing() {
               </p>
 
               {/* 7 dias grátis badge */}
-              <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-500/30 mb-8">
-                <Star size={18} className="text-green-400" />
-                <span className="text-green-400 font-bold text-sm">7 Dias Grátis</span>
+              <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-primary/15 border border-primary/30 mb-8">
+                <Star size={18} className="text-primary" />
+                <span className="text-primary font-bold text-sm">7 Dias Grátis</span>
                 <span className="text-muted-foreground text-xs">em todos os planos pagos</span>
               </div>
 
