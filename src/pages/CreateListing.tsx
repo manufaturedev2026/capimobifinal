@@ -190,7 +190,7 @@ export default function CreateListing() {
                     <div className="w-5 h-5 rounded-full bg-accent/20 flex items-center justify-center shrink-0">
                       <CheckCircle2 size={12} className="text-accent" />
                     </div>
-                    <span className="text-white/70 text-sm">{b}</span>
+                    <span className="text-muted-foreground text-sm">{b}</span>
                   </motion.div>
                 ))}
               </div>
