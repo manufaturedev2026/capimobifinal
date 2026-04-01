@@ -44,6 +44,7 @@ export default function CompanyProfile() {
   const { id } = useParams();
   const location = useLocation();
   const [activeCategory, setActiveCategory] = useState("todos");
+  const [filterCity, setFilterCity] = useState("");
   const [dbProfile, setDbProfile] = useState<any>(null);
   const [dbItems, setDbItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
