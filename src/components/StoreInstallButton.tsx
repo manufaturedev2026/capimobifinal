@@ -27,7 +27,7 @@ function isIOS(): boolean {
   return /iphone|ipad|ipod/i.test(navigator.userAgent);
 }
 
-export default function StoreInstallButton() {
+export default function StoreInstallButton({ variant = "default" }: StoreInstallButtonProps) {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [installed, setInstalled] = useState(true); // assume installed until we check
   const [showIOSGuide, setShowIOSGuide] = useState(false);
