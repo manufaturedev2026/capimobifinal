@@ -269,6 +269,10 @@ export type Database = {
           state: string | null
           store_layout: string | null
           store_theme: string | null
+          store_video_button_text: string | null
+          store_video_button_url: string | null
+          store_video_title: string | null
+          store_video_url: string | null
           updated_at: string
           user_id: string
           video_description: string | null
@@ -310,6 +314,10 @@ export type Database = {
           state?: string | null
           store_layout?: string | null
           store_theme?: string | null
+          store_video_button_text?: string | null
+          store_video_button_url?: string | null
+          store_video_title?: string | null
+          store_video_url?: string | null
           updated_at?: string
           user_id: string
           video_description?: string | null
@@ -351,6 +359,10 @@ export type Database = {
           state?: string | null
           store_layout?: string | null
           store_theme?: string | null
+          store_video_button_text?: string | null
+          store_video_button_url?: string | null
+          store_video_title?: string | null
+          store_video_url?: string | null
           updated_at?: string
           user_id?: string
           video_description?: string | null
