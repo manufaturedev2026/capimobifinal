@@ -149,7 +149,7 @@ const steps = [
 
 const skills = [
   { icon: Target, title: "Negociação", description: "Domine a arte de ouvir, argumentar e fechar acordos que satisfaçam todas as partes." },
-  { icon: Lightbulb, title: "Marketing Digital", description: "Aprenda a usar redes sociais, portais e o ES Corretores para atrair clientes qualificados.", accent: true },
+  { icon: Lightbulb, title: "Marketing Digital", description: "Aprenda a usar redes sociais, portais e o Brokers Bio para atrair clientes qualificados.", accent: true },
   { icon: Star, title: "Conhecimento Jurídico", description: "Entenda contratos, documentação e legislação para transmitir segurança ao cliente." },
   { icon: Award, title: "Atendimento Premium", description: "Ofereça uma experiência personalizada. O cliente satisfeito indica 3 novos." },
   { icon: Building2, title: "Avaliação de Imóveis", description: "Saiba precificar com base em localização, conservação e tendências de mercado." },
