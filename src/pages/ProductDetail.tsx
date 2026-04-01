@@ -32,6 +32,7 @@ export default function ProductDetail() {
   const [sellerTier, setSellerTier] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [isDb, setIsDb] = useState(false);
+  const [relatedItems, setRelatedItems] = useState<any[]>([]);
 
   useEffect(() => {
     if (productId && isUUID(productId)) {
