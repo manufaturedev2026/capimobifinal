@@ -134,7 +134,9 @@ export default function SellerDashboard() {
 
   const toggleDestaque = async (itemId: string) => {
     if (!user || !profile) return;
-    const current: string[] = (profile as any).destaque_item_ids || [];
+    const allIds: string[] = (profile as any).destaque_item_ids || [];
+    const activeItemIds = new Set(items.map((i: any) => i.id));
+    const current = allIds.filter((id: string) => activeItemIds.has(id));
     const isSelected = current.includes(itemId);
     if (!isSelected && current.length >= 5) {
       toast({ title: "Máximo de 5 destaques", description: "Remova um destaque antes de adicionar outro", variant: "destructive" });
