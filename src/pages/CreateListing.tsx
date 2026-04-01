@@ -205,7 +205,7 @@ export default function CreateListing() {
                 <img src={lojaPreviewImg} alt="Loja estilo Netflix" loading="lazy" className="w-full h-auto" width={1280} height={800} />
               </div>
               <motion.div animate={{ y: [0, -8, 0] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute -bottom-4 -left-4 md:bottom-4 md:left-4 bg-white/10 backdrop-blur-xl rounded-2xl p-4 border border-white/15 shadow-xl">
+                className="absolute -bottom-4 -left-4 md:bottom-4 md:left-4 bg-card/90 backdrop-blur-xl rounded-2xl p-4 border border-border shadow-xl">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center">
                     <Monitor size={20} className="text-accent" />
