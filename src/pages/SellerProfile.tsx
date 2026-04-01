@@ -137,7 +137,7 @@ export default function SellerProfile() {
       logo_url: form.logo_url.trim() || null,
       slug: cleanSlug || null,
       seller_type: "imoveis",
-      state: "ES",
+      state: form.state || null,
     };
 
     if (!profileData.seller_category) delete profileData.seller_category;
