@@ -237,8 +237,8 @@ export default function CreateListing() {
                     <TrendingUp size={20} className="text-primary" />
                   </div>
                   <div>
-                    <div className="text-xs text-white/50">Visualizações hoje</div>
-                    <div className="font-display font-black text-xl text-white">+578</div>
+                    <div className="text-xs text-muted-foreground">Visualizações hoje</div>
+                    <div className="font-display font-black text-xl text-foreground">+578</div>
                   </div>
                 </div>
               </motion.div>
