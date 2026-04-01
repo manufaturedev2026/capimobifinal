@@ -19,12 +19,12 @@ export const PACKAGE_CONFIG = {
   start: {
     name: "Start",
     price: 24.99,
-    maxItems: 10,
+    maxItems: 25,
     color: "from-emerald-500 to-teal-600",
     borderColor: "border-emerald-400",
     badgeColor: "bg-gradient-to-r from-emerald-500 to-teal-500 text-white",
     benefits: [
-      "Até 10 anúncios ativos",
+      "Até 25 anúncios ativos",
       "Loja estilo Netflix",
       "2 Stories por 24h",
       "Destaque normal na listagem",
@@ -35,12 +35,12 @@ export const PACKAGE_CONFIG = {
   basico: {
     name: "Básico",
     price: 0,
-    maxItems: 3,
+    maxItems: 5,
     color: "from-slate-500 to-slate-600",
     borderColor: "border-slate-400",
     badgeColor: "bg-slate-500 text-white",
     benefits: [
-      "Até 3 anúncios ativos",
+      "Até 5 anúncios ativos",
       "Loja estilo Netflix",
       "1 Story por 24h",
       "Painel do vendedor completo",
@@ -50,12 +50,12 @@ export const PACKAGE_CONFIG = {
   premium: {
     name: "VIP",
     price: 59.99,
-    maxItems: 25,
+    maxItems: 60,
     color: "from-amber-500 to-orange-600",
     borderColor: "border-amber-400",
     badgeColor: "bg-gradient-to-r from-amber-500 to-orange-500 text-white",
     benefits: [
-      "Até 25 anúncios ativos",
+      "Até 60 anúncios ativos",
       "Loja estilo Netflix",
       "3 Stories por 24h",
       "Selo VIP nos anúncios",
@@ -68,12 +68,12 @@ export const PACKAGE_CONFIG = {
   vip: {
     name: "Premium",
     price: 114.99,
-    maxItems: 50,
+    maxItems: 115,
     color: "from-purple-600 to-indigo-700",
     borderColor: "border-purple-500",
     badgeColor: "bg-gradient-to-r from-purple-600 to-indigo-600 text-white",
     benefits: [
-      "Até 50 anúncios ativos",
+      "Até 115 anúncios ativos",
       "Loja estilo Netflix",
       "4 Stories por 24h",
       "Selo Premium exclusivo",
