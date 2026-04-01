@@ -174,7 +174,7 @@ export default function Index() {
                   imóveis pronto
                 </span>
                 <br />
-                em minutos
+                em até 24 Horas
               </h1>
 
               <p className="text-white/60 text-base md:text-lg mt-6 leading-relaxed max-w-lg">
