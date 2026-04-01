@@ -78,6 +78,19 @@ export default function SellerDashboard() {
     if (user) fetchAdHistory();
   }, [user]);
 
+  useEffect(() => {
+    if (profile?.id) {
+      supabase
+        .from("team_members")
+        .select("id, full_name, photo_url, phone, is_active")
+        .eq("company_id", profile.id)
+        .order("created_at", { ascending: true })
+        .then(({ data }) => {
+          if (data) setTeamMembers(data as any);
+        });
+    }
+  }, [profile?.id]);
+
   const fetchItems = async () => {
     const { data, error } = await supabase
       .from("seller_items")
