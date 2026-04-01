@@ -49,6 +49,17 @@ export default function ProductDetail() {
       setDbItem(item);
       const { data: seller } = await supabase.from("profiles").select("*").eq("id", item.seller_id).maybeSingle();
       setDbSeller(seller);
+      // Fetch team member if corretor slug is present
+      if (corretorSlug) {
+        const { data: member } = await supabase
+          .from("team_members")
+          .select("*")
+          .eq("company_id", item.seller_id)
+          .eq("slug", corretorSlug)
+          .eq("is_active", true)
+          .maybeSingle();
+        if (member) setTeamMember(member);
+      }
       // Fetch seller subscription tier
       const { data: subData } = await supabase
         .from("seller_subscriptions")
