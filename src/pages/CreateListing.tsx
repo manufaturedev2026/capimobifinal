@@ -181,7 +181,7 @@ export default function CreateListing() {
                 <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">Netflix</span>
               </h2>
-              <p className="text-white/60 text-lg leading-relaxed mb-8">
+              <p className="text-muted-foreground text-lg leading-relaxed mb-8">
                 Cada corretor ganha uma loja personalizada com visual moderno. Seus imóveis exibidos em carrosséis elegantes, stories e modo cinema.
               </p>
               <div className="space-y-3 mb-8">
