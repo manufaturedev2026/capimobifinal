@@ -517,7 +517,7 @@ export default function ProductDetail() {
                   </div>
                   <p className="text-xs text-muted-foreground mt-0.5">
                     {isDb && (company as any).sellerCategory
-                      ? ({ imobiliaria: "Imobiliária", corretor: "Corretor(a)", proprietario: "Proprietário", loja_veiculos: "Loja de Veículos", autonomo: "Autônomo", concessionaria: "Concessionária" } as any)[(company as any).sellerCategory] || (company as any).sellerCategory
+                      ? ({ imobiliaria: "Imobiliária", corretor: "Corretor(a)", proprietario: "Proprietário", construtora: "Construtora", loja_veiculos: "Loja de Veículos", autonomo: "Autônomo", concessionaria: "Concessionária" } as any)[(company as any).sellerCategory] || (company as any).sellerCategory
                       : isProperty ? "Imobiliária" : "Revenda"}
                   </p>
                 </div>
