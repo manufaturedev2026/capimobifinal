@@ -1058,7 +1058,7 @@ export default function CompanyProfile() {
                             to={`/${seg}/produto/${lbProduct.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`}
                             className="inline-flex items-center gap-1.5 px-3 py-2 md:px-6 md:py-3.5 rounded-lg md:rounded-xl bg-white text-black font-bold text-[11px] md:text-sm hover:bg-white/90 transition-all shadow-lg hover:scale-105"
                           >
-                            <Eye size={12} className="md:w-4 md:h-4" /> Ver Produto
+                            <Eye size={12} className="md:w-4 md:h-4" /> Ver Imóvel
                           </Link>
                           {company.whatsapp && (
                             <button
