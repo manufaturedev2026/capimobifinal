@@ -213,18 +213,30 @@ export default function CompanyProfile() {
   const products = isDbProfile ? dbDisplayItems : [];
 
   const filteredProducts = useMemo(() => {
-    if (activeCategory === "todos") return products;
+    let filtered = products;
+    // Filter by city if selected
+    if (filterCity) {
+      filtered = filtered.filter((p: any) => p.city === filterCity);
+    }
+    if (activeCategory === "todos") return filtered;
     if (activeCategory === "aluguel") {
-      return products.filter((p: any) => {
+      return filtered.filter((p: any) => {
         const tags: string[] = p.tags || [];
         return tags.includes("aluguel_flex");
       });
     }
-    return products.filter((p: any) => {
+    return filtered.filter((p: any) => {
       if (isDbProfile) return p.category === activeCategory;
       return true;
     });
-  }, [products, activeCategory, isDbProfile]);
+  }, [products, activeCategory, isDbProfile, filterCity]);
+
+  // Get unique cities from products
+  const availableCities = useMemo(() => {
+    const cities = new Set<string>();
+    products.forEach((p: any) => { if (p.city) cities.add(p.city); });
+    return Array.from(cities).sort();
+  }, [products]);
 
   const categoryCounts = useMemo(() => {
     const counts: Record<string, number> = { todos: products.length };
