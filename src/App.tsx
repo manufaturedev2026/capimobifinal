@@ -33,10 +33,6 @@ import TermsPage from "@/pages/TermsPage";
 import NotFound from "@/pages/NotFound";
 import FavoritesPage from "@/pages/FavoritesPage";
 import NeighborhoodPage from "@/pages/NeighborhoodPage";
-import CaptacaoPage from "@/pages/CaptacaoPage";
-import OwnerListingForm from "@/pages/OwnerListingForm";
-import MyListingsPage from "@/pages/MyListingsPage";
-import MyCapturesPage from "@/pages/MyCapturesPage";
 
 const queryClient = new QueryClient();
 
