@@ -34,6 +34,8 @@ export default function ProductDetail() {
   const [loading, setLoading] = useState(true);
   const [isDb, setIsDb] = useState(false);
   const [relatedItems, setRelatedItems] = useState<any[]>([]);
+  const [leadCaptureOpen, setLeadCaptureOpen] = useState(false);
+  const [pendingWhatsAppAction, setPendingWhatsAppAction] = useState<(() => void) | null>(null);
 
   useEffect(() => {
     if (productId && isUUID(productId)) {
