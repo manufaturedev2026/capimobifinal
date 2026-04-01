@@ -613,7 +613,7 @@ export default function CompanyProfile() {
             </span>
           )}
 
-          {company.address && (
+          {company.show_location && company.address && (
             <span className="flex items-center gap-1 text-white/50 text-[11px] mb-3">
               <MapPin size={10} /> {company.address}
             </span>
@@ -818,7 +818,7 @@ export default function CompanyProfile() {
                         {["corretor", "imobiliaria", "construtora"].includes(dbProfile.seller_category) && dbProfile.creci && ` • ${dbProfile.creci}`}
                       </span>
                     )}
-                    {company.address && (
+                    {company.show_location && company.address && (
                       <span className="flex items-center gap-1 text-white/70 text-xs">
                         <MapPin size={12} /> {company.address}
                       </span>
@@ -975,7 +975,7 @@ export default function CompanyProfile() {
                     </>
                   )}
                   
-                  {company.address && (
+                  {company.show_location && company.address && (
                     <div className="flex items-start gap-2 text-xs mt-3" style={{ color: storeTheme.textMuted }}>
                       <MapPin size={12} className="mt-0.5 flex-shrink-0" style={{ color: storeTheme.primary }} />
                       <span>{company.address}</span>
@@ -1392,7 +1392,7 @@ export default function CompanyProfile() {
                           )}
                           <div>
                             <p className="font-display font-bold text-sm text-white/90">{company.name}</p>
-                            <p className="text-[11px] text-white/40">{company.address}</p>
+                            {company.show_location && <p className="text-[11px] text-white/40">{company.address}</p>}
                           </div>
                         </div>
 
