@@ -82,6 +82,10 @@ export default function SellerProfile() {
         slug: (profile as any).slug || "",
         store_theme: (profile as any).store_theme || "default",
         store_layout: (profile as any).store_layout || "netflix",
+        store_video_url: (profile as any).store_video_url || "",
+        store_video_title: (profile as any).store_video_title || "",
+        store_video_button_text: (profile as any).store_video_button_text || "",
+        store_video_button_url: (profile as any).store_video_button_url || "",
       });
     }
   }, [profile]);
