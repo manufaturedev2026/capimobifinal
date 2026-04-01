@@ -479,10 +479,16 @@ export default function AdminPanel() {
 
               return (
                 <div key={seller.id} className="bg-card border border-border rounded-2xl p-4">
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
                         <h3 className="font-display font-bold text-foreground">{seller.company_name || seller.full_name}</h3>
+                        {bans[seller.user_id] && (
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-destructive/20 text-destructive">
+                            <Ban size={10} className="inline mr-0.5" />
+                            {bans[seller.user_id].is_permanent ? "BANIDO PERMANENTE" : `BANIDO até ${new Date(bans[seller.user_id].expires_at!).toLocaleDateString("pt-BR")}`}
+                          </span>
+                        )}
                         {sub && (
                           <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${tierConfig?.badgeColor}`}>
                             <TierIcon size={10} className="inline mr-0.5" />
