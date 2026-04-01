@@ -157,6 +157,31 @@ export default function CompanyProfile() {
         }
       }
       const items = allItems;
+
+      // Also fetch captured items (owner listings this broker captured)
+      const { data: captures } = await supabase
+        .from("property_captures")
+        .select("item_id")
+        .eq("broker_id", pid);
+
+      if (captures && captures.length > 0) {
+        const capturedItemIds = captures.map((c: any) => c.item_id);
+        const { data: capturedItems } = await supabase
+          .from("seller_items")
+          .select("*")
+          .in("id", capturedItemIds)
+          .in("status", ["ativo", "vendido"] as any);
+
+        if (capturedItems) {
+          // Avoid duplicates
+          const existingIds = new Set(items.map((i: any) => i.id));
+          for (const ci of capturedItems) {
+            if (!existingIds.has(ci.id)) {
+              items.push(ci);
+            }
+          }
+        }
+      }
       
       // Filter out sold items older than 24h
       const cutoff = Date.now() - 24 * 60 * 60 * 1000;
