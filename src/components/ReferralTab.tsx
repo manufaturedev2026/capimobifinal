@@ -217,9 +217,10 @@ export default function ReferralTab() {
             <Banknote size={16} className="text-green-500" /> Solicitar Saque
           </h3>
           {!showWithdrawForm && (
-            <button onClick={() => setShowWithdrawForm(true)}
-              className="px-4 py-2 rounded-xl bg-green-500 text-white text-xs font-bold hover:bg-green-600 transition-colors flex items-center gap-1">
-              <ArrowRight size={14} /> Solicitar
+            <button onClick={() => setShowWithdrawForm(true)} disabled={!canWithdraw}
+              className="px-4 py-2 rounded-xl bg-green-500 text-white text-xs font-bold hover:bg-green-600 transition-colors flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+              title={!canWithdraw ? `Disponível após 7 dias (faltam ${7 - accountAgeDays})` : ""}>
+              <ArrowRight size={14} /> {canWithdraw ? "Solicitar" : `Aguarde ${7 - accountAgeDays}d`}
             </button>
           )}
         </div>
