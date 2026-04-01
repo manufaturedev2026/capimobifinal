@@ -1085,8 +1085,12 @@ export default function CompanyProfile() {
 
           {/* ═══════════ MAIN CONTENT ═══════════ */}
           <div className="flex-1 min-w-0">
-            {/* Mobile Category Carousel — Epic Premium Cards */}
+            {/* Mobile Category Carousel — Netflix-style tall cards */}
             <div className="lg:hidden mb-6">
+              <div className="flex items-center gap-2 mb-3 px-1">
+                <Store size={16} style={{ color: storeTheme.primary }} />
+                <h3 className="font-display font-bold text-sm" style={{ color: storeTheme.text }}>Categorias</h3>
+              </div>
               <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-3 snap-x snap-mandatory -mx-4 px-4">
                 {subcategories.map((cat) => {
                   const Icon = cat.icon;
@@ -1098,83 +1102,33 @@ export default function CompanyProfile() {
                       key={cat.slug}
                       onClick={() => setActiveCategory(cat.slug)}
                       disabled={isDisabled}
-                      className="flex-shrink-0 snap-start relative w-28 h-20 rounded-2xl overflow-hidden transition-all duration-300 group"
+                      className="flex-shrink-0 snap-start relative w-[120px] h-[170px] rounded-2xl overflow-hidden transition-all duration-300 group"
                       style={{
-                        boxShadow: isActive ? `0 0 20px ${storeTheme.primary}40, 0 4px 15px rgba(0,0,0,0.3)` : "0 2px 8px rgba(0,0,0,0.15)",
-                        border: isActive ? `2px solid ${storeTheme.primary}` : "2px solid transparent",
-                        opacity: isDisabled ? 0.45 : 1,
+                        boxShadow: isActive ? `0 0 24px ${storeTheme.primary}50, 0 8px 20px rgba(0,0,0,0.4)` : "0 4px 12px rgba(0,0,0,0.2)",
+                        border: isActive ? `2.5px solid ${storeTheme.primary}` : "2.5px solid transparent",
+                        opacity: isDisabled ? 0.4 : 1,
                         cursor: isDisabled ? "not-allowed" : "pointer",
                       }}
                     >
-                      <img src={categoryCardImages[cat.slug] || cat.img} alt={cat.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/10" />
-                      {isActive && <div className="absolute inset-0 bg-primary/20" />}
-                      <div className="absolute bottom-0 left-0 right-0 p-2 text-left">
-                        <div className="flex items-center gap-1">
-                          <Icon size={11} className="text-white/80" />
-                          <span className="text-[11px] font-bold text-white leading-tight">{cat.name}</span>
+                      <img src={categoryCardImages[cat.slug] || cat.img} alt={cat.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 group-active:scale-105" loading="lazy" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
+                      {isActive && <div className="absolute inset-0 bg-primary/15 ring-1 ring-inset ring-white/20 rounded-2xl" />}
+                      <div className="absolute bottom-0 left-0 right-0 p-3 text-left">
+                        <div className="flex items-center gap-1.5 mb-1">
+                          <div className="w-7 h-7 rounded-lg bg-white/15 backdrop-blur-sm flex items-center justify-center">
+                            <Icon size={14} className="text-white" />
+                          </div>
                         </div>
-                        {(count > 0 || cat.slug === "todos") && <span className="text-[9px] text-white/70 font-medium">{count} imóveis</span>}
+                        <span className="text-[13px] font-bold text-white leading-tight block">{cat.name}</span>
+                        {(count > 0 || cat.slug === "todos") && (
+                          <span className="text-[10px] text-white/60 font-medium mt-0.5 block">{count} imóveis</span>
+                        )}
                       </div>
                     </button>
                   );
                 })}
               </div>
             </div>
-
-            {/* City Filter — Epic Horizontal Scroll with Photos */}
-            {availableCities.length > 1 && (
-              <div className="mb-6">
-                <div className="flex items-center gap-2 mb-3">
-                  <MapPin size={16} style={{ color: storeTheme.primary }} />
-                  <h3 className="font-display font-bold text-sm" style={{ color: storeTheme.text }}>Cidades</h3>
-                </div>
-                <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-3 -mx-4 px-4 snap-x snap-mandatory">
-                  {/* All cities button */}
-                  <button
-                    onClick={() => setFilterCity("")}
-                    className="flex-shrink-0 snap-start relative w-32 h-24 md:w-36 md:h-28 rounded-2xl overflow-hidden transition-all duration-300 group"
-                    style={{
-                      boxShadow: !filterCity ? `0 0 20px ${storeTheme.primary}40, 0 4px 15px rgba(0,0,0,0.3)` : "0 2px 8px rgba(0,0,0,0.15)",
-                      border: !filterCity ? `2px solid ${storeTheme.primary}` : "2px solid transparent",
-                    }}
-                  >
-                    <img src="https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=400&h=300&fit=crop" alt="Todas" className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-black/10" />
-                    {!filterCity && <div className="absolute inset-0 bg-primary/20" />}
-                    <div className="absolute bottom-0 left-0 right-0 p-2.5">
-                      <span className="text-xs font-bold text-white block leading-tight">Todas as Cidades</span>
-                      <span className="text-[10px] text-white/70 font-medium">{productsForSelectedCategory.length} imóveis</span>
-                    </div>
-                  </button>
-                  {availableCities.map((city, idx) => {
-                    const count = cityCounts[city] || 0;
-                    const isActive = filterCity === city;
-                    const img = CITY_CARD_IMAGES[idx % CITY_CARD_IMAGES.length];
-                    return (
-                      <button
-                        key={city}
-                        onClick={() => setFilterCity(isActive ? "" : city)}
-                        className="flex-shrink-0 snap-start relative w-32 h-24 md:w-36 md:h-28 rounded-2xl overflow-hidden transition-all duration-300 group"
-                        style={{
-                          boxShadow: isActive ? `0 0 20px ${storeTheme.primary}40, 0 4px 15px rgba(0,0,0,0.3)` : "0 2px 8px rgba(0,0,0,0.15)",
-                          border: isActive ? `2px solid ${storeTheme.primary}` : "2px solid transparent",
-                        }}
-                      >
-                        <img src={img} alt={city} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-black/10" />
-                        {isActive && <div className="absolute inset-0 bg-primary/20" />}
-                        <div className="absolute bottom-0 left-0 right-0 p-2.5">
-                          <span className="text-xs font-bold text-white block leading-tight truncate">{city}</span>
-                          <span className="text-[10px] text-white/70 font-medium">{count} imóveis</span>
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
             {/* Products Header */}
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-display font-bold text-lg md:text-xl" style={{ color: storeTheme.text }}>
