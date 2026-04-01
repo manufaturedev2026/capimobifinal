@@ -95,7 +95,19 @@ serve(async (req) => {
       return new Response(JSON.stringify({ received: true }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
-    const commission = amountPaid * COMMISSION_RATE;
+    // Read commission rate from platform_settings
+    let commissionRate = DEFAULT_COMMISSION_RATE;
+    const { data: rateSetting } = await supabaseAdmin
+      .from("platform_settings")
+      .select("value")
+      .eq("key", "referral_commission_rate")
+      .maybeSingle();
+    if (rateSetting?.value) {
+      commissionRate = parseFloat(rateSetting.value) / 100;
+    }
+    console.log(`[REFERRAL-WEBHOOK] Commission rate: ${(commissionRate * 100).toFixed(1)}%`);
+
+    const commission = amountPaid * commissionRate;
 
     // Insert commission
     await supabaseAdmin.from("commissions").insert({
