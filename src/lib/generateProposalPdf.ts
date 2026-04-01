@@ -98,7 +98,7 @@ export async function generateProposalPdf(data: ProposalData) {
   pdf.setFont("helvetica", "bold");
   pdf.setFontSize(16);
   pdf.setTextColor(255, 255, 255);
-  pdf.text("LojaES", M + 2, 16);
+  pdf.text("ES Corretores", M + 2, 16);
 
   pdf.setFont("helvetica", "normal");
   pdf.setFontSize(8);
