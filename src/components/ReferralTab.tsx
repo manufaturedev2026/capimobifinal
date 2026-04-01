@@ -87,10 +87,19 @@ export default function ReferralTab() {
     toast({ title: "Link copiado!", description: "Compartilhe com seus amigos!" });
   };
 
+  const accountAgeDays = profile?.created_at
+    ? Math.floor((Date.now() - new Date((profile as any).created_at).getTime()) / (1000 * 60 * 60 * 24))
+    : 0;
+  const canWithdraw = accountAgeDays >= 7;
+
   const handleWithdraw = async () => {
+    if (!canWithdraw) {
+      toast({ title: "Saque disponível após 7 dias de conta", description: `Faltam ${7 - accountAgeDays} dia(s).`, variant: "destructive" });
+      return;
+    }
     const amount = parseFloat(withdrawAmount);
-    if (!amount || amount < 50) {
-      toast({ title: "Valor mínimo de R$ 50,00", variant: "destructive" });
+    if (!amount || amount < 100) {
+      toast({ title: "Valor mínimo de R$ 100,00", variant: "destructive" });
       return;
     }
     if (amount > balance) {
