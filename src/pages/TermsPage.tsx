@@ -56,7 +56,7 @@ export default function TermsPage() {
 
           <section>
             <h2 className="font-display font-bold text-xl mb-3">6. Responsabilidades</h2>
-            <p className="text-muted-foreground leading-relaxed">O ES Corretores não se responsabiliza por:</p>
+            <p className="text-muted-foreground leading-relaxed">O Brokers Bio não se responsabiliza por:</p>
             <ul className="list-disc pl-6 text-muted-foreground space-y-1">
               <li>Negociações realizadas entre compradores e vendedores</li>
               <li>Veracidade das informações fornecidas pelos anunciantes</li>
