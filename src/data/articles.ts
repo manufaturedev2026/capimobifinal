@@ -12,13 +12,13 @@ export const articles: Article[] = [
   {
     slug: "como-criar-seu-primeiro-anuncio",
     title: "Como Criar Seu Primeiro Anúncio",
-    description: "Passo a passo completo para publicar seu primeiro imóvel ou veículo na plataforma e começar a receber contatos.",
+    description: "Passo a passo completo para publicar seu primeiro imóvel na plataforma e começar a receber contatos.",
     cover: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=400&fit=crop",
     category: "Primeiros Passos",
     readTime: "5 min",
     content: `## Como Criar Seu Primeiro Anúncio
 
-Publicar seu primeiro anúncio na plataforma é simples e rápido. Siga este guia para ter seu imóvel ou veículo visível em minutos.
+Publicar seu primeiro anúncio na plataforma é simples e rápido. Siga este guia para ter seu imóvel visível em minutos.
 
 ### 1. Acesse o Painel do Vendedor
 
@@ -31,7 +31,7 @@ No painel, clique no botão **"Novo Anúncio"** (ícone de +). Você será direc
 ### 3. Preencha as Informações Básicas
 
 - **Título:** Escreva um título atrativo e descritivo. Ex: "Apartamento 3 quartos com vista para o mar em Vila Velha"
-- **Categoria:** Selecione o tipo (Casa, Apartamento, Terreno, Comercial, Carro, etc.)
+- **Categoria:** Selecione o tipo (Casa, Apartamento, Terreno, Comercial, Galpão, Flat)
 - **Preço:** Informe o valor de venda ou aluguel
 - **Localização:** Cidade, bairro e endereço
 
@@ -46,8 +46,11 @@ No painel, clique no botão **"Novo Anúncio"** (ícone de +). Você será direc
 
 Dependendo da categoria, preencha os campos específicos:
 
-- **Imóveis:** Quartos, banheiros, suítes, vagas, área, condomínio, IPTU
-- **Veículos:** Marca, modelo, ano, quilometragem, câmbio, combustível
+- **Quartos, banheiros, suítes, vagas** de garagem
+- **Área total e construída**
+- **Condomínio e IPTU**
+- **Tipo do imóvel:** Casa, Apartamento, Terreno, Comercial, Galpão, Flat
+- **Finalidade:** Venda ou Aluguel
 
 ### 6. Adicione Tags (Opcional)
 
