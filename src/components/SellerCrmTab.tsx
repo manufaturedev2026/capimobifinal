@@ -229,9 +229,25 @@ export default function SellerCrmTab({ userId, sellerId }: SellerCrmTabProps) {
                     <motion.div key={contact.id} layout
                       className="bg-background border border-border rounded-xl p-3 cursor-pointer hover:shadow-md transition-shadow"
                       onClick={() => setExpandedContact(isExpanded ? null : contact.id)}>
-                      <div className="flex items-start justify-between">
+                        <div className="flex items-start justify-between">
                         <div className="flex-1 min-w-0">
-                          <p className="font-semibold text-sm text-foreground truncate">{contact.full_name}</p>
+                          {editingName === contact.id ? (
+                            <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+                              <input value={nameValue} onChange={(e) => setNameValue(e.target.value)}
+                                className="px-2 py-1 rounded-lg bg-secondary text-foreground text-sm border border-border flex-1 min-w-0"
+                                autoFocus onKeyDown={(e) => { if (e.key === "Enter") saveName(contact.id); if (e.key === "Escape") setEditingName(null); }} />
+                              <button onClick={() => saveName(contact.id)} className="w-6 h-6 flex items-center justify-center rounded-lg bg-primary text-primary-foreground"><Save size={10} /></button>
+                              <button onClick={() => setEditingName(null)} className="w-6 h-6 flex items-center justify-center rounded-lg hover:bg-secondary text-muted-foreground"><X size={10} /></button>
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-1">
+                              <p className="font-semibold text-sm text-foreground truncate">{contact.full_name}</p>
+                              <button onClick={(e) => { e.stopPropagation(); setEditingName(contact.id); setNameValue(contact.full_name); }}
+                                className="w-5 h-5 flex items-center justify-center rounded text-muted-foreground hover:text-foreground transition-colors shrink-0">
+                                <Edit3 size={10} />
+                              </button>
+                            </div>
+                          )}
                           {contact.email && <p className="text-[10px] text-muted-foreground truncate">{contact.email}</p>}
                           {contact.phone && <p className="text-[10px] text-muted-foreground">{contact.phone}</p>}
                         </div>
