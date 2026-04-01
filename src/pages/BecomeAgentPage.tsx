@@ -256,7 +256,7 @@ export default function BecomeAgentPage() {
 
               <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mb-10 leading-relaxed">
                 Descubra como iniciar uma carreira de sucesso no mercado imobiliário
-                do Espírito Santo. Liberdade financeira, flexibilidade e crescimento
+                brasileiro. Liberdade financeira, flexibilidade e crescimento
                 profissional ilimitado.
               </p>
 
