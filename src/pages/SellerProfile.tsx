@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { ArrowLeft, Save, Upload, User, Instagram, Video, Link as LinkIcon } from "lucide-react";
+import { ArrowLeft, Save, Upload, User, Instagram, Video, Link as LinkIcon, Lock, Eye, EyeOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useSellerSubscription } from "@/hooks/useSubscription";
 import type { Database } from "@/integrations/supabase/types";
@@ -638,6 +638,143 @@ export default function SellerProfile() {
           )}
         </button>
       </form>
+
+      {/* ══════ TROCAR SENHA ══════ */}
+      <ChangePasswordSection />
+
     </div>
+  );
+}
+
+function ChangePasswordSection() {
+  const { toast } = useToast();
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showCurrent, setShowCurrent] = useState(false);
+  const [showNew, setShowNew] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (newPassword.length < 6) {
+      toast({ title: "Senha muito curta", description: "A nova senha deve ter pelo menos 6 caracteres.", variant: "destructive" });
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      toast({ title: "Senhas não conferem", description: "A nova senha e a confirmação devem ser iguais.", variant: "destructive" });
+      return;
+    }
+
+    setSaving(true);
+    try {
+      // Verify current password by re-signing in
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user?.email) throw new Error("Usuário não encontrado");
+
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: user.email,
+        password: currentPassword,
+      });
+
+      if (signInError) {
+        toast({ title: "Senha atual incorreta", description: "Verifique sua senha atual e tente novamente.", variant: "destructive" });
+        setSaving(false);
+        return;
+      }
+
+      // Update password
+      const { error } = await supabase.auth.updateUser({ password: newPassword });
+      if (error) throw error;
+
+      toast({ title: "Senha alterada!", description: "Sua senha foi atualizada com sucesso." });
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (err: any) {
+      toast({ title: "Erro ao trocar senha", description: err.message || "Tente novamente.", variant: "destructive" });
+    }
+    setSaving(false);
+  };
+
+  return (
+    <form onSubmit={handleChangePassword} className="mt-8 bg-card border border-border rounded-2xl p-6 space-y-4">
+      <div className="flex items-center gap-3 mb-2">
+        <div className="w-10 h-10 rounded-xl bg-destructive/10 flex items-center justify-center">
+          <Lock size={20} className="text-destructive" />
+        </div>
+        <div>
+          <h3 className="font-display font-bold text-foreground">Trocar Senha</h3>
+          <p className="text-xs text-muted-foreground">Altere sua senha de acesso</p>
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        <div className="relative">
+          <input
+            type={showCurrent ? "text" : "password"}
+            value={currentPassword}
+            onChange={(e) => setCurrentPassword(e.target.value)}
+            placeholder="Senha atual"
+            required
+            className="w-full px-4 py-3 pr-12 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+          />
+          <button type="button" onClick={() => setShowCurrent(!showCurrent)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+            {showCurrent ? <EyeOff size={18} /> : <Eye size={18} />}
+          </button>
+        </div>
+
+        <div className="relative">
+          <input
+            type={showNew ? "text" : "password"}
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            placeholder="Nova senha (mín. 6 caracteres)"
+            required
+            minLength={6}
+            className="w-full px-4 py-3 pr-12 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+          />
+          <button type="button" onClick={() => setShowNew(!showNew)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+            {showNew ? <EyeOff size={18} /> : <Eye size={18} />}
+          </button>
+        </div>
+
+        <div className="relative">
+          <input
+            type={showConfirm ? "text" : "password"}
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            placeholder="Confirmar nova senha"
+            required
+            minLength={6}
+            className="w-full px-4 py-3 pr-12 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+          />
+          <button type="button" onClick={() => setShowConfirm(!showConfirm)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+            {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
+          </button>
+        </div>
+
+        {newPassword && confirmPassword && newPassword !== confirmPassword && (
+          <p className="text-xs text-destructive">As senhas não conferem</p>
+        )}
+      </div>
+
+      <button
+        type="submit"
+        disabled={saving || !currentPassword || !newPassword || !confirmPassword || newPassword !== confirmPassword}
+        className="w-full py-3 rounded-xl bg-destructive text-destructive-foreground font-bold text-sm hover:bg-destructive/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+      >
+        {saving ? (
+          <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+        ) : (
+          <>
+            <Lock size={16} /> Alterar Senha
+          </>
+        )}
+      </button>
+    </form>
   );
 }
