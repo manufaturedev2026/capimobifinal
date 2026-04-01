@@ -1486,24 +1486,6 @@ export default function CompanyProfile() {
         </div>
       )}
 
-      {/* ═══════════ LOCATION ═══════════ */}
-      {company.address && (!isDbProfile || (company as any).show_location) && (
-        <section className="container max-w-7xl mx-auto px-4 pb-10">
-          <div className="rounded-2xl overflow-hidden border border-border bg-card">
-            <div className="px-5 py-4 border-b border-border flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                <MapPin size={20} className="text-primary" />
-              </div>
-              <div>
-                <h2 className="font-display font-bold text-lg text-foreground">Localização</h2>
-                <p className="text-xs text-muted-foreground">{company.address}</p>
-              </div>
-            </div>
-            <MapEmbed address={company.address} className="border-0 rounded-none" />
-          </div>
-        </section>
-      )}
-
       {/* ═══════════ VIDEO FULLSCREEN MODAL ═══════════ */}
       <AnimatePresence>
         {videoModalOpen && videoId && (
