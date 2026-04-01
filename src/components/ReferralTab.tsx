@@ -231,7 +231,7 @@ export default function ReferralTab() {
               <label className="text-xs font-semibold text-foreground mb-1 block">Valor (mínimo R$ 100,00)</label>
               <input
                 type="number"
-                min="50"
+                min="100"
                 step="0.01"
                 value={withdrawAmount}
                 onChange={(e) => setWithdrawAmount(e.target.value)}
