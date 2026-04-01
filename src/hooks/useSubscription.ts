@@ -57,7 +57,7 @@ export const PACKAGE_CONFIG = {
     benefits: [
       "Até 60 anúncios ativos",
       "Loja estilo Netflix",
-      "3 Stories por 24h",
+      
       "Selo VIP nos anúncios",
       "Destaque no topo da listagem",
       "Estatísticas avançadas",
