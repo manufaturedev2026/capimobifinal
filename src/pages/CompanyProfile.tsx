@@ -1272,16 +1272,24 @@ export default function CompanyProfile() {
         const ytId = extractYouTubeId((dbProfile as any).store_video_url);
         if (!ytId) return null;
         const svTitle = (dbProfile as any)?.store_video_title || "Vídeo";
+        const svDescription = (dbProfile as any)?.store_video_description;
         const svButtonText = (dbProfile as any)?.store_video_button_text;
         const svButtonUrl = (dbProfile as any)?.store_video_button_url;
         return (
-          <section className="px-4 md:px-8 lg:px-12 py-8">
+          <section className="px-4 md:px-8 lg:px-12 py-10">
             <div className="max-w-4xl mx-auto">
-              <h3 className="font-display font-bold text-lg md:text-xl mb-4" style={{ color: storeTheme.text }}>
-                <Play size={20} className="inline mr-2" style={{ color: storeTheme.primary }} />
+              <h3 className="font-display font-bold text-xl md:text-2xl mb-2 flex items-center gap-2" style={{ color: storeTheme.text }}>
+                <span className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: `${storeTheme.primary}20` }}>
+                  <Play size={18} style={{ color: storeTheme.primary }} />
+                </span>
                 {svTitle}
               </h3>
-              <div className="relative aspect-video rounded-2xl overflow-hidden shadow-xl" style={{ border: `1px solid ${storeTheme.border}` }}>
+              {svDescription && (
+                <p className="text-sm mb-5 leading-relaxed max-w-2xl" style={{ color: storeTheme.textMuted }}>
+                  {svDescription}
+                </p>
+              )}
+              <div className="relative aspect-video rounded-2xl overflow-hidden shadow-2xl" style={{ border: `1px solid ${storeTheme.border}` }}>
                 <iframe
                   src={`https://www.youtube.com/embed/${ytId}?rel=0`}
                   title={svTitle}
@@ -1290,14 +1298,14 @@ export default function CompanyProfile() {
                   className="w-full h-full"
                 />
               </div>
-              <div className="flex gap-3 mt-4">
+              <div className="flex flex-wrap gap-3 mt-5">
                 {svButtonText && svButtonUrl && (
                   <a
                     href={svButtonUrl}
                     target={svButtonUrl.startsWith("http") ? "_blank" : undefined}
                     rel={svButtonUrl.startsWith("http") ? "noopener noreferrer" : undefined}
-                    className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm text-white shadow-lg active:scale-95 transition-transform"
-                    style={{ background: storeTheme.primary }}
+                    className="inline-flex items-center gap-2 px-7 py-3.5 rounded-2xl font-bold text-sm text-white shadow-xl hover:shadow-2xl active:scale-95 transition-all"
+                    style={{ background: `linear-gradient(135deg, ${storeTheme.primary}, ${storeTheme.primary}dd)` }}
                   >
                     <ExternalLink size={16} /> {svButtonText}
                   </a>
@@ -1305,7 +1313,8 @@ export default function CompanyProfile() {
                 {company.whatsapp && (
                   <button
                     onClick={() => handleWhatsApp("Vídeo: " + svTitle)}
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#25d366] text-white font-bold text-sm shadow-lg active:scale-95 transition-transform"
+                    className="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl font-bold text-sm text-white shadow-xl hover:shadow-2xl active:scale-95 transition-all"
+                    style={{ background: "linear-gradient(135deg, #25d366, #128C7E)" }}
                   >
                     <MessageCircle size={16} /> WhatsApp
                   </button>
