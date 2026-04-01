@@ -69,15 +69,15 @@ const stats = [
 ];
 
 const plans = [
-  { name: "Start", price: "R$ 24,99/mês", items: "Até 10 anúncios", features: ["Loja estilo Netflix", "Painel do vendedor completo", "Destaque normal na listagem", "Estatísticas básicas"] },
-  { name: "Premium", price: "R$ 59,99/mês", items: "Até 15 anúncios", features: ["Selo Premium nos anúncios", "Destaque no topo da listagem", "Loja estilo Netflix", "Estatísticas avançadas", "Suporte prioritário"], highlight: true },
-  { name: "VIP", price: "R$ 114,99/mês", items: "Até 50 anúncios", features: ["Selo VIP exclusivo", "Destaque no topo da listagem", "Estatísticas completas", "Suporte VIP dedicado", "Anúncios via Google Ads", "Instagram na loja"] },
+  { name: "Start", price: "R$ 24,99/mês", items: "Até 10 anúncios", features: ["Loja estilo Netflix", "2 Stories por 24h", "Painel do vendedor completo", "Destaque normal na listagem", "Estatísticas básicas"] },
+  { name: "VIP", price: "R$ 59,99/mês", items: "Até 25 anúncios", features: ["Selo Premium nos anúncios", "3 Stories por 24h", "Destaque no topo da listagem", "Loja estilo Netflix", "Estatísticas avançadas", "Suporte prioritário", "Botão Modo Cinema na loja"], highlight: true },
+  { name: "Premium", price: "R$ 114,99/mês", items: "Até 50 anúncios", features: ["Selo VIP exclusivo", "4 Stories por 24h", "Destaque no topo da listagem", "Estatísticas completas", "Suporte VIP dedicado", "Anúncios via Google Ads", "Instagram na loja", "Botão Modo Cinema na loja"] },
 ];
 
 const companyPlans = [
-  { name: "Essencial Empresa", price: "R$ 539,90/mês", items: "Anúncios ilimitados", features: ["Selo Empresa Verificada", "Destaque na homepage", "Destaque no topo da listagem", "Estatísticas completas", "Campanha dedicada de Google Ads", "Gerente de conta dedicado", "Suporte VIP dedicado", "Instagram na loja", "Botão Modo Cinema na loja", "Até 6 corretores vinculados"] },
-  { name: "Premium Empresa", price: "R$ 999,90/mês", items: "Anúncios ilimitados", features: ["Selo Empresa Verificada", "Destaque na homepage", "Destaque no topo da listagem", "Estatísticas completas", "Campanha Google Ads ampliada", "Anúncios Dinâmicos Google Ads", "Gerente de conta dedicado", "Suporte VIP dedicado", "Instagram na loja", "Botão Modo Cinema na loja", "Até 15 corretores vinculados"], highlight: true },
-  { name: "Black Empresa", price: "R$ 1.899,00/mês", items: "Anúncios ilimitados", features: ["Selo Empresa Verificada", "Destaque na homepage", "Destaque no topo da listagem", "Estatísticas completas", "Campanha Google Ads ampliada", "Anúncios Dinâmicos Google ADS", "Gerente de conta dedicado", "Suporte VIP dedicado", "Instagram na loja", "Botão Modo Cinema na loja", "Até 30 corretores vinculados", "Prioridade total em destaque"] },
+  { name: "Essencial Empresa", price: "R$ 539,90/mês", items: "Anúncios ilimitados", features: ["Selo Empresa Verificada", "5 Stories por 24h", "Destaque na homepage", "Destaque no topo da listagem", "Estatísticas completas", "Campanha dedicada de Google Ads", "Gerente de conta dedicado", "Suporte VIP dedicado", "Instagram na loja", "Botão Modo Cinema na loja", "Até 6 corretores vinculados"] },
+  { name: "Premium Empresa", price: "R$ 999,90/mês", items: "Anúncios ilimitados", features: ["Selo Empresa Verificada", "6 Stories por 24h", "Destaque na homepage", "Destaque no topo da listagem", "Estatísticas completas", "Campanha Google Ads ampliada", "Anúncios Dinâmicos Google Ads", "Gerente de conta dedicado", "Suporte VIP dedicado", "Instagram na loja", "Botão Modo Cinema na loja", "Até 15 corretores vinculados"], highlight: true },
+  { name: "Black Empresa", price: "R$ 1.899,00/mês", items: "Anúncios ilimitados", features: ["Selo Empresa Verificada", "10 Stories por 24h", "Destaque na homepage", "Destaque no topo da listagem", "Estatísticas completas", "Campanha Google Ads ampliada", "Anúncios Dinâmicos Google ADS", "Gerente de conta dedicado", "Suporte VIP dedicado", "Instagram na loja", "Botão Modo Cinema na loja", "Até 30 corretores vinculados", "Prioridade total em destaque"] },
 ];
 export default function CreateListing() {
   return (
@@ -98,12 +98,20 @@ export default function CreateListing() {
                 Anuncie seus<br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">imóveis</span>
               </h1>
-              <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mb-8">
+              <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mb-4">
                 O maior marketplace de imóveis do Espírito Santo. Alcance milhares de compradores e acelere suas vendas.
               </p>
+
+              {/* 7 dias grátis badge */}
+              <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-500/30 mb-8">
+                <Star size={18} className="text-green-400" />
+                <span className="text-green-400 font-bold text-sm">7 Dias Grátis</span>
+                <span className="text-muted-foreground text-xs">em todos os planos pagos</span>
+              </div>
+
               <div className="flex flex-wrap gap-4">
-                <Link to="/login" className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-accent text-accent-foreground font-bold text-sm hover:bg-accent/90 transition-all shadow-lg shadow-accent/20">
-                  Começar Agora <ArrowRight size={16} />
+                <Link to="/entrar" className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-accent text-accent-foreground font-bold text-sm hover:bg-accent/90 transition-all shadow-lg shadow-accent/20">
+                  Cadastrar e Testar 7 Dias Grátis <ArrowRight size={16} />
                 </Link>
                 <a href="#beneficios" className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-secondary text-foreground font-bold text-sm hover:bg-secondary/80 transition-all border border-border">
                   Ver Benefícios
@@ -160,7 +168,7 @@ export default function CreateListing() {
         <div className="container max-w-6xl mx-auto px-4">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
             <h2 className="font-display font-bold text-3xl md:text-4xl text-foreground mb-3">Planos para Corretores</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">Comece grátis e evolua conforme sua carteira cresce.</p>
+            <p className="text-muted-foreground max-w-2xl mx-auto">Comece com 7 dias grátis e evolua conforme sua carteira cresce.</p>
           </motion.div>
 
           <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
@@ -182,6 +190,9 @@ export default function CreateListing() {
                     </li>
                   ))}
                 </ul>
+                <Link to="/entrar" className="block mt-5 w-full py-3 rounded-xl bg-accent text-accent-foreground text-center font-bold text-sm hover:bg-accent/90 transition-all">
+                  Testar 7 Dias Grátis
+                </Link>
               </motion.div>
             ))}
           </div>
@@ -218,6 +229,9 @@ export default function CreateListing() {
                     </li>
                   ))}
                 </ul>
+                <Link to="/entrar" className="block mt-5 w-full py-3 rounded-xl bg-accent text-accent-foreground text-center font-bold text-sm hover:bg-accent/90 transition-all">
+                  Testar 7 Dias Grátis
+                </Link>
               </motion.div>
             ))}
           </div>
@@ -234,10 +248,10 @@ export default function CreateListing() {
               Pronto para vender <span className="text-accent">mais</span>?
             </h2>
             <p className="text-muted-foreground mb-8 max-w-lg mx-auto">
-              Cadastre-se gratuitamente e comece a anunciar seus imóveis no maior marketplace do Espírito Santo.
+              Cadastre-se gratuitamente e teste por 7 dias grátis no maior marketplace do Espírito Santo.
             </p>
-            <Link to="/login" className="inline-flex items-center gap-2 px-10 py-4 rounded-xl bg-accent text-accent-foreground font-bold hover:bg-accent/90 transition-all shadow-lg shadow-accent/20">
-              Criar Conta Grátis <ArrowRight size={16} />
+            <Link to="/entrar" className="inline-flex items-center gap-2 px-10 py-4 rounded-xl bg-accent text-accent-foreground font-bold hover:bg-accent/90 transition-all shadow-lg shadow-accent/20">
+              Cadastrar e Testar 7 Dias Grátis <ArrowRight size={16} />
             </Link>
           </motion.div>
         </div>
