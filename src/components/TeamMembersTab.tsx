@@ -103,6 +103,18 @@ export default function TeamMembersTab({ profileId, userId, maxMembers }: Props)
 
     const slug = form.slug.trim() ? slugify(form.slug.trim()) : slugify(form.full_name);
 
+    // Check for duplicate slug globally
+    const { data: existingSlug } = await supabase
+      .from("team_members")
+      .select("id")
+      .eq("slug", slug)
+      .maybeSingle();
+
+    if (existingSlug && existingSlug.id !== editing) {
+      toast({ title: "Essa URL já está em uso", description: "Escolha outra URL para o corretor.", variant: "destructive" });
+      return;
+    }
+
     if (editing) {
       const { error } = await supabase
         .from("team_members")
@@ -143,8 +155,8 @@ export default function TeamMembersTab({ profileId, userId, maxMembers }: Props)
       });
 
       if (error) {
-        if (error.message.includes("unique")) {
-          toast({ title: "Já existe um corretor com esse nome", variant: "destructive" });
+        if (error.message.includes("unique") || error.message.includes("duplicate")) {
+          toast({ title: "Essa URL já está em uso por outro corretor", variant: "destructive" });
         } else {
           toast({ title: "Erro ao adicionar", description: error.message, variant: "destructive" });
         }
