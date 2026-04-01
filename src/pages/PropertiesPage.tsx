@@ -168,8 +168,7 @@ export default function PropertiesPage() {
     realItems.forEach((item) => {
       if (item.city) citiesFromItems.add(item.city.trim());
     });
-    // Merge with ES_CITIES for backward compatibility
-    ES_CITIES.forEach((c) => citiesFromItems.add(c));
+    
     return Array.from(citiesFromItems).sort();
   }, [realItems]);
 

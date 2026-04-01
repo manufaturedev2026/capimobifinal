@@ -715,7 +715,7 @@ export default function BecomeAgentPage() {
               </h2>
               <p className="text-muted-foreground text-lg mb-10 max-w-lg mx-auto">
                 Fale conosco pelo WhatsApp e descubra como se tornar um corretor de
-                imóveis de sucesso no Espírito Santo.
+                imóveis de sucesso em todo o Brasil.
               </p>
 
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">

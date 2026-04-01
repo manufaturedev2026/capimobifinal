@@ -68,7 +68,7 @@ export default function NeighborhoodPage() {
           </h1>
           <p className="text-primary-foreground/80 mt-2 flex items-center gap-2">
             <MapPin size={16} />
-            {neighborhoodName}, {cityName} - ES
+            {neighborhoodName}, {cityName}
           </p>
         </div>
       </section>

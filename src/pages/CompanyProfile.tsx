@@ -507,7 +507,7 @@ export default function CompanyProfile() {
                 "@type": "PostalAddress",
                 "streetAddress": dbProfile?.address || "",
                 "addressLocality": dbProfile?.city || "",
-                "addressRegion": dbProfile?.state || "ES",
+                "addressRegion": dbProfile?.state || "",
                 "addressCountry": "BR",
               } : undefined,
               "telephone": company.whatsapp || undefined,

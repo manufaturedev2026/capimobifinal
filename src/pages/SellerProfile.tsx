@@ -479,7 +479,7 @@ export default function SellerProfile() {
                 className="px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
                 disabled={!form.state || citiesLoading}>
                 <option value="">{citiesLoading ? "Carregando..." : "Selecione a cidade"}</option>
-                {(form.state === "ES" ? ES_CITIES : ibgeCities).map((city) => (
+                {ibgeCities.map((city) => (
                   <option key={city} value={city}>{city}</option>
                 ))}
               </select>
