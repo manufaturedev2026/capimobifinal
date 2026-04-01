@@ -14,7 +14,7 @@ export default function FooterSimple() {
               </span>
             </Link>
             <p className="text-xs text-muted-foreground leading-relaxed max-w-xs">
-              Marketplace de captação de imóveis. Proprietários anunciam grátis, corretores captam e vendem.
+              Crie seu próprio app de imóveis. Perfeito para corretores, imobiliárias e construtoras.
             </p>
           </div>
 
