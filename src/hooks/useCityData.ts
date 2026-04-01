@@ -43,6 +43,7 @@ export function useCityData(city: string, segment?: "imoveis") {
         .ilike("city", `%${normalizedCity}%`)
         .eq("seller_type", "imoveis")
         .eq("status", "ativo")
+        .or("is_owner_listing.is.null,is_owner_listing.eq.false")
         .order("created_at", { ascending: false });
 
       const sellerIds = [...new Set((rawItems || []).map((item: any) => item.seller_id).filter(Boolean))];
