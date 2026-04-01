@@ -76,9 +76,38 @@ const TARGET_AUDIENCE = [
 ];
 
 const PLANS_PREVIEW = [
-  { name: "Start", price: "R$ 24,99", items: "25 anúncios", highlight: true },
-  { name: "VIP", price: "R$ 59,99", items: "100 anúncios + Analytics", highlight: false },
-  { name: "Premium", price: "R$ 114,99", items: "115 anúncios + Ads", highlight: false },
+  {
+    name: "Start",
+    price: "R$ 24,99",
+    setupFee: "R$ 299",
+    items: "25 anúncios",
+    layouts: "1 Layout (Netflix)",
+    highlight: false,
+    color: "from-emerald-500 to-teal-600",
+    icon: Zap,
+  },
+  {
+    name: "VIP",
+    price: "R$ 59,99",
+    setupFee: "R$ 719",
+    items: "60 anúncios",
+    layouts: "4 Layouts",
+    highlight: true,
+    color: "from-amber-500 to-orange-600",
+    icon: Star,
+    benefits: ["Selo VIP", "Destaque no topo", "Analytics avançado", "Modo Cinema"],
+  },
+  {
+    name: "Premium",
+    price: "R$ 114,99",
+    setupFee: "R$ 1.379",
+    items: "115 anúncios",
+    layouts: "7 Layouts (todos)",
+    highlight: false,
+    color: "from-purple-600 to-indigo-700",
+    icon: Crown,
+    benefits: ["Selo Premium", "SEO Otimizado", "Suporte VIP", "Instagram na loja", "Modo Cinema"],
+  },
 ];
 
 export default function Index() {
