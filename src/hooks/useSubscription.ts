@@ -84,7 +84,7 @@ export const PACKAGE_CONFIG = {
       "Destaque no topo da listagem",
       "Estatísticas completas",
       "Suporte VIP dedicado",
-      "Anúncios via Google Ads",
+      "SEO Otimizado",
       "Instagram na loja",
       "Botão Modo Cinema na loja",
     ],
