@@ -222,7 +222,17 @@ export default function SellerCrmTab({ userId, sellerId }: SellerCrmTabProps) {
                           {contact.email && <p className="text-[10px] text-muted-foreground truncate">{contact.email}</p>}
                           {contact.phone && <p className="text-[10px] text-muted-foreground">{contact.phone}</p>}
                         </div>
-                        {isExpanded ? <ChevronDown size={14} className="text-muted-foreground shrink-0" /> : <ChevronRight size={14} className="text-muted-foreground shrink-0" />}
+                        <div className="flex items-center gap-1 shrink-0">
+                          {contact.phone && (
+                            <a href={getWhatsAppUrl(contact.phone, contact.full_name)}
+                              target="_blank" rel="noopener noreferrer"
+                              onClick={(e) => { e.stopPropagation(); markContacted(contact.id); }}
+                              className="w-7 h-7 flex items-center justify-center rounded-lg bg-green-500/10 text-green-600 hover:bg-green-500/20 transition-colors">
+                              <MessageCircle size={13} />
+                            </a>
+                          )}
+                          {isExpanded ? <ChevronDown size={14} className="text-muted-foreground" /> : <ChevronRight size={14} className="text-muted-foreground" />}
+                        </div>
                       </div>
 
                       {contact.last_contacted_at && (
