@@ -64,8 +64,8 @@ export default function CaptacaoPage() {
 
   // Filters
   const [search, setSearch] = useState("");
-  const [cityFilter, setCityFilter] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("");
+  const [cityFilter, setCityFilter] = useState("all");
+  const [categoryFilter, setCategoryFilter] = useState("all");
   const [priceMin, setPriceMin] = useState("");
   const [priceMax, setPriceMax] = useState("");
 
