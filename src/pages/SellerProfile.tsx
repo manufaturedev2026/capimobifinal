@@ -45,6 +45,10 @@ export default function SellerProfile() {
     slug: "",
     store_theme: "default",
     store_layout: "netflix",
+    store_video_url: "",
+    store_video_title: "",
+    store_video_button_text: "",
+    store_video_button_url: "",
   });
   const { cities: ibgeCities, loading: citiesLoading } = useCitiesByState(form.state);
   const [slugError, setSlugError] = useState("");
@@ -78,6 +82,10 @@ export default function SellerProfile() {
         slug: (profile as any).slug || "",
         store_theme: (profile as any).store_theme || "default",
         store_layout: (profile as any).store_layout || "netflix",
+        store_video_url: (profile as any).store_video_url || "",
+        store_video_title: (profile as any).store_video_title || "",
+        store_video_button_text: (profile as any).store_video_button_text || "",
+        store_video_button_url: (profile as any).store_video_button_url || "",
       });
     }
   }, [profile]);
@@ -416,6 +424,51 @@ export default function SellerProfile() {
             )}
           </div>
         )}
+
+        {/* Store Video Section */}
+        <div className="bg-card border border-border rounded-2xl p-5 space-y-3">
+          <div className="flex items-center gap-2">
+            <Video size={18} className="text-primary" />
+            <h3 className="font-display font-bold text-foreground">🎬 Vídeo da Loja</h3>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Adicione um vídeo do YouTube que aparecerá <strong>depois dos seus anúncios</strong> na loja, com um botão personalizável.
+          </p>
+          <input
+            value={form.store_video_url}
+            onChange={(e) => setForm((f) => ({ ...f, store_video_url: e.target.value }))}
+            className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+            placeholder="https://www.youtube.com/watch?v=..."
+          />
+          {form.store_video_url && (
+            <>
+              <input
+                value={form.store_video_title}
+                onChange={(e) => setForm((f) => ({ ...f, store_video_title: e.target.value }))}
+                className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+                placeholder="Título do vídeo (ex: Conheça nosso empreendimento)"
+                maxLength={80}
+              />
+              <input
+                value={form.store_video_button_text}
+                onChange={(e) => setForm((f) => ({ ...f, store_video_button_text: e.target.value }))}
+                className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+                placeholder="Texto do botão (ex: Ver Imóvel, Saiba Mais)"
+                maxLength={30}
+              />
+              <input
+                value={form.store_video_button_url}
+                onChange={(e) => setForm((f) => ({ ...f, store_video_button_url: e.target.value }))}
+                className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+                placeholder="Link do botão (ex: /imoveis/produto/xxx ou https://...)"
+              />
+              <div className="flex items-center gap-2 text-xs text-green-600">
+                <span className="w-2 h-2 rounded-full bg-green-500" />
+                Vídeo da loja ativado — aparecerá após os anúncios
+              </div>
+            </>
+          )}
+        </div>
 
         {/* Store Theme Picker */}
         <div className="bg-card border border-border rounded-2xl p-5">
