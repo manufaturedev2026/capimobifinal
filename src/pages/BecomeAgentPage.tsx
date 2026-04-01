@@ -449,7 +449,7 @@ export default function BecomeAgentPage() {
               </h2>
               <p className="text-muted-foreground mb-8">
                 Compare o potencial de renda de um corretor de imóveis com um emprego tradicional.
-                Os valores são baseados em médias do mercado do Espírito Santo.
+                Os valores são baseados em médias do mercado imobiliário brasileiro.
               </p>
               <div className="space-y-5">
                 {incomeComparison.map((item, i) => (
