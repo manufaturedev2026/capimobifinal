@@ -248,10 +248,10 @@ export default function CreateListing() {
               Pronto para vender <span className="text-accent">mais</span>?
             </h2>
             <p className="text-muted-foreground mb-8 max-w-lg mx-auto">
-              Cadastre-se gratuitamente e comece a anunciar seus imóveis no maior marketplace do Espírito Santo.
+              Cadastre-se gratuitamente e teste por 7 dias grátis no maior marketplace do Espírito Santo.
             </p>
-            <Link to="/login" className="inline-flex items-center gap-2 px-10 py-4 rounded-xl bg-accent text-accent-foreground font-bold hover:bg-accent/90 transition-all shadow-lg shadow-accent/20">
-              Criar Conta Grátis <ArrowRight size={16} />
+            <Link to="/entrar" className="inline-flex items-center gap-2 px-10 py-4 rounded-xl bg-accent text-accent-foreground font-bold hover:bg-accent/90 transition-all shadow-lg shadow-accent/20">
+              Cadastrar e Testar 7 Dias Grátis <ArrowRight size={16} />
             </Link>
           </motion.div>
         </div>
