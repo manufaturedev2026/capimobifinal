@@ -1392,7 +1392,7 @@ export default function CompanyProfile() {
                           )}
                           <div>
                             <p className="font-display font-bold text-sm text-white/90">{company.name}</p>
-                            <p className="text-[11px] text-white/40">{company.address}</p>
+                            {company.show_location && <p className="text-[11px] text-white/40">{company.address}</p>}
                           </div>
                         </div>
 
