@@ -429,14 +429,13 @@ export default function CompanyProfile() {
     ? products.find((p: any) => p.id === featuredItemId) || products[0]
     : products[0];
 
-  const handleWhatsApp = (title: string, productId?: string) => {
+  const doWhatsAppRedirect = useCallback((title: string, productId?: string) => {
     if (isDbProfile && id) trackSellerEvent(id, "whatsapp_click", productId, teamMember?.id);
     const seg = "imoveis";
     const link = productId 
       ? `${window.location.origin}/${seg}/produto/${productId}${corretorSlug ? `?corretor=${corretorSlug}` : ""}` 
       : window.location.href;
     
-    // If on a broker's mirror store, go directly to broker's WhatsApp
     if (teamMember && teamMember.phone) {
       const phone = teamMember.phone.replace(/\D/g, "");
       const msg = productId
@@ -453,6 +452,15 @@ export default function CompanyProfile() {
       title,
       link,
     });
+  }, [isDbProfile, id, teamMember, corretorSlug, company, openWhatsAppPicker]);
+
+  const handleWhatsApp = (title: string, productId?: string) => {
+    if (isDbProfile && dbProfile) {
+      setPendingWhatsAppAction(() => () => doWhatsAppRedirect(title, productId));
+      setLeadCaptureOpen(true);
+    } else {
+      doWhatsAppRedirect(title, productId);
+    }
   };
 
   const isPaid = sellerTier !== "basico";
