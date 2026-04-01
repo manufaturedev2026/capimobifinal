@@ -1123,31 +1123,34 @@ export default function SellerDashboard() {
         </main>
       </div>
 
-      {/* Mobile Bottom Nav */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-xl border-t border-border safe-area-bottom">
-        <div className="flex items-center justify-around h-16">
+      {/* Mobile Bottom Nav — Premium */}
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-xl border-t border-border safe-area-bottom shadow-[0_-4px_20px_-4px_rgba(0,0,0,0.1)]">
+        <div className="flex items-center justify-around h-[68px]">
           {sidebarNav.slice(0, 3).map((nav) => (
             <button
               key={nav.id}
               onClick={() => { handleTabClick(nav.id); setMobileMenuOpen(false); }}
-              className={`flex flex-col items-center justify-center gap-0.5 px-2 py-1 rounded-lg transition-colors min-w-0 ${
+              className={`flex flex-col items-center justify-center gap-0.5 px-3 py-1.5 rounded-xl transition-all duration-200 min-w-0 ${
                 nav.locked
                   ? "text-muted-foreground/40"
                   : activeTab === nav.id
-                    ? "text-primary"
+                    ? "text-primary scale-105"
                     : "text-muted-foreground"
               }`}
             >
               {nav.locked ? <Lock size={20} /> : <nav.icon size={20} />}
-              <span className="text-[10px] font-medium truncate">{nav.label}</span>
+              <span className="text-[10px] font-semibold truncate">{nav.label}</span>
+              {activeTab === nav.id && (
+                <div className="w-1.5 h-1.5 rounded-full bg-primary mt-0.5" />
+              )}
             </button>
           ))}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className={`flex flex-col items-center justify-center gap-0.5 px-2 py-1 rounded-lg transition-colors ${mobileMenuOpen ? "text-primary" : "text-muted-foreground"}`}
+            className={`flex flex-col items-center justify-center gap-0.5 px-3 py-1.5 rounded-xl transition-all duration-200 ${mobileMenuOpen ? "text-primary scale-105" : "text-muted-foreground"}`}
           >
             {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
-            <span className="text-[10px] font-medium">Mais</span>
+            <span className="text-[10px] font-semibold">Mais</span>
           </button>
         </div>
       </nav>
