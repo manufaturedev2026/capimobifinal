@@ -1,40 +1,87 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
-import { MapPin, Image } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { MapPin, Image, Menu, X } from "lucide-react";
 import type { StoreLayoutProps } from "./types";
 
 /**
- * Minimal Layout — Clean, no category carousel, just pill filters + clean grid
+ * Minimal Layout — Scrollable category pills + hamburger menu
  */
 export default function StoreLayoutMinimal({
   filteredProducts, subcategories, activeCategory, setActiveCategory,
   categoryCounts, storeTheme, corretorSlug, getTagStyle, getTagLabel,
 }: StoreLayoutProps) {
+  const [menuOpen, setMenuOpen] = useState(false);
+
   return (
     <div>
-      {/* Pill filters */}
-      <div className="lg:hidden mb-6 flex flex-wrap gap-2">
-        {subcategories.map((cat) => {
-          const isActive = activeCategory === cat.slug;
-          const count = categoryCounts[cat.slug] || 0;
-          const isDisabled = cat.slug !== "todos" && count === 0;
-          return (
-            <button
-              key={cat.slug}
-              onClick={() => setActiveCategory(cat.slug)}
-              disabled={isDisabled}
-              className="px-4 py-2 rounded-full text-xs font-semibold transition-all"
-              style={{
-                background: isActive ? storeTheme.primary : `${storeTheme.border}`,
-                color: isActive ? "#fff" : storeTheme.textMuted,
-                opacity: isDisabled ? 0.4 : 1,
-              }}
-            >
-              {cat.name} {count > 0 && `(${count})`}
-            </button>
-          );
-        })}
+      {/* Top bar: scrollable pills + hamburger */}
+      <div className="lg:hidden mb-5 flex items-center gap-2">
+        <div className="flex-1 flex gap-2 overflow-x-auto scrollbar-hide -mx-1 px-1 pb-1">
+          {subcategories.filter(c => c.slug === "todos" || (categoryCounts[c.slug] || 0) > 0).slice(0, 4).map((cat) => {
+            const isActive = activeCategory === cat.slug;
+            return (
+              <button
+                key={cat.slug}
+                onClick={() => setActiveCategory(cat.slug)}
+                className="flex-shrink-0 px-3.5 py-2 rounded-full text-[11px] font-semibold transition-all whitespace-nowrap"
+                style={{
+                  background: isActive ? storeTheme.primary : `${storeTheme.border}`,
+                  color: isActive ? "#fff" : storeTheme.textMuted,
+                }}
+              >
+                {cat.name}
+              </button>
+            );
+          })}
+        </div>
+        {subcategories.length > 4 && (
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center transition-colors"
+            style={{ background: `${storeTheme.border}`, color: storeTheme.text }}
+          >
+            {menuOpen ? <X size={18} /> : <Menu size={18} />}
+          </button>
+        )}
       </div>
+
+      {/* Hamburger dropdown */}
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="lg:hidden mb-4 overflow-hidden rounded-xl"
+            style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}
+          >
+            <div className="p-2 grid grid-cols-2 gap-1.5">
+              {subcategories.map((cat) => {
+                const isActive = activeCategory === cat.slug;
+                const count = categoryCounts[cat.slug] || 0;
+                const isDisabled = cat.slug !== "todos" && count === 0;
+                return (
+                  <button
+                    key={cat.slug}
+                    onClick={() => { setActiveCategory(cat.slug); setMenuOpen(false); }}
+                    disabled={isDisabled}
+                    className="px-3 py-2.5 rounded-lg text-xs font-semibold text-left transition-all"
+                    style={{
+                      background: isActive ? `${storeTheme.primary}20` : "transparent",
+                      color: isActive ? storeTheme.primary : storeTheme.textMuted,
+                      opacity: isDisabled ? 0.3 : 1,
+                      borderLeft: isActive ? `3px solid ${storeTheme.primary}` : "3px solid transparent",
+                    }}
+                  >
+                    {cat.name} {count > 0 && <span className="opacity-60">({count})</span>}
+                  </button>
+                );
+              })}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Clean 2-column grid with minimal cards */}
       {filteredProducts.length > 0 ? (
