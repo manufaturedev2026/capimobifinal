@@ -521,26 +521,38 @@ export default function CompanyProfile() {
       {isDbProfile && dbProfile?.id && <StoreEffects sellerId={dbProfile.id} />}
       {/* ═══════════ MOBILE PROFILE HERO (Instagram-style) ═══════════ */}
       <section className="md:hidden relative overflow-hidden">
-        {/* Background image or gradient */}
+        {/* Sliding hero images behind profile */}
         {heroImages.length > 0 ? (
           <>
             <AnimatePresence mode="wait">
               <motion.img
                 key={heroSlide}
                 src={heroImages[heroSlide].image}
-                alt=""
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
+                alt={heroImages[heroSlide].title}
+                initial={{ opacity: 0, scale: 1.08 }}
+                animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: 0.6 }}
-                className="absolute inset-0 w-full h-full object-cover scale-110 blur-xl brightness-[0.3]"
+                transition={{ duration: 1 }}
+                className="absolute inset-0 w-full h-full object-cover"
               />
             </AnimatePresence>
+            {/* Slide indicators */}
+            {heroImages.length > 1 && (
+              <div className="absolute top-14 left-0 right-0 z-20 flex justify-center gap-1.5">
+                {heroImages.map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setHeroSlide(idx)}
+                    className={`h-1 rounded-full transition-all duration-300 ${idx === heroSlide ? "w-6 bg-white" : "w-1.5 bg-white/40"}`}
+                  />
+                ))}
+              </div>
+            )}
           </>
         ) : (
           <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/80 to-accent" />
         )}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/60 to-black/90" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/50 to-black/90" />
         
         {/* Back + Badge */}
         <div className="relative z-10 flex items-center justify-between px-4 pt-4">
