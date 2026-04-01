@@ -252,10 +252,10 @@ export default function CreateListing() {
                 <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-primary">resultados</span>
               </h2>
-              <p className="text-muted-foreground text-lg leading-relaxed mb-8">
+              <p className="text-muted-foreground text-sm sm:text-lg leading-relaxed mb-6 sm:mb-8">
                 Painel profissional com estatísticas em tempo real. Saiba quais anúncios performam melhor e otimize sua estratégia.
               </p>
-              <div className="grid grid-cols-2 gap-4 mb-8">
+              <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-6 sm:mb-8">
                 {[
                   { icon: Eye, label: "Visualizações", value: "Em tempo real" },
                   { icon: Smartphone, label: "Contatos", value: "Via WhatsApp" },
