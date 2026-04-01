@@ -134,8 +134,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (currentSession?.user) {
         await ensureProfile(currentSession.user);
+        await checkBan(currentSession.user.id);
       } else {
         setProfile(null);
+        setBanInfo(null);
       }
 
       setLoading(false);
