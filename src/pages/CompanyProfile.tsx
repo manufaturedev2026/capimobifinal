@@ -794,7 +794,49 @@ export default function CompanyProfile() {
         )}
       </section>
 
-      {/* ═══════════ DESKTOP HERO BANNER (unchanged) ═══════════ */}
+      {/* ═══ MARKETPLACE SCROLLING PROPERTY BANNER ═══ */}
+      {isMarketplace && products.length > 0 && (
+        <div className="md:hidden overflow-hidden" style={{ background: `${storeTheme.primary}e6` }}>
+          <motion.div
+            className="flex gap-3 py-3 px-4"
+            animate={{ x: ["0%", "-50%"] }}
+            transition={{ duration: products.length * 4, repeat: Infinity, ease: "linear" }}
+          >
+            {[...products, ...products].filter((p: any) => p.image).slice(0, 20).map((product: any, i: number) => {
+              const productLink = `/imoveis/produto/${product.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`;
+              return (
+                <Link
+                  key={`scroll-${product.id}-${i}`}
+                  to={productLink}
+                  className="flex-shrink-0 w-[200px] rounded-xl overflow-hidden shadow-lg"
+                  style={{ background: storeTheme.card }}
+                >
+                  <div className="relative h-[110px] overflow-hidden">
+                    <img src={product.image} alt={product.title} className="w-full h-full object-cover" loading="lazy" />
+                    {product.tag && (
+                      <span className={`absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded text-[8px] font-bold ${getTagStyle(product.tag)}`}>
+                        {getTagLabel(product.tag)}
+                      </span>
+                    )}
+                  </div>
+                  <div className="px-2.5 py-2">
+                    <h4 className="text-[11px] font-semibold line-clamp-1" style={{ color: storeTheme.text }}>{product.title}</h4>
+                    {product.price > 0 && (
+                      <p className="text-xs font-bold text-emerald-500 mt-0.5">R$ {product.price.toLocaleString("pt-BR")}</p>
+                    )}
+                    {product.city && (
+                      <p className="text-[9px] mt-0.5 flex items-center gap-0.5" style={{ color: storeTheme.textMuted }}>
+                        <MapPin size={8} /> {product.city}
+                      </p>
+                    )}
+                  </div>
+                </Link>
+              );
+            })}
+          </motion.div>
+        </div>
+      )}
+
       <section className={`hidden md:block relative overflow-hidden ${hasVideoHero ? "h-[70vh]" : "h-[60vh]"}`}>
         {/* Video background or sliding images */}
         {hasVideoHero ? (
