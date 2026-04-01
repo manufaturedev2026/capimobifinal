@@ -166,6 +166,7 @@ export default function TeamMembersTab({ profileId, userId, maxMembers }: Props)
       bio: m.bio || "",
       photo_url: m.photo_url || "",
       instagram: (m as any).instagram || "",
+      slug: m.slug || "",
     });
     setEditing(m.id);
     setShowForm(true);
