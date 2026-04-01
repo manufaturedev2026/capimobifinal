@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import {
   Instagram, Smartphone, Globe, Sparkles, ArrowRight, Star, Zap, Shield,
-  Layout, Palette, BarChart3, Share2, ChevronRight, Play, Check, Crown
+  Layout, Palette, BarChart3, Share2, ChevronRight, Play, Check, Crown, Eye, MessageCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -299,63 +299,100 @@ export default function Index() {
             </p>
           </div>
 
-          {/* Mock store preview */}
+          {/* Mock store preview — Showcase style */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="bg-card border border-border rounded-3xl overflow-hidden shadow-2xl shadow-black/10 max-w-4xl mx-auto"
+            className="bg-card border border-border rounded-3xl overflow-hidden shadow-2xl shadow-black/10 max-w-sm mx-auto"
           >
-            {/* Fake store header */}
-            <div className="bg-gradient-to-r from-[hsl(var(--navy))] to-primary h-48 md:h-56 relative flex items-end p-6">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(255,255,255,0.1),transparent)]" />
-              <div className="relative z-10 flex items-end gap-4">
-                <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/20">
-                  <span className="text-white font-display font-bold text-xl">JR</span>
+            {/* Showcase Hero Banner */}
+            <div className="relative aspect-[3/4] overflow-hidden">
+              <img
+                src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&h=1000&fit=crop"
+                alt="Casa premium"
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-transparent" />
+
+              {/* Profile badge */}
+              <div className="absolute top-4 left-4 flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/30 backdrop-blur-md">
+                <div className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center border border-white/20">
+                  <span className="text-white font-display font-bold text-[10px]">JR</span>
                 </div>
-                <div>
-                  <h3 className="text-white font-display font-bold text-xl">João Imóveis</h3>
-                  <p className="text-white/60 text-sm">CRECI 12345-ES · Vila Velha, ES</p>
+                <span className="text-white text-xs font-semibold">João Imóveis</span>
+              </div>
+
+              {/* Tag */}
+              <Badge className="absolute top-4 right-4 bg-primary text-primary-foreground text-[10px] shadow-lg">
+                Destaque
+              </Badge>
+
+              {/* Content overlay */}
+              <div className="absolute bottom-0 left-0 right-0 p-5 pb-6">
+                <h3 className="font-display font-extrabold text-xl text-white drop-shadow-lg leading-tight">
+                  Casa 3 quartos com piscina
+                </h3>
+                <p className="text-white/60 text-xs mt-1 flex items-center gap-1">
+                  📍 Vila Velha, ES
+                </p>
+                <p className="font-display font-extrabold text-2xl text-emerald-400 mt-2 drop-shadow-lg">
+                  R$ 450.000
+                </p>
+                <div className="flex gap-2 mt-4">
+                  <span className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl bg-primary text-primary-foreground font-bold text-sm">
+                    <Eye size={16} /> Ver Detalhes
+                  </span>
+                  <span className="flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-[#25d366] text-white font-bold text-sm">
+                    <MessageCircle size={16} />
+                  </span>
                 </div>
+              </div>
+
+              {/* Navigation arrows */}
+              <div className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/30 backdrop-blur flex items-center justify-center text-white">
+                <ChevronRight size={16} className="rotate-180" />
+              </div>
+              <div className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/30 backdrop-blur flex items-center justify-center text-white">
+                <ChevronRight size={16} />
+              </div>
+
+              {/* Progress dots */}
+              <div className="absolute bottom-[6.5rem] left-1/2 -translate-x-1/2 flex gap-1.5">
+                <span className="h-1 w-5 rounded-full bg-white" />
+                <span className="h-1 w-1.5 rounded-full bg-white/40" />
+                <span className="h-1 w-1.5 rounded-full bg-white/40" />
+                <span className="h-1 w-1.5 rounded-full bg-white/40" />
               </div>
             </div>
 
-            {/* Fake categories */}
-            <div className="p-4 border-b border-border flex gap-3 overflow-x-auto">
-              {["Todos", "Casas", "Apartamentos", "Terrenos"].map((cat, i) => (
-                <span
-                  key={cat}
-                  className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-semibold transition-colors ${
-                    i === 0 ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"
-                  }`}
-                >
-                  {cat}
-                </span>
-              ))}
-            </div>
-
-            {/* Fake property cards */}
-            <div className="p-4 grid grid-cols-2 md:grid-cols-3 gap-3">
-              {[
-                { title: "Casa 3 quartos", price: "R$ 450.000", tag: "Destaque", img: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&h=300&fit=crop" },
-                { title: "Apto 2 quartos", price: "R$ 320.000", tag: "Novo", img: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=300&fit=crop" },
-                { title: "Terreno 300m²", price: "R$ 180.000", tag: null, img: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400&h=300&fit=crop" },
-              ].map((item) => (
-                <div key={item.title} className="bg-secondary/50 rounded-2xl overflow-hidden border border-border">
-                  <div className="aspect-[4/3] relative overflow-hidden">
-                    <img src={item.img} alt={item.title} className="w-full h-full object-cover" loading="lazy" />
-                    {item.tag && (
-                      <Badge className="absolute top-2 left-2 bg-primary text-primary-foreground text-[10px]">
-                        {item.tag}
-                      </Badge>
-                    )}
+            {/* Grid of other properties */}
+            <div className="p-3">
+              <p className="font-display font-bold text-xs text-foreground mb-2 px-1">Todos os Imóveis <span className="font-normal text-muted-foreground">(6)</span></p>
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  { title: "Apto 2 quartos", price: "R$ 320.000", tag: "Novo", img: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=300&fit=crop" },
+                  { title: "Terreno 300m²", price: "R$ 180.000", tag: null, img: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400&h=300&fit=crop" },
+                  { title: "Cobertura Duplex", price: "R$ 890.000", tag: "Premium", img: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400&h=300&fit=crop" },
+                  { title: "Sala Comercial", price: "R$ 210.000", tag: null, img: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&h=300&fit=crop" },
+                ].map((item) => (
+                  <div key={item.title} className="rounded-xl overflow-hidden bg-secondary/50 border border-border">
+                    <div className="relative aspect-[4/3] overflow-hidden">
+                      <img src={item.img} alt={item.title} className="w-full h-full object-cover" loading="lazy" />
+                      {item.tag && (
+                        <Badge className="absolute top-1.5 left-1.5 bg-primary text-primary-foreground text-[8px] px-1.5 py-0.5">
+                          {item.tag}
+                        </Badge>
+                      )}
+                    </div>
+                    <div className="p-2">
+                      <p className="font-display font-semibold text-[11px] text-foreground truncate">{item.title}</p>
+                      <p className="text-emerald-500 font-display font-bold text-xs mt-0.5">{item.price}</p>
+                    </div>
                   </div>
-                  <div className="p-3">
-                    <p className="font-display font-semibold text-sm text-foreground truncate">{item.title}</p>
-                    <p className="text-emerald-500 font-display font-bold text-sm mt-1">{item.price}</p>
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </motion.div>
 
