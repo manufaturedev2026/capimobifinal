@@ -69,15 +69,15 @@ const stats = [
 ];
 
 const plans = [
-  { name: "Start", price: "R$ 24,99/mês", items: "Até 10 anúncios", features: ["Loja estilo Netflix", "Painel do vendedor completo", "Destaque normal na listagem", "Estatísticas básicas"] },
-  { name: "Premium", price: "R$ 59,99/mês", items: "Até 15 anúncios", features: ["Selo Premium nos anúncios", "Destaque no topo da listagem", "Loja estilo Netflix", "Estatísticas avançadas", "Suporte prioritário"], highlight: true },
-  { name: "VIP", price: "R$ 114,99/mês", items: "Até 50 anúncios", features: ["Selo VIP exclusivo", "Destaque no topo da listagem", "Estatísticas completas", "Suporte VIP dedicado", "Anúncios via Google Ads", "Instagram na loja"] },
+  { name: "Start", price: "R$ 24,99/mês", items: "Até 10 anúncios", features: ["Loja estilo Netflix", "2 Stories por 24h", "Painel do vendedor completo", "Destaque normal na listagem", "Estatísticas básicas"] },
+  { name: "VIP", price: "R$ 59,99/mês", items: "Até 25 anúncios", features: ["Selo Premium nos anúncios", "3 Stories por 24h", "Destaque no topo da listagem", "Loja estilo Netflix", "Estatísticas avançadas", "Suporte prioritário", "Botão Modo Cinema na loja"], highlight: true },
+  { name: "Premium", price: "R$ 114,99/mês", items: "Até 50 anúncios", features: ["Selo VIP exclusivo", "4 Stories por 24h", "Destaque no topo da listagem", "Estatísticas completas", "Suporte VIP dedicado", "Anúncios via Google Ads", "Instagram na loja", "Botão Modo Cinema na loja"] },
 ];
 
 const companyPlans = [
-  { name: "Essencial Empresa", price: "R$ 539,90/mês", items: "Anúncios ilimitados", features: ["Selo Empresa Verificada", "Destaque na homepage", "Destaque no topo da listagem", "Estatísticas completas", "Campanha dedicada de Google Ads", "Gerente de conta dedicado", "Suporte VIP dedicado", "Instagram na loja", "Botão Modo Cinema na loja", "Até 6 corretores vinculados"] },
-  { name: "Premium Empresa", price: "R$ 999,90/mês", items: "Anúncios ilimitados", features: ["Selo Empresa Verificada", "Destaque na homepage", "Destaque no topo da listagem", "Estatísticas completas", "Campanha Google Ads ampliada", "Anúncios Dinâmicos Google Ads", "Gerente de conta dedicado", "Suporte VIP dedicado", "Instagram na loja", "Botão Modo Cinema na loja", "Até 15 corretores vinculados"], highlight: true },
-  { name: "Black Empresa", price: "R$ 1.899,00/mês", items: "Anúncios ilimitados", features: ["Selo Empresa Verificada", "Destaque na homepage", "Destaque no topo da listagem", "Estatísticas completas", "Campanha Google Ads ampliada", "Anúncios Dinâmicos Google ADS", "Gerente de conta dedicado", "Suporte VIP dedicado", "Instagram na loja", "Botão Modo Cinema na loja", "Até 30 corretores vinculados", "Prioridade total em destaque"] },
+  { name: "Essencial Empresa", price: "R$ 539,90/mês", items: "Anúncios ilimitados", features: ["Selo Empresa Verificada", "5 Stories por 24h", "Destaque na homepage", "Destaque no topo da listagem", "Estatísticas completas", "Campanha dedicada de Google Ads", "Gerente de conta dedicado", "Suporte VIP dedicado", "Instagram na loja", "Botão Modo Cinema na loja", "Até 6 corretores vinculados"] },
+  { name: "Premium Empresa", price: "R$ 999,90/mês", items: "Anúncios ilimitados", features: ["Selo Empresa Verificada", "6 Stories por 24h", "Destaque na homepage", "Destaque no topo da listagem", "Estatísticas completas", "Campanha Google Ads ampliada", "Anúncios Dinâmicos Google Ads", "Gerente de conta dedicado", "Suporte VIP dedicado", "Instagram na loja", "Botão Modo Cinema na loja", "Até 15 corretores vinculados"], highlight: true },
+  { name: "Black Empresa", price: "R$ 1.899,00/mês", items: "Anúncios ilimitados", features: ["Selo Empresa Verificada", "10 Stories por 24h", "Destaque na homepage", "Destaque no topo da listagem", "Estatísticas completas", "Campanha Google Ads ampliada", "Anúncios Dinâmicos Google ADS", "Gerente de conta dedicado", "Suporte VIP dedicado", "Instagram na loja", "Botão Modo Cinema na loja", "Até 30 corretores vinculados", "Prioridade total em destaque"] },
 ];
 export default function CreateListing() {
   return (
