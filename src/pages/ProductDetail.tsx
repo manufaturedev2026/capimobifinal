@@ -573,6 +573,34 @@ export default function ProductDetail() {
                 <Share2 size={16} /> Compartilhar
               </button>
 
+              {isDb && dbItem && (
+                <button
+                  onClick={() => generateProposalPdf({
+                    id: dbItem.id,
+                    title: title,
+                    price: product.price,
+                    image: images[0] || "",
+                    location: mapAddress || "",
+                    description: product.description || "",
+                    tags: product.tags || [],
+                    status: dbItem.status || "ativo",
+                    sellerName: company.name,
+                    sellerPhone: company.whatsapp || "",
+                    sellerCategory: (company as any).sellerCategory || "",
+                    sellerLogo: company.logo || "",
+                    propertyUrl: window.location.href,
+                    bedrooms: product.bedrooms,
+                    bathrooms: product.bathrooms,
+                    area: product.area,
+                    suites: product.suites,
+                    parking_spots: product.parking_spots,
+                  })}
+                  className="mt-3 w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-secondary text-foreground font-medium text-sm hover:bg-secondary/80 transition-colors border border-border"
+                >
+                  <FileDown size={16} /> Baixar Proposta (PDF)
+                </button>
+              )}
+
               <Link to={companyUrl}
                 className="mt-3 w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-accent text-accent-foreground font-bold text-sm hover:bg-accent/90 transition-colors shadow-md">
                 <Store size={16} /> Ver Loja Completa
