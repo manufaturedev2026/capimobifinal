@@ -21,6 +21,7 @@ import {
 import heroImg from "@/assets/hero-anunciar.jpg";
 import lojaPreviewImg from "@/assets/loja-preview-anunciar.jpg";
 import painelPreviewImg from "@/assets/painel-preview-anunciar.jpg";
+import avatarCorretorImg from "@/assets/avatar-corretor.png";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -207,12 +208,10 @@ export default function CreateListing() {
               <motion.div animate={{ y: [0, -8, 0] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
                 className="absolute -bottom-4 -left-4 md:bottom-4 md:left-4 bg-card/90 backdrop-blur-xl rounded-2xl p-4 border border-border shadow-xl">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center">
-                    <Monitor size={20} className="text-accent" />
-                  </div>
+                  <img src={avatarCorretorImg} alt="Corretor" className="w-11 h-11 rounded-xl object-cover shadow-md" />
                   <div>
-                    <div className="text-xs text-muted-foreground">Sua vitrine online</div>
-                    <div className="font-display font-bold text-sm text-foreground">Sempre ativa 24/7</div>
+                    <div className="text-xs text-muted-foreground">Corretor verificado</div>
+                    <div className="font-display font-bold text-sm text-foreground">Sua loja pronta 24/7</div>
                   </div>
                 </div>
               </motion.div>
