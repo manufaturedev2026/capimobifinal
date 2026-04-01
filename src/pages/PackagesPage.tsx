@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Check, Crown, Star, Zap, ArrowLeft, Building } from "lucide-react";
+import { Check, Crown, Star, Zap, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription, PACKAGE_CONFIG } from "@/hooks/useSubscription";
