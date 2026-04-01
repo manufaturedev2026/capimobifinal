@@ -23,6 +23,7 @@ import PackageBadge from "@/components/PackageBadge";
 import { useWhatsAppPicker } from "@/components/WhatsAppTeamPicker";
 import StoryViewer from "@/components/StoryViewer";
 import { useStories } from "@/hooks/useStories";
+import WhatsAppLeadCapture from "@/components/WhatsAppLeadCapture";
 
 const propertySubcategories = [
   { slug: "todos", name: "Todos", icon: Store, img: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=300&h=200&fit=crop" },
@@ -92,6 +93,8 @@ export default function CompanyProfile() {
   const { openWhatsApp: openWhatsAppPicker } = useWhatsAppPicker();
   const { sellerStories } = useStories();
   const [storyViewerOpen, setStoryViewerOpen] = useState(false);
+  const [leadCaptureOpen, setLeadCaptureOpen] = useState(false);
+  const [pendingWhatsAppAction, setPendingWhatsAppAction] = useState<(() => void) | null>(null);
 
   const searchParams = new URLSearchParams(location.search);
   const corretorSlug = searchParams.get("corretor");
@@ -426,14 +429,13 @@ export default function CompanyProfile() {
     ? products.find((p: any) => p.id === featuredItemId) || products[0]
     : products[0];
 
-  const handleWhatsApp = (title: string, productId?: string) => {
+  const doWhatsAppRedirect = (title: string, productId?: string) => {
     if (isDbProfile && id) trackSellerEvent(id, "whatsapp_click", productId, teamMember?.id);
     const seg = "imoveis";
     const link = productId 
       ? `${window.location.origin}/${seg}/produto/${productId}${corretorSlug ? `?corretor=${corretorSlug}` : ""}` 
       : window.location.href;
     
-    // If on a broker's mirror store, go directly to broker's WhatsApp
     if (teamMember && teamMember.phone) {
       const phone = teamMember.phone.replace(/\D/g, "");
       const msg = productId
@@ -450,6 +452,15 @@ export default function CompanyProfile() {
       title,
       link,
     });
+  };
+
+  const handleWhatsApp = (title: string, productId?: string) => {
+    if (isDbProfile && dbProfile) {
+      setPendingWhatsAppAction(() => () => doWhatsAppRedirect(title, productId));
+      setLeadCaptureOpen(true);
+    } else {
+      doWhatsAppRedirect(title, productId);
+    }
   };
 
   const isPaid = sellerTier !== "basico";
@@ -1770,6 +1781,20 @@ export default function CompanyProfile() {
         ) : null;
       })()}
 
+      {isDbProfile && dbProfile && (
+        <WhatsAppLeadCapture
+          open={leadCaptureOpen}
+          onOpenChange={setLeadCaptureOpen}
+          sellerId={id!}
+          sellerUserId={dbProfile.user_id}
+          onComplete={() => {
+            if (pendingWhatsAppAction) {
+              pendingWhatsAppAction();
+              setPendingWhatsAppAction(null);
+            }
+          }}
+        />
+      )}
     </div>
   );
 }

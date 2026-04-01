@@ -222,7 +222,17 @@ export default function SellerCrmTab({ userId, sellerId }: SellerCrmTabProps) {
                           {contact.email && <p className="text-[10px] text-muted-foreground truncate">{contact.email}</p>}
                           {contact.phone && <p className="text-[10px] text-muted-foreground">{contact.phone}</p>}
                         </div>
-                        {isExpanded ? <ChevronDown size={14} className="text-muted-foreground shrink-0" /> : <ChevronRight size={14} className="text-muted-foreground shrink-0" />}
+                        <div className="flex items-center gap-1 shrink-0">
+                          {contact.phone && (
+                            <a href={getWhatsAppUrl(contact.phone, contact.full_name)}
+                              target="_blank" rel="noopener noreferrer"
+                              onClick={(e) => { e.stopPropagation(); markContacted(contact.id); }}
+                              className="w-7 h-7 flex items-center justify-center rounded-lg bg-green-500/10 text-green-600 hover:bg-green-500/20 transition-colors">
+                              <MessageCircle size={13} />
+                            </a>
+                          )}
+                          {isExpanded ? <ChevronDown size={14} className="text-muted-foreground" /> : <ChevronRight size={14} className="text-muted-foreground" />}
+                        </div>
                       </div>
 
                       {contact.last_contacted_at && (
@@ -252,12 +262,18 @@ export default function SellerCrmTab({ userId, sellerId }: SellerCrmTabProps) {
 
                               {/* WhatsApp */}
                               {contact.phone && (
-                                <a href={getWhatsAppUrl(contact.phone, contact.full_name)}
-                                  target="_blank" rel="noopener noreferrer"
-                                  onClick={() => markContacted(contact.id)}
-                                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-green-500/10 text-green-600 text-[11px] font-medium hover:bg-green-500/20 transition-colors border border-green-500/20">
-                                  <Phone size={12} /> Enviar WhatsApp
-                                </a>
+                                <div className="flex gap-1">
+                                  <a href={getWhatsAppUrl(contact.phone, contact.full_name)}
+                                    target="_blank" rel="noopener noreferrer"
+                                    onClick={() => markContacted(contact.id)}
+                                    className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-green-500/10 text-green-600 text-[11px] font-medium hover:bg-green-500/20 transition-colors border border-green-500/20">
+                                    <Phone size={12} /> Enviar WhatsApp
+                                  </a>
+                                  <a href={`tel:${contact.phone.replace(/\D/g, "")}`}
+                                    className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-blue-500/10 text-blue-600 text-[11px] font-medium hover:bg-blue-500/20 transition-colors border border-blue-500/20">
+                                    <Phone size={12} /> Ligar
+                                  </a>
+                                </div>
                               )}
 
                               {/* Notes */}

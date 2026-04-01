@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { trackSellerEvent } from "@/hooks/useSellerAnalytics";
 import { useToast } from "@/hooks/use-toast";
 import MapEmbed from "@/components/MapEmbed";
+import WhatsAppLeadCapture from "@/components/WhatsAppLeadCapture";
 
 function isUUID(str: string) {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
@@ -33,6 +34,8 @@ export default function ProductDetail() {
   const [loading, setLoading] = useState(true);
   const [isDb, setIsDb] = useState(false);
   const [relatedItems, setRelatedItems] = useState<any[]>([]);
+  const [leadCaptureOpen, setLeadCaptureOpen] = useState(false);
+  const [pendingWhatsAppAction, setPendingWhatsAppAction] = useState<(() => void) | null>(null);
 
   useEffect(() => {
     if (productId && isUUID(productId)) {
@@ -162,10 +165,9 @@ export default function ProductDetail() {
     ? price ? `R$ ${Number(price).toLocaleString("pt-BR")}` : ""
     : formatPrice(price);
   const productUrl = window.location.href;
-  const handleWhatsAppClick = (e?: React.MouseEvent) => {
+  const doWhatsAppRedirect = (e?: React.MouseEvent) => {
     if (e) e.preventDefault();
     if (isDb && dbItem) trackSellerEvent(dbItem.seller_id, "whatsapp_click", dbItem.id, teamMember?.id);
-    // When a specific broker is selected, go directly to their WhatsApp
     if (teamMember && teamMember.phone) {
       const phone = teamMember.phone.replace(/\D/g, "");
       const msg = `Olá ${teamMember.full_name}! 🏠 Vi o imóvel *${title}* - ${formattedPrice} na sua loja e gostaria de mais informações.\n\n🔗 ${productUrl}`;
@@ -179,6 +181,15 @@ export default function ProductDetail() {
       title: `${title} - ${formattedPrice}`,
       link: productUrl,
     });
+  };
+  const handleWhatsAppClick = (e?: React.MouseEvent) => {
+    if (e) e.preventDefault();
+    if (isDb && dbSeller) {
+      setPendingWhatsAppAction(() => () => doWhatsAppRedirect());
+      setLeadCaptureOpen(true);
+    } else {
+      doWhatsAppRedirect(e);
+    }
   };
   const mapAddress = isDb
     ? [product.address, product.neighborhood, product.city, product.state].filter(Boolean).join(", ") || company.address
@@ -732,6 +743,20 @@ export default function ProductDetail() {
           </motion.section>
         )}
       </div>
+      {isDb && dbSeller && (
+        <WhatsAppLeadCapture
+          open={leadCaptureOpen}
+          onOpenChange={setLeadCaptureOpen}
+          sellerId={dbItem?.seller_id || ""}
+          sellerUserId={dbSeller.user_id}
+          onComplete={() => {
+            if (pendingWhatsAppAction) {
+              pendingWhatsAppAction();
+              setPendingWhatsAppAction(null);
+            }
+          }}
+        />
+      )}
     </div>
   );
 }
