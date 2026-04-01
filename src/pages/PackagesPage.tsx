@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Check, Crown, Star, Zap, ArrowLeft } from "lucide-react";
+import { Check, Crown, Star, Zap, ArrowLeft, Settings } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription, PACKAGE_CONFIG } from "@/hooks/useSubscription";
@@ -17,6 +17,27 @@ export default function PackagesPage() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [selecting, setSelecting] = useState<string | null>(null);
+  const [openingPortal, setOpeningPortal] = useState(false);
+
+  const handleManageSubscription = async () => {
+    if (!user) {
+      navigate("/entrar");
+      return;
+    }
+    setOpeningPortal(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("customer-portal");
+      if (error) throw error;
+      if (data?.url) {
+        window.open(data.url, "_blank");
+      } else {
+        throw new Error("URL do portal não retornada");
+      }
+    } catch (err: any) {
+      toast({ title: "Erro ao abrir portal", description: err.message || "Tente novamente.", variant: "destructive" });
+    }
+    setOpeningPortal(false);
+  };
 
   const handleSelect = async (tier: "basico" | "start" | "premium" | "vip") => {
     if (!user || !profile) {
@@ -153,6 +174,19 @@ export default function PackagesPage() {
             );
           })}
         </div>
+
+        {subscription && currentTier !== "basico" && (
+          <div className="mt-6 flex justify-center">
+            <button
+              onClick={handleManageSubscription}
+              disabled={openingPortal}
+              className="inline-flex items-center gap-2 px-6 py-3 bg-card border border-border rounded-xl text-foreground font-semibold text-sm hover:bg-muted transition-all"
+            >
+              <Settings size={18} />
+              {openingPortal ? "Abrindo..." : "Gerenciar Assinatura (Upgrade, Cancelar, Pagamento)"}
+            </button>
+          </div>
+        )}
 
         <div className="mt-10 bg-card border border-border rounded-2xl p-6">
           <h3 className="font-display font-bold text-lg text-foreground mb-3">Como funciona?</h3>
