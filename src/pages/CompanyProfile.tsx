@@ -1125,6 +1125,7 @@ export default function CompanyProfile() {
                 case "gallery": return <StoreLayoutGallery {...layoutProps} />;
                 case "elegant": return <StoreLayoutElegant {...layoutProps} />;
                 case "showcase": return <StoreLayoutShowcase {...layoutProps} />;
+                case "marketplace": return <StoreLayoutMarketplace {...layoutProps} />;
                 default: return <StoreLayoutNetflix {...layoutProps} />;
               }
             })()}
