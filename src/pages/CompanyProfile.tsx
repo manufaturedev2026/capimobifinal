@@ -600,7 +600,7 @@ export default function CompanyProfile() {
           {dbProfile?.seller_category && (
             <span className="text-white/70 text-xs font-medium mb-2">
               {({ imobiliaria: "🏢 Imobiliária", corretor: "📋 Corretor(a)", proprietario: "🏠 Proprietário", construtora: "🏗️ Construtora" } as Record<string, string>)[dbProfile.seller_category]}
-              {dbProfile.seller_category === "corretor" && dbProfile.creci && ` • ${dbProfile.creci}`}
+              {["corretor", "imobiliaria", "construtora"].includes(dbProfile.seller_category) && dbProfile.creci && ` • ${dbProfile.creci}`}
             </span>
           )}
 
@@ -804,7 +804,7 @@ export default function CompanyProfile() {
                     {dbProfile?.seller_category && (
                       <span className="flex items-center gap-1 text-white/80 text-xs font-medium bg-white/10 px-2 py-0.5 rounded-full">
                         {({ imobiliaria: "🏢 Imobiliária", corretor: "📋 Corretor(a)", proprietario: "🏠 Proprietário", construtora: "🏗️ Construtora" } as Record<string, string>)[dbProfile.seller_category]}
-                        {dbProfile.seller_category === "corretor" && dbProfile.creci && ` • ${dbProfile.creci}`}
+                        {["corretor", "imobiliaria", "construtora"].includes(dbProfile.seller_category) && dbProfile.creci && ` • ${dbProfile.creci}`}
                       </span>
                     )}
                     {company.address && (
