@@ -306,19 +306,6 @@ export default function SellerProfile() {
             </div>
           )}
 
-          {/* CNPJ field — only for imobiliaria */}
-          {form.seller_category === "imobiliaria" && (
-            <div className="mt-4">
-              <label className="text-sm font-medium text-foreground mb-1 block">CNPJ</label>
-              <input
-                value={form.cnpj}
-                onChange={(e) => setForm((f) => ({ ...f, cnpj: e.target.value }))}
-                className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
-                placeholder="Ex: 12.345.678/0001-90"
-              />
-              <p className="text-xs text-muted-foreground mt-1">O CNPJ será exibido no perfil da sua loja.</p>
-            </div>
-          )}
         </div>
 
         {/* Info */}
