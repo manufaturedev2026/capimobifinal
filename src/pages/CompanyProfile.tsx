@@ -499,7 +499,7 @@ export default function CompanyProfile() {
               "@context": "https://schema.org",
               "@type": "RealEstateAgent",
               "name": company.name,
-              "url": `https://lojaes.lovable.app/empresa/${dbProfile?.slug || id}`,
+              "url": `https://redeimoveisgb.lovable.app/empresa/${dbProfile?.slug || id}`,
               "logo": company.logo || undefined,
               "image": company.logo || undefined,
               "description": dbProfile?.bio || `Imóveis em ${dbProfile?.city || "ES"}`,
