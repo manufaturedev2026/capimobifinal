@@ -58,7 +58,7 @@ export const PACKAGE_CONFIG = {
       "Até 25 anúncios ativos",
       "Loja estilo Netflix",
       "3 Stories por 24h",
-      "Selo Premium nos anúncios",
+      "Selo VIP nos anúncios",
       "Destaque no topo da listagem",
       "Estatísticas avançadas",
       "Suporte prioritário",
