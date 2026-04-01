@@ -140,7 +140,7 @@ export default function SellerItemForm() {
               category: d.category,
               price: d.price?.toString() || "",
               city: d.city || "",
-              state: d.state || "ES",
+              state: d.state || "",
               neighborhood: d.neighborhood || "",
               address: d.address?.replace(/,\s*\d+$/, '') || "",
               addressNumber: d.address?.match(/,\s*(\d+)$/)?.[1] || "",
