@@ -31,7 +31,7 @@ No painel, clique no botão **"Novo Anúncio"** (ícone de +). Você será direc
 ### 3. Preencha as Informações Básicas
 
 - **Título:** Escreva um título atrativo e descritivo. Ex: "Apartamento 3 quartos com vista para o mar em Vila Velha"
-- **Categoria:** Selecione o tipo (Casa, Apartamento, Terreno, Comercial, Carro, etc.)
+- **Categoria:** Selecione o tipo (Casa, Apartamento, Terreno, Comercial, Galpão, Flat)
 - **Preço:** Informe o valor de venda ou aluguel
 - **Localização:** Cidade, bairro e endereço
 
