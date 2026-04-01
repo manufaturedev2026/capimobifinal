@@ -643,56 +643,78 @@ export default function Index() {
 
       {/* ═══════════ PLANOS ═══════════ */}
       <section className="px-4 py-16 md:py-24 bg-secondary/50">
-        <div className="max-w-4xl mx-auto text-center">
+        <div className="max-w-5xl mx-auto text-center">
           <Badge variant="outline" className="mb-4 text-accent border-accent/30">Preços simples</Badge>
           <h2 className="font-display font-bold text-2xl md:text-4xl text-foreground">
-            Comece grátis, <span className="text-accent">cresça</span> quando quiser
+            Escolha o plano ideal para <span className="text-accent">seu negócio</span>
           </h2>
 
-          <div className="grid md:grid-cols-3 gap-5 mt-12">
-            {PLANS_PREVIEW.map((plan, i) => (
-              <motion.div
-                key={plan.name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className={`rounded-3xl p-6 border-2 transition-all ${
-                  plan.highlight
-                    ? "border-primary bg-primary/5 shadow-xl shadow-primary/10 scale-105"
-                    : "border-border bg-card hover:border-primary/20"
-                }`}
-              >
-                {plan.highlight && (
-                  <Badge className="bg-primary text-primary-foreground mb-3">
-                    <Star size={12} className="mr-1" /> Mais Popular
-                  </Badge>
-                )}
-                <h3 className="font-display font-bold text-lg text-foreground">{plan.name}</h3>
-                <p className="font-display font-extrabold text-3xl text-foreground mt-2">
-                  {plan.price}
-                  {plan.price !== "Grátis" && <span className="text-sm font-normal text-muted-foreground">/mês</span>}
-                </p>
-                <p className="text-sm text-muted-foreground mt-3">{plan.items}</p>
-                <ul className="mt-4 space-y-2 text-left">
-                  {["App instalável (PWA)", "Link na Bio profissional", "WhatsApp integrado", "CRM de leads"].map((f) => (
-                    <li key={f} className="flex items-center gap-2 text-sm text-foreground">
-                      <Check size={14} className="text-emerald-500 flex-shrink-0" /> {f}
-                    </li>
-                  ))}
-                </ul>
-                <Button
-                  asChild
-                  className="w-full mt-6"
-                  variant={plan.highlight ? "default" : "outline"}
+          <div className="grid md:grid-cols-3 gap-6 mt-12">
+            {PLANS_PREVIEW.map((plan, i) => {
+              const Icon = plan.icon;
+              return (
+                <motion.div
+                  key={plan.name}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 }}
+                  className={`relative rounded-3xl overflow-hidden border-2 transition-all ${
+                    plan.highlight
+                      ? "border-amber-400 shadow-2xl shadow-amber-500/15 scale-[1.03]"
+                      : "border-border bg-card hover:border-primary/20 hover:shadow-lg"
+                  }`}
                 >
-                  <Link to="/pacotes">
-                    {plan.highlight ? "Criar Meu App" : "Ver Detalhes"}
-                    <ChevronRight size={16} />
-                  </Link>
-                </Button>
-              </motion.div>
-            ))}
+                  {plan.highlight && (
+                    <div className="absolute top-0 right-0 px-4 py-1 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold rounded-bl-xl z-10">
+                      POPULAR
+                    </div>
+                  )}
+
+                  <div className={`p-6 bg-gradient-to-br ${plan.color} text-white`}>
+                    <Icon size={28} className="mb-2" />
+                    <h3 className="font-display font-extrabold text-xl">{plan.name}</h3>
+                    <div className="mt-2">
+                      <span className="font-display font-bold text-3xl">{plan.price}</span>
+                      <span className="text-white/70 text-sm">/mês</span>
+                    </div>
+                    <div className="mt-2 px-3 py-1.5 bg-white/15 rounded-xl text-center">
+                      <span className="text-white/80 text-xs">Implementação: </span>
+                      <span className="text-white font-bold text-sm">{plan.setupFee}</span>
+                    </div>
+                  </div>
+
+                  <div className="p-6 bg-card">
+                    <p className="text-sm font-semibold text-foreground">{plan.items}</p>
+                    <p className="text-xs text-muted-foreground mt-1">{plan.layouts}</p>
+
+                    <ul className="mt-4 space-y-2 text-left">
+                      {["App instalável (PWA)", "Link na Bio profissional", "WhatsApp integrado", "CRM de leads"].map((f) => (
+                        <li key={f} className="flex items-center gap-2 text-sm text-foreground">
+                          <Check size={14} className="text-emerald-500 flex-shrink-0" /> {f}
+                        </li>
+                      ))}
+                      {plan.benefits?.map((b) => (
+                        <li key={b} className="flex items-center gap-2 text-sm text-foreground">
+                          <Check size={14} className="text-primary flex-shrink-0" /> {b}
+                        </li>
+                      ))}
+                    </ul>
+
+                    <Button
+                      asChild
+                      className={`w-full mt-6 ${plan.highlight ? "shadow-lg" : ""}`}
+                      variant={plan.highlight ? "default" : "outline"}
+                    >
+                      <Link to="/pacotes">
+                        {plan.highlight ? "Criar Meu App" : "Ver Detalhes"}
+                        <ChevronRight size={16} />
+                      </Link>
+                    </Button>
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </section>
