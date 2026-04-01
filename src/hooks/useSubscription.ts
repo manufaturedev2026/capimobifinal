@@ -59,7 +59,7 @@ export const PACKAGE_CONFIG = {
     badgeColor: "bg-gradient-to-r from-amber-500 to-orange-500 text-white",
     benefits: [
       "Até 60 anúncios ativos",
-      "Loja estilo Netflix",
+      "4 Layouts (Netflix, Minimal, Marketplace, Showcase)",
       
       "Selo VIP nos anúncios",
       "Destaque no topo da listagem",
