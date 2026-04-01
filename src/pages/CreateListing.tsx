@@ -143,10 +143,10 @@ export default function CreateListing() {
       </section>
 
       {/* Benefits */}
-      <section id="beneficios" className="py-16 md:py-24">
+      <section id="beneficios" className="py-10 sm:py-16 md:py-24">
         <div className="container max-w-6xl mx-auto px-4">
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
-            <h2 className="font-display font-bold text-3xl md:text-4xl text-foreground mb-3">
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-8 sm:mb-12">
+            <h2 className="font-display font-bold text-2xl sm:text-3xl md:text-4xl text-foreground mb-3">
               Por que anunciar no <span className="text-accent">ES Corretores</span>?
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">Tudo que você precisa para vender mais imóveis em um só lugar.</p>
