@@ -68,7 +68,7 @@ export default function PackagesPage() {
   return (
     <div className="min-h-screen bg-background">
       <div className="gradient-hero py-12">
-        <div className="container max-w-5xl mx-auto px-4">
+        <div className="container max-w-6xl mx-auto px-4">
           <Link to="/painel" className="inline-flex items-center gap-2 text-white/70 text-sm mb-4 hover:text-white transition-colors">
             <ArrowLeft size={16} /> Voltar ao Painel
           </Link>
@@ -77,8 +77,8 @@ export default function PackagesPage() {
         </div>
       </div>
 
-      <div className="container max-w-5xl mx-auto px-4 -mt-8 relative z-10 pb-24 lg:pb-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="container max-w-6xl mx-auto px-4 -mt-8 relative z-10 pb-24 lg:pb-16">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {tiers.map((tier, i) => {
             const config = PACKAGE_CONFIG[tier];
             const Icon = tierIcons[tier];
