@@ -249,7 +249,7 @@ export default function BecomeAgentPage() {
               <h1 className="font-display font-black text-5xl md:text-7xl lg:text-8xl leading-[0.95] mb-6">
                 Torne-se um
                 <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-white to-accent">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-primary-foreground to-accent">
                   Corretor de Imóveis
                 </span>
               </h1>
@@ -298,8 +298,8 @@ export default function BecomeAgentPage() {
           animate={{ y: [0, 8, 0] }}
           transition={{ duration: 2, repeat: Infinity }}
         >
-          <div className="w-6 h-10 rounded-full border-2 border-white/20 flex justify-center pt-2">
-            <div className="w-1 h-2 rounded-full bg-white/40" />
+          <div className="w-6 h-10 rounded-full border-2 border-border flex justify-center pt-2">
+            <div className="w-1 h-2 rounded-full bg-muted-foreground" />
           </div>
         </motion.div>
       </div>
@@ -422,7 +422,7 @@ export default function BecomeAgentPage() {
                 className={`group rounded-2xl p-7 border transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 ${
                   item.accent
                     ? "bg-gradient-to-br from-accent/15 to-accent/5 border-accent/25 hover:border-accent/50"
-                    : "bg-white/[0.03] border-border hover:border-primary/40 hover:bg-white/[0.06]"
+                    : "bg-secondary/30 border-border hover:border-primary/40 hover:bg-secondary/50"
                 }`}
               >
                 <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-5 transition-transform group-hover:scale-110 ${
@@ -524,7 +524,7 @@ export default function BecomeAgentPage() {
                 >
                   {/* Content */}
                   <div className={`flex-1 ${i % 2 === 0 ? "md:pr-16 md:text-right" : "md:pl-16"}`}>
-                    <div className={`bg-white/[0.04] rounded-2xl p-6 md:p-8 border border-border hover:border-primary/30 transition-all hover:shadow-xl ${i % 2 === 0 ? "md:ml-auto" : ""} max-w-lg`}>
+                    <div className={`bg-secondary/30 rounded-2xl p-6 md:p-8 border border-border hover:border-primary/30 transition-all hover:shadow-xl ${i % 2 === 0 ? "md:ml-auto" : ""} max-w-lg`}>
                       <div className="flex items-center gap-3 mb-3">
                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${i === 0 ? "bg-accent/20 text-accent" : "bg-primary/15 text-primary"} md:hidden`}>
                           <step.icon size={20} />
@@ -591,7 +591,7 @@ export default function BecomeAgentPage() {
                     className={`flex items-start gap-4 p-4 rounded-xl border transition-all hover:-translate-y-0.5 ${
                       skill.accent
                         ? "bg-accent/10 border-accent/20 hover:border-accent/40"
-                        : "bg-white/[0.03] border-border hover:border-primary/30"
+                        : "bg-secondary/30 border-border hover:border-primary/30"
                     }`}
                   >
                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${skill.accent ? "bg-accent/20 text-accent" : "bg-primary/15 text-primary"}`}>
@@ -629,7 +629,7 @@ export default function BecomeAgentPage() {
                 whileInView="visible"
                 viewport={{ once: true }}
                 variants={fadeUp}
-                className="bg-white/[0.04] rounded-2xl p-7 border border-border hover:border-primary/30 transition-all hover:shadow-xl relative"
+                className="bg-secondary/30 rounded-2xl p-7 border border-border hover:border-primary/30 transition-all hover:shadow-xl relative"
               >
                 <Quote size={32} className="text-primary/20 absolute top-5 right-5" />
                 <div className="flex gap-1 mb-4">
@@ -640,7 +640,7 @@ export default function BecomeAgentPage() {
                 <p className="text-muted-foreground text-sm leading-relaxed mb-6 italic">"{t.text}"</p>
                 <div>
                   <div className="font-display font-bold  text-foreground">{t.name}</div>
-                  <div className="text-white/40 text-xs">{t.role}</div>
+                  <div className="text-muted-foreground text-xs">{t.role}</div>
                 </div>
               </motion.div>
             ))}
@@ -663,13 +663,13 @@ export default function BecomeAgentPage() {
               <motion.div key={i} custom={i} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}>
                 <button
                   onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                  className="w-full text-left bg-white/[0.04] hover:bg-white/[0.07] border border-border rounded-2xl p-5 transition-all"
+                  className="w-full text-left bg-secondary/30 hover:bg-secondary/50 border border-border rounded-2xl p-5 transition-all"
                 >
                   <div className="flex items-center justify-between gap-4">
                     <span className="font-display font-bold text-foreground text-sm md:text-base">{faq.q}</span>
                     <ChevronDown
                       size={18}
-                      className={`text-white/40 shrink-0 transition-transform duration-300 ${openFaq === i ? "rotate-180" : ""}`}
+                      className={`text-muted-foreground shrink-0 transition-transform duration-300 ${openFaq === i ? "rotate-180" : ""}`}
                     />
                   </div>
                   {openFaq === i && (
@@ -698,7 +698,7 @@ export default function BecomeAgentPage() {
             transition={{ duration: 0.8 }}
             className="relative rounded-[2rem] overflow-hidden"
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-[hsl(212,100%,12%)] to-accent/30" />
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-card to-accent/30" />
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,hsl(var(--primary)/0.2),transparent_60%)]" />
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,hsl(var(--accent)/0.15),transparent_50%)]" />
             <div className="absolute inset-0 border border-border rounded-[2rem]" />
@@ -738,7 +738,7 @@ export default function BecomeAgentPage() {
                 </a>
               </div>
 
-              <p className="text-white/30 text-xs mt-6">
+              <p className="text-muted-foreground text-xs mt-6">
                 Resposta rápida pelo WhatsApp • Atendimento personalizado
               </p>
             </div>
