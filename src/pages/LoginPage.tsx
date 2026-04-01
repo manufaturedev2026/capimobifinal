@@ -38,7 +38,7 @@ export default function LoginPage() {
       if (error) {
         toast({ title: "Erro ao cadastrar", description: error.message, variant: "destructive" });
       } else {
-        toast({ title: "Cadastro realizado!", description: "Bem-vindo ao ES Corretores!" });
+        toast({ title: "Cadastro realizado!", description: "Bem-vindo ao Brokers Bio!" });
         navigate("/painel");
       }
     }
