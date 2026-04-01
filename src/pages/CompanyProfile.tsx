@@ -44,6 +44,7 @@ export default function CompanyProfile() {
   const { id } = useParams();
   const location = useLocation();
   const [activeCategory, setActiveCategory] = useState("todos");
+  const [filterCity, setFilterCity] = useState("");
   const [dbProfile, setDbProfile] = useState<any>(null);
   const [dbItems, setDbItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -109,12 +110,28 @@ export default function CompanyProfile() {
     if (profile) {
       setDbProfile(profile);
       const pid = profile.id;
-      const { data: items } = await supabase
-        .from("seller_items")
-        .select("*")
-        .eq("seller_id", pid)
-        .in("status", ["ativo", "vendido"] as any)
-        .order("created_at", { ascending: false });
+      // Paginate to fetch all items (Supabase default limit is 1000)
+      let allItems: any[] = [];
+      let page = 0;
+      const pageSize = 1000;
+      let hasMore = true;
+      while (hasMore) {
+        const { data: batch } = await supabase
+          .from("seller_items")
+          .select("*")
+          .eq("seller_id", pid)
+          .in("status", ["ativo", "vendido"] as any)
+          .order("created_at", { ascending: false })
+          .range(page * pageSize, (page + 1) * pageSize - 1);
+        if (batch && batch.length > 0) {
+          allItems = [...allItems, ...batch];
+          hasMore = batch.length === pageSize;
+          page++;
+        } else {
+          hasMore = false;
+        }
+      }
+      const items = allItems;
       
       // Filter out sold items older than 24h
       const cutoff = Date.now() - 24 * 60 * 60 * 1000;
@@ -212,18 +229,30 @@ export default function CompanyProfile() {
   const products = isDbProfile ? dbDisplayItems : [];
 
   const filteredProducts = useMemo(() => {
-    if (activeCategory === "todos") return products;
+    let filtered = products;
+    // Filter by city if selected
+    if (filterCity) {
+      filtered = filtered.filter((p: any) => p.city === filterCity);
+    }
+    if (activeCategory === "todos") return filtered;
     if (activeCategory === "aluguel") {
-      return products.filter((p: any) => {
+      return filtered.filter((p: any) => {
         const tags: string[] = p.tags || [];
         return tags.includes("aluguel_flex");
       });
     }
-    return products.filter((p: any) => {
+    return filtered.filter((p: any) => {
       if (isDbProfile) return p.category === activeCategory;
       return true;
     });
-  }, [products, activeCategory, isDbProfile]);
+  }, [products, activeCategory, isDbProfile, filterCity]);
+
+  // Get unique cities from products
+  const availableCities = useMemo(() => {
+    const cities = new Set<string>();
+    products.forEach((p: any) => { if (p.city) cities.add(p.city); });
+    return Array.from(cities).sort();
+  }, [products]);
 
   const categoryCounts = useMemo(() => {
     const counts: Record<string, number> = { todos: products.length };
@@ -846,12 +875,51 @@ export default function CompanyProfile() {
             </div>
 
 
+            {/* City Filter */}
+            {availableCities.length > 1 && (
+              <div className="mb-4">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <MapPin size={16} style={{ color: storeTheme.textMuted }} className="flex-shrink-0" />
+                  <button
+                    onClick={() => setFilterCity("")}
+                    className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
+                      !filterCity
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-card border-border hover:border-primary/30"
+                    }`}
+                    style={!filterCity ? {} : { color: storeTheme.textMuted }}
+                  >
+                    Todas ({products.length})
+                  </button>
+                  {availableCities.map((city) => {
+                    const count = products.filter((p: any) => p.city === city).length;
+                    const isActive = filterCity === city;
+                    return (
+                      <button
+                        key={city}
+                        onClick={() => setFilterCity(isActive ? "" : city)}
+                        className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
+                          isActive
+                            ? "bg-primary text-primary-foreground border-primary"
+                            : "bg-card border-border hover:border-primary/30"
+                        }`}
+                        style={isActive ? {} : { color: storeTheme.textMuted }}
+                      >
+                        {city} ({count})
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
             {/* Products Header */}
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-display font-bold text-lg md:text-xl" style={{ color: storeTheme.text }}>
                 {activeCategory === "todos"
                   ? `Todos os Anúncios`
                   : subcategories.find(c => c.slug === activeCategory)?.name}
+                {filterCity && <span className="font-normal text-sm ml-2" style={{ color: storeTheme.textMuted }}>em {filterCity}</span>}
                 <span className="font-normal text-sm ml-2" style={{ color: storeTheme.textMuted }}>({filteredProducts.length})</span>
               </h2>
             </div>
