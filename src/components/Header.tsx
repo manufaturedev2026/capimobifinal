@@ -24,9 +24,9 @@ export default function Header() {
     <header className="sticky top-0 z-50 bg-card/90 backdrop-blur-xl border-b border-border">
       <div className="container max-w-6xl mx-auto flex items-center justify-between h-16 px-4">
         <Link to="/" className="flex items-center gap-2.5">
-          <img src="/pwa-icon-512.png" alt="Brokers Bio" className="w-9 h-9 rounded-xl shadow-md object-contain" />
+          <img src="/pwa-icon-512.png" alt="Brokers App" className="w-9 h-9 rounded-xl shadow-md object-contain" />
           <span className="text-xl tracking-wide uppercase" style={{ fontFamily: "'Orbitron', sans-serif", fontWeight: 800 }}>
-            <span className="text-primary">Brokers</span><span className="text-accent">Bio</span>
+            <span className="text-primary">Brokers</span><span className="text-accent">App</span>
           </span>
         </Link>
 
