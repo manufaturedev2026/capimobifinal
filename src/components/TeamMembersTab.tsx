@@ -49,6 +49,7 @@ export default function TeamMembersTab({ profileId, userId, maxMembers }: Props)
     bio: "",
     photo_url: "",
     instagram: "",
+    slug: "",
   });
 
   const fetchMembers = async () => {
