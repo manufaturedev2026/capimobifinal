@@ -185,7 +185,7 @@ export default function CreateListing() {
               <p className="text-muted-foreground text-sm sm:text-lg leading-relaxed mb-6 sm:mb-8">
                 Cada corretor ganha uma loja personalizada com visual moderno. Seus imóveis exibidos em carrosséis elegantes, stories e modo cinema.
               </p>
-              <div className="space-y-3 mb-8">
+              <div className="space-y-2 sm:space-y-3 mb-6 sm:mb-8">
                 {["Carrosséis com fotos em alta qualidade", "Stories interativos por 24h", "Modo Cinema imersivo", "Link exclusivo para compartilhar", "Estatísticas de visualizações"].map((b, i) => (
                   <motion.div key={i} custom={i} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="flex items-center gap-3">
                     <div className="w-5 h-5 rounded-full bg-accent/20 flex items-center justify-center shrink-0">
