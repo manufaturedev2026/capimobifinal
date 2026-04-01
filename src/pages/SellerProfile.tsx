@@ -275,8 +275,8 @@ export default function SellerProfile() {
             ))}
           </div>
 
-          {/* CRECI field — only for corretor */}
-          {form.seller_category === "corretor" && (
+          {/* CRECI field — for corretor, imobiliaria, construtora */}
+          {["corretor", "imobiliaria", "construtora"].includes(form.seller_category) && (
             <div className="mt-4">
               <label className="text-sm font-medium text-foreground mb-1 block">Número do CRECI</label>
               <input
@@ -286,6 +286,20 @@ export default function SellerProfile() {
                 placeholder="Ex: CRECI 12345-ES"
               />
               <p className="text-xs text-muted-foreground mt-1">O CRECI será exibido no perfil da sua loja.</p>
+            </div>
+          )}
+
+          {/* CNPJ field — for imobiliaria, construtora */}
+          {["imobiliaria", "construtora"].includes(form.seller_category) && (
+            <div className="mt-4">
+              <label className="text-sm font-medium text-foreground mb-1 block">CNPJ</label>
+              <input
+                value={form.cnpj}
+                onChange={(e) => setForm((f) => ({ ...f, cnpj: e.target.value }))}
+                className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+                placeholder="Ex: 12.345.678/0001-99"
+              />
+              <p className="text-xs text-muted-foreground mt-1">O CNPJ só aparece na loja se preenchido.</p>
             </div>
           )}
 
