@@ -840,7 +840,7 @@ export default function CompanyProfile() {
                     <MessageCircle size={14} /> WhatsApp
                   </button>
                 )}
-                {(company as any).instagram && ["vip", "premium", "essencial_empresa", "premium_empresa", "prime_empresa"].includes(sellerTier || "") && (
+                {(company as any).instagram && ["start", "vip", "premium", "essencial_empresa", "premium_empresa", "prime_empresa"].includes(sellerTier || "") && (
                   <a href={`https://instagram.com/${(company as any).instagram.replace(/^@/, "")}`} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#833AB4] via-[#E1306C] to-[#F77737] text-white font-bold text-sm hover:opacity-90 transition-opacity shadow-lg whitespace-nowrap flex-shrink-0">
                     <Instagram size={14} /> Instagram
                   </a>
