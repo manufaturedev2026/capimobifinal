@@ -532,7 +532,7 @@ export default function AdminPanel() {
                           <Check size={12} /> Aprovar
                         </button>
                       )}
-                      {sub && (
+                       {sub && (
                         <>
                           <button onClick={() => renewSubscription(sub.id)}
                             className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-semibold hover:bg-primary/20">
@@ -543,6 +543,17 @@ export default function AdminPanel() {
                             <X size={12} /> Cancelar
                           </button>
                         </>
+                      )}
+                      {bans[seller.user_id] ? (
+                        <button onClick={() => unbanUser(seller.user_id)}
+                          className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-green-500/10 text-green-600 text-xs font-semibold hover:bg-green-500/20">
+                          <ShieldOff size={12} /> Desbanir
+                        </button>
+                      ) : (
+                        <button onClick={() => openBanDialog(seller)}
+                          className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-red-900/10 text-red-500 text-xs font-semibold hover:bg-red-900/20">
+                          <Ban size={12} /> Banir
+                        </button>
                       )}
                     </div>
                   </div>
