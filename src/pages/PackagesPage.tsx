@@ -8,7 +8,7 @@ import { useSubscription, PACKAGE_CONFIG } from "@/hooks/useSubscription";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
-const tiers = ["basico", "start", "premium", "vip"] as const;
+const tiers = ["start", "premium", "vip"] as const;
 const tierIcons = { basico: Zap, start: Zap, premium: Star, vip: Crown };
 
 export default function PackagesPage() {
@@ -110,14 +110,8 @@ export default function PackagesPage() {
                   <Icon size={32} className="mb-3" />
                   <h2 className="font-display font-extrabold text-2xl">{config.name}</h2>
                   <div className="mt-2">
-                    {config.price === 0 ? (
-                      <span className="font-display font-bold text-3xl">Grátis</span>
-                    ) : (
-                      <>
-                        <span className="font-display font-bold text-3xl">R$ {config.price.toFixed(2).replace(".", ",")}</span>
-                        <span className="text-white/70 text-sm">/mês</span>
-                      </>
-                    )}
+                    <span className="font-display font-bold text-3xl">R$ {config.price.toFixed(2).replace(".", ",")}</span>
+                    <span className="text-white/70 text-sm">/mês</span>
                   </div>
                   {config.setupFee > 0 && (
                     <div className="mt-2 px-3 py-1.5 bg-white/15 rounded-xl text-center">
@@ -151,8 +145,6 @@ export default function PackagesPage() {
                       ? "Processando..."
                       : isCurrent
                       ? "Plano Atual"
-                      : config.price === 0
-                      ? "Ativar Grátis"
                       : "Contratar"}
                   </button>
                 </div>
