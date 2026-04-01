@@ -168,7 +168,7 @@ export default function CreateListing() {
         <div className="container max-w-6xl mx-auto px-4">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
             <h2 className="font-display font-bold text-3xl md:text-4xl text-foreground mb-3">Planos para Corretores</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">Comece grátis e evolua conforme sua carteira cresce.</p>
+            <p className="text-muted-foreground max-w-2xl mx-auto">Comece com 7 dias grátis e evolua conforme sua carteira cresce.</p>
           </motion.div>
 
           <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
