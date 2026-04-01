@@ -305,7 +305,7 @@ export default function SellerDashboard() {
   };
 
   const isFreePlan = currentTier === "basico";
-  const isImobiliaria = profile?.seller_category === "imobiliaria";
+  const isImobiliaria = profile?.seller_category === "imobiliaria" || profile?.seller_category === "construtora";
   const isEmpresaPlan = ["essencial_empresa", "premium_empresa", "prime_empresa"].includes(currentTier);
   const showTeamTab = isEmpresaPlan || isImobiliaria;
   const maxTeamMembers = currentTier === ("prime_empresa" as any) ? 30 : currentTier === "premium_empresa" ? 15 : currentTier === "essencial_empresa" ? 6 : isImobiliaria ? 3 : 0;
