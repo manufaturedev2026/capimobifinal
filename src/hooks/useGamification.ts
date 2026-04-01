@@ -130,13 +130,21 @@ export function useGamification(userId?: string, sellerId?: string) {
   const fetchStats = useCallback(async () => {
     if (!userId || !sellerId) return;
 
+    // Count active listings
     const { data: items } = await supabase
       .from("seller_items")
-      .select("views_count")
+      .select("id")
       .eq("seller_id", sellerId)
       .eq("status", "ativo");
-    const totalViews = (items || []).reduce((sum, i) => sum + (i.views_count || 0), 0);
     const totalListings = (items || []).length;
+
+    // Count views from seller_analytics (the actual source of truth)
+    const { count } = await supabase
+      .from("seller_analytics")
+      .select("id", { count: "exact", head: true })
+      .eq("seller_id", sellerId)
+      .eq("event_type", "view");
+    const totalViews = count || 0;
 
     setStats({ totalViews, totalListings, profileComplete: false });
   }, [userId, sellerId]);
