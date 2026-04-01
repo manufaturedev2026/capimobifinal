@@ -18,9 +18,9 @@ const PRICE_TO_TIER: Record<string, string> = {
 };
 
 const TIER_MAX_ITEMS: Record<string, number> = {
-  start: 10,
-  premium: 25,
-  vip: 50,
+  start: 25,
+  premium: 60,
+  vip: 115,
   essencial_empresa: 9999,
   premium_empresa: 9999,
   prime_empresa: 9999,
