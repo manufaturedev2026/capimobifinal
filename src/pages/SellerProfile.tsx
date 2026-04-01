@@ -65,7 +65,7 @@ export default function SellerProfile() {
         logo_url: profile.logo_url || "",
         address: profile.address || "",
         city: profile.city || "",
-        state: profile.state || "ES",
+        state: profile.state || "",
         show_location: profile.show_location ?? true,
         instagram: (profile as any).instagram || "",
         bio: (profile as any).bio || "",
