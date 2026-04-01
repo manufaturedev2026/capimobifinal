@@ -580,6 +580,7 @@ export default function ProductDetail() {
                     title: title,
                     price: product.price,
                     image: images[0] || "",
+                    images: images || [],
                     location: mapAddress || "",
                     description: product.description || "",
                     tags: product.tags || [],
