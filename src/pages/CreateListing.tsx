@@ -276,17 +276,17 @@ export default function CreateListing() {
       </section>
 
       {/* Plans Preview - Corretores */}
-      <section className="py-16 md:py-24 bg-secondary/30">
+      <section className="py-10 sm:py-16 md:py-24 bg-secondary/30">
         <div className="container max-w-6xl mx-auto px-4">
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
-            <h2 className="font-display font-bold text-3xl md:text-4xl text-foreground mb-3">Planos para Corretores</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">Comece com 7 dias grátis e evolua conforme sua carteira cresce.</p>
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-8 sm:mb-12">
+            <h2 className="font-display font-bold text-2xl sm:text-3xl md:text-4xl text-foreground mb-3">Planos para Corretores</h2>
+            <p className="text-muted-foreground text-sm sm:text-base max-w-2xl mx-auto">Comece com 7 dias grátis e evolua conforme sua carteira cresce.</p>
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 max-w-4xl mx-auto">
             {plans.map((plan, i) => (
               <motion.div key={plan.name} custom={i} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
-                className={`rounded-2xl p-6 border text-center ${plan.highlight ? "bg-gradient-to-b from-primary/10 to-accent/10 border-primary/30 shadow-xl scale-105" : "bg-card border-border"}`}>
+                className={`rounded-2xl p-5 sm:p-6 border text-center ${plan.highlight ? "bg-gradient-to-b from-primary/10 to-accent/10 border-primary/30 shadow-xl sm:scale-105" : "bg-card border-border"}`}>
                 {plan.highlight && (
                   <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-primary/20 text-primary text-xs font-bold mb-4">
                     <Star size={12} /> Mais popular
