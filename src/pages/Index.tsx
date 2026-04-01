@@ -297,6 +297,18 @@ export default function Index() {
             <p className="text-muted-foreground mt-3 max-w-lg mx-auto">
               Uma vitrine profissional que impressiona seus clientes e gera contatos no WhatsApp
             </p>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              className="mt-5"
+            >
+              <Button asChild size="lg" className="gap-2 font-bold rounded-full shadow-lg shadow-primary/30 animate-pulse-glow">
+                <Link to="/empresa/gabriel-imoveis">
+                  <Eye size={18} /> Ver Exemplo Real ao Vivo
+                </Link>
+              </Button>
+            </motion.div>
           </div>
 
           {/* Mock store preview — Showcase style */}
