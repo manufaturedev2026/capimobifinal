@@ -195,8 +195,8 @@ const faqs = [
     a: "Sim! Muitos corretores começam atuando nos finais de semana e horários livres. A flexibilidade é uma das maiores vantagens.",
   },
   {
-    q: "O ES Corretores cobra para anunciar?",
-    a: "O cadastro é gratuito com até 3 anúncios. Temos planos premium para quem deseja mais visibilidade e recursos.",
+    q: "O Brokers Bio cobra para anunciar?",
+    a: "O cadastro é gratuito com até 5 anúncios. Temos planos premium para quem deseja mais visibilidade e recursos.",
   },
 ];
 
