@@ -3,7 +3,7 @@ import { getStoreUrl, getStoreFullUrl } from "@/lib/storeUrl";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Package, Eye, Plus, Settings, Edit, Trash2, Copy, ToggleLeft, ToggleRight, Search, Image, LogOut, BarChart3, Star, Crown, Zap, AlertTriangle, Shield, MessageCircle, Home, UserCircle, Headphones, Globe, ExternalLink, CheckCircle2, ClipboardCopy, Megaphone, Send, Calculator, Lock, Clapperboard, Menu, X, Building2, BookOpen, Users, Trophy, BadgeCheck, GripVertical, ChevronRight, Gift } from "lucide-react";
+import { Package, Eye, Plus, Settings, Edit, Trash2, Copy, ToggleLeft, ToggleRight, Search, Image, LogOut, BarChart3, Star, Crown, Zap, AlertTriangle, Shield, MessageCircle, Home, UserCircle, Headphones, Globe, ExternalLink, CheckCircle2, ClipboardCopy, Lock, Clapperboard, Menu, X, Building2, Users, Trophy, BadgeCheck, GripVertical, ChevronRight, Gift } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import SoldCountdown from "@/components/SoldCountdown";
 import TeamMembersTab from "@/components/TeamMembersTab";
@@ -35,7 +35,7 @@ type SellerItem = {
   sold_at: string | null;
 };
 
-type DashboardTab = "overview" | "items" | "stats" | "domain" | "ads" | "study" | "team" | "events" | "referral" | "crm";
+type DashboardTab = "overview" | "items" | "stats" | "domain" | "team" | "events" | "referral" | "crm";
 
 export default function SellerDashboard() {
   const { user, profile, signOut, refreshProfile, loading: authLoading } = useAuth();
@@ -50,11 +50,6 @@ export default function SellerDashboard() {
   const { dailyData, weeklyData, totals: analyticsTotals, loading: analyticsLoading } = useSellerAnalytics(profile?.id);
   const [chartView, setChartView] = useState<"diario" | "semanal">("diario");
   const [activeTab, setActiveTab] = useState<DashboardTab>("overview");
-  const [adDailyBudget, setAdDailyBudget] = useState<string>("10");
-  const [adDuration, setAdDuration] = useState<string>("4");
-  const [adDetails, setAdDetails] = useState("");
-  const [adSubmitting, setAdSubmitting] = useState(false);
-  const [adHistory, setAdHistory] = useState<any[]>([]);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [draggedItemId, setDraggedItemId] = useState<string | null>(null);
   const [dragOverItemId, setDragOverItemId] = useState<string | null>(null);
@@ -67,19 +62,6 @@ export default function SellerDashboard() {
     if (user) fetchItems();
   }, [user]);
 
-  const fetchAdHistory = async () => {
-    if (!user) return;
-    const { data } = await supabase
-      .from("ad_requests")
-      .select("*")
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false });
-    if (data) setAdHistory(data);
-  };
-
-  useEffect(() => {
-    if (user) fetchAdHistory();
-  }, [user]);
 
   useEffect(() => {
     if (profile?.id) {
@@ -260,56 +242,13 @@ export default function SellerDashboard() {
   };
 
 
-  const adBudget = parseFloat(adDailyBudget) || 0;
-  const adDays = parseInt(adDuration) || 0;
-  const adSubtotal = adBudget * adDays;
-  const adServiceFee = Math.ceil(adSubtotal / 44) * 10;
-  const adTotal = adSubtotal + adServiceFee;
-  // Estimativa: a cada R$8.64 = 1.661 impressões
-  const adDailyImpressions = Math.floor((adBudget / 8.64) * 1661);
-  const adTotalImpressions = adDailyImpressions * adDays;
-
-  const submitAdRequest = async () => {
-    if (!user || !profile || adSubtotal <= 0) return;
-    if (adBudget < 10) {
-      toast({ title: "Valor mínimo é R$ 10,00/dia", variant: "destructive" });
-      return;
-    }
-    if (adDays < 4) {
-      toast({ title: "Mínimo de 4 dias (depósito mínimo R$ 40,00)", variant: "destructive" });
-      return;
-    }
-    setAdSubmitting(true);
-    const { error } = await supabase.from("ad_requests").insert({
-      seller_id: profile.id,
-      user_id: user.id,
-      platform: "ads_interno",
-      daily_budget: adBudget,
-      duration_days: adDays,
-      details: adDetails || null,
-      subtotal: adSubtotal,
-      tax_amount: 0,
-      service_fee: adServiceFee,
-      total: adTotal,
-    } as any);
-    setAdSubmitting(false);
-    if (!error) {
-      toast({ title: "Solicitação enviada!", description: "O admin receberá sua solicitação de ADS." });
-      setAdDailyBudget("");
-      setAdDuration("");
-      setAdDetails("");
-      fetchAdHistory();
-    } else {
-      toast({ title: "Erro ao enviar", description: error.message, variant: "destructive" });
-    }
-  };
 
   const isFreePlan = currentTier === "basico";
   const isImobiliaria = profile?.seller_category === "imobiliaria" || profile?.seller_category === "construtora";
   const isEmpresaPlan = ["essencial_empresa", "premium_empresa", "prime_empresa"].includes(currentTier);
   const showTeamTab = isEmpresaPlan || isImobiliaria;
   const maxTeamMembers = currentTier === ("prime_empresa" as any) ? 30 : currentTier === "premium_empresa" ? 15 : currentTier === "essencial_empresa" ? 6 : isImobiliaria ? 3 : 0;
-  const lockedTabs: DashboardTab[] = isFreePlan ? ["domain", "ads"] : [];
+  const lockedTabs: DashboardTab[] = isFreePlan ? ["domain"] : [];
 
   const sidebarNav: { id: DashboardTab; label: string; icon: any; locked?: boolean }[] = [
     { id: "overview", label: "Visão Geral", icon: Home },
@@ -318,17 +257,11 @@ export default function SellerDashboard() {
     { id: "events", label: "Eventos", icon: Trophy },
     { id: "referral" as DashboardTab, label: "Indique e Ganhe", icon: Gift },
     { id: "crm" as DashboardTab, label: "Meu CRM", icon: MessageCircle },
-    { id: "ads", label: "Fazer ADS", icon: Megaphone, locked: lockedTabs.includes("ads") },
     { id: "domain", label: "Meu Domínio", icon: Globe, locked: lockedTabs.includes("domain") },
     ...(showTeamTab ? [{ id: "team" as DashboardTab, label: "Empresa", icon: Users }] : []),
-    { id: "study", label: "Material de Estudo", icon: BookOpen },
   ];
 
   const handleTabClick = (tabId: DashboardTab) => {
-    if (tabId === "study") {
-      navigate("/painel/estudo");
-      return;
-    }
     if (lockedTabs.includes(tabId)) {
       toast({
         title: "Recurso bloqueado 🔒",
@@ -869,128 +802,6 @@ export default function SellerDashboard() {
               </div>
             )}
 
-            {/* ADS Tab */}
-            {activeTab === "ads" && (
-              <div className="space-y-6">
-                <div className="bg-card border border-border rounded-2xl p-6">
-                  <div className="flex items-center gap-3 mb-5">
-                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                      <Megaphone size={20} className="text-primary" />
-                    </div>
-                    <div>
-                      <h2 className="font-display font-bold text-lg text-foreground">Fazer ADS</h2>
-                      <p className="text-xs text-muted-foreground">Iremos procurar clientes selecionados para o seu negócio e trazê-los para a sua Loja. Entrarei em contato com você através do seu WhatsApp para fecharmos o negócio.</p>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    {/* Budget & Duration */}
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <label className="text-sm font-semibold text-foreground mb-1.5 block">Valor diário (R$)</label>
-                        <input type="number" min="10" value={adDailyBudget} onChange={(e) => setAdDailyBudget(e.target.value)}
-                          placeholder="Mínimo R$ 10" className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" />
-                      </div>
-                      <div>
-                        <label className="text-sm font-semibold text-foreground mb-1.5 block">Durante quantos dias?</label>
-                        <input type="number" min="4" value={adDuration} onChange={(e) => setAdDuration(e.target.value)}
-                          placeholder="Mínimo 4 dias" className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" />
-                      </div>
-                    </div>
-
-                    {/* Details */}
-                    <div>
-                      <label className="text-sm font-semibold text-foreground mb-1.5 block">Detalhes (opcional)</label>
-                      <textarea value={adDetails} onChange={(e) => setAdDetails(e.target.value)} rows={3} maxLength={500}
-                        placeholder="Descreva o que deseja divulgar, público-alvo, região..."
-                        className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none resize-none" />
-                    </div>
-
-                    {/* Pricing Breakdown */}
-                    {adSubtotal > 0 && (
-                      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-                        className="bg-muted rounded-2xl p-5 space-y-3">
-                        <div className="flex items-center gap-2 mb-2">
-                          <Calculator size={16} className="text-primary" />
-                          <span className="font-display font-bold text-foreground">Resumo do Investimento</span>
-                        </div>
-                        <div className="space-y-2 text-sm">
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">Valor por dia</span>
-                            <span className="text-foreground font-medium">R$ {adBudget.toFixed(2)}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">Impressões estimadas/dia</span>
-                            <span className="text-foreground font-medium">~{adDailyImpressions.toLocaleString("pt-BR")}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">Subtotal ({adDays} dias)</span>
-                            <span className="text-foreground font-medium">R$ {adSubtotal.toFixed(2)}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">Imposto e Taxa de serviço</span>
-                            <span className="text-foreground font-medium">R$ {adServiceFee.toFixed(2)}</span>
-                          </div>
-                          <div className="border-t border-border pt-2 flex justify-between">
-                            <span className="font-display font-bold text-foreground">Total</span>
-                            <span className="font-display font-bold text-xl text-primary">R$ {adTotal.toFixed(2)}</span>
-                          </div>
-                          <div className="flex items-center gap-2 pt-2 text-xs text-muted-foreground bg-primary/5 rounded-xl p-3">
-                            <Zap size={14} className="text-primary" />
-                            <span>Estimativa total: <strong className="text-foreground">~{adTotalImpressions.toLocaleString("pt-BR")} impressões</strong> em {adDays} dias</span>
-                          </div>
-                        </div>
-                      </motion.div>
-                    )}
-
-                    {/* Submit */}
-                    <button onClick={submitAdRequest} disabled={adSubmitting || adSubtotal <= 0}
-                      className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md">
-                      <Send size={16} /> {adSubmitting ? "Enviando..." : "Enviar Solicitação"}
-                    </button>
-                  </div>
-                </div>
-
-                {/* History */}
-                {adHistory.length > 0 && (
-                  <div className="bg-card border border-border rounded-2xl p-6">
-                    <h3 className="font-display font-bold text-foreground mb-4">Histórico de Solicitações</h3>
-                    <div className="space-y-3">
-                      {adHistory.map((req) => (
-                        <div key={req.id} className="p-3 rounded-xl bg-muted">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                              <span className="text-lg">📢</span>
-                              <div>
-                                <p className="text-sm font-semibold text-foreground">
-                                  Campanha ADS — {req.duration_days} dias
-                                </p>
-                                <p className="text-xs text-muted-foreground">
-                                  R$ {Number(req.daily_budget).toFixed(2)}/dia • Total: R$ {Number(req.total).toFixed(2)}
-                                </p>
-                              </div>
-                            </div>
-                            <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${
-                              req.status === "aprovado" ? "bg-green-500/20 text-green-600" :
-                              req.status === "rejeitado" ? "bg-destructive/20 text-destructive" :
-                              "bg-amber-500/20 text-amber-600"
-                            }`}>
-                              {req.status === "aprovado" ? "Aprovado" : req.status === "rejeitado" ? "Rejeitado" : "Pendente"}
-                            </span>
-                          </div>
-                          {req.status === "rejeitado" && req.details && (
-                            <div className="mt-2 p-2.5 rounded-lg bg-destructive/5 border border-destructive/20">
-                              <p className="text-xs font-semibold text-destructive mb-0.5">Motivo da rejeição:</p>
-                              <p className="text-xs text-muted-foreground">{req.details}</p>
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
 
             {/* Domain Tab */}
             {activeTab === "domain" && (
