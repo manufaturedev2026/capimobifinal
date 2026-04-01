@@ -9,7 +9,7 @@ import heroImg from "@/assets/hero-auth.jpg";
 import logoImg from "@/assets/logo-es-corretores.png";
 
 export default function AuthPage() {
-  const [isLogin, setIsLogin] = useState(true);
+  const [isLogin, setIsLogin] = useState(!new URLSearchParams(window.location.search).get("ref"));
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
