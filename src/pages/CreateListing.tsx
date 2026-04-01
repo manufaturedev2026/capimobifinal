@@ -41,7 +41,7 @@ const benefits = [
   {
     icon: TrendingUp,
     title: "Mais Vendas",
-    description: "Corretores que anunciam no ES Corretores vendem até 3x mais rápido que em plataformas tradicionais.",
+    description: "Corretores que anunciam no Brokers Bio vendem até 3x mais rápido que em plataformas tradicionais.",
     accent: true,
   },
   {
