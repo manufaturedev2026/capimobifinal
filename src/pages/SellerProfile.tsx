@@ -45,6 +45,10 @@ export default function SellerProfile() {
     slug: "",
     store_theme: "default",
     store_layout: "netflix",
+    store_video_url: "",
+    store_video_title: "",
+    store_video_button_text: "",
+    store_video_button_url: "",
   });
   const { cities: ibgeCities, loading: citiesLoading } = useCitiesByState(form.state);
   const [slugError, setSlugError] = useState("");
