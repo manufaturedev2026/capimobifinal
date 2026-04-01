@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ChevronLeft, ChevronRight, MessageCircle, Share2, Star, MapPin, Tag, Store, Image, X, ZoomIn, BadgeCheck, Video } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, MessageCircle, Share2, Star, MapPin, Tag, Store, Image, X, ZoomIn, BadgeCheck, Video, FileDown } from "lucide-react";
+import { generateProposalPdf } from "@/lib/generateProposalPdf";
 import QRCodeDisplay from "@/components/QRCodeDisplay";
 import FinancingSimulator from "@/components/FinancingSimulator";
 import PackageBadge from "@/components/PackageBadge";
@@ -571,6 +572,34 @@ export default function ProductDetail() {
                 className="mt-3 w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-white border border-border text-foreground font-medium text-sm hover:bg-secondary transition-colors">
                 <Share2 size={16} /> Compartilhar
               </button>
+
+              {isDb && dbItem && (
+                <button
+                  onClick={() => generateProposalPdf({
+                    id: dbItem.id,
+                    title: title,
+                    price: product.price,
+                    image: images[0] || "",
+                    location: mapAddress || "",
+                    description: product.description || "",
+                    tags: product.tags || [],
+                    status: dbItem.status || "ativo",
+                    sellerName: company.name,
+                    sellerPhone: company.whatsapp || "",
+                    sellerCategory: (company as any).sellerCategory || "",
+                    sellerLogo: company.logo || "",
+                    propertyUrl: window.location.href,
+                    bedrooms: product.bedrooms,
+                    bathrooms: product.bathrooms,
+                    area: product.area,
+                    suites: product.suites,
+                    parking_spots: product.parking_spots,
+                  })}
+                  className="mt-3 w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-secondary text-foreground font-medium text-sm hover:bg-secondary/80 transition-colors border border-border"
+                >
+                  <FileDown size={16} /> Baixar Proposta (PDF)
+                </button>
+              )}
 
               <Link to={companyUrl}
                 className="mt-3 w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-accent text-accent-foreground font-bold text-sm hover:bg-accent/90 transition-colors shadow-md">
