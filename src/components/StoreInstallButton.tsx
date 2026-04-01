@@ -29,12 +29,12 @@ function isIOS(): boolean {
 
 export default function StoreInstallButton({ variant = "default" }: StoreInstallButtonProps) {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
-  const [installed, setInstalled] = useState(true); // assume installed until we check
+  const [installed, setInstalled] = useState(false);
   const [showIOSGuide, setShowIOSGuide] = useState(false);
   const [dismissed, setDismissed] = useState(false);
 
   useEffect(() => {
-    setInstalled(isAppInstalled());
+    if (isAppInstalled()) setInstalled(true);
 
     const handler = (e: Event) => {
       e.preventDefault();
@@ -54,12 +54,8 @@ export default function StoreInstallButton({ variant = "default" }: StoreInstall
   // Don't show if already installed or user dismissed
   if (installed || dismissed) return null;
 
-  // On iOS we can't use beforeinstallprompt — show instructions
   const ios = isIOS();
   const canPrompt = !!deferredPrompt;
-
-  // If neither iOS nor Android prompt available AND not desktop-capable, hide
-  if (!ios && !canPrompt) return null;
 
   const handleClick = async () => {
     if (canPrompt) {
