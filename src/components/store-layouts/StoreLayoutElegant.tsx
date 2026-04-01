@@ -42,7 +42,7 @@ export default function StoreLayoutElegant({
 
       {/* Glassmorphism cards */}
       {filteredProducts.length > 0 ? (
-        <div className="grid grid-cols-1 gap-4">
+        <div className="grid grid-cols-2 gap-3">
           {filteredProducts.map((product: any, i: number) => {
             const productLink = `/imoveis/produto/${product.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`;
             return (
