@@ -253,44 +253,82 @@ export default function CompanyProfile() {
 
   const products = isDbProfile ? dbDisplayItems : [];
 
-  const filteredProducts = useMemo(() => {
-    let filtered = products;
-    // Filter by city if selected
-    if (filterCity) {
-      filtered = filtered.filter((p: any) => p.city === filterCity);
-    }
-    if (activeCategory === "todos") return filtered;
-    if (activeCategory === "aluguel") {
-      return filtered.filter((p: any) => {
-        const tags: string[] = p.tags || [];
-        return tags.includes("aluguel_flex");
-      });
-    }
-    return filtered.filter((p: any) => {
-      if (isDbProfile) return p.category === activeCategory;
-      return true;
-    });
-  }, [products, activeCategory, isDbProfile, filterCity]);
+  const productsForSelectedCity = useMemo(
+    () => products.filter((product: any) => matchesCityFilter(product, filterCity)),
+    [products, filterCity],
+  );
 
-  // Get unique cities from products
+  const productsForSelectedCategory = useMemo(
+    () => products.filter((product: any) => matchesCategoryFilter(product, activeCategory)),
+    [products, activeCategory],
+  );
+
+  const filteredProducts = useMemo(() => {
+    return products.filter(
+      (product: any) => matchesCityFilter(product, filterCity) && matchesCategoryFilter(product, activeCategory),
+    );
+  }, [products, activeCategory, filterCity]);
+
   const availableCities = useMemo(() => {
     const cities = new Set<string>();
-    products.forEach((p: any) => { if (p.city) cities.add(p.city); });
+    productsForSelectedCategory.forEach((product: any) => {
+      if (product.city) cities.add(product.city);
+    });
     return Array.from(cities).sort();
-  }, [products]);
+  }, [productsForSelectedCategory]);
+
+  const cityCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+
+    productsForSelectedCategory.forEach((product: any) => {
+      if (!product.city) return;
+      counts[product.city] = (counts[product.city] || 0) + 1;
+    });
+
+    return counts;
+  }, [productsForSelectedCategory]);
 
   const categoryCounts = useMemo(() => {
-    const counts: Record<string, number> = { todos: products.length };
-    products.forEach((p: any) => {
-      const cat = isDbProfile ? p.category : "todos";
+    const counts: Record<string, number> = { todos: productsForSelectedCity.length };
+
+    productsForSelectedCity.forEach((product: any) => {
+      const cat = isDbProfile ? product.category : "todos";
       counts[cat] = (counts[cat] || 0) + 1;
-      const tags: string[] = p.tags || [];
-      if (tags.includes("aluguel_flex")) {
+      const tags: string[] = product.tags || [];
+      if (tags.includes("aluguel_flex") || product.category === "aluguel") {
         counts["aluguel"] = (counts["aluguel"] || 0) + 1;
       }
     });
+
     return counts;
-  }, [products, isDbProfile]);
+  }, [productsForSelectedCity, isDbProfile]);
+
+  const categoryCardImages = useMemo(() => {
+    return propertySubcategories.reduce<Record<string, string>>((images, category) => {
+      const selectedCityImage = productsForSelectedCity.find(
+        (product: any) => product.image && matchesCategoryFilter(product, category.slug),
+      )?.image;
+
+      const fallbackImage = products.find(
+        (product: any) => product.image && matchesCategoryFilter(product, category.slug),
+      )?.image;
+
+      images[category.slug] = selectedCityImage || fallbackImage || category.img;
+      return images;
+    }, {});
+  }, [products, productsForSelectedCity]);
+
+  useEffect(() => {
+    if (activeCategory !== "todos" && (categoryCounts[activeCategory] || 0) === 0) {
+      setActiveCategory("todos");
+    }
+  }, [activeCategory, categoryCounts]);
+
+  useEffect(() => {
+    if (filterCity && !availableCities.includes(filterCity)) {
+      setFilterCity("");
+    }
+  }, [filterCity, availableCities]);
 
   // Hero images: prioritize seller-chosen hero_item_ids, fallback to all products
   const heroImages = useMemo(() => {
