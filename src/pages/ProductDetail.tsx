@@ -492,7 +492,7 @@ export default function ProductDetail() {
                       </div>
                     )}
 
-                    {dbSeller.creci && (
+                    {dbSeller.creci && (company as any).sellerCategory !== "imobiliaria" && (
                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
                         <BadgeCheck size={13} className="text-primary flex-shrink-0" />
                         <span>CRECI {dbSeller.creci}</span>
