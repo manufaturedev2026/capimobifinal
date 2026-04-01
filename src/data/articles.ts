@@ -567,6 +567,8 @@ Use os templates pré-prontos para enviar mensagens padronizadas via WhatsApp em
 
 Quer mais visibilidade para seus imóveis? Solicite campanhas pagas no Google Ads ou Meta (Instagram/Facebook) diretamente pelo painel.
 
+![Painel de anúncios pagos](https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=400&fit=crop)
+
 ### Como Funciona
 
 Você solicita uma campanha e nossa equipe configura e gerencia o anúncio para você. Sem complicação técnica!
@@ -575,6 +577,8 @@ Você solicita uma campanha e nossa equipe configura e gerencia o anúncio para 
 
 1. No **Painel**, clique na aba **"Anúncios"** no menu lateral
 2. Clique em **"Solicitar Campanha"**
+
+![Configurando campanha](https://images.unsplash.com/photo-1553877522-43269d4ea984?w=800&h=400&fit=crop)
 
 ### Preenchendo a Solicitação
 
@@ -590,6 +594,8 @@ O valor total é calculado automaticamente:
 - **Investimento:** Orçamento diário × dias
 - **Taxa de serviço:** Taxa pela gestão da campanha
 - **Impostos:** Calculados automaticamente
+
+![Acompanhamento de resultados](https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=400&fit=crop)
 
 ### Acompanhamento
 
