@@ -1,230 +1,205 @@
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { useCityDetection } from "@/hooks/useCityDetection";
-import { Building2, ArrowRight, Search, Home, Key, Landmark, Store, MapPin, Shield, Zap, Star, ChevronRight, Plus } from "lucide-react";
-import NotFoundPage from "@/pages/NotFound";
-import { motion } from "framer-motion";
-import { useState, useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import heroImoveis from "@/assets/hero-imoveis.jpg";
-import { slugToCity, cityToSlug } from "@/lib/citySlug";
-import StoriesBar from "@/components/StoriesBar";
-import StoryUploadDialog from "@/components/StoryUploadDialog";
+import { motion } from "framer-motion";
+import { Home, Users, Search, Shield, Zap, ArrowRight, Building2, Plus, Star, TrendingUp, Key } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 
-function getHeroBanners(city: string, prefix: string) {
-  const imoveisLink = prefix ? `/imoveis/${prefix}` : "/imoveis";
-  return [
-    {
-      image: heroImoveis,
-      title: `Imóveis ${city.includes("Espírito") ? "no" : "em"} ${city}`,
-      subtitle: "Encontre casas, apartamentos e terrenos com os melhores preços",
-      link: imoveisLink,
-      accent: "from-primary to-[hsl(212,100%,21%)]",
-    },
-  ];
-}
-
-function getQuickActions(prefix: string) {
-  return [
-    { icon: Home, label: "Casas", desc: "Encontre a casa ideal", link: `/imoveis?categoria=casas`, color: "text-primary" },
-    { icon: Building2, label: "Apartamentos", desc: "Aptos disponíveis", link: `/imoveis?categoria=apartamentos`, color: "text-primary" },
-    { icon: Key, label: "Aluguel", desc: "Imóveis para alugar", link: `/imoveis?categoria=alugueis`, color: "text-primary" },
-    { icon: Landmark, label: "Terrenos", desc: "Lotes e terrenos", link: `/imoveis?categoria=terrenos`, color: "text-primary" },
-    { icon: Store, label: "Comerciais", desc: "Salas e lojas", link: `/imoveis?categoria=comerciais`, color: "text-primary" },
-    { icon: Building2, label: "Flats", desc: "Flats e studios", link: `/imoveis?categoria=flats`, color: "text-primary" },
-  ];
-}
-
-function getCategories(prefix: string) {
-  return [
-    { name: "Casas", img: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&h=400&fit=crop", link: `/imoveis?categoria=casas` },
-    { name: "Apartamentos", img: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=400&fit=crop", link: `/imoveis?categoria=apartamentos` },
-    { name: "Terrenos", img: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400&h=400&fit=crop", link: `/imoveis?categoria=terrenos` },
-    { name: "Aluguel", img: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400&h=400&fit=crop", link: `/imoveis?categoria=alugueis` },
-    { name: "Comercial", img: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&h=400&fit=crop", link: `/imoveis?categoria=comerciais` },
-    { name: "Flats", img: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=400&fit=crop", link: `/imoveis?categoria=flats` },
-    { name: "Galpões", img: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=400&h=400&fit=crop", link: `/imoveis?categoria=galpoes` },
-    { name: "Cobertura", img: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400&h=400&fit=crop", link: `/imoveis?categoria=coberturas` },
-  ];
-}
-
 export default function Index() {
-  const { cidade } = useParams<{ cidade?: string }>();
-  const { detectedCity } = useCityDetection();
-  const navigate = useNavigate();
-  const cityName = cidade ? slugToCity(cidade) : (detectedCity || null);
-  const displayCity = cityName || "Espírito Santo";
-  const citySlug = cityName ? cityToSlug(cityName) : "";
-  const [searchQuery, setSearchQuery] = useState("");
-  const [storyDialogOpen, setStoryDialogOpen] = useState(false);
-  const { user, profile } = useAuth();
-  const quickActions = getQuickActions(citySlug);
-  const categories = getCategories(citySlug);
-  const heroBanners = getHeroBanners(displayCity, citySlug);
-
-  if (cidade && !cityName) {
-    return <NotFoundPage />;
-  }
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) navigate(`/buscar?q=${encodeURIComponent(searchQuery.trim())}`);
-  };
+  const { user } = useAuth();
 
   return (
     <div className="min-h-screen bg-secondary/50">
       <Helmet>
-        <title>{`Imóveis ${displayCity.includes("Espírito") ? "no" : "em"} ${displayCity} | ES Corretores`}</title>
-        <meta name="description" content={`Marketplace de imóveis ${displayCity.includes("Espírito") ? "no" : "em"} ${displayCity}. Casas, apartamentos, terrenos e mais com contato direto via WhatsApp.`} />
-        <link rel="canonical" href={`https://redeimoveisgb.lovable.app${cidade ? `/${cidade}` : '/'}`} />
+        <title>ES Corretores | Marketplace de Captação de Imóveis</title>
+        <meta name="description" content="Plataforma de captação de imóveis. Proprietários anunciam grátis, corretores captam e vendem." />
+        <link rel="canonical" href="https://redeimoveisgb.lovable.app/" />
       </Helmet>
 
-      {/* Hero Banner */}
-      <section className="relative w-full h-[280px] md:h-[400px] overflow-hidden">
-        <Link to={heroBanners[0].link} className="absolute inset-0">
-          <img src={heroBanners[0].image} alt={heroBanners[0].title} className="w-full h-full object-cover" width={1400} height={512} />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent" />
-          <div className="absolute inset-0 flex flex-col justify-center px-6 md:px-16 lg:px-24 max-w-2xl">
-            <h2 className="font-display font-bold text-2xl md:text-5xl text-white drop-shadow-lg leading-tight">
-              {heroBanners[0].title}
-            </h2>
-            <p className="text-white/80 text-sm md:text-lg mt-2 md:mt-3 drop-shadow">{heroBanners[0].subtitle}</p>
-            <div className="mt-4 md:mt-6">
-              <span className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r ${heroBanners[0].accent} text-white font-bold text-sm shadow-lg`}>
-                Ver ofertas <ArrowRight size={16} />
+      {/* Hero */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-[hsl(var(--navy))] via-primary to-[hsl(var(--navy))] py-16 md:py-24 px-4">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(255,255,255,0.08),transparent_50%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(255,255,255,0.05),transparent_40%)]" />
+
+        <div className="max-w-6xl mx-auto relative z-10">
+          <div className="grid md:grid-cols-2 gap-10 items-center">
+            <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }}>
+              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 text-white/90 text-xs font-semibold mb-6 backdrop-blur-sm border border-white/10">
+                <Star size={14} className="text-amber-400" /> Marketplace de Captação
               </span>
-            </div>
+              <h1 className="font-display font-bold text-3xl md:text-5xl text-white leading-tight">
+                Conectamos <span className="text-accent">proprietários</span> a <span className="text-accent">corretores</span>
+              </h1>
+              <p className="text-white/70 text-base md:text-lg mt-4 leading-relaxed">
+                Proprietários cadastram seus imóveis gratuitamente. Corretores qualificados captam e vendem com agilidade.
+              </p>
+              <div className="flex flex-wrap gap-3 mt-8">
+                <Button asChild size="lg" className="gap-2 h-12 px-8 text-base font-bold rounded-xl">
+                  <Link to="/anunciar-proprietario">
+                    <Plus size={18} /> Anunciar Grátis
+                  </Link>
+                </Button>
+                <Button asChild size="lg" variant="outline" className="gap-2 h-12 px-8 text-base font-bold rounded-xl border-white/20 text-white hover:bg-white/10">
+                  <Link to="/captacao">
+                    <Search size={18} /> Área do Corretor
+                  </Link>
+                </Button>
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="hidden md:block"
+            >
+              <div className="grid grid-cols-2 gap-4">
+                {[
+                  { icon: Home, label: "Imóveis cadastrados", value: "500+", color: "from-primary to-sky-400" },
+                  { icon: Users, label: "Corretores ativos", value: "120+", color: "from-accent to-pink-400" },
+                  { icon: TrendingUp, label: "Vendas este mês", value: "35+", color: "from-emerald-500 to-teal-400" },
+                  { icon: Key, label: "Captações realizadas", value: "200+", color: "from-amber-500 to-orange-400" },
+                ].map((stat, i) => (
+                  <motion.div
+                    key={stat.label}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 + i * 0.1 }}
+                    className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-5"
+                  >
+                    <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center mb-3`}>
+                      <stat.icon size={20} className="text-white" />
+                    </div>
+                    <p className="font-display font-bold text-2xl text-white">{stat.value}</p>
+                    <p className="text-white/50 text-xs mt-1">{stat.label}</p>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
           </div>
-        </Link>
-      </section>
-
-      {/* Stories Bar */}
-      <StoriesBar onAddStory={() => setStoryDialogOpen(true)} />
-      <StoryUploadDialog
-        open={storyDialogOpen}
-        onOpenChange={setStoryDialogOpen}
-        sellerId={profile?.id}
-      />
-
-      {/* Search Bar */}
-      <section className="relative z-20 -mt-7 px-4 md:px-8">
-        <div className="max-w-4xl mx-auto">
-          <form onSubmit={handleSearch} className="flex bg-card rounded-2xl shadow-xl border border-border overflow-hidden">
-            <div className="flex-1 flex items-center px-4 gap-3">
-              <Search size={20} className="text-muted-foreground flex-shrink-0" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Buscar imóveis..."
-                className="w-full py-4 text-sm md:text-base bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none"
-              />
-            </div>
-            <button type="submit" className="px-6 md:px-8 bg-primary text-primary-foreground font-bold text-sm hover:opacity-90 transition-opacity">
-              Buscar
-            </button>
-          </form>
         </div>
       </section>
 
-      {/* Quick Actions */}
-      <section className="px-4 md:px-8 mt-6">
+      {/* How it works */}
+      <section className="px-4 py-12 md:py-16">
         <div className="max-w-6xl mx-auto">
-          <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-1 snap-x snap-mandatory md:grid md:grid-cols-6">
-            {quickActions.map((action, i) => (
+          <h2 className="font-display font-bold text-2xl md:text-3xl text-foreground text-center mb-10">
+            Como funciona
+          </h2>
+
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Owner flow */}
+            <div className="bg-card border border-border rounded-2xl p-6 md:p-8">
+              <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
+                <Home size={24} className="text-primary" />
+              </div>
+              <h3 className="font-display font-bold text-xl text-foreground mb-2">Para Proprietários</h3>
+              <p className="text-muted-foreground text-sm mb-6">Cadastre seu imóvel gratuitamente e receba propostas de corretores.</p>
+              <ol className="space-y-4">
+                {[
+                  "Cadastre seu imóvel com fotos e descrição",
+                  "Seu imóvel fica visível para corretores qualificados",
+                  "Corretores interessados captam e entram em contato",
+                  "Acompanhe o status da venda pelo painel",
+                ].map((step, i) => (
+                  <li key={i} className="flex items-start gap-3">
+                    <span className="w-7 h-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold flex-shrink-0">
+                      {i + 1}
+                    </span>
+                    <span className="text-sm text-foreground pt-0.5">{step}</span>
+                  </li>
+                ))}
+              </ol>
+              <Button asChild className="w-full mt-6 gap-2">
+                <Link to="/anunciar-proprietario">
+                  <Plus size={16} /> Anunciar Grátis
+                </Link>
+              </Button>
+            </div>
+
+            {/* Broker flow */}
+            <div className="bg-card border border-border rounded-2xl p-6 md:p-8">
+              <div className="w-12 h-12 rounded-2xl bg-accent/10 flex items-center justify-center mb-4">
+                <Users size={24} className="text-accent" />
+              </div>
+              <h3 className="font-display font-bold text-xl text-foreground mb-2">Para Corretores</h3>
+              <p className="text-muted-foreground text-sm mb-6">Capte imóveis e amplie seu portfólio com planos acessíveis.</p>
+              <ol className="space-y-4">
+                {[
+                  "Cadastre-se e escolha seu plano",
+                  "Navegue pelos imóveis disponíveis com filtros",
+                  "Clique em \"Quero vender este imóvel\" para captar",
+                  "Receba o contato do proprietário e feche o negócio",
+                ].map((step, i) => (
+                  <li key={i} className="flex items-start gap-3">
+                    <span className="w-7 h-7 rounded-full bg-accent text-accent-foreground flex items-center justify-center text-sm font-bold flex-shrink-0">
+                      {i + 1}
+                    </span>
+                    <span className="text-sm text-foreground pt-0.5">{step}</span>
+                  </li>
+                ))}
+              </ol>
+              <Button asChild variant="outline" className="w-full mt-6 gap-2">
+                <Link to="/captacao">
+                  <Search size={16} /> Ver Imóveis Disponíveis
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Plans preview */}
+      <section className="px-4 py-12 bg-card border-y border-border">
+        <div className="max-w-6xl mx-auto text-center">
+          <h2 className="font-display font-bold text-2xl md:text-3xl text-foreground mb-3">
+            Planos para Corretores
+          </h2>
+          <p className="text-muted-foreground mb-8">Escolha o plano ideal para o seu volume de captação</p>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto">
+            {[
+              { name: "Básico", price: "Grátis", captures: "1 captação/mês", highlight: false },
+              { name: "Start", price: "R$ 24,99/mês", captures: "20 captações/mês", highlight: true },
+              { name: "VIP", price: "R$ 59,99/mês", captures: "50 captações/mês", highlight: false },
+            ].map((plan) => (
               <motion.div
-                key={action.label}
+                key={plan.name}
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.05 }}
-                className="snap-start flex-shrink-0 w-[130px] md:w-auto"
+                className={`rounded-2xl p-6 border ${plan.highlight ? "border-primary bg-primary/5 shadow-lg shadow-primary/10" : "border-border bg-card"}`}
               >
-                <Link to={action.link} className="group flex flex-col items-center text-center bg-card border border-border rounded-2xl p-4 hover:shadow-md hover:border-primary/30 transition-all">
-                  <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center mb-2 group-hover:bg-primary/10 transition-colors">
-                    <action.icon size={22} className={`${action.color} transition-colors`} />
-                  </div>
-                  <span className="font-display font-semibold text-sm text-foreground">{action.label}</span>
-                  <span className="text-[11px] text-muted-foreground mt-0.5 line-clamp-1">{action.desc}</span>
-                </Link>
+                {plan.highlight && (
+                  <Badge className="bg-primary text-primary-foreground mb-3">Mais Popular</Badge>
+                )}
+                <h3 className="font-display font-bold text-lg text-foreground">{plan.name}</h3>
+                <p className="font-display font-bold text-2xl text-foreground mt-2">{plan.price}</p>
+                <p className="text-sm text-muted-foreground mt-2">{plan.captures}</p>
+                <p className="text-sm text-muted-foreground">+ Loja própria</p>
               </motion.div>
             ))}
           </div>
+
+          <Button asChild variant="outline" className="mt-8 gap-2">
+            <Link to="/pacotes">Ver todos os planos <ArrowRight size={16} /></Link>
+          </Button>
         </div>
       </section>
 
-      {/* Promo Banners */}
-      <section className="px-4 md:px-8 mt-6">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Link to={citySlug ? `/imoveis/${citySlug}` : "/imoveis"} className="group relative overflow-hidden rounded-2xl h-[180px] md:h-[200px] block">
-            <img src={heroImoveis} alt="Imóveis" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" width={1400} height={200} />
-            <div className="absolute inset-0 bg-gradient-to-r from-[hsl(var(--primary)/0.9)] to-transparent" />
-            <div className="absolute inset-0 flex flex-col justify-center px-6 md:px-8">
-              <span className="text-xs font-semibold text-white/70 uppercase tracking-wider">Marketplace</span>
-              <h3 className="font-display font-bold text-2xl md:text-3xl text-white mt-1">Todos os Imóveis</h3>
-              <p className="text-white/80 text-sm mt-1">Casas, aptos, terrenos e mais</p>
-              <span className="mt-3 inline-flex items-center gap-1 text-white text-sm font-semibold group-hover:gap-2 transition-all">
-                Explorar <ChevronRight size={16} />
-              </span>
-            </div>
-          </Link>
-
-          <Link to={`${citySlug ? `/imoveis/${citySlug}` : "/imoveis"}?categoria=casas`} className="group relative overflow-hidden rounded-2xl h-[180px] md:h-[200px] block">
-            <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&h=400&fit=crop" alt="Casa Própria" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" width={800} height={400} />
-            <div className="absolute inset-0 bg-gradient-to-r from-[hsl(var(--accent)/0.9)] to-transparent" />
-            <div className="absolute inset-0 flex flex-col justify-center px-6 md:px-8">
-              <span className="text-xs font-semibold text-white/70 uppercase tracking-wider">Mais Buscado</span>
-              <h3 className="font-display font-bold text-2xl md:text-3xl text-white mt-1">Casa Própria</h3>
-              <p className="text-white/80 text-sm mt-1">Realize o sonho da sua casa</p>
-              <span className="mt-3 inline-flex items-center gap-1 text-white text-sm font-semibold group-hover:gap-2 transition-all">
-                Ver Casas <ChevronRight size={16} />
-              </span>
-            </div>
-          </Link>
-        </div>
-      </section>
-
-      {/* Categories Grid */}
-      <section className="px-4 md:px-8 mt-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="font-display font-bold text-xl md:text-2xl text-foreground">Categorias</h2>
-          </div>
-          <div className="bg-card border border-border rounded-2xl p-4 md:p-6">
-            <div className="grid grid-cols-4 md:grid-cols-8 gap-3 md:gap-4">
-              {categories.map((cat, i) => (
-                <motion.div
-                  key={cat.name}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.1 + i * 0.04 }}
-                >
-                  <Link to={cat.link} className="group flex flex-col items-center text-center">
-                    <div className="w-14 h-14 md:w-16 md:h-16 rounded-full overflow-hidden border-2 border-border group-hover:border-primary group-hover:shadow-lg transition-all">
-                      <img src={cat.img} alt={cat.name} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" loading="lazy" />
-                    </div>
-                    <span className="text-xs md:text-sm font-medium text-foreground mt-2 group-hover:text-primary transition-colors">{cat.name}</span>
-                  </Link>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Benefits Bar */}
-      <section className="px-4 md:px-8 mt-8">
-        <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-3">
+      {/* Benefits */}
+      <section className="px-4 py-12">
+        <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
-            { icon: Shield, title: "Contato Direto", desc: "Fale via WhatsApp" },
-            { icon: MapPin, title: displayCity.includes("Espírito") ? "Todo o ES" : `${displayCity} e Região`, desc: displayCity.includes("Espírito") ? "Cobertura estadual" : "Foco na sua cidade" },
-            { icon: Star, title: "Vendedores Verificados", desc: "Corretores confiáveis" },
-            { icon: Zap, title: "Anuncie Grátis", desc: "Cadastre seus imóveis" },
+            { icon: Shield, title: "Seguro e Confiável", desc: "Dados protegidos" },
+            { icon: Zap, title: "Captação Rápida", desc: "Contato imediato" },
+            { icon: Building2, title: "Todos os Tipos", desc: "Casas, aptos, terrenos" },
+            { icon: Star, title: "Corretores Premium", desc: "Profissionais verificados" },
           ].map((item, i) => (
             <motion.div
               key={item.title}
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 + i * 0.08 }}
+              transition={{ delay: 0.1 + i * 0.08 }}
               className="bg-card border border-border rounded-2xl p-4 flex items-start gap-3"
             >
               <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
@@ -239,23 +214,19 @@ export default function Index() {
         </div>
       </section>
 
-      {/* CTA — Anunciar */}
-      <section className="px-4 md:px-8 mt-8 pb-10">
-        <div className="max-w-6xl mx-auto">
-          <div className="gradient-hero rounded-2xl p-6 md:p-10 flex flex-col md:flex-row items-center justify-between gap-4 relative overflow-hidden">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(255,255,255,0.12),transparent_50%)]" />
-            <div className="relative z-10 text-center md:text-left">
-              <h2 className="font-display font-bold text-xl md:text-3xl text-white">Quer anunciar seu imóvel?</h2>
-              <p className="text-white/80 text-sm md:text-base mt-1">Publique seu imóvel e receba contatos via WhatsApp</p>
-            </div>
-            <Link
-              to="/anunciar"
-              className="relative z-10 inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-white text-gray-900 font-bold text-sm hover:scale-105 transition-transform shadow-lg"
-            >
-              <Plus size={18} />
-              Anunciar Grátis
-            </Link>
+      {/* CTA */}
+      <section className="px-4 pb-10">
+        <div className="max-w-6xl mx-auto gradient-hero rounded-2xl p-6 md:p-10 flex flex-col md:flex-row items-center justify-between gap-4 relative overflow-hidden">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(255,255,255,0.12),transparent_50%)]" />
+          <div className="relative z-10 text-center md:text-left">
+            <h2 className="font-display font-bold text-xl md:text-3xl text-white">Tem um imóvel para vender?</h2>
+            <p className="text-white/80 text-sm md:text-base mt-1">Cadastre gratuitamente e receba propostas de corretores</p>
           </div>
+          <Button asChild size="lg" variant="secondary" className="relative z-10 gap-2 font-bold">
+            <Link to="/anunciar-proprietario">
+              <Plus size={18} /> Anunciar Grátis
+            </Link>
+          </Button>
         </div>
       </section>
     </div>
