@@ -169,7 +169,7 @@ export default function CreateListing() {
       </section>
 
       {/* Store Preview - Netflix Style */}
-      <section className="py-16 md:py-24 bg-[hsl(212,80%,6%)] text-white overflow-hidden">
+      <section className="py-16 md:py-24 bg-secondary/40 overflow-hidden">
         <div className="container max-w-6xl mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.7 }}>
