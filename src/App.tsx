@@ -17,10 +17,6 @@ import ScrollToTop from "@/components/ScrollToTop";
 import { CustomDomainRedirect } from "@/components/CustomDomainRedirect";
 import Index from "@/pages/Index";
 import PropertiesPage from "@/pages/PropertiesPage";
-import BecomeAgentPage from "@/pages/BecomeAgentPage";
-import StudyMaterial from "@/pages/StudyMaterial";
-import ArticleReader from "@/pages/ArticleReader";
-
 import CompanyProfile from "@/pages/CompanyProfile";
 import ProductDetail from "@/pages/ProductDetail";
 import CreateListing from "@/pages/CreateListing";
@@ -35,8 +31,6 @@ import AdminPanel from "@/pages/AdminPanel";
 import PrivacyPage from "@/pages/PrivacyPage";
 import TermsPage from "@/pages/TermsPage";
 import NotFound from "@/pages/NotFound";
-import BlogPage from "@/pages/BlogPage";
-import BlogArticlePage from "@/pages/BlogArticlePage";
 import FavoritesPage from "@/pages/FavoritesPage";
 import NeighborhoodPage from "@/pages/NeighborhoodPage";
 import CaptacaoPage from "@/pages/CaptacaoPage";
@@ -54,7 +48,6 @@ const AppLayout = () => {
     (r) => location.pathname.startsWith(r)
   );
 
-  // Block banned users from protected routes
   if (isProtectedRoute && banInfo?.is_banned) {
     return <BannedScreen />;
   }
@@ -78,7 +71,6 @@ const AppLayout = () => {
           <Route path="/meus-imoveis" element={<MyListingsPage />} />
           <Route path="/minhas-captacoes" element={<MyCapturesPage />} />
 
-          <Route path="/seja-corretor" element={<BecomeAgentPage />} />
           <Route path="/anunciar" element={<CreateListing />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/buscar" element={<SearchPage />} />
@@ -87,16 +79,11 @@ const AppLayout = () => {
           <Route path="/painel/novo" element={<SellerItemForm />} />
           <Route path="/painel/editar/:id" element={<SellerItemForm />} />
           <Route path="/painel/perfil" element={<SellerProfile />} />
-          <Route path="/painel/estudo" element={<StudyMaterial />} />
-          <Route path="/painel/estudo/:slug" element={<ArticleReader />} />
           <Route path="/pacotes" element={<PackagesPage />} />
           <Route path="/favoritos" element={<FavoritesPage />} />
           <Route path="/admin" element={<AdminPanel />} />
           <Route path="/privacidade" element={<PrivacyPage />} />
           <Route path="/termos" element={<TermsPage />} />
-          <Route path="/blog" element={<BlogPage />} />
-          <Route path="/blog/:slug" element={<BlogArticlePage />} />
-          <Route path="/:cidade" element={<Index />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
