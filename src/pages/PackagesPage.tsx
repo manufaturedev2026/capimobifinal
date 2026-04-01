@@ -20,7 +20,7 @@ export default function PackagesPage() {
   const { toast } = useToast();
   const [selecting, setSelecting] = useState<string | null>(null);
 
-  const handleSelect = async (tier: "basico" | "start" | "premium" | "vip" | "essencial_empresa" | "premium_empresa") => {
+  const handleSelect = async (tier: "basico" | "start" | "premium" | "vip" | "essencial_empresa" | "premium_empresa" | "prime_empresa") => {
     if (!user || !profile) {
       navigate("/entrar");
       return;
@@ -28,36 +28,41 @@ export default function PackagesPage() {
     setSelecting(tier);
 
     try {
-      // Deactivate current subscription
-      if (subscription) {
-        await supabase
-          .from("seller_subscriptions")
-          .update({ is_active: false } as any)
-          .eq("id", subscription.id);
+      if (tier === "basico") {
+        // Free tier - handle locally
+        if (subscription) {
+          await supabase
+            .from("seller_subscriptions")
+            .update({ is_active: false } as any)
+            .eq("id", subscription.id);
+        }
+        const config = PACKAGE_CONFIG[tier];
+        const { error } = await supabase.from("seller_subscriptions").insert({
+          user_id: user.id,
+          seller_id: profile.id,
+          tier,
+          max_items: config.maxItems,
+          expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+          payment_method: "gratis",
+          payment_status: "confirmado",
+        } as any);
+        if (error) throw error;
+        await refetch();
+        toast({ title: "Pacote Básico ativado!", description: "Você pode começar a anunciar agora." });
+      } else {
+        // Paid tier - redirect to Stripe Checkout
+        const { data, error } = await supabase.functions.invoke("create-checkout", {
+          body: { tier },
+        });
+        if (error) throw error;
+        if (data?.url) {
+          window.open(data.url, "_blank");
+        } else {
+          throw new Error("URL de checkout não retornada");
+        }
       }
-
-      const config = PACKAGE_CONFIG[tier];
-      const { error } = await supabase.from("seller_subscriptions").insert({
-        user_id: user.id,
-        seller_id: profile.id,
-        tier,
-        max_items: config.maxItems,
-        expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-        payment_method: tier === "basico" ? "gratis" : "pendente",
-        payment_status: tier === "basico" ? "confirmado" : "pendente",
-      } as any);
-
-      if (error) throw error;
-
-      await refetch();
-      toast({
-        title: tier === "basico" ? "Pacote Básico ativado!" : `Pacote ${config.name} solicitado!`,
-        description: tier === "basico"
-          ? "Você pode começar a anunciar agora."
-          : "Aguarde a confirmação do pagamento para ativar.",
-      });
-    } catch {
-      toast({ title: "Erro ao selecionar pacote", variant: "destructive" });
+    } catch (err: any) {
+      toast({ title: "Erro ao processar", description: err.message || "Tente novamente.", variant: "destructive" });
     }
     setSelecting(null);
   };
