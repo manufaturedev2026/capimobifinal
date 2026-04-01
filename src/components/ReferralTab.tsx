@@ -153,7 +153,7 @@ export default function ReferralTab() {
           <h2 className="font-display font-bold text-xl text-foreground flex items-center gap-2">
             <Gift size={22} className="text-primary" /> Indique e Ganhe
           </h2>
-          <p className="text-sm text-muted-foreground mt-1">Ganhe 10% de comissão recorrente por cada indicação!</p>
+          <p className="text-sm text-muted-foreground mt-1">Ganhe {commissionRate}% de comissão recorrente por cada indicação!</p>
         </div>
         {badge && (
           <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full ${badge.bg}`}>
