@@ -163,7 +163,15 @@ export default function PropertiesPage() {
     return ids;
   }, [realSellers]);
 
-  const availableCities = ES_CITIES;
+  const availableCities = useMemo(() => {
+    const citiesFromItems = new Set<string>();
+    realItems.forEach((item) => {
+      if (item.city) citiesFromItems.add(item.city.trim());
+    });
+    // Merge with ES_CITIES for backward compatibility
+    ES_CITIES.forEach((c) => citiesFromItems.add(c));
+    return Array.from(citiesFromItems).sort();
+  }, [realItems]);
 
   const availableNeighborhoods = useMemo(() => {
     if (filterCity) {
