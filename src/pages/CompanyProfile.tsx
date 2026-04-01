@@ -1621,20 +1621,34 @@ export default function CompanyProfile() {
 
       {/* ═══ STICKY MOBILE BOTTOM BAR ═══ */}
       {company.whatsapp && (
-        <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-card/95 backdrop-blur-xl border-t border-border px-4 py-3 safe-area-pb">
+        <div
+          className="md:hidden fixed bottom-0 left-0 right-0 z-40 backdrop-blur-xl px-4 py-3 safe-area-pb"
+          style={isMarketplace ? {
+            background: storeTheme.primary,
+            borderTop: "none",
+          } : {
+            background: "hsl(var(--card) / 0.95)",
+            borderTop: "1px solid hsl(var(--border))",
+          }}
+        >
           <div className="flex gap-2">
             <button
               onClick={() => handleWhatsApp(heroProduct?.title || company.name)}
-              className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl bg-[#25d366] text-white font-bold text-sm shadow-lg active:scale-95 transition-transform"
+              className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl font-bold text-sm shadow-lg active:scale-95 transition-transform ${
+                isMarketplace ? "bg-white" : "bg-[#25d366] text-white"
+              }`}
+              style={isMarketplace ? { color: storeTheme.primary } : {}}
             >
-              <MessageCircle size={18} /> Falar no WhatsApp
+              <MessageCircle size={18} /> {isMarketplace ? "Falar com Corretor" : "Falar no WhatsApp"}
             </button>
             <button
               onClick={() => {
                 const phone = (teamMember?.phone || company.whatsapp || "").replace(/\D/g, "");
                 if (phone) window.open(`tel:+55${phone}`, "_self");
               }}
-              className="w-12 flex items-center justify-center rounded-2xl border border-border text-foreground active:scale-95 transition-transform"
+              className={`w-12 flex items-center justify-center rounded-2xl active:scale-95 transition-transform ${
+                isMarketplace ? "bg-white/20 text-white" : "border border-border text-foreground"
+              }`}
             >
               <Phone size={18} />
             </button>
