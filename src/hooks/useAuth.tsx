@@ -32,8 +32,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [banInfo, setBanInfo] = useState<BanInfo | null>(null);
 
-  const fetchProfile = async (userId: string) => {
+  const checkBan = async (userId: string) => {
+    const { data } = await supabase
+      .from("user_bans")
+      .select("*")
+      .eq("user_id", userId)
+      .eq("is_active", true)
+      .order("created_at", { ascending: false })
+      .limit(1);
+
+    if (data && data.length > 0) {
+      const ban = data[0] as any;
+      // Check if temporary ban has expired
+      if (!ban.is_permanent && ban.expires_at && new Date(ban.expires_at) < new Date()) {
+        setBanInfo(null);
+        return;
+      }
+      setBanInfo({
+        is_banned: true,
+        reason: ban.reason,
+        expires_at: ban.expires_at,
+        is_permanent: ban.is_permanent,
+      });
+    } else {
+      setBanInfo(null);
+    }
+  };
     const { data, error } = await supabase
       .from("profiles")
       .select("*")
