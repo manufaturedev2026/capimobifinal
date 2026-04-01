@@ -165,8 +165,17 @@ export function useSubscription(userId?: string) {
 
   useEffect(() => {
     if (!userId) { setLoading(false); return; }
-    fetchSubscription();
+    // First sync with Stripe, then fetch local
+    syncWithStripe().then(() => fetchSubscription());
   }, [userId]);
+
+  const syncWithStripe = async () => {
+    try {
+      await supabase.functions.invoke("check-subscription");
+    } catch {
+      // Silently fail - local data will be used
+    }
+  };
 
   const fetchSubscription = async () => {
     if (!userId) return;
@@ -197,6 +206,11 @@ export function useSubscription(userId?: string) {
     setLoading(false);
   };
 
+  const refetch = async () => {
+    await syncWithStripe();
+    await fetchSubscription();
+  };
+
   const daysUntilExpiry = subscription
     ? Math.ceil((new Date(subscription.expires_at).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
     : null;
@@ -215,7 +229,7 @@ export function useSubscription(userId?: string) {
     isExpiringSoon,
     currentTier,
     config,
-    refetch: fetchSubscription,
+    refetch,
   };
 }
 
