@@ -26,6 +26,7 @@ import {
   MessageCircle,
 } from "lucide-react";
 import heroImg from "@/assets/hero-corretor-epic.jpg";
+import lojaNetflixImg from "@/assets/loja-netflix-mockup.jpg";
 import successImg from "@/assets/corretor-success.jpg";
 import teamImg from "@/assets/corretor-team.jpg";
 
