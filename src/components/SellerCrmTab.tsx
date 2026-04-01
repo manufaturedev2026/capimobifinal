@@ -252,12 +252,18 @@ export default function SellerCrmTab({ userId, sellerId }: SellerCrmTabProps) {
 
                               {/* WhatsApp */}
                               {contact.phone && (
-                                <a href={getWhatsAppUrl(contact.phone, contact.full_name)}
-                                  target="_blank" rel="noopener noreferrer"
-                                  onClick={() => markContacted(contact.id)}
-                                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-green-500/10 text-green-600 text-[11px] font-medium hover:bg-green-500/20 transition-colors border border-green-500/20">
-                                  <Phone size={12} /> Enviar WhatsApp
-                                </a>
+                                <div className="flex gap-1">
+                                  <a href={getWhatsAppUrl(contact.phone, contact.full_name)}
+                                    target="_blank" rel="noopener noreferrer"
+                                    onClick={() => markContacted(contact.id)}
+                                    className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-green-500/10 text-green-600 text-[11px] font-medium hover:bg-green-500/20 transition-colors border border-green-500/20">
+                                    <Phone size={12} /> Enviar WhatsApp
+                                  </a>
+                                  <a href={`tel:${contact.phone.replace(/\D/g, "")}`}
+                                    className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-blue-500/10 text-blue-600 text-[11px] font-medium hover:bg-blue-500/20 transition-colors border border-blue-500/20">
+                                    <Phone size={12} /> Ligar
+                                  </a>
+                                </div>
                               )}
 
                               {/* Notes */}

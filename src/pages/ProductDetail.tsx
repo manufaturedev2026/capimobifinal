@@ -743,6 +743,20 @@ export default function ProductDetail() {
           </motion.section>
         )}
       </div>
+      {isDb && dbSeller && (
+        <WhatsAppLeadCapture
+          open={leadCaptureOpen}
+          onOpenChange={setLeadCaptureOpen}
+          sellerId={dbItem?.seller_id || ""}
+          sellerUserId={dbSeller.user_id}
+          onComplete={() => {
+            if (pendingWhatsAppAction) {
+              pendingWhatsAppAction();
+              setPendingWhatsAppAction(null);
+            }
+          }}
+        />
+      )}
     </div>
   );
 }
