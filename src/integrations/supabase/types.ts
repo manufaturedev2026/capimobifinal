@@ -95,6 +95,99 @@ export type Database = {
         }
         Relationships: []
       }
+      crm_contacts: {
+        Row: {
+          created_at: string
+          email: string
+          full_name: string
+          funnel_stage: string
+          id: string
+          last_contacted_at: string | null
+          notes: string | null
+          phone: string | null
+          profile_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          full_name: string
+          funnel_stage?: string
+          id?: string
+          last_contacted_at?: string | null
+          notes?: string | null
+          phone?: string | null
+          profile_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          full_name?: string
+          funnel_stage?: string
+          id?: string
+          last_contacted_at?: string | null
+          notes?: string | null
+          phone?: string | null
+          profile_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      crm_funnel_stages: {
+        Row: {
+          color: string
+          created_at: string
+          id: string
+          name: string
+          sort_order: number
+        }
+        Insert: {
+          color?: string
+          created_at?: string
+          id?: string
+          name: string
+          sort_order?: number
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          id?: string
+          name?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
+      crm_templates: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          name: string
+          sort_order: number
+          stage: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message: string
+          name: string
+          sort_order?: number
+          stage: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          name?: string
+          sort_order?: number
+          stage?: string
+        }
+        Relationships: []
+      }
       favorites: {
         Row: {
           created_at: string
