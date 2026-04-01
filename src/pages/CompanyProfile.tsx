@@ -481,11 +481,11 @@ export default function CompanyProfile() {
 
           {/* Open Graph */}
           <meta property="og:type" content="website" />
-          <meta property="og:title" content={`${company.name} — Imóveis em ${dbProfile?.city || "ES"}`} />
+          <meta property="og:title" content={`${company.name} — Imóveis em ${dbProfile?.city || "Brasil"}`} />
           <meta property="og:description" content={dbProfile?.bio ? dbProfile.bio.slice(0, 200) : `Veja os ${products.length} anúncios de ${company.name}`} />
-          <meta property="og:url" content={`https://lojaes.lovable.app/empresa/${dbProfile?.slug || id}`} />
+          <meta property="og:url" content={`https://redeimoveisgb.lovable.app/empresa/${dbProfile?.slug || id}`} />
           {company.logo && <meta property="og:image" content={company.logo} />}
-          <meta property="og:site_name" content="ES Corretores" />
+          <meta property="og:site_name" content="Brokers Bio" />
 
           {/* Twitter Card */}
           <meta name="twitter:card" content="summary_large_image" />
