@@ -18,7 +18,7 @@ export default function PackagesPage() {
   const { toast } = useToast();
   const [selecting, setSelecting] = useState<string | null>(null);
 
-  const handleSelect = async (tier: "basico" | "start" | "premium" | "vip" | "essencial_empresa" | "premium_empresa" | "prime_empresa") => {
+  const handleSelect = async (tier: "basico" | "start" | "premium" | "vip") => {
     if (!user || !profile) {
       navigate("/entrar");
       return;
