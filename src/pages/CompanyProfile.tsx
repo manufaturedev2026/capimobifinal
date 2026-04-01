@@ -613,7 +613,7 @@ export default function CompanyProfile() {
             </span>
           )}
 
-          {company.address && (
+          {company.show_location && company.address && (
             <span className="flex items-center gap-1 text-white/50 text-[11px] mb-3">
               <MapPin size={10} /> {company.address}
             </span>
