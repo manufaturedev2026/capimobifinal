@@ -18,7 +18,7 @@ export const articles: Article[] = [
     readTime: "5 min",
     content: `## Como Criar Seu Primeiro Anúncio
 
-Publicar seu primeiro anúncio na plataforma é simples e rápido. Siga este guia para ter seu imóvel ou veículo visível em minutos.
+Publicar seu primeiro anúncio na plataforma é simples e rápido. Siga este guia para ter seu imóvel visível em minutos.
 
 ### 1. Acesse o Painel do Vendedor
 
