@@ -12,6 +12,7 @@ import {
   Star,
   Target,
   Lightbulb,
+  Sparkles,
   DollarSign,
   MapPin,
   Clock,
