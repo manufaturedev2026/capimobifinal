@@ -243,49 +243,6 @@ export default function SellerDashboard() {
   };
 
 
-  const adBudget = parseFloat(adDailyBudget) || 0;
-  const adDays = parseInt(adDuration) || 0;
-  const adSubtotal = adBudget * adDays;
-  const adServiceFee = Math.ceil(adSubtotal / 44) * 10;
-  const adTotal = adSubtotal + adServiceFee;
-  // Estimativa: a cada R$8.64 = 1.661 impressões
-  const adDailyImpressions = Math.floor((adBudget / 8.64) * 1661);
-  const adTotalImpressions = adDailyImpressions * adDays;
-
-  const submitAdRequest = async () => {
-    if (!user || !profile || adSubtotal <= 0) return;
-    if (adBudget < 10) {
-      toast({ title: "Valor mínimo é R$ 10,00/dia", variant: "destructive" });
-      return;
-    }
-    if (adDays < 4) {
-      toast({ title: "Mínimo de 4 dias (depósito mínimo R$ 40,00)", variant: "destructive" });
-      return;
-    }
-    setAdSubmitting(true);
-    const { error } = await supabase.from("ad_requests").insert({
-      seller_id: profile.id,
-      user_id: user.id,
-      platform: "ads_interno",
-      daily_budget: adBudget,
-      duration_days: adDays,
-      details: adDetails || null,
-      subtotal: adSubtotal,
-      tax_amount: 0,
-      service_fee: adServiceFee,
-      total: adTotal,
-    } as any);
-    setAdSubmitting(false);
-    if (!error) {
-      toast({ title: "Solicitação enviada!", description: "O admin receberá sua solicitação de ADS." });
-      setAdDailyBudget("");
-      setAdDuration("");
-      setAdDetails("");
-      fetchAdHistory();
-    } else {
-      toast({ title: "Erro ao enviar", description: error.message, variant: "destructive" });
-    }
-  };
 
   const isFreePlan = currentTier === "basico";
   const isImobiliaria = profile?.seller_category === "imobiliaria" || profile?.seller_category === "construtora";
