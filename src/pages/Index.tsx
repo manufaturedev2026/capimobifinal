@@ -337,9 +337,9 @@ export default function Index() {
             {/* Fake property cards */}
             <div className="p-4 grid grid-cols-2 md:grid-cols-3 gap-3">
               {[
-                { title: "Casa 3 quartos", price: "R$ 450.000", tag: "Destaque" },
-                { title: "Apto 2 quartos", price: "R$ 320.000", tag: "Novo" },
-                { title: "Terreno 300m²", price: "R$ 180.000", tag: null },
+                { title: "Casa 3 quartos", price: "R$ 450.000", tag: "Destaque", img: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&h=300&fit=crop" },
+                { title: "Apto 2 quartos", price: "R$ 320.000", tag: "Novo", img: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=300&fit=crop" },
+                { title: "Terreno 300m²", price: "R$ 180.000", tag: null, img: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400&h=300&fit=crop" },
               ].map((item) => (
                 <div key={item.title} className="bg-secondary/50 rounded-2xl overflow-hidden border border-border">
                   <div className="aspect-[4/3] bg-gradient-to-br from-primary/20 to-accent/10 relative">
