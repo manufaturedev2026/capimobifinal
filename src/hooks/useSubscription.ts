@@ -26,7 +26,7 @@ export const PACKAGE_CONFIG = {
     benefits: [
       "Até 25 anúncios ativos",
       "Loja estilo Netflix",
-      "2 Stories por 24h",
+      
       "Destaque normal na listagem",
       "Painel do vendedor completo",
       "Estatísticas básicas",
@@ -42,7 +42,7 @@ export const PACKAGE_CONFIG = {
     benefits: [
       "Até 5 anúncios ativos",
       "Loja estilo Netflix",
-      "1 Story por 24h",
+      
       "Painel do vendedor completo",
       "Estatísticas básicas",
     ],
@@ -57,7 +57,7 @@ export const PACKAGE_CONFIG = {
     benefits: [
       "Até 60 anúncios ativos",
       "Loja estilo Netflix",
-      "3 Stories por 24h",
+      
       "Selo VIP nos anúncios",
       "Destaque no topo da listagem",
       "Estatísticas avançadas",
@@ -75,7 +75,7 @@ export const PACKAGE_CONFIG = {
     benefits: [
       "Até 115 anúncios ativos",
       "Loja estilo Netflix",
-      "4 Stories por 24h",
+      
       "Selo Premium exclusivo",
       "Destaque no topo da listagem",
       "Estatísticas completas",
