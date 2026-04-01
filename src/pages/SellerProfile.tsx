@@ -62,6 +62,7 @@ export default function SellerProfile() {
     store_layout: "netflix",
     store_video_url: "",
     store_video_title: "",
+    store_video_description: "",
     store_video_button_text: "",
     store_video_button_url: "",
   });
