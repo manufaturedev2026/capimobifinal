@@ -116,10 +116,10 @@ export default function AuthPage() {
         <div className="absolute bottom-0 left-0 right-0 p-6 lg:p-12 lg:bottom-auto lg:top-1/2 lg:-translate-y-1/2">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
             <div className="flex items-center gap-3 mb-6">
-              <img src={logoImg} alt="ES Corretores" className="w-14 h-14 rounded-2xl object-contain" />
+              <img src={logoImg} alt="Brokers Bio" className="w-14 h-14 rounded-2xl object-contain" />
               <div>
                 <h2 className="text-white font-display text-xl font-bold">
-                  <span className="text-primary">E</span><span className="text-accent">S</span> Corretores
+                  <span className="text-primary">Brokers</span><span className="text-accent">Bio</span>
                 </h2>
                 <p className="text-white/60 text-sm">Painel do Corretor</p>
               </div>
