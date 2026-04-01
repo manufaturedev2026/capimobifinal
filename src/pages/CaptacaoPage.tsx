@@ -93,8 +93,8 @@ export default function CaptacaoPage() {
 
   const filteredListings = listings.filter((l) => {
     if (search && !l.title.toLowerCase().includes(search.toLowerCase())) return false;
-    if (cityFilter && l.city?.toLowerCase() !== cityFilter.toLowerCase()) return false;
-    if (categoryFilter && l.category !== categoryFilter) return false;
+    if (cityFilter && cityFilter !== "all" && l.city?.toLowerCase() !== cityFilter.toLowerCase()) return false;
+    if (categoryFilter && categoryFilter !== "all" && l.category !== categoryFilter) return false;
     if (priceMin && l.price && l.price < parseFloat(priceMin)) return false;
     if (priceMax && l.price && l.price > parseFloat(priceMax)) return false;
     return true;
