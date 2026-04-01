@@ -39,6 +39,10 @@ import BlogPage from "@/pages/BlogPage";
 import BlogArticlePage from "@/pages/BlogArticlePage";
 import FavoritesPage from "@/pages/FavoritesPage";
 import NeighborhoodPage from "@/pages/NeighborhoodPage";
+import CaptacaoPage from "@/pages/CaptacaoPage";
+import OwnerListingForm from "@/pages/OwnerListingForm";
+import MyListingsPage from "@/pages/MyListingsPage";
+import MyCapturesPage from "@/pages/MyCapturesPage";
 
 const queryClient = new QueryClient();
 
@@ -67,6 +71,12 @@ const AppLayout = () => {
           <Route path="/imoveis/empresa/:id" element={<CompanyProfile />} />
           <Route path="/imoveis/produto/:productId" element={<ProductDetail />} />
           <Route path="/imoveis/:cidade/bairro/:bairro" element={<NeighborhoodPage />} />
+
+          {/* Marketplace de Captação */}
+          <Route path="/captacao" element={<CaptacaoPage />} />
+          <Route path="/anunciar-proprietario" element={<OwnerListingForm />} />
+          <Route path="/meus-imoveis" element={<MyListingsPage />} />
+          <Route path="/minhas-captacoes" element={<MyCapturesPage />} />
 
           <Route path="/seja-corretor" element={<BecomeAgentPage />} />
           <Route path="/anunciar" element={<CreateListing />} />

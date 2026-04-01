@@ -364,6 +364,57 @@ export type Database = {
           },
         ]
       }
+      property_captures: {
+        Row: {
+          broker_id: string
+          broker_user_id: string
+          captured_at: string
+          created_at: string
+          id: string
+          item_id: string
+          notes: string | null
+          status: Database["public"]["Enums"]["capture_status"]
+          updated_at: string
+        }
+        Insert: {
+          broker_id: string
+          broker_user_id: string
+          captured_at?: string
+          created_at?: string
+          id?: string
+          item_id: string
+          notes?: string | null
+          status?: Database["public"]["Enums"]["capture_status"]
+          updated_at?: string
+        }
+        Update: {
+          broker_id?: string
+          broker_user_id?: string
+          captured_at?: string
+          created_at?: string
+          id?: string
+          item_id?: string
+          notes?: string | null
+          status?: Database["public"]["Enums"]["capture_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "property_captures_broker_id_fkey"
+            columns: ["broker_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "property_captures_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "seller_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       seller_analytics: {
         Row: {
           created_at: string
@@ -453,6 +504,7 @@ export type Database = {
           bedrooms: number | null
           brand: string | null
           built_area: number | null
+          capture_status: Database["public"]["Enums"]["capture_status"] | null
           category: Database["public"]["Enums"]["item_category"]
           ceiling_height: number | null
           city: string | null
@@ -477,6 +529,7 @@ export type Database = {
           infrastructure: string[] | null
           internal_office: boolean | null
           iptu: number | null
+          is_owner_listing: boolean | null
           kitchen_type: string | null
           leisure_amenities: string[] | null
           living_rooms: number | null
@@ -485,6 +538,7 @@ export type Database = {
           mileage: number | null
           model: string | null
           neighborhood: string | null
+          owner_phone: string | null
           parking_spots: number | null
           photos: string[] | null
           pool: boolean | null
@@ -523,6 +577,7 @@ export type Database = {
           bedrooms?: number | null
           brand?: string | null
           built_area?: number | null
+          capture_status?: Database["public"]["Enums"]["capture_status"] | null
           category: Database["public"]["Enums"]["item_category"]
           ceiling_height?: number | null
           city?: string | null
@@ -547,6 +602,7 @@ export type Database = {
           infrastructure?: string[] | null
           internal_office?: boolean | null
           iptu?: number | null
+          is_owner_listing?: boolean | null
           kitchen_type?: string | null
           leisure_amenities?: string[] | null
           living_rooms?: number | null
@@ -555,6 +611,7 @@ export type Database = {
           mileage?: number | null
           model?: string | null
           neighborhood?: string | null
+          owner_phone?: string | null
           parking_spots?: number | null
           photos?: string[] | null
           pool?: boolean | null
@@ -593,6 +650,7 @@ export type Database = {
           bedrooms?: number | null
           brand?: string | null
           built_area?: number | null
+          capture_status?: Database["public"]["Enums"]["capture_status"] | null
           category?: Database["public"]["Enums"]["item_category"]
           ceiling_height?: number | null
           city?: string | null
@@ -617,6 +675,7 @@ export type Database = {
           infrastructure?: string[] | null
           internal_office?: boolean | null
           iptu?: number | null
+          is_owner_listing?: boolean | null
           kitchen_type?: string | null
           leisure_amenities?: string[] | null
           living_rooms?: number | null
@@ -625,6 +684,7 @@ export type Database = {
           mileage?: number | null
           model?: string | null
           neighborhood?: string | null
+          owner_phone?: string | null
           parking_spots?: number | null
           photos?: string[] | null
           pool?: boolean | null
@@ -1023,6 +1083,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
+      capture_status: "disponivel" | "em_negociacao" | "vendido"
       item_category:
         | "casa"
         | "apartamento"
@@ -1204,6 +1265,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user"],
+      capture_status: ["disponivel", "em_negociacao", "vendido"],
       item_category: [
         "casa",
         "apartamento",
