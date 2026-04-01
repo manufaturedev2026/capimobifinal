@@ -956,7 +956,7 @@ export default function CompanyProfile() {
                           ? ({ imobiliaria: "Imobiliária", corretor: "Corretor(a) de Imóveis", proprietario: "Proprietário", construtora: "Construtora" } as Record<string, string>)[dbProfile.seller_category] || "Imobiliária"
                           : "Imobiliária"}
                       </p>
-                      {dbProfile?.seller_category === "corretor" && dbProfile?.creci && (
+                      {["corretor", "imobiliaria", "construtora"].includes(dbProfile?.seller_category) && dbProfile?.creci && (
                         <p className="text-xs font-semibold mt-1 flex items-center gap-1" style={{ color: storeTheme.primary }}>
                           <Shield size={12} /> {dbProfile.creci}
                         </p>
@@ -1026,7 +1026,7 @@ export default function CompanyProfile() {
                         : "Especialista em imóveis"}
                     </span>
                   </div>
-                  {dbProfile?.seller_category === "corretor" && dbProfile?.creci && (
+                  {["corretor", "imobiliaria", "construtora"].includes(dbProfile?.seller_category) && dbProfile?.creci && (
                     <div className="flex items-center gap-2">
                       <Shield size={13} className="flex-shrink-0" style={{ color: storeTheme.primary }} />
                       <span className="font-semibold" style={{ color: storeTheme.primary }}>{dbProfile.creci}</span>
@@ -1410,7 +1410,7 @@ export default function CompanyProfile() {
                     : "Especialista em imóveis"}
                 </span>
               </div>
-              {dbProfile?.seller_category === "corretor" && dbProfile?.creci && (
+              {["corretor", "imobiliaria", "construtora"].includes(dbProfile?.seller_category) && dbProfile?.creci && (
                 <div className="flex items-center gap-2">
                   <Shield size={13} className="flex-shrink-0" style={{ color: storeTheme.primary }} />
                   <span className="font-semibold" style={{ color: storeTheme.primary }}>{dbProfile.creci}</span>
