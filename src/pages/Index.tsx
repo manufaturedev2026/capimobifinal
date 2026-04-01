@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import {
   Instagram, Smartphone, Globe, Sparkles, ArrowRight, Star, Zap, Shield,
-  Layout, Palette, BarChart3, Share2, ChevronRight, Play, Check, Crown
+  Layout, Palette, BarChart3, Share2, ChevronRight, Play, Check, Crown, Eye, MessageCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
