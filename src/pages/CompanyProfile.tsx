@@ -975,7 +975,7 @@ export default function CompanyProfile() {
                     </>
                   )}
                   
-                  {company.address && (
+                  {company.show_location && company.address && (
                     <div className="flex items-start gap-2 text-xs mt-3" style={{ color: storeTheme.textMuted }}>
                       <MapPin size={12} className="mt-0.5 flex-shrink-0" style={{ color: storeTheme.primary }} />
                       <span>{company.address}</span>
