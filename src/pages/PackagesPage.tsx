@@ -183,14 +183,14 @@ export default function PackagesPage() {
           >
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
               <div className="flex items-center gap-4">
-                <div className={`p-3 rounded-xl bg-gradient-to-br ${config.color}`}>
+                <div className={`p-3 rounded-xl bg-gradient-to-br ${activeConfig.color}`}>
                   {(() => { const ActiveIcon = tierIcons[currentTier as keyof typeof tierIcons] || Zap; return <ActiveIcon size={24} className="text-white" />; })()}
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Plano Ativo</p>
-                  <h3 className="font-display font-extrabold text-xl text-foreground">{config.name}</h3>
+                  <h3 className="font-display font-extrabold text-xl text-foreground">{activeConfig.name}</h3>
                   <p className="text-sm text-muted-foreground">
-                    R$ {config.price.toFixed(2).replace(".", ",")}/mês
+                    R$ {activeConfig.price.toFixed(2).replace(".", ",")}/mês
                     {subscription.expires_at && (
                       <span className="ml-2">
                         · Renova em {new Date(subscription.expires_at).toLocaleDateString("pt-BR")}
