@@ -4,7 +4,8 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { toast } from "@/hooks/use-toast";
 import { useParams, Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Star, MapPin, MessageCircle, Share2, Key, Home, Building2, Landmark, Store, Warehouse, MoreHorizontal, Image, Eye, Instagram, Phone, ExternalLink, Clock, Shield, Zap, ChevronLeft, ChevronRight, Heart, BadgeCheck, Clapperboard, Play, X, Volume2, VolumeX } from "lucide-react";
+import { ArrowLeft, Star, MapPin, MessageCircle, Share2, Key, Home, Building2, Landmark, Store, Warehouse, MoreHorizontal, Image, Eye, Instagram, Phone, ExternalLink, Clock, Shield, Zap, ChevronLeft, ChevronRight, Heart, BadgeCheck, Clapperboard, Play, X, Volume2, VolumeX, LayoutDashboard } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 import StoreEffects from "@/components/StoreEffects";
 import {
   StoreLayoutNetflix, StoreLayoutMinimal, StoreLayoutMagazine,
@@ -73,6 +74,7 @@ function isUUID(str: string) {
 export default function CompanyProfile() {
   const { id } = useParams();
   const location = useLocation();
+  const { user } = useAuth();
   const [activeCategory, setActiveCategory] = useState("todos");
   const [filterCity, setFilterCity] = useState("");
   const [dbProfile, setDbProfile] = useState<any>(null);
@@ -561,9 +563,11 @@ export default function CompanyProfile() {
         
         {/* Back + Badge */}
         <div className="relative z-10 flex items-center justify-between px-4 pt-4">
-          <Link to="/imoveis" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-white text-xs font-medium">
-            <ArrowLeft size={14} /> Voltar
-          </Link>
+          {user && (
+            <Link to="/painel" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-white text-xs font-medium">
+              <LayoutDashboard size={14} /> Painel
+            </Link>
+          )}
           {isPaid && <PackageBadge tier={sellerTier} size="sm" />}
         </div>
 
@@ -744,9 +748,11 @@ export default function CompanyProfile() {
 
         {/* Back button */}
         <div className="absolute top-4 left-4 z-20">
-          <Link to="/imoveis" className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 backdrop-blur-md text-white text-sm font-medium hover:bg-white/20 transition-colors">
-            <ArrowLeft size={16} /> Voltar
-          </Link>
+          {user && (
+            <Link to="/painel" className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 backdrop-blur-md text-white text-sm font-medium hover:bg-white/20 transition-colors">
+              <LayoutDashboard size={16} /> Painel
+            </Link>
+          )}
         </div>
 
         {/* Tier Badge */}
