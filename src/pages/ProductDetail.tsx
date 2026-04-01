@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ChevronLeft, ChevronRight, MessageCircle, Share2, Star, MapPin, Tag, Store, Image, X, ZoomIn, BadgeCheck, Video } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, MessageCircle, Share2, Star, MapPin, Tag, Store, Image, X, ZoomIn, BadgeCheck, Video, FileDown } from "lucide-react";
+import { generateProposalPdf } from "@/lib/generateProposalPdf";
 import QRCodeDisplay from "@/components/QRCodeDisplay";
 import FinancingSimulator from "@/components/FinancingSimulator";
 import PackageBadge from "@/components/PackageBadge";
