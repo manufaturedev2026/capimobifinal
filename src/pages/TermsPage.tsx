@@ -15,7 +15,7 @@ export default function TermsPage() {
         <div className="prose prose-sm max-w-none text-foreground space-y-6">
           <section>
             <h2 className="font-display font-bold text-xl mb-3">1. Aceitação dos Termos</h2>
-            <p className="text-muted-foreground leading-relaxed">Ao acessar ou utilizar o ES Corretores, você concorda com estes Termos de Uso. Caso não concorde, não utilize a plataforma.</p>
+            <p className="text-muted-foreground leading-relaxed">Ao acessar ou utilizar o Brokers Bio, você concorda com estes Termos de Uso. Caso não concorde, não utilize a plataforma.</p>
           </section>
 
           <section>
