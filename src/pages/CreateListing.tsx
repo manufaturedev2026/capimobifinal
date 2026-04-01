@@ -21,6 +21,7 @@ import {
 import heroImg from "@/assets/hero-anunciar.jpg";
 import lojaPreviewImg from "@/assets/loja-preview-anunciar.jpg";
 import painelPreviewImg from "@/assets/painel-preview-anunciar.jpg";
+import avatarCorretorImg from "@/assets/avatar-corretor.png";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
