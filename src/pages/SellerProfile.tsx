@@ -67,6 +67,7 @@ export default function SellerProfile() {
     store_video_description: "",
     store_video_button_text: "",
     store_video_button_url: "",
+    show_floating_whatsapp: false,
   });
   const { cities: ibgeCities, loading: citiesLoading } = useCitiesByState(form.state);
   const [slugError, setSlugError] = useState("");
@@ -105,6 +106,7 @@ export default function SellerProfile() {
         store_video_description: (profile as any).store_video_description || "",
         store_video_button_text: (profile as any).store_video_button_text || "",
         store_video_button_url: (profile as any).store_video_button_url || "",
+        show_floating_whatsapp: (profile as any).show_floating_whatsapp ?? false,
       });
     }
   }, [profile]);
@@ -594,6 +596,17 @@ export default function SellerProfile() {
                 : form.seller_category === "corretor" || form.seller_category === "imobiliaria"
                 ? "Mostrar localização do escritório no perfil"
                 : "Mostrar localização no perfil da loja"}
+            </span>
+          </label>
+          <label className="flex items-center gap-3 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={form.show_floating_whatsapp}
+              onChange={(e) => setForm((f) => ({ ...f, show_floating_whatsapp: e.target.checked }))}
+              className="w-5 h-5 rounded border-input text-primary focus:ring-ring accent-primary cursor-pointer"
+            />
+            <span className="text-sm text-foreground">
+              Mostrar botão flutuante do WhatsApp na loja
             </span>
           </label>
         </div>

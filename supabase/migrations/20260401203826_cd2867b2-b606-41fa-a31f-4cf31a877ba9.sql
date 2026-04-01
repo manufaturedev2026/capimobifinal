@@ -1,0 +1,1 @@
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS show_floating_whatsapp boolean NOT NULL DEFAULT false;

@@ -264,6 +264,7 @@ export type Database = {
           referred_by: string | null
           seller_category: Database["public"]["Enums"]["seller_category"] | null
           seller_type: Database["public"]["Enums"]["seller_type"]
+          show_floating_whatsapp: boolean
           show_location: boolean
           slug: string | null
           state: string | null
@@ -310,6 +311,7 @@ export type Database = {
             | Database["public"]["Enums"]["seller_category"]
             | null
           seller_type?: Database["public"]["Enums"]["seller_type"]
+          show_floating_whatsapp?: boolean
           show_location?: boolean
           slug?: string | null
           state?: string | null
@@ -356,6 +358,7 @@ export type Database = {
             | Database["public"]["Enums"]["seller_category"]
             | null
           seller_type?: Database["public"]["Enums"]["seller_type"]
+          show_floating_whatsapp?: boolean
           show_location?: boolean
           slug?: string | null
           state?: string | null
