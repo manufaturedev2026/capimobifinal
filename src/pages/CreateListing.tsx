@@ -105,7 +105,7 @@ export default function CreateListing() {
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">imóveis</span>
               </h1>
               <p className="text-muted-foreground text-sm sm:text-lg md:text-xl max-w-2xl mb-3 sm:mb-4">
-                O maior marketplace de imóveis do Espírito Santo. Alcance milhares de compradores e acelere suas vendas.
+                O maior marketplace de imóveis do Brasil. Alcance milhares de compradores e acelere suas vendas.
               </p>
 
               {/* 7 dias grátis badge */}
