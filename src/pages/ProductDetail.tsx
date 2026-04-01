@@ -19,6 +19,8 @@ function isUUID(str: string) {
 
 export default function ProductDetail() {
   const { productId } = useParams();
+  const [searchParams] = useSearchParams();
+  const corretorSlug = searchParams.get("corretor");
   const { toast } = useToast();
   const { openWhatsApp } = useWhatsAppPicker();
   const [activeImage, setActiveImage] = useState(0);
@@ -26,6 +28,7 @@ export default function ProductDetail() {
   const carouselRef = useRef<HTMLDivElement>(null);
   const [dbItem, setDbItem] = useState<any>(null);
   const [dbSeller, setDbSeller] = useState<any>(null);
+  const [teamMember, setTeamMember] = useState<any>(null);
   const [sellerTier, setSellerTier] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [isDb, setIsDb] = useState(false);
