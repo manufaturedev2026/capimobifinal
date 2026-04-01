@@ -263,10 +263,10 @@ export default function CreateListing() {
                   { icon: TrendingUp, label: "Performance", value: "Por anúncio" },
                 ].map((stat, i) => (
                   <motion.div key={i} custom={i} initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp}
-                    className="bg-secondary/50 rounded-xl p-4 border border-border">
-                    <stat.icon size={20} className="text-primary mb-2" />
-                    <div className="text-foreground text-sm font-bold">{stat.label}</div>
-                    <div className="text-muted-foreground text-xs">{stat.value}</div>
+                    className="bg-secondary/50 rounded-xl p-3 sm:p-4 border border-border">
+                    <stat.icon size={18} className="text-primary mb-1.5 sm:mb-2" />
+                    <div className="text-foreground text-xs sm:text-sm font-bold">{stat.label}</div>
+                    <div className="text-muted-foreground text-[10px] sm:text-xs">{stat.value}</div>
                   </motion.div>
                 ))}
               </div>
