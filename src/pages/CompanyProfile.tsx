@@ -848,9 +848,9 @@ export default function CompanyProfile() {
 
           {/* ═══════════ MAIN CONTENT ═══════════ */}
           <div className="flex-1 min-w-0">
-            {/* Mobile Category Carousel */}
+            {/* Mobile Category Carousel — Epic Premium Cards */}
             <div className="lg:hidden mb-6">
-              <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-2 snap-x snap-mandatory">
+              <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-3 snap-x snap-mandatory -mx-4 px-4">
                 {subcategories.map((cat) => {
                   const Icon = cat.icon;
                   const isActive = activeCategory === cat.slug;
@@ -859,53 +859,85 @@ export default function CompanyProfile() {
                     <button
                       key={cat.slug}
                       onClick={() => setActiveCategory(cat.slug)}
-                      className={`flex-shrink-0 snap-start flex items-center gap-1.5 px-4 py-2.5 rounded-full text-xs font-semibold transition-all border ${
-                        isActive
-                          ? "bg-primary text-primary-foreground border-primary shadow-md"
-                          : "bg-card text-muted-foreground border-border hover:border-primary/30"
-                      }`}
+                      className="flex-shrink-0 snap-start relative w-28 h-20 rounded-2xl overflow-hidden transition-all duration-300 group"
+                      style={{
+                        boxShadow: isActive ? `0 0 20px ${storeTheme.primary}40, 0 4px 15px rgba(0,0,0,0.3)` : "0 2px 8px rgba(0,0,0,0.15)",
+                        border: isActive ? `2px solid ${storeTheme.primary}` : "2px solid transparent",
+                      }}
                     >
-                      <Icon size={14} />
-                      {cat.name}
-                      {count > 0 && <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${isActive ? "bg-white/20" : "bg-muted"}`}>{count}</span>}
+                      <img src={cat.img} alt={cat.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/10" />
+                      {isActive && <div className="absolute inset-0 bg-primary/20" />}
+                      <div className="absolute bottom-0 left-0 right-0 p-2 text-left">
+                        <div className="flex items-center gap-1">
+                          <Icon size={11} className="text-white/80" />
+                          <span className="text-[11px] font-bold text-white leading-tight">{cat.name}</span>
+                        </div>
+                        {count > 0 && <span className="text-[9px] text-white/70 font-medium">{count} imóveis</span>}
+                      </div>
                     </button>
                   );
                 })}
               </div>
             </div>
 
-
-            {/* City Filter */}
+            {/* City Filter — Epic Horizontal Scroll with Photos */}
             {availableCities.length > 1 && (
-              <div className="mb-4">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <MapPin size={16} style={{ color: storeTheme.textMuted }} className="flex-shrink-0" />
+              <div className="mb-6">
+                <div className="flex items-center gap-2 mb-3">
+                  <MapPin size={16} style={{ color: storeTheme.primary }} />
+                  <h3 className="font-display font-bold text-sm" style={{ color: storeTheme.text }}>Cidades</h3>
+                </div>
+                <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-3 -mx-4 px-4 snap-x snap-mandatory">
+                  {/* All cities button */}
                   <button
                     onClick={() => setFilterCity("")}
-                    className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
-                      !filterCity
-                        ? "bg-primary text-primary-foreground border-primary"
-                        : "bg-card border-border hover:border-primary/30"
-                    }`}
-                    style={!filterCity ? {} : { color: storeTheme.textMuted }}
+                    className="flex-shrink-0 snap-start relative w-32 h-24 md:w-36 md:h-28 rounded-2xl overflow-hidden transition-all duration-300 group"
+                    style={{
+                      boxShadow: !filterCity ? `0 0 20px ${storeTheme.primary}40, 0 4px 15px rgba(0,0,0,0.3)` : "0 2px 8px rgba(0,0,0,0.15)",
+                      border: !filterCity ? `2px solid ${storeTheme.primary}` : "2px solid transparent",
+                    }}
                   >
-                    Todas ({products.length})
+                    <img src="https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=400&h=300&fit=crop" alt="Todas" className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-black/10" />
+                    {!filterCity && <div className="absolute inset-0 bg-primary/20" />}
+                    <div className="absolute bottom-0 left-0 right-0 p-2.5">
+                      <span className="text-xs font-bold text-white block leading-tight">Todas as Cidades</span>
+                      <span className="text-[10px] text-white/70 font-medium">{products.length} imóveis</span>
+                    </div>
                   </button>
-                  {availableCities.map((city) => {
+                  {availableCities.map((city, idx) => {
                     const count = products.filter((p: any) => p.city === city).length;
                     const isActive = filterCity === city;
+                    // Rotate through different city images
+                    const cityImages = [
+                      "https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=400&h=300&fit=crop",
+                      "https://images.unsplash.com/photo-1444723121867-7a241cacace9?w=400&h=300&fit=crop",
+                      "https://images.unsplash.com/photo-1514565131-fce0801e5785?w=400&h=300&fit=crop",
+                      "https://images.unsplash.com/photo-1519501025264-65ba15a82390?w=400&h=300&fit=crop",
+                      "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=400&h=300&fit=crop",
+                      "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=400&h=300&fit=crop",
+                      "https://images.unsplash.com/photo-1500916434205-0c77489c6cf7?w=400&h=300&fit=crop",
+                      "https://images.unsplash.com/photo-1518391846015-55a9cc003b25?w=400&h=300&fit=crop",
+                    ];
+                    const img = cityImages[idx % cityImages.length];
                     return (
                       <button
                         key={city}
                         onClick={() => setFilterCity(isActive ? "" : city)}
-                        className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
-                          isActive
-                            ? "bg-primary text-primary-foreground border-primary"
-                            : "bg-card border-border hover:border-primary/30"
-                        }`}
-                        style={isActive ? {} : { color: storeTheme.textMuted }}
+                        className="flex-shrink-0 snap-start relative w-32 h-24 md:w-36 md:h-28 rounded-2xl overflow-hidden transition-all duration-300 group"
+                        style={{
+                          boxShadow: isActive ? `0 0 20px ${storeTheme.primary}40, 0 4px 15px rgba(0,0,0,0.3)` : "0 2px 8px rgba(0,0,0,0.15)",
+                          border: isActive ? `2px solid ${storeTheme.primary}` : "2px solid transparent",
+                        }}
                       >
-                        {city} ({count})
+                        <img src={img} alt={city} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-black/10" />
+                        {isActive && <div className="absolute inset-0 bg-primary/20" />}
+                        <div className="absolute bottom-0 left-0 right-0 p-2.5">
+                          <span className="text-xs font-bold text-white block leading-tight truncate">{city}</span>
+                          <span className="text-[10px] text-white/70 font-medium">{count} imóveis</span>
+                        </div>
                       </button>
                     );
                   })}
