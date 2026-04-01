@@ -47,12 +47,11 @@ export default function AuthPage() {
         toast({ title: "Erro ao cadastrar", description: error.message, variant: "destructive" });
       } else {
         // Save referral code if present (after profile is created)
-        if (refCode.trim()) {
-          // Wait a bit for profile to be created by trigger/hook
-          setTimeout(async () => {
-            const { data: { user: newUser } } = await supabase.auth.getUser();
-            if (newUser) {
-              // Check it's not self-referral
+        setTimeout(async () => {
+          const { data: { user: newUser } } = await supabase.auth.getUser();
+          if (newUser) {
+            // Handle referral
+            if (refCode.trim()) {
               const { data: referrer } = await supabase
                 .from("profiles")
                 .select("user_id")
@@ -65,9 +64,35 @@ export default function AuthPage() {
                   .eq("user_id", newUser.id);
               }
             }
-          }, 2000);
-        }
-        toast({ title: "Cadastro realizado!", description: "Complete seu perfil para começar!" });
+
+            // Handle 7-day free trial from /anunciar
+            if (trialDays === "7") {
+              const { data: profile } = await supabase
+                .from("profiles")
+                .select("id")
+                .eq("user_id", newUser.id)
+                .maybeSingle();
+              if (profile) {
+                await supabase.from("seller_subscriptions").insert({
+                  user_id: newUser.id,
+                  seller_id: profile.id,
+                  tier: "start",
+                  max_items: 10,
+                  expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+                  payment_method: "trial",
+                  payment_status: "confirmado",
+                } as any);
+              }
+            }
+          }
+        }, 2000);
+
+        toast({
+          title: "Cadastro realizado!",
+          description: trialDays === "7"
+            ? "Seus 7 dias grátis do plano Start foram ativados! 🎉"
+            : "Complete seu perfil para começar!",
+        });
         navigate("/painel");
       }
     }
