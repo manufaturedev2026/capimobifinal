@@ -32,7 +32,7 @@ interface OwnerListing {
 }
 
 const CATEGORIES = [
-  { value: "", label: "Todos os tipos" },
+  { value: "all", label: "Todos os tipos" },
   { value: "casa", label: "Casa" },
   { value: "apartamento", label: "Apartamento" },
   { value: "terreno", label: "Terreno" },
@@ -64,8 +64,8 @@ export default function CaptacaoPage() {
 
   // Filters
   const [search, setSearch] = useState("");
-  const [cityFilter, setCityFilter] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("");
+  const [cityFilter, setCityFilter] = useState("all");
+  const [categoryFilter, setCategoryFilter] = useState("all");
   const [priceMin, setPriceMin] = useState("");
   const [priceMax, setPriceMax] = useState("");
 
@@ -93,8 +93,8 @@ export default function CaptacaoPage() {
 
   const filteredListings = listings.filter((l) => {
     if (search && !l.title.toLowerCase().includes(search.toLowerCase())) return false;
-    if (cityFilter && l.city?.toLowerCase() !== cityFilter.toLowerCase()) return false;
-    if (categoryFilter && l.category !== categoryFilter) return false;
+    if (cityFilter && cityFilter !== "all" && l.city?.toLowerCase() !== cityFilter.toLowerCase()) return false;
+    if (categoryFilter && categoryFilter !== "all" && l.category !== categoryFilter) return false;
     if (priceMin && l.price && l.price < parseFloat(priceMin)) return false;
     if (priceMax && l.price && l.price > parseFloat(priceMax)) return false;
     return true;
@@ -193,7 +193,7 @@ export default function CaptacaoPage() {
               <SelectValue placeholder="Cidade" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Todas as cidades</SelectItem>
+              <SelectItem value="all">Todas as cidades</SelectItem>
               {cities.map((c) => (
                 <SelectItem key={c} value={c!}>{c}</SelectItem>
               ))}
