@@ -1,17 +1,15 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Check, Crown, Star, Zap, ArrowLeft, Building } from "lucide-react";
+import { Check, Crown, Star, Zap, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription, PACKAGE_CONFIG } from "@/hooks/useSubscription";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
-const tiers = ["basico", "start", "premium", "vip", "essencial_empresa", "premium_empresa", "prime_empresa"] as const;
-const tierIcons = { basico: Zap, start: Zap, premium: Star, vip: Crown, essencial_empresa: Building, premium_empresa: Building, prime_empresa: Crown };
-const empresaTiers = ["essencial_empresa", "premium_empresa", "prime_empresa"];
-const individualTiers = ["start", "premium", "vip"];
+const tiers = ["basico", "start", "premium", "vip"] as const;
+const tierIcons = { basico: Zap, start: Zap, premium: Star, vip: Crown };
 
 export default function PackagesPage() {
   const { user, profile } = useAuth();
@@ -20,7 +18,7 @@ export default function PackagesPage() {
   const { toast } = useToast();
   const [selecting, setSelecting] = useState<string | null>(null);
 
-  const handleSelect = async (tier: "basico" | "start" | "premium" | "vip" | "essencial_empresa" | "premium_empresa" | "prime_empresa") => {
+  const handleSelect = async (tier: "basico" | "start" | "premium" | "vip") => {
     if (!user || !profile) {
       navigate("/entrar");
       return;
@@ -80,15 +78,12 @@ export default function PackagesPage() {
       </div>
 
       <div className="container max-w-5xl mx-auto px-4 -mt-8 relative z-10 pb-24 lg:pb-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {tiers.map((tier, i) => {
             const config = PACKAGE_CONFIG[tier];
             const Icon = tierIcons[tier];
             const isCurrent = currentTier === tier;
             const isPopular = tier === "premium";
-            const isEmpresaTier = empresaTiers.includes(tier);
-            const isImobiliaria = profile?.seller_category === "imobiliaria" || profile?.seller_category === "construtora";
-            const isLocked = (isEmpresaTier && !isImobiliaria) || (individualTiers.includes(tier) && isImobiliaria);
 
             return (
               <motion.div
@@ -136,24 +131,16 @@ export default function PackagesPage() {
                     ))}
                   </ul>
 
-                  {isLocked && (
-                    <p className="text-xs text-muted-foreground mt-4 text-center italic">
-                      {isEmpresaTier ? "Exclusivo para Imobiliárias" : "Disponível apenas para Corretores e Proprietários"}
-                    </p>
-                  )}
-
                   <button
                     onClick={() => handleSelect(tier as any)}
-                    disabled={isCurrent || selecting === tier || isLocked}
+                    disabled={isCurrent || selecting === tier}
                     className={`w-full mt-3 py-3 rounded-xl font-bold text-sm transition-all ${
-                      isCurrent || isLocked
+                      isCurrent
                         ? "bg-muted text-muted-foreground cursor-default"
                         : `bg-gradient-to-r ${config.color} text-white hover:opacity-90 shadow-lg`
                     }`}
                   >
-                    {isLocked
-                      ? (isEmpresaTier ? "Somente Imobiliárias" : "Somente Corretores")
-                      : selecting === tier
+                    {selecting === tier
                       ? "Processando..."
                       : isCurrent
                       ? "Plano Atual"
