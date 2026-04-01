@@ -1,4 +1,4 @@
-import { Suspense, lazy } from "react";
+import { Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import BannedScreen from "@/components/BannedScreen";
@@ -16,25 +16,27 @@ import FooterSimple from "@/components/FooterSimple";
 import InstallPWA from "@/components/InstallPWA";
 import ScrollToTop from "@/components/ScrollToTop";
 import { CustomDomainRedirect } from "@/components/CustomDomainRedirect";
+import RouteErrorBoundary from "@/components/RouteErrorBoundary";
+import { lazyPage } from "@/lib/chunkRecovery";
 
-const Index = lazy(() => import("@/pages/Index"));
-const PropertiesPage = lazy(() => import("@/pages/PropertiesPage"));
-const CompanyProfile = lazy(() => import("@/pages/CompanyProfile"));
-const ProductDetail = lazy(() => import("@/pages/ProductDetail"));
-const CreateListing = lazy(() => import("@/pages/CreateListing"));
-const LoginPage = lazy(() => import("@/pages/LoginPage"));
-const SearchPage = lazy(() => import("@/pages/SearchPage"));
-const AuthPage = lazy(() => import("@/pages/AuthPage"));
-const SellerDashboard = lazy(() => import("@/pages/SellerDashboard"));
-const SellerItemForm = lazy(() => import("@/pages/SellerItemForm"));
-const SellerProfile = lazy(() => import("@/pages/SellerProfile"));
-const PackagesPage = lazy(() => import("@/pages/PackagesPage"));
-const AdminPanel = lazy(() => import("@/pages/AdminPanel"));
-const PrivacyPage = lazy(() => import("@/pages/PrivacyPage"));
-const TermsPage = lazy(() => import("@/pages/TermsPage"));
-const NotFound = lazy(() => import("@/pages/NotFound"));
-const FavoritesPage = lazy(() => import("@/pages/FavoritesPage"));
-const NeighborhoodPage = lazy(() => import("@/pages/NeighborhoodPage"));
+const Index = lazyPage(() => import("@/pages/Index"));
+const PropertiesPage = lazyPage(() => import("@/pages/PropertiesPage"));
+const CompanyProfile = lazyPage(() => import("@/pages/CompanyProfile"));
+const ProductDetail = lazyPage(() => import("@/pages/ProductDetail"));
+const CreateListing = lazyPage(() => import("@/pages/CreateListing"));
+const LoginPage = lazyPage(() => import("@/pages/LoginPage"));
+const SearchPage = lazyPage(() => import("@/pages/SearchPage"));
+const AuthPage = lazyPage(() => import("@/pages/AuthPage"));
+const SellerDashboard = lazyPage(() => import("@/pages/SellerDashboard"));
+const SellerItemForm = lazyPage(() => import("@/pages/SellerItemForm"));
+const SellerProfile = lazyPage(() => import("@/pages/SellerProfile"));
+const PackagesPage = lazyPage(() => import("@/pages/PackagesPage"));
+const AdminPanel = lazyPage(() => import("@/pages/AdminPanel"));
+const PrivacyPage = lazyPage(() => import("@/pages/PrivacyPage"));
+const TermsPage = lazyPage(() => import("@/pages/TermsPage"));
+const NotFound = lazyPage(() => import("@/pages/NotFound"));
+const FavoritesPage = lazyPage(() => import("@/pages/FavoritesPage"));
+const NeighborhoodPage = lazyPage(() => import("@/pages/NeighborhoodPage"));
 
 const queryClient = new QueryClient();
 
@@ -60,31 +62,33 @@ const AppLayout = () => {
     <div className="min-h-screen flex flex-col">
       {!isStorePage && <Header />}
       <main className="flex-1">
-        <Suspense fallback={<RouteLoader />}>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/imoveis" element={<PropertiesPage />} />
-            <Route path="/imoveis/:cidade" element={<PropertiesPage />} />
-            <Route path="/empresa/:id" element={<CompanyProfile />} />
-            <Route path="/imoveis/empresa/:id" element={<CompanyProfile />} />
-            <Route path="/imoveis/produto/:productId" element={<ProductDetail />} />
-            <Route path="/imoveis/:cidade/bairro/:bairro" element={<NeighborhoodPage />} />
-            <Route path="/anunciar" element={<CreateListing />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/buscar" element={<SearchPage />} />
-            <Route path="/entrar" element={<AuthPage />} />
-            <Route path="/painel" element={<SellerDashboard />} />
-            <Route path="/painel/novo" element={<SellerItemForm />} />
-            <Route path="/painel/editar/:id" element={<SellerItemForm />} />
-            <Route path="/painel/perfil" element={<SellerProfile />} />
-            <Route path="/pacotes" element={<PackagesPage />} />
-            <Route path="/favoritos" element={<FavoritesPage />} />
-            <Route path="/admin" element={<AdminPanel />} />
-            <Route path="/privacidade" element={<PrivacyPage />} />
-            <Route path="/termos" element={<TermsPage />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Suspense>
+        <RouteErrorBoundary>
+          <Suspense fallback={<RouteLoader />}>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/imoveis" element={<PropertiesPage />} />
+              <Route path="/imoveis/:cidade" element={<PropertiesPage />} />
+              <Route path="/empresa/:id" element={<CompanyProfile />} />
+              <Route path="/imoveis/empresa/:id" element={<CompanyProfile />} />
+              <Route path="/imoveis/produto/:productId" element={<ProductDetail />} />
+              <Route path="/imoveis/:cidade/bairro/:bairro" element={<NeighborhoodPage />} />
+              <Route path="/anunciar" element={<CreateListing />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/buscar" element={<SearchPage />} />
+              <Route path="/entrar" element={<AuthPage />} />
+              <Route path="/painel" element={<SellerDashboard />} />
+              <Route path="/painel/novo" element={<SellerItemForm />} />
+              <Route path="/painel/editar/:id" element={<SellerItemForm />} />
+              <Route path="/painel/perfil" element={<SellerProfile />} />
+              <Route path="/pacotes" element={<PackagesPage />} />
+              <Route path="/favoritos" element={<FavoritesPage />} />
+              <Route path="/admin" element={<AdminPanel />} />
+              <Route path="/privacidade" element={<PrivacyPage />} />
+              <Route path="/termos" element={<TermsPage />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
+        </RouteErrorBoundary>
       </main>
       {!isStorePage && <FooterSimple />}
       <InstallPWA />
