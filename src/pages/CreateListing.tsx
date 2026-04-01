@@ -230,7 +230,7 @@ export default function CreateListing() {
                 <img src={painelPreviewImg} alt="Painel de estatísticas" loading="lazy" className="w-full h-auto" width={1280} height={800} />
               </div>
               <motion.div animate={{ y: [0, -8, 0] }} transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-                className="absolute -bottom-4 -right-4 md:bottom-4 md:right-4 bg-card/90 backdrop-blur-xl rounded-2xl p-4 border border-border shadow-xl">
+                className="absolute bottom-2 right-2 sm:-bottom-4 sm:-right-4 md:bottom-4 md:right-4 bg-card/90 backdrop-blur-xl rounded-xl sm:rounded-2xl p-2.5 sm:p-4 border border-border shadow-xl">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
                     <TrendingUp size={20} className="text-primary" />
