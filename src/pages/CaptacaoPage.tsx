@@ -193,7 +193,7 @@ export default function CaptacaoPage() {
               <SelectValue placeholder="Cidade" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Todas as cidades</SelectItem>
+              <SelectItem value="all">Todas as cidades</SelectItem>
               {cities.map((c) => (
                 <SelectItem key={c} value={c!}>{c}</SelectItem>
               ))}
