@@ -218,6 +218,7 @@ export type Database = {
           id: string
           item_id: string | null
           seller_id: string
+          team_member_id: string | null
         }
         Insert: {
           created_at?: string
@@ -225,6 +226,7 @@ export type Database = {
           id?: string
           item_id?: string | null
           seller_id: string
+          team_member_id?: string | null
         }
         Update: {
           created_at?: string
@@ -232,8 +234,17 @@ export type Database = {
           id?: string
           item_id?: string | null
           seller_id?: string
+          team_member_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "seller_analytics_team_member_id_fkey"
+            columns: ["team_member_id"]
+            isOneToOne: false
+            referencedRelation: "team_members"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       seller_items: {
         Row: {
