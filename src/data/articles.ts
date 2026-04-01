@@ -260,7 +260,7 @@ Você pode desativar um corretor sem excluí-lo. Ele deixará de aparecer no rod
     slug: "como-usar-sistema-indicacao",
     title: "Como Ganhar Dinheiro com Indicações",
     description: "Entenda o programa de indicação e ganhe comissões recorrentes indicando novos vendedores para a plataforma.",
-    cover: "https://images.unsplash.com/photo-1553729459-uj1ef3f28b9c?w=800&h=400&fit=crop",
+    cover: "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=800&h=400&fit=crop",
     category: "Indicação",
     readTime: "3 min",
     content: `## Como Ganhar Dinheiro com Indicações
@@ -306,7 +306,7 @@ Na aba de Indicação você vê:
     slug: "como-escolher-plano-ideal",
     title: "Como Escolher o Plano Ideal Para Você",
     description: "Compare os planos disponíveis e descubra qual se encaixa melhor no seu perfil e necessidades.",
-    cover: "https://images.unsplash.com/photo-1553484771-047a44eee27b?w=800&h=400&fit=crop",
+    cover: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800&h=400&fit=crop",
     category: "Planos",
     readTime: "4 min",
     content: `## Como Escolher o Plano Ideal Para Você
