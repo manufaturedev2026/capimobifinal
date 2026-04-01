@@ -36,12 +36,12 @@ const benefits = [
   {
     icon: Eye,
     title: "Máxima Visibilidade",
-    description: "Seus imóveis são exibidos para milhares de compradores ativos no Espírito Santo todos os dias.",
+    description: "Seus imóveis são exibidos para milhares de compradores ativos em todo o Brasil.",
   },
   {
     icon: TrendingUp,
     title: "Mais Vendas",
-    description: "Corretores que anunciam no ES Corretores vendem até 3x mais rápido que em plataformas tradicionais.",
+    description: "Corretores que anunciam no Brokers Bio vendem até 3x mais rápido que em plataformas tradicionais.",
     accent: true,
   },
   {
@@ -71,7 +71,7 @@ const stats = [
   { value: "10.000+", label: "Visitantes mensais" },
   { value: "500+", label: "Corretores cadastrados" },
   { value: "2.000+", label: "Imóveis anunciados" },
-  { value: "78+", label: "Cidades no ES" },
+  { value: "78+", label: "Cidades atendidas" },
 ];
 
 const plans = [
@@ -90,7 +90,7 @@ export default function CreateListing() {
     <div className="min-h-screen bg-background">
       {/* Hero */}
       <div className="relative h-[55vh] sm:h-[65vh] md:h-[80vh] overflow-hidden">
-        <img src={heroImg} alt="Anuncie no ES Corretores" className="absolute inset-0 w-full h-full object-cover" />
+        <img src={heroImg} alt="Anuncie no Brokers Bio" className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-r from-background/80 to-transparent" />
 
@@ -147,7 +147,7 @@ export default function CreateListing() {
         <div className="container max-w-6xl mx-auto px-4">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-8 sm:mb-12">
             <h2 className="font-display font-bold text-2xl sm:text-3xl md:text-4xl text-foreground mb-3">
-              Por que anunciar no <span className="text-accent">ES Corretores</span>?
+              Por que anunciar no <span className="text-accent">Brokers Bio</span>?
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">Tudo que você precisa para vender mais imóveis em um só lugar.</p>
           </motion.div>

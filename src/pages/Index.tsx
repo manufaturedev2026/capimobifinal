@@ -62,8 +62,8 @@ export default function Index() {
   return (
     <div className="min-h-screen bg-background">
       <Helmet>
-        <title>ES Corretores | Sua Loja de Imóveis no Instagram</title>
-        <meta name="description" content="Crie sua loja de imóveis estilo Netflix e compartilhe no Instagram. Link na Bio profissional para corretores e imobiliárias." />
+        <title>Brokers Bio | Sua Loja de Imóveis no Instagram</title>
+        <meta name="description" content="Crie sua loja de imóveis estilo Netflix e compartilhe no Instagram. Link na Bio profissional para corretores e imobiliárias de todo o Brasil." />
         <link rel="canonical" href="https://redeimoveisgb.lovable.app/" />
       </Helmet>
 
@@ -224,7 +224,7 @@ export default function Index() {
                     <Globe size={18} className="text-primary" />
                     <div>
                       <p className="text-white text-xs font-bold">Link na Bio</p>
-                      <p className="text-white/40 text-[10px]">escoretores.app/loja</p>
+                      <p className="text-white/40 text-[10px]">brokersbio.app/loja</p>
                     </div>
                   </div>
                 </motion.div>
@@ -334,9 +334,9 @@ export default function Index() {
                 <h3 className="font-display font-extrabold text-xl text-white drop-shadow-lg leading-tight">
                   Casa 3 quartos com piscina
                 </h3>
-                <p className="text-white/60 text-xs mt-1 flex items-center gap-1">
-                  📍 Vila Velha, ES
-                </p>
+                 <p className="text-white/60 text-xs mt-1 flex items-center gap-1">
+                   📍 São Paulo, SP
+                 </p>
                 <p className="font-display font-extrabold text-2xl text-emerald-400 mt-2 drop-shadow-lg">
                   R$ 450.000
                 </p>

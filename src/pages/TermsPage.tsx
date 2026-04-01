@@ -4,8 +4,8 @@ export default function TermsPage() {
   return (
     <>
       <Helmet>
-        <title>Termos de Uso | ES Corretores</title>
-        <meta name="description" content="Termos de Uso do ES Corretores. Conheça as condições de uso da nossa plataforma de anúncios de imóveis e veículos." />
+        <title>Termos de Uso | Brokers Bio</title>
+        <meta name="description" content="Termos de Uso do Brokers Bio. Conheça as condições de uso da nossa plataforma de anúncios de imóveis." />
         <link rel="canonical" href="https://redeimoveisgb.lovable.app/termos" />
       </Helmet>
       <div className="container max-w-3xl mx-auto px-4 py-12">
@@ -15,12 +15,12 @@ export default function TermsPage() {
         <div className="prose prose-sm max-w-none text-foreground space-y-6">
           <section>
             <h2 className="font-display font-bold text-xl mb-3">1. Aceitação dos Termos</h2>
-            <p className="text-muted-foreground leading-relaxed">Ao acessar ou utilizar o ES Corretores, você concorda com estes Termos de Uso. Caso não concorde, não utilize a plataforma.</p>
+            <p className="text-muted-foreground leading-relaxed">Ao acessar ou utilizar o Brokers Bio, você concorda com estes Termos de Uso. Caso não concorde, não utilize a plataforma.</p>
           </section>
 
           <section>
             <h2 className="font-display font-bold text-xl mb-3">2. Descrição do Serviço</h2>
-            <p className="text-muted-foreground leading-relaxed">O ES Corretores é um marketplace que conecta vendedores e compradores de imóveis e veículos no Espírito Santo. Atuamos como intermediários, fornecendo a plataforma para publicação e busca de anúncios.</p>
+            <p className="text-muted-foreground leading-relaxed">O Brokers Bio é uma plataforma que conecta vendedores e compradores de imóveis em todo o Brasil. Atuamos como intermediários, fornecendo a plataforma para publicação e busca de anúncios.</p>
           </section>
 
           <section>
@@ -47,7 +47,7 @@ export default function TermsPage() {
           <section>
             <h2 className="font-display font-bold text-xl mb-3">5. Planos e Pagamentos</h2>
             <ul className="list-disc pl-6 text-muted-foreground space-y-1">
-              <li>O ES Corretores oferece planos gratuitos e pagos para anunciantes</li>
+              <li>O Brokers Bio oferece planos gratuitos e pagos para anunciantes</li>
               <li>Os planos pagos oferecem recursos adicionais conforme descrito na página de pacotes</li>
               <li>Pagamentos são processados conforme acordado com o gerente de conta</li>
               <li>Não há reembolso após a ativação do plano</li>
@@ -56,7 +56,7 @@ export default function TermsPage() {
 
           <section>
             <h2 className="font-display font-bold text-xl mb-3">6. Responsabilidades</h2>
-            <p className="text-muted-foreground leading-relaxed">O ES Corretores não se responsabiliza por:</p>
+            <p className="text-muted-foreground leading-relaxed">O Brokers Bio não se responsabiliza por:</p>
             <ul className="list-disc pl-6 text-muted-foreground space-y-1">
               <li>Negociações realizadas entre compradores e vendedores</li>
               <li>Veracidade das informações fornecidas pelos anunciantes</li>
@@ -67,7 +67,7 @@ export default function TermsPage() {
 
           <section>
             <h2 className="font-display font-bold text-xl mb-3">7. Propriedade Intelectual</h2>
-            <p className="text-muted-foreground leading-relaxed">Todo o conteúdo da plataforma (design, código, marca, logotipos) é propriedade do ES Corretores. Os anunciantes mantêm os direitos sobre suas fotos e descrições.</p>
+            <p className="text-muted-foreground leading-relaxed">Todo o conteúdo da plataforma (design, código, marca, logotipos) é propriedade do Brokers Bio. Os anunciantes mantêm os direitos sobre suas fotos e descrições.</p>
           </section>
 
           <section>

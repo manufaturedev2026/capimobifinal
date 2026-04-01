@@ -8,9 +8,9 @@ export default function FooterSimple() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           <div className="col-span-2 md:col-span-1">
             <Link to="/" className="flex items-center gap-2.5 mb-3">
-              <img src="/pwa-icon-512.png" alt="ES Corretores" className="w-9 h-9 rounded-xl shadow-md object-contain" />
+              <img src="/pwa-icon-512.png" alt="Brokers Bio" className="w-9 h-9 rounded-xl shadow-md object-contain" />
               <span className="font-display font-bold text-lg">
-                <span className="text-primary">E</span><span className="text-accent">S</span><span className="text-foreground">Corretores</span>
+                <span className="text-primary">Brokers</span><span className="text-accent">Bio</span>
               </span>
             </Link>
             <p className="text-xs text-muted-foreground leading-relaxed max-w-xs">
@@ -60,7 +60,7 @@ export default function FooterSimple() {
 
         <div className="border-t border-border mt-8 pt-6 flex flex-col items-center gap-2 text-center">
           <p className="text-xs text-muted-foreground">
-            © {new Date().getFullYear()} ES Corretores — Colatina, ES · Brasil
+            © {new Date().getFullYear()} Brokers Bio · Brasil
           </p>
         </div>
       </div>

@@ -5,10 +5,10 @@ import { toast } from "sonner";
 
 const blogContent: Record<string, { title: string; category: string; readTime: string; date: string; cover: string; body: string }> = {
   "como-comprar-primeiro-imovel": {
-    title: "Como Comprar Seu Primeiro Imóvel no ES",
+    title: "Como Comprar Seu Primeiro Imóvel",
     category: "Guias", readTime: "8 min", date: "2026-03-25",
     cover: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1200&h=500&fit=crop",
-    body: `## Planejamento Financeiro\n\nAntes de tudo, organize suas finanças. Tenha pelo menos 20% do valor do imóvel para entrada e mantenha uma reserva de emergência.\n\n## Escolha da Região\n\nNo Espírito Santo, cada região tem suas particularidades. Vitória oferece infraestrutura completa, Vila Velha tem praias incríveis, e Serra apresenta ótimo custo-benefício.\n\n## Documentação\n\nReúna seus documentos: RG, CPF, comprovante de renda, extrato bancário dos últimos 3 meses e declaração de IR.\n\n## Financiamento\n\nCompare taxas entre os bancos. A Caixa Econômica costuma oferecer as melhores condições para primeira moradia.\n\n## Vistoria\n\nNunca dispense a vistoria. Verifique instalações elétricas, hidráulicas, acabamentos e estrutura.\n\n## Escritura e Registro\n\nApós a compra, faça a escritura no cartório e registre o imóvel em seu nome. Isso garante sua propriedade legalmente.`,
+    body: `## Planejamento Financeiro\n\nAntes de tudo, organize suas finanças. Tenha pelo menos 20% do valor do imóvel para entrada e mantenha uma reserva de emergência.\n\n## Escolha da Região\n\nCada região do Brasil tem suas particularidades. Pesquise bem a localidade, infraestrutura e valorização antes de decidir.\n\n## Documentação\n\nReúna seus documentos: RG, CPF, comprovante de renda, extrato bancário dos últimos 3 meses e declaração de IR.\n\n## Financiamento\n\nCompare taxas entre os bancos. A Caixa Econômica costuma oferecer as melhores condições para primeira moradia.\n\n## Vistoria\n\nNunca dispense a vistoria. Verifique instalações elétricas, hidráulicas, acabamentos e estrutura.\n\n## Escritura e Registro\n\nApós a compra, faça a escritura no cartório e registre o imóvel em seu nome. Isso garante sua propriedade legalmente.`,
   },
   "bairros-mais-valorizados-vitoria": {
     title: "Os 10 Bairros Mais Valorizados de Vitória em 2026",
@@ -65,7 +65,7 @@ export default function BlogArticlePage() {
   return (
     <div className="min-h-screen bg-secondary/50">
       <Helmet>
-        <title>{article.title} | Blog ES Corretores</title>
+        <title>{article.title} | Blog Brokers Bio</title>
         <meta name="description" content={article.body.substring(0, 155)} />
       </Helmet>
 

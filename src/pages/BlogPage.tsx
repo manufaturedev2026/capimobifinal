@@ -17,8 +17,8 @@ interface BlogArticle {
 const blogArticles: BlogArticle[] = [
   {
     slug: "como-comprar-primeiro-imovel",
-    title: "Como Comprar Seu Primeiro Imóvel no ES",
-    description: "Guia completo para quem quer realizar o sonho da casa própria no Espírito Santo, desde o planejamento até a entrega das chaves.",
+    title: "Como Comprar Seu Primeiro Imóvel",
+    description: "Guia completo para quem quer realizar o sonho da casa própria, desde o planejamento até a entrega das chaves.",
     cover: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&h=400&fit=crop",
     category: "Guias",
     readTime: "8 min",
@@ -63,7 +63,7 @@ const blogArticles: BlogArticle[] = [
   {
     slug: "documentacao-compra-imovel",
     title: "Documentação para Compra de Imóvel: Checklist Completo",
-    description: "Lista completa de todos os documentos necessários para comprar um imóvel com segurança no Espírito Santo.",
+    description: "Lista completa de todos os documentos necessários para comprar um imóvel com segurança no Brasil.",
     cover: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800&h=400&fit=crop",
     category: "Legal",
     readTime: "6 min",
@@ -91,10 +91,10 @@ export default function BlogPage() {
   return (
     <div className="min-h-screen bg-background">
       <Helmet>
-        <title>Blog | ES Corretores - Dicas e Notícias do Mercado Imobiliário</title>
+        <title>Blog | Brokers Bio - Dicas e Notícias do Mercado Imobiliário</title>
         <meta
           name="description"
-          content="Blog sobre mercado imobiliário do Espírito Santo. Dicas de compra, investimento, decoração e tendências."
+          content="Blog sobre mercado imobiliário no Brasil. Dicas de compra, investimento, decoração e tendências."
         />
       </Helmet>
 
