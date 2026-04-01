@@ -60,7 +60,7 @@ export default function FooterSimple() {
 
         <div className="border-t border-border mt-8 pt-6 flex flex-col items-center gap-2 text-center">
           <p className="text-xs text-muted-foreground">
-            © {new Date().getFullYear()} ES Corretores — Colatina, ES · Brasil
+            © {new Date().getFullYear()} Brokers Bio · Brasil
           </p>
         </div>
       </div>

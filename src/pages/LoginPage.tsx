@@ -56,7 +56,7 @@ export default function LoginPage() {
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
             <div className="flex items-center gap-2 mb-4">
               <Sparkles size={20} className="text-primary" />
-              <span className="text-primary font-semibold text-sm uppercase tracking-wider">ES Corretores</span>
+              <span className="text-primary font-semibold text-sm uppercase tracking-wider">Brokers Bio</span>
             </div>
             <h1 className="font-display font-bold text-3xl lg:text-5xl text-white leading-tight mb-3">
               Área do<br /><span className="text-accent">Corretor</span>
