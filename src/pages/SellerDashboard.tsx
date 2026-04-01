@@ -855,6 +855,11 @@ export default function SellerDashboard() {
                     </div>
                   )}
                 </div>
+
+                {/* Broker Analytics - only for companies with team members */}
+                {teamMembers.length > 0 && profile?.id && (
+                  <BrokerAnalytics sellerId={profile.id} teamMembers={teamMembers} />
+                )}
               </div>
             )}
 
