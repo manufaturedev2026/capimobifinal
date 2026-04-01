@@ -8,10 +8,8 @@ import { useSubscription, PACKAGE_CONFIG } from "@/hooks/useSubscription";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
-const tiers = ["basico", "start", "premium", "vip", "essencial_empresa", "premium_empresa", "prime_empresa"] as const;
-const tierIcons = { basico: Zap, start: Zap, premium: Star, vip: Crown, essencial_empresa: Building, premium_empresa: Building, prime_empresa: Crown };
-const empresaTiers = ["essencial_empresa", "premium_empresa", "prime_empresa"];
-const individualTiers = ["start", "premium", "vip"];
+const tiers = ["basico", "start", "premium", "vip"] as const;
+const tierIcons = { basico: Zap, start: Zap, premium: Star, vip: Crown };
 
 export default function PackagesPage() {
   const { user, profile } = useAuth();
