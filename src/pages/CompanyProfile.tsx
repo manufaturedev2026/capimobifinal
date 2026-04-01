@@ -619,7 +619,7 @@ export default function CompanyProfile() {
                   <div className="flex items-center gap-3 mt-1 flex-wrap">
                     {dbProfile?.seller_category && (
                       <span className="flex items-center gap-1 text-white/80 text-xs font-medium bg-white/10 px-2 py-0.5 rounded-full">
-                        {({ imobiliaria: "🏢 Imobiliária", corretor: "📋 Corretor(a)", proprietario: "🏠 Proprietário" } as Record<string, string>)[dbProfile.seller_category]}
+                        {({ imobiliaria: "🏢 Imobiliária", corretor: "📋 Corretor(a)", proprietario: "🏠 Proprietário", construtora: "🏗️ Construtora" } as Record<string, string>)[dbProfile.seller_category]}
                         {dbProfile.seller_category === "corretor" && dbProfile.creci && ` • ${dbProfile.creci}`}
                       </span>
                     )}
@@ -781,7 +781,7 @@ export default function CompanyProfile() {
                     <>
                       <p className="text-xs mt-0.5" style={{ color: storeTheme.textMuted }}>
                         {dbProfile?.seller_category
-                          ? ({ imobiliaria: "Imobiliária", corretor: "Corretor(a) de Imóveis", proprietario: "Proprietário" } as Record<string, string>)[dbProfile.seller_category] || "Imobiliária"
+                          ? ({ imobiliaria: "Imobiliária", corretor: "Corretor(a) de Imóveis", proprietario: "Proprietário", construtora: "Construtora" } as Record<string, string>)[dbProfile.seller_category] || "Imobiliária"
                           : "Imobiliária"}
                       </p>
                       {dbProfile?.seller_category === "corretor" && dbProfile?.creci && (
@@ -850,7 +850,7 @@ export default function CompanyProfile() {
                     <Store size={13} className="flex-shrink-0" />
                     <span>
                       {dbProfile?.seller_category
-                        ? ({ imobiliaria: "Imobiliária", corretor: "Corretor(a) de Imóveis", proprietario: "Proprietário" } as Record<string, string>)[dbProfile.seller_category] || "Especialista em imóveis"
+                        ? ({ imobiliaria: "Imobiliária", corretor: "Corretor(a) de Imóveis", proprietario: "Proprietário", construtora: "Construtora" } as Record<string, string>)[dbProfile.seller_category] || "Especialista em imóveis"
                         : "Especialista em imóveis"}
                     </span>
                   </div>
@@ -1282,7 +1282,7 @@ export default function CompanyProfile() {
                 <Store size={13} className="flex-shrink-0" />
                 <span>
                   {dbProfile?.seller_category
-                    ? ({ imobiliaria: "Imobiliária", corretor: "Corretor(a) de Imóveis", proprietario: "Proprietário", loja_veiculos: "Loja de Veículos", autonomo: "Vendedor Autônomo", concessionaria: "Concessionária" } as Record<string, string>)[dbProfile.seller_category] || (isProperty ? "Especialista em imóveis" : "Especialista em veículos")
+                    ? ({ imobiliaria: "Imobiliária", corretor: "Corretor(a) de Imóveis", proprietario: "Proprietário", construtora: "Construtora", loja_veiculos: "Loja de Veículos", autonomo: "Vendedor Autônomo", concessionaria: "Concessionária" } as Record<string, string>)[dbProfile.seller_category] || (isProperty ? "Especialista em imóveis" : "Especialista em veículos")
                     : isProperty ? "Especialista em imóveis" : "Especialista em veículos"}
                 </span>
               </div>

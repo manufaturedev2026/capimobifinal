@@ -1074,6 +1074,7 @@ export type Database = {
         | "loja_veiculos"
         | "autonomo"
         | "concessionaria"
+        | "construtora"
       seller_type: "imoveis" | "automoveis"
     }
     CompositeTypes: {
@@ -1257,6 +1258,7 @@ export const Constants = {
         "loja_veiculos",
         "autonomo",
         "concessionaria",
+        "construtora",
       ],
       seller_type: ["imoveis", "automoveis"],
     },

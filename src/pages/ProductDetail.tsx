@@ -517,7 +517,7 @@ export default function ProductDetail() {
                   </div>
                   <p className="text-xs text-muted-foreground mt-0.5">
                     {isDb && (company as any).sellerCategory
-                      ? ({ imobiliaria: "Imobiliária", corretor: "Corretor(a)", proprietario: "Proprietário", loja_veiculos: "Loja de Veículos", autonomo: "Autônomo", concessionaria: "Concessionária" } as any)[(company as any).sellerCategory] || (company as any).sellerCategory
+                      ? ({ imobiliaria: "Imobiliária", corretor: "Corretor(a)", proprietario: "Proprietário", construtora: "Construtora", loja_veiculos: "Loja de Veículos", autonomo: "Autônomo", concessionaria: "Concessionária" } as any)[(company as any).sellerCategory] || (company as any).sellerCategory
                       : isProperty ? "Imobiliária" : "Revenda"}
                   </p>
                 </div>
@@ -580,7 +580,7 @@ export default function ProductDetail() {
                         {(company as any).sellerCategory && (
                           <div className="flex items-center gap-2 text-xs text-muted-foreground">
                             <BadgeCheck size={13} className="text-primary flex-shrink-0" />
-                            <span>{({ imobiliaria: "Imobiliária", corretor: "Corretor(a) de Imóveis", proprietario: "Proprietário", loja_veiculos: "Loja de Veículos", autonomo: "Autônomo", concessionaria: "Concessionária" } as any)[(company as any).sellerCategory] || (company as any).sellerCategory}</span>
+                            <span>{({ imobiliaria: "Imobiliária", corretor: "Corretor(a) de Imóveis", proprietario: "Proprietário", construtora: "Construtora", loja_veiculos: "Loja de Veículos", autonomo: "Autônomo", concessionaria: "Concessionária" } as any)[(company as any).sellerCategory] || (company as any).sellerCategory}</span>
                           </div>
                         )}
                         {dbSeller.creci && (company as any).sellerCategory !== "imobiliaria" && (
