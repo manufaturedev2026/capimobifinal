@@ -1,0 +1,1 @@
+ALTER TYPE public.seller_category ADD VALUE IF NOT EXISTS 'construtora';
