@@ -67,7 +67,7 @@ export default function TermsPage() {
 
           <section>
             <h2 className="font-display font-bold text-xl mb-3">7. Propriedade Intelectual</h2>
-            <p className="text-muted-foreground leading-relaxed">Todo o conteúdo da plataforma (design, código, marca, logotipos) é propriedade do ES Corretores. Os anunciantes mantêm os direitos sobre suas fotos e descrições.</p>
+            <p className="text-muted-foreground leading-relaxed">Todo o conteúdo da plataforma (design, código, marca, logotipos) é propriedade do Brokers Bio. Os anunciantes mantêm os direitos sobre suas fotos e descrições.</p>
           </section>
 
           <section>

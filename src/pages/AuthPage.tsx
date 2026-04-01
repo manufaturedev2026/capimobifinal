@@ -162,9 +162,9 @@ export default function AuthPage() {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }} className="w-full max-w-md">
           {/* Mobile header */}
            <div className="lg:hidden text-center mb-6">
-              <img src={logoImg} alt="ES Corretores" className="w-14 h-14 rounded-2xl object-contain mx-auto mb-3" />
+              <img src={logoImg} alt="Brokers Bio" className="w-14 h-14 rounded-2xl object-contain mx-auto mb-3" />
               <h2 className="font-display font-bold text-lg">
-                <span className="text-primary">E</span><span className="text-accent">S</span> <span className="text-foreground">Corretores</span>
+                <span className="text-primary">Brokers</span><span className="text-accent">Bio</span>
               </h2>
             </div>
 

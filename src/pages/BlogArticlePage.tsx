@@ -65,7 +65,7 @@ export default function BlogArticlePage() {
   return (
     <div className="min-h-screen bg-secondary/50">
       <Helmet>
-        <title>{article.title} | Blog ES Corretores</title>
+        <title>{article.title} | Blog Brokers Bio</title>
         <meta name="description" content={article.body.substring(0, 155)} />
       </Helmet>
 
