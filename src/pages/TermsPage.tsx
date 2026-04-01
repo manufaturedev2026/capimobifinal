@@ -47,7 +47,7 @@ export default function TermsPage() {
           <section>
             <h2 className="font-display font-bold text-xl mb-3">5. Planos e Pagamentos</h2>
             <ul className="list-disc pl-6 text-muted-foreground space-y-1">
-              <li>O ES Corretores oferece planos gratuitos e pagos para anunciantes</li>
+              <li>O Brokers Bio oferece planos gratuitos e pagos para anunciantes</li>
               <li>Os planos pagos oferecem recursos adicionais conforme descrito na página de pacotes</li>
               <li>Pagamentos são processados conforme acordado com o gerente de conta</li>
               <li>Não há reembolso após a ativação do plano</li>
