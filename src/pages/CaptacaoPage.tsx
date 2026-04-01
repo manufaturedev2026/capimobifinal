@@ -123,7 +123,6 @@ export default function CaptacaoPage() {
         item_id: item.id,
         broker_id: profile.id,
         broker_user_id: user.id,
-        status: "em_negociacao" as any,
       });
 
       if (error) {
