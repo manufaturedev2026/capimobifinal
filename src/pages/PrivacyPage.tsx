@@ -4,8 +4,8 @@ export default function PrivacyPage() {
   return (
     <>
       <Helmet>
-        <title>Política de Privacidade | ES Corretores</title>
-        <meta name="description" content="Política de Privacidade do ES Corretores. Saiba como coletamos, usamos e protegemos seus dados pessoais." />
+        <title>Política de Privacidade | Brokers Bio</title>
+        <meta name="description" content="Política de Privacidade do Brokers Bio. Saiba como coletamos, usamos e protegemos seus dados pessoais." />
         <link rel="canonical" href="https://redeimoveisgb.lovable.app/privacidade" />
       </Helmet>
       <div className="container max-w-3xl mx-auto px-4 py-12">
