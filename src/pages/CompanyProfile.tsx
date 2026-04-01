@@ -801,7 +801,7 @@ export default function CompanyProfile() {
             <button onClick={() => setGalleryLightbox(0)} className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/10 backdrop-blur-md text-white text-xs font-medium">
               <Clapperboard size={13} /> Cinema
             </button>
-            <StoreInstallButton />
+            <StoreInstallButton variant="hero-dark" />
           </div>
         </div>
           </>
