@@ -44,7 +44,7 @@ const INITIAL_FORM = {
   category: "" as ItemCategory | "",
   price: "",
   city: "",
-  state: "ES",
+  state: "",
   neighborhood: "",
   address: "",
   addressNumber: "",
