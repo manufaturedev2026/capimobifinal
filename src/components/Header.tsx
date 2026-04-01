@@ -1,38 +1,28 @@
-import { Building2, Plus, Search, Menu, X, MapPin, ChevronDown, LayoutDashboard, GraduationCap, LogIn, Heart } from "lucide-react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Home, Search, Menu, X, LogIn, LayoutDashboard, Plus, Key, Package, FolderOpen } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
 import { useState } from "react";
-import { useCityDetection } from "@/hooks/useCityDetection";
-import { ES_CITIES } from "@/data/esCities";
-import { cityToSlug } from "@/lib/citySlug";
 import { useAuth } from "@/hooks/useAuth";
 import ThemeToggle from "@/components/ThemeToggle";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 export default function Header() {
   const location = useLocation();
-  const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
-  const { detectedCity, setCity } = useCityDetection();
   const { user } = useAuth();
 
   const navLinks = [
-    { to: "/", label: "Início" },
-    { to: "/imoveis", label: "Imóveis", icon: Building2 },
-    { to: "/blog", label: "Blog" },
-    { to: "/seja-corretor", label: "Seja um Corretor", icon: GraduationCap },
-    { to: "/anunciar", label: "Anunciar", icon: Plus },
+    { to: "/", label: "Início", icon: Home },
+    { to: "/captacao", label: "Captar Imóveis", icon: Key },
+    { to: "/anunciar-proprietario", label: "Anunciar Grátis", icon: Plus },
+    { to: "/pacotes", label: "Planos", icon: Package },
   ];
 
-  const handleCitySelect = (city: string) => {
-    setCity(city);
-    const slug = cityToSlug(city);
-    navigate(`/${slug}`);
-  };
+  const userLinks = user
+    ? [
+        { to: "/minhas-captacoes", label: "Minhas Captações", icon: FolderOpen },
+        { to: "/meus-imoveis", label: "Meus Imóveis", icon: Home },
+        { to: "/painel", label: "Painel", icon: LayoutDashboard },
+      ]
+    : [];
 
   return (
     <header className="sticky top-0 z-50 bg-card/90 backdrop-blur-xl border-b border-border">
@@ -58,33 +48,10 @@ export default function Header() {
               {link.label}
             </Link>
           ))}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="flex items-center gap-1 px-3 py-2 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors">
-                <MapPin size={14} className="text-primary" />
-                {detectedCity || "Selecionar cidade"}
-                <ChevronDown size={12} />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="max-h-[300px] overflow-y-auto w-56">
-              {ES_CITIES.map((city) => (
-                <DropdownMenuItem
-                  key={city}
-                  onClick={() => handleCitySelect(city)}
-                  className={detectedCity === city ? "bg-primary/10 font-semibold" : ""}
-                >
-                  {city}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
         </nav>
 
         <div className="hidden md:flex items-center gap-2">
           <ThemeToggle />
-          <Link to="/favoritos" className="p-2 rounded-xl hover:bg-secondary transition-colors" aria-label="Favoritos">
-            <Heart size={18} className="text-foreground" />
-          </Link>
           <Link
             to="/buscar"
             className="flex items-center gap-2 px-4 py-2 rounded-xl bg-secondary text-secondary-foreground text-sm hover:bg-secondary/80 transition-colors"
@@ -102,11 +69,11 @@ export default function Header() {
             </Link>
           ) : (
             <Link
-              to="/login"
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-secondary text-secondary-foreground text-sm hover:bg-secondary/80 transition-colors"
+              to="/entrar"
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors shadow-md"
             >
               <LogIn size={16} />
-              Login
+              Entrar
             </Link>
           )}
         </div>
@@ -121,7 +88,7 @@ export default function Header() {
 
       {menuOpen && (
         <div className="md:hidden border-t border-border bg-card px-4 py-3 space-y-1 animate-fade-in">
-          {navLinks.map((link) => (
+          {[...navLinks, ...userLinks].map((link) => (
             <Link
               key={link.to}
               to={link.to}
@@ -136,22 +103,6 @@ export default function Header() {
               {link.label}
             </Link>
           ))}
-          {/* City selector mobile */}
-          <div className="px-4 py-2">
-            <label className="flex items-center gap-2 text-sm font-medium text-muted-foreground mb-2">
-              <MapPin size={14} className="text-primary" /> Cidade
-            </label>
-            <select
-              value={detectedCity || ""}
-              onChange={(e) => { handleCitySelect(e.target.value); setMenuOpen(false); }}
-              className="w-full px-3 py-2.5 rounded-xl bg-secondary text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
-            >
-              <option value="">Selecionar cidade</option>
-              {ES_CITIES.map((city) => (
-                <option key={city} value={city}>{city}</option>
-              ))}
-            </select>
-          </div>
           <Link
             to="/buscar"
             onClick={() => setMenuOpen(false)}
@@ -160,23 +111,14 @@ export default function Header() {
             <Search size={18} />
             Buscar
           </Link>
-          {user ? (
+          {!user && (
             <Link
-              to="/painel"
+              to="/entrar"
               onClick={() => setMenuOpen(false)}
               className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold bg-primary text-primary-foreground"
             >
-              <LayoutDashboard size={18} />
-              Painel
-            </Link>
-          ) : (
-            <Link
-              to="/login"
-              onClick={() => setMenuOpen(false)}
-              className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary"
-            >
               <LogIn size={18} />
-              Login
+              Entrar / Cadastrar
             </Link>
           )}
         </div>
