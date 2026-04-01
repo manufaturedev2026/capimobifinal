@@ -145,8 +145,6 @@ export default function PackagesPage() {
                       ? "Processando..."
                       : isCurrent
                       ? "Plano Atual"
-                      : config.price === 0
-                      ? "Ativar Grátis"
                       : "Contratar"}
                   </button>
                 </div>

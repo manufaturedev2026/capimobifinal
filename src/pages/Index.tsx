@@ -76,9 +76,9 @@ const TARGET_AUDIENCE = [
 ];
 
 const PLANS_PREVIEW = [
-  { name: "Básico", price: "Grátis", items: "5 anúncios", highlight: false },
   { name: "Start", price: "R$ 24,99", items: "25 anúncios", highlight: true },
   { name: "VIP", price: "R$ 59,99", items: "100 anúncios + Analytics", highlight: false },
+  { name: "Premium", price: "R$ 114,99", items: "115 anúncios + Ads", highlight: false },
 ];
 
 export default function Index() {
