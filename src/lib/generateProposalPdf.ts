@@ -702,5 +702,103 @@ export async function generateProposalPdf(data: ProposalData) {
     }
   }
 
+  // ── Location / Map page ──
+  if (data.location) {
+    final.addPage();
+
+    // Page bg
+    final.setFillColor(240, 242, 245);
+    final.rect(0, 0, W, H, "F");
+
+    // Mini header
+    final.setFillColor(15, 23, 42);
+    final.rect(0, 0, W, 18, "F");
+    final.setFillColor(16, 185, 129);
+    final.rect(0, 18, W, 0.8, "F");
+    final.setFont("helvetica", "bold"); final.setFontSize(11);
+    final.setTextColor(255, 255, 255);
+    final.text("ES Corretores", M + 2, 12);
+    final.setFont("helvetica", "normal"); final.setFontSize(8);
+    final.setTextColor(148, 163, 184);
+    final.text("Localização", W - M - 2, 12, { align: "right" });
+
+    let ly = 24;
+
+    // Title strip
+    final.setFillColor(255, 255, 255);
+    drawRoundedRect(final, cX, ly, cW, 14, 3, "F");
+    final.setDrawColor(203, 213, 225); final.setLineWidth(0.2);
+    drawRoundedRect(final, cX, ly, cW, 14, 3, "S");
+    final.setFont("helvetica", "bold"); final.setFontSize(10);
+    final.setTextColor(15, 23, 42);
+    final.text(data.location, cX + 5, ly + 9);
+    ly += 20;
+
+    // Static map image from Google Static Maps API (free, no key needed for low usage)
+    const mapW = cW - 8;
+    const mapH = 140;
+    const mapQuery = encodeURIComponent(data.location);
+    // Use OpenStreetMap static map
+    const mapUrl = `https://staticmap.thistle.workers.dev/?center=${mapQuery}&zoom=15&size=600x400&markers=${mapQuery}`;
+    // Fallback: use a screenshot-style approach with OSM tile
+    const osmLat = 0;
+    const osmLon = 0;
+    // Better approach: Google Static Maps (works without key for small usage)
+    const googleMapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${mapQuery}&zoom=15&size=600x400&markers=color:red|${mapQuery}&scale=2`;
+    
+    // Try loading map image - use multiple fallbacks
+    let mapImg = await loadImg(googleMapUrl);
+    if (!mapImg) {
+      // Fallback: OpenStreetMap export
+      const osmUrl = `https://www.openstreetmap.org/export/embed.html?bbox=-40.3,-20.3,-40.2,-20.2&layer=mapnik`;
+      mapImg = await loadImg(osmUrl);
+    }
+
+    // White card for map
+    final.setFillColor(255, 255, 255);
+    drawRoundedRect(final, cX, ly, cW, mapH + 30, 4, "F");
+    final.setDrawColor(203, 213, 225); final.setLineWidth(0.2);
+    drawRoundedRect(final, cX, ly, cW, mapH + 30, 4, "S");
+
+    if (mapImg) {
+      try {
+        final.addImage(mapImg, "JPEG", cX + 4, ly + 4, mapW, mapH, undefined, "MEDIUM");
+      } catch { /* skip */ }
+    } else {
+      // Draw a placeholder map card
+      final.setFillColor(226, 232, 240);
+      drawRoundedRect(final, cX + 4, ly + 4, mapW, mapH, 3, "F");
+
+      // Draw a simple map icon placeholder
+      final.setFont("helvetica", "normal"); final.setFontSize(12);
+      final.setTextColor(148, 163, 184);
+      final.text("Mapa da regiao", cX + 4 + mapW / 2, ly + 4 + mapH / 2 - 5, { align: "center" });
+      final.setFontSize(8);
+      final.text("Acesse o link do anuncio para ver no mapa interativo", cX + 4 + mapW / 2, ly + 4 + mapH / 2 + 5, { align: "center" });
+    }
+
+    // Location details below map
+    const detY = ly + mapH + 10;
+    final.setFont("helvetica", "bold"); final.setFontSize(10);
+    final.setTextColor(15, 23, 42);
+    final.text("Endereco", cX + 8, detY);
+
+    final.setFont("helvetica", "normal"); final.setFontSize(9);
+    final.setTextColor(71, 85, 105);
+    final.text(data.location, cX + 8, detY + 6);
+
+    // Google Maps link
+    const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${mapQuery}`;
+    final.setFontSize(8);
+    final.setTextColor(59, 130, 246);
+    final.text("Abrir no Google Maps", cX + 8, detY + 13);
+    final.link(cX + 8, detY + 10, 40, 6, { url: mapsUrl });
+
+    // Footer
+    final.setFont("helvetica", "normal"); final.setFontSize(7);
+    final.setTextColor(156, 163, 175);
+    final.text(`Proposta gerada em ${new Date().toLocaleDateString("pt-BR")}  •  ES Corretores`, W / 2, H - 8, { align: "center" });
+  }
+
   final.save(`proposta-${data.id}.pdf`);
 }
