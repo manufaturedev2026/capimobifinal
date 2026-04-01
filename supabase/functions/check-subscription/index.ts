@@ -120,7 +120,7 @@ serve(async (req) => {
             user_id: user.id,
             seller_id: profile.id,
             tier: "basico",
-            max_items: 3,
+            max_items: 5,
             is_active: true,
             expires_at: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
             payment_method: "gratis",
