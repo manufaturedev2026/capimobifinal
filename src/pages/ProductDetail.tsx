@@ -111,6 +111,13 @@ export default function ProductDetail() {
       : null
     : null;
 
+  // Override with team member data when ?corretor= is present
+  if (teamMember && company) {
+    company.name = teamMember.full_name;
+    company.whatsapp = teamMember.phone || company.whatsapp;
+    if (teamMember.photo_url) company.logo = teamMember.photo_url;
+  }
+
   if (!product || !company) {
     return (
       <div className="container max-w-6xl mx-auto px-4 py-20 text-center">
