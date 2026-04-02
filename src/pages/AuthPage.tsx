@@ -43,9 +43,8 @@ export default function AuthPage() {
       const { error } = await signIn(email, password);
       if (error) {
         toast({ title: "Erro ao entrar", description: error.message, variant: "destructive" });
-      } else {
-        navigate("/painel");
       }
+      // useEffect handles redirect after profile loads
     } else {
       const { error } = await signUp(email, password, fullName, phone);
       if (error) {
