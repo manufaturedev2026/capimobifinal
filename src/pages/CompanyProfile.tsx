@@ -1278,7 +1278,7 @@ export default function CompanyProfile() {
                 case "elegant": return <StoreLayoutElegant {...layoutProps} />;
                 case "showcase": return <StoreLayoutShowcase {...layoutProps} />;
                 case "marketplace": return <StoreLayoutMarketplace {...layoutProps} />;
-                default: return <StoreLayoutNetflix {...layoutProps} />;
+                default: return <StoreLayoutShowcase {...layoutProps} />;
               }
             })()}
 

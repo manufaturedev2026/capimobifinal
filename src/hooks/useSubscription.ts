@@ -26,7 +26,7 @@ export const PACKAGE_CONFIG = {
     badgeColor: "bg-gradient-to-r from-emerald-500 to-teal-500 text-white",
     benefits: [
       "Até 25 anúncios ativos",
-      "1 Layout (Netflix)",
+      "1 Layout (Showcase)",
       
       "Destaque normal na listagem",
       "Painel do vendedor completo",
@@ -43,7 +43,7 @@ export const PACKAGE_CONFIG = {
     badgeColor: "bg-slate-500 text-white",
     benefits: [
       "Até 5 anúncios ativos",
-      "Loja estilo Netflix",
+      "Loja estilo Showcase",
       
       "Painel do vendedor completo",
       "Estatísticas básicas",
@@ -59,7 +59,7 @@ export const PACKAGE_CONFIG = {
     badgeColor: "bg-gradient-to-r from-amber-500 to-orange-500 text-white",
     benefits: [
       "Até 60 anúncios ativos",
-      "4 Layouts (Netflix, Minimal, Marketplace, Showcase)",
+      "4 Layouts (Showcase, Netflix, Minimal, Marketplace)",
       
       "Selo VIP nos anúncios",
       "Destaque no topo da listagem",
