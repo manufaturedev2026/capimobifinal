@@ -97,7 +97,7 @@ export default function AuthPage() {
             ? "Seus 7 dias grátis do plano Start foram ativados! 🎉"
             : "Complete seu perfil para começar!",
         });
-        navigate("/painel");
+        // useEffect handles redirect after profile loads
       }
     }
     setLoading(false);
