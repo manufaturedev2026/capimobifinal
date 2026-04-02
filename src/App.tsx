@@ -17,8 +17,6 @@ import { CustomDomainRedirect } from "@/components/CustomDomainRedirect";
 import RouteErrorBoundary from "@/components/RouteErrorBoundary";
 import { lazyPage } from "@/lib/chunkRecovery";
 
-const Index = lazyPage(() => import("@/pages/Index"));
-const PropertiesPage = lazyPage(() => import("@/pages/PropertiesPage"));
 const CompanyProfile = lazyPage(() => import("@/pages/CompanyProfile"));
 const ProductDetail = lazyPage(() => import("@/pages/ProductDetail"));
 const CreateListing = lazyPage(() => import("@/pages/CreateListing"));
