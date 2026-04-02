@@ -43,7 +43,7 @@ export const PACKAGE_CONFIG = {
     badgeColor: "bg-slate-500 text-white",
     benefits: [
       "Até 5 anúncios ativos",
-      "Loja estilo Netflix",
+      "Loja estilo Showcase",
       
       "Painel do vendedor completo",
       "Estatísticas básicas",
