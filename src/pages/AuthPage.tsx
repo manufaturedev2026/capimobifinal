@@ -26,9 +26,14 @@ export default function AuthPage() {
   const trialDays = searchParams.get("trial");
   const { toast } = useToast();
 
+  const getStoreRoute = (p?: { id: string; slug?: string | null } | null) => {
+    const identifier = p?.slug || p?.id;
+    return identifier ? `/empresa/${identifier}` : "/painel";
+  };
+
   useEffect(() => {
-    if (user) navigate("/painel");
-  }, [user, navigate]);
+    if (user && profile) navigate(getStoreRoute(profile), { replace: true });
+  }, [user, profile, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
