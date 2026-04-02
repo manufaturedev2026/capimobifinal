@@ -50,6 +50,7 @@ export default function AuthPage() {
       if (error) {
         toast({ title: "Erro ao cadastrar", description: error.message, variant: "destructive" });
       } else {
+        setSignedUp(true);
         toast({
           title: "Cadastro realizado!",
           description: trialDays === "7"
