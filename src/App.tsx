@@ -59,7 +59,7 @@ const AppLayout = () => {
         <RouteErrorBoundary>
           <Suspense fallback={<RouteLoader />}>
             <Routes>
-              <Route path="/" element={<Navigate to={`/empresa/${BROKER_ID}`} replace />} />
+              <Route path="/" element={<HomeRedirect />} />
               <Route path="/empresa/:id" element={<CompanyProfile />} />
               <Route path="/imoveis/produto/:productId" element={<ProductDetail />} />
               <Route path="/anunciar" element={<CreateListing />} />
