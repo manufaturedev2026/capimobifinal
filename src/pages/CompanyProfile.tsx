@@ -544,11 +544,12 @@ export default function CompanyProfile() {
             <div className="px-4 pt-4 pb-5" style={{ background: storeTheme.primary }}>
               {/* Top bar */}
               <div className="flex items-center justify-between mb-4">
-{user && dbProfile && user.id === dbProfile.user_id && (
-                  <Link to="/painel" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/15 text-white text-xs font-medium">
-                    <LayoutDashboard size={14} /> Painel
-                  </Link>
-                )}
+                <Link
+                  to={user && dbProfile && user.id === dbProfile.user_id ? "/painel" : "/entrar"}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/15 text-white text-xs font-medium"
+                >
+                  <LayoutDashboard size={14} /> {user && dbProfile && user.id === dbProfile.user_id ? "Painel" : "Entrar"}
+                </Link>
                 {isPaid && <PackageBadge tier={sellerTier} size="sm" />}
               </div>
 
