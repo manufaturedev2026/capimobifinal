@@ -22,7 +22,6 @@ export default function AuthPage() {
   const { user, profile, signIn, signUp } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const refCode = searchParams.get("ref") || "";
   const trialDays = searchParams.get("trial");
   const { toast } = useToast();
 
