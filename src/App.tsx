@@ -73,7 +73,7 @@ const AppLayout = () => {
               <Route path="/admin" element={<AdminPanel />} />
               <Route path="/privacidade" element={<PrivacyPage />} />
               <Route path="/termos" element={<TermsPage />} />
-              <Route path="*" element={<Navigate to={`/empresa/${BROKER_ID}`} replace />} />
+              <Route path="*" element={<HomeRedirect />} />
             </Routes>
           </Suspense>
         </RouteErrorBoundary>
