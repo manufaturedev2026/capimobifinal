@@ -42,11 +42,19 @@ const RouteLoader = () => (
 
 // No fixed BROKER_ID — the logged-in user IS the broker
 const HomeRedirect = () => {
-  const { user, profile } = useAuth();
+  const { user, profile, loading } = useAuth();
+  if (loading) return null;
   if (!user) return <Navigate to="/entrar" replace />;
   const identifier = profile?.slug || profile?.id;
   if (identifier) return <Navigate to={`/empresa/${identifier}`} replace />;
   return <Navigate to="/painel" replace />;
+};
+
+const RequireAuth = ({ children }: { children: React.ReactNode }) => {
+  const { user, loading } = useAuth();
+  if (loading) return null;
+  if (!user) return <Navigate to="/entrar" replace />;
+  return <>{children}</>;
 };
 
 const AppLayout = () => {
@@ -72,12 +80,12 @@ const AppLayout = () => {
               <Route path="/anunciar" element={<CreateListing />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/entrar" element={<AuthPage />} />
-              <Route path="/painel" element={<SellerDashboard />} />
-              <Route path="/painel/novo" element={<SellerItemForm />} />
-              <Route path="/painel/editar/:id" element={<SellerItemForm />} />
-              <Route path="/painel/perfil" element={<SellerProfile />} />
-              <Route path="/pacotes" element={<PackagesPage />} />
-              <Route path="/admin" element={<AdminPanel />} />
+              <Route path="/painel" element={<RequireAuth><SellerDashboard /></RequireAuth>} />
+              <Route path="/painel/novo" element={<RequireAuth><SellerItemForm /></RequireAuth>} />
+              <Route path="/painel/editar/:id" element={<RequireAuth><SellerItemForm /></RequireAuth>} />
+              <Route path="/painel/perfil" element={<RequireAuth><SellerProfile /></RequireAuth>} />
+              <Route path="/pacotes" element={<RequireAuth><PackagesPage /></RequireAuth>} />
+              <Route path="/admin" element={<RequireAuth><AdminPanel /></RequireAuth>} />
               <Route path="/privacidade" element={<PrivacyPage />} />
               <Route path="/termos" element={<TermsPage />} />
               <Route path="*" element={<HomeRedirect />} />
