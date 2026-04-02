@@ -101,6 +101,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     if (error) {
       console.error("Erro ao criar perfil automaticamente:", error);
+      // If the auth user no longer exists (FK violation), sign out the stale session
+      if (error.code === "23503") {
+        await supabase.auth.signOut();
+      }
       setProfile(null);
       return null;
     }
