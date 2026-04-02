@@ -1,3 +1,4 @@
+import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { Download, MonitorSmartphone, Smartphone, X, type LucideIcon } from "lucide-react";
 
@@ -56,7 +57,7 @@ export default function PwaInstallGuide({ mode, onClose, open }: PwaInstallGuide
   const content = GUIDE_CONTENT[mode];
   const Icon = content.icon;
 
-  return (
+  return createPortal(
     <AnimatePresence>
       {open && (
         <motion.div
@@ -120,6 +121,7 @@ export default function PwaInstallGuide({ mode, onClose, open }: PwaInstallGuide
           </motion.div>
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }
