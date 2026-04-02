@@ -4,28 +4,24 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import BannedScreen from "@/components/BannedScreen";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import { ThemeProvider } from "next-themes";
 import { WhatsAppTeamPickerProvider } from "@/components/WhatsAppTeamPicker";
 import { CompareProvider } from "@/hooks/useCompare";
 import CompareBar from "@/components/CompareBar";
-import Header from "@/components/Header";
-import FooterSimple from "@/components/FooterSimple";
 import InstallPWA from "@/components/InstallPWA";
 import ScrollToTop from "@/components/ScrollToTop";
 import { CustomDomainRedirect } from "@/components/CustomDomainRedirect";
 import RouteErrorBoundary from "@/components/RouteErrorBoundary";
 import { lazyPage } from "@/lib/chunkRecovery";
 
-const Index = lazyPage(() => import("@/pages/Index"));
-const PropertiesPage = lazyPage(() => import("@/pages/PropertiesPage"));
 const CompanyProfile = lazyPage(() => import("@/pages/CompanyProfile"));
 const ProductDetail = lazyPage(() => import("@/pages/ProductDetail"));
 const CreateListing = lazyPage(() => import("@/pages/CreateListing"));
 const LoginPage = lazyPage(() => import("@/pages/LoginPage"));
-const SearchPage = lazyPage(() => import("@/pages/SearchPage"));
+
 const AuthPage = lazyPage(() => import("@/pages/AuthPage"));
 const SellerDashboard = lazyPage(() => import("@/pages/SellerDashboard"));
 const SellerItemForm = lazyPage(() => import("@/pages/SellerItemForm"));
@@ -35,8 +31,6 @@ const AdminPanel = lazyPage(() => import("@/pages/AdminPanel"));
 const PrivacyPage = lazyPage(() => import("@/pages/PrivacyPage"));
 const TermsPage = lazyPage(() => import("@/pages/TermsPage"));
 const NotFound = lazyPage(() => import("@/pages/NotFound"));
-const FavoritesPage = lazyPage(() => import("@/pages/FavoritesPage"));
-const NeighborhoodPage = lazyPage(() => import("@/pages/NeighborhoodPage"));
 
 const queryClient = new QueryClient();
 
@@ -46,10 +40,11 @@ const RouteLoader = () => (
   </div>
 );
 
+const BROKER_ID = "e01e4ed1-3b76-489e-8ab1-26da8c7598c2";
+
 const AppLayout = () => {
-  const location = useLocation();
   const { banInfo } = useAuth();
-  const isStorePage = location.pathname.includes("/empresa/");
+  const location = useLocation();
   const isProtectedRoute = ["/painel", "/admin", "/pacotes"].some(
     (r) => location.pathname.startsWith(r)
   );
@@ -60,37 +55,29 @@ const AppLayout = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {!isStorePage && <Header />}
       <main className="flex-1">
         <RouteErrorBoundary>
           <Suspense fallback={<RouteLoader />}>
             <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/imoveis" element={<PropertiesPage />} />
-              <Route path="/imoveis/:cidade" element={<PropertiesPage />} />
+              <Route path="/" element={<Navigate to={`/empresa/${BROKER_ID}`} replace />} />
               <Route path="/empresa/:id" element={<CompanyProfile />} />
-              <Route path="/imoveis/empresa/:id" element={<CompanyProfile />} />
               <Route path="/imoveis/produto/:productId" element={<ProductDetail />} />
-              <Route path="/imoveis/:cidade/bairro/:bairro" element={<NeighborhoodPage />} />
               <Route path="/anunciar" element={<CreateListing />} />
               <Route path="/login" element={<LoginPage />} />
-              <Route path="/buscar" element={<SearchPage />} />
               <Route path="/entrar" element={<AuthPage />} />
               <Route path="/painel" element={<SellerDashboard />} />
               <Route path="/painel/novo" element={<SellerItemForm />} />
               <Route path="/painel/editar/:id" element={<SellerItemForm />} />
               <Route path="/painel/perfil" element={<SellerProfile />} />
               <Route path="/pacotes" element={<PackagesPage />} />
-              <Route path="/favoritos" element={<FavoritesPage />} />
               <Route path="/admin" element={<AdminPanel />} />
               <Route path="/privacidade" element={<PrivacyPage />} />
               <Route path="/termos" element={<TermsPage />} />
-              <Route path="*" element={<NotFound />} />
+              <Route path="*" element={<Navigate to={`/empresa/${BROKER_ID}`} replace />} />
             </Routes>
           </Suspense>
         </RouteErrorBoundary>
       </main>
-      {!isStorePage && <FooterSimple />}
       <InstallPWA />
     </div>
   );
