@@ -813,13 +813,13 @@ export default function SellerDashboard() {
                     </div>
                     <div>
                       <h2 className="font-display font-bold text-lg text-foreground">Domínio Personalizado</h2>
-                      <p className="text-xs text-muted-foreground">Aponte seu domínio para sua loja</p>
+                      <p className="text-xs text-muted-foreground">Tenha seu próprio endereço na internet</p>
                     </div>
                   </div>
 
                   {/* Store URL */}
                   <div className="bg-muted rounded-xl p-4 mb-6">
-                    <p className="text-xs font-semibold text-muted-foreground mb-2">URL da sua loja:</p>
+                    <p className="text-xs font-semibold text-muted-foreground mb-2">URL atual da sua loja:</p>
                     <div className="flex items-center gap-2">
                       <code className="flex-1 bg-background px-3 py-2 rounded-lg text-xs text-foreground border border-border break-all">
                         {storeUrl}
@@ -831,114 +831,103 @@ export default function SellerDashboard() {
                     </div>
                   </div>
 
-                  {/* Instructions */}
+                  {/* Tutorial Hostinger */}
                   <h3 className="font-display font-bold text-foreground mb-4 flex items-center gap-2">
-                    📋 Como configurar seu domínio
+                    🌐 Como ter seu próprio domínio
                   </h3>
 
-                  <div className="space-y-4">
+                  <div className="space-y-5">
+                    {/* Step 1 */}
                     <div className="flex gap-3">
                       <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold">1</div>
                       <div>
-                        <p className="font-semibold text-sm text-foreground">Compre seu domínio</p>
+                        <p className="font-semibold text-sm text-foreground">Acesse a Hostinger</p>
                         <p className="text-xs text-muted-foreground mt-1">
-                          Registre seu domínio em um provedor como{" "}
-                          <a href="https://registro.br" target="_blank" rel="noopener noreferrer" className="text-primary underline">Registro.br</a>,{" "}
-                          <a href="https://hostinger.com.br" target="_blank" rel="noopener noreferrer" className="text-primary underline">Hostinger</a> ou{" "}
-                          <a href="https://godaddy.com" target="_blank" rel="noopener noreferrer" className="text-primary underline">GoDaddy</a>.
+                          Entre no site da Hostinger e clique em <strong>"Domínios"</strong> no menu superior.
                         </p>
+                        <a
+                          href="https://www.hostinger.com.br/registro-de-dominio"
+                          target="_blank" rel="noopener noreferrer"
+                          className="mt-2 inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline"
+                        >
+                          <ExternalLink size={12} /> Ir para Hostinger Domínios
+                        </a>
                       </div>
                     </div>
 
+                    {/* Step 2 */}
                     <div className="flex gap-3">
                       <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold">2</div>
                       <div>
-                        <p className="font-semibold text-sm text-foreground">Copie a URL da sua loja</p>
+                        <p className="font-semibold text-sm text-foreground">Pesquise o domínio desejado</p>
                         <p className="text-xs text-muted-foreground mt-1">
-                          Copie o link acima (URL da sua loja). Esse é o endereço para onde seu domínio vai redirecionar.
+                          Digite o nome que deseja (ex: <strong>seudominio.com.br</strong>) e veja se está disponível. Dê preferência para domínios <strong>.com.br</strong> — são mais confiáveis para clientes brasileiros.
                         </p>
                       </div>
                     </div>
 
+                    {/* Step 3 */}
                     <div className="flex gap-3">
                       <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold">3</div>
                       <div>
-                        <p className="font-semibold text-sm text-foreground">Configure o Redirecionamento 301</p>
+                        <p className="font-semibold text-sm text-foreground">Finalize a compra</p>
                         <p className="text-xs text-muted-foreground mt-1">
-                          No painel do seu provedor de domínio, procure a opção <strong>"Redirecionamento de URL"</strong> ou <strong>"URL Forwarding"</strong> e configure assim:
+                          Adicione ao carrinho, crie sua conta na Hostinger (se ainda não tiver) e conclua o pagamento. 
+                          O valor do domínio <strong>.com.br</strong> geralmente fica entre <strong>R$ 20 ~ R$ 40/ano</strong>.
                         </p>
-                        <div className="mt-2 bg-muted rounded-lg p-3 space-y-2">
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs text-muted-foreground">Tipo:</span>
-                            <code className="text-xs font-mono text-foreground bg-background px-2 py-1 rounded">Redirecionamento 301 (Permanente)</code>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs text-muted-foreground">De:</span>
-                            <code className="text-xs font-mono text-foreground bg-background px-2 py-1 rounded">seudominio.com.br</code>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs text-muted-foreground">Para:</span>
-                            <code className="text-xs font-mono text-primary bg-primary/10 px-2 py-1 rounded break-all">{storeUrl}</code>
-                          </div>
-                        </div>
-
-                        <div className="mt-3 space-y-2">
-                          <p className="text-xs font-semibold text-foreground">📌 Como fazer em cada provedor:</p>
-                          <div className="bg-muted rounded-lg p-3 space-y-3">
-                            <div>
-                              <p className="text-xs font-bold text-foreground">GoDaddy:</p>
-                              <p className="text-[11px] text-muted-foreground">Domínios → Gerenciar DNS → Encaminhamento → Adicionar encaminhamento → Cole a URL da loja → Tipo: Permanente (301)</p>
-                            </div>
-                            <div>
-                              <p className="text-xs font-bold text-foreground">Hostinger:</p>
-                              <p className="text-[11px] text-muted-foreground">Domínios → Gerenciar → Redirecionamentos → Novo redirecionamento → Cole a URL da loja → Tipo: 301</p>
-                            </div>
-                            <div>
-                              <p className="text-xs font-bold text-foreground">Registro.br:</p>
-                              <p className="text-[11px] text-muted-foreground">Domínios → Editar → Publicação web → Redirecionar → Cole a URL da loja</p>
-                            </div>
-                            <div>
-                              <p className="text-xs font-bold text-foreground">Cloudflare:</p>
-                              <p className="text-[11px] text-muted-foreground">Rules → Page Rules → URL: seudominio.com/* → Forwarding URL → 301 → Cole a URL da loja</p>
-                            </div>
-                          </div>
-                        </div>
                       </div>
                     </div>
 
+                    {/* Step 4 */}
                     <div className="flex gap-3">
-                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold">4</div>
+                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center text-sm font-bold">4</div>
                       <div>
-                        <p className="font-semibold text-sm text-foreground">Pronto!</p>
+                        <p className="font-semibold text-sm text-foreground">Entre em contato com seu gerente</p>
                         <p className="text-xs text-muted-foreground mt-1">
-                          Após configurar, quem acessar <strong>seudominio.com.br</strong> será redirecionado automaticamente para sua loja. A propagação pode levar até <strong>24 horas</strong>.
+                          Após comprar o domínio, <strong>envie os dados de acesso da Hostinger</strong> (e-mail e senha) para o seu gerente pelo WhatsApp. Ele vai configurar tudo e conectar o domínio à sua loja — <strong>sem custo adicional!</strong>
                         </p>
                       </div>
                     </div>
                   </div>
 
-                  {/* Tips */}
-                  <div className="mt-6 p-4 rounded-xl bg-primary/5 border border-primary/20">
+                  {/* Info box */}
+                  <div className="mt-6 p-4 rounded-xl bg-amber-500/10 border border-amber-500/30">
                     <p className="text-sm font-bold text-foreground flex items-center gap-2 mb-2">
-                      <CheckCircle2 size={16} className="text-green-500" /> Dicas importantes
+                      ⚠️ Importante
                     </p>
                     <ul className="text-xs text-muted-foreground space-y-1.5">
-                      <li>• Escolha <strong>Redirecionamento 301 (Permanente)</strong> — é melhor para SEO</li>
-                      <li>• Configure tanto <strong>seudominio.com</strong> quanto <strong>www.seudominio.com</strong></li>
-                      <li>• A propagação pode levar até <strong>24 horas</strong></li>
-                      <li>• Compartilhe seu domínio nas redes sociais e cartão de visita</li>
-                      <li>• Se tiver dúvidas, fale com seu gerente clicando no botão abaixo</li>
+                      <li>• <strong>Não tente configurar sozinho</strong> — envie os dados de acesso ao seu gerente para que ele faça a instalação correta</li>
+                      <li>• A configuração leva em média <strong>1 a 2 horas</strong> após o contato</li>
+                      <li>• Depois de configurado, quem acessar <strong>seudominio.com.br</strong> cairá direto na sua loja</li>
+                      <li>• Coloque o domínio no seu cartão de visita, redes sociais e materiais de divulgação</li>
+                    </ul>
+                  </div>
+
+                  {/* Tips */}
+                  <div className="mt-4 p-4 rounded-xl bg-primary/5 border border-primary/20">
+                    <p className="text-sm font-bold text-foreground flex items-center gap-2 mb-2">
+                      <CheckCircle2 size={16} className="text-green-500" /> Dicas para escolher seu domínio
+                    </p>
+                    <ul className="text-xs text-muted-foreground space-y-1.5">
+                      <li>• Use seu <strong>nome profissional</strong> ou <strong>nome da imobiliária</strong> (ex: gabrielcorretor.com.br)</li>
+                      <li>• Quanto mais curto e fácil de lembrar, melhor</li>
+                      <li>• Evite números e hifens desnecessários</li>
+                      <li>• Prefira <strong>.com.br</strong> para o mercado brasileiro</li>
                     </ul>
                   </div>
 
                   {/* CTA Gerente */}
                   <a
-                    href={`https://wa.me/${((profile as any)?.manager_phone || "5527995055993").replace(/\D/g, "")}?text=Olá%20${encodeURIComponent(profile?.account_manager || "Gabriel")}!%20Preciso%20de%20ajuda%20para%20configurar%20meu%20domínio%20personalizado.`}
+                    href={`https://wa.me/${((profile as any)?.manager_phone || "5527995055993").replace(/\D/g, "")}?text=Olá%20${encodeURIComponent(profile?.account_manager || "Gabriel")}!%20Comprei%20meu%20domínio%20na%20Hostinger%20e%20preciso%20que%20você%20configure%20na%20minha%20loja.%20Posso%20enviar%20os%20dados%20de%20acesso%3F`}
                     target="_blank" rel="noopener noreferrer"
-                    className="mt-4 w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-green-500 text-white font-bold text-sm hover:bg-green-600 transition-colors"
+                    className="mt-5 w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-green-500 text-white font-bold text-sm hover:bg-green-600 transition-colors"
                   >
-                    <Headphones size={16} /> Fale com seu Gerente{profile?.account_manager ? ` ${profile.account_manager}` : ""}
+                    <Headphones size={16} /> Já comprei! Falar com {profile?.account_manager || "meu Gerente"}
                   </a>
+
+                  <p className="text-center text-[11px] text-muted-foreground mt-2">
+                    Seu gerente vai configurar tudo para você sem custo adicional
+                  </p>
                 </div>
               </div>
             )}
