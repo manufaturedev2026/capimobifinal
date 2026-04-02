@@ -291,7 +291,6 @@ export default function SellerProfile() {
             {[
               { value: "imobiliaria", label: "🏢 Imobiliária" },
               { value: "corretor", label: "📋 Corretor(a)" },
-              { value: "proprietario", label: "🏠 Proprietário" },
               { value: "construtora", label: "🏗️ Construtora" },
             ].map((cat) => (
               <button
