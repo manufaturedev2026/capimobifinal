@@ -544,11 +544,12 @@ export default function CompanyProfile() {
             <div className="px-4 pt-4 pb-5" style={{ background: storeTheme.primary }}>
               {/* Top bar */}
               <div className="flex items-center justify-between mb-4">
-{user && dbProfile && user.id === dbProfile.user_id && (
-                  <Link to="/painel" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/15 text-white text-xs font-medium">
-                    <LayoutDashboard size={14} /> Painel
-                  </Link>
-                )}
+                <Link
+                  to={user && dbProfile && user.id === dbProfile.user_id ? "/painel" : "/entrar"}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/15 text-white text-xs font-medium"
+                >
+                  <LayoutDashboard size={14} /> {user && dbProfile && user.id === dbProfile.user_id ? "Painel" : "Entrar"}
+                </Link>
                 {isPaid && <PackageBadge tier={sellerTier} size="sm" />}
               </div>
 
@@ -670,11 +671,12 @@ export default function CompanyProfile() {
         
         {/* Back + Badge */}
         <div className="relative z-10 flex items-center justify-between px-4 pt-4">
-{user && dbProfile && user.id === dbProfile.user_id && (
-            <Link to="/painel" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-white text-xs font-medium">
-              <LayoutDashboard size={14} /> Painel
-            </Link>
-          )}
+          <Link
+            to={user && dbProfile && user.id === dbProfile.user_id ? "/painel" : "/entrar"}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-white text-xs font-medium"
+          >
+            <LayoutDashboard size={14} /> {user && dbProfile && user.id === dbProfile.user_id ? "Painel" : "Entrar"}
+          </Link>
           {isPaid && <PackageBadge tier={sellerTier} size="sm" />}
         </div>
 
@@ -900,11 +902,12 @@ export default function CompanyProfile() {
 
         {/* Back button */}
         <div className="absolute top-4 left-4 z-20">
-{user && dbProfile && user.id === dbProfile.user_id && (
-            <Link to="/painel" className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 backdrop-blur-md text-white text-sm font-medium hover:bg-white/20 transition-colors">
-              <LayoutDashboard size={16} /> Painel
-            </Link>
-          )}
+          <Link
+            to={user && dbProfile && user.id === dbProfile.user_id ? "/painel" : "/entrar"}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 backdrop-blur-md text-white text-sm font-medium hover:bg-white/20 transition-colors"
+          >
+            <LayoutDashboard size={16} /> {user && dbProfile && user.id === dbProfile.user_id ? "Painel" : "Entrar"}
+          </Link>
         </div>
 
         {/* Tier Badge */}
