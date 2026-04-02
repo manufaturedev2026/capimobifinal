@@ -1,10 +1,11 @@
-import { Suspense } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import BannedScreen from "@/components/BannedScreen";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import { HelmetProvider } from "react-helmet-async";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import { ThemeProvider } from "next-themes";
@@ -43,14 +44,38 @@ const RouteLoader = () => (
 // No fixed BROKER_ID — the logged-in user IS the broker
 const HomeRedirect = () => {
   const { user, profile, loading } = useAuth();
-  if (loading) return null;
-  if (user) {
-    const identifier = profile?.slug || profile?.id;
-    if (identifier) return <Navigate to={`/empresa/${identifier}`} replace />;
-    return <Navigate to="/painel" replace />;
-  }
-  // Visitantes não logados veem a loja principal
-  return <Navigate to="/empresa/loja" replace />;
+  const [target, setTarget] = useState<string | null>(null);
+  const [checking, setChecking] = useState(true);
+
+  useEffect(() => {
+    if (loading) return;
+
+    // Logged-in user → their store
+    if (user) {
+      const identifier = profile?.slug || profile?.id;
+      setTarget(identifier ? `/empresa/${identifier}` : "/painel");
+      setChecking(false);
+      return;
+    }
+
+    // Not logged in → check if any profile exists
+    supabase
+      .from("profiles")
+      .select("id, slug")
+      .limit(1)
+      .then(({ data }) => {
+        if (data && data.length > 0) {
+          const p = data[0];
+          setTarget(`/empresa/${p.slug || p.id}`);
+        } else {
+          setTarget("/entrar");
+        }
+        setChecking(false);
+      });
+  }, [user, profile, loading]);
+
+  if (loading || checking) return null;
+  return <Navigate to={target!} replace />;
 };
 
 const RequireAuth = ({ children }: { children: React.ReactNode }) => {
