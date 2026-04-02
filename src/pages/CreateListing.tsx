@@ -116,7 +116,7 @@ export default function CreateListing() {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                <Link to="/entrar?trial=7" className="inline-flex items-center justify-center gap-2 px-5 sm:px-8 py-3 sm:py-4 rounded-xl bg-accent text-accent-foreground font-bold text-xs sm:text-sm hover:bg-accent/90 transition-all shadow-lg shadow-accent/20">
+                <Link to="/login?trial=7" className="inline-flex items-center justify-center gap-2 px-5 sm:px-8 py-3 sm:py-4 rounded-xl bg-accent text-accent-foreground font-bold text-xs sm:text-sm hover:bg-accent/90 transition-all shadow-lg shadow-accent/20">
                   Cadastrar e Testar 7 Dias Grátis <ArrowRight size={14} />
                 </Link>
                 <a href="#beneficios" className="inline-flex items-center justify-center gap-2 px-5 sm:px-8 py-3 sm:py-4 rounded-xl bg-secondary text-foreground font-bold text-xs sm:text-sm hover:bg-secondary/80 transition-all border border-border">
@@ -195,7 +195,7 @@ export default function CreateListing() {
                   </motion.div>
                 ))}
               </div>
-              <Link to="/entrar?trial=7" className="group inline-flex items-center justify-center gap-2 px-5 sm:px-8 py-3 sm:py-4 rounded-2xl bg-accent text-accent-foreground font-bold text-xs sm:text-sm hover:bg-accent/90 transition-all shadow-2xl shadow-accent/30 hover:scale-105 w-full sm:w-auto">
+              <Link to="/login?trial=7" className="group inline-flex items-center justify-center gap-2 px-5 sm:px-8 py-3 sm:py-4 rounded-2xl bg-accent text-accent-foreground font-bold text-xs sm:text-sm hover:bg-accent/90 transition-all shadow-2xl shadow-accent/30 hover:scale-105 w-full sm:w-auto">
                 <Sparkles size={14} /> Testar Grátis por 7 Dias <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
               </Link>
             </motion.div>
