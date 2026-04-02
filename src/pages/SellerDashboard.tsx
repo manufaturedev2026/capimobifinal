@@ -3,11 +3,11 @@ import { getStoreUrl, getStoreFullUrl } from "@/lib/storeUrl";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Package, Eye, Plus, Settings, Edit, Trash2, Copy, ToggleLeft, ToggleRight, Search, Image, LogOut, BarChart3, Star, Crown, Zap, AlertTriangle, Shield, MessageCircle, Home, UserCircle, Headphones, Globe, ExternalLink, CheckCircle2, ClipboardCopy, Lock, Clapperboard, Menu, X, Building2, Users, Trophy, BadgeCheck, GripVertical, ChevronRight } from "lucide-react";
+import { Package, Eye, Plus, Settings, Edit, Trash2, Copy, ToggleLeft, ToggleRight, Search, Image, LogOut, BarChart3, Star, Crown, Zap, AlertTriangle, Shield, MessageCircle, Home, UserCircle, Headphones, Globe, ExternalLink, CheckCircle2, ClipboardCopy, Lock, Clapperboard, Menu, X, Building2, Users, BadgeCheck, GripVertical, ChevronRight, Sparkles } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import SoldCountdown from "@/components/SoldCountdown";
 import TeamMembersTab from "@/components/TeamMembersTab";
-import GamificationTab from "@/components/GamificationTab";
+import StoreEffectsPicker from "@/components/StoreEffectsPicker";
 import BrokerAnalytics from "@/components/BrokerAnalytics";
 
 import SellerCrmTab from "@/components/SellerCrmTab";
@@ -254,7 +254,7 @@ export default function SellerDashboard() {
     { id: "overview", label: "Visão Geral", icon: Home },
     { id: "items", label: "Meus Anúncios", icon: Package },
     { id: "stats", label: "Estatísticas", icon: BarChart3 },
-    { id: "events", label: "Eventos", icon: Trophy },
+    { id: "events", label: "Efeitos", icon: Sparkles },
     
     { id: "crm" as DashboardTab, label: "Meu CRM", icon: MessageCircle },
     { id: "domain", label: "Meu Domínio", icon: Globe, locked: lockedTabs.includes("domain") },
@@ -943,9 +943,9 @@ export default function SellerDashboard() {
               </div>
             )}
 
-            {/* Events/Gamification Tab */}
+            {/* Effects Tab */}
             {activeTab === "events" && user?.id && profile?.id && (
-              <GamificationTab userId={user.id} sellerId={profile.id} />
+              <StoreEffectsPicker userId={user.id} sellerId={profile.id} />
             )}
 
 
