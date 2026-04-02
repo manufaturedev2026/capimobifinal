@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { toast } from "@/hooks/use-toast";
-import { useParams, Link, useLocation } from "react-router-dom";
+import { useParams, Link, useLocation, Navigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Star, MapPin, MessageCircle, Share2, Key, Home, Building2, Landmark, Store, Warehouse, MoreHorizontal, Image, Eye, Instagram, Phone, ExternalLink, Clock, Shield, Zap, ChevronLeft, ChevronRight, Heart, BadgeCheck, Clapperboard, Play, X, Volume2, VolumeX, LayoutDashboard } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
@@ -417,12 +417,7 @@ export default function CompanyProfile() {
   }
 
   if (!company) {
-    return (
-      <div className="container max-w-6xl mx-auto px-4 py-20 text-center">
-        <h1 className="font-display font-bold text-2xl text-foreground">Empresa não encontrada</h1>
-        <Link to="/" className="text-primary text-sm mt-4 inline-block hover:underline">Voltar ao início</Link>
-      </div>
-    );
+    return <Navigate to="/entrar" replace />;
   }
 
   const featuredItemId = isDbProfile ? dbProfile?.featured_item_id : null;
