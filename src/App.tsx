@@ -40,7 +40,7 @@ const RouteLoader = () => (
   </div>
 );
 
-const BROKER_ID = "e01e4ed1-3b76-489e-8ab1-26da8c7598c2";
+// No fixed BROKER_ID — the logged-in user IS the broker
 
 const AppLayout = () => {
   const { banInfo } = useAuth();
