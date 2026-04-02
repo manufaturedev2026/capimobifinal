@@ -100,7 +100,7 @@ export default function SellerProfile() {
         video_description: (profile as any).video_description || "",
         slug: (profile as any).slug || "",
         store_theme: (profile as any).store_theme || "dark",
-        store_layout: (profile as any).store_layout || "netflix",
+        store_layout: (profile as any).store_layout || "showcase",
         store_video_url: (profile as any).store_video_url || "",
         store_video_title: (profile as any).store_video_title || "",
         store_video_description: (profile as any).store_video_description || "",
