@@ -44,10 +44,13 @@ const RouteLoader = () => (
 const HomeRedirect = () => {
   const { user, profile, loading } = useAuth();
   if (loading) return null;
-  if (!user) return <Navigate to="/entrar" replace />;
-  const identifier = profile?.slug || profile?.id;
-  if (identifier) return <Navigate to={`/empresa/${identifier}`} replace />;
-  return <Navigate to="/painel" replace />;
+  if (user) {
+    const identifier = profile?.slug || profile?.id;
+    if (identifier) return <Navigate to={`/empresa/${identifier}`} replace />;
+    return <Navigate to="/painel" replace />;
+  }
+  // Visitantes não logados veem a loja principal
+  return <Navigate to="/empresa/loja" replace />;
 };
 
 const RequireAuth = ({ children }: { children: React.ReactNode }) => {
