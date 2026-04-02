@@ -68,7 +68,7 @@ const HomeRedirect = () => {
           const p = data[0];
           setTarget(`/empresa/${p.slug || p.id}`);
         } else {
-          setTarget("/entrar");
+          setTarget("/login");
         }
         setChecking(false);
       });
@@ -81,7 +81,7 @@ const HomeRedirect = () => {
 const RequireAuth = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
   if (loading) return null;
-  if (!user) return <Navigate to="/entrar" replace />;
+  if (!user) return <Navigate to="/login" replace />;
   return <>{children}</>;
 };
 
@@ -107,7 +107,7 @@ const AppLayout = () => {
               <Route path="/imoveis/produto/:productId" element={<ProductDetail />} />
               <Route path="/anunciar" element={<CreateListing />} />
               <Route path="/login" element={<LoginPage />} />
-              <Route path="/entrar" element={<AuthPage />} />
+              <Route path="/login" element={<AuthPage />} />
               <Route path="/painel" element={<RequireAuth><SellerDashboard /></RequireAuth>} />
               <Route path="/painel/novo" element={<RequireAuth><SellerItemForm /></RequireAuth>} />
               <Route path="/painel/editar/:id" element={<RequireAuth><SellerItemForm /></RequireAuth>} />

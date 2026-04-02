@@ -746,7 +746,7 @@ export default function Index() {
               </p>
               <div className="flex flex-wrap justify-center gap-3 mt-8">
                 <Button asChild size="lg" variant="secondary" className="gap-2 font-bold rounded-xl shadow-lg">
-                  <Link to="/entrar">
+                  <Link to="/login">
                     <Sparkles size={18} /> Criar Meu App Grátis
                   </Link>
                 </Button>

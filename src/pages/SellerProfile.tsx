@@ -73,7 +73,7 @@ export default function SellerProfile() {
   const [slugError, setSlugError] = useState("");
 
   useEffect(() => {
-    if (!authLoading && !user) navigate("/entrar");
+    if (!authLoading && !user) navigate("/login");
   }, [user, authLoading]);
 
   useEffect(() => {

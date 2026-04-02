@@ -65,7 +65,7 @@ export default function Header() {
             </Link>
           ) : (
             <Link
-              to="/entrar"
+              to="/login"
               className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors shadow-md"
             >
               <LogIn size={16} />
@@ -109,7 +109,7 @@ export default function Header() {
           </Link>
           {!user && (
             <Link
-              to="/entrar"
+              to="/login"
               onClick={() => setMenuOpen(false)}
               className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold bg-primary text-primary-foreground"
             >

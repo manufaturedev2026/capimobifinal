@@ -117,7 +117,7 @@ export default function SellerItemForm() {
   const { cities: ibgeCities, loading: citiesLoading } = useCitiesByState(form.state);
 
   useEffect(() => {
-    if (!authLoading && !user) navigate("/entrar");
+    if (!authLoading && !user) navigate("/login");
   }, [user, authLoading]);
 
   useEffect(() => {
