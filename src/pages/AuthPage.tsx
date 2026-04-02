@@ -229,9 +229,8 @@ export default function AuthPage() {
 
           {!signedUp && isLogin && (
             <p className="text-center text-sm text-muted-foreground mt-8">
-              Não tem conta?{" "}
               <button onClick={() => setIsLogin(false)} className="text-primary font-semibold hover:underline">
-                Cadastre-se grátis
+                Criar conta da loja
               </button>
             </p>
           )}
