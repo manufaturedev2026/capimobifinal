@@ -179,6 +179,15 @@ export default function LoginPage() {
               </div>
             </div>
 
+            {!isLogin && (
+              <div>
+                <label className="block text-sm font-medium text-foreground/80 mb-1.5">Confirmar Senha</label>
+                <input type={showPassword ? "text" : "password"} required minLength={6} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl border border-border bg-secondary text-foreground text-sm placeholder:text-muted-foreground focus:ring-2 focus:ring-foreground/30 focus:border-foreground/30 focus:outline-none transition-all"
+                  placeholder="Repita a senha" />
+              </div>
+            )}
+
             <button type="submit" disabled={loading}
               className="w-full py-3.5 rounded-xl bg-accent text-accent-foreground font-bold text-sm hover:bg-accent/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-accent/20 mt-2">
               {loading ? (
