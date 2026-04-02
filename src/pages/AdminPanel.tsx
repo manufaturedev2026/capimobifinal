@@ -1,14 +1,14 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Shield, Users, Package, DollarSign, Search, Check, X, RefreshCw, ArrowLeft, Crown, Star, Zap, Globe, Plus, Trash2, ExternalLink, Copy, Megaphone, LayoutDashboard, Building2, Rocket, FileText, UserCog, Filter, Camera, Phone, Ban, ShieldOff, Clock, Gift, MessageCircle } from "lucide-react";
+import { Shield, Users, Package, DollarSign, Search, Check, X, RefreshCw, ArrowLeft, Crown, Star, Zap, Globe, Plus, Trash2, ExternalLink, Copy, Megaphone, LayoutDashboard, Building2, Rocket, FileText, UserCog, Filter, Camera, Phone, Ban, ShieldOff, Clock, MessageCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsAdmin, PACKAGE_CONFIG } from "@/hooks/useSubscription";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import AdminReferralTab from "@/components/AdminReferralTab";
+
 import AdminCrmTab from "@/components/AdminCrmTab";
 
 interface SellerWithSub {
@@ -345,7 +345,7 @@ export default function AdminPanel() {
     { key: "sellers" as const, label: "Vendedores", icon: Users },
     { key: "billing" as const, label: "Faturamento", icon: DollarSign },
     { key: "ads" as const, label: "Solicitações ADS", icon: Megaphone, badge: pendingAdsCount },
-    { key: "referrals" as const, label: "Indicações", icon: Gift },
+    
     { key: "crm" as const, label: "CRM WhatsApp", icon: MessageCircle },
   ];
 
@@ -752,9 +752,6 @@ export default function AdminPanel() {
           </div>
         )}
 
-        {tab === "referrals" && (
-          <AdminReferralTab />
-        )}
 
         {tab === "crm" && (
           <AdminCrmTab />

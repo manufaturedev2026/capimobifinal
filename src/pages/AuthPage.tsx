@@ -11,7 +11,7 @@ import logoImg from "@/assets/logo-es-corretores.png";
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(() => {
     const params = new URLSearchParams(window.location.search);
-    return !params.get("ref") && !params.get("trial");
+    return !params.get("trial");
   });
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -22,7 +22,6 @@ export default function AuthPage() {
   const { user, profile, signIn, signUp } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const refCode = searchParams.get("ref") || "";
   const trialDays = searchParams.get("trial");
   const { toast } = useToast();
 
@@ -50,24 +49,10 @@ export default function AuthPage() {
       if (error) {
         toast({ title: "Erro ao cadastrar", description: error.message, variant: "destructive" });
       } else {
-        // Save referral code if present (after profile is created)
+        // Save trial if present (after profile is created)
         setTimeout(async () => {
           const { data: { user: newUser } } = await supabase.auth.getUser();
           if (newUser) {
-            // Handle referral
-            if (refCode.trim()) {
-              const { data: referrer } = await supabase
-                .from("profiles")
-                .select("user_id")
-                .eq("referral_code", refCode.trim().toUpperCase())
-                .maybeSingle();
-              if (referrer && referrer.user_id !== newUser.id) {
-                await supabase
-                  .from("profiles")
-                  .update({ referred_by: refCode.trim().toUpperCase() } as any)
-                  .eq("user_id", newUser.id);
-              }
-            }
 
             // Handle 7-day free trial from /anunciar
             if (trialDays === "7") {
