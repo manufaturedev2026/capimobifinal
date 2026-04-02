@@ -11,8 +11,6 @@ import { ThemeProvider } from "next-themes";
 import { WhatsAppTeamPickerProvider } from "@/components/WhatsAppTeamPicker";
 import { CompareProvider } from "@/hooks/useCompare";
 import CompareBar from "@/components/CompareBar";
-import Header from "@/components/Header";
-import FooterSimple from "@/components/FooterSimple";
 import InstallPWA from "@/components/InstallPWA";
 import ScrollToTop from "@/components/ScrollToTop";
 import { CustomDomainRedirect } from "@/components/CustomDomainRedirect";
