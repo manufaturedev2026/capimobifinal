@@ -254,7 +254,7 @@ export default function SellerDashboard() {
     { id: "overview", label: "Visão Geral", icon: Home },
     { id: "items", label: "Meus Anúncios", icon: Package },
     { id: "stats", label: "Estatísticas", icon: BarChart3 },
-    { id: "events", label: "Eventos", icon: Trophy },
+    { id: "events", label: "Efeitos", icon: Sparkles },
     
     { id: "crm" as DashboardTab, label: "Meu CRM", icon: MessageCircle },
     { id: "domain", label: "Meu Domínio", icon: Globe, locked: lockedTabs.includes("domain") },
