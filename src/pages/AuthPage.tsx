@@ -19,16 +19,21 @@ export default function AuthPage() {
   const [phone, setPhone] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { user, signIn, signUp } = useAuth();
+  const { user, profile, signIn, signUp } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const refCode = searchParams.get("ref") || "";
   const trialDays = searchParams.get("trial");
   const { toast } = useToast();
 
+  const getStoreRoute = (p?: { id: string; slug?: string | null } | null) => {
+    const identifier = p?.slug || p?.id;
+    return identifier ? `/empresa/${identifier}` : "/painel";
+  };
+
   useEffect(() => {
-    if (user) navigate("/painel");
-  }, [user, navigate]);
+    if (user && profile) navigate(getStoreRoute(profile), { replace: true });
+  }, [user, profile, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,9 +43,8 @@ export default function AuthPage() {
       const { error } = await signIn(email, password);
       if (error) {
         toast({ title: "Erro ao entrar", description: error.message, variant: "destructive" });
-      } else {
-        navigate("/painel");
       }
+      // useEffect handles redirect after profile loads
     } else {
       const { error } = await signUp(email, password, fullName, phone);
       if (error) {
@@ -93,7 +97,7 @@ export default function AuthPage() {
             ? "Seus 7 dias grátis do plano Start foram ativados! 🎉"
             : "Complete seu perfil para começar!",
         });
-        navigate("/painel");
+        // useEffect handles redirect after profile loads
       }
     }
     setLoading(false);

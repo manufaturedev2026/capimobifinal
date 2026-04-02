@@ -40,7 +40,14 @@ const RouteLoader = () => (
   </div>
 );
 
-const BROKER_ID = "e01e4ed1-3b76-489e-8ab1-26da8c7598c2";
+// No fixed BROKER_ID — the logged-in user IS the broker
+const HomeRedirect = () => {
+  const { user, profile } = useAuth();
+  if (!user) return <Navigate to="/entrar" replace />;
+  const identifier = profile?.slug || profile?.id;
+  if (identifier) return <Navigate to={`/empresa/${identifier}`} replace />;
+  return <Navigate to="/painel" replace />;
+};
 
 const AppLayout = () => {
   const { banInfo } = useAuth();
@@ -59,7 +66,7 @@ const AppLayout = () => {
         <RouteErrorBoundary>
           <Suspense fallback={<RouteLoader />}>
             <Routes>
-              <Route path="/" element={<Navigate to={`/empresa/${BROKER_ID}`} replace />} />
+              <Route path="/" element={<HomeRedirect />} />
               <Route path="/empresa/:id" element={<CompanyProfile />} />
               <Route path="/imoveis/produto/:productId" element={<ProductDetail />} />
               <Route path="/anunciar" element={<CreateListing />} />
@@ -73,7 +80,7 @@ const AppLayout = () => {
               <Route path="/admin" element={<AdminPanel />} />
               <Route path="/privacidade" element={<PrivacyPage />} />
               <Route path="/termos" element={<TermsPage />} />
-              <Route path="*" element={<Navigate to={`/empresa/${BROKER_ID}`} replace />} />
+              <Route path="*" element={<HomeRedirect />} />
             </Routes>
           </Suspense>
         </RouteErrorBoundary>
