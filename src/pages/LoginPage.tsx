@@ -1,26 +1,38 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Eye, EyeOff, LogIn, UserPlus, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
+import { supabase } from "@/integrations/supabase/client";
 import heroImg from "@/assets/hero-anunciar.jpg";
 
 export default function LoginPage() {
-  const [isLogin, setIsLogin] = useState(true);
+  const [isLogin, setIsLogin] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    return !params.get("trial");
+  });
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { user, signIn, signUp } = useAuth();
+  const [signedUp, setSignedUp] = useState(false);
+  const { user, profile, signIn, signUp } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const trialDays = searchParams.get("trial");
   const { toast } = useToast();
 
+  const getStoreRoute = (p?: { id: string; slug?: string | null } | null) => {
+    const identifier = p?.slug || p?.id;
+    return identifier ? `/empresa/${identifier}` : "/painel";
+  };
+
   useEffect(() => {
-    if (user) navigate("/painel");
-  }, [user, navigate]);
+    if (user && profile) navigate(getStoreRoute(profile), { replace: true });
+  }, [user, profile, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,16 +42,52 @@ export default function LoginPage() {
       const { error } = await signIn(email, password);
       if (error) {
         toast({ title: "Erro ao entrar", description: error.message, variant: "destructive" });
-      } else {
-        navigate("/painel");
       }
     } else {
       const { error } = await signUp(email, password, fullName, phone);
       if (error) {
         toast({ title: "Erro ao cadastrar", description: error.message, variant: "destructive" });
       } else {
-        toast({ title: "Cadastro realizado!", description: "Bem-vindo ao Brokers App!" });
-        navigate("/painel");
+        setSignedUp(true);
+        toast({
+          title: "Cadastro realizado!",
+          description: trialDays === "7"
+            ? "Seus 7 dias grátis do plano Start foram ativados! 🎉"
+            : "Complete seu perfil para começar!",
+        });
+
+        const waitForProfile = async () => {
+          for (let i = 0; i < 10; i++) {
+            const { data: { user: newUser } } = await supabase.auth.getUser();
+            if (!newUser) break;
+
+            const { data: newProfile } = await supabase
+              .from("profiles")
+              .select("id, slug")
+              .eq("user_id", newUser.id)
+              .maybeSingle();
+
+            if (newProfile) {
+              if (trialDays === "7") {
+                await supabase.from("seller_subscriptions").insert({
+                  user_id: newUser.id,
+                  seller_id: newProfile.id,
+                  tier: "start",
+                  max_items: 10,
+                  expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+                  payment_method: "trial",
+                  payment_status: "confirmado",
+                } as any);
+              }
+
+              navigate(getStoreRoute(newProfile), { replace: true });
+              return;
+            }
+            await new Promise(r => setTimeout(r, 500));
+          }
+          navigate("/painel", { replace: true });
+        };
+        waitForProfile();
       }
     }
     setLoading(false);
@@ -130,14 +178,14 @@ export default function LoginPage() {
             </button>
           </form>
 
-          {isLogin && (
+          {!signedUp && isLogin && (
             <p className="text-center text-sm text-muted-foreground mt-8">
               <button onClick={() => setIsLogin(false)} className="text-accent font-semibold hover:underline">
                 Criar conta da loja
               </button>
             </p>
           )}
-          {!isLogin && (
+          {!signedUp && !isLogin && (
             <p className="text-center text-sm text-muted-foreground mt-8">
               Já tem conta?{" "}
               <button onClick={() => setIsLogin(true)} className="text-accent font-semibold hover:underline">
