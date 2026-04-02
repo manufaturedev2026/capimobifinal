@@ -41,6 +41,13 @@ const RouteLoader = () => (
 );
 
 // No fixed BROKER_ID — the logged-in user IS the broker
+const HomeRedirect = () => {
+  const { user, profile } = useAuth();
+  if (!user) return <Navigate to="/entrar" replace />;
+  const identifier = profile?.slug || profile?.id;
+  if (identifier) return <Navigate to={`/empresa/${identifier}`} replace />;
+  return <Navigate to="/painel" replace />;
+};
 
 const AppLayout = () => {
   const { banInfo } = useAuth();
