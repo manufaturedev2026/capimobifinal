@@ -700,18 +700,18 @@ function ChangePasswordSection() {
   };
 
   return (
-    <form onSubmit={handleChangePassword} className="mt-8 bg-card border border-border rounded-2xl p-6 space-y-4">
-      <div className="flex items-center gap-3 mb-2">
-        <div className="w-10 h-10 rounded-xl bg-destructive/10 flex items-center justify-center">
-          <Lock size={20} className="text-destructive" />
+    <form onSubmit={handleChangePassword} className="mt-8 bg-card border border-border rounded-2xl p-4 space-y-3">
+      <div className="flex items-center gap-3 mb-1">
+        <div className="w-8 h-8 rounded-lg bg-destructive/10 flex items-center justify-center">
+          <Lock size={16} className="text-destructive" />
         </div>
         <div>
-          <h3 className="font-display font-bold text-foreground">Trocar Senha</h3>
-          <p className="text-xs text-muted-foreground">Altere sua senha de acesso</p>
+          <h3 className="font-display font-bold text-sm text-foreground">Trocar Senha</h3>
+          <p className="text-[11px] text-muted-foreground">Altere sua senha de acesso</p>
         </div>
       </div>
 
-      <div className="space-y-3">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
         <div className="relative">
           <input
             type={showCurrent ? "text" : "password"}
@@ -719,10 +719,10 @@ function ChangePasswordSection() {
             onChange={(e) => setCurrentPassword(e.target.value)}
             placeholder="Senha atual"
             required
-            className="w-full px-4 py-3 pr-12 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+            className="w-full px-3 py-2.5 pr-10 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
           />
-          <button type="button" onClick={() => setShowCurrent(!showCurrent)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
-            {showCurrent ? <EyeOff size={18} /> : <Eye size={18} />}
+          <button type="button" onClick={() => setShowCurrent(!showCurrent)} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+            {showCurrent ? <EyeOff size={16} /> : <Eye size={16} />}
           </button>
         </div>
 
@@ -731,13 +731,13 @@ function ChangePasswordSection() {
             type={showNew ? "text" : "password"}
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
-            placeholder="Nova senha (mín. 6 caracteres)"
+            placeholder="Nova senha (mín. 6)"
             required
             minLength={6}
-            className="w-full px-4 py-3 pr-12 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+            className="w-full px-3 py-2.5 pr-10 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
           />
-          <button type="button" onClick={() => setShowNew(!showNew)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
-            {showNew ? <EyeOff size={18} /> : <Eye size={18} />}
+          <button type="button" onClick={() => setShowNew(!showNew)} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+            {showNew ? <EyeOff size={16} /> : <Eye size={16} />}
           </button>
         </div>
 
@@ -749,22 +749,22 @@ function ChangePasswordSection() {
             placeholder="Confirmar nova senha"
             required
             minLength={6}
-            className="w-full px-4 py-3 pr-12 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+            className="w-full px-3 py-2.5 pr-10 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
           />
-          <button type="button" onClick={() => setShowConfirm(!showConfirm)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
-            {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
+          <button type="button" onClick={() => setShowConfirm(!showConfirm)} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+            {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
           </button>
         </div>
-
-        {newPassword && confirmPassword && newPassword !== confirmPassword && (
-          <p className="text-xs text-destructive">As senhas não conferem</p>
-        )}
       </div>
+
+      {newPassword && confirmPassword && newPassword !== confirmPassword && (
+        <p className="text-xs text-destructive">As senhas não conferem</p>
+      )}
 
       <button
         type="submit"
         disabled={saving || !currentPassword || !newPassword || !confirmPassword || newPassword !== confirmPassword}
-        className="w-full py-3 rounded-xl bg-destructive text-destructive-foreground font-bold text-sm hover:bg-destructive/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+        className="w-full py-2.5 rounded-xl bg-destructive text-destructive-foreground font-bold text-sm hover:bg-destructive/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
       >
         {saving ? (
           <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
