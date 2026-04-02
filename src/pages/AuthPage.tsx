@@ -49,22 +49,31 @@ export default function AuthPage() {
       if (error) {
         toast({ title: "Erro ao cadastrar", description: error.message, variant: "destructive" });
       } else {
-        // Save trial if present (after profile is created)
-        setTimeout(async () => {
-          const { data: { user: newUser } } = await supabase.auth.getUser();
-          if (newUser) {
+        toast({
+          title: "Cadastro realizado!",
+          description: trialDays === "7"
+            ? "Seus 7 dias grátis do plano Start foram ativados! 🎉"
+            : "Complete seu perfil para começar!",
+        });
 
-            // Handle 7-day free trial from /anunciar
-            if (trialDays === "7") {
-              const { data: profile } = await supabase
-                .from("profiles")
-                .select("id")
-                .eq("user_id", newUser.id)
-                .maybeSingle();
-              if (profile) {
+        // Wait for profile to be created by trigger, then redirect
+        const waitForProfile = async () => {
+          for (let i = 0; i < 10; i++) {
+            const { data: { user: newUser } } = await supabase.auth.getUser();
+            if (!newUser) break;
+
+            const { data: newProfile } = await supabase
+              .from("profiles")
+              .select("id, slug")
+              .eq("user_id", newUser.id)
+              .maybeSingle();
+
+            if (newProfile) {
+              // Handle 7-day free trial from /anunciar
+              if (trialDays === "7") {
                 await supabase.from("seller_subscriptions").insert({
                   user_id: newUser.id,
-                  seller_id: profile.id,
+                  seller_id: newProfile.id,
                   tier: "start",
                   max_items: 10,
                   expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
@@ -72,17 +81,17 @@ export default function AuthPage() {
                   payment_status: "confirmado",
                 } as any);
               }
-            }
-          }
-        }, 2000);
 
-        toast({
-          title: "Cadastro realizado!",
-          description: trialDays === "7"
-            ? "Seus 7 dias grátis do plano Start foram ativados! 🎉"
-            : "Complete seu perfil para começar!",
-        });
-        // useEffect handles redirect after profile loads
+              const route = getStoreRoute(newProfile);
+              navigate(route, { replace: true });
+              return;
+            }
+            await new Promise(r => setTimeout(r, 500));
+          }
+          // Fallback
+          navigate("/painel", { replace: true });
+        };
+        waitForProfile();
       }
     }
     setLoading(false);
