@@ -7,7 +7,7 @@ import { Package, Eye, Plus, Settings, Edit, Trash2, Copy, ToggleLeft, ToggleRig
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import SoldCountdown from "@/components/SoldCountdown";
 import TeamMembersTab from "@/components/TeamMembersTab";
-import GamificationTab from "@/components/GamificationTab";
+import StoreEffectsPicker from "@/components/StoreEffectsPicker";
 import BrokerAnalytics from "@/components/BrokerAnalytics";
 
 import SellerCrmTab from "@/components/SellerCrmTab";
