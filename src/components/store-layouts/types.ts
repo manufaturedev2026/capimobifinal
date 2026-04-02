@@ -32,13 +32,13 @@ export type StoreLayoutId = typeof STORE_LAYOUTS[number]["id"];
 
 /** Layouts allowed per subscription tier */
 export const LAYOUTS_BY_TIER: Record<string, string[]> = {
-  basico: ["netflix"],
-  start: ["netflix"],
-  premium: ["netflix", "minimal", "marketplace", "showcase"],
-  vip: ["netflix", "minimal", "marketplace", "showcase", "magazine", "gallery", "elegant"],
-  essencial_empresa: ["netflix", "minimal", "marketplace", "showcase"],
-  premium_empresa: ["netflix", "minimal", "marketplace", "showcase", "magazine", "gallery", "elegant"],
-  prime_empresa: ["netflix", "minimal", "marketplace", "showcase", "magazine", "gallery", "elegant"],
+  basico: ["showcase"],
+  start: ["showcase"],
+  premium: ["showcase", "netflix", "minimal", "marketplace"],
+  vip: ["showcase", "netflix", "minimal", "marketplace", "magazine", "gallery", "elegant"],
+  essencial_empresa: ["showcase", "netflix", "minimal", "marketplace"],
+  premium_empresa: ["showcase", "netflix", "minimal", "marketplace", "magazine", "gallery", "elegant"],
+  prime_empresa: ["showcase", "netflix", "minimal", "marketplace", "magazine", "gallery", "elegant"],
 };
 
 export function isLayoutAllowed(layoutId: string, tier: string | null | undefined): boolean {
@@ -49,6 +49,6 @@ export function isLayoutAllowed(layoutId: string, tier: string | null | undefine
 /** Returns the minimum tier required for a layout */
 export function getMinTierForLayout(layoutId: string): string {
   if (["magazine", "gallery", "elegant"].includes(layoutId)) return "Premium";
-  if (["minimal", "marketplace", "showcase"].includes(layoutId)) return "VIP";
+  if (["netflix", "minimal", "marketplace"].includes(layoutId)) return "VIP";
   return "";
 }
