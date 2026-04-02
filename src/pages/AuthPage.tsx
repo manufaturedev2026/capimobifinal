@@ -11,7 +11,7 @@ import logoImg from "@/assets/logo-es-corretores.png";
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(() => {
     const params = new URLSearchParams(window.location.search);
-    return !params.get("ref") && !params.get("trial");
+    return !params.get("trial");
   });
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
