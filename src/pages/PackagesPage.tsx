@@ -21,7 +21,7 @@ export default function PackagesPage() {
 
   const handleManageSubscription = async () => {
     if (!user) {
-      navigate("/entrar");
+      navigate("/login");
       return;
     }
     setOpeningPortal(true);
@@ -41,7 +41,7 @@ export default function PackagesPage() {
 
   const handleSelect = async (tier: "basico" | "start" | "premium" | "vip") => {
     if (!user || !profile) {
-      navigate("/entrar");
+      navigate("/login");
       return;
     }
     setSelecting(tier);

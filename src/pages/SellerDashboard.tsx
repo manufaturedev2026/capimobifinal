@@ -55,7 +55,7 @@ export default function SellerDashboard() {
   const [dragOverItemId, setDragOverItemId] = useState<string | null>(null);
   const [teamMembers, setTeamMembers] = useState<{ id: string; full_name: string; photo_url: string | null; phone: string | null; is_active: boolean }[]>([]);
   useEffect(() => {
-    if (!authLoading && !user) navigate("/entrar");
+    if (!authLoading && !user) navigate("/login");
   }, [user, authLoading, navigate]);
 
   useEffect(() => {

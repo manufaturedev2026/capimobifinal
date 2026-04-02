@@ -417,7 +417,7 @@ export default function CompanyProfile() {
   }
 
   if (!company) {
-    return <Navigate to="/entrar" replace />;
+    return <Navigate to="/login" replace />;
   }
 
   const featuredItemId = isDbProfile ? dbProfile?.featured_item_id : null;
@@ -545,7 +545,7 @@ export default function CompanyProfile() {
               {/* Top bar */}
               <div className="flex items-center justify-between mb-4">
                 <Link
-                  to={user && dbProfile && user.id === dbProfile.user_id ? "/painel" : "/entrar"}
+                  to={user && dbProfile && user.id === dbProfile.user_id ? "/painel" : "/login"}
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/15 text-white text-xs font-medium"
                 >
                   <LayoutDashboard size={14} /> {user && dbProfile && user.id === dbProfile.user_id ? "Painel" : "Entrar"}
@@ -672,7 +672,7 @@ export default function CompanyProfile() {
         {/* Back + Badge */}
         <div className="relative z-10 flex items-center justify-between px-4 pt-4">
           <Link
-            to={user && dbProfile && user.id === dbProfile.user_id ? "/painel" : "/entrar"}
+            to={user && dbProfile && user.id === dbProfile.user_id ? "/painel" : "/login"}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-white text-xs font-medium"
           >
             <LayoutDashboard size={14} /> {user && dbProfile && user.id === dbProfile.user_id ? "Painel" : "Entrar"}
@@ -903,7 +903,7 @@ export default function CompanyProfile() {
         {/* Back button */}
         <div className="absolute top-4 left-4 z-20">
           <Link
-            to={user && dbProfile && user.id === dbProfile.user_id ? "/painel" : "/entrar"}
+            to={user && dbProfile && user.id === dbProfile.user_id ? "/painel" : "/login"}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 backdrop-blur-md text-white text-sm font-medium hover:bg-white/20 transition-colors"
           >
             <LayoutDashboard size={16} /> {user && dbProfile && user.id === dbProfile.user_id ? "Painel" : "Entrar"}

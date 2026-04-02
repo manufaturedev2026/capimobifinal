@@ -32,7 +32,7 @@ export default function FavoritesPage() {
         <div className="text-center">
           <Heart size={48} className="mx-auto text-muted-foreground mb-4" />
           <h1 className="font-display font-bold text-2xl text-foreground">Faça login para ver seus favoritos</h1>
-          <Link to="/entrar" className="mt-4 inline-block px-6 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-sm">Entrar</Link>
+          <Link to="/login" className="mt-4 inline-block px-6 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-sm">Entrar</Link>
         </div>
       </div>
     );

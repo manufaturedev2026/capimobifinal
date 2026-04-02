@@ -116,7 +116,7 @@ export default function CreateListing() {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                <Link to="/entrar?trial=7" className="inline-flex items-center justify-center gap-2 px-5 sm:px-8 py-3 sm:py-4 rounded-xl bg-accent text-accent-foreground font-bold text-xs sm:text-sm hover:bg-accent/90 transition-all shadow-lg shadow-accent/20">
+                <Link to="/login?trial=7" className="inline-flex items-center justify-center gap-2 px-5 sm:px-8 py-3 sm:py-4 rounded-xl bg-accent text-accent-foreground font-bold text-xs sm:text-sm hover:bg-accent/90 transition-all shadow-lg shadow-accent/20">
                   Cadastrar e Testar 7 Dias Grátis <ArrowRight size={14} />
                 </Link>
                 <a href="#beneficios" className="inline-flex items-center justify-center gap-2 px-5 sm:px-8 py-3 sm:py-4 rounded-xl bg-secondary text-foreground font-bold text-xs sm:text-sm hover:bg-secondary/80 transition-all border border-border">
@@ -195,7 +195,7 @@ export default function CreateListing() {
                   </motion.div>
                 ))}
               </div>
-              <Link to="/entrar?trial=7" className="group inline-flex items-center justify-center gap-2 px-5 sm:px-8 py-3 sm:py-4 rounded-2xl bg-accent text-accent-foreground font-bold text-xs sm:text-sm hover:bg-accent/90 transition-all shadow-2xl shadow-accent/30 hover:scale-105 w-full sm:w-auto">
+              <Link to="/login?trial=7" className="group inline-flex items-center justify-center gap-2 px-5 sm:px-8 py-3 sm:py-4 rounded-2xl bg-accent text-accent-foreground font-bold text-xs sm:text-sm hover:bg-accent/90 transition-all shadow-2xl shadow-accent/30 hover:scale-105 w-full sm:w-auto">
                 <Sparkles size={14} /> Testar Grátis por 7 Dias <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
               </Link>
             </motion.div>
@@ -302,7 +302,7 @@ export default function CreateListing() {
                     </li>
                   ))}
                 </ul>
-                <Link to="/entrar" className="block mt-4 sm:mt-5 w-full py-2.5 sm:py-3 rounded-xl bg-accent text-accent-foreground text-center font-bold text-xs sm:text-sm hover:bg-accent/90 transition-all">
+                <Link to="/login" className="block mt-4 sm:mt-5 w-full py-2.5 sm:py-3 rounded-xl bg-accent text-accent-foreground text-center font-bold text-xs sm:text-sm hover:bg-accent/90 transition-all">
                   Testar 7 Dias Grátis
                 </Link>
               </motion.div>
@@ -341,7 +341,7 @@ export default function CreateListing() {
                     </li>
                   ))}
                 </ul>
-                <Link to="/entrar" className="block mt-4 sm:mt-5 w-full py-2.5 sm:py-3 rounded-xl bg-accent text-accent-foreground text-center font-bold text-xs sm:text-sm hover:bg-accent/90 transition-all">
+                <Link to="/login" className="block mt-4 sm:mt-5 w-full py-2.5 sm:py-3 rounded-xl bg-accent text-accent-foreground text-center font-bold text-xs sm:text-sm hover:bg-accent/90 transition-all">
                   Testar 7 Dias Grátis
                 </Link>
               </motion.div>
@@ -362,7 +362,7 @@ export default function CreateListing() {
             <p className="text-muted-foreground text-sm sm:text-base mb-6 sm:mb-8 max-w-lg mx-auto">
               Cadastre-se gratuitamente e teste por 7 dias grátis no Brokers App.
             </p>
-            <Link to="/entrar" className="inline-flex items-center justify-center gap-2 px-6 sm:px-10 py-3 sm:py-4 rounded-xl bg-accent text-accent-foreground font-bold text-xs sm:text-sm hover:bg-accent/90 transition-all shadow-lg shadow-accent/20 w-full sm:w-auto">
+            <Link to="/login" className="inline-flex items-center justify-center gap-2 px-6 sm:px-10 py-3 sm:py-4 rounded-xl bg-accent text-accent-foreground font-bold text-xs sm:text-sm hover:bg-accent/90 transition-all shadow-lg shadow-accent/20 w-full sm:w-auto">
               Cadastrar e Testar 7 Dias Grátis <ArrowRight size={14} />
             </Link>
           </motion.div>

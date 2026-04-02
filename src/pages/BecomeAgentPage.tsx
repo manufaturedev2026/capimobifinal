@@ -262,7 +262,7 @@ export default function BecomeAgentPage() {
 
               <div className="flex flex-wrap gap-3">
                 <a
-                  href="/entrar?trial=7"
+                  href="/login?trial=7"
                   className="group inline-flex items-center gap-2 px-5 py-3 md:px-8 md:py-4 rounded-2xl bg-accent text-accent-foreground font-bold text-xs md:text-sm hover:bg-accent/90 transition-all shadow-2xl shadow-accent/30 hover:shadow-accent/50 hover:scale-105"
                 >
                   <Sparkles size={16} />
@@ -357,7 +357,7 @@ export default function BecomeAgentPage() {
                 ))}
               </div>
               <a
-                href="/entrar?trial=7"
+                href="/login?trial=7"
                 className="group inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-accent text-accent-foreground font-bold text-sm hover:bg-accent/90 transition-all shadow-2xl shadow-accent/30 hover:shadow-accent/50 hover:scale-105"
               >
                 <Sparkles size={16} />
@@ -720,7 +720,7 @@ export default function BecomeAgentPage() {
 
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <a
-                  href="/entrar?trial=7"
+                  href="/login?trial=7"
                   className="group inline-flex items-center gap-3 px-10 py-5 rounded-2xl bg-accent text-accent-foreground font-bold text-base hover:bg-accent/90 transition-all shadow-2xl shadow-accent/30 hover:shadow-accent/50 hover:scale-105"
                 >
                   <Sparkles size={20} />
