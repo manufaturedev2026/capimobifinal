@@ -57,7 +57,7 @@ export default function PwaInstallGuide({ mode, onClose, open }: PwaInstallGuide
   const content = GUIDE_CONTENT[mode];
   const Icon = content.icon;
 
-  return (
+  return createPortal(
     <AnimatePresence>
       {open && (
         <motion.div
