@@ -948,10 +948,6 @@ export default function SellerDashboard() {
               <GamificationTab userId={user.id} sellerId={profile.id} />
             )}
 
-            {/* Referral Tab */}
-            {activeTab === "referral" && (
-              <ReferralTab />
-            )}
 
             {/* CRM Tab */}
             {activeTab === "crm" && user?.id && profile?.id && (
