@@ -227,7 +227,7 @@ export default function AuthPage() {
             </button>
           </form>
 
-          {isLogin && (
+          {!signedUp && isLogin && (
             <p className="text-center text-sm text-muted-foreground mt-8">
               Não tem conta?{" "}
               <button onClick={() => setIsLogin(false)} className="text-primary font-semibold hover:underline">
@@ -235,7 +235,7 @@ export default function AuthPage() {
               </button>
             </p>
           )}
-          {!isLogin && (
+          {!signedUp && !isLogin && (
             <p className="text-center text-sm text-muted-foreground mt-8">
               Já tem conta?{" "}
               <button onClick={() => setIsLogin(true)} className="text-primary font-semibold hover:underline">
