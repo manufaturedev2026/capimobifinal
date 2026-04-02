@@ -18,6 +18,7 @@ export default function AuthPage() {
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [signedUp, setSignedUp] = useState(false);
   const [loading, setLoading] = useState(false);
   const { user, profile, signIn, signUp } = useAuth();
   const navigate = useNavigate();
@@ -49,6 +50,7 @@ export default function AuthPage() {
       if (error) {
         toast({ title: "Erro ao cadastrar", description: error.message, variant: "destructive" });
       } else {
+        setSignedUp(true);
         toast({
           title: "Cadastro realizado!",
           description: trialDays === "7"
@@ -225,12 +227,22 @@ export default function AuthPage() {
             </button>
           </form>
 
-          <p className="text-center text-sm text-muted-foreground mt-8">
-            {isLogin ? "Não tem conta?" : "Já tem conta?"}{" "}
-            <button onClick={() => setIsLogin(!isLogin)} className="text-primary font-semibold hover:underline">
-              {isLogin ? "Cadastre-se grátis" : "Entrar"}
-            </button>
-          </p>
+          {!signedUp && isLogin && (
+            <p className="text-center text-sm text-muted-foreground mt-8">
+              Não tem conta?{" "}
+              <button onClick={() => setIsLogin(false)} className="text-primary font-semibold hover:underline">
+                Cadastre-se grátis
+              </button>
+            </p>
+          )}
+          {!signedUp && !isLogin && (
+            <p className="text-center text-sm text-muted-foreground mt-8">
+              Já tem conta?{" "}
+              <button onClick={() => setIsLogin(true)} className="text-primary font-semibold hover:underline">
+                Entrar
+              </button>
+            </p>
+          )}
         </motion.div>
       </div>
     </div>
