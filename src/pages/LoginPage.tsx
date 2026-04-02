@@ -35,6 +35,12 @@ export default function LoginPage() {
     if (user && profile) navigate(getStoreRoute(profile), { replace: true });
   }, [user, profile, navigate]);
 
+  useEffect(() => {
+    supabase.from("profiles").select("id").limit(1).then(({ data }) => {
+      setHasStore(!!data && data.length > 0);
+    });
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
