@@ -121,6 +121,7 @@ export default function PwaInstallGuide({ mode, onClose, open }: PwaInstallGuide
           </motion.div>
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }
