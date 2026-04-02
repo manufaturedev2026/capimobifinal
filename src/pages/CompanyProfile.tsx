@@ -417,12 +417,7 @@ export default function CompanyProfile() {
   }
 
   if (!company) {
-    return (
-      <div className="container max-w-6xl mx-auto px-4 py-20 text-center">
-        <h1 className="font-display font-bold text-2xl text-foreground">Empresa não encontrada</h1>
-        <Link to="/" className="text-primary text-sm mt-4 inline-block hover:underline">Voltar ao início</Link>
-      </div>
-    );
+    return <Navigate to="/entrar" replace />;
   }
 
   const featuredItemId = isDbProfile ? dbProfile?.featured_item_id : null;
