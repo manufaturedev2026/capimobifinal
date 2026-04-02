@@ -21,7 +21,7 @@ const CompanyProfile = lazyPage(() => import("@/pages/CompanyProfile"));
 const ProductDetail = lazyPage(() => import("@/pages/ProductDetail"));
 const CreateListing = lazyPage(() => import("@/pages/CreateListing"));
 const LoginPage = lazyPage(() => import("@/pages/LoginPage"));
-const SearchPage = lazyPage(() => import("@/pages/SearchPage"));
+
 const AuthPage = lazyPage(() => import("@/pages/AuthPage"));
 const SellerDashboard = lazyPage(() => import("@/pages/SellerDashboard"));
 const SellerItemForm = lazyPage(() => import("@/pages/SellerItemForm"));
