@@ -19,6 +19,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [signedUp, setSignedUp] = useState(false);
+  const [hasStore, setHasStore] = useState(true);
   const { user, profile, signIn, signUp } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -33,6 +34,12 @@ export default function LoginPage() {
   useEffect(() => {
     if (user && profile) navigate(getStoreRoute(profile), { replace: true });
   }, [user, profile, navigate]);
+
+  useEffect(() => {
+    supabase.from("profiles").select("id").limit(1).then(({ data }) => {
+      setHasStore(!!data && data.length > 0);
+    });
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -178,7 +185,7 @@ export default function LoginPage() {
             </button>
           </form>
 
-          {!signedUp && isLogin && (
+          {!signedUp && isLogin && !hasStore && (
             <p className="text-center text-sm text-muted-foreground mt-8">
               <button onClick={() => setIsLogin(false)} className="text-accent font-semibold hover:underline">
                 Criar conta da loja
