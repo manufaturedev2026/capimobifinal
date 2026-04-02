@@ -52,6 +52,11 @@ export default function LoginPage() {
         toast({ title: "Erro ao entrar", description: error.message, variant: "destructive" });
       }
     } else {
+      if (password !== confirmPassword) {
+        toast({ title: "Senhas não conferem", description: "Digite a mesma senha nos dois campos.", variant: "destructive" });
+        setLoading(false);
+        return;
+      }
       const { error } = await signUp(email, password, fullName, phone);
       if (error) {
         toast({ title: "Erro ao cadastrar", description: error.message, variant: "destructive" });
