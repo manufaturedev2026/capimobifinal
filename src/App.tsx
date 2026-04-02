@@ -42,11 +42,19 @@ const RouteLoader = () => (
 
 // No fixed BROKER_ID — the logged-in user IS the broker
 const HomeRedirect = () => {
-  const { user, profile } = useAuth();
+  const { user, profile, loading } = useAuth();
+  if (loading) return null;
   if (!user) return <Navigate to="/entrar" replace />;
   const identifier = profile?.slug || profile?.id;
   if (identifier) return <Navigate to={`/empresa/${identifier}`} replace />;
   return <Navigate to="/painel" replace />;
+};
+
+const RequireAuth = ({ children }: { children: React.ReactNode }) => {
+  const { user, loading } = useAuth();
+  if (loading) return null;
+  if (!user) return <Navigate to="/entrar" replace />;
+  return <>{children}</>;
 };
 
 const AppLayout = () => {
