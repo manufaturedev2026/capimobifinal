@@ -943,9 +943,9 @@ export default function SellerDashboard() {
               </div>
             )}
 
-            {/* Events/Gamification Tab */}
+            {/* Effects Tab */}
             {activeTab === "events" && user?.id && profile?.id && (
-              <GamificationTab userId={user.id} sellerId={profile.id} />
+              <StoreEffectsPicker userId={user.id} sellerId={profile.id} />
             )}
 
 
