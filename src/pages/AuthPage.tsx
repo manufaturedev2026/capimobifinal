@@ -225,12 +225,22 @@ export default function AuthPage() {
             </button>
           </form>
 
-          <p className="text-center text-sm text-muted-foreground mt-8">
-            {isLogin ? "Não tem conta?" : "Já tem conta?"}{" "}
-            <button onClick={() => setIsLogin(!isLogin)} className="text-primary font-semibold hover:underline">
-              {isLogin ? "Cadastre-se grátis" : "Entrar"}
-            </button>
-          </p>
+          {isLogin && (
+            <p className="text-center text-sm text-muted-foreground mt-8">
+              Não tem conta?{" "}
+              <button onClick={() => setIsLogin(false)} className="text-primary font-semibold hover:underline">
+                Cadastre-se grátis
+              </button>
+            </p>
+          )}
+          {!isLogin && (
+            <p className="text-center text-sm text-muted-foreground mt-8">
+              Já tem conta?{" "}
+              <button onClick={() => setIsLogin(true)} className="text-primary font-semibold hover:underline">
+                Entrar
+              </button>
+            </p>
+          )}
         </motion.div>
       </div>
     </div>
