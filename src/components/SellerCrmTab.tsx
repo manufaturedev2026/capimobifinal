@@ -256,11 +256,14 @@ export default function SellerCrmTab({ userId, sellerId }: SellerCrmTabProps) {
     toast({ title: "Contato removido" });
   };
 
-  const getWhatsAppUrl = (phone: string, name: string) => {
-    const msg = `Olá ${name}! 👋`;
+  const buildWhatsAppUrl = (phone: string, message: string) => {
     const cleanPhone = phone.replace(/\D/g, "");
     const phoneWithCountry = cleanPhone.startsWith("55") ? cleanPhone : `55${cleanPhone}`;
-    return `https://wa.me/${phoneWithCountry}?text=${encodeURIComponent(msg)}`;
+    return `https://wa.me/${phoneWithCountry}?text=${encodeURIComponent(message)}`;
+  };
+
+  const getWhatsAppUrl = (phone: string, name: string) => {
+    return buildWhatsAppUrl(phone, `Olá ${name}! 👋`);
   };
 
   const filtered = contacts.filter((c) => {
