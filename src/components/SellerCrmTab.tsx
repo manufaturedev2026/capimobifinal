@@ -63,6 +63,33 @@ const LEAD_SOURCES = [
   { value: "outro", label: "Outro" },
 ];
 
+const WHATSAPP_TEMPLATES: Record<string, { label: string; emoji: string; msg: (name: string, item?: string) => string }[]> = {
+  novo: [
+    { label: "Saudação", emoji: "👋", msg: (name) => `Olá ${name}! Tudo bem? 😊\nVi que você demonstrou interesse em nossos imóveis. Como posso te ajudar?` },
+    { label: "Apresentação", emoji: "🏠", msg: (name) => `Olá ${name}! Sou corretor(a) de imóveis e tenho ótimas opções pra você. Posso te enviar algumas sugestões?` },
+  ],
+  contato: [
+    { label: "Follow-up", emoji: "📲", msg: (name) => `Oi ${name}! 😊 Passando pra saber se você teve alguma dúvida sobre os imóveis que conversamos. Estou à disposição!` },
+    { label: "Enviar opções", emoji: "📋", msg: (name) => `${name}, separei algumas opções incríveis que combinam com o que você procura! Posso enviar os detalhes?` },
+  ],
+  visita: [
+    { label: "Confirmar visita", emoji: "📅", msg: (name) => `Olá ${name}! Confirmando nossa visita agendada. Está tudo certo pra você? 😊` },
+    { label: "Lembrete", emoji: "⏰", msg: (name) => `Oi ${name}! Só passando pra lembrar da nossa visita ao imóvel. Nos vemos em breve! 🏡` },
+  ],
+  proposta: [
+    { label: "Enviar proposta", emoji: "💰", msg: (name, item) => `${name}, preparei uma proposta especial${item ? ` para o imóvel "${item}"` : ""}! Posso te enviar os detalhes agora?` },
+    { label: "Negociar", emoji: "🤝", msg: (name) => `Oi ${name}! Gostaria de conversar sobre condições especiais. Que tal agendarmos uma conversa rápida?` },
+  ],
+  negociacao: [
+    { label: "Atualização", emoji: "📊", msg: (name) => `${name}, tenho novidades sobre a negociação! Podemos conversar agora? 😊` },
+    { label: "Fechamento", emoji: "🎯", msg: (name) => `Oi ${name}! Estamos quase finalizando. Vamos alinhar os últimos detalhes?` },
+  ],
+  fechado: [
+    { label: "Parabéns", emoji: "🎉", msg: (name) => `Parabéns ${name}! 🥳🏡 Foi um prazer te ajudar nessa conquista! Conte comigo sempre que precisar.` },
+    { label: "Indicação", emoji: "⭐", msg: (name) => `${name}, ficamos felizes com a sua conquista! 🎉 Se conhecer alguém buscando imóvel, ficarei feliz em ajudar!` },
+  ],
+};
+
 interface SellerCrmTabProps {
   userId: string;
   sellerId: string;
