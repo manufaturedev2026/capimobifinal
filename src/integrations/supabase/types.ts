@@ -95,6 +95,39 @@ export type Database = {
         }
         Relationships: []
       }
+      crm_activity_log: {
+        Row: {
+          action_type: string
+          contact_id: string
+          created_at: string
+          description: string
+          id: string
+          new_value: string | null
+          old_value: string | null
+          user_id: string
+        }
+        Insert: {
+          action_type: string
+          contact_id: string
+          created_at?: string
+          description: string
+          id?: string
+          new_value?: string | null
+          old_value?: string | null
+          user_id: string
+        }
+        Update: {
+          action_type?: string
+          contact_id?: string
+          created_at?: string
+          description?: string
+          id?: string
+          new_value?: string | null
+          old_value?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       crm_contacts: {
         Row: {
           created_at: string
@@ -473,12 +506,17 @@ export type Database = {
       }
       seller_crm_contacts: {
         Row: {
+          budget_max: number | null
+          budget_min: number | null
           created_at: string
           email: string | null
+          follow_up_date: string | null
           full_name: string
           funnel_stage: string
           id: string
+          interested_item_id: string | null
           last_contacted_at: string | null
+          lead_source: string | null
           notes: string | null
           phone: string | null
           seller_id: string
@@ -486,12 +524,17 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          budget_max?: number | null
+          budget_min?: number | null
           created_at?: string
           email?: string | null
+          follow_up_date?: string | null
           full_name: string
           funnel_stage?: string
           id?: string
+          interested_item_id?: string | null
           last_contacted_at?: string | null
+          lead_source?: string | null
           notes?: string | null
           phone?: string | null
           seller_id: string
@@ -499,12 +542,17 @@ export type Database = {
           user_id: string
         }
         Update: {
+          budget_max?: number | null
+          budget_min?: number | null
           created_at?: string
           email?: string | null
+          follow_up_date?: string | null
           full_name?: string
           funnel_stage?: string
           id?: string
+          interested_item_id?: string | null
           last_contacted_at?: string | null
+          lead_source?: string | null
           notes?: string | null
           phone?: string | null
           seller_id?: string
