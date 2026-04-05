@@ -697,19 +697,28 @@ export default function SellerCrmTab({ userId, sellerId }: SellerCrmTabProps) {
                                     </div>
                                   </div>
 
-                                  {/* WhatsApp / Call */}
+                                  {/* WhatsApp Templates */}
                                   {contact.phone && (
-                                    <div className="flex gap-1">
-                                      <a href={getWhatsAppUrl(contact.phone, contact.full_name)}
-                                        target="_blank" rel="noopener noreferrer"
-                                        onClick={() => markContacted(contact.id)}
-                                        className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-green-500/10 text-green-600 text-[11px] font-medium hover:bg-green-500/20 transition-colors border border-green-500/20">
-                                        <MessageCircle size={12} /> WhatsApp
-                                      </a>
-                                      <a href={`tel:${contact.phone.replace(/\D/g, "")}`}
-                                        className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-blue-500/10 text-blue-600 text-[11px] font-medium hover:bg-blue-500/20 transition-colors border border-blue-500/20">
-                                        <Phone size={12} /> Ligar
-                                      </a>
+                                    <div>
+                                      <p className="text-[10px] font-bold text-muted-foreground mb-1.5">📲 Enviar WhatsApp:</p>
+                                      <div className="flex flex-wrap gap-1.5">
+                                        {(WHATSAPP_TEMPLATES[contact.funnel_stage] || WHATSAPP_TEMPLATES.novo).map((tpl) => {
+                                          const itemTitle = sellerItems.find(i => i.id === contact.interested_item_id)?.title;
+                                          return (
+                                            <a key={tpl.label}
+                                              href={buildWhatsAppUrl(contact.phone!, tpl.msg(contact.full_name, itemTitle))}
+                                              target="_blank" rel="noopener noreferrer"
+                                              onClick={() => markContacted(contact.id)}
+                                              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-green-500/10 text-green-600 text-[11px] font-medium hover:bg-green-500/20 transition-colors border border-green-500/20">
+                                              <span>{tpl.emoji}</span> {tpl.label}
+                                            </a>
+                                          );
+                                        })}
+                                        <a href={`tel:${contact.phone.replace(/\D/g, "")}`}
+                                          className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-blue-500/10 text-blue-600 text-[11px] font-medium hover:bg-blue-500/20 transition-colors border border-blue-500/20">
+                                          <Phone size={12} /> Ligar
+                                        </a>
+                                      </div>
                                     </div>
                                   )}
 
