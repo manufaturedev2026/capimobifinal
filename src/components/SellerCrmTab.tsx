@@ -63,6 +63,33 @@ const LEAD_SOURCES = [
   { value: "outro", label: "Outro" },
 ];
 
+const WHATSAPP_TEMPLATES: Record<string, { label: string; emoji: string; msg: (name: string, item?: string) => string }[]> = {
+  novo: [
+    { label: "Saudação", emoji: "👋", msg: (name) => `Olá ${name}! Tudo bem? 😊\nVi que você demonstrou interesse em nossos imóveis. Como posso te ajudar?` },
+    { label: "Apresentação", emoji: "🏠", msg: (name) => `Olá ${name}! Sou corretor(a) de imóveis e tenho ótimas opções pra você. Posso te enviar algumas sugestões?` },
+  ],
+  contato: [
+    { label: "Follow-up", emoji: "📲", msg: (name) => `Oi ${name}! 😊 Passando pra saber se você teve alguma dúvida sobre os imóveis que conversamos. Estou à disposição!` },
+    { label: "Enviar opções", emoji: "📋", msg: (name) => `${name}, separei algumas opções incríveis que combinam com o que você procura! Posso enviar os detalhes?` },
+  ],
+  visita: [
+    { label: "Confirmar visita", emoji: "📅", msg: (name) => `Olá ${name}! Confirmando nossa visita agendada. Está tudo certo pra você? 😊` },
+    { label: "Lembrete", emoji: "⏰", msg: (name) => `Oi ${name}! Só passando pra lembrar da nossa visita ao imóvel. Nos vemos em breve! 🏡` },
+  ],
+  proposta: [
+    { label: "Enviar proposta", emoji: "💰", msg: (name, item) => `${name}, preparei uma proposta especial${item ? ` para o imóvel "${item}"` : ""}! Posso te enviar os detalhes agora?` },
+    { label: "Negociar", emoji: "🤝", msg: (name) => `Oi ${name}! Gostaria de conversar sobre condições especiais. Que tal agendarmos uma conversa rápida?` },
+  ],
+  negociacao: [
+    { label: "Atualização", emoji: "📊", msg: (name) => `${name}, tenho novidades sobre a negociação! Podemos conversar agora? 😊` },
+    { label: "Fechamento", emoji: "🎯", msg: (name) => `Oi ${name}! Estamos quase finalizando. Vamos alinhar os últimos detalhes?` },
+  ],
+  fechado: [
+    { label: "Parabéns", emoji: "🎉", msg: (name) => `Parabéns ${name}! 🥳🏡 Foi um prazer te ajudar nessa conquista! Conte comigo sempre que precisar.` },
+    { label: "Indicação", emoji: "⭐", msg: (name) => `${name}, ficamos felizes com a sua conquista! 🎉 Se conhecer alguém buscando imóvel, ficarei feliz em ajudar!` },
+  ],
+};
+
 interface SellerCrmTabProps {
   userId: string;
   sellerId: string;
@@ -229,11 +256,14 @@ export default function SellerCrmTab({ userId, sellerId }: SellerCrmTabProps) {
     toast({ title: "Contato removido" });
   };
 
-  const getWhatsAppUrl = (phone: string, name: string) => {
-    const msg = `Olá ${name}! 👋`;
+  const buildWhatsAppUrl = (phone: string, message: string) => {
     const cleanPhone = phone.replace(/\D/g, "");
     const phoneWithCountry = cleanPhone.startsWith("55") ? cleanPhone : `55${cleanPhone}`;
-    return `https://wa.me/${phoneWithCountry}?text=${encodeURIComponent(msg)}`;
+    return `https://wa.me/${phoneWithCountry}?text=${encodeURIComponent(message)}`;
+  };
+
+  const getWhatsAppUrl = (phone: string, name: string) => {
+    return buildWhatsAppUrl(phone, `Olá ${name}! 👋`);
   };
 
   const filtered = contacts.filter((c) => {
@@ -667,19 +697,28 @@ export default function SellerCrmTab({ userId, sellerId }: SellerCrmTabProps) {
                                     </div>
                                   </div>
 
-                                  {/* WhatsApp / Call */}
+                                  {/* WhatsApp Templates */}
                                   {contact.phone && (
-                                    <div className="flex gap-1">
-                                      <a href={getWhatsAppUrl(contact.phone, contact.full_name)}
-                                        target="_blank" rel="noopener noreferrer"
-                                        onClick={() => markContacted(contact.id)}
-                                        className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-green-500/10 text-green-600 text-[11px] font-medium hover:bg-green-500/20 transition-colors border border-green-500/20">
-                                        <MessageCircle size={12} /> WhatsApp
-                                      </a>
-                                      <a href={`tel:${contact.phone.replace(/\D/g, "")}`}
-                                        className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-blue-500/10 text-blue-600 text-[11px] font-medium hover:bg-blue-500/20 transition-colors border border-blue-500/20">
-                                        <Phone size={12} /> Ligar
-                                      </a>
+                                    <div>
+                                      <p className="text-[10px] font-bold text-muted-foreground mb-1.5">📲 Enviar WhatsApp:</p>
+                                      <div className="flex flex-wrap gap-1.5">
+                                        {(WHATSAPP_TEMPLATES[contact.funnel_stage] || WHATSAPP_TEMPLATES.novo).map((tpl) => {
+                                          const itemTitle = sellerItems.find(i => i.id === contact.interested_item_id)?.title;
+                                          return (
+                                            <a key={tpl.label}
+                                              href={buildWhatsAppUrl(contact.phone!, tpl.msg(contact.full_name, itemTitle))}
+                                              target="_blank" rel="noopener noreferrer"
+                                              onClick={() => markContacted(contact.id)}
+                                              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-green-500/10 text-green-600 text-[11px] font-medium hover:bg-green-500/20 transition-colors border border-green-500/20">
+                                              <span>{tpl.emoji}</span> {tpl.label}
+                                            </a>
+                                          );
+                                        })}
+                                        <a href={`tel:${contact.phone.replace(/\D/g, "")}`}
+                                          className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-blue-500/10 text-blue-600 text-[11px] font-medium hover:bg-blue-500/20 transition-colors border border-blue-500/20">
+                                          <Phone size={12} /> Ligar
+                                        </a>
+                                      </div>
                                     </div>
                                   )}
 
