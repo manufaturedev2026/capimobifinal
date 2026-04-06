@@ -393,7 +393,7 @@ export default function StoreLayoutMarketplace({
             <motion.div
               key={banner.slug}
               whileHover={{ y: -4, transition: { duration: 0.25 } }}
-              className="relative h-44 md:h-52 rounded-2xl overflow-hidden group cursor-pointer"
+              className="relative h-36 md:h-52 rounded-2xl overflow-hidden group cursor-pointer"
               onClick={() => { setActiveCategory(banner.slug); scrollToGrid(); }}
               style={{ boxShadow: `0 8px 32px ${storeTheme.primary}18` }}
             >
