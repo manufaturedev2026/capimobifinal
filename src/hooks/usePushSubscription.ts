@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { detectIOS, isIOSStandaloneApp } from "@/lib/pwaInstall";
 
 const SUBSCRIPTION_TIMEOUT_MS = 15000;
 const PUSH_SW_URL = "/push-sw.js";
@@ -10,10 +11,33 @@ export function usePushSubscription(sellerId?: string) {
   const [isSupported, setIsSupported] = useState(false);
   const [permission, setPermission] = useState<NotificationPermission>("default");
   const [loading, setLoading] = useState(false);
+  const [unsupportedReason, setUnsupportedReason] = useState<string | null>(null);
 
   useEffect(() => {
+    const isPreviewHost = window.location.hostname.includes("id-preview--") || window.location.hostname.includes("lovableproject.com");
+    const isEmbeddedPreview = (() => {
+      try {
+        return window.self !== window.top;
+      } catch {
+        return true;
+      }
+    })();
+
+    if (isPreviewHost || isEmbeddedPreview) {
+      setIsSupported(false);
+      setUnsupportedReason("No preview do editor o push não ativa de forma confiável. Teste na versão publicada do app.");
+      return;
+    }
+
+    if (detectIOS() && !isIOSStandaloneApp()) {
+      setIsSupported(false);
+      setUnsupportedReason("No iPhone o push só funciona com o app instalado na Tela Inicial.");
+      return;
+    }
+
     const supported = "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;
     setIsSupported(supported);
+    setUnsupportedReason(supported ? null : "Seu navegador não suporta notificações push.");
 
     if (!supported) return;
 
@@ -32,7 +56,7 @@ export function usePushSubscription(sellerId?: string) {
   const subscribe = useCallback(async () => {
     if (!isSupported || !sellerId) {
       console.warn("[Push] Not supported or no sellerId");
-      toast({ title: "Push não suportado", description: "Seu navegador não suporta notificações push.", variant: "destructive" });
+      toast({ title: "Push indisponível", description: unsupportedReason || "Seu navegador não suporta notificações push.", variant: "destructive" });
       return false;
     }
 
@@ -165,9 +189,9 @@ export function usePushSubscription(sellerId?: string) {
     } finally {
       setLoading(false);
     }
-  }, [isSupported, sellerId]);
+  }, [isSupported, sellerId, unsupportedReason]);
 
-  return { isSubscribed, isSupported, permission, subscribe, loading };
+  return { isSubscribed, isSupported, permission, subscribe, loading, unsupportedReason };
 }
 
 function urlBase64ToUint8Array(base64String: string) {

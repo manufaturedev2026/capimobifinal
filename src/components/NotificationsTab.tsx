@@ -119,7 +119,7 @@ export default function NotificationsTab({ userId, sellerId }: NotificationsTabP
         </h3>
         {!pushSub.isSupported ? (
           <p className="text-xs text-muted-foreground">
-            ⚠️ Este navegador não suporta Push Notifications. Teste no Chrome, Edge, Firefox ou Safari 16.4+.
+            ⚠️ {pushSub.unsupportedReason || "Este navegador não suporta Push Notifications. Teste no Chrome, Edge, Firefox ou Safari 16.4+."}
           </p>
         ) : pushSub.isSubscribed ? (
           <p className="text-xs text-green-500 font-medium flex items-center gap-1">
