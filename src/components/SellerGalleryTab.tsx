@@ -579,7 +579,33 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
             </div>
           </div>
 
-          {/* Broker photo toggle */}
+          {/* Font selector */}
+          <div className="space-y-1.5">
+            <p className="text-[11px] font-semibold text-muted-foreground flex items-center gap-1">
+              ✏️ Fonte:
+            </p>
+            <div className="flex gap-2 flex-wrap">
+              {(Object.keys(FONT_CONFIG) as FontStyle[]).map((key) => {
+                const cfg = FONT_CONFIG[key];
+                const isActive = selectedFont === key;
+                return (
+                  <button
+                    key={key}
+                    onClick={() => setSelectedFont(key)}
+                    className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border-2 transition-all ${
+                      isActive
+                        ? "border-primary bg-primary/10"
+                        : "border-border hover:border-primary/40"
+                    }`}
+                  >
+                    <span className="text-sm font-bold" style={{ fontFamily: cfg.family }}>{cfg.preview}</span>
+                    <span className="text-[11px] font-bold text-foreground">{cfg.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           <label className="flex items-center gap-2 cursor-pointer">
             <input
               type="checkbox"
