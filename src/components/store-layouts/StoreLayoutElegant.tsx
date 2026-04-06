@@ -154,11 +154,11 @@ export default function StoreLayoutElegant({
             >
               <select
                 value={filterCity} onChange={(e) => setFilterCity(e.target.value)}
-                className="rounded-lg px-3 py-2 text-xs bg-transparent outline-none"
-                style={{ color: storeTheme.text, border: `1px solid ${storeTheme.border}` }}
+                className="rounded-lg px-3 py-2 text-xs outline-none"
+                style={{ color: storeTheme.text, background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}
               >
-                <option value="">Todas as cidades</option>
-                {availableCities.map(c => <option key={c} value={c}>{c}</option>)}
+                <option value="" style={{ background: storeTheme.card, color: storeTheme.text }}>Todas as cidades</option>
+                {availableCities.map(c => <option key={c} value={c} style={{ background: storeTheme.card, color: storeTheme.text }}>{c}</option>)}
               </select>
               <input
                 type="number" placeholder="Preço mín." value={minPrice}
