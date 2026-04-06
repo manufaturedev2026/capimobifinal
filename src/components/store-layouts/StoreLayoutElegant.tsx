@@ -14,7 +14,7 @@ import type { StoreLayoutProps } from "./types";
 export default function StoreLayoutElegant({
   filteredProducts, products, subcategories, activeCategory, setActiveCategory,
   categoryCounts, categoryCardImages, storeTheme, corretorSlug, getTagStyle, getTagLabel,
-  formatPrice, dbProfile,
+  formatPrice, dbProfile, storiesBar,
 }: StoreLayoutProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [minPrice, setMinPrice] = useState("");

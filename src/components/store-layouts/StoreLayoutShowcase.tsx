@@ -32,7 +32,7 @@ function StatPill({ icon: Icon, value }: { icon: any; value: string | number }) 
 
 export default function StoreLayoutShowcase({
   filteredProducts, subcategories, activeCategory, setActiveCategory,
-  categoryCounts, storeTheme, corretorSlug, handleWhatsApp, getTagStyle, getTagLabel,
+  categoryCounts, storeTheme, corretorSlug, handleWhatsApp, getTagStyle, getTagLabel, storiesBar,
 }: StoreLayoutProps) {
   const [heroIndex, setHeroIndex] = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);

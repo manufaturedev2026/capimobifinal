@@ -228,7 +228,7 @@ function MediumCard({ product, corretorSlug, storeTheme, getTagStyle, getTagLabe
 export default function StoreLayoutMagazine({
   filteredProducts, products, subcategories, activeCategory, setActiveCategory,
   categoryCounts, categoryCardImages, storeTheme, corretorSlug,
-  handleWhatsApp, getTagStyle, getTagLabel, formatPrice, dbProfile,
+  handleWhatsApp, getTagStyle, getTagLabel, formatPrice, dbProfile, storiesBar,
 }: StoreLayoutProps) {
 
   const cardProps = { corretorSlug, storeTheme, getTagStyle, getTagLabel };

@@ -8,7 +8,7 @@ import type { StoreLayoutProps } from "./types";
  */
 export default function StoreLayoutGallery({
   filteredProducts, subcategories, activeCategory, setActiveCategory,
-  categoryCounts, storeTheme, corretorSlug, getTagStyle, getTagLabel,
+  categoryCounts, storeTheme, corretorSlug, getTagStyle, getTagLabel, storiesBar,
 }: StoreLayoutProps) {
   // Alternate tall/short cards for masonry effect
   const getAspect = (i: number) => {

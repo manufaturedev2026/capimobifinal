@@ -42,7 +42,7 @@ const CATEGORY_ICONS: Record<string, React.ElementType> = {
 export default function StoreLayoutMinimal({
   filteredProducts, products, subcategories, activeCategory, setActiveCategory,
   categoryCounts, storeTheme, corretorSlug, dbProfile, getTagStyle, getTagLabel, handleWhatsApp,
-  filterCity, setFilterCity, availableCities,
+  filterCity, setFilterCity, availableCities, storiesBar,
 }: StoreLayoutProps) {
   const { user } = useAuth();
   const isOwner = !!(user && dbProfile && user.id === dbProfile.user_id);
