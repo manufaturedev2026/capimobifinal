@@ -1766,7 +1766,7 @@ export default function CompanyProfile() {
           {/* ── Bloco 1: Card do Corretor ── */}
           <div className="rounded-2xl overflow-hidden" style={{ border: `1px solid ${storeTheme.border}` }}>
             {/* Header com cor primária */}
-            <div className="relative px-5 pt-4 pb-12" style={{ background: `linear-gradient(135deg, ${storeTheme.primary}, ${storeTheme.primary}dd)` }}>
+            <div className="relative px-5 pt-4 pb-12" style={{ background: dbProfile?.cover_color || `linear-gradient(135deg, ${storeTheme.primary}, ${storeTheme.primary}dd)` }}>
               <div className="flex items-center gap-2">
                 <BadgeCheck size={16} className="text-white/90" />
                 <span className="text-white/90 text-xs font-semibold uppercase tracking-wider">Profissional verificado</span>
