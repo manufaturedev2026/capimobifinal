@@ -341,9 +341,9 @@ export default function AdminPanel() {
   const sidebarItems = [
     { key: "sellers" as const, label: "Vendedores", icon: Users },
     { key: "billing" as const, label: "Faturamento", icon: DollarSign },
-    
     { key: "crm" as const, label: "CRM WhatsApp", icon: MessageCircle },
     { key: "seo" as const, label: "SEO / Sitemaps", icon: Globe },
+    { key: "vendas" as const, label: "Página de Vendas", icon: Rocket },
   ];
 
   return (
