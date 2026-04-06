@@ -339,7 +339,7 @@ export default function StoreLayoutMarketplace({
                   whileHover={{ y: -4, transition: { duration: 0.2 } }}
                   whileTap={{ scale: 0.97 }}
                   onClick={() => { setActiveCategory(isActive ? "todos" : action.slug); scrollToGrid(); }}
-                  className="flex-shrink-0 flex flex-col items-center gap-2.5 p-4 rounded-2xl transition-all min-w-[100px] relative overflow-hidden"
+                  className="flex-shrink-0 flex flex-col items-center gap-1.5 md:gap-2.5 p-3 md:p-4 rounded-2xl transition-all min-w-[85px] md:min-w-[100px] relative overflow-hidden"
                   style={{
                     background: isActive ? `${storeTheme.primary}18` : `${storeTheme.card}`,
                     border: `1.5px solid ${isActive ? storeTheme.primary : storeTheme.border}`,
