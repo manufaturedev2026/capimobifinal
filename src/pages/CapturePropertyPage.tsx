@@ -47,7 +47,7 @@ export default function CapturePropertyPage() {
     if (!slug) return;
     supabase
       .from("profiles")
-      .select("id, user_id, full_name, company_name, logo_url, phone, slug, seller_category")
+      .select("id, user_id, full_name, company_name, logo_url, phone, slug, seller_category, creci, instagram, bio, city, state, email")
       .or(`slug.eq.${slug},id.eq.${slug}`)
       .limit(1)
       .single()
