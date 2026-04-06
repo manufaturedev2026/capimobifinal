@@ -290,10 +290,10 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
       <div className="space-y-5">
         <div>
           <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
-            <Sparkles size={20} className="text-primary" /> Criar Galeria / Showroom
+            <Sparkles size={20} className="text-primary" /> Galeria de Anúncios
           </h2>
           <p className="text-sm text-muted-foreground mt-1">
-            Selecione um imóvel para gerar uma galeria de fotos pronta para anunciar no Facebook Ads, Google Ads ou WhatsApp.
+            Crie imagens profissionais prontas para anunciar seus imóveis. Selecione um imóvel, escolha a foto e o formato ideal para Facebook Ads, Google Ads, Instagram ou WhatsApp — tudo com seus dados de corretor já incluídos.
           </p>
         </div>
 
