@@ -291,12 +291,12 @@ export default function ProductDetail() {
       || (navigator as any).standalone === true;
 
     const openUrl = (url: string) => {
+      // WhatsApp after async/modal submit can be blocked as popup, so always navigate directly
       if (isStandalone) {
-        // iOS PWA blocks window.open and target=_blank after async — use location.href
         window.location.href = url;
-      } else {
-        window.open(url, "_blank");
+        return;
       }
+      window.location.assign(url);
     };
 
     if (teamMember && teamMember.phone) {
