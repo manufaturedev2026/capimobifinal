@@ -51,7 +51,7 @@ export default function NotificationsTab({ userId, sellerId }: NotificationsTabP
       .order("created_at", { ascending: false })
       .limit(20);
 
-    setLogs((logData as NotificationLog[]) || []);
+    setLogs((logData as unknown as NotificationLog[]) || []);
     setLoading(false);
   };
 
