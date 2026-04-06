@@ -98,6 +98,7 @@ export default function CompanyProfile() {
   const { sellerStories } = useStories();
   const [storyViewerOpen, setStoryViewerOpen] = useState(false);
   const [leadCaptureOpen, setLeadCaptureOpen] = useState(false);
+  const [storyUploadOpen, setStoryUploadOpen] = useState(false);
   const [pendingWhatsAppAction, setPendingWhatsAppAction] = useState<(() => void) | null>(null);
 
   const searchParams = new URLSearchParams(location.search);
