@@ -281,11 +281,14 @@ export default function CompanyProfile() {
     tags: item.tags || [],
     category: item.category,
     city: item.city,
+    neighborhood: item.neighborhood,
     description: item.description,
     specs: {} as Record<string, string>,
     type: "imovel" as const,
     status: item.status,
     sold_at: item.sold_at,
+    finality: item.finality,
+    isAluguel: item.category === "aluguel" || item.finality === "aluguel",
   }));
 
   const products = isDbProfile ? dbDisplayItems : [];
