@@ -325,7 +325,7 @@ export default function StoreLayoutMarketplace({
               O que você procura?
             </h2>
           </div>
-          <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2 md:grid md:grid-cols-6 md:overflow-visible">
+          <div className="flex gap-2.5 md:gap-3 overflow-x-auto scrollbar-hide pb-2 md:grid md:grid-cols-6 md:overflow-visible">
             {QUICK_ACTIONS.map((action, idx) => {
               const Icon = action.icon;
               const isActive = activeCategory === action.slug;
