@@ -162,7 +162,7 @@ export default function CapturePropertyPage() {
         <Helmet>
           <title>Imóvel cadastrado! | {broker.company_name || broker.full_name}</title>
         </Helmet>
-        {isLuxury && <LuxuryGoldDust />}
+        <ThemeParticles color={colors.primary} />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-[120px]" style={{ background: `${colors.primary}18` }} />
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
