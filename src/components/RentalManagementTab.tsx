@@ -218,7 +218,7 @@ export default function RentalManagementTab({ userId, sellerId }: Props) {
     fetchAll();
   };
 
-
+  const sendWhatsAppReminder = (contract: RentalContract, type: string) => {
     if (!contract.tenant_phone) {
       toast({ title: "Sem telefone", description: "O inquilino não tem telefone cadastrado." });
       return;
