@@ -444,7 +444,7 @@ export default function StoreLayoutMarketplace({
                     className="flex flex-col items-center gap-2 group"
                   >
                     <div
-                      className="w-16 h-16 rounded-full flex items-center justify-center transition-all relative"
+                      className="w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center transition-all relative"
                       style={{
                         background: isActive ? `${storeTheme.primary}20` : storeTheme.card,
                         border: `2.5px solid ${isActive ? storeTheme.primary : storeTheme.border}`,
