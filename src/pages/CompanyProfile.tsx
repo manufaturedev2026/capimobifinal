@@ -1092,7 +1092,7 @@ export default function CompanyProfile() {
       <div className={`max-w-[1800px] mx-auto px-4 md:px-8 ${isMinimal ? "py-0" : "py-6"}`}>
         <div className="flex gap-8">
           {/* ═══════════ DESKTOP SIDEBAR ═══════════ */}
-          <aside className="hidden lg:block w-[280px] flex-shrink-0">
+          <aside className={`hidden lg:block w-[280px] flex-shrink-0 ${isMarketplace ? "!hidden" : ""}`}>
             <div className={`sticky ${isMinimal ? "top-4" : "top-20"} space-y-4`}>
               {/* Company Card */}
               <div className="rounded-2xl overflow-hidden" style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}>
