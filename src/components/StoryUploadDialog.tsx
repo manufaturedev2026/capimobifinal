@@ -57,9 +57,7 @@ export default function StoryUploadDialog({ open, onOpenChange, sellerId, onUplo
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
   const [showMemberPicker, setShowMemberPicker] = useState(false);
 
-  const isEmpresa = ["essencial_empresa", "premium_empresa", "prime_empresa"].includes(currentTier);
-
-  const canPost = currentCount < limit;
+  const isEmpresa = false; // no tier-based restrictions anymore
 
   // Load seller items + team members
   useEffect(() => {

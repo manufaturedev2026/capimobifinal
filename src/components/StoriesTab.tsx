@@ -29,9 +29,7 @@ interface StoryRow {
 
 export default function StoriesTab({ userId, sellerId }: StoriesTabProps) {
   const { toast } = useToast();
-  const { currentTier } = useSubscription(userId);
   const storyCount = useMyStoryCount(userId);
-  const limit = getStoryLimit(currentTier);
   const [stories, setStories] = useState<StoryRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploadOpen, setUploadOpen] = useState(false);
