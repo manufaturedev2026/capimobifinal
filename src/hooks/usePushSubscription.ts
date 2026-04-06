@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
 const SUBSCRIPTION_TIMEOUT_MS = 15000;
 
@@ -30,6 +31,7 @@ export function usePushSubscription(sellerId?: string) {
   const subscribe = useCallback(async () => {
     if (!isSupported || !sellerId) {
       console.warn("[Push] Not supported or no sellerId");
+      toast({ title: "Push não suportado", description: "Seu navegador não suporta notificações push.", variant: "destructive" });
       return false;
     }
 
@@ -43,6 +45,7 @@ export function usePushSubscription(sellerId?: string) {
 
       if (perm !== "granted") {
         console.warn("[Push] Permission denied:", perm);
+        toast({ title: "Permissão negada", description: "Você precisa permitir notificações no navegador.", variant: "destructive" });
         return false;
       }
       console.log("[Push] Permission granted");
@@ -53,6 +56,7 @@ export function usePushSubscription(sellerId?: string) {
 
       if (vapidError || !vapidData?.publicKey) {
         console.error("[Push] Failed to get VAPID key:", vapidError);
+        toast({ title: "Erro ao configurar push", description: "Não foi possível obter a chave do servidor.", variant: "destructive" });
         return false;
       }
       console.log("[Push] VAPID key received");
@@ -102,31 +106,32 @@ export function usePushSubscription(sellerId?: string) {
       const subJson = subscription.toJSON();
       console.log("[Push] Saving to DB, seller_id:", sellerId);
       
-      // Delete existing subscription for this endpoint first, then insert fresh
-      await supabase.from("push_subscriptions" as any)
-        .delete()
-        .eq("endpoint", subJson.endpoint);
-      
-      const { error: saveError } = await supabase.from("push_subscriptions" as any).insert(
+      // Upsert: update if endpoint exists, insert if new
+      const { error: saveError } = await supabase.from("push_subscriptions" as any).upsert(
         {
           seller_id: sellerId,
           endpoint: subJson.endpoint,
           p256dh: subJson.keys?.p256dh || "",
           auth: subJson.keys?.auth || "",
           user_agent: navigator.userAgent,
-        }
+        },
+        { onConflict: "endpoint" }
       );
 
       if (saveError) {
         console.error("[Push] Failed to save subscription:", saveError.message, saveError.code);
+        toast({ title: "Erro ao salvar inscrição", description: saveError.message, variant: "destructive" });
         return false;
       }
 
       console.log("[Push] Subscription saved successfully!");
       setIsSubscribed(true);
+      toast({ title: "Notificações ativadas! 🔔", description: "Você receberá notificações deste corretor." });
       return true;
     } catch (err) {
-      console.error("[Push] Subscription failed:", err);
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error("[Push] Subscription failed:", msg);
+      toast({ title: "Erro ao ativar push", description: msg, variant: "destructive" });
       return false;
     } finally {
       setLoading(false);
