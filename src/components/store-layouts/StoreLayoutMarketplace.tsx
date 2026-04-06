@@ -5,7 +5,7 @@ import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion"
 import {
   MapPin, Image, Search, Bed, Bath, Ruler, Home, Building2,
   Store, Trees, Key, Landmark, Phone, ShieldCheck, Globe, Megaphone,
-  ArrowRight, X, Sparkles, Crown, Star,
+  ArrowRight, X, Sparkles, Crown, Star, LayoutDashboard,
 } from "lucide-react";
 import type { StoreLayoutProps } from "./types";
 
