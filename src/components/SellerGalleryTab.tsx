@@ -428,7 +428,7 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
       {/* Hero Banner — preview da foto selecionada com estilo */}
       {photos.length > 0 && (() => {
         const stylePreview = STYLE_CONFIG[selectedStyle];
-        const titleStyle = { color: stylePreview.titleColor, fontFamily: selectedStyle === "gold" ? "Georgia, serif" : selectedStyle === "moderno" ? "'Trebuchet MS', sans-serif" : "inherit" };
+        const titleStyle = { color: stylePreview.titleColor, fontFamily: stylePreview.fontFamily };
         return (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
