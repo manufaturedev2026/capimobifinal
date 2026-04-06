@@ -136,20 +136,21 @@ export default function RentalManagementTab({ userId, sellerId }: Props) {
       }
     }
 
-    // Check current month's due day
+    // Check current month's due day (compare by calendar day, not timestamp)
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const dueDate = new Date(now.getFullYear(), now.getMonth(), contract.due_day);
-    const diff = (dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24);
+    const diffDays = Math.round((dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
     
-    if (diff < -1) {
-      const overdueDays = Math.abs(Math.floor(diff));
-      // Check if payment exists and is marked atrasado, or if no payment exists at all
+    if (diffDays < 0) {
+      const overdueDays = Math.abs(diffDays);
       if (!monthPayment || monthPayment.status === "atrasado" || monthPayment.status === "pendente") {
         return { type: "atrasado" as const, label: `Atrasado ${overdueDays} dia${overdueDays !== 1 ? 's' : ''}`, color: "text-red-500" };
       }
     }
-    if (diff <= 0 && diff >= -1) return { type: "no_vencimento" as const, label: "Vence hoje!", color: "text-orange-500" };
-    if (diff <= 3 && diff > 0) return { type: "antes_vencimento" as const, label: `Vence em ${Math.ceil(diff)} dia${Math.ceil(diff) !== 1 ? 's' : ''}`, color: "text-amber-500" };
-    if (diff <= 7 && diff > 3) return { type: "antes_vencimento" as const, label: `Vence em ${Math.ceil(diff)} dias`, color: "text-blue-500" };
+    if (diffDays === 0) return { type: "no_vencimento" as const, label: "⚠️ Vence HOJE!", color: "text-orange-500" };
+    if (diffDays === 1) return { type: "antes_vencimento" as const, label: "Vence amanhã!", color: "text-amber-500" };
+    if (diffDays <= 3) return { type: "antes_vencimento" as const, label: `Vence em ${diffDays} dias`, color: "text-amber-500" };
+    if (diffDays <= 7) return { type: "antes_vencimento" as const, label: `Vence em ${diffDays} dias`, color: "text-blue-500" };
     return null;
   };
 
