@@ -363,7 +363,7 @@ export default function StoreLayoutMarketplace({
                       boxShadow: isActive ? `0 0 16px ${storeTheme.primary}20` : "none",
                     }}
                   >
-                    <Icon size={22} />
+                    <Icon size={20} />
                   </div>
                   <span className="text-xs font-bold" style={{ color: isActive ? storeTheme.primary : storeTheme.text }}>
                     {action.name}
