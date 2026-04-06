@@ -134,7 +134,6 @@ async function generateMarketingImage(
 ): Promise<string> {
   const { width, height } = FORMAT_CONFIG[format];
   const s = STYLE_CONFIG[style];
-  const { width, height } = FORMAT_CONFIG[format];
   const canvas = document.createElement("canvas");
   canvas.width = width;
   canvas.height = height;
