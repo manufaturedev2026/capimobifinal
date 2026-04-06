@@ -518,13 +518,13 @@ export default function CompanyProfile() {
         <Helmet>
           <title>{company.name} — Imóveis em {dbProfile?.city || "Brasil"} | Brokers App</title>
           <meta name="description" content={`${company.name} — ${dbProfile?.bio ? dbProfile.bio.slice(0, 140) : `Encontre os melhores imóveis com ${company.name} em ${dbProfile?.city || "Brasil"}`}.`} />
-          <link rel="canonical" href={`https://redeimoveisgb.lovable.app/empresa/${dbProfile?.slug || id}`} />
+          <link rel="canonical" href={`https://brokergb.lovable.app/empresa/${dbProfile?.slug || id}`} />
 
           {/* Open Graph */}
           <meta property="og:type" content="website" />
           <meta property="og:title" content={`${company.name} — Imóveis em ${dbProfile?.city || "Brasil"}`} />
           <meta property="og:description" content={dbProfile?.bio ? dbProfile.bio.slice(0, 200) : `Veja os ${products.length} anúncios de ${company.name}`} />
-          <meta property="og:url" content={`https://redeimoveisgb.lovable.app/empresa/${dbProfile?.slug || id}`} />
+          <meta property="og:url" content={`https://brokergb.lovable.app/empresa/${dbProfile?.slug || id}`} />
           {company.logo && <meta property="og:image" content={company.logo} />}
           <meta property="og:site_name" content="Brokers App" />
 
@@ -540,7 +540,7 @@ export default function CompanyProfile() {
               "@context": "https://schema.org",
               "@type": "RealEstateAgent",
               "name": company.name,
-              "url": `https://redeimoveisgb.lovable.app/empresa/${dbProfile?.slug || id}`,
+              "url": `https://brokergb.lovable.app/empresa/${dbProfile?.slug || id}`,
               "logo": company.logo || undefined,
               "image": company.logo || undefined,
               "description": dbProfile?.bio || `Imóveis em ${dbProfile?.city || "Brasil"}`,
