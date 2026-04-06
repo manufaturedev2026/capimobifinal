@@ -174,63 +174,94 @@ export default function CapturePropertyPage() {
         }} />
       </div>
 
-      <div className="relative max-w-lg mx-auto px-4 py-10 md:py-20">
-        {/* Broker Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-10"
-        >
-          {broker.logo_url && (
+      {/* Hero Banner */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="relative w-full py-16 md:py-24 mb-0"
+      >
+        <div className="absolute inset-0 bg-gradient-to-b from-[#00AEEF]/15 via-transparent to-transparent" />
+        <div className="relative max-w-2xl mx-auto px-4 flex flex-col md:flex-row items-center gap-6 md:gap-8">
+          {broker.logo_url ? (
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.1, type: "spring" }}
-              className="relative inline-block mb-6"
+              className="relative shrink-0"
             >
-              <div className="absolute inset-0 rounded-2xl bg-[#00AEEF]/30 blur-xl scale-125" />
+              <div className="absolute inset-0 rounded-3xl bg-[#00AEEF]/30 blur-2xl scale-150" />
               <img
                 src={broker.logo_url}
                 alt={broker.full_name}
-                className="relative w-20 h-20 rounded-2xl object-cover ring-2 ring-white/20 shadow-2xl"
+                className="relative w-24 h-24 md:w-28 md:h-28 rounded-3xl object-cover ring-2 ring-white/20 shadow-2xl"
               />
             </motion.div>
+          ) : (
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.1, type: "spring" }}
+              className="relative shrink-0 w-24 h-24 md:w-28 md:h-28 rounded-3xl bg-gradient-to-br from-[#00AEEF] to-[#0060a0] flex items-center justify-center text-white text-3xl font-bold ring-2 ring-white/20 shadow-2xl"
+            >
+              {broker.full_name?.charAt(0)}
+            </motion.div>
           )}
+          <div className="text-center md:text-left">
+            <motion.h2
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="text-2xl md:text-3xl font-bold text-white font-display"
+            >
+              {broker.company_name || broker.full_name}
+            </motion.h2>
+            {broker.seller_category && (
+              <motion.span
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3 }}
+                className="inline-block px-3 py-1 rounded-full bg-[#00AEEF]/10 border border-[#00AEEF]/20 text-[#00AEEF] text-[10px] font-bold uppercase tracking-wider mt-2"
+              >
+                {broker.seller_category === 'corretor' ? 'Corretor(a) de Imóveis' :
+                 broker.seller_category === 'imobiliaria' ? 'Imobiliária' :
+                 broker.seller_category === 'construtora' ? 'Construtora' : broker.seller_category}
+              </motion.span>
+            )}
+            {broker.creci && (
+              <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.35 }} className="text-white/40 text-xs mt-1.5">
+                CRECI: {broker.creci}
+              </motion.p>
+            )}
+            {(broker.city || broker.state) && (
+              <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }} className="text-white/30 text-xs mt-1 flex items-center gap-1 justify-center md:justify-start">
+                <MapPinned size={12} /> {[broker.city, broker.state].filter(Boolean).join(" - ")}
+              </motion.p>
+            )}
+          </div>
+        </div>
+      </motion.div>
 
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-            <span className="inline-block px-4 py-1.5 rounded-full bg-[#00AEEF]/10 border border-[#00AEEF]/20 text-[#00AEEF] text-xs font-bold mb-4 tracking-wider uppercase">
-              ✨ Cadastro gratuito
-            </span>
-          </motion.div>
+      <div className="relative max-w-lg mx-auto px-4 pb-10 md:pb-20">
+        {/* Title */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="text-center mb-10"
+        >
+          <span className="inline-block px-4 py-1.5 rounded-full bg-[#00AEEF]/10 border border-[#00AEEF]/20 text-[#00AEEF] text-xs font-bold mb-4 tracking-wider uppercase">
+            ✨ Cadastro gratuito
+          </span>
 
-          <motion.h1
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="text-3xl md:text-4xl font-bold text-white mb-3 font-display leading-tight"
-          >
+          <h1 className="text-3xl md:text-4xl font-bold text-white mb-3 font-display leading-tight">
             Cadastre seu imóvel
             <br />
             <span className="bg-gradient-to-r from-[#00AEEF] to-[#60d0ff] bg-clip-text text-transparent">gratuitamente</span>
-          </motion.h1>
+          </h1>
 
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
-            className="text-white/50 text-sm md:text-base max-w-sm mx-auto"
-          >
+          <p className="text-white/50 text-sm md:text-base max-w-sm mx-auto">
             Receba propostas de compra ou aluguel mais rápido
-          </motion.p>
-
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-            className="text-white/30 text-xs mt-3"
-          >
-            por <strong className="text-white/60">{broker.company_name || broker.full_name}</strong>
-          </motion.p>
+          </p>
         </motion.div>
 
         {/* Benefits */}
