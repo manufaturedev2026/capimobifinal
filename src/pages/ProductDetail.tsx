@@ -21,6 +21,7 @@ import MapEmbed from "@/components/MapEmbed";
 import WhatsAppLeadCapture from "@/components/WhatsAppLeadCapture";
 import { useIsMobile } from "@/hooks/use-mobile";
 import StoreEffects from "@/components/StoreEffects";
+import LuxuryGoldDust from "@/components/LuxuryGoldDust";
 import { getStoreTheme } from "@/components/StoreThemePicker";
 
 /* ── hex→HSL for CSS vars ── */
