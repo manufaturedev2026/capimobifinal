@@ -142,7 +142,7 @@ export default function StoreLayoutMinimal({
             style={{ color: storeTheme.primary }}
           >
             <MapPin size={12} className="inline mr-1 -mt-0.5" />
-            {cityName}
+            {currentHeroCity}
           </motion.p>
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
