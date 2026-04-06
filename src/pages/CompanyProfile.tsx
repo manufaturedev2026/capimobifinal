@@ -1140,7 +1140,7 @@ export default function CompanyProfile() {
       </section>
 
       {/* ═══════════ STATS BAR ═══════════ */}
-      <section className={`${isElegant ? "block" : "hidden lg:block"} relative z-20 ${isNetflix ? "!hidden" : ""}`} style={{ borderBottom: `1px solid ${storeTheme.border}`, background: storeTheme.card }}>
+      <section className={`${isElegant || isMagazine ? "block" : "hidden lg:block"} relative z-20 ${isNetflix ? "!hidden" : ""}`} style={{ borderBottom: `1px solid ${storeTheme.border}`, background: storeTheme.card }}>
         <div className="max-w-[1800px] mx-auto px-4 md:px-8">
           <div className="flex items-center gap-6 py-3 overflow-x-auto scrollbar-hide">
             <div className="flex items-center gap-2 text-sm flex-shrink-0">
