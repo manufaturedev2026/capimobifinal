@@ -69,6 +69,7 @@ async function generateMarketingImage(
   sellerName: string,
   sellerPhone: string | null,
   sellerCreci: string | null,
+  photoUrl?: string,
 ): Promise<string> {
   const { width, height } = FORMAT_CONFIG[format];
   const canvas = document.createElement("canvas");
