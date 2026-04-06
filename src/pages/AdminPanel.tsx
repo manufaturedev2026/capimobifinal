@@ -417,9 +417,9 @@ export default function AdminPanel() {
             >
               <item.icon size={14} />
               {item.label}
-              {item.badge && item.badge > 0 && (
+              {'badge' in item && (item as any).badge > 0 && (
                 <span className="bg-destructive text-destructive-foreground text-[10px] px-1.5 py-0.5 rounded-full font-bold">
-                  {item.badge}
+                  {(item as any).badge}
                 </span>
               )}
             </button>
