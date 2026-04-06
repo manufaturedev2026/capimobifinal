@@ -966,6 +966,16 @@ export default function SellerDashboard() {
               <ContractsTab userId={user.id} sellerId={profile.id} />
             )}
 
+            {/* Captação Online Tab */}
+            {activeTab === "captacao" && user?.id && profile?.id && (
+              <CaptacaoOnlineTab
+                userId={user.id}
+                sellerId={profile.id}
+                sellerSlug={profile.slug || null}
+                sellerName={profile.company_name || profile.full_name || "Corretor"}
+              />
+            )}
+
             {/* Team Tab */}
             {activeTab === "team" && showTeamTab && profile?.id && (
               <TeamMembersTab
