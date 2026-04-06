@@ -453,7 +453,7 @@ export default function StoreLayoutNetflix({
                   <img
                     src={thumbImg}
                     alt={cat.name}
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover/cat:scale-110"
+                    className="absolute inset-0 w-full h-full object-cover"
                   />
                 ) : (
                   <div
