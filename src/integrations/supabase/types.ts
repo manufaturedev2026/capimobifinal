@@ -469,6 +469,202 @@ export type Database = {
           },
         ]
       }
+      rental_contracts: {
+        Row: {
+          created_at: string
+          daily_interest_percent: number | null
+          due_day: number
+          end_date: string | null
+          id: string
+          item_id: string | null
+          late_fee_percent: number | null
+          notes: string | null
+          owner_name: string | null
+          owner_phone: string | null
+          rent_amount: number
+          seller_id: string
+          start_date: string
+          status: Database["public"]["Enums"]["rental_contract_status"]
+          tenant_cpf_cnpj: string | null
+          tenant_email: string | null
+          tenant_name: string
+          tenant_phone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          daily_interest_percent?: number | null
+          due_day?: number
+          end_date?: string | null
+          id?: string
+          item_id?: string | null
+          late_fee_percent?: number | null
+          notes?: string | null
+          owner_name?: string | null
+          owner_phone?: string | null
+          rent_amount?: number
+          seller_id: string
+          start_date: string
+          status?: Database["public"]["Enums"]["rental_contract_status"]
+          tenant_cpf_cnpj?: string | null
+          tenant_email?: string | null
+          tenant_name: string
+          tenant_phone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          daily_interest_percent?: number | null
+          due_day?: number
+          end_date?: string | null
+          id?: string
+          item_id?: string | null
+          late_fee_percent?: number | null
+          notes?: string | null
+          owner_name?: string | null
+          owner_phone?: string | null
+          rent_amount?: number
+          seller_id?: string
+          start_date?: string
+          status?: Database["public"]["Enums"]["rental_contract_status"]
+          tenant_cpf_cnpj?: string | null
+          tenant_email?: string | null
+          tenant_name?: string
+          tenant_phone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rental_contracts_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "seller_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rental_payments: {
+        Row: {
+          amount_due: number
+          amount_paid: number | null
+          contract_id: string
+          created_at: string
+          due_date: string
+          id: string
+          interest: number | null
+          late_fee: number | null
+          notes: string | null
+          paid_at: string | null
+          payment_method: string | null
+          reference_month: string
+          status: Database["public"]["Enums"]["rental_payment_status"]
+          total_due: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount_due?: number
+          amount_paid?: number | null
+          contract_id: string
+          created_at?: string
+          due_date: string
+          id?: string
+          interest?: number | null
+          late_fee?: number | null
+          notes?: string | null
+          paid_at?: string | null
+          payment_method?: string | null
+          reference_month: string
+          status?: Database["public"]["Enums"]["rental_payment_status"]
+          total_due?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount_due?: number
+          amount_paid?: number | null
+          contract_id?: string
+          created_at?: string
+          due_date?: string
+          id?: string
+          interest?: number | null
+          late_fee?: number | null
+          notes?: string | null
+          paid_at?: string | null
+          payment_method?: string | null
+          reference_month?: string
+          status?: Database["public"]["Enums"]["rental_payment_status"]
+          total_due?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rental_payments_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "rental_contracts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rental_reminders: {
+        Row: {
+          channel: string
+          contract_id: string
+          created_at: string
+          id: string
+          is_sent: boolean
+          message: string | null
+          payment_id: string | null
+          reminder_type: Database["public"]["Enums"]["rental_reminder_type"]
+          sent_at: string | null
+          user_id: string
+        }
+        Insert: {
+          channel?: string
+          contract_id: string
+          created_at?: string
+          id?: string
+          is_sent?: boolean
+          message?: string | null
+          payment_id?: string | null
+          reminder_type: Database["public"]["Enums"]["rental_reminder_type"]
+          sent_at?: string | null
+          user_id: string
+        }
+        Update: {
+          channel?: string
+          contract_id?: string
+          created_at?: string
+          id?: string
+          is_sent?: boolean
+          message?: string | null
+          payment_id?: string | null
+          reminder_type?: Database["public"]["Enums"]["rental_reminder_type"]
+          sent_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rental_reminders_contract_id_fkey"
+            columns: ["contract_id"]
+            isOneToOne: false
+            referencedRelation: "rental_contracts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rental_reminders_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: false
+            referencedRelation: "rental_payments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       seller_analytics: {
         Row: {
           created_at: string
@@ -1197,6 +1393,9 @@ export type Database = {
         | "essencial_empresa"
         | "premium_empresa"
         | "prime_empresa"
+      rental_contract_status: "ativo" | "encerrado" | "cancelado" | "renovacao"
+      rental_payment_status: "pago" | "pendente" | "atrasado" | "parcial"
+      rental_reminder_type: "antes_vencimento" | "no_vencimento" | "atrasado"
       seller_category:
         | "imobiliaria"
         | "corretor"
@@ -1382,6 +1581,9 @@ export const Constants = {
         "premium_empresa",
         "prime_empresa",
       ],
+      rental_contract_status: ["ativo", "encerrado", "cancelado", "renovacao"],
+      rental_payment_status: ["pago", "pendente", "atrasado", "parcial"],
+      rental_reminder_type: ["antes_vencimento", "no_vencimento", "atrasado"],
       seller_category: [
         "imobiliaria",
         "corretor",
