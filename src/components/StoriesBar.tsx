@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 
 interface StoriesBarProps {
   onAddStory?: () => void;
+  textColor?: string;
 }
 
 export default function StoriesBar({ onAddStory }: StoriesBarProps) {
