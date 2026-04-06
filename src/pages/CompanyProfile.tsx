@@ -1643,7 +1643,7 @@ export default function CompanyProfile() {
                   )}
                 </div>
               )}
-              <div className="relative px-5 pb-5" style={{ marginTop: heroImages.length > 0 ? "-2rem" : "0" }}>
+              <div className="relative px-5 pb-5 pt-4">
                 <div className="flex items-end gap-3 mb-3">
                   {company.logo ? (
                     <img src={company.logo} alt={company.name} className="w-16 h-16 rounded-xl object-cover shadow-lg relative z-10" style={{ border: `3px solid ${storeTheme.card}` }} />
