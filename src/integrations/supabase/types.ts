@@ -477,6 +477,7 @@ export type Database = {
           end_date: string | null
           id: string
           item_id: string | null
+          item_label: string | null
           late_fee_percent: number | null
           notes: string | null
           owner_name: string | null
@@ -499,6 +500,7 @@ export type Database = {
           end_date?: string | null
           id?: string
           item_id?: string | null
+          item_label?: string | null
           late_fee_percent?: number | null
           notes?: string | null
           owner_name?: string | null
@@ -521,6 +523,7 @@ export type Database = {
           end_date?: string | null
           id?: string
           item_id?: string | null
+          item_label?: string | null
           late_fee_percent?: number | null
           notes?: string | null
           owner_name?: string | null
