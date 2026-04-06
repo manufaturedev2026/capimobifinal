@@ -469,17 +469,58 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
         </div>
       </div>
 
-      {/* Hero Banner — preview da foto selecionada com estilo */}
-      {photos.length > 0 && (() => {
+      {/* Format Preview — shows generated image for selected format */}
+      {previewFormat && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="space-y-3"
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Eye size={16} className="text-primary" />
+              <span className="text-sm font-bold text-foreground">Preview — {FORMAT_CONFIG[previewFormat].label}</span>
+            </div>
+            <button onClick={() => { setPreviewFormat(null); setPreviewDataUrl(null); }} className="text-xs text-muted-foreground hover:text-foreground transition-colors">✕ Fechar</button>
+          </div>
+          <div className="flex justify-center rounded-2xl overflow-hidden border border-border bg-muted/30 p-4">
+            {generatingPreview ? (
+              <div className="flex flex-col items-center justify-center py-20 gap-3">
+                <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                <span className="text-xs text-muted-foreground">Gerando preview...</span>
+              </div>
+            ) : previewDataUrl ? (
+              <img
+                src={previewDataUrl}
+                alt={`Preview ${FORMAT_CONFIG[previewFormat].label}`}
+                className={`rounded-xl shadow-lg ${
+                  previewFormat === "story" ? "max-h-[500px]" : previewFormat === "card" ? "max-h-[400px] max-w-[400px]" : "max-w-full"
+                }`}
+                style={{ objectFit: "contain" }}
+              />
+            ) : null}
+          </div>
+          {previewDataUrl && (
+            <button
+              onClick={handleDownloadFromPreview}
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:bg-primary/90 transition-all"
+            >
+              <Download size={18} />
+              Baixar {FORMAT_CONFIG[previewFormat].label}
+            </button>
+          )}
+        </motion.div>
+      )}
+
+      {/* Hero Banner — preview da foto selecionada com estilo (hidden when format preview is active) */}
+      {!previewFormat && photos.length > 0 && (() => {
         const stylePreview = STYLE_CONFIG[selectedStyle];
         const fontPreview = FONT_CONFIG[selectedFont];
-        const titleStyle = { color: stylePreview.titleColor, fontFamily: fontPreview.family };
         return (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="relative rounded-2xl overflow-hidden cursor-pointer group"
-            onClick={() => setLightboxIndex(selectedPhotoIndex)}
+            className="relative rounded-2xl overflow-hidden group"
           >
             <AnimatePresence mode="wait">
               <motion.img
@@ -527,7 +568,7 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
               </div>
             )}
             <div className="absolute top-3 left-3 bg-black/50 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded-lg flex items-center gap-1">
-              <Eye size={12} /> Preview — {stylePreview.label}
+              <Eye size={12} /> Selecione um formato abaixo
             </div>
           </motion.div>
         );
