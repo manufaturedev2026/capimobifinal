@@ -959,6 +959,11 @@ export default function SellerDashboard() {
               <RentalManagementTab userId={user.id} sellerId={profile.id} />
             )}
 
+            {/* Contracts Tab */}
+            {activeTab === "contracts" && user?.id && profile?.id && (
+              <ContractsTab userId={user.id} sellerId={profile.id} />
+            )}
+
             {/* Team Tab */}
             {activeTab === "team" && showTeamTab && profile?.id && (
               <TeamMembersTab
