@@ -36,9 +36,7 @@ interface TeamMemberOption {
 
 export default function StoryUploadDialog({ open, onOpenChange, sellerId, onUploaded }: StoryUploadDialogProps) {
   const { user, profile } = useAuth();
-  const { currentTier } = useSubscription(user?.id);
   const currentCount = useMyStoryCount(user?.id);
-  const limit = getStoryLimit(currentTier);
   const { toast } = useToast();
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
