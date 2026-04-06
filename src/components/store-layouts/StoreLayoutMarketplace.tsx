@@ -206,7 +206,7 @@ export default function StoreLayoutMarketplace({
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.3 }}
-            className="font-display font-black text-4xl md:text-6xl text-white leading-[1.1] drop-shadow-2xl"
+            className="font-display font-black text-2xl md:text-6xl text-white leading-[1.1] drop-shadow-2xl"
           >
             Imóveis em<br />
             <span style={{ color: storeTheme.primary }}>{cityName}</span>
