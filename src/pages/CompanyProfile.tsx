@@ -895,10 +895,14 @@ export default function CompanyProfile() {
                 </div>
                 <Link
                   to={`/imoveis/produto/${heroProduct.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`}
-                  className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold text-sm text-white shadow-lg active:scale-95 transition-transform"
-                  style={{ background: storeTheme.primary }}
+                  className="flex items-center justify-center gap-2 px-6 py-3 font-black text-sm uppercase tracking-wider text-white shadow-lg active:scale-95 transition-transform"
+                  style={{
+                    background: `linear-gradient(135deg, ${storeTheme.primary}, ${storeTheme.primary}aa)`,
+                    border: `1px solid ${storeTheme.primary}60`,
+                    clipPath: "polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%)",
+                  }}
                 >
-                  <Eye size={16} /> Saiba Mais
+                  <Eye size={16} /> Explorar
                 </Link>
               </>
             )}
