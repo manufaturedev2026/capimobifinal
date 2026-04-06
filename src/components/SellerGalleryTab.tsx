@@ -314,6 +314,9 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
   const [selectedStyle, setSelectedStyle] = useState<ImageStyle>("verde");
   const [showBrokerPhoto, setShowBrokerPhoto] = useState(true);
   const [selectedFont, setSelectedFont] = useState<FontStyle>("moderna");
+  const [previewFormat, setPreviewFormat] = useState<ImageFormat | null>(null);
+  const [previewDataUrl, setPreviewDataUrl] = useState<string | null>(null);
+  const [generatingPreview, setGeneratingPreview] = useState(false);
 
   useEffect(() => {
     (async () => {
