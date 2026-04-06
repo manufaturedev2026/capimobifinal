@@ -1271,6 +1271,9 @@ export default function CompanyProfile() {
                 formatPrice: (p: number) => `R$ ${p.toLocaleString("pt-BR")}`,
                 getTagStyle,
                 getTagLabel,
+                filterCity,
+                setFilterCity,
+                availableCities,
               };
 
               const layout = (dbProfile as any)?.store_layout || "showcase";

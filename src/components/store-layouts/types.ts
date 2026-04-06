@@ -16,6 +16,9 @@ export interface StoreLayoutProps {
   formatPrice: (price: number) => string;
   getTagStyle: (tag: string) => string;
   getTagLabel: (tag: string) => string;
+  filterCity?: string;
+  setFilterCity?: (city: string) => void;
+  availableCities?: string[];
 }
 
 export const STORE_LAYOUTS = [
