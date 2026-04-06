@@ -163,14 +163,14 @@ export default function StoreLayoutElegant({
               <input
                 type="number" placeholder="Preço mín." value={minPrice}
                 onChange={(e) => setMinPrice(e.target.value)}
-                className="rounded-lg px-3 py-2 text-xs bg-transparent outline-none"
-                style={{ color: storeTheme.text, border: `1px solid ${storeTheme.border}` }}
+                className="rounded-lg px-3 py-2 text-xs outline-none placeholder:opacity-50"
+                style={{ color: storeTheme.text, background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}
               />
               <input
                 type="number" placeholder="Preço máx." value={maxPrice}
                 onChange={(e) => setMaxPrice(e.target.value)}
-                className="rounded-lg px-3 py-2 text-xs bg-transparent outline-none"
-                style={{ color: storeTheme.text, border: `1px solid ${storeTheme.border}` }}
+                className="rounded-lg px-3 py-2 text-xs outline-none placeholder:opacity-50"
+                style={{ color: storeTheme.text, background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}
               />
               <select
                 value={minBedrooms} onChange={(e) => setMinBedrooms(e.target.value)}
