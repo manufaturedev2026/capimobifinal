@@ -479,7 +479,7 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
             {stylePreview.accentBar && (
               <div className="absolute bottom-0 left-0 right-0 h-1" style={{ backgroundColor: stylePreview.accentBar }} />
             )}
-            <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6" style={{ fontFamily: fontPreview.family }}>
+            <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6">
               {showBrokerPhoto && sellerLogo && (
                 <img src={sellerLogo} alt="" className="w-10 h-10 rounded-full object-cover mb-2 border-2 border-white/30 shadow-lg" />
               )}
