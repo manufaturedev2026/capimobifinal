@@ -12,6 +12,7 @@ import BrokerAnalytics from "@/components/BrokerAnalytics";
 
 import SellerCrmTab from "@/components/SellerCrmTab";
 import SellerGalleryTab from "@/components/SellerGalleryTab";
+import RentalManagementTab from "@/components/RentalManagementTab";
 import { getTagStyle, getTagLabel } from "@/data/products";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
@@ -36,7 +37,7 @@ type SellerItem = {
   sold_at: string | null;
 };
 
-type DashboardTab = "overview" | "items" | "stats" | "domain" | "team" | "events" | "referral" | "crm" | "gallery";
+type DashboardTab = "overview" | "items" | "stats" | "domain" | "team" | "events" | "referral" | "crm" | "gallery" | "rentals";
 
 export default function SellerDashboard() {
   const { user, profile, signOut, refreshProfile, loading: authLoading } = useAuth();
@@ -259,6 +260,7 @@ export default function SellerDashboard() {
     
     { id: "crm" as DashboardTab, label: "Meu CRM", icon: MessageCircle },
     { id: "gallery" as DashboardTab, label: "Galeria", icon: Image },
+    { id: "rentals" as DashboardTab, label: "Aluguéis", icon: Building2 },
     { id: "domain", label: "Meu Domínio", icon: Globe, locked: lockedTabs.includes("domain") },
     ...(showTeamTab ? [{ id: "team" as DashboardTab, label: "Empresa", icon: Users }] : []),
   ];
@@ -948,6 +950,11 @@ export default function SellerDashboard() {
             {/* Gallery Tab */}
             {activeTab === "gallery" && user?.id && profile?.id && (
               <SellerGalleryTab userId={user.id} sellerId={profile.id} sellerSlug={profile.slug || null} />
+            )}
+
+            {/* Rentals Tab */}
+            {activeTab === "rentals" && user?.id && profile?.id && (
+              <RentalManagementTab userId={user.id} sellerId={profile.id} />
             )}
 
             {/* Team Tab */}
