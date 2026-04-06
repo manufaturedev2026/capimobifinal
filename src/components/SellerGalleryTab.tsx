@@ -342,7 +342,7 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
     } finally {
       setGenerating(null);
     }
-  }, [selectedItem, sellerName, sellerPhone, sellerCreci, sellerLogo, selectedStyle, toast, photos, selectedPhotoIndex]);
+  }, [selectedItem, sellerName, sellerPhone, sellerCreci, sellerLogo, selectedStyle, showBrokerPhoto, toast, photos, selectedPhotoIndex]);
 
   if (loading) {
     return (
