@@ -247,7 +247,7 @@ export default function StoreLayoutElegant({
             className="relative rounded-2xl overflow-hidden"
             style={{ border: `1px solid ${storeTheme.border}` }}
           >
-            <div className="relative aspect-[21/9] sm:aspect-[21/8] overflow-hidden">
+            <div className="relative aspect-[4/3] sm:aspect-[21/9] overflow-hidden">
               {featuredProduct.image ? (
                 <img
                   src={featuredProduct.image} alt={featuredProduct.title}
