@@ -27,6 +27,7 @@ import { useStories } from "@/hooks/useStories";
 import WhatsAppLeadCapture from "@/components/WhatsAppLeadCapture";
 import StoreInstallButton from "@/components/StoreInstallButton";
 import StoriesBar from "@/components/StoriesBar";
+import StoryUploadDialog from "@/components/StoryUploadDialog";
 
 const propertySubcategories = [
   { slug: "todos", name: "Todos", icon: Store, img: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=300&h=200&fit=crop" },
