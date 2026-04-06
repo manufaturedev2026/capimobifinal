@@ -19,6 +19,8 @@ export interface StoreLayoutProps {
   filterCity?: string;
   setFilterCity?: (city: string) => void;
   availableCities?: string[];
+  onCinemaMode?: () => void;
+  onShareLink?: () => void;
 }
 
 export const STORE_LAYOUTS = [
