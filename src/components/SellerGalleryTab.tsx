@@ -548,7 +548,7 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
                     <div className={`w-4 h-4 rounded-full ${cfg.preview.bg}`} />
                     <div>
                       <p className="text-[11px] font-bold text-foreground">{cfg.label}</p>
-                      <p className="text-[9px] text-muted-foreground">{cfg.description}</p>
+                      <p className="text-[9px] text-muted-foreground">{cfg.label}</p>
                     </div>
                   </button>
                 );
