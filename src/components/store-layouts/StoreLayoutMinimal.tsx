@@ -53,18 +53,10 @@ export default function StoreLayoutMinimal({
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const heroScale = useTransform(scrollYProgress, [0, 1], [1, 1.1]);
 
-  const heroImages = filteredProducts.filter((p: any) => p.image).slice(0, 8).map((p: any) => p.image);
-  // Auto-detect city from products if seller profile has no city
-  const cityName = (() => {
-    if (dbProfile?.city) return dbProfile.city;
-    const cities = filteredProducts.map((p: any) => p.city).filter(Boolean);
-    if (cities.length > 0) {
-      const freq: Record<string, number> = {};
-      cities.forEach((c: string) => { freq[c] = (freq[c] || 0) + 1; });
-      return Object.entries(freq).sort((a, b) => b[1] - a[1])[0][0];
-    }
-    return "sua região";
-  })();
+  const heroProducts = filteredProducts.filter((p: any) => p.image).slice(0, 8);
+  const heroImages = heroProducts.map((p: any) => p.image);
+  // Dynamic city name based on current hero slide
+  const currentHeroCity = heroProducts[heroIdx]?.city || dbProfile?.city || "sua região";
   const totalCount = filteredProducts.length;
 
   const activeCats = subcategories.filter(c => c.slug === "todos" || (categoryCounts[c.slug] || 0) > 0);
@@ -150,7 +142,7 @@ export default function StoreLayoutMinimal({
             style={{ color: storeTheme.primary }}
           >
             <MapPin size={12} className="inline mr-1 -mt-0.5" />
-            {cityName}
+            {currentHeroCity}
           </motion.p>
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
@@ -159,7 +151,7 @@ export default function StoreLayoutMinimal({
             className="font-display font-light text-2xl md:text-5xl leading-tight text-white drop-shadow-lg"
           >
             Imóveis em{" "}
-            <span className="font-bold" style={{ color: storeTheme.primary }}>{cityName}</span>
+            <span className="font-bold" style={{ color: storeTheme.primary }}>{currentHeroCity}</span>
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 10 }}
