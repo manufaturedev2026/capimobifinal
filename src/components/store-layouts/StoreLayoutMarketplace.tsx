@@ -71,7 +71,7 @@ function ShimmerLine({ color }: { color: string }) {
 
 export default function StoreLayoutMarketplace({
   filteredProducts, subcategories, activeCategory, setActiveCategory,
-  categoryCounts, storeTheme, corretorSlug, dbProfile, getTagStyle, getTagLabel,
+  categoryCounts, storeTheme, corretorSlug, dbProfile, getTagStyle, getTagLabel, handleWhatsApp,
 }: StoreLayoutProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [heroIdx, setHeroIdx] = useState(0);
