@@ -206,7 +206,7 @@ export default function CapturePropertyPage() {
         <meta name="description" content={`Cadastre seu imóvel gratuitamente com ${broker.full_name}. Receba propostas de compra ou aluguel mais rápido.`} />
       </Helmet>
 
-      <ThemeParticles color={colors.primary} />
+      <ThemeParticles color={colors.primary} sellerId={broker?.id} />
 
       {/* Background effects */}
       <div className="absolute inset-0 pointer-events-none">
