@@ -439,7 +439,29 @@ export default function StoreLayoutNetflix({
       {/* ══════ NETFLIX CATEGORY CARDS + CONTENT ══════ */}
       <div className="pb-8 pt-6">
         {/* Category cards — movie poster style */}
-        <h3 className="font-bold text-sm md:text-base text-white mb-3 px-4 md:px-12">Explorar por Categoria</h3>
+        <div className="flex items-center justify-between px-4 md:px-12 mb-3">
+          <h3 className="font-bold text-sm md:text-base text-white">Explorar por Categoria</h3>
+          <div className="flex items-center gap-2">
+            {onShareLink && (
+              <button
+                onClick={onShareLink}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-medium text-white/80 hover:text-white transition-colors"
+                style={{ background: "rgba(255,255,255,0.1)", backdropFilter: "blur(8px)" }}
+              >
+                <Share2 size={14} /> Compartilhar
+              </button>
+            )}
+            {onCinemaMode && (
+              <button
+                onClick={onCinemaMode}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-medium text-white/80 hover:text-white transition-colors"
+                style={{ background: "rgba(255,255,255,0.1)", backdropFilter: "blur(8px)" }}
+              >
+                <Clapperboard size={14} /> Modo Cinema
+              </button>
+            )}
+          </div>
+        </div>
         <div className="flex gap-2 md:gap-3 overflow-x-auto scrollbar-hide scroll-smooth px-4 md:px-12 pb-6">
           {/* "Todos" card */}
           {(() => {
