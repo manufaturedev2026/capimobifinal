@@ -480,9 +480,7 @@ export default function StoreLayoutNetflix({
                   <div className="w-full h-full bg-[#2a2a2a]" />
                 )}
                 <div className="absolute inset-0" style={{
-                  background: isActive
-                    ? "linear-gradient(to top, rgba(229,9,20,0.85) 0%, rgba(229,9,20,0.3) 40%, transparent 70%)"
-                    : "linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 40%, transparent 70%)",
+                   background: "linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 40%, transparent 70%)",
                 }} />
                 <div className="absolute bottom-0 left-0 right-0 p-2.5 text-center">
                   <span className="text-white font-bold text-xs md:text-sm drop-shadow-lg block">Todos</span>
