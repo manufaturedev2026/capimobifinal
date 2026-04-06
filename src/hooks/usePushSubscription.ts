@@ -12,23 +12,21 @@ export function usePushSubscription(sellerId?: string) {
     setIsSupported(supported);
     if (supported) {
       setPermission(Notification.permission);
+      // Check existing subscription
+      navigator.serviceWorker.getRegistration("/push-sw.js").then(async (reg) => {
+        if (reg) {
+          const sub = await reg.pushManager.getSubscription();
+          if (sub) setIsSubscribed(true);
+        }
+      }).catch(() => {});
     }
-  }, []);
-
-  // Check if already subscribed
-  useEffect(() => {
-    if (!isSupported || !sellerId) return;
-    navigator.serviceWorker.ready.then(async (reg) => {
-      const sub = await reg.pushManager.getSubscription();
-      setIsSubscribed(!!sub);
-    }).catch(() => {});
-  }, [isSupported, sellerId]);
+  }, [sellerId]);
 
   const subscribe = useCallback(async () => {
     if (!isSupported || !sellerId) return false;
     setLoading(true);
     try {
-      // Request permission first (iOS requires this before SW registration)
+      // 1. Request permission first
       const perm = await Notification.requestPermission();
       setPermission(perm);
       if (perm !== "granted") {
@@ -36,7 +34,7 @@ export function usePushSubscription(sellerId?: string) {
         return false;
       }
 
-      // Get VAPID public key from edge function
+      // 2. Get VAPID key
       const { data: vapidData, error: vapidError } = await supabase.functions.invoke("get-vapid-key");
       if (vapidError || !vapidData?.publicKey) {
         console.error("Failed to get VAPID key:", vapidError);
@@ -44,23 +42,33 @@ export function usePushSubscription(sellerId?: string) {
         return false;
       }
 
-      // Register service worker
-      let registration: ServiceWorkerRegistration;
-      try {
-        registration = await navigator.serviceWorker.register("/push-sw.js");
-        // Wait for the SW to be ready with a timeout
-        const readyPromise = navigator.serviceWorker.ready;
-        const timeoutPromise = new Promise<never>((_, reject) =>
-          setTimeout(() => reject(new Error("SW ready timeout")), 10000)
-        );
-        await Promise.race([readyPromise, timeoutPromise]);
-      } catch (swErr) {
-        console.error("Service Worker registration failed:", swErr);
-        setLoading(false);
-        return false;
+      // 3. Register SW and wait for it to be active
+      const registration = await navigator.serviceWorker.register("/push-sw.js", { scope: "/" });
+      
+      // Wait for the SW to become active
+      const sw = registration.installing || registration.waiting || registration.active;
+      if (sw && sw.state !== "activated") {
+        await new Promise<void>((resolve, reject) => {
+          const timeout = setTimeout(() => reject(new Error("SW activation timeout")), 15000);
+          sw.addEventListener("statechange", function handler() {
+            if (sw.state === "activated") {
+              clearTimeout(timeout);
+              sw.removeEventListener("statechange", handler);
+              resolve();
+            } else if (sw.state === "redundant") {
+              clearTimeout(timeout);
+              sw.removeEventListener("statechange", handler);
+              reject(new Error("SW became redundant"));
+            }
+          });
+          if (sw.state === "activated") {
+            clearTimeout(timeout);
+            resolve();
+          }
+        });
       }
 
-      // Subscribe to push
+      // 4. Subscribe to push
       const applicationServerKey = urlBase64ToUint8Array(vapidData.publicKey);
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
@@ -69,7 +77,7 @@ export function usePushSubscription(sellerId?: string) {
 
       const subJson = subscription.toJSON();
 
-      // Save to database
+      // 5. Save to database
       await supabase.from("push_subscriptions" as any).upsert({
         seller_id: sellerId,
         endpoint: subJson.endpoint,
