@@ -5,7 +5,7 @@ interface StoreEffectsProps {
   sellerId: string;
 }
 
-type EffectType = "chuva" | "raios" | "poeira" | "brasas" | "vento" | "neblina" | "fumaca" | "dinheiro" | "pascoa" | "estrelas" | "petalas" | "confetti" | "fogos" | "aurora" | "bolhas";
+type EffectType = "chuva" | "raios" | "poeira" | "brasas" | "vento" | "neblina" | "fumaca" | "dinheiro" | "particulas" | "estrelas" | "petalas" | "confetti" | "fogos" | "aurora" | "bolhas";
 
 export default function StoreEffects({ sellerId }: StoreEffectsProps) {
   const [activeEffect, setActiveEffect] = useState<EffectType | null>(null);
@@ -18,7 +18,6 @@ export default function StoreEffects({ sellerId }: StoreEffectsProps) {
         .select("*")
         .eq("seller_id", sellerId)
         .eq("is_active", true)
-        .gte("expires_at", new Date().toISOString())
         .order("activated_at", { ascending: false })
         .limit(1);
       setActiveEffect(data && data.length > 0 ? (data[0] as any).effect_type as EffectType : null);
@@ -52,7 +51,6 @@ export default function StoreEffects({ sellerId }: StoreEffectsProps) {
       {activeEffect === "neblina" && <FogEffect />}
       {activeEffect === "fumaca" && <SmokeEffect />}
       {activeEffect === "dinheiro" && <MoneyEffect />}
-      {activeEffect === "pascoa" && <EasterEffect />}
       {activeEffect === "estrelas" && <ShootingStarsEffect />}
       {activeEffect === "petalas" && <PetalsEffect />}
       {activeEffect === "confetti" && <ConfettiEffect />}
