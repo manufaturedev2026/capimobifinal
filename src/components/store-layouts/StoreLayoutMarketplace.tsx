@@ -323,7 +323,7 @@ export default function StoreLayoutMarketplace({
                         </p>
                       )}
                       {product.accepts_financing && (
-                        <p className="text-[9px] mt-0.5 font-medium" style={{ color: "#00a650" }}>✓ Aceita financiamento</p>
+                        <p className="text-[9px] mt-0.5 font-medium" style={{ color: storeTheme.primary }}>✓ Aceita financiamento</p>
                       )}
                       <div className="flex items-center gap-2 mt-2 text-[10px]" style={{ color: storeTheme.textMuted }}>
                         {product.bedrooms > 0 && <span className="flex items-center gap-0.5"><Bed size={10} /> {product.bedrooms}</span>}
