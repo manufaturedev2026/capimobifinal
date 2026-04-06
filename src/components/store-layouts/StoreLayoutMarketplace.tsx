@@ -108,12 +108,14 @@ function getDarkMid(primary: string): string {
 export default function StoreLayoutMarketplace({
   filteredProducts, subcategories, activeCategory, setActiveCategory,
   categoryCounts, storeTheme, corretorSlug, dbProfile, getTagStyle, getTagLabel, handleWhatsApp,
+  filterCity, setFilterCity, availableCities,
 }: StoreLayoutProps) {
   const darkBase = getDarkBase(storeTheme.primary);
   const darkMid = getDarkMid(storeTheme.primary);
   const [searchTerm, setSearchTerm] = useState("");
   const [heroIdx, setHeroIdx] = useState(0);
   const [promoIdx, setPromoIdx] = useState(0);
+  const [showCityPicker, setShowCityPicker] = useState(false);
   const promoScrollRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
 
@@ -129,8 +131,9 @@ export default function StoreLayoutMarketplace({
       )
     : filteredProducts;
 
-  const heroImages = filteredProducts.slice(0, 5).map((p: any) => p.image).filter(Boolean);
-  const cityName = dbProfile?.city || "sua cidade";
+  const heroProducts = filteredProducts.slice(0, 5).filter((p: any) => p.image);
+  const heroImages = heroProducts.map((p: any) => p.image);
+  const currentHeroCity = heroProducts[heroIdx]?.city || filterCity || dbProfile?.city || "sua cidade";
   const activeCats = subcategories.filter(c => c.slug === "todos" || (categoryCounts[c.slug] || 0) > 0);
 
   // Auto-rotate hero
@@ -228,8 +231,59 @@ export default function StoreLayoutMarketplace({
             className="font-display font-black text-2xl md:text-6xl text-white leading-[1.1] drop-shadow-2xl"
           >
             Imóveis em<br />
-            <span style={{ color: storeTheme.primary }}>{cityName}</span>
+            <span style={{ color: storeTheme.primary }}>{currentHeroCity}</span>
           </motion.h1>
+
+          {/* City selector */}
+          {availableCities && availableCities.length > 1 && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+              className="relative mt-1"
+            >
+              <button
+                onClick={() => setShowCityPicker(!showCityPicker)}
+                className="flex items-center gap-1.5 text-xs font-medium text-white/70 hover:text-white transition-colors"
+              >
+                <MapPin size={12} />
+                {filterCity || "Todas as cidades"}
+                <span className="text-[10px]">▾</span>
+              </button>
+              <AnimatePresence>
+                {showCityPicker && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -5 }}
+                    className="absolute left-0 top-8 z-50 rounded-xl overflow-hidden shadow-2xl backdrop-blur-xl"
+                    style={{ background: `${storeTheme.card}f0`, border: `1px solid ${storeTheme.border}` }}
+                  >
+                    <button
+                      onClick={() => { setFilterCity?.(""); setShowCityPicker(false); }}
+                      className="w-full text-left px-4 py-2.5 text-xs font-medium hover:opacity-80 transition-opacity"
+                      style={{ color: !filterCity ? storeTheme.primary : storeTheme.text }}
+                    >
+                      Todas as cidades
+                    </button>
+                    {availableCities.map(city => (
+                      <button
+                        key={city}
+                        onClick={() => { setFilterCity?.(city); setShowCityPicker(false); setHeroIdx(0); }}
+                        className="w-full text-left px-4 py-2.5 text-xs font-medium hover:opacity-80 transition-opacity"
+                        style={{
+                          color: filterCity === city ? storeTheme.primary : storeTheme.text,
+                          borderTop: `1px solid ${storeTheme.border}`,
+                        }}
+                      >
+                        {city}
+                      </button>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          )}
 
           <motion.p
             initial={{ opacity: 0, y: 20 }}
