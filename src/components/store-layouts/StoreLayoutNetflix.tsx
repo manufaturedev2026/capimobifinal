@@ -470,8 +470,8 @@ export default function StoreLayoutNetflix({
                 style={{
                   width: "clamp(120px, 18vw, 180px)",
                   aspectRatio: "2/3",
-                  outline: isActive ? "2px solid #e50914" : "2px solid transparent",
-                  outlineOffset: 2,
+                   outline: isActive ? "2px solid #fff" : "2px solid transparent",
+                   outlineOffset: 2,
                 }}
               >
                 {allImages[0] ? (
@@ -480,16 +480,14 @@ export default function StoreLayoutNetflix({
                   <div className="w-full h-full bg-[#2a2a2a]" />
                 )}
                 <div className="absolute inset-0" style={{
-                  background: isActive
-                    ? "linear-gradient(to top, rgba(229,9,20,0.85) 0%, rgba(229,9,20,0.3) 40%, transparent 70%)"
-                    : "linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 40%, transparent 70%)",
+                   background: "linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 40%, transparent 70%)",
                 }} />
                 <div className="absolute bottom-0 left-0 right-0 p-2.5 text-center">
                   <span className="text-white font-bold text-xs md:text-sm drop-shadow-lg block">Todos</span>
                   <span className="text-white/60 text-[9px] md:text-[10px]">{filteredProducts.length} imóveis</span>
                 </div>
                 {isActive && (
-                  <div className="absolute top-0 left-0 right-0 h-[3px] bg-[#e50914]" />
+                   <div className="absolute top-0 left-0 right-0 h-[3px] bg-white" />
                 )}
               </button>
             );
@@ -511,8 +509,8 @@ export default function StoreLayoutNetflix({
                   style={{
                     width: "clamp(120px, 18vw, 180px)",
                     aspectRatio: "2/3",
-                    outline: isActive ? "2px solid #e50914" : "2px solid transparent",
-                    outlineOffset: 2,
+                     outline: isActive ? "2px solid #fff" : "2px solid transparent",
+                     outlineOffset: 2,
                   }}
                 >
                   {coverImg ? (
@@ -521,16 +519,14 @@ export default function StoreLayoutNetflix({
                     <div className="w-full h-full bg-[#2a2a2a]" />
                   )}
                   <div className="absolute inset-0" style={{
-                    background: isActive
-                      ? "linear-gradient(to top, rgba(229,9,20,0.85) 0%, rgba(229,9,20,0.3) 40%, transparent 70%)"
-                      : "linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 40%, transparent 70%)",
+                     background: "linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 40%, transparent 70%)",
                   }} />
                   <div className="absolute bottom-0 left-0 right-0 p-2.5 text-center">
                     <span className="text-white font-bold text-xs md:text-sm drop-shadow-lg block">{c.name}</span>
                     <span className="text-white/60 text-[9px] md:text-[10px]">{count} imóveis</span>
                   </div>
                   {isActive && (
-                    <div className="absolute top-0 left-0 right-0 h-[3px] bg-[#e50914]" />
+                    <div className="absolute top-0 left-0 right-0 h-[3px] bg-white" />
                   )}
                 </button>
               );
