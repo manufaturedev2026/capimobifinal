@@ -4,9 +4,10 @@ import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion"
 import {
   MapPin, Image, Bed, Bath, Ruler, Search, X,
   Home, Building2, Key, Trees, Store, Landmark,
-  ArrowRight, Sparkles, Heart, ChevronDown,
+  ArrowRight, Sparkles, Heart, ChevronDown, LayoutDashboard,
 } from "lucide-react";
 import type { StoreLayoutProps } from "./types";
+import { useAuth } from "@/hooks/useAuth";
 
 /* ── Color helpers ── */
 function hexToHsl(hex: string): [number, number, number] {
@@ -42,6 +43,8 @@ export default function StoreLayoutMinimal({
   filteredProducts, subcategories, activeCategory, setActiveCategory,
   categoryCounts, storeTheme, corretorSlug, dbProfile, getTagStyle, getTagLabel, handleWhatsApp,
 }: StoreLayoutProps) {
+  const { user } = useAuth();
+  const isOwner = !!(user && dbProfile && user.id === dbProfile.user_id);
   const [searchTerm, setSearchTerm] = useState("");
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [heroIdx, setHeroIdx] = useState(0);
@@ -107,6 +110,16 @@ export default function StoreLayoutMinimal({
         {/* Dark gradient overlays for readability */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-black/25" />
         <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent" />
+
+        {/* Painel / Entrar button */}
+        <div className="absolute top-4 left-4 z-20">
+          <Link
+            to={isOwner ? "/painel" : "/login"}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-white text-xs font-medium hover:bg-white/20 transition-colors"
+          >
+            <LayoutDashboard size={14} /> {isOwner ? "Painel" : "Entrar"}
+          </Link>
+        </div>
 
         {/* Subtle accent line */}
         <motion.div
