@@ -126,9 +126,11 @@ async function generateMarketingImage(
   sellerLogo: string | null,
   style: ImageStyle = "verde",
   photoUrl?: string,
+  fontStyle: FontStyle = "moderna",
 ): Promise<string> {
   const { width, height } = FORMAT_CONFIG[format];
   const s = STYLE_CONFIG[style];
+  const font = FONT_CONFIG[fontStyle].family;
   const canvas = document.createElement("canvas");
   canvas.width = width;
   canvas.height = height;
