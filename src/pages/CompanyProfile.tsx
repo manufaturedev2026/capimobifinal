@@ -467,6 +467,7 @@ export default function CompanyProfile() {
   const currentLayout = (dbProfile as any)?.store_layout || "showcase";
   const isMarketplace = currentLayout === "marketplace";
   const isMinimal = currentLayout === "minimal";
+  const isShowcase = currentLayout === "showcase";
 
   return (
     <div
