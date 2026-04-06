@@ -250,7 +250,42 @@ export default function NotificationsTab({ userId, sellerId }: NotificationsTabP
               <p className="text-[10px] text-muted-foreground">URL para onde o usuário será levado ao clicar</p>
             </div>
 
-            <Button onClick={handleSend} disabled={sending || !title.trim() || !body.trim()} className="w-full gap-2">
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium">Imagem (opcional)</Label>
+              {image ? (
+                <div className="relative w-full h-32 rounded-lg overflow-hidden border border-border">
+                  <img src={image} alt="Preview" className="w-full h-full object-cover" />
+                  <Button
+                    type="button"
+                    size="icon"
+                    variant="destructive"
+                    className="absolute top-1 right-1 h-6 w-6"
+                    onClick={() => setImage("")}
+                  >
+                    <X className="w-3 h-3" />
+                  </Button>
+                </div>
+              ) : (
+                <label className="flex items-center gap-2 p-3 rounded-lg border border-dashed border-border cursor-pointer hover:bg-muted/50 transition-colors">
+                  {uploadingImage ? (
+                    <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+                  ) : (
+                    <ImagePlus className="w-4 h-4 text-muted-foreground" />
+                  )}
+                  <span className="text-xs text-muted-foreground">
+                    {uploadingImage ? "Enviando..." : "Clique para selecionar uma imagem"}
+                  </span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleImageUpload}
+                    disabled={uploadingImage}
+                  />
+                </label>
+              )}
+              <p className="text-[10px] text-muted-foreground">Imagem exibida na notificação (ex: foto do imóvel)</p>
+            </div>
               {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
               Enviar para {subscriberCount} inscrito{subscriberCount !== 1 ? "s" : ""}
             </Button>
