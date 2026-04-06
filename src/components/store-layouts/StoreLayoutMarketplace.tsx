@@ -317,7 +317,7 @@ export default function StoreLayoutMarketplace({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.15 }}
-          className="mt-10 mb-8"
+          className="mt-6 md:mt-10 mb-6 md:mb-8"
         >
           <div className="flex items-center gap-2 mb-5">
             <Crown size={16} style={{ color: storeTheme.primary }} />
