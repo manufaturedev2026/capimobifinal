@@ -24,7 +24,7 @@ export default function StoriesBar({ onAddStory, textColor }: StoriesBarProps) {
 
   return (
     <>
-      <div className="w-full overflow-x-auto py-4 px-4 md:px-8">
+      <div className="w-full overflow-x-auto py-4 px-4 md:px-8 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
         <div className="flex gap-4 items-center">
           {/* Add story button for logged-in users */}
           {user && onAddStory && (
