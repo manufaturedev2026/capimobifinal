@@ -2183,6 +2183,15 @@ export default function CompanyProfile() {
           }}
         />
       )}
+
+      {dbProfile && (
+        <StoryUploadDialog
+          open={storyUploadOpen}
+          onOpenChange={setStoryUploadOpen}
+          sellerId={dbProfile.id}
+          onUploaded={() => window.location.reload()}
+        />
+      )}
     </div>
   );
 }
