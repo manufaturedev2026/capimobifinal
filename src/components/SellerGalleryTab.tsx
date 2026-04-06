@@ -479,25 +479,25 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
             {stylePreview.accentBar && (
               <div className="absolute bottom-0 left-0 right-0 h-1" style={{ backgroundColor: stylePreview.accentBar }} />
             )}
-            <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6">
+            <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6" style={{ fontFamily: fontPreview.family }}>
               {showBrokerPhoto && sellerLogo && (
                 <img src={sellerLogo} alt="" className="w-10 h-10 rounded-full object-cover mb-2 border-2 border-white/30 shadow-lg" />
               )}
-              <h2 className="font-extrabold text-lg sm:text-2xl leading-tight line-clamp-2" style={titleStyle}>{selectedItem?.title}</h2>
+              <h2 className="font-extrabold text-lg sm:text-2xl leading-tight line-clamp-2" style={{ color: stylePreview.titleColor }}>{selectedItem?.title}</h2>
               <div className="flex items-center gap-3 mt-2 flex-wrap">
                 {selectedItem?.price && selectedItem.price > 0 && (
                   <span className="font-black text-base sm:text-xl" style={{ color: stylePreview.titleColor }}>R$ {selectedItem.price.toLocaleString("pt-BR")}</span>
                 )}
                 {selectedItem?.city && (
-                  <span className="text-xs" style={{ color: stylePreview.locationColor }}>📍 {selectedItem.neighborhood ? `${selectedItem.neighborhood}, ${selectedItem.city}` : selectedItem.city}</span>
+                  <span className="text-sm" style={{ color: stylePreview.locationColor }}>📍 {selectedItem.neighborhood ? `${selectedItem.neighborhood}, ${selectedItem.city}` : selectedItem.city}</span>
                 )}
               </div>
-              <div className="flex items-center gap-3 mt-1.5 text-[11px]" style={{ color: stylePreview.detailColor }}>
+              <div className="flex items-center gap-3 mt-1.5 text-sm" style={{ color: stylePreview.detailColor }}>
                 {selectedItem?.bedrooms && <span>🛏 {selectedItem.bedrooms} quartos</span>}
                 {selectedItem?.bathrooms && <span>🚿 {selectedItem.bathrooms} banheiros</span>}
                 {selectedItem?.area && <span>📐 {selectedItem.area}m²</span>}
               </div>
-              <p className="mt-1.5 text-[10px]" style={{ color: stylePreview.sellerColor }}>
+              <p className="mt-1.5 text-xs" style={{ color: stylePreview.sellerColor }}>
                 {sellerName}{sellerCreci ? ` • CRECI ${sellerCreci}` : ""}{sellerPhone ? ` • ${sellerPhone}` : ""}
               </p>
             </div>
