@@ -1346,7 +1346,7 @@ export default function CompanyProfile() {
                           </h3>
                           {product.price > 0 && (
                             <div className="flex items-center gap-2 mt-1.5">
-                              <p className="font-display font-bold text-emerald-500 text-base md:text-lg">
+                              <p className="font-display font-bold text-base md:text-lg" style={{ color: storeTheme.primary }}>
                                 R$ {product.price.toLocaleString("pt-BR")}
                                 {isDbProfile && ((product.tags || []).includes("aluguel_flex") || product.category === "aluguel") && (
                                   <span className="text-sm font-normal text-muted-foreground"> /mês</span>
