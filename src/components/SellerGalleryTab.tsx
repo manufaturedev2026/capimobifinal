@@ -29,12 +29,11 @@ interface Props {
 
 type ImageFormat = "card" | "banner" | "story";
 type ImageStyle = "verde" | "azul" | "vermelho" | "rosa" | "gold" | "roxo";
-type FontStyle = "moderna" | "elegante" | "negrito" | "suave" | "tech" | "classica" | "manuscrita";
+type FontStyle = "moderna" | "elegante" | "suave" | "tech" | "classica" | "manuscrita";
 
 const FONT_CONFIG: Record<FontStyle, { label: string; family: string; preview: string }> = {
   moderna: { label: "Moderna", family: "'Trebuchet MS', 'Helvetica Neue', Arial, sans-serif", preview: "Aa" },
   elegante: { label: "Elegante", family: "'Georgia', 'Times New Roman', serif", preview: "Aa" },
-  negrito: { label: "Negrito", family: "'Impact', 'Arial Black', sans-serif", preview: "Aa" },
   suave: { label: "Suave", family: "'Segoe UI', 'Verdana', sans-serif", preview: "Aa" },
   tech: { label: "Tech", family: "'Courier New', 'Lucida Console', monospace", preview: "Aa" },
   classica: { label: "Clássica", family: "'Palatino Linotype', 'Book Antiqua', Palatino, serif", preview: "Aa" },
