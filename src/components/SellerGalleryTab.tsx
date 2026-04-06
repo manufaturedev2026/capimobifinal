@@ -175,16 +175,26 @@ async function generateMarketingImage(
   const scale = width / 1080;
   const font = s.fontFamily;
 
-  // Seller logo (top-left)
+  // Seller photo (circular, top-left)
   if (sellerLogo) {
     try {
       const logoImg = await loadImage(sellerLogo);
-      const logoSize = Math.round(48 * scale);
+      const logoSize = Math.round(56 * scale);
+      const logoX = pad;
+      const logoY = pad;
       ctx.save();
-      drawRoundedRect(ctx, pad, pad, logoSize, logoSize, Math.round(8 * scale));
+      ctx.beginPath();
+      ctx.arc(logoX + logoSize / 2, logoY + logoSize / 2, logoSize / 2, 0, Math.PI * 2);
+      ctx.closePath();
       ctx.clip();
-      ctx.drawImage(logoImg, pad, pad, logoSize, logoSize);
+      ctx.drawImage(logoImg, logoX, logoY, logoSize, logoSize);
       ctx.restore();
+      // White border
+      ctx.strokeStyle = "rgba(255,255,255,0.4)";
+      ctx.lineWidth = Math.round(2 * scale);
+      ctx.beginPath();
+      ctx.arc(logoX + logoSize / 2, logoY + logoSize / 2, logoSize / 2, 0, Math.PI * 2);
+      ctx.stroke();
     } catch { /* skip logo */ }
   }
 
