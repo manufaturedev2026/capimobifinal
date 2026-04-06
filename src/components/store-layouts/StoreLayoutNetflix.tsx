@@ -231,7 +231,7 @@ export default function StoreLayoutNetflix({
     .filter(r => r.items.length > 0);
 
   return (
-    <div className="-mx-4 md:-mx-8" style={{ background: "#141414" }}>
+    <div className="-mx-4 md:-mx-8" style={{ background: storeTheme.bg }}>
       {/* ══════ BILLBOARD ══════ */}
       {billboard.length > 0 && currentBillboard && (
         <div className="relative w-full" style={{ aspectRatio: "16/7", minHeight: 320 }}>
