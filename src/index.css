@@ -105,12 +105,19 @@
     max-width: 100%;
     width: 100%;
     -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: none;
   }
   html {
     overflow-x: clip;
   }
   body {
     @apply bg-background text-foreground font-body antialiased;
+  }
+  #root {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: clip;
+    overscroll-behavior-x: none;
   }
 }
 

@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import type { StoreLayoutProps } from "./types";
+import { isIOSStandaloneApp } from "@/lib/pwaInstall";
 
 /* ═══════════════════════════════════════════
    Netflix-style horizontal content row
@@ -192,6 +193,7 @@ export default function StoreLayoutNetflix({
   const { user } = useAuth();
   const [billboardIdx, setBillboardIdx] = useState(0);
   const accent = "#e50914";
+  const isIOSStandalone = isIOSStandaloneApp();
 
   const allProducts = products || filteredProducts;
   const billboard = allProducts.filter((p: any) => p.image).slice(0, 6);
@@ -231,7 +233,7 @@ export default function StoreLayoutNetflix({
     .filter(r => r.items.length > 0);
 
   return (
-    <div className="-mx-4 md:-mx-8" style={{ background: storeTheme.bg }}>
+    <div className={isIOSStandalone ? "overflow-x-hidden max-w-full" : "-mx-4 md:-mx-8 overflow-x-hidden max-w-full"} style={{ background: storeTheme.bg, overflowX: "clip", maxWidth: "100%" }}>
       {/* ══════ BILLBOARD ══════ */}
       {billboard.length > 0 && currentBillboard && (
         <div className="relative w-full" style={{ aspectRatio: "16/7", minHeight: 320 }}>

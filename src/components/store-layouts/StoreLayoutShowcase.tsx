@@ -57,7 +57,7 @@ export default function StoreLayoutShowcase({
   const accentColor = storeTheme.primary;
 
   return (
-    <div className="font-body">
+    <div className="font-body overflow-x-hidden max-w-full" style={{ overflowX: "clip" }}>
       {/* Stories Bar */}
       {storiesBar && <div className="mb-4">{storiesBar}</div>}
       {/* ══════ CATEGORY BAR ══════ */}
