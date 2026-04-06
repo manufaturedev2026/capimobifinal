@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, X, CloudRain, Zap, Wind, Flame, CloudFog, DollarSign, CircleDot, Star, Flower2, PartyPopper, Rainbow, Droplets } from "lucide-react";
+import { Sparkles, X, CloudRain, Zap, Wind, Flame, CloudFog, DollarSign, Star, Flower2, PartyPopper, Rainbow, Droplets } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { Switch } from "@/components/ui/switch";
 
 interface StoreEffectsPickerProps {
   userId: string;
@@ -18,7 +19,6 @@ type EffectOption = {
 };
 
 const EFFECTS: EffectOption[] = [
-  { type: "particulas", label: "Partículas", emoji: "✨", icon: Sparkles, description: "Partículas flutuando na cor do tema" },
   { type: "chuva", label: "Chuva", emoji: "💧", icon: CloudRain, description: "Gotas de chuva caindo na sua loja" },
   { type: "raios", label: "Raios", emoji: "⚡", icon: Zap, description: "Raios iluminando a tela" },
   { type: "poeira", label: "Poeira", emoji: "🌫️", icon: CloudFog, description: "Partículas de poeira flutuando" },
@@ -38,6 +38,7 @@ const EFFECTS: EffectOption[] = [
 export default function StoreEffectsPicker({ userId, sellerId }: StoreEffectsPickerProps) {
   const { toast } = useToast();
   const [activeEffect, setActiveEffect] = useState<any>(null);
+  const [particlesEnabled, setParticlesEnabled] = useState(true);
   const [loading, setLoading] = useState(true);
   const [activating, setActivating] = useState<string | null>(null);
 
@@ -47,16 +48,66 @@ export default function StoreEffectsPicker({ userId, sellerId }: StoreEffectsPic
       .select("*")
       .eq("seller_id", sellerId)
       .eq("is_active", true)
+      .neq("effect_type", "particulas")
       .order("activated_at", { ascending: false })
       .limit(1);
     setActiveEffect(data && data.length > 0 ? data[0] : null);
   };
 
+  const fetchParticlesStatus = async () => {
+    const { data } = await supabase
+      .from("store_effects")
+      .select("is_active")
+      .eq("seller_id", sellerId)
+      .eq("effect_type", "particulas")
+      .order("activated_at", { ascending: false })
+      .limit(1);
+    // Default: enabled (no record means enabled)
+    if (data && data.length > 0) {
+      setParticlesEnabled(!!(data[0] as any).is_active);
+    } else {
+      setParticlesEnabled(true);
+    }
+  };
+
   useEffect(() => {
-    fetchActiveEffect().then(() => setLoading(false));
+    Promise.all([fetchActiveEffect(), fetchParticlesStatus()]).then(() => setLoading(false));
     const interval = setInterval(fetchActiveEffect, 15000);
     return () => clearInterval(interval);
   }, [sellerId]);
+
+  const toggleParticles = async () => {
+    const newState = !particlesEnabled;
+    setParticlesEnabled(newState);
+
+    if (newState) {
+      // Re-enable: insert new active record
+      await supabase.from("store_effects").insert({
+        seller_id: sellerId,
+        user_id: userId,
+        effect_type: "particulas",
+        is_free: true,
+        is_active: true,
+      } as any);
+      toast({ title: "✨ Partículas ativadas!" });
+    } else {
+      // Disable: deactivate all particulas records
+      await supabase
+        .from("store_effects")
+        .update({ is_active: false } as any)
+        .eq("seller_id", sellerId)
+        .eq("effect_type", "particulas");
+      // Insert a disabled record
+      await supabase.from("store_effects").insert({
+        seller_id: sellerId,
+        user_id: userId,
+        effect_type: "particulas",
+        is_free: true,
+        is_active: false,
+      } as any);
+      toast({ title: "Partículas desativadas" });
+    }
+  };
 
   const activateEffect = async (effect: EffectOption) => {
     if (activeEffect) {
@@ -98,75 +149,91 @@ export default function StoreEffectsPicker({ userId, sellerId }: StoreEffectsPic
   }
 
   return (
-    <div className="bg-card border border-border rounded-2xl p-5">
-      <h3 className="font-display font-bold text-sm text-foreground mb-4 flex items-center gap-2">
+    <div className="bg-card border border-border rounded-2xl p-5 space-y-5">
+      <h3 className="font-display font-bold text-sm text-foreground flex items-center gap-2">
         <Sparkles size={16} className="text-purple-500" /> Efeitos Visuais na Loja
       </h3>
-      <p className="text-xs text-muted-foreground mb-4">Ative um efeito visual na sua loja. Ele ficará ativo até você desativar. Apenas um efeito por vez.</p>
 
-      {/* Active Effect */}
-      <AnimatePresence>
-        {activeEffect && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            className="mb-4 bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/30 rounded-xl p-4"
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <span className="text-2xl">{EFFECTS.find(e => e.type === activeEffect.effect_type)?.emoji || "✨"}</span>
-                <div>
-                  <p className="font-bold text-sm text-foreground">
-                    {EFFECTS.find(e => e.type === activeEffect.effect_type)?.label || activeEffect.effect_type} ativo
-                  </p>
-                  <p className="text-xs text-muted-foreground">Ativo permanentemente</p>
-                </div>
-              </div>
-              <button
-                onClick={cancelEffect}
-                className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-destructive/10 text-destructive text-xs font-bold hover:bg-destructive/20 transition-colors"
-              >
-                <X size={12} /> Desativar
-              </button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Particles Toggle - always visible */}
+      <div className="flex items-center justify-between p-4 rounded-xl border border-border bg-gradient-to-r from-purple-500/5 to-pink-500/5">
+        <div className="flex items-center gap-3">
+          <span className="text-2xl">✨</span>
+          <div>
+            <p className="font-bold text-sm text-foreground">Partículas do Tema</p>
+            <p className="text-[11px] text-muted-foreground">Partículas flutuantes na cor do seu tema</p>
+          </div>
+        </div>
+        <Switch checked={particlesEnabled} onCheckedChange={toggleParticles} />
+      </div>
 
-      {/* Effects Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-        {EFFECTS.map((effect) => {
-          const isActive = activeEffect?.effect_type === effect.type;
-          const isDisabled = !!activeEffect;
-          const isActivating = activating === effect.type;
+      {/* Separator */}
+      <div>
+        <p className="text-xs text-muted-foreground mb-3">Efeitos adicionais — ative um por vez, fica ativo até você desativar.</p>
 
-          return (
-            <motion.button
-              key={effect.type}
-              whileHover={!isDisabled ? { scale: 1.03 } : {}}
-              whileTap={!isDisabled ? { scale: 0.97 } : {}}
-              onClick={() => !isDisabled && activateEffect(effect)}
-              disabled={isDisabled || isActivating}
-              className={`relative flex flex-col items-center gap-1.5 p-3 rounded-xl border transition-all text-center ${
-                isActive
-                  ? "border-purple-500 bg-purple-500/10"
-                  : isDisabled
-                  ? "border-border bg-muted/50 opacity-50 cursor-not-allowed"
-                  : "border-border hover:border-primary/50 hover:bg-primary/5 cursor-pointer"
-              }`}
+        {/* Active Effect */}
+        <AnimatePresence>
+          {activeEffect && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="mb-3 bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/30 rounded-xl p-4"
             >
-              <span className="text-2xl">{effect.emoji}</span>
-              <span className="font-bold text-xs text-foreground">{effect.label}</span>
-              <span className="text-[10px] text-muted-foreground leading-tight">{effect.description}</span>
-              {isActivating && (
-                <div className="absolute inset-0 flex items-center justify-center bg-background/80 rounded-xl">
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary" />
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">{EFFECTS.find(e => e.type === activeEffect.effect_type)?.emoji || "✨"}</span>
+                  <div>
+                    <p className="font-bold text-sm text-foreground">
+                      {EFFECTS.find(e => e.type === activeEffect.effect_type)?.label || activeEffect.effect_type} ativo
+                    </p>
+                    <p className="text-xs text-muted-foreground">Ativo permanentemente</p>
+                  </div>
                 </div>
-              )}
-            </motion.button>
-          );
-        })}
+                <button
+                  onClick={cancelEffect}
+                  className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-destructive/10 text-destructive text-xs font-bold hover:bg-destructive/20 transition-colors"
+                >
+                  <X size={12} /> Desativar
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Effects Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          {EFFECTS.map((effect) => {
+            const isActive = activeEffect?.effect_type === effect.type;
+            const isDisabled = !!activeEffect;
+            const isActivating = activating === effect.type;
+
+            return (
+              <motion.button
+                key={effect.type}
+                whileHover={!isDisabled ? { scale: 1.03 } : {}}
+                whileTap={!isDisabled ? { scale: 0.97 } : {}}
+                onClick={() => !isDisabled && activateEffect(effect)}
+                disabled={isDisabled || isActivating}
+                className={`relative flex flex-col items-center gap-1.5 p-3 rounded-xl border transition-all text-center ${
+                  isActive
+                    ? "border-purple-500 bg-purple-500/10"
+                    : isDisabled
+                    ? "border-border bg-muted/50 opacity-50 cursor-not-allowed"
+                    : "border-border hover:border-primary/50 hover:bg-primary/5 cursor-pointer"
+                }`}
+              >
+                <span className="text-2xl">{effect.emoji}</span>
+                <span className="font-bold text-xs text-foreground">{effect.label}</span>
+                <span className="text-[10px] text-muted-foreground leading-tight">{effect.description}</span>
+                {isActivating && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-background/80 rounded-xl">
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary" />
+                  </div>
+                )}
+              </motion.button>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
