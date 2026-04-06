@@ -237,7 +237,7 @@ async function generateMarketingImage(
   let y = height - pad - (s.accentBar ? Math.round(6 * scale) : 0);
 
   // Seller info
-  const sellerFontSize = Math.round(16 * scale);
+  const sellerFontSize = Math.round((isStory ? 28 : 24) * scale);
   ctx.font = `600 ${sellerFontSize}px ${baseFont}`;
   ctx.fillStyle = s.sellerColor;
   ctx.textAlign = "left";
@@ -247,7 +247,7 @@ async function generateMarketingImage(
   if (sellerCreci) sellerLine += ` • CRECI ${sellerCreci}`;
   if (sellerPhone) sellerLine += ` • ${sellerPhone}`;
   ctx.fillText(sellerLine, pad, y);
-  y -= sellerFontSize + Math.round(12 * scale);
+  y -= sellerFontSize + Math.round(14 * scale);
 
   // Details row
   const details: string[] = [];
@@ -256,25 +256,25 @@ async function generateMarketingImage(
   if (item.area) details.push(`📐 ${item.area}m²`);
 
   if (details.length > 0) {
-    const detailFontSize = Math.round(18 * scale);
+    const detailFontSize = Math.round((isStory ? 30 : 26) * scale);
     ctx.font = `500 ${detailFontSize}px ${baseFont}`;
     ctx.fillStyle = s.detailColor;
     ctx.fillText(details.join("   "), pad, y);
-    y -= detailFontSize + Math.round(8 * scale);
+    y -= detailFontSize + Math.round(10 * scale);
   }
 
   // Location
   const location = item.neighborhood ? `📍 ${item.neighborhood}, ${item.city}` : item.city ? `📍 ${item.city}` : "";
   if (location) {
-    const locFontSize = Math.round(20 * scale);
+    const locFontSize = Math.round((isStory ? 32 : 28) * scale);
     ctx.font = `600 ${locFontSize}px ${baseFont}`;
     ctx.fillStyle = s.locationColor;
     ctx.fillText(location, pad, y);
-    y -= locFontSize + Math.round(10 * scale);
+    y -= locFontSize + Math.round(12 * scale);
   }
 
   // Title
-  const titleFontSize = Math.round((isStory ? 36 : 32) * scale);
+  const titleFontSize = Math.round((isStory ? 52 : 44) * scale);
   ctx.font = `800 ${titleFontSize}px ${titleFont}`;
   ctx.fillStyle = s.titleColor;
   const maxTitleWidth = width - pad * 2;
