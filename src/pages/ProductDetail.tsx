@@ -503,8 +503,10 @@ export default function ProductDetail() {
     </div>
   );
 
+  const themeVars = buildThemeCSSVars(dbSeller?.store_theme);
+
   return (
-    <div className="min-h-screen bg-background pb-24 lg:pb-0">
+    <div className="min-h-screen bg-background pb-24 lg:pb-0" style={themeVars}>
       {/* ── Hero Banner ── */}
       <section className="relative">
         <div className="aspect-[16/9] md:aspect-[21/7] overflow-hidden bg-muted">
