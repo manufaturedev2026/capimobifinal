@@ -1862,14 +1862,14 @@ export default function CompanyProfile() {
           {/* ── Bloco 1: Card do Corretor ── */}
           <div className="rounded-2xl" style={{ border: `1px solid ${storeTheme.border}`, background: storeTheme.card }}>
             {/* Header com cor primária */}
-            <div className="rounded-t-2xl px-5 pt-4 pb-16" style={{ background: dbProfile?.cover_color || `linear-gradient(135deg, ${storeTheme.primary}, ${storeTheme.primary}dd)` }}>
+            <div className="rounded-t-2xl px-5 pt-4 pb-4" style={{ background: dbProfile?.cover_color || `linear-gradient(135deg, ${storeTheme.primary}, ${storeTheme.primary}dd)` }}>
               <div className="flex items-center gap-2">
                 <BadgeCheck size={16} className="text-white/90" />
                 <span className="text-white/90 text-xs font-semibold uppercase tracking-wider">Profissional verificado</span>
               </div>
             </div>
-            {/* Foto + dados sobrepondo */}
-            <div className="px-5 -mt-10 pb-5">
+            {/* Foto + dados abaixo do header */}
+            <div className="px-5 pt-4 pb-5">
               <div className="flex items-start gap-3.5">
                 {company.logo ? (
                   <img src={company.logo} alt={company.name} className="w-16 h-16 rounded-xl object-cover shadow-lg ring-2 ring-white" style={{ borderColor: storeTheme.primary }} />
