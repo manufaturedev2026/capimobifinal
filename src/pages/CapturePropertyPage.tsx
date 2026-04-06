@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Home, Phone, User, MapPin, DollarSign, FileText, CheckCircle2, Loader2, Building2, Shield, Zap, TrendingUp, Instagram, Mail, Award, MapPinned } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
-import { getStoreTheme, type StoreTheme } from "@/components/StoreThemePicker";
+import { getStoreTheme } from "@/components/StoreThemePicker";
 import ThemeParticles from "@/components/ThemeParticles";
 
 const PROPERTY_TYPES = [
