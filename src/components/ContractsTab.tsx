@@ -356,7 +356,7 @@ export default function ContractsTab({ userId, sellerId }: { userId: string; sel
   const getFilledContent = () => {
     let filled = content;
     for (const [key, val] of Object.entries(variables)) {
-      filled = filled.replaceAll(key, val || key);
+      filled = filled.split(key).join(val || key);
     }
     return filled;
   };
