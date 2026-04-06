@@ -28,30 +28,57 @@ export function usePushSubscription(sellerId?: string) {
   }, [sellerId]);
 
   const subscribe = useCallback(async () => {
-    if (!isSupported || !sellerId) return false;
+    if (!isSupported || !sellerId) {
+      console.warn("[Push] Not supported or no sellerId");
+      return false;
+    }
 
     setLoading(true);
 
     try {
+      // Step 1: Request permission
+      console.log("[Push] Requesting permission...");
       const perm = await Notification.requestPermission();
       setPermission(perm);
 
       if (perm !== "granted") {
+        console.warn("[Push] Permission denied:", perm);
         return false;
       }
+      console.log("[Push] Permission granted");
 
+      // Step 2: Get VAPID key
+      console.log("[Push] Fetching VAPID key...");
       const { data: vapidData, error: vapidError } = await supabase.functions.invoke("get-vapid-key");
 
       if (vapidError || !vapidData?.publicKey) {
-        console.error("Failed to get VAPID key:", vapidError);
+        console.error("[Push] Failed to get VAPID key:", vapidError);
         return false;
       }
+      console.log("[Push] VAPID key received");
 
-      let registration = await navigator.serviceWorker.getRegistration();
+      // Step 3: Register service worker
+      console.log("[Push] Registering service worker...");
+      let registration = await navigator.serviceWorker.getRegistration("/");
       if (!registration) {
         registration = await navigator.serviceWorker.register("/push-sw.js", { scope: "/" });
+        console.log("[Push] SW registered, waiting for activation...");
+        // Wait for the SW to be active
+        if (registration.installing || registration.waiting) {
+          await new Promise<void>((resolve) => {
+            const sw = registration!.installing || registration!.waiting;
+            if (!sw) { resolve(); return; }
+            sw.addEventListener("statechange", () => {
+              if (sw.state === "activated") resolve();
+            });
+            // Fallback timeout
+            setTimeout(resolve, 5000);
+          });
+        }
       }
+      console.log("[Push] SW ready, state:", registration.active?.state);
 
+      // Step 4: Subscribe to push
       const readyRegistration = await Promise.race<ServiceWorkerRegistration>([
         navigator.serviceWorker.ready,
         new Promise<ServiceWorkerRegistration>((_, reject) =>
@@ -60,16 +87,20 @@ export function usePushSubscription(sellerId?: string) {
       ]);
 
       const applicationServerKey = urlBase64ToUint8Array(vapidData.publicKey);
-      const existingSubscription = await readyRegistration.pushManager.getSubscription();
-      const subscription =
-        existingSubscription ||
-        (await readyRegistration.pushManager.subscribe({
+      let subscription = await readyRegistration.pushManager.getSubscription();
+      
+      if (!subscription) {
+        console.log("[Push] Creating new subscription...");
+        subscription = await readyRegistration.pushManager.subscribe({
           userVisibleOnly: true,
           applicationServerKey,
-        }));
+        });
+      }
+      console.log("[Push] Subscription obtained:", subscription.endpoint.substring(0, 60) + "...");
 
+      // Step 5: Save to database
       const subJson = subscription.toJSON();
-      const { error: saveError } = await supabase.from("push_subscriptions" as any).insert(
+      const { error: saveError } = await supabase.from("push_subscriptions" as any).upsert(
         {
           seller_id: sellerId,
           endpoint: subJson.endpoint,
@@ -77,17 +108,31 @@ export function usePushSubscription(sellerId?: string) {
           auth: subJson.keys?.auth || "",
           user_agent: navigator.userAgent,
         },
+        { onConflict: "endpoint" }
       );
 
-      if (saveError && saveError.code !== "23505") {
-        console.error("Failed to save push subscription:", saveError);
-        return false;
+      if (saveError) {
+        // Try insert if upsert fails (no unique constraint on endpoint)
+        console.warn("[Push] Upsert failed, trying insert:", saveError.message);
+        const { error: insertError } = await supabase.from("push_subscriptions" as any).insert({
+          seller_id: sellerId,
+          endpoint: subJson.endpoint,
+          p256dh: subJson.keys?.p256dh || "",
+          auth: subJson.keys?.auth || "",
+          user_agent: navigator.userAgent,
+        });
+        
+        if (insertError && insertError.code !== "23505") {
+          console.error("[Push] Failed to save subscription:", insertError);
+          return false;
+        }
       }
 
+      console.log("[Push] Subscription saved successfully!");
       setIsSubscribed(true);
       return true;
     } catch (err) {
-      console.error("Push subscription failed:", err);
+      console.error("[Push] Subscription failed:", err);
       return false;
     } finally {
       setLoading(false);
