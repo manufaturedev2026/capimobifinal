@@ -138,46 +138,40 @@ export default function NotificationsTab({ userId, sellerId }: NotificationsTabP
       </div>
 
       {/* Stats */}
-      {/* Self-subscribe test button */}
-      <div className="p-4 rounded-xl border border-border bg-card space-y-3">
-        <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
-          <Smartphone className="w-4 h-4" /> Testar neste navegador
-        </h3>
-        {!pushSub.isSupported ? (
-          <p className="text-xs text-muted-foreground">
-            ⚠️ {pushSub.unsupportedReason || "Este navegador não suporta Push Notifications. Teste no Chrome, Edge, Firefox ou Safari 16.4+."}
+      {/* Self-subscribe test button — only show if not yet subscribed */}
+      {pushSub.isSupported && !pushSub.isSubscribed && (
+        <div className="p-4 rounded-xl border border-border bg-card space-y-3">
+          <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
+            <Smartphone className="w-4 h-4" /> Testar neste navegador
+          </h3>
+          {pushSub.permission === "denied" ? (
+            <p className="text-xs text-destructive">
+              ❌ Notificações bloqueadas neste navegador. Vá nas configurações do navegador para desbloquear.
+            </p>
+          ) : (
+            <Button
+              size="sm"
+              variant="outline"
+              className="gap-2"
+              disabled={pushSub.loading}
+              onClick={async () => {
+                const ok = await pushSub.subscribe();
+                if (ok) fetchData();
+              }}
+            >
+              {pushSub.loading ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <BellRing className="w-4 h-4" />
+              )}
+              {pushSub.loading ? "Ativando..." : "Ativar Push neste navegador"}
+            </Button>
+          )}
+          <p className="text-[10px] text-muted-foreground">
+            Inscreva este dispositivo para testar o envio de notificações.
           </p>
-        ) : pushSub.isSubscribed ? (
-          <p className="text-xs text-green-500 font-medium flex items-center gap-1">
-            <CheckCircle2 className="w-3.5 h-3.5" /> Este navegador já está inscrito para receber push.
-          </p>
-        ) : pushSub.permission === "denied" ? (
-          <p className="text-xs text-destructive">
-            ❌ Notificações bloqueadas neste navegador. Vá nas configurações do navegador para desbloquear.
-          </p>
-        ) : (
-          <Button
-            size="sm"
-            variant="outline"
-            className="gap-2"
-            disabled={pushSub.loading}
-            onClick={async () => {
-              const ok = await pushSub.subscribe();
-              if (ok) fetchData();
-            }}
-          >
-            {pushSub.loading ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <BellRing className="w-4 h-4" />
-            )}
-            {pushSub.loading ? "Ativando..." : "Ativar Push neste navegador"}
-          </Button>
-        )}
-        <p className="text-[10px] text-muted-foreground">
-          Inscreva este dispositivo para testar o envio de notificações.
-        </p>
-      </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         <div className="stat-card p-4 rounded-xl border border-border bg-card">
