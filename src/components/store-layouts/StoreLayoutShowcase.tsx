@@ -58,6 +58,8 @@ export default function StoreLayoutShowcase({
 
   return (
     <div className="font-body">
+      {/* Stories Bar */}
+      {storiesBar && <div className="mb-4">{storiesBar}</div>}
       {/* ══════ CATEGORY BAR ══════ */}
       <div className="mb-5 flex gap-2 overflow-x-auto scrollbar-hide -mx-4 px-4 pb-1">
         {subcategories.filter(c => c.slug === "todos" || (categoryCounts[c.slug] || 0) > 0).map((cat) => {
