@@ -356,7 +356,7 @@ export default function StoryUploadDialog({ open, onOpenChange, sellerId, onUplo
                   </Button>
                 </div>
               </>
-            )}
+
           </div>
         </ScrollArea>
       </DialogContent>
