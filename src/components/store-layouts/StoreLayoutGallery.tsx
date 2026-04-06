@@ -57,7 +57,7 @@ export default function StoreLayoutGallery({
                   <div className="absolute bottom-0 left-0 right-0 p-2.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <h3 className="text-white text-xs font-bold line-clamp-1">{product.title}</h3>
                     {product.price > 0 && (
-                      <p className="text-emerald-400 text-xs font-bold mt-0.5">R$ {product.price.toLocaleString("pt-BR")}</p>
+                      <p className="text-xs font-bold mt-0.5" style={{ color: storeTheme.primary }}>R$ {product.price.toLocaleString("pt-BR")}</p>
                     )}
                     {product.city && (
                       <p className="text-white/70 text-[10px] mt-0.5 flex items-center gap-1"><MapPin size={9} /> {product.neighborhood ? `${product.neighborhood}, ${product.city}` : product.city}</p>

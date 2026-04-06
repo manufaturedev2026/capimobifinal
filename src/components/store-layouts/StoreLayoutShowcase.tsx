@@ -98,7 +98,7 @@ export default function StoreLayoutShowcase({
                   </p>
                 )}
                 {heroProduct.price > 0 && (
-                  <p className="font-display font-extrabold text-2xl sm:text-3xl text-emerald-400 mt-2 drop-shadow-lg">
+                  <p className="font-display font-extrabold text-2xl sm:text-3xl mt-2 drop-shadow-lg" style={{ color: storeTheme.primary }}>
                     R$ {heroProduct.price.toLocaleString("pt-BR")}
                   </p>
                 )}

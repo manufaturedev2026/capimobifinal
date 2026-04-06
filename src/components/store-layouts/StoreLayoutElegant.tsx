@@ -79,7 +79,7 @@ export default function StoreLayoutElegant({
                     </div>
                     <div className="flex items-center justify-between mt-1.5">
                       {product.price > 0 && (
-                        <p className="font-display font-extrabold text-emerald-500 text-base">
+                        <p className="font-display font-extrabold text-base" style={{ color: storeTheme.primary }}>
                           R$ {product.price.toLocaleString("pt-BR")}
                         </p>
                       )}
