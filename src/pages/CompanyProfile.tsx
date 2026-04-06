@@ -865,7 +865,7 @@ export default function CompanyProfile() {
                 </h1>
                 {heroProduct.city && (
                   <p className="text-white/50 text-xs flex items-center gap-1 mb-2">
-                    <MapPin size={11} /> {heroProduct.neighborhood ? `${heroProduct.neighborhood}, ${heroProduct.city}` : heroProduct.city}
+                    <MapPin size={11} /> {(heroProduct as any).neighborhood ? `${(heroProduct as any).neighborhood}, ${heroProduct.city}` : heroProduct.city}
                   </p>
                 )}
                 {heroProduct.price > 0 && (
