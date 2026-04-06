@@ -6,7 +6,7 @@ import {
   Home, Plus, ArrowLeft, Edit, Trash2, Phone, Mail, Calendar,
   DollarSign, AlertTriangle, CheckCircle2, Clock, TrendingUp,
   Send, MessageCircle, X, FileText, User, Building2, Search,
-  ChevronRight, Eye, Filter,
+  ChevronRight, Eye, Filter, MoreVertical, Ban, RefreshCw, Receipt,
 } from "lucide-react";
 
 /* ═══════════════════════════════════════
