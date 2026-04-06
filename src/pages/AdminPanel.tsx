@@ -44,7 +44,7 @@ export default function AdminPanel() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [tierFilter, setTierFilter] = useState<string>("todos");
-  const [tab, setTab] = useState<"sellers" | "billing" | "ads" | "referrals" | "crm" | "seo">("sellers");
+  const [tab, setTab] = useState<"sellers" | "billing" | "referrals" | "crm" | "seo">("sellers");
   const [adRequests, setAdRequests] = useState<any[]>([]);
   const [adsLoading, setAdsLoading] = useState(false);
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
@@ -341,7 +341,7 @@ export default function AdminPanel() {
   const sidebarItems = [
     { key: "sellers" as const, label: "Vendedores", icon: Users },
     { key: "billing" as const, label: "Faturamento", icon: DollarSign },
-    { key: "ads" as const, label: "Solicitações ADS", icon: Megaphone, badge: pendingAdsCount },
+    
     { key: "crm" as const, label: "CRM WhatsApp", icon: MessageCircle },
     { key: "seo" as const, label: "SEO / Sitemaps", icon: Globe },
   ];
@@ -395,9 +395,9 @@ export default function AdminPanel() {
               >
                 <item.icon size={18} />
                 <span className="flex-1 text-left">{item.label}</span>
-                {item.badge && item.badge > 0 && (
+                {'badge' in item && (item as any).badge > 0 && (
                   <span className="bg-destructive text-destructive-foreground text-[10px] px-1.5 py-0.5 rounded-full font-bold">
-                    {item.badge}
+                    {(item as any).badge}
                   </span>
                 )}
               </button>
@@ -417,9 +417,9 @@ export default function AdminPanel() {
             >
               <item.icon size={14} />
               {item.label}
-              {item.badge && item.badge > 0 && (
+              {'badge' in item && (item as any).badge > 0 && (
                 <span className="bg-destructive text-destructive-foreground text-[10px] px-1.5 py-0.5 rounded-full font-bold">
-                  {item.badge}
+                  {(item as any).badge}
                 </span>
               )}
             </button>
@@ -610,141 +610,6 @@ export default function AdminPanel() {
         )}
 
 
-        {tab === "ads" && (
-          <div className="space-y-3">
-            {adsLoading ? (
-              <div className="text-center py-8 text-muted-foreground text-sm">Carregando...</div>
-            ) : adRequests.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground text-sm">Nenhuma solicitação de ADS ainda.</div>
-            ) : (
-              adRequests.map((ad) => {
-                const seller = sellers.find(s => s.id === ad.seller_id || s.user_id === ad.user_id);
-                return (
-                  <div key={ad.id} className="bg-card border border-border rounded-2xl p-4">
-                    <div className="flex flex-col md:flex-row md:items-start justify-between gap-3">
-                      <div className="flex-1 space-y-1">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <h3 className="font-display font-bold text-foreground">
-                            {seller?.company_name || "Vendedor"}
-                          </h3>
-                          {seller?.company_name && seller?.full_name && (
-                            <span className="text-xs text-muted-foreground">({seller.full_name})</span>
-                          )}
-                          {!seller?.company_name && seller?.full_name && (
-                            <h3 className="font-display font-bold text-foreground">{seller.full_name}</h3>
-                          )}
-                          <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
-                            ad.status === "pendente" ? "bg-amber-500/10 text-amber-500" :
-                            ad.status === "aprovado" ? "bg-green-500/10 text-green-500" :
-                            "bg-destructive/10 text-destructive"
-                          }`}>
-                            {ad.status}
-                          </span>
-                        </div>
-                        <p className="text-xs text-muted-foreground">
-                          {seller?.email || "—"} • {seller?.city || "—"} • {seller?.seller_type || "—"}
-                        </p>
-                        {seller?.phone && (
-                          <p className="text-xs text-muted-foreground flex items-center gap-2 flex-wrap">
-                            📞 {seller.phone}
-                            {(() => {
-                              const nome = seller.full_name || "cliente";
-                              const loja = seller.company_name || "";
-                              const plataforma = "ADS Interno";
-                              const cidade = seller.city || "";
-                              const nicho = seller.seller_type === "automoveis" ? "Automóveis" : "Imóveis";
-                              const total = `R$ ${Number(ad.total).toFixed(2).replace(".", ",")}`;
-                              
-                              const msgAprovado = `Olá ${nome}! 🎉 É com grande alegria que viemos lhe informar que a sua solicitação de anúncio foi *APROVADA*! ✅\n\n📋 *Detalhes do seu pedido:*\n🏪 Loja: ${loja}\n📍 Cidade: ${cidade}\n🏷️ Nicho: ${nicho}\n💰 Valor total: ${total}\n\nEntraremos em contato em breve para dar início à sua campanha. Obrigado por confiar na Manufature! 🚀`;
-                              const msgPendente = `Olá ${nome}! 👋 Recebemos a sua solicitação de anúncio.\n\n📋 *Detalhes:*\n🏪 Loja: ${loja}\n📍 Cidade: ${cidade}\n🏷️ Nicho: ${nicho}\n💰 Valor total: ${total}\n\nEstamos analisando o seu pedido e em breve retornaremos com uma resposta. 😊`;
-                              const motivoRejeicao = ad.details ? `\n\n📝 *Motivo:* ${ad.details}` : "";
-                              const msgRejeitado = `Olá ${nome}! 👋 Infelizmente sua solicitação de anúncio não foi aprovada desta vez.\n\n📋 *Detalhes:*\n🏪 Loja: ${loja}\n💰 Valor: ${total}${motivoRejeicao}\n\nEntre em contato conosco para mais informações. Estamos à disposição! 🤝`;
-                              
-                              const msg = ad.status === "aprovado" ? msgAprovado : ad.status === "rejeitado" ? msgRejeitado : msgPendente;
-                              const phone = seller.phone.replace(/\D/g, '');
-                              const waUrl = `https://wa.me/55${phone}?text=${encodeURIComponent(msg)}`;
-                              
-                              return (
-                                <a href={waUrl} target="_blank" rel="noopener noreferrer"
-                                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-green-500/10 text-green-600 text-[10px] font-semibold hover:bg-green-500/20">
-                                  WhatsApp
-                                </a>
-                              );
-                            })()}
-                          </p>
-                        )}
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-2">
-                          <div className="bg-secondary rounded-lg p-2 text-center">
-                            <p className="text-[10px] text-muted-foreground">Diário</p>
-                            <p className="text-sm font-bold text-foreground">R$ {Number(ad.daily_budget).toFixed(2)}</p>
-                          </div>
-                          <div className="bg-secondary rounded-lg p-2 text-center">
-                            <p className="text-[10px] text-muted-foreground">Dias</p>
-                            <p className="text-sm font-bold text-foreground">{ad.duration_days}</p>
-                          </div>
-                          <div className="bg-secondary rounded-lg p-2 text-center">
-                            <p className="text-[10px] text-muted-foreground">Total</p>
-                            <p className="text-sm font-bold text-green-500">R$ {Number(ad.total).toFixed(2)}</p>
-                          </div>
-                        </div>
-                        {ad.details && (
-                          <p className="text-xs text-muted-foreground mt-2 bg-secondary/50 p-2 rounded-lg">
-                            💬 {ad.details}
-                          </p>
-                        )}
-                        <p className="text-[10px] text-muted-foreground mt-1">
-                          {new Date(ad.created_at).toLocaleDateString("pt-BR")} às {new Date(ad.created_at).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
-                        </p>
-                      </div>
-                      <div className="flex gap-1.5 flex-wrap">
-                        {seller && (
-                          <Link to={`/empresa/${seller.id}`} target="_blank"
-                            className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-semibold hover:bg-primary/20">
-                            <ExternalLink size={12} /> Ver Loja
-                          </Link>
-                        )}
-                        {ad.status === "aprovado" && seller && (() => {
-                          const sitemapUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/seller-sitemap?seller_id=${seller.id}&format=google`;
-                          return (
-                            <>
-                              <a href={sitemapUrl} target="_blank" rel="noopener noreferrer"
-                                className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-amber-500/10 text-amber-600 text-xs font-semibold hover:bg-amber-500/20">
-                                <FileText size={12} /> Sitemap
-                              </a>
-                              <button onClick={() => {
-                                navigator.clipboard.writeText(sitemapUrl);
-                                toast({ title: "URL do sitemap copiada!" });
-                              }}
-                                className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-secondary text-foreground text-xs font-semibold hover:bg-secondary/80">
-                                <Copy size={12} /> Copiar URL
-                              </button>
-                            </>
-                          );
-                        })()}
-                        {ad.status === "pendente" && (
-                          <>
-                            <button onClick={() => updateAdStatus(ad.id, "aprovado")}
-                              className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-green-500/10 text-green-600 text-xs font-semibold hover:bg-green-500/20">
-                              <Check size={12} /> Aprovar
-                            </button>
-                            <button onClick={() => handleRejectClick(ad.id)}
-                              className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-destructive/10 text-destructive text-xs font-semibold hover:bg-destructive/20">
-                              <X size={12} /> Rejeitar
-                            </button>
-                          </>
-                        )}
-                        <button onClick={() => deleteAdRequest(ad.id)}
-                          className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-destructive/10 text-destructive text-xs font-semibold hover:bg-destructive/20">
-                          <Trash2 size={12} /> Apagar
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })
-            )}
-          </div>
-        )}
 
 
         {tab === "crm" && (
