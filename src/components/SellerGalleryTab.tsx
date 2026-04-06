@@ -238,7 +238,7 @@ async function generateMarketingImage(
 
   // Seller info
   const sellerFontSize = Math.round(16 * scale);
-  ctx.font = `600 ${sellerFontSize}px ${font}`;
+  ctx.font = `600 ${sellerFontSize}px ${baseFont}`;
   ctx.fillStyle = s.sellerColor;
   ctx.textAlign = "left";
   ctx.textBaseline = "bottom";
