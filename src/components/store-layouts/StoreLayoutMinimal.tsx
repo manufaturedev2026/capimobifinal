@@ -9,6 +9,7 @@ import {
 import type { StoreLayoutProps } from "./types";
 import { useAuth } from "@/hooks/useAuth";
 import { isIOSStandaloneApp } from "@/lib/pwaInstall";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 /* ── Color helpers ── */
 function hexToHsl(hex: string): [number, number, number] {
@@ -53,6 +54,7 @@ export default function StoreLayoutMinimal({
   const [showCityPicker, setShowCityPicker] = useState(false);
   const heroRef = useRef<HTMLDivElement>(null);
   const isIOSStandalone = isIOSStandaloneApp();
+  const isMobile = useIsMobile();
 
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const heroScale = useTransform(scrollYProgress, [0, 1], [1, 1.1]);
@@ -75,10 +77,10 @@ export default function StoreLayoutMinimal({
 
   // Auto-rotate hero images
   useEffect(() => {
-    if (heroImages.length <= 1) return;
+    if (heroImages.length <= 1 || isMobile) return;
     const t = setInterval(() => setHeroIdx(prev => (prev + 1) % heroImages.length), 5000);
     return () => clearInterval(t);
-  }, [heroImages.length]);
+  }, [heroImages.length, isMobile]);
 
   const scrollToGrid = () =>
     setTimeout(() => {

@@ -6,6 +6,7 @@ import {
   Sword, Sparkles, Trophy, Bed, Bath, Car, Maximize,
 } from "lucide-react";
 import type { StoreLayoutProps } from "./types";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 /* ─── RPG decorative corner ─── */
 function CornerDecor({ color, position }: { color: string; position: string }) {
@@ -36,17 +37,18 @@ export default function StoreLayoutShowcase({
 }: StoreLayoutProps) {
   const [heroIndex, setHeroIndex] = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const isMobile = useIsMobile();
 
   const heroProducts = filteredProducts.filter((p: any) => p.image).slice(0, 8);
   const restProducts = filteredProducts;
 
   useEffect(() => {
-    if (heroProducts.length <= 1) return;
+    if (heroProducts.length <= 1 || isMobile) return;
     intervalRef.current = setInterval(() => {
       setHeroIndex((p) => (p + 1) % heroProducts.length);
     }, 5000);
     return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
-  }, [heroProducts.length]);
+  }, [heroProducts.length, isMobile]);
 
   const handleCategoryChange = (cat: string) => {
     setActiveCategory(cat);

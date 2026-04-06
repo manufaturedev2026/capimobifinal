@@ -9,6 +9,7 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import type { StoreLayoutProps } from "./types";
 import { isIOSStandaloneApp } from "@/lib/pwaInstall";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 /* ═══════════════════════════════════════════
    Netflix-style horizontal content row
@@ -194,6 +195,7 @@ export default function StoreLayoutNetflix({
   const [billboardIdx, setBillboardIdx] = useState(0);
   const accent = "#e50914";
   const isIOSStandalone = isIOSStandaloneApp();
+  const isMobile = useIsMobile();
 
   const allProducts = products || filteredProducts;
   const billboard = allProducts.filter((p: any) => p.image).slice(0, 6);
@@ -201,14 +203,18 @@ export default function StoreLayoutNetflix({
 
   // Auto-rotate billboard
   useEffect(() => {
-    if (billboard.length <= 1) return;
+    if (billboard.length <= 1 || isMobile) return;
     const t = setInterval(() => setBillboardIdx(p => (p + 1) % billboard.length), 7000);
     return () => clearInterval(t);
-  }, [billboard.length]);
+  }, [billboard.length, isMobile]);
 
   // Progress bar for current billboard
   const [progress, setProgress] = useState(0);
   useEffect(() => {
+    if (isMobile) {
+      setProgress(0);
+      return;
+    }
     setProgress(0);
     const start = Date.now();
     const interval = setInterval(() => {
@@ -216,7 +222,7 @@ export default function StoreLayoutNetflix({
       setProgress(Math.min((elapsed / 7000) * 100, 100));
     }, 50);
     return () => clearInterval(interval);
-  }, [billboardIdx]);
+  }, [billboardIdx, isMobile]);
 
   // Build category rows
   const categoryMap: Record<string, string[]> = {
