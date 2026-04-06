@@ -945,6 +945,11 @@ export default function SellerDashboard() {
               <SellerCrmTab userId={user.id} sellerId={profile.id} />
             )}
 
+            {/* Gallery Tab */}
+            {activeTab === "gallery" && user?.id && profile?.id && (
+              <SellerGalleryTab userId={user.id} sellerId={profile.id} sellerSlug={profile.slug || null} />
+            )}
+
             {/* Team Tab */}
             {activeTab === "team" && showTeamTab && profile?.id && (
               <TeamMembersTab
