@@ -417,6 +417,13 @@ export default function StoreLayoutMarketplace({
         </div>
       </motion.div>
 
+      {/* Stories Bar */}
+      {storiesBar && (
+        <div className="max-w-6xl mx-auto px-4 mt-4">
+          {storiesBar}
+        </div>
+      )}
+
       <div className="max-w-6xl mx-auto px-4">
 
         {/* ═══ QUICK ACTIONS — Glass morphism cards ═══ */}
