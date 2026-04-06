@@ -347,11 +347,76 @@ export default function CapturePropertyPage() {
           </p>
         </motion.form>
 
+        {/* Broker Info Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8 }}
+          className="mt-8 bg-white/[0.04] backdrop-blur-xl rounded-3xl p-6 border border-white/10"
+        >
+          <div className="flex items-center gap-4 mb-4">
+            {broker.logo_url ? (
+              <img src={broker.logo_url} alt={broker.full_name} className="w-16 h-16 rounded-2xl object-cover ring-2 ring-white/10" />
+            ) : (
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#00AEEF] to-[#0060a0] flex items-center justify-center text-white text-xl font-bold">
+                {broker.full_name?.charAt(0)}
+              </div>
+            )}
+            <div className="flex-1 min-w-0">
+              <h3 className="text-white font-bold text-lg truncate">{broker.company_name || broker.full_name}</h3>
+              {broker.seller_category && (
+                <span className="inline-block px-2.5 py-0.5 rounded-full bg-[#00AEEF]/10 border border-[#00AEEF]/20 text-[#00AEEF] text-[10px] font-bold uppercase tracking-wider mt-1">
+                  {broker.seller_category === 'corretor' ? 'Corretor(a) de Imóveis' :
+                   broker.seller_category === 'imobiliaria' ? 'Imobiliária' :
+                   broker.seller_category === 'construtora' ? 'Construtora' : broker.seller_category}
+                </span>
+              )}
+            </div>
+          </div>
+
+          {broker.bio && (
+            <p className="text-white/40 text-xs leading-relaxed mb-4">{broker.bio}</p>
+          )}
+
+          <div className="space-y-2.5">
+            {broker.creci && (
+              <div className="flex items-center gap-2.5 text-white/50 text-xs">
+                <Award size={14} className="text-[#00AEEF] shrink-0" />
+                <span>CRECI: <strong className="text-white/70">{broker.creci}</strong></span>
+              </div>
+            )}
+            {(broker.city || broker.state) && (
+              <div className="flex items-center gap-2.5 text-white/50 text-xs">
+                <MapPinned size={14} className="text-[#00AEEF] shrink-0" />
+                <span>{[broker.city, broker.state].filter(Boolean).join(" - ")}</span>
+              </div>
+            )}
+            {broker.phone && (
+              <a href={`https://wa.me/${broker.phone.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 text-white/50 text-xs hover:text-[#00AEEF] transition-colors">
+                <Phone size={14} className="text-[#00AEEF] shrink-0" />
+                <span>{broker.phone}</span>
+              </a>
+            )}
+            {broker.email && (
+              <div className="flex items-center gap-2.5 text-white/50 text-xs">
+                <Mail size={14} className="text-[#00AEEF] shrink-0" />
+                <span>{broker.email}</span>
+              </div>
+            )}
+            {broker.instagram && (
+              <a href={`https://instagram.com/${broker.instagram.replace('@', '')}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2.5 text-white/50 text-xs hover:text-[#00AEEF] transition-colors">
+                <Instagram size={14} className="text-[#00AEEF] shrink-0" />
+                <span>@{broker.instagram.replace('@', '')}</span>
+              </a>
+            )}
+          </div>
+        </motion.div>
+
         {/* Trust footer */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.8 }}
+          transition={{ delay: 1.0 }}
           className="text-center mt-8"
         >
           <div className="flex items-center justify-center gap-2 text-white/20 text-[11px]">
