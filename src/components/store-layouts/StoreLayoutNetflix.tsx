@@ -454,40 +454,87 @@ export default function StoreLayoutNetflix({
         </div>
       )}
 
-      {/* ══════ NETFLIX CATEGORY NAV + CONTENT ══════ */}
-      <div className="pb-8 pt-4">
-        {/* Category scroll bar */}
-        <div className="relative mb-6">
-          <div className="flex gap-1 overflow-x-auto scrollbar-hide scroll-smooth px-4 md:px-12 py-2">
-            <button
-              onClick={() => setActiveCategory("todos")}
-              className="flex-shrink-0 px-5 py-2 rounded-sm text-sm font-semibold transition-all duration-300 whitespace-nowrap"
-              style={{
-                background: activeCategory === "todos" ? "#e50914" : "transparent",
-                color: activeCategory === "todos" ? "#fff" : "rgba(255,255,255,0.65)",
-                borderBottom: activeCategory === "todos" ? "2px solid #e50914" : "2px solid transparent",
-              }}
-            >
-              Todos
-            </button>
-            {subcategories
-              .filter(c => c.slug !== "todos" && (categoryCounts[c.slug] || 0) > 0)
-              .map(c => (
+      {/* ══════ NETFLIX CATEGORY CARDS + CONTENT ══════ */}
+      <div className="pb-8 pt-6">
+        {/* Category cards — movie poster style */}
+        <h3 className="font-bold text-sm md:text-base text-white mb-3 px-4 md:px-12">Explorar por Categoria</h3>
+        <div className="flex gap-2 md:gap-3 overflow-x-auto scrollbar-hide scroll-smooth px-4 md:px-12 pb-6">
+          {/* "Todos" card */}
+          {(() => {
+            const allImages = filteredProducts.filter((p: any) => p.image).slice(0, 4);
+            const isActive = activeCategory === "todos";
+            return (
+              <button
+                onClick={() => setActiveCategory("todos")}
+                className="flex-shrink-0 relative overflow-hidden rounded-md transition-all duration-300 group/cat"
+                style={{
+                  width: "clamp(120px, 18vw, 180px)",
+                  aspectRatio: "2/3",
+                  outline: isActive ? "2px solid #e50914" : "2px solid transparent",
+                  outlineOffset: 2,
+                }}
+              >
+                {allImages[0] ? (
+                  <img src={allImages[0].image} alt="Todos" className="w-full h-full object-cover transition-transform duration-500 group-hover/cat:scale-110" />
+                ) : (
+                  <div className="w-full h-full bg-[#2a2a2a]" />
+                )}
+                <div className="absolute inset-0" style={{
+                  background: isActive
+                    ? "linear-gradient(to top, rgba(229,9,20,0.85) 0%, rgba(229,9,20,0.3) 40%, transparent 70%)"
+                    : "linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 40%, transparent 70%)",
+                }} />
+                <div className="absolute bottom-0 left-0 right-0 p-2.5 text-center">
+                  <span className="text-white font-bold text-xs md:text-sm drop-shadow-lg block">Todos</span>
+                  <span className="text-white/60 text-[9px] md:text-[10px]">{filteredProducts.length} imóveis</span>
+                </div>
+                {isActive && (
+                  <div className="absolute top-0 left-0 right-0 h-[3px] bg-[#e50914]" />
+                )}
+              </button>
+            );
+          })()}
+
+          {subcategories
+            .filter(c => c.slug !== "todos" && (categoryCounts[c.slug] || 0) > 0)
+            .map(c => {
+              const catItems = filteredProducts.filter((p: any) => (categoryMap[c.slug] || []).includes(p.category));
+              const coverImg = categoryCardImages?.[c.slug] || catItems.find((p: any) => p.image)?.image;
+              const isActive = activeCategory === c.slug;
+              const count = categoryCounts[c.slug] || 0;
+
+              return (
                 <button
                   key={c.slug}
                   onClick={() => setActiveCategory(c.slug)}
-                  className="flex-shrink-0 px-5 py-2 rounded-sm text-sm font-semibold transition-all duration-300 whitespace-nowrap hover:text-white"
+                  className="flex-shrink-0 relative overflow-hidden rounded-md transition-all duration-300 group/cat"
                   style={{
-                    background: activeCategory === c.slug ? "#e50914" : "transparent",
-                    color: activeCategory === c.slug ? "#fff" : "rgba(255,255,255,0.65)",
-                    borderBottom: activeCategory === c.slug ? "2px solid #e50914" : "2px solid transparent",
+                    width: "clamp(120px, 18vw, 180px)",
+                    aspectRatio: "2/3",
+                    outline: isActive ? "2px solid #e50914" : "2px solid transparent",
+                    outlineOffset: 2,
                   }}
                 >
-                  {c.name}
+                  {coverImg ? (
+                    <img src={coverImg} alt={c.name} className="w-full h-full object-cover transition-transform duration-500 group-hover/cat:scale-110" />
+                  ) : (
+                    <div className="w-full h-full bg-[#2a2a2a]" />
+                  )}
+                  <div className="absolute inset-0" style={{
+                    background: isActive
+                      ? "linear-gradient(to top, rgba(229,9,20,0.85) 0%, rgba(229,9,20,0.3) 40%, transparent 70%)"
+                      : "linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 40%, transparent 70%)",
+                  }} />
+                  <div className="absolute bottom-0 left-0 right-0 p-2.5 text-center">
+                    <span className="text-white font-bold text-xs md:text-sm drop-shadow-lg block">{c.name}</span>
+                    <span className="text-white/60 text-[9px] md:text-[10px]">{count} imóveis</span>
+                  </div>
+                  {isActive && (
+                    <div className="absolute top-0 left-0 right-0 h-[3px] bg-[#e50914]" />
+                  )}
                 </button>
-              ))}
-          </div>
-          <div className="absolute bottom-0 left-4 right-4 md:left-12 md:right-12 h-px bg-white/10" />
+              );
+            })}
         </div>
 
         {/* Items row */}
