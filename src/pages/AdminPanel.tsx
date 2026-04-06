@@ -586,9 +586,9 @@ export default function AdminPanel() {
             <h3 className="font-display font-bold text-lg text-foreground mb-4">Resumo de Faturamento</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {(["start", "basico", "premium", "vip", "essencial_empresa", "premium_empresa", "prime_empresa"] as const).map((tier) => {
-                const config = PACKAGE_CONFIG[tier];
-                const count = totalByTier[tier];
-                const revenue = count * config.price;
+                const config = PACKAGE_CONFIG[tier as keyof typeof PACKAGE_CONFIG] ?? { name: tier, price: 0, borderColor: "border-border" };
+                const count = totalByTier[tier] || 0;
+                const revenue = count * (config.price ?? 0);
                 return (
                   <div key={tier} className={`rounded-xl border-2 ${config.borderColor} p-4`}>
                     <h4 className="font-display font-bold text-foreground">{config.name}</h4>
