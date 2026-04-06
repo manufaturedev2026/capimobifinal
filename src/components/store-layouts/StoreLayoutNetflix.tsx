@@ -574,8 +574,8 @@ export default function StoreLayoutNetflix({
                           loading="lazy"
                         />
                       ) : (
-                        <div className="w-full h-full bg-[#232323] flex items-center justify-center">
-                          <Image size={24} className="text-white/30" />
+                        <div className="w-full h-full flex items-center justify-center" style={{ background: storeTheme.card }}>
+                          <Image size={24} style={{ color: storeTheme.textMuted }} />
                         </div>
                       )}
 
