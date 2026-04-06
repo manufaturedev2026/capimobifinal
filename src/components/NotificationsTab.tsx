@@ -59,6 +59,18 @@ export default function NotificationsTab({ userId, sellerId }: NotificationsTabP
     setLoading(false);
   };
 
+  const handleDeleteLog = async (id: string) => {
+    await supabase.from("push_notifications_log" as any).delete().eq("id", id);
+    setLogs((prev) => prev.filter((l) => l.id !== id));
+    toast({ title: "Registro removido" });
+  };
+
+  const handleClearAll = async () => {
+    await supabase.from("push_notifications_log" as any).delete().eq("user_id", userId);
+    setLogs([]);
+    toast({ title: "Histórico limpo" });
+  };
+
   useEffect(() => {
     fetchData();
   }, [userId, sellerId]);
