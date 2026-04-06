@@ -250,6 +250,48 @@ export type Database = {
           },
         ]
       }
+      generated_contracts: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          seller_id: string
+          signature_locador: string | null
+          signature_locatario: string | null
+          template_type: string
+          title: string
+          updated_at: string
+          user_id: string
+          variables: Json | null
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          seller_id: string
+          signature_locador?: string | null
+          signature_locatario?: string | null
+          template_type: string
+          title: string
+          updated_at?: string
+          user_id: string
+          variables?: Json | null
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          seller_id?: string
+          signature_locador?: string | null
+          signature_locatario?: string | null
+          template_type?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+          variables?: Json | null
+        }
+        Relationships: []
+      }
       platform_settings: {
         Row: {
           key: string
