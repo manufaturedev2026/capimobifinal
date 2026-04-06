@@ -29,6 +29,17 @@ interface Props {
 
 type ImageFormat = "card" | "banner" | "story";
 type ImageStyle = "verde" | "azul" | "vermelho" | "rosa" | "gold" | "roxo";
+type FontStyle = "moderna" | "elegante" | "negrito" | "suave" | "tech" | "classica" | "manuscrita";
+
+const FONT_CONFIG: Record<FontStyle, { label: string; family: string; preview: string }> = {
+  moderna: { label: "Moderna", family: "'Trebuchet MS', 'Helvetica Neue', Arial, sans-serif", preview: "Aa" },
+  elegante: { label: "Elegante", family: "'Georgia', 'Times New Roman', serif", preview: "Aa" },
+  negrito: { label: "Negrito", family: "'Impact', 'Arial Black', sans-serif", preview: "Aa" },
+  suave: { label: "Suave", family: "'Segoe UI', 'Verdana', sans-serif", preview: "Aa" },
+  tech: { label: "Tech", family: "'Courier New', 'Lucida Console', monospace", preview: "Aa" },
+  classica: { label: "Clássica", family: "'Palatino Linotype', 'Book Antiqua', Palatino, serif", preview: "Aa" },
+  manuscrita: { label: "Manuscrita", family: "'Brush Script MT', 'Comic Sans MS', cursive", preview: "Aa" },
+};
 
 const FORMAT_CONFIG: Record<ImageFormat, { label: string; width: number; height: number; description: string }> = {
   card: { label: "Post (1:1)", width: 1080, height: 1080, description: "Instagram / Facebook" },
@@ -115,9 +126,11 @@ async function generateMarketingImage(
   sellerLogo: string | null,
   style: ImageStyle = "verde",
   photoUrl?: string,
+  fontStyle: FontStyle = "moderna",
 ): Promise<string> {
   const { width, height } = FORMAT_CONFIG[format];
   const s = STYLE_CONFIG[style];
+  const font = FONT_CONFIG[fontStyle].family;
   const canvas = document.createElement("canvas");
   canvas.width = width;
   canvas.height = height;
@@ -173,7 +186,7 @@ async function generateMarketingImage(
   const pad = Math.round(width * 0.045);
   const isStory = format === "story";
   const scale = width / 1080;
-  const font = s.fontFamily;
+  // font is already set from FONT_CONFIG
 
   // Seller photo (circular, top-left)
   if (sellerLogo) {
@@ -300,6 +313,7 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
   const [selectedStyle, setSelectedStyle] = useState<ImageStyle>("verde");
   const [showBrokerPhoto, setShowBrokerPhoto] = useState(true);
+  const [selectedFont, setSelectedFont] = useState<FontStyle>("moderna");
 
   useEffect(() => {
     (async () => {
@@ -340,7 +354,7 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
     setGenerating(format);
     try {
       const chosenPhoto = photos[selectedPhotoIndex] || photos[0];
-      const dataUrl = await generateMarketingImage(selectedItem, format, sellerName, sellerPhone, sellerCreci, showBrokerPhoto ? sellerLogo : null, selectedStyle, chosenPhoto);
+      const dataUrl = await generateMarketingImage(selectedItem, format, sellerName, sellerPhone, sellerCreci, showBrokerPhoto ? sellerLogo : null, selectedStyle, chosenPhoto, selectedFont);
       const link = document.createElement("a");
       link.download = `${selectedItem.title.replace(/[^a-zA-Z0-9À-ÿ ]/g, "").trim().replace(/\s+/g, "-")}_${format}.jpg`;
       link.href = dataUrl;
@@ -352,7 +366,7 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
     } finally {
       setGenerating(null);
     }
-  }, [selectedItem, sellerName, sellerPhone, sellerCreci, sellerLogo, selectedStyle, showBrokerPhoto, toast, photos, selectedPhotoIndex]);
+  }, [selectedItem, sellerName, sellerPhone, sellerCreci, sellerLogo, selectedStyle, showBrokerPhoto, selectedFont, toast, photos, selectedPhotoIndex]);
 
   if (loading) {
     return (
@@ -439,7 +453,8 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
       {/* Hero Banner — preview da foto selecionada com estilo */}
       {photos.length > 0 && (() => {
         const stylePreview = STYLE_CONFIG[selectedStyle];
-        const titleStyle = { color: stylePreview.titleColor, fontFamily: stylePreview.fontFamily };
+        const fontPreview = FONT_CONFIG[selectedFont];
+        const titleStyle = { color: stylePreview.titleColor, fontFamily: fontPreview.family };
         return (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
@@ -564,7 +579,33 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
             </div>
           </div>
 
-          {/* Broker photo toggle */}
+          {/* Font selector */}
+          <div className="space-y-1.5">
+            <p className="text-[11px] font-semibold text-muted-foreground flex items-center gap-1">
+              ✏️ Fonte:
+            </p>
+            <div className="flex gap-2 flex-wrap">
+              {(Object.keys(FONT_CONFIG) as FontStyle[]).map((key) => {
+                const cfg = FONT_CONFIG[key];
+                const isActive = selectedFont === key;
+                return (
+                  <button
+                    key={key}
+                    onClick={() => setSelectedFont(key)}
+                    className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border-2 transition-all ${
+                      isActive
+                        ? "border-primary bg-primary/10"
+                        : "border-border hover:border-primary/40"
+                    }`}
+                  >
+                    <span className="text-sm font-bold" style={{ fontFamily: cfg.family }}>{cfg.preview}</span>
+                    <span className="text-[11px] font-bold text-foreground">{cfg.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           <label className="flex items-center gap-2 cursor-pointer">
             <input
               type="checkbox"
