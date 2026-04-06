@@ -1989,7 +1989,7 @@ export default function CompanyProfile() {
           </div>
         </section>
       )}
-      <section className={`${isMarketplace || isNetflix ? "" : "lg:hidden"} ${isMinimal ? "hidden" : ""} px-4 mt-6 mb-6`}>
+      <section className={`${isMarketplace || isNetflix ? "" : "lg:hidden"} px-4 mt-6 mb-6`}>
         <div className="max-w-[1800px] mx-auto">
           {/* ── Bloco 1: Card do Corretor ── */}
           <div className="rounded-2xl" style={{ border: `1px solid ${storeTheme.border}`, background: storeTheme.card }}>
