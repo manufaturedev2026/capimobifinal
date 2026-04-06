@@ -487,7 +487,7 @@ export default function StoreLayoutNetflix({
                   <span className="text-white/60 text-[9px] md:text-[10px]">{filteredProducts.length} imóveis</span>
                 </div>
                 {isActive && (
-                  <div className="absolute top-0 left-0 right-0 h-[3px] bg-[#e50914]" />
+                   <div className="absolute top-0 left-0 right-0 h-[3px] bg-white" />
                 )}
               </button>
             );
