@@ -201,7 +201,7 @@ export default function StoreLayoutMarketplace({
           {/* Banner 2 - Casa Própria */}
           <div
             className="relative h-44 md:h-48 rounded-2xl overflow-hidden group cursor-pointer"
-            onClick={() => setActiveCategory("casa")}
+            onClick={() => { setActiveCategory("casa"); setTimeout(() => document.getElementById("marketplace-grid")?.scrollIntoView({ behavior: "smooth" }), 100); }}
           >
             <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, #1b5e20, #43a047)` }} />
             <div className="absolute inset-0 bg-gradient-to-r from-black/30 to-transparent" />
