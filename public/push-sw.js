@@ -1,4 +1,8 @@
-// Push notification service worker
+self.addEventListener("activate", function (event) {
+  event.waitUntil(self.clients.claim());
+});
+
+// Push notification handlers imported by the main PWA service worker
 self.addEventListener("push", function (event) {
   let data = { title: "Nova notificação", body: "", url: "/" };
   try {

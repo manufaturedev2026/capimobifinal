@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Bell, BellRing, X } from "lucide-react";
+import { BellRing, X } from "lucide-react";
 import { usePushSubscription } from "@/hooks/usePushSubscription";
 
 interface PushSubscribeButtonProps {
@@ -22,20 +22,26 @@ export default function PushSubscribeButton({ sellerId, primaryColor }: PushSubs
   };
 
   return (
-    <button
-      onClick={handleSubscribe}
-      disabled={loading}
-      className="fixed bottom-20 md:bottom-6 right-4 z-40 flex items-center gap-2 px-4 py-2.5 rounded-full shadow-lg text-white text-xs font-bold transition-all active:scale-95"
-      style={{ background: primaryColor || "#3B82F6" }}
-    >
-      <BellRing className="w-4 h-4" />
-      {loading ? "Ativando..." : "Ativar Notificações"}
+    <div className="fixed bottom-20 md:bottom-6 right-4 z-40 flex items-center gap-2">
       <button
-        onClick={(e) => { e.stopPropagation(); setDismissed(true); }}
-        className="ml-1 p-0.5 rounded-full hover:bg-white/20"
+        type="button"
+        onClick={handleSubscribe}
+        disabled={loading}
+        className="flex items-center gap-2 px-4 py-2.5 rounded-full shadow-lg text-white text-xs font-bold transition-all active:scale-95 disabled:opacity-70"
+        style={{ background: primaryColor || "#3B82F6" }}
       >
-        <X className="w-3 h-3" />
+        <BellRing className="w-4 h-4" />
+        {loading ? "Ativando..." : "Ativar Notificações"}
       </button>
-    </button>
+
+      <button
+        type="button"
+        aria-label="Fechar aviso de notificações"
+        onClick={() => setDismissed(true)}
+        className="flex h-9 w-9 items-center justify-center rounded-full bg-background/90 text-foreground shadow-lg backdrop-blur-sm"
+      >
+        <X className="w-3.5 h-3.5" />
+      </button>
+    </div>
   );
 }
