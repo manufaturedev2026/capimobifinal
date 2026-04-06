@@ -4,9 +4,10 @@ import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion"
 import {
   MapPin, Image, Bed, Bath, Ruler, Search, X,
   Home, Building2, Key, Trees, Store, Landmark,
-  ArrowRight, Sparkles, Heart, ChevronDown,
+  ArrowRight, Sparkles, Heart, ChevronDown, LayoutDashboard,
 } from "lucide-react";
 import type { StoreLayoutProps } from "./types";
+import { useAuth } from "@/hooks/useAuth";
 
 /* ── Color helpers ── */
 function hexToHsl(hex: string): [number, number, number] {
