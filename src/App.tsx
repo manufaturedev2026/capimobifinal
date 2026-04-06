@@ -32,6 +32,7 @@ const AdminPanel = lazyPage(() => import("@/pages/AdminPanel"));
 const PrivacyPage = lazyPage(() => import("@/pages/PrivacyPage"));
 const TermsPage = lazyPage(() => import("@/pages/TermsPage"));
 const NotFound = lazyPage(() => import("@/pages/NotFound"));
+const CapturePropertyPage = lazyPage(() => import("@/pages/CapturePropertyPage"));
 
 const queryClient = new QueryClient();
 
