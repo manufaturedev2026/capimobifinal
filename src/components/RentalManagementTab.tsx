@@ -881,11 +881,21 @@ function ContractForm({ userId, sellerId, properties, editing, onSave, onCancel 
           <h3 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2"><Home size={14} className="text-primary" /> Imóvel e Proprietário</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className={labelCls}>Imóvel Vinculado</label>
-              <select value={form.item_id} onChange={e => set("item_id", e.target.value)} className={inputCls}>
-                <option value="">Selecionar imóvel...</option>
+              <label className={labelCls}>Selecionar Imóvel</label>
+              <select value={form.item_id} onChange={e => {
+                const selectedProp = properties.find(p => p.id === e.target.value);
+                set("item_id", e.target.value);
+                if (selectedProp && !form.item_label) {
+                  set("item_label", `${selectedProp.title}${selectedProp.city ? ` — ${selectedProp.city}` : ""}`);
+                }
+              }} className={inputCls}>
+                <option value="">Nenhum (manual)</option>
                 {properties.map(p => <option key={p.id} value={p.id}>{p.title}{p.city ? ` — ${p.city}` : ""}</option>)}
               </select>
+            </div>
+            <div>
+              <label className={labelCls}>Imóvel Vinculado (texto)</label>
+              <input value={form.item_label} onChange={e => set("item_label", e.target.value)} placeholder="Ex: Apt 302, Ed. Solar, Centro" className={inputCls} />
             </div>
             <div><label className={labelCls}>Nome do Proprietário</label><input value={form.owner_name} onChange={e => set("owner_name", e.target.value)} placeholder="Nome do proprietário" className={inputCls} /></div>
             <div><label className={labelCls}>Telefone do Proprietário</label><input value={form.owner_phone} onChange={e => set("owner_phone", e.target.value)} placeholder="(27) 99999-9999" className={inputCls} /></div>
