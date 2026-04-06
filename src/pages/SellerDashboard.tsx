@@ -978,6 +978,11 @@ export default function SellerDashboard() {
               />
             )}
 
+            {/* Stories Tab */}
+            {activeTab === "stories" && user?.id && profile?.id && (
+              <StoriesTab userId={user.id} sellerId={profile.id} />
+            )}
+
             {/* Team Tab */}
             {activeTab === "team" && showTeamTab && profile?.id && (
               <TeamMembersTab
