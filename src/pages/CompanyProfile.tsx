@@ -808,9 +808,9 @@ export default function CompanyProfile() {
         )}
       </section>
 
-      {/* ═══════════ SHOWCASE MOBILE HERO — Featured Item ═══════════ */}
+      {/* ═══════════ SHOWCASE HERO — Featured Item ═══════════ */}
       {isShowcase && (
-        <section className="lg:hidden relative overflow-hidden">
+        <section className="relative overflow-hidden" style={{ minHeight: "50vh" }}>
           {heroImages.length > 0 ? (
             <>
               <AnimatePresence mode="wait">
