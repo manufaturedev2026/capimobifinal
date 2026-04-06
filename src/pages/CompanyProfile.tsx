@@ -466,6 +466,7 @@ export default function CompanyProfile() {
   const storeTheme = getStoreTheme((dbProfile as any)?.store_theme);
   const currentLayout = (dbProfile as any)?.store_layout || "showcase";
   const isMarketplace = currentLayout === "marketplace";
+  const isMinimal = currentLayout === "minimal";
 
   return (
     <div
@@ -537,7 +538,7 @@ export default function CompanyProfile() {
 
       {isDbProfile && dbProfile?.id && <StoreEffects sellerId={dbProfile.id} />}
       {/* ═══════════ MOBILE PROFILE HERO ═══════════ */}
-      <section className="lg:hidden relative overflow-hidden">
+      <section className={`lg:hidden relative overflow-hidden ${isMinimal ? "hidden" : ""}`}>
         {isMarketplace ? (
           /* ── Marketplace-style compact hero ── */
           <>
@@ -1625,6 +1626,117 @@ export default function CompanyProfile() {
         );
       })()}
       {/* Mobile "Sobre" section - simplified since bio is in hero */}
+      {/* Minimal layout: Profile card moved here, above "Mais informações" */}
+      {isMinimal && (
+        <section className="lg:hidden px-4 mt-6 mb-2">
+          <div className="max-w-[1800px] mx-auto">
+            <div className="rounded-2xl overflow-hidden" style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}>
+              {/* Mini hero banner */}
+              {heroImages.length > 0 && (
+                <div className="relative h-32 overflow-hidden">
+                  <img src={heroImages[0]?.image} alt="" className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/30 to-black/80" />
+                  {isPaid && (
+                    <div className="absolute top-3 right-3 z-10">
+                      <PackageBadge tier={sellerTier} size="sm" />
+                    </div>
+                  )}
+                </div>
+              )}
+              <div className="relative px-5 pb-5" style={{ marginTop: heroImages.length > 0 ? "-2rem" : "0" }}>
+                <div className="flex items-end gap-3 mb-3">
+                  {company.logo ? (
+                    <img src={company.logo} alt={company.name} className="w-16 h-16 rounded-xl object-cover shadow-lg relative z-10" style={{ border: `3px solid ${storeTheme.card}` }} />
+                  ) : (
+                    <div className="w-16 h-16 rounded-xl flex items-center justify-center shadow-lg relative z-10" style={{ background: storeTheme.primary, border: `3px solid ${storeTheme.card}` }}>
+                      <span className="text-white font-bold text-xl">{company.name?.charAt(0)}</span>
+                    </div>
+                  )}
+                  <div className="flex-1 min-w-0 pb-1">
+                    <div className="flex items-center gap-1.5">
+                      <h2 className="font-display font-bold text-base truncate" style={{ color: storeTheme.text }}>{company.name}</h2>
+                      {isPaid && <BadgeCheck size={15} style={{ color: storeTheme.primary }} />}
+                    </div>
+                    {company.show_location && company.address && (
+                      <p className="text-[10px] flex items-center gap-1 mt-0.5" style={{ color: storeTheme.textMuted }}>
+                        <MapPin size={9} /> {company.address}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {dbProfile?.bio && (
+                  <p className="text-xs leading-relaxed line-clamp-2 mb-3" style={{ color: storeTheme.textMuted }}>{dbProfile.bio}</p>
+                )}
+
+                {/* Stats */}
+                <div className="flex items-center gap-4 mb-4 text-xs" style={{ color: storeTheme.text }}>
+                  <div className="text-center">
+                    <p className="font-bold text-sm">{products.length}</p>
+                    <p className="text-[9px]" style={{ color: storeTheme.textMuted }}>Imóveis</p>
+                  </div>
+                  <div className="w-px h-6" style={{ background: storeTheme.border }} />
+                  <div className="text-center">
+                    <p className="font-bold text-sm">{isPaid ? "✓" : "—"}</p>
+                    <p className="text-[9px]" style={{ color: storeTheme.textMuted }}>{isPaid ? "Verificado" : "Ativo"}</p>
+                  </div>
+                  {availableCities.length > 0 && (
+                    <>
+                      <div className="w-px h-6" style={{ background: storeTheme.border }} />
+                      <div className="text-center">
+                        <p className="font-bold text-sm">{availableCities.length}</p>
+                        <p className="text-[9px]" style={{ color: storeTheme.textMuted }}>Cidades</p>
+                      </div>
+                    </>
+                  )}
+                </div>
+
+                {/* Action buttons */}
+                <div className="flex gap-2">
+                  {company.whatsapp && (
+                    <button onClick={() => handleWhatsApp(heroProduct?.title || company.name)} className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-[#25d366] text-white font-bold text-xs active:scale-95 transition-transform">
+                      <MessageCircle size={15} /> WhatsApp
+                    </button>
+                  )}
+                  {(company as any).instagram && ["start", "vip", "premium", "essencial_empresa", "premium_empresa", "prime_empresa"].includes(sellerTier || "") && (
+                    <a href={`https://instagram.com/${(company as any).instagram.replace(/^@/, "")}`} target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-gradient-to-r from-[#833AB4] via-[#E1306C] to-[#F77737] text-white font-bold text-xs active:scale-95 transition-transform">
+                      <Instagram size={15} /> Instagram
+                    </a>
+                  )}
+                </div>
+
+                <div className="flex gap-2 mt-2">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <button className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium" style={{ background: `${storeTheme.border}`, color: storeTheme.text }}>
+                        <Share2 size={12} /> Compartilhar
+                      </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="center" className="w-48">
+                      <DropdownMenuItem onClick={() => {
+                        const text = `Confira ${company.name} no Brokers App: ${window.location.href}`;
+                        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
+                      }}>
+                        <MessageCircle size={16} className="mr-2 text-[#25d366]" /> Enviar via WhatsApp
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => {
+                        navigator.clipboard.writeText(window.location.href);
+                        toast({ title: "Link copiado!", description: "O link da loja foi copiado." });
+                      }}>
+                        <ExternalLink size={16} className="mr-2" /> Copiar link
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                  <button onClick={() => setGalleryLightbox(0)} className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium" style={{ background: `${storeTheme.border}`, color: storeTheme.text }}>
+                    <Clapperboard size={12} /> Cinema
+                  </button>
+                  <StoreInstallButton variant="hero-dark" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
       <section className="lg:hidden px-4 mt-6 mb-6">
         <div className="max-w-[1800px] mx-auto">
           <div className="rounded-2xl p-5" style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}>
