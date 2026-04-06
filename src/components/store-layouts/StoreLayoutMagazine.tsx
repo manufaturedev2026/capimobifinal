@@ -233,33 +233,67 @@ export default function StoreLayoutMagazine({
 
   const cardProps = { corretorSlug, storeTheme, getTagStyle, getTagLabel };
 
+  // Categories with items (exclude "todos" for visual cards, keep it as a reset)
+  const visualCategories = subcategories.filter(c => c.slug !== "todos" && (categoryCounts[c.slug] || 0) > 0);
+
   return (
     <div className="space-y-6">
-      {/* ─── Category Tabs ─── */}
-      <div className="flex gap-2 overflow-x-auto scrollbar-hide -mx-4 px-4 pb-2">
-        {subcategories.map((cat) => {
-          const isActive = activeCategory === cat.slug;
-          const count = categoryCounts[cat.slug] || 0;
-          const isDisabled = cat.slug !== "todos" && count === 0;
-          return (
+      {/* ─── Visual Category Cards ─── */}
+      <div>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-sm font-bold uppercase tracking-wider" style={{ color: storeTheme.text }}>
+            Categorias
+          </h2>
+          {activeCategory !== "todos" && (
             <button
-              key={cat.slug}
-              onClick={() => setActiveCategory(cat.slug)}
-              disabled={isDisabled}
-              className="flex-shrink-0 flex items-center gap-1.5 px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all"
-              style={{
-                background: isActive ? storeTheme.primary : "transparent",
-                color: isActive ? "#fff" : storeTheme.textMuted,
-                border: `1.5px solid ${isActive ? storeTheme.primary : storeTheme.border}`,
-                opacity: isDisabled ? 0.3 : 1,
-              }}
+              onClick={() => setActiveCategory("todos")}
+              className="text-[11px] font-bold underline"
+              style={{ color: storeTheme.primary }}
             >
-              {categoryIcons[cat.slug]}
-              {cat.name}
-              {count > 0 && <span className="opacity-60 text-[10px]">({count})</span>}
+              Ver todos
             </button>
-          );
-        })}
+          )}
+        </div>
+        <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-3">
+          {visualCategories.map((cat) => {
+            const isActive = activeCategory === cat.slug;
+            const count = categoryCounts[cat.slug] || 0;
+            const bgImage = categoryCardImages?.[cat.slug];
+            return (
+              <motion.button
+                key={cat.slug}
+                onClick={() => setActiveCategory(isActive ? "todos" : cat.slug)}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                className="relative rounded-2xl overflow-hidden h-28 sm:h-32 group transition-all"
+                style={{
+                  border: `2px solid ${isActive ? storeTheme.primary : storeTheme.border}`,
+                  boxShadow: isActive ? `0 0 20px ${storeTheme.primary}40` : "none",
+                }}
+              >
+                {bgImage ? (
+                  <img src={bgImage} alt={cat.name}
+                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                ) : (
+                  <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${storeTheme.primary}30, ${storeTheme.primary}10)` }} />
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/30 to-black/10" />
+
+                <div className="relative z-10 h-full flex flex-col items-center justify-center text-white px-2">
+                  <span className="mb-1 opacity-90">
+                    {categoryIcons[cat.slug] || <Building2 size={20} />}
+                  </span>
+                  <span className="text-xs font-bold drop-shadow-lg">{cat.name}</span>
+                  <span className="text-[9px] opacity-60 mt-0.5">{count} {count === 1 ? "imóvel" : "imóveis"}</span>
+                </div>
+
+                {isActive && (
+                  <div className="absolute bottom-0 left-0 right-0 h-1" style={{ background: storeTheme.primary }} />
+                )}
+              </motion.button>
+            );
+          })}
+        </div>
       </div>
 
       {filteredProducts.length === 0 ? (
