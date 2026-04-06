@@ -833,7 +833,7 @@ export default function CompanyProfile() {
                   <div className="px-2.5 py-2">
                     <h4 className="text-[11px] font-semibold line-clamp-1" style={{ color: storeTheme.text }}>{product.title}</h4>
                     {product.price > 0 && (
-                      <p className="text-xs font-bold text-emerald-500 mt-0.5">R$ {product.price.toLocaleString("pt-BR")}</p>
+                      <p className="text-xs font-bold mt-0.5" style={{ color: storeTheme.primary }}>R$ {product.price.toLocaleString("pt-BR")}</p>
                     )}
                     {product.city && (
                       <p className="text-[9px] mt-0.5 flex items-center gap-0.5" style={{ color: storeTheme.textMuted }}>
@@ -1346,7 +1346,7 @@ export default function CompanyProfile() {
                           </h3>
                           {product.price > 0 && (
                             <div className="flex items-center gap-2 mt-1.5">
-                              <p className="font-display font-bold text-emerald-500 text-base md:text-lg">
+                              <p className="font-display font-bold text-base md:text-lg" style={{ color: storeTheme.primary }}>
                                 R$ {product.price.toLocaleString("pt-BR")}
                                 {isDbProfile && ((product.tags || []).includes("aluguel_flex") || product.category === "aluguel") && (
                                   <span className="text-sm font-normal text-muted-foreground"> /mês</span>
@@ -1574,7 +1574,7 @@ export default function CompanyProfile() {
                           <p className="text-white/50 text-sm md:text-lg mt-3 line-clamp-3 max-w-xl">{lbProduct.description}</p>
                         )}
                         {lbProduct.price > 0 && (
-                          <p className="font-display font-bold text-2xl md:text-4xl text-emerald-500 mt-4 drop-shadow-lg">
+                          <p className="font-display font-bold text-2xl md:text-4xl mt-4 drop-shadow-lg" style={{ color: storeTheme.primary }}>
                             {isDbProfile ? `R$ ${lbProduct.price.toLocaleString("pt-BR")}` : formatPrice(lbProduct.price)}
                             {isDbProfile && (((lbProduct as any).tags || []).includes("aluguel_flex") || (lbProduct as any).category === "aluguel") && (
                               <span className="text-lg font-normal text-muted-foreground"> /mês</span>
