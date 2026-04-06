@@ -540,7 +540,7 @@ export default function StoreLayoutMarketplace({
                         </span>
                       )}
                     </div>
-                    <div className="p-3.5">
+                    <div className="p-2.5 md:p-3.5">
                       <h3 className="text-xs font-bold line-clamp-2 leading-snug mb-2" style={{ color: storeTheme.text }}>
                         {product.title}
                       </h3>
