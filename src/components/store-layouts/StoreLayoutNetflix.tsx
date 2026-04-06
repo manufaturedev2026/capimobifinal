@@ -85,7 +85,7 @@ function NetflixCard({ product, index, corretorSlug, getTagLabel, accent }: {
   return (
     <div
       className="flex-shrink-0 relative"
-      style={{ width: "clamp(130px, 18vw, 230px)" }}
+      style={{ width: "clamp(180px, 22vw, 300px)" }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
@@ -436,122 +436,13 @@ export default function StoreLayoutNetflix({
         </div>
       )}
 
-      {/* ══════ CATEGORY TABS — Cinematic genre cards ══════ */}
-      <div className="px-4 md:px-12 py-5" style={{ background: "linear-gradient(to bottom, rgba(20,20,20,0.9), #141414)" }}>
-        <div className="flex gap-2 md:gap-3 overflow-x-auto scrollbar-hide pb-2 snap-x snap-mandatory">
-          {subcategories.filter(c => c.slug !== "todos" && (categoryCounts[c.slug] || 0) > 0).map((cat) => {
-            const isActive = activeCategory === cat.slug;
-            const count = categoryCounts[cat.slug] || 0;
-            const thumbImg = categoryCardImages[cat.slug];
-            return (
-              <motion.button
-                key={cat.slug}
-                onClick={() => setActiveCategory(cat.slug)}
-                whileHover={{ scale: 1.05, y: -4 }}
-                whileTap={{ scale: 0.97 }}
-                className="flex-shrink-0 snap-start relative overflow-hidden rounded-lg transition-all duration-300 group/cat"
-                style={{
-                  width: cat.slug === "todos" ? 100 : 140,
-                  height: 80,
-                  boxShadow: isActive
-                    ? "0 0 20px rgba(229,9,20,0.5), 0 0 40px rgba(229,9,20,0.2)"
-                    : "0 4px 12px rgba(0,0,0,0.4)",
-                  border: isActive ? "2px solid #e50914" : "2px solid transparent",
-                }}
-              >
-                {/* Background image or gradient */}
-                {thumbImg ? (
-                  <img
-                    src={thumbImg}
-                    alt={cat.name}
-                    className="absolute inset-0 w-full h-full object-cover"
-                  />
-                ) : (
-                  <div
-                    className="absolute inset-0"
-                    style={{
-                      background: isActive
-                        ? "linear-gradient(135deg, #e50914 0%, #831010 100%)"
-                        : "linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%)",
-                    }}
-                  />
-                )}
-
-                {/* Dark overlay */}
-                <div
-                  className="absolute inset-0 transition-opacity duration-300"
-                  style={{
-                    background: isActive
-                      ? "linear-gradient(to top, rgba(229,9,20,0.6) 0%, rgba(0,0,0,0.3) 100%)"
-                      : "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.1) 100%)",
-                  }}
-                />
-
-                {/* Hover red glow line at bottom */}
-                <div
-                  className="absolute bottom-0 left-0 right-0 h-[3px] transition-all duration-300"
-                  style={{
-                    background: isActive ? "#e50914" : "transparent",
-                    boxShadow: isActive ? "0 0 8px #e50914" : "none",
-                  }}
-                />
-
-                {/* Content */}
-                <div className="relative z-10 h-full flex flex-col items-center justify-center px-2">
-                  <span
-                    className="font-bold text-xs md:text-sm text-white drop-shadow-lg text-center leading-tight"
-                    style={{ textShadow: "0 2px 8px rgba(0,0,0,0.8)" }}
-                  >
-                    {cat.name}
-                  </span>
-                  {count > 0 && (
-                    <span
-                      className="mt-1 text-[9px] font-medium px-2 py-0.5 rounded-full"
-                      style={{
-                        background: isActive ? "rgba(255,255,255,0.25)" : "rgba(255,255,255,0.1)",
-                        color: "rgba(255,255,255,0.8)",
-                      }}
-                    >
-                      {count} {count === 1 ? "título" : "títulos"}
-                    </span>
-                  )}
-                </div>
-
-                {/* Active pulse ring */}
-                {isActive && (
-                  <motion.div
-                    className="absolute inset-0 rounded-lg pointer-events-none"
-                    initial={{ opacity: 0.6 }}
-                    animate={{ opacity: [0.6, 0.2, 0.6] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                    style={{ border: "1px solid rgba(229,9,20,0.4)" }}
-                  />
-                )}
-              </motion.button>
-            );
-          })}
-        </div>
-      </div>
-
       {/* ══════ CONTENT ROWS ══════ */}
-      <div className="pb-8">
-        {activeCategory === "todos" && rows.length > 1 ? (
-          <>
-            <NetflixRow title="Em Alta 🔥" items={filteredProducts.slice(0, 10)} corretorSlug={corretorSlug} getTagLabel={getTagLabel} accent={accent} />
-            <NetflixRow title="Adicionados Recentemente" items={[...filteredProducts].reverse().slice(0, 10)} corretorSlug={corretorSlug} getTagLabel={getTagLabel} accent={accent} />
-            {rows.map((row) => (
-              <NetflixRow key={row.name} title={row.name} items={row.items} corretorSlug={corretorSlug} getTagLabel={getTagLabel} accent={accent} />
-            ))}
-          </>
-        ) : (
-          <NetflixRow
-            title={activeCategory === "todos" ? "Todos" : subcategories.find(c => c.slug === activeCategory)?.name || "Resultados"}
-            items={filteredProducts}
-            corretorSlug={corretorSlug}
-            getTagLabel={getTagLabel}
-            accent={accent}
-          />
-        )}
+      <div className="pb-8 pt-4">
+        <NetflixRow title="Em Alta 🔥" items={filteredProducts.slice(0, 10)} corretorSlug={corretorSlug} getTagLabel={getTagLabel} accent={accent} />
+        <NetflixRow title="Adicionados Recentemente" items={[...filteredProducts].reverse().slice(0, 10)} corretorSlug={corretorSlug} getTagLabel={getTagLabel} accent={accent} />
+        {rows.map((row) => (
+          <NetflixRow key={row.name} title={row.name} items={row.items} corretorSlug={corretorSlug} getTagLabel={getTagLabel} accent={accent} />
+        ))}
       </div>
 
       {filteredProducts.length === 0 && (
