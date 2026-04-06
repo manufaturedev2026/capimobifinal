@@ -104,7 +104,7 @@ export default function StoreLayoutMinimal({
                       </p>
                     )}
                     {product.price > 0 && (
-                      <p className="text-sm font-bold text-emerald-500 mt-0.5">R$ {product.price.toLocaleString("pt-BR")}</p>
+                      <p className="text-sm font-bold mt-0.5" style={{ color: storeTheme.primary }}>R$ {product.price.toLocaleString("pt-BR")}</p>
                     )}
                   </div>
                 </Link>

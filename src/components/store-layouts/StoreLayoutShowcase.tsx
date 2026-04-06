@@ -206,7 +206,7 @@ export default function StoreLayoutShowcase({
                         {product.title}
                       </h4>
                       {product.price > 0 && (
-                        <p className="font-display font-extrabold text-sm text-emerald-500 mt-1">
+                        <p className="font-display font-extrabold text-sm mt-1" style={{ color: storeTheme.primary }}>
                           R$ {product.price.toLocaleString("pt-BR")}
                         </p>
                       )}
