@@ -203,7 +203,7 @@ export default function StoreLayoutMarketplace({
             className="relative h-44 md:h-48 rounded-2xl overflow-hidden group cursor-pointer"
             onClick={() => { setActiveCategory("casa"); setTimeout(() => document.getElementById("marketplace-grid")?.scrollIntoView({ behavior: "smooth" }), 100); }}
           >
-            <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, #1b5e20, #43a047)` }} />
+            <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${storeTheme.bg}, ${storeTheme.primary}cc)` }} />
             <div className="absolute inset-0 bg-gradient-to-r from-black/30 to-transparent" />
             <div className="relative z-10 h-full flex flex-col justify-center p-6">
               <h3 className="font-display font-extrabold text-xl md:text-2xl text-white leading-tight">
