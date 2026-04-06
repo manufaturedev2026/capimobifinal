@@ -3,8 +3,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { detectIOS, isIOSStandaloneApp } from "@/lib/pwaInstall";
 
-const SUBSCRIPTION_TIMEOUT_MS = 15000;
+const SUBSCRIPTION_TIMEOUT_MS = 20000;
 const PUSH_SW_URL = "/push-sw.js";
+const PUSH_SW_SCOPE = "/push-sw-scope/";
 
 export function usePushSubscription(sellerId?: string) {
   const [isSubscribed, setIsSubscribed] = useState(false);
@@ -110,20 +111,20 @@ export function usePushSubscription(sellerId?: string) {
       if (!registration) {
         console.log("[Push] No push-sw found, registering...");
         registration = await withTimeout(
-          navigator.serviceWorker.register(PUSH_SW_URL),
+          navigator.serviceWorker.register(PUSH_SW_URL, { scope: PUSH_SW_SCOPE }),
           SUBSCRIPTION_TIMEOUT_MS,
           "Tempo esgotado ao registrar o app para push."
         );
       }
 
-      if (registration.installing || registration.waiting) {
+      // Only wait for activation if not already active
+      if (!registration.active && (registration.installing || registration.waiting)) {
         console.log("[Push] SW registered, waiting for activation...");
         await waitForActivation(registration);
       }
       console.log("[Push] push-sw state:", registration.active?.state);
 
       // Step 4: Subscribe to push
-      // Wait for THIS specific registration to be active (not navigator.serviceWorker.ready which waits for the PWA sw)
       if (!registration.active) {
         console.log("[Push] Waiting for push-sw to activate...");
         await waitForActivation(registration);
@@ -218,15 +219,28 @@ function withTimeout<T>(promise: PromiseLike<T>, timeoutMs: number, message: str
 
 async function waitForActivation(registration: ServiceWorkerRegistration) {
   const worker = registration.installing || registration.waiting;
-  if (!worker || worker.state === "activated") return;
+  if (!worker) return;
+  if (worker.state === "activated" || worker.state === "activating") {
+    // Already activating/activated — wait briefly for it to finish
+    if (worker.state === "activating") {
+      await new Promise<void>((resolve) => {
+        const check = () => { if (worker.state === "activated") resolve(); };
+        worker.addEventListener("statechange", check);
+        setTimeout(resolve, 3000); // fallback
+      });
+    }
+    return;
+  }
 
   await withTimeout(
     new Promise<void>((resolve) => {
       worker.addEventListener("statechange", () => {
         if (worker.state === "activated") resolve();
       });
+      // Also resolve if already activated by the time listener is added
+      if (worker.state === "activated") resolve();
     }),
-    5000,
+    10000,
     "O app demorou demais para ativar o suporte a notificações."
   );
 }
