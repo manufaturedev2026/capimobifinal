@@ -108,12 +108,14 @@ function getDarkMid(primary: string): string {
 export default function StoreLayoutMarketplace({
   filteredProducts, subcategories, activeCategory, setActiveCategory,
   categoryCounts, storeTheme, corretorSlug, dbProfile, getTagStyle, getTagLabel, handleWhatsApp,
+  filterCity, setFilterCity, availableCities,
 }: StoreLayoutProps) {
   const darkBase = getDarkBase(storeTheme.primary);
   const darkMid = getDarkMid(storeTheme.primary);
   const [searchTerm, setSearchTerm] = useState("");
   const [heroIdx, setHeroIdx] = useState(0);
   const [promoIdx, setPromoIdx] = useState(0);
+  const [showCityPicker, setShowCityPicker] = useState(false);
   const promoScrollRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
 
@@ -129,8 +131,9 @@ export default function StoreLayoutMarketplace({
       )
     : filteredProducts;
 
-  const heroImages = filteredProducts.slice(0, 5).map((p: any) => p.image).filter(Boolean);
-  const cityName = dbProfile?.city || "sua cidade";
+  const heroProducts = filteredProducts.slice(0, 5).filter((p: any) => p.image);
+  const heroImages = heroProducts.map((p: any) => p.image);
+  const currentHeroCity = heroProducts[heroIdx]?.city || filterCity || dbProfile?.city || "sua cidade";
   const activeCats = subcategories.filter(c => c.slug === "todos" || (categoryCounts[c.slug] || 0) > 0);
 
   // Auto-rotate hero
