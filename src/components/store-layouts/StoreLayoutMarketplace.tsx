@@ -59,7 +59,7 @@ export default function StoreLayoutMarketplace({
         {heroImage ? (
           <img src={heroImage} alt="Hero" className="absolute inset-0 w-full h-full object-cover" />
         ) : (
-          <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${storeTheme.primary}, #1a1a2e)` }} />
+          <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${storeTheme.bg}, ${storeTheme.primary})` }} />
         )}
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent" />
         <div className="relative z-10 h-full flex flex-col justify-end p-6 md:p-12 max-w-6xl mx-auto">
