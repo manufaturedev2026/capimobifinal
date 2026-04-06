@@ -43,7 +43,9 @@ self.addEventListener("push", function (event) {
       }
     }
 
-    const options = {
+    console.log("[push-sw] payload received:", JSON.stringify(data));
+
+    var options = {
       body: data.body,
       icon: "/icons/icon-192x192.png",
       badge: "/icons/icon-72x72.png",
@@ -54,6 +56,7 @@ self.addEventListener("push", function (event) {
 
     if (data.image) {
       options.image = data.image;
+      console.log("[push-sw] image set:", data.image);
     }
 
     await self.registration.showNotification(data.title || "Nova notificação", options);
