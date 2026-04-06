@@ -59,7 +59,7 @@ export default function StoreLayoutMarketplace({
         {heroImage ? (
           <img src={heroImage} alt="Hero" className="absolute inset-0 w-full h-full object-cover" />
         ) : (
-          <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${storeTheme.primary}, #1a1a2e)` }} />
+          <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${storeTheme.bg}, ${storeTheme.primary})` }} />
         )}
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent" />
         <div className="relative z-10 h-full flex flex-col justify-end p-6 md:p-12 max-w-6xl mx-auto">
@@ -79,7 +79,7 @@ export default function StoreLayoutMarketplace({
                 el?.scrollIntoView({ behavior: "smooth" });
               }}
               className="mt-4 inline-flex items-center gap-2 px-6 py-3 rounded-2xl font-bold text-sm text-white shadow-lg transition-transform hover:scale-105"
-              style={{ background: `linear-gradient(135deg, ${storeTheme.primary}, #1a5fcc)` }}
+              style={{ background: `linear-gradient(135deg, ${storeTheme.primary}, ${storeTheme.primary}cc)` }}
             >
               Ver ofertas <ArrowRight size={16} />
             </button>
@@ -180,7 +180,7 @@ export default function StoreLayoutMarketplace({
             className="relative h-44 md:h-48 rounded-2xl overflow-hidden group cursor-pointer"
             onClick={() => { setActiveCategory("todos"); setTimeout(() => document.getElementById("marketplace-grid")?.scrollIntoView({ behavior: "smooth" }), 100); }}
           >
-            <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, #0d47a1, ${storeTheme.primary})` }} />
+            <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${storeTheme.bg}, ${storeTheme.primary})` }} />
             <div className="absolute inset-0 bg-gradient-to-r from-black/30 to-transparent" />
             <div className="relative z-10 h-full flex flex-col justify-center p-6">
               <h3 className="font-display font-extrabold text-xl md:text-2xl text-white leading-tight">
@@ -203,7 +203,7 @@ export default function StoreLayoutMarketplace({
             className="relative h-44 md:h-48 rounded-2xl overflow-hidden group cursor-pointer"
             onClick={() => { setActiveCategory("casa"); setTimeout(() => document.getElementById("marketplace-grid")?.scrollIntoView({ behavior: "smooth" }), 100); }}
           >
-            <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, #1b5e20, #43a047)` }} />
+            <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${storeTheme.bg}, ${storeTheme.primary}cc)` }} />
             <div className="absolute inset-0 bg-gradient-to-r from-black/30 to-transparent" />
             <div className="relative z-10 h-full flex flex-col justify-center p-6">
               <h3 className="font-display font-extrabold text-xl md:text-2xl text-white leading-tight">
@@ -317,13 +317,13 @@ export default function StoreLayoutMarketplace({
                         {product.title}
                       </h3>
                       {product.price > 0 && (
-                        <p className="text-base font-bold text-emerald-500">
+                        <p className="text-base font-bold" style={{ color: storeTheme.primary }}>
                           R$ {product.price.toLocaleString("pt-BR")}
                           {product.isAluguel && <span className="text-[10px] font-normal ml-0.5" style={{ color: storeTheme.textMuted }}>/mês</span>}
                         </p>
                       )}
                       {product.accepts_financing && (
-                        <p className="text-[9px] mt-0.5 font-medium" style={{ color: "#00a650" }}>✓ Aceita financiamento</p>
+                        <p className="text-[9px] mt-0.5 font-medium" style={{ color: storeTheme.primary }}>✓ Aceita financiamento</p>
                       )}
                       <div className="flex items-center gap-2 mt-2 text-[10px]" style={{ color: storeTheme.textMuted }}>
                         {product.bedrooms > 0 && <span className="flex items-center gap-0.5"><Bed size={10} /> {product.bedrooms}</span>}
@@ -387,7 +387,7 @@ export default function StoreLayoutMarketplace({
         <motion.section {...fadeUp(0.35)} className="mb-10">
           <div
             className="rounded-2xl p-8 md:p-12 text-center"
-            style={{ background: `linear-gradient(135deg, #0d2137, ${storeTheme.primary}90)` }}
+            style={{ background: `linear-gradient(135deg, ${storeTheme.bg}, ${storeTheme.primary}90)` }}
           >
             <h2 className="font-display font-extrabold text-xl md:text-2xl text-white mb-2">
               Quer anunciar seu imóvel?
