@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, type Easing } from "framer-motion";
 import {
   MapPin, Image, Search, Bed, Bath, Ruler, Home, Building2,
   Store, Trees, Key, Landmark, Phone, ShieldCheck, Globe, Megaphone,
