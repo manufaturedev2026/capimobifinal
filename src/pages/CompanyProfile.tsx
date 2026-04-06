@@ -1294,8 +1294,8 @@ export default function CompanyProfile() {
               }
             })()}
 
-            {/* Desktop: keep original grid (hidden for netflix layout) */}
-            {((dbProfile as any)?.store_layout || "showcase") !== "netflix" && <div id="products-grid" className="hidden lg:block">
+            {/* Desktop: keep original grid */}
+            <div id="products-grid" className="hidden lg:block">
             {/* Products Header */}
             <div className="flex items-center justify-between mb-4">
               {isShowcase ? (
