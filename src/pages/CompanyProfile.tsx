@@ -1287,7 +1287,7 @@ export default function CompanyProfile() {
             })()}
 
             {/* Desktop: keep original grid */}
-            <div className="hidden lg:block">
+            <div className={`hidden lg:block ${isMinimal ? "!hidden" : ""}`}>
             {/* Products Header */}
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-display font-bold text-lg md:text-xl" style={{ color: storeTheme.text }}>
