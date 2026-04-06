@@ -237,7 +237,7 @@ async function generateMarketingImage(
   let y = height - pad - (s.accentBar ? Math.round(6 * scale) : 0);
 
   // Seller info
-  const sellerFontSize = Math.round((isStory ? 38 : 24) * scale);
+  const sellerFontSize = Math.round((isStory ? 38 : 30) * scale);
   ctx.font = `600 ${sellerFontSize}px ${baseFont}`;
   ctx.fillStyle = s.sellerColor;
   ctx.textAlign = "left";
