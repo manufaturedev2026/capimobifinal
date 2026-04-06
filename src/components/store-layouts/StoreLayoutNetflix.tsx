@@ -65,7 +65,7 @@ function NetflixRow({ title, items, corretorSlug, getTagLabel, accent }: {
         )}
 
         <div ref={scrollRef} onScroll={checkArrows}
-          className="flex gap-1 md:gap-1.5 overflow-x-auto scrollbar-hide scroll-smooth px-4 md:px-12">
+          className="flex gap-1 md:gap-1.5 overflow-x-auto overflow-y-visible scrollbar-hide scroll-smooth px-4 md:px-12 py-8 -my-8">
           {items.map((product: any, i: number) => (
             <NetflixCard key={product.id} product={product} index={i} corretorSlug={corretorSlug} getTagLabel={getTagLabel} accent={accent} />
           ))}
