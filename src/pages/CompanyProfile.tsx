@@ -545,7 +545,7 @@ export default function CompanyProfile() {
       )}
 
       {isDbProfile && dbProfile?.id && <StoreEffects sellerId={dbProfile.id} />}
-      {storeTheme.id === "luxury" && <LuxuryGoldDust />}
+      <ThemeParticles color={storeTheme.primary} />
       {/* ═══════════ MOBILE PROFILE HERO ═══════════ */}
       <section className={`lg:hidden relative overflow-hidden ${isMinimal || isMarketplace || isNetflix || isShowcase ? "hidden" : ""}`}>
         {isMarketplace ? (
