@@ -387,7 +387,7 @@ export default function StoreLayoutMarketplace({
         <motion.section {...fadeUp(0.35)} className="mb-10">
           <div
             className="rounded-2xl p-8 md:p-12 text-center"
-            style={{ background: `linear-gradient(135deg, #0d2137, ${storeTheme.primary}90)` }}
+            style={{ background: `linear-gradient(135deg, ${storeTheme.bg}, ${storeTheme.primary}90)` }}
           >
             <h2 className="font-display font-extrabold text-xl md:text-2xl text-white mb-2">
               Quer anunciar seu imóvel?
