@@ -99,6 +99,7 @@ export default function RentalManagementTab({ userId, sellerId }: Props) {
   const [editingContract, setEditingContract] = useState<RentalContract | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>("todos");
   const [search, setSearch] = useState("");
+  const [expandedAlertId, setExpandedAlertId] = useState<string | null>(null);
 
   // ── Fetch data ──
   useEffect(() => {
