@@ -149,7 +149,7 @@ export default function StoreLayoutMarketplace({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
-        className="relative h-[380px] md:h-[480px] overflow-hidden rounded-b-[2rem]"
+        className="relative h-[280px] md:h-[480px] overflow-hidden rounded-b-[2rem]"
       >
         {/* Parallax background */}
         <AnimatePresence mode="wait">
@@ -189,15 +189,15 @@ export default function StoreLayoutMarketplace({
         <FloatingParticles color={storeTheme.primary} />
 
         {/* Hero content */}
-        <div className="relative z-10 h-full flex flex-col justify-end p-6 md:p-12 max-w-6xl mx-auto">
+        <div className="relative z-10 h-full flex flex-col justify-end p-5 md:p-12 max-w-6xl mx-auto">
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.7, delay: 0.2 }}
-            className="flex items-center gap-2 mb-3"
+            className="flex items-center gap-2 mb-2"
           >
-            <Sparkles size={16} style={{ color: storeTheme.primary }} />
-            <span className="text-xs font-bold uppercase tracking-widest" style={{ color: storeTheme.primary }}>
+            <Sparkles size={14} style={{ color: storeTheme.primary }} />
+            <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest" style={{ color: storeTheme.primary }}>
               Marketplace Imobiliário
             </span>
           </motion.div>
@@ -206,7 +206,7 @@ export default function StoreLayoutMarketplace({
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.3 }}
-            className="font-display font-black text-4xl md:text-6xl text-white leading-[1.1] drop-shadow-2xl"
+            className="font-display font-black text-2xl md:text-6xl text-white leading-[1.1] drop-shadow-2xl"
           >
             Imóveis em<br />
             <span style={{ color: storeTheme.primary }}>{cityName}</span>
@@ -216,7 +216,7 @@ export default function StoreLayoutMarketplace({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.45 }}
-            className="text-white/60 text-sm md:text-base mt-3 max-w-md"
+            className="text-white/60 text-xs md:text-base mt-2 md:mt-3 max-w-md hidden md:block"
           >
             Encontre casas, apartamentos e terrenos com os melhores corretores da região.
           </motion.p>
@@ -225,14 +225,14 @@ export default function StoreLayoutMarketplace({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.6 }}
-            className="flex items-center gap-3 mt-5"
+            className="flex items-center gap-3 mt-3 md:mt-5"
           >
             <button
               onClick={() => {
                 const el = document.getElementById("marketplace-grid");
                 el?.scrollIntoView({ behavior: "smooth" });
               }}
-              className="group inline-flex items-center gap-2 px-7 py-3.5 rounded-2xl font-bold text-sm text-white shadow-2xl transition-all hover:scale-105 hover:shadow-[0_0_30px_rgba(0,0,0,0.3)]"
+              className="group inline-flex items-center gap-2 px-5 py-2.5 md:px-7 md:py-3.5 rounded-2xl font-bold text-xs md:text-sm text-white shadow-2xl transition-all hover:scale-105"
               style={{
                 background: `linear-gradient(135deg, ${storeTheme.primary}, ${storeTheme.primary}bb)`,
                 boxShadow: `0 8px 32px ${storeTheme.primary}40`,
@@ -250,7 +250,7 @@ export default function StoreLayoutMarketplace({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.8 }}
-              className="flex gap-1.5 mt-5"
+              className="flex gap-1.5 mt-3 md:mt-5"
             >
               {heroImages.map((_: string, i: number) => (
                 <button
@@ -276,7 +276,7 @@ export default function StoreLayoutMarketplace({
         className="max-w-6xl mx-auto px-4 -mt-7 relative z-20"
       >
         <div
-          className="flex items-center gap-3 rounded-2xl px-5 py-4 backdrop-blur-xl"
+          className="flex items-center gap-2 md:gap-3 rounded-2xl px-4 py-3 md:px-5 md:py-4 backdrop-blur-xl"
           style={{
             background: `${storeTheme.card}ee`,
             border: `1px solid ${storeTheme.border}`,
@@ -317,7 +317,7 @@ export default function StoreLayoutMarketplace({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.15 }}
-          className="mt-10 mb-8"
+          className="mt-6 md:mt-10 mb-6 md:mb-8"
         >
           <div className="flex items-center gap-2 mb-5">
             <Crown size={16} style={{ color: storeTheme.primary }} />
@@ -325,7 +325,7 @@ export default function StoreLayoutMarketplace({
               O que você procura?
             </h2>
           </div>
-          <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2 md:grid md:grid-cols-6 md:overflow-visible">
+          <div className="flex gap-2.5 md:gap-3 overflow-x-auto scrollbar-hide pb-2 md:grid md:grid-cols-6 md:overflow-visible">
             {QUICK_ACTIONS.map((action, idx) => {
               const Icon = action.icon;
               const isActive = activeCategory === action.slug;
@@ -339,7 +339,7 @@ export default function StoreLayoutMarketplace({
                   whileHover={{ y: -4, transition: { duration: 0.2 } }}
                   whileTap={{ scale: 0.97 }}
                   onClick={() => { setActiveCategory(isActive ? "todos" : action.slug); scrollToGrid(); }}
-                  className="flex-shrink-0 flex flex-col items-center gap-2.5 p-4 rounded-2xl transition-all min-w-[100px] relative overflow-hidden"
+                  className="flex-shrink-0 flex flex-col items-center gap-1.5 md:gap-2.5 p-3 md:p-4 rounded-2xl transition-all min-w-[85px] md:min-w-[100px] relative overflow-hidden"
                   style={{
                     background: isActive ? `${storeTheme.primary}18` : `${storeTheme.card}`,
                     border: `1.5px solid ${isActive ? storeTheme.primary : storeTheme.border}`,
@@ -363,7 +363,7 @@ export default function StoreLayoutMarketplace({
                       boxShadow: isActive ? `0 0 16px ${storeTheme.primary}20` : "none",
                     }}
                   >
-                    <Icon size={22} />
+                    <Icon size={20} />
                   </div>
                   <span className="text-xs font-bold" style={{ color: isActive ? storeTheme.primary : storeTheme.text }}>
                     {action.name}
@@ -393,7 +393,7 @@ export default function StoreLayoutMarketplace({
             <motion.div
               key={banner.slug}
               whileHover={{ y: -4, transition: { duration: 0.25 } }}
-              className="relative h-44 md:h-52 rounded-2xl overflow-hidden group cursor-pointer"
+              className="relative h-36 md:h-52 rounded-2xl overflow-hidden group cursor-pointer"
               onClick={() => { setActiveCategory(banner.slug); scrollToGrid(); }}
               style={{ boxShadow: `0 8px 32px ${storeTheme.primary}18` }}
             >
@@ -401,7 +401,7 @@ export default function StoreLayoutMarketplace({
               <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent" />
               <FloatingParticles color={storeTheme.primary} />
               <div className="relative z-10 h-full flex flex-col justify-center p-6">
-                <h3 className="font-display font-black text-2xl md:text-3xl text-white leading-tight">
+                <h3 className="font-display font-black text-xl md:text-3xl text-white leading-tight">
                   {banner.title[0]}<br />{banner.title[1]}
                 </h3>
                 <p className="text-white/60 text-xs mt-2 max-w-[200px]">{banner.desc}</p>
@@ -428,7 +428,7 @@ export default function StoreLayoutMarketplace({
               <Star size={14} style={{ color: storeTheme.primary }} />
               <h2 className="font-display font-bold text-lg" style={{ color: storeTheme.text }}>Categorias</h2>
             </div>
-            <div className="grid grid-cols-4 md:grid-cols-8 gap-3">
+            <div className="grid grid-cols-3 md:grid-cols-8 gap-3">
               {activeCats.filter(c => c.slug !== "todos").map((cat, cIdx) => {
                 const isActive = activeCategory === cat.slug;
                 const Icon = QUICK_ACTIONS.find(a => a.slug === cat.slug)?.icon || Home;
@@ -444,7 +444,7 @@ export default function StoreLayoutMarketplace({
                     className="flex flex-col items-center gap-2 group"
                   >
                     <div
-                      className="w-16 h-16 rounded-full flex items-center justify-center transition-all relative"
+                      className="w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center transition-all relative"
                       style={{
                         background: isActive ? `${storeTheme.primary}20` : storeTheme.card,
                         border: `2.5px solid ${isActive ? storeTheme.primary : storeTheme.border}`,
@@ -490,7 +490,7 @@ export default function StoreLayoutMarketplace({
 
         {/* ═══ PRODUCT GRID — Staggered reveal + hover glow ═══ */}
         {visibleProducts.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-12">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 mb-12">
             {visibleProducts.map((product: any, i: number) => {
               const productLink = `/imoveis/produto/${product.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`;
               return (
@@ -540,12 +540,12 @@ export default function StoreLayoutMarketplace({
                         </span>
                       )}
                     </div>
-                    <div className="p-3.5">
-                      <h3 className="text-xs font-bold line-clamp-2 leading-snug mb-2" style={{ color: storeTheme.text }}>
+                    <div className="p-2.5 md:p-3.5">
+                      <h3 className="text-[11px] md:text-xs font-bold line-clamp-2 leading-snug mb-1.5" style={{ color: storeTheme.text }}>
                         {product.title}
                       </h3>
                       {product.price > 0 && (
-                        <p className="text-lg font-black" style={{ color: storeTheme.primary }}>
+                        <p className="text-sm md:text-lg font-black" style={{ color: storeTheme.primary }}>
                           R$ {product.price.toLocaleString("pt-BR")}
                           {product.isAluguel && <span className="text-[10px] font-normal ml-1" style={{ color: storeTheme.textMuted }}>/mês</span>}
                         </p>
