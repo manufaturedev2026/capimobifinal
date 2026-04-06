@@ -441,12 +441,29 @@ export default function CompanyProfile() {
       ? `${window.location.origin}/${seg}/produto/${productId}${corretorSlug ? `?corretor=${corretorSlug}` : ""}` 
       : window.location.href;
     
+    const isStandalone = window.matchMedia("(display-mode: standalone)").matches
+      || (navigator as any).standalone === true;
+
+    const openUrl = (url: string) => {
+      if (isStandalone) {
+        const a = document.createElement("a");
+        a.href = url;
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      } else {
+        window.open(url, "_blank");
+      }
+    };
+
     if (teamMember && teamMember.phone) {
       const phone = teamMember.phone.replace(/\D/g, "");
       const msg = productId
         ? `Olá ${teamMember.full_name}! 🏠 Vi o imóvel *${title}* na sua loja e gostaria de mais informações.\n\n🔗 ${link}`
         : `Olá ${teamMember.full_name}! 🏠 Vim da sua loja Brokers App e gostaria de mais informações sobre seus imóveis.\n\n🔗 ${link}`;
-      window.open(`https://wa.me/55${phone}?text=${encodeURIComponent(msg)}`, "_blank");
+      openUrl(`https://wa.me/55${phone}?text=${encodeURIComponent(msg)}`);
       return;
     }
     

@@ -40,11 +40,16 @@ export default function WhatsAppLeadCapture({
       } as any);
     } catch {}
     setSaving(false);
-    onOpenChange(false);
-    setName("");
-    setPhone("");
-    setCity("");
+    // Call onComplete BEFORE closing the dialog so the WhatsApp redirect
+    // happens inside the user-interaction context (required for iOS PWA)
     onComplete();
+    // Small delay to let the redirect start before closing the modal
+    setTimeout(() => {
+      onOpenChange(false);
+      setName("");
+      setPhone("");
+      setCity("");
+    }, 300);
   };
 
   const handleSkip = () => {
