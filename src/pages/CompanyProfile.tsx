@@ -1382,7 +1382,7 @@ export default function CompanyProfile() {
                 onCinemaMode: () => setGalleryLightbox(0),
                 onShareLink: () => { navigator.clipboard.writeText(window.location.href); },
                 storiesBar: sellerStories.some(s => s.sellerId === dbProfile?.id) || (user && dbProfile && user.id === dbProfile.user_id)
-                  ? <StoriesBar onAddStory={user && dbProfile && user.id === dbProfile.user_id ? () => setStoryUploadOpen(true) : undefined} />
+                  ? <StoriesBar textColor={storeTheme.text} onAddStory={user && dbProfile && user.id === dbProfile.user_id ? () => setStoryUploadOpen(true) : undefined} />
                   : undefined,
               };
 

@@ -6,9 +6,10 @@ import { useAuth } from "@/hooks/useAuth";
 
 interface StoriesBarProps {
   onAddStory?: () => void;
+  textColor?: string;
 }
 
-export default function StoriesBar({ onAddStory }: StoriesBarProps) {
+export default function StoriesBar({ onAddStory, textColor }: StoriesBarProps) {
   const { sellerStories, loading } = useStories();
   const { user } = useAuth();
   const [viewerOpen, setViewerOpen] = useState(false);
@@ -34,7 +35,7 @@ export default function StoriesBar({ onAddStory }: StoriesBarProps) {
               <div className="w-16 h-16 md:w-[72px] md:h-[72px] rounded-full border-2 border-dashed border-muted-foreground/40 flex items-center justify-center bg-muted/50 hover:bg-muted transition-colors">
                 <Plus className="w-6 h-6 text-muted-foreground" />
               </div>
-              <span className="text-[11px] text-muted-foreground font-medium truncate max-w-[72px]">Publicar</span>
+              <span className="text-[11px] font-medium truncate max-w-[72px]" style={textColor ? { color: textColor } : undefined}>Publicar</span>
             </button>
           )}
 
@@ -63,7 +64,7 @@ export default function StoriesBar({ onAddStory }: StoriesBarProps) {
                   />
                 </div>
               </div>
-              <span className="text-[11px] text-foreground font-semibold truncate max-w-[72px]">
+              <span className="text-[11px] font-semibold truncate max-w-[72px]" style={textColor ? { color: textColor } : undefined}>
                 {seller.sellerName.split(" ")[0]}
               </span>
             </button>
