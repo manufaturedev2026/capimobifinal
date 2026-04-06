@@ -129,7 +129,8 @@ async function generateMarketingImage(
 ): Promise<string> {
   const { width, height } = FORMAT_CONFIG[format];
   const s = STYLE_CONFIG[style];
-  const font = FONT_CONFIG[fontStyle].family;
+  const titleFont = FONT_CONFIG[fontStyle].family;
+  const baseFont = "'Trebuchet MS', 'Helvetica Neue', Arial, sans-serif";
   const canvas = document.createElement("canvas");
   canvas.width = width;
   canvas.height = height;
@@ -214,7 +215,7 @@ async function generateMarketingImage(
   if (item.price && item.price > 0) {
     const priceText = formatPrice(item.price);
     const priceFontSize = Math.round(28 * scale);
-    ctx.font = `900 ${priceFontSize}px ${font}`;
+    ctx.font = `900 ${priceFontSize}px ${baseFont}`;
     const priceMetrics = ctx.measureText(priceText);
     const badgePad = Math.round(16 * scale);
     const badgeW = priceMetrics.width + badgePad * 2;
@@ -237,7 +238,7 @@ async function generateMarketingImage(
 
   // Seller info
   const sellerFontSize = Math.round(16 * scale);
-  ctx.font = `600 ${sellerFontSize}px ${font}`;
+  ctx.font = `600 ${sellerFontSize}px ${baseFont}`;
   ctx.fillStyle = s.sellerColor;
   ctx.textAlign = "left";
   ctx.textBaseline = "bottom";
@@ -256,7 +257,7 @@ async function generateMarketingImage(
 
   if (details.length > 0) {
     const detailFontSize = Math.round(18 * scale);
-    ctx.font = `500 ${detailFontSize}px ${font}`;
+    ctx.font = `500 ${detailFontSize}px ${baseFont}`;
     ctx.fillStyle = s.detailColor;
     ctx.fillText(details.join("   "), pad, y);
     y -= detailFontSize + Math.round(8 * scale);
@@ -266,7 +267,7 @@ async function generateMarketingImage(
   const location = item.neighborhood ? `📍 ${item.neighborhood}, ${item.city}` : item.city ? `📍 ${item.city}` : "";
   if (location) {
     const locFontSize = Math.round(20 * scale);
-    ctx.font = `600 ${locFontSize}px ${font}`;
+    ctx.font = `600 ${locFontSize}px ${baseFont}`;
     ctx.fillStyle = s.locationColor;
     ctx.fillText(location, pad, y);
     y -= locFontSize + Math.round(10 * scale);
@@ -274,7 +275,7 @@ async function generateMarketingImage(
 
   // Title
   const titleFontSize = Math.round((isStory ? 36 : 32) * scale);
-  ctx.font = `800 ${titleFontSize}px ${font}`;
+  ctx.font = `800 ${titleFontSize}px ${titleFont}`;
   ctx.fillStyle = s.titleColor;
   const maxTitleWidth = width - pad * 2;
   const words = item.title.split(" ");
@@ -479,11 +480,11 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
             {stylePreview.accentBar && (
               <div className="absolute bottom-0 left-0 right-0 h-1" style={{ backgroundColor: stylePreview.accentBar }} />
             )}
-            <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6" style={{ fontFamily: fontPreview.family }}>
+            <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6">
               {showBrokerPhoto && sellerLogo && (
                 <img src={sellerLogo} alt="" className="w-10 h-10 rounded-full object-cover mb-2 border-2 border-white/30 shadow-lg" />
               )}
-              <h2 className="font-extrabold text-lg sm:text-2xl leading-tight line-clamp-2" style={{ color: stylePreview.titleColor }}>{selectedItem?.title}</h2>
+              <h2 className="font-extrabold text-lg sm:text-2xl leading-tight line-clamp-2" style={{ color: stylePreview.titleColor, fontFamily: fontPreview.family }}>{selectedItem?.title}</h2>
               <div className="flex items-center gap-3 mt-2 flex-wrap">
                 {selectedItem?.price && selectedItem.price > 0 && (
                   <span className="font-black text-base sm:text-xl" style={{ color: stylePreview.titleColor }}>R$ {selectedItem.price.toLocaleString("pt-BR")}</span>
