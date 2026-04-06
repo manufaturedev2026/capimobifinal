@@ -129,7 +129,8 @@ async function generateMarketingImage(
 ): Promise<string> {
   const { width, height } = FORMAT_CONFIG[format];
   const s = STYLE_CONFIG[style];
-  const font = FONT_CONFIG[fontStyle].family;
+  const titleFont = FONT_CONFIG[fontStyle].family;
+  const baseFont = "'Trebuchet MS', 'Helvetica Neue', Arial, sans-serif";
   const canvas = document.createElement("canvas");
   canvas.width = width;
   canvas.height = height;
