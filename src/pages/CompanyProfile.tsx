@@ -466,6 +466,7 @@ export default function CompanyProfile() {
   const storeTheme = getStoreTheme((dbProfile as any)?.store_theme);
   const currentLayout = (dbProfile as any)?.store_layout || "showcase";
   const isMarketplace = currentLayout === "marketplace";
+  const isMinimal = currentLayout === "minimal";
 
   return (
     <div
