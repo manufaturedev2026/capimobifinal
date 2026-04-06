@@ -469,6 +469,7 @@ export default function CompanyProfile() {
   const isMinimal = currentLayout === "minimal";
   const isShowcase = currentLayout === "showcase";
   const isNetflix = currentLayout === "netflix";
+  const isElegant = currentLayout === "elegant";
 
   return (
     <div
