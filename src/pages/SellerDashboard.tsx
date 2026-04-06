@@ -11,6 +11,7 @@ import StoreEffectsPicker from "@/components/StoreEffectsPicker";
 import BrokerAnalytics from "@/components/BrokerAnalytics";
 
 import SellerCrmTab from "@/components/SellerCrmTab";
+import SellerGalleryTab from "@/components/SellerGalleryTab";
 import { getTagStyle, getTagLabel } from "@/data/products";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
@@ -35,7 +36,7 @@ type SellerItem = {
   sold_at: string | null;
 };
 
-type DashboardTab = "overview" | "items" | "stats" | "domain" | "team" | "events" | "referral" | "crm";
+type DashboardTab = "overview" | "items" | "stats" | "domain" | "team" | "events" | "referral" | "crm" | "gallery";
 
 export default function SellerDashboard() {
   const { user, profile, signOut, refreshProfile, loading: authLoading } = useAuth();
@@ -257,6 +258,7 @@ export default function SellerDashboard() {
     { id: "events", label: "Efeitos", icon: Sparkles },
     
     { id: "crm" as DashboardTab, label: "Meu CRM", icon: MessageCircle },
+    { id: "gallery" as DashboardTab, label: "Galeria", icon: Image },
     { id: "domain", label: "Meu Domínio", icon: Globe, locked: lockedTabs.includes("domain") },
     ...(showTeamTab ? [{ id: "team" as DashboardTab, label: "Empresa", icon: Users }] : []),
   ];
@@ -941,6 +943,11 @@ export default function SellerDashboard() {
             {/* CRM Tab */}
             {activeTab === "crm" && user?.id && profile?.id && (
               <SellerCrmTab userId={user.id} sellerId={profile.id} />
+            )}
+
+            {/* Gallery Tab */}
+            {activeTab === "gallery" && user?.id && profile?.id && (
+              <SellerGalleryTab userId={user.id} sellerId={profile.id} sellerSlug={profile.slug || null} />
             )}
 
             {/* Team Tab */}
