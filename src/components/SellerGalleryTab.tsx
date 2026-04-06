@@ -354,7 +354,7 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
     setGenerating(format);
     try {
       const chosenPhoto = photos[selectedPhotoIndex] || photos[0];
-      const dataUrl = await generateMarketingImage(selectedItem, format, sellerName, sellerPhone, sellerCreci, showBrokerPhoto ? sellerLogo : null, selectedStyle, chosenPhoto);
+      const dataUrl = await generateMarketingImage(selectedItem, format, sellerName, sellerPhone, sellerCreci, showBrokerPhoto ? sellerLogo : null, selectedStyle, chosenPhoto, selectedFont);
       const link = document.createElement("a");
       link.download = `${selectedItem.title.replace(/[^a-zA-Z0-9À-ÿ ]/g, "").trim().replace(/\s+/g, "-")}_${format}.jpg`;
       link.href = dataUrl;
