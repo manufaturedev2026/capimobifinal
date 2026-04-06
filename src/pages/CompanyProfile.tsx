@@ -1665,6 +1665,30 @@ export default function CompanyProfile() {
                   </div>
                 </div>
 
+                {/* Seller category & CRECI */}
+                <div className="space-y-1.5 mb-3 text-xs" style={{ color: storeTheme.textMuted }}>
+                  <div className="flex items-center gap-1.5">
+                    <Store size={11} className="flex-shrink-0" />
+                    <span>
+                      {dbProfile?.seller_category
+                        ? ({ imobiliaria: "Imobiliária", corretor: "Corretor(a) de Imóveis", proprietario: "Proprietário", construtora: "Construtora", loja_veiculos: "Loja de Veículos", autonomo: "Vendedor Autônomo", concessionaria: "Concessionária" } as Record<string, string>)[dbProfile.seller_category] || "Especialista em imóveis"
+                        : "Especialista em imóveis"}
+                    </span>
+                  </div>
+                  {["corretor", "imobiliaria", "construtora"].includes(dbProfile?.seller_category || "") && dbProfile?.creci && (
+                    <div className="flex items-center gap-1.5">
+                      <Shield size={11} className="flex-shrink-0" style={{ color: storeTheme.primary }} />
+                      <span className="font-semibold" style={{ color: storeTheme.primary }}>CRECI: {dbProfile.creci}</span>
+                    </div>
+                  )}
+                  {dbProfile?.cnpj && (
+                    <div className="flex items-center gap-1.5">
+                      <Shield size={11} className="flex-shrink-0" />
+                      <span>CNPJ: {dbProfile.cnpj}</span>
+                    </div>
+                  )}
+                </div>
+
                 {dbProfile?.bio && (
                   <p className="text-xs leading-relaxed line-clamp-2 mb-3" style={{ color: storeTheme.textMuted }}>{dbProfile.bio}</p>
                 )}
@@ -1691,21 +1715,18 @@ export default function CompanyProfile() {
                   )}
                 </div>
 
-                {/* Action buttons */}
-                <div className="flex gap-2">
+                {/* All action buttons in one row */}
+                <div className="flex flex-wrap gap-2">
                   {company.whatsapp && (
-                    <button onClick={() => handleWhatsApp(heroProduct?.title || company.name)} className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-[#25d366] text-white font-bold text-xs active:scale-95 transition-transform">
-                      <MessageCircle size={15} /> WhatsApp
+                    <button onClick={() => handleWhatsApp(heroProduct?.title || company.name)} className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#25d366] text-white font-bold text-xs active:scale-95 transition-transform">
+                      <MessageCircle size={13} /> WhatsApp
                     </button>
                   )}
                   {(company as any).instagram && ["start", "vip", "premium", "essencial_empresa", "premium_empresa", "prime_empresa"].includes(sellerTier || "") && (
-                    <a href={`https://instagram.com/${(company as any).instagram.replace(/^@/, "")}`} target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-gradient-to-r from-[#833AB4] via-[#E1306C] to-[#F77737] text-white font-bold text-xs active:scale-95 transition-transform">
-                      <Instagram size={15} /> Instagram
+                    <a href={`https://instagram.com/${(company as any).instagram.replace(/^@/, "")}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-gradient-to-r from-[#833AB4] via-[#E1306C] to-[#F77737] text-white font-bold text-xs active:scale-95 transition-transform">
+                      <Instagram size={13} /> Instagram
                     </a>
                   )}
-                </div>
-
-                <div className="flex gap-2 mt-2">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <button className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium" style={{ background: `${storeTheme.border}`, color: storeTheme.text }}>
