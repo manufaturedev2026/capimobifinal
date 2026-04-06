@@ -177,6 +177,19 @@ export const STORE_THEMES: StoreTheme[] = [
     border: "#2a1a40",
     preview: { heroBg: "linear-gradient(135deg, #0a0020, #1a0040, #bf00ff)", cardBg: "#16102a", btnBg: "#bf00ff", btnText: "#fff" },
   },
+  {
+    id: "neon_red",
+    name: "Neon Red",
+    icon: "🔴",
+    bg: "#0a0a0a",
+    card: "#1a1010",
+    text: "#f0e0e0",
+    textMuted: "#b06060",
+    primary: "#ff1a1a",
+    accent: "#ff4d4d",
+    border: "#2a1515",
+    preview: { heroBg: "linear-gradient(135deg, #1a0000, #330000, #ff1a1a)", cardBg: "#1a1010", btnBg: "#ff1a1a", btnText: "#fff" },
+  },
 ];
 
 export function getStoreTheme(themeId: string | null | undefined): StoreTheme {
