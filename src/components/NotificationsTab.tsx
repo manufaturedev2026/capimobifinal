@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Bell, Send, Users, Clock, CheckCircle2, XCircle, Loader2, Trash2, MessageSquare } from "lucide-react";
+import { Bell, Send, Users, Clock, CheckCircle2, XCircle, Loader2, Trash2, MessageSquare, BellRing, Smartphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { usePushSubscription } from "@/hooks/usePushSubscription";
 
 interface NotificationsTabProps {
   userId: string;
@@ -24,6 +25,7 @@ interface NotificationLog {
 
 export default function NotificationsTab({ userId, sellerId }: NotificationsTabProps) {
   const { toast } = useToast();
+  const pushSub = usePushSubscription(sellerId);
   const [subscriberCount, setSubscriberCount] = useState(0);
   const [logs, setLogs] = useState<NotificationLog[]>([]);
   const [loading, setLoading] = useState(true);
@@ -110,6 +112,47 @@ export default function NotificationsTab({ userId, sellerId }: NotificationsTabP
       </div>
 
       {/* Stats */}
+      {/* Self-subscribe test button */}
+      <div className="p-4 rounded-xl border border-border bg-card space-y-3">
+        <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
+          <Smartphone className="w-4 h-4" /> Testar neste navegador
+        </h3>
+        {!pushSub.isSupported ? (
+          <p className="text-xs text-muted-foreground">
+            ⚠️ Este navegador não suporta Push Notifications. Teste no Chrome, Edge, Firefox ou Safari 16.4+.
+          </p>
+        ) : pushSub.isSubscribed ? (
+          <p className="text-xs text-green-500 font-medium flex items-center gap-1">
+            <CheckCircle2 className="w-3.5 h-3.5" /> Este navegador já está inscrito para receber push.
+          </p>
+        ) : pushSub.permission === "denied" ? (
+          <p className="text-xs text-destructive">
+            ❌ Notificações bloqueadas neste navegador. Vá nas configurações do navegador para desbloquear.
+          </p>
+        ) : (
+          <Button
+            size="sm"
+            variant="outline"
+            className="gap-2"
+            disabled={pushSub.loading}
+            onClick={async () => {
+              const ok = await pushSub.subscribe();
+              if (ok) fetchData();
+            }}
+          >
+            {pushSub.loading ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <BellRing className="w-4 h-4" />
+            )}
+            {pushSub.loading ? "Ativando..." : "Ativar Push neste navegador"}
+          </Button>
+        )}
+        <p className="text-[10px] text-muted-foreground">
+          Inscreva este dispositivo para testar o envio de notificações.
+        </p>
+      </div>
+
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         <div className="stat-card p-4 rounded-xl border border-border bg-card">
           <div className="flex items-center gap-2 mb-1">
