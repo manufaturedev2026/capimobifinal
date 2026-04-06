@@ -111,6 +111,16 @@ export default function StoreLayoutMinimal({
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-black/25" />
         <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent" />
 
+        {/* Painel / Entrar button */}
+        <div className="absolute top-4 left-4 z-20">
+          <Link
+            to={isOwner ? "/painel" : "/login"}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-white text-xs font-medium hover:bg-white/20 transition-colors"
+          >
+            <LayoutDashboard size={14} /> {isOwner ? "Painel" : "Entrar"}
+          </Link>
+        </div>
+
         {/* Subtle accent line */}
         <motion.div
           className="absolute bottom-0 left-0 right-0 h-[2px]"
