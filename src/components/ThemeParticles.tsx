@@ -1,16 +1,42 @@
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ThemeParticlesProps {
   /** Primary color in hex, e.g. "#d4a853" */
   color: string;
-  /** Optional secondary/glow color. Defaults to a slightly different shade of color */
+  /** Optional secondary/glow color */
   glowColor?: string;
   /** Number of particles (default 35) */
   count?: number;
+  /** Seller ID to check if particles are disabled */
+  sellerId?: string;
 }
 
-export default function ThemeParticles({ color, glowColor, count = 35 }: ThemeParticlesProps) {
+export default function ThemeParticles({ color, glowColor, count = 35, sellerId }: ThemeParticlesProps) {
   const glow = glowColor || adjustBrightness(color, -20);
+  const [disabled, setDisabled] = useState(false);
+
+  useEffect(() => {
+    if (!sellerId) return;
+    const check = async () => {
+      // If there's an inactive particulas record (most recent), particles are disabled
+      const { data } = await supabase
+        .from("store_effects")
+        .select("is_active")
+        .eq("seller_id", sellerId)
+        .eq("effect_type", "particulas")
+        .order("activated_at", { ascending: false })
+        .limit(1);
+      if (data && data.length > 0 && !(data[0] as any).is_active) {
+        setDisabled(true);
+      } else {
+        setDisabled(false);
+      }
+    };
+    check();
+    const interval = setInterval(check, 30000);
+    return () => clearInterval(interval);
+  }, [sellerId]);
 
   const particles = useMemo(() => Array.from({ length: count }, (_, i) => ({
     id: i,
@@ -21,6 +47,8 @@ export default function ThemeParticles({ color, glowColor, count = 35 }: ThemePa
     opacity: 0.2 + Math.random() * 0.5,
     drift: -30 + Math.random() * 60,
   })), [count]);
+
+  if (disabled) return null;
 
   return (
     <div className="fixed inset-0 pointer-events-none z-30 overflow-hidden">
