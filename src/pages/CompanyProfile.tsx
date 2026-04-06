@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Star, MapPin, MessageCircle, Share2, Key, Home, Building2, Landmark, Store, Warehouse, MoreHorizontal, Image, Eye, Instagram, Phone, ExternalLink, Clock, Shield, Zap, ChevronLeft, ChevronRight, Heart, BadgeCheck, Clapperboard, Play, X, Volume2, VolumeX, LayoutDashboard, Bed, Bath, Car, Maximize, Sword, Trophy, Sparkles } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import StoreEffects from "@/components/StoreEffects";
-import LuxuryGoldDust from "@/components/LuxuryGoldDust";
+import ThemeParticles from "@/components/ThemeParticles";
 import {
   StoreLayoutNetflix, StoreLayoutMinimal, StoreLayoutMagazine,
   StoreLayoutGallery, StoreLayoutElegant, StoreLayoutShowcase,
@@ -545,7 +545,7 @@ export default function CompanyProfile() {
       )}
 
       {isDbProfile && dbProfile?.id && <StoreEffects sellerId={dbProfile.id} />}
-      {storeTheme.id === "luxury" && <LuxuryGoldDust />}
+      <ThemeParticles color={storeTheme.primary} />
       {/* ═══════════ MOBILE PROFILE HERO ═══════════ */}
       <section className={`lg:hidden relative overflow-hidden ${isMinimal || isMarketplace || isNetflix || isShowcase ? "hidden" : ""}`}>
         {isMarketplace ? (

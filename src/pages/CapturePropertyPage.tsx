@@ -10,7 +10,7 @@ import { Home, Phone, User, MapPin, DollarSign, FileText, CheckCircle2, Loader2,
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { getStoreTheme, type StoreTheme } from "@/components/StoreThemePicker";
-import LuxuryGoldDust from "@/components/LuxuryGoldDust";
+import ThemeParticles from "@/components/ThemeParticles";
 
 const PROPERTY_TYPES = [
   { value: "casa", label: "🏠 Casa" },
@@ -96,7 +96,7 @@ export default function CapturePropertyPage() {
     return { primary, primaryDarker, primaryLighter, bg, card, text, textMuted, border, glowBg, btnTextColor };
   }, [theme, dark]);
 
-  const isLuxury = broker?.store_theme === "luxury";
+  
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -162,7 +162,7 @@ export default function CapturePropertyPage() {
         <Helmet>
           <title>Imóvel cadastrado! | {broker.company_name || broker.full_name}</title>
         </Helmet>
-        {isLuxury && <LuxuryGoldDust />}
+        <ThemeParticles color={colors.primary} />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-[120px]" style={{ background: `${colors.primary}18` }} />
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
@@ -206,7 +206,7 @@ export default function CapturePropertyPage() {
         <meta name="description" content={`Cadastre seu imóvel gratuitamente com ${broker.full_name}. Receba propostas de compra ou aluguel mais rápido.`} />
       </Helmet>
 
-      {isLuxury && <LuxuryGoldDust />}
+      <ThemeParticles color={colors.primary} />
 
       {/* Background effects */}
       <div className="absolute inset-0 pointer-events-none">
