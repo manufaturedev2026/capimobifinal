@@ -100,7 +100,7 @@ export default function StoreLayoutMinimal({
                     <h3 className="text-xs font-semibold line-clamp-1" style={{ color: storeTheme.text }}>{product.title}</h3>
                     {product.city && (
                       <p className="text-[10px] mt-0.5 flex items-center gap-1" style={{ color: storeTheme.textMuted }}>
-                        <MapPin size={9} /> {product.city}
+                        <MapPin size={9} /> {product.neighborhood ? `${product.neighborhood}, ${product.city}` : product.city}
                       </p>
                     )}
                     {product.price > 0 && (

@@ -94,7 +94,7 @@ export default function StoreLayoutShowcase({
                 </h3>
                 {heroProduct.city && (
                   <p className="text-white/70 text-xs mt-1 flex items-center gap-1">
-                    <MapPin size={11} /> {heroProduct.city}
+                    <MapPin size={11} /> {heroProduct.neighborhood ? `${heroProduct.neighborhood}, ${heroProduct.city}` : heroProduct.city}
                   </p>
                 )}
                 {heroProduct.price > 0 && (
@@ -212,7 +212,7 @@ export default function StoreLayoutShowcase({
                       )}
                       {product.city && (
                         <p className="text-[10px] mt-1 flex items-center gap-0.5" style={{ color: storeTheme.textMuted }}>
-                          <MapPin size={9} /> {product.city}
+                          <MapPin size={9} /> {product.neighborhood ? `${product.neighborhood}, ${product.city}` : product.city}
                         </p>
                       )}
                     </div>
