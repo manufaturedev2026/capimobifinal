@@ -113,6 +113,8 @@ export default function StoreLayoutMarketplace({
   const darkMid = getDarkMid(storeTheme.primary);
   const [searchTerm, setSearchTerm] = useState("");
   const [heroIdx, setHeroIdx] = useState(0);
+  const [promoIdx, setPromoIdx] = useState(0);
+  const promoScrollRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
 
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
