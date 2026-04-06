@@ -189,7 +189,7 @@ export default function StoreLayoutMarketplace({
         <FloatingParticles color={storeTheme.primary} />
 
         {/* Hero content */}
-        <div className="relative z-10 h-full flex flex-col justify-end p-6 md:p-12 max-w-6xl mx-auto">
+        <div className="relative z-10 h-full flex flex-col justify-end p-5 md:p-12 max-w-6xl mx-auto">
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
