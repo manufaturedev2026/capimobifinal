@@ -313,6 +313,7 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
   const [selectedStyle, setSelectedStyle] = useState<ImageStyle>("verde");
   const [showBrokerPhoto, setShowBrokerPhoto] = useState(true);
+  const [selectedFont, setSelectedFont] = useState<FontStyle>("moderna");
 
   useEffect(() => {
     (async () => {
