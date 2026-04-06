@@ -985,6 +985,11 @@ export default function SellerDashboard() {
               <StoriesTab userId={user.id} sellerId={profile.id} />
             )}
 
+            {/* Notifications Tab */}
+            {activeTab === "notifications" && user?.id && profile?.id && (
+              <NotificationsTab userId={user.id} sellerId={profile.id} />
+            )}
+
             {/* Team Tab */}
             {activeTab === "team" && showTeamTab && profile?.id && (
               <TeamMembersTab
