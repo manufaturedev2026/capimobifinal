@@ -34,8 +34,8 @@ export type StoreLayoutId = typeof STORE_LAYOUTS[number]["id"];
 export const LAYOUTS_BY_TIER: Record<string, string[]> = {
   basico: ["showcase"],
   start: ["showcase"],
-  premium: ["showcase", "netflix", "minimal", "marketplace"],
-  vip: ["showcase", "netflix", "minimal", "marketplace", "magazine", "gallery", "elegant"],
+  vip: ["showcase", "netflix", "minimal", "marketplace"],
+  premium: ["showcase", "netflix", "minimal", "marketplace", "magazine", "gallery", "elegant"],
   essencial_empresa: ["showcase", "netflix", "minimal", "marketplace"],
   premium_empresa: ["showcase", "netflix", "minimal", "marketplace", "magazine", "gallery", "elegant"],
   prime_empresa: ["showcase", "netflix", "minimal", "marketplace", "magazine", "gallery", "elegant"],
