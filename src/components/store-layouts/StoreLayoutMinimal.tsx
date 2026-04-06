@@ -151,7 +151,7 @@ export default function StoreLayoutMinimal({
             className="font-display font-light text-2xl md:text-5xl leading-tight text-white drop-shadow-lg"
           >
             Imóveis em{" "}
-            <span className="font-bold" style={{ color: storeTheme.primary }}>{cityName}</span>
+            <span className="font-bold" style={{ color: storeTheme.primary }}>{currentHeroCity}</span>
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 10 }}
