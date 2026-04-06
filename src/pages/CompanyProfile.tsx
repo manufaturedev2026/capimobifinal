@@ -1228,7 +1228,7 @@ export default function CompanyProfile() {
                     return (
                       <button
                         key={cat.slug}
-                        onClick={() => setActiveCategory(cat.slug)}
+                        onClick={() => { setActiveCategory(cat.slug); setTimeout(() => document.getElementById("products-grid")?.scrollIntoView({ behavior: "smooth", block: "start" }), 100); }}
                         disabled={isDisabled}
                         className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-medium transition-all`}
                         style={{
@@ -1291,7 +1291,7 @@ export default function CompanyProfile() {
             })()}
 
             {/* Desktop: keep original grid */}
-            <div className="hidden lg:block">
+            <div id="products-grid" className="hidden lg:block">
             {/* Products Header */}
             <div className="flex items-center justify-between mb-4">
               {isShowcase ? (
