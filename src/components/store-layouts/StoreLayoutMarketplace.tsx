@@ -194,7 +194,7 @@ export default function StoreLayoutMarketplace({
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.7, delay: 0.2 }}
-            className="flex items-center gap-2 mb-3"
+            className="flex items-center gap-2 mb-2"
           >
             <Sparkles size={16} style={{ color: storeTheme.primary }} />
             <span className="text-xs font-bold uppercase tracking-widest" style={{ color: storeTheme.primary }}>
