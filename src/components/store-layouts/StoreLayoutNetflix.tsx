@@ -74,7 +74,7 @@ export default function StoreLayoutNetflix({
                   <div className="p-3">
                     <h3 className="font-display font-semibold text-sm leading-tight line-clamp-2" style={{ color: storeTheme.text }}>{product.title}</h3>
                     {product.price > 0 && (
-                      <p className="font-display font-bold text-emerald-500 text-base mt-1">R$ {product.price.toLocaleString("pt-BR")}</p>
+                      <p className="font-display font-bold text-base mt-1" style={{ color: storeTheme.primary }}>R$ {product.price.toLocaleString("pt-BR")}</p>
                     )}
                     {product.city && (
                       <p className="text-[11px] mt-1 flex items-center gap-1" style={{ color: storeTheme.textMuted }}><MapPin size={10} /> {product.neighborhood ? `${product.neighborhood}, ${product.city}` : product.city}</p>

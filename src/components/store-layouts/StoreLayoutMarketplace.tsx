@@ -69,10 +69,48 @@ function ShimmerLine({ color }: { color: string }) {
   );
 }
 
+/* ── Derive a dark base from the primary color for gradients ── */
+function hexToHsl(hex: string): [number, number, number] {
+  const r = parseInt(hex.slice(1, 3), 16) / 255;
+  const g = parseInt(hex.slice(3, 5), 16) / 255;
+  const b = parseInt(hex.slice(5, 7), 16) / 255;
+  const max = Math.max(r, g, b), min = Math.min(r, g, b);
+  let h = 0, s = 0;
+  const l = (max + min) / 2;
+  if (max !== min) {
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    if (max === r) h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
+    else if (max === g) h = ((b - r) / d + 2) / 6;
+    else h = ((r - g) / d + 4) / 6;
+  }
+  return [Math.round(h * 360), Math.round(s * 100), Math.round(l * 100)];
+}
+
+function getDarkBase(primary: string): string {
+  try {
+    const [h] = hexToHsl(primary);
+    return `hsl(${h}, 40%, 8%)`;
+  } catch {
+    return "#0a0a0a";
+  }
+}
+
+function getDarkMid(primary: string): string {
+  try {
+    const [h] = hexToHsl(primary);
+    return `hsl(${h}, 45%, 15%)`;
+  } catch {
+    return "#1a1a2e";
+  }
+}
+
 export default function StoreLayoutMarketplace({
   filteredProducts, subcategories, activeCategory, setActiveCategory,
   categoryCounts, storeTheme, corretorSlug, dbProfile, getTagStyle, getTagLabel, handleWhatsApp,
 }: StoreLayoutProps) {
+  const darkBase = getDarkBase(storeTheme.primary);
+  const darkMid = getDarkMid(storeTheme.primary);
   const [searchTerm, setSearchTerm] = useState("");
   const [heroIdx, setHeroIdx] = useState(0);
   const heroRef = useRef<HTMLDivElement>(null);
@@ -131,7 +169,7 @@ export default function StoreLayoutMarketplace({
                 style={{ y: heroY, scale: heroScale }}
               />
             ) : (
-              <div className="w-full h-full" style={{ background: `linear-gradient(135deg, ${storeTheme.bg}, ${storeTheme.primary})` }} />
+              <div className="w-full h-full" style={{ background: `linear-gradient(135deg, ${darkBase}, ${darkMid}, ${storeTheme.primary})` }} />
             )}
           </motion.div>
         </AnimatePresence>
@@ -359,7 +397,7 @@ export default function StoreLayoutMarketplace({
               onClick={() => { setActiveCategory(banner.slug); scrollToGrid(); }}
               style={{ boxShadow: `0 8px 32px ${storeTheme.primary}18` }}
             >
-              <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${storeTheme.bg}, ${storeTheme.primary}${bIdx === 0 ? "" : "cc"})` }} />
+              <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${darkBase}, ${storeTheme.primary}${bIdx === 0 ? "" : "cc"})` }} />
               <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent" />
               <FloatingParticles color={storeTheme.primary} />
               <div className="relative z-10 h-full flex flex-col justify-center p-6">
@@ -594,7 +632,7 @@ export default function StoreLayoutMarketplace({
         >
           <div
             className="relative rounded-2xl p-8 md:p-14 text-center overflow-hidden"
-            style={{ background: `linear-gradient(135deg, ${storeTheme.bg}, ${storeTheme.primary}90)` }}
+            style={{ background: `linear-gradient(135deg, ${darkBase}, ${darkMid}, ${storeTheme.primary}90)` }}
           >
             <FloatingParticles color="#ffffff" />
             <motion.div

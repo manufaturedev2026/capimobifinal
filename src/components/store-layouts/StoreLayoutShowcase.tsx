@@ -98,7 +98,7 @@ export default function StoreLayoutShowcase({
                   </p>
                 )}
                 {heroProduct.price > 0 && (
-                  <p className="font-display font-extrabold text-2xl sm:text-3xl text-emerald-400 mt-2 drop-shadow-lg">
+                  <p className="font-display font-extrabold text-2xl sm:text-3xl mt-2 drop-shadow-lg" style={{ color: storeTheme.primary }}>
                     R$ {heroProduct.price.toLocaleString("pt-BR")}
                   </p>
                 )}
@@ -206,7 +206,7 @@ export default function StoreLayoutShowcase({
                         {product.title}
                       </h4>
                       {product.price > 0 && (
-                        <p className="font-display font-extrabold text-sm text-emerald-500 mt-1">
+                        <p className="font-display font-extrabold text-sm mt-1" style={{ color: storeTheme.primary }}>
                           R$ {product.price.toLocaleString("pt-BR")}
                         </p>
                       )}
