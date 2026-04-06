@@ -1960,6 +1960,46 @@ export default function CompanyProfile() {
                   {dbProfile.bio}
                 </p>
               )}
+              {/* Stats bar inline for Netflix */}
+              {isNetflix && (
+                <div className="flex items-center gap-4 flex-wrap mt-4 pt-3" style={{ borderTop: `1px solid ${storeTheme.border}` }}>
+                  <div className="flex items-center gap-2 text-sm">
+                    <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: `${storeTheme.primary}18` }}>
+                      <Store size={14} style={{ color: storeTheme.primary }} />
+                    </div>
+                    <div>
+                      <p className="font-bold text-xs" style={{ color: storeTheme.text }}>{products.length}</p>
+                      <p className="text-[9px]" style={{ color: storeTheme.textMuted }}>Anúncios</p>
+                    </div>
+                  </div>
+                  <div className="w-px h-6" style={{ background: storeTheme.border }} />
+                  <div className="flex items-center gap-2 text-sm">
+                    <div className="w-7 h-7 rounded-lg bg-[#25d366]/10 flex items-center justify-center">
+                      <MessageCircle size={14} className="text-[#25d366]" />
+                    </div>
+                    <div>
+                      <p className="font-bold text-xs" style={{ color: storeTheme.text }}>Direto</p>
+                      <p className="text-[9px]" style={{ color: storeTheme.textMuted }}>WhatsApp</p>
+                    </div>
+                  </div>
+                  <div className="w-px h-6" style={{ background: storeTheme.border }} />
+                  <div className="flex items-center gap-2 text-sm">
+                    <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: `${storeTheme.accent}30` }}>
+                      <Shield size={14} style={{ color: storeTheme.accent }} />
+                    </div>
+                    <div>
+                      <p className="font-bold text-xs" style={{ color: storeTheme.text }}>{isPaid ? "Verificado" : "Ativo"}</p>
+                      <p className="text-[9px]" style={{ color: storeTheme.textMuted }}>Vendedor</p>
+                    </div>
+                  </div>
+                  {isPaid && (
+                    <>
+                      <div className="w-px h-6" style={{ background: storeTheme.border }} />
+                      <PackageBadge tier={sellerTier} size="sm" />
+                    </>
+                  )}
+                </div>
+              )}
             </div>
           </div>
 
