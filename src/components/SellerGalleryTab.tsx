@@ -113,7 +113,7 @@ async function generateMarketingImage(
   sellerPhone: string | null,
   sellerCreci: string | null,
   sellerLogo: string | null,
-  style: ImageStyle = "classico",
+  style: ImageStyle = "verde",
   photoUrl?: string,
 ): Promise<string> {
   const { width, height } = FORMAT_CONFIG[format];
