@@ -54,7 +54,17 @@ export default function StoreLayoutMinimal({
   const heroScale = useTransform(scrollYProgress, [0, 1], [1, 1.1]);
 
   const heroImages = filteredProducts.filter((p: any) => p.image).slice(0, 8).map((p: any) => p.image);
-  const cityName = dbProfile?.city || "sua região";
+  // Auto-detect city from products if seller profile has no city
+  const cityName = (() => {
+    if (dbProfile?.city) return dbProfile.city;
+    const cities = filteredProducts.map((p: any) => p.city).filter(Boolean);
+    if (cities.length > 0) {
+      const freq: Record<string, number> = {};
+      cities.forEach((c: string) => { freq[c] = (freq[c] || 0) + 1; });
+      return Object.entries(freq).sort((a, b) => b[1] - a[1])[0][0];
+    }
+    return "sua região";
+  })();
   const totalCount = filteredProducts.length;
 
   const activeCats = subcategories.filter(c => c.slug === "todos" || (categoryCounts[c.slug] || 0) > 0);
