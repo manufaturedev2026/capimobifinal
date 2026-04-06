@@ -3,7 +3,7 @@ import { getStoreUrl, getStoreFullUrl } from "@/lib/storeUrl";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Package, Eye, Plus, Settings, Edit, Trash2, Copy, ToggleLeft, ToggleRight, Search, Image, LogOut, BarChart3, Star, Crown, Zap, AlertTriangle, Shield, MessageCircle, Home, UserCircle, Headphones, Globe, ExternalLink, CheckCircle2, ClipboardCopy, Lock, Clapperboard, Menu, X, Building2, Users, BadgeCheck, GripVertical, ChevronRight, Sparkles, FileText, Magnet, Camera } from "lucide-react";
+import { Package, Eye, Plus, Settings, Edit, Trash2, Copy, ToggleLeft, ToggleRight, Search, Image, LogOut, BarChart3, Star, Crown, Zap, AlertTriangle, Shield, MessageCircle, Home, UserCircle, Headphones, Globe, ExternalLink, CheckCircle2, ClipboardCopy, Lock, Clapperboard, Menu, X, Building2, Users, BadgeCheck, GripVertical, ChevronRight, Sparkles, FileText, Magnet, Camera, Bell } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import SoldCountdown from "@/components/SoldCountdown";
 import TeamMembersTab from "@/components/TeamMembersTab";
@@ -16,6 +16,7 @@ import RentalManagementTab from "@/components/RentalManagementTab";
 import ContractsTab from "@/components/ContractsTab";
 import CaptacaoOnlineTab from "@/components/CaptacaoOnlineTab";
 import StoriesTab from "@/components/StoriesTab";
+import NotificationsTab from "@/components/NotificationsTab";
 import { getTagStyle, getTagLabel } from "@/data/products";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
@@ -40,7 +41,7 @@ type SellerItem = {
   sold_at: string | null;
 };
 
-type DashboardTab = "overview" | "items" | "stats" | "domain" | "team" | "events" | "referral" | "crm" | "gallery" | "rentals" | "contracts" | "captacao" | "stories";
+type DashboardTab = "overview" | "items" | "stats" | "domain" | "team" | "events" | "referral" | "crm" | "gallery" | "rentals" | "contracts" | "captacao" | "stories" | "notifications";
 
 export default function SellerDashboard() {
   const { user, profile, signOut, refreshProfile, loading: authLoading } = useAuth();
@@ -267,6 +268,7 @@ export default function SellerDashboard() {
     { id: "contracts" as DashboardTab, label: "Contratos", icon: FileText },
     { id: "captacao" as DashboardTab, label: "Captação", icon: Magnet },
     { id: "stories" as DashboardTab, label: "Stories", icon: Camera },
+    { id: "notifications" as DashboardTab, label: "Push", icon: Bell },
     { id: "domain", label: "Meu Domínio", icon: Globe, locked: lockedTabs.includes("domain") },
     ...(showTeamTab ? [{ id: "team" as DashboardTab, label: "Empresa", icon: Users }] : []),
   ];
@@ -981,6 +983,11 @@ export default function SellerDashboard() {
             {/* Stories Tab */}
             {activeTab === "stories" && user?.id && profile?.id && (
               <StoriesTab userId={user.id} sellerId={profile.id} />
+            )}
+
+            {/* Notifications Tab */}
+            {activeTab === "notifications" && user?.id && profile?.id && (
+              <NotificationsTab userId={user.id} sellerId={profile.id} />
             )}
 
             {/* Team Tab */}
