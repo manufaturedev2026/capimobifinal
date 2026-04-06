@@ -4,8 +4,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   MapPin, Image, ChevronLeft, ChevronRight, Play, Plus,
   MessageCircle, Bed, Bath, Maximize, Car, Info, ChevronDown,
-  Volume2, VolumeX, Share2, Clapperboard,
+  Volume2, VolumeX, Share2, Clapperboard, LayoutDashboard,
 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 import type { StoreLayoutProps } from "./types";
 
 /* ═══════════════════════════════════════════
