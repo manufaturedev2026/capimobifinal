@@ -304,6 +304,7 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
   const [copied, setCopied] = useState(false);
   const [generating, setGenerating] = useState<ImageFormat | null>(null);
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
+  const [selectedStyle, setSelectedStyle] = useState<ImageStyle>("classico");
 
   useEffect(() => {
     (async () => {
