@@ -2,17 +2,20 @@ self.addEventListener("activate", function (event) {
   event.waitUntil(self.clients.claim());
 });
 
-// Push notification handlers imported by the main PWA service worker
 self.addEventListener("push", function (event) {
   let data = { title: "Nova notificação", body: "", url: "/" };
   try {
-    data = event.data ? event.data.json() : data;
+    if (event.data) {
+      data = event.data.json();
+    }
   } catch (e) {
-    // fallback
+    try {
+      data.body = event.data ? event.data.text() : "";
+    } catch (_) {}
   }
 
   const options = {
-    body: data.body,
+    body: data.body || "",
     icon: "/icons/icon-192x192.png",
     badge: "/icons/icon-72x72.png",
     vibrate: [100, 50, 100],
@@ -20,7 +23,12 @@ self.addEventListener("push", function (event) {
     actions: [{ action: "open", title: "Abrir" }],
   };
 
-  event.waitUntil(self.registration.showNotification(data.title, options));
+  // Add image if provided
+  if (data.image) {
+    options.image = data.image;
+  }
+
+  event.waitUntil(self.registration.showNotification(data.title || "Nova notificação", options));
 });
 
 self.addEventListener("notificationclick", function (event) {

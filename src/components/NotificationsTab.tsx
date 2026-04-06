@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Bell, Send, Users, Clock, CheckCircle2, XCircle, Loader2, Trash2, MessageSquare, BellRing, Smartphone } from "lucide-react";
+import { Bell, Send, Users, Clock, CheckCircle2, XCircle, Loader2, Trash2, MessageSquare, BellRing, Smartphone, ImagePlus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -35,6 +35,8 @@ export default function NotificationsTab({ userId, sellerId }: NotificationsTabP
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [url, setUrl] = useState("");
+  const [image, setImage] = useState("");
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   const fetchData = async () => {
     // Get subscriber count
@@ -61,6 +63,24 @@ export default function NotificationsTab({ userId, sellerId }: NotificationsTabP
     fetchData();
   }, [userId, sellerId]);
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingImage(true);
+    try {
+      const ext = file.name.split(".").pop();
+      const path = `push-images/${sellerId}/${Date.now()}.${ext}`;
+      const { error } = await supabase.storage.from("seller-uploads").upload(path, file, { upsert: true });
+      if (error) throw error;
+      const { data: urlData } = supabase.storage.from("seller-uploads").getPublicUrl(path);
+      setImage(urlData.publicUrl);
+    } catch (err: any) {
+      toast({ title: "Erro ao enviar imagem", description: err.message, variant: "destructive" });
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
   const handleSend = async () => {
     if (!title.trim() || !body.trim()) {
       toast({ title: "Preencha título e mensagem", variant: "destructive" });
@@ -70,7 +90,12 @@ export default function NotificationsTab({ userId, sellerId }: NotificationsTabP
     setSending(true);
     try {
       const { data, error } = await supabase.functions.invoke("send-push", {
-        body: { title: title.trim(), body: body.trim(), url: url.trim() || undefined },
+        body: {
+          title: title.trim(),
+          body: body.trim(),
+          url: url.trim() || undefined,
+          image: image || undefined,
+        },
       });
 
       if (error) throw error;
@@ -83,6 +108,7 @@ export default function NotificationsTab({ userId, sellerId }: NotificationsTabP
       setTitle("");
       setBody("");
       setUrl("");
+      setImage("");
       fetchData();
     } catch (err: any) {
       toast({ title: "Erro ao enviar", description: err.message, variant: "destructive" });
@@ -224,7 +250,44 @@ export default function NotificationsTab({ userId, sellerId }: NotificationsTabP
               <p className="text-[10px] text-muted-foreground">URL para onde o usuário será levado ao clicar</p>
             </div>
 
-            <Button onClick={handleSend} disabled={sending || !title.trim() || !body.trim()} className="w-full gap-2">
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium">Imagem (opcional)</Label>
+              {image ? (
+                <div className="relative w-full h-32 rounded-lg overflow-hidden border border-border">
+                  <img src={image} alt="Preview" className="w-full h-full object-cover" />
+                  <Button
+                    type="button"
+                    size="icon"
+                    variant="destructive"
+                    className="absolute top-1 right-1 h-6 w-6"
+                    onClick={() => setImage("")}
+                  >
+                    <X className="w-3 h-3" />
+                  </Button>
+                </div>
+              ) : (
+                <label className="flex items-center gap-2 p-3 rounded-lg border border-dashed border-border cursor-pointer hover:bg-muted/50 transition-colors">
+                  {uploadingImage ? (
+                    <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+                  ) : (
+                    <ImagePlus className="w-4 h-4 text-muted-foreground" />
+                  )}
+                  <span className="text-xs text-muted-foreground">
+                    {uploadingImage ? "Enviando..." : "Clique para selecionar uma imagem"}
+                  </span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleImageUpload}
+                    disabled={uploadingImage}
+                  />
+                </label>
+              )}
+              <p className="text-[10px] text-muted-foreground">Imagem exibida na notificação (ex: foto do imóvel)</p>
+            </div>
+
+            <Button onClick={handleSend} disabled={sending || uploadingImage || !title.trim() || !body.trim()} className="w-full gap-2">
               {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
               Enviar para {subscriberCount} inscrito{subscriberCount !== 1 ? "s" : ""}
             </Button>
