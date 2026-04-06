@@ -425,26 +425,98 @@ export default function StoreLayoutNetflix({
         </div>
       )}
 
-      {/* ══════ CATEGORY TABS ══════ */}
-      <div className="px-4 md:px-12 py-4" style={{ background: "linear-gradient(to bottom, rgba(20,20,20,0.8), #141414)" }}>
-        <div className="flex gap-1.5 overflow-x-auto scrollbar-hide pb-1">
+      {/* ══════ CATEGORY TABS — Cinematic genre cards ══════ */}
+      <div className="px-4 md:px-12 py-5" style={{ background: "linear-gradient(to bottom, rgba(20,20,20,0.9), #141414)" }}>
+        <div className="flex gap-2 md:gap-3 overflow-x-auto scrollbar-hide pb-2 snap-x snap-mandatory">
           {subcategories.filter(c => c.slug === "todos" || (categoryCounts[c.slug] || 0) > 0).map((cat) => {
             const isActive = activeCategory === cat.slug;
+            const count = categoryCounts[cat.slug] || 0;
+            const thumbImg = categoryCardImages[cat.slug];
             return (
-              <button
+              <motion.button
                 key={cat.slug}
                 onClick={() => setActiveCategory(cat.slug)}
-                className="flex-shrink-0 px-4 py-2 text-xs font-semibold transition-all rounded-full"
+                whileHover={{ scale: 1.05, y: -4 }}
+                whileTap={{ scale: 0.97 }}
+                className="flex-shrink-0 snap-start relative overflow-hidden rounded-lg transition-all duration-300 group/cat"
                 style={{
-                  background: isActive ? "#e50914" : "rgba(255,255,255,0.08)",
-                  color: isActive ? "#fff" : "rgba(255,255,255,0.55)",
+                  width: cat.slug === "todos" ? 100 : 140,
+                  height: 80,
+                  boxShadow: isActive
+                    ? "0 0 20px rgba(229,9,20,0.5), 0 0 40px rgba(229,9,20,0.2)"
+                    : "0 4px 12px rgba(0,0,0,0.4)",
+                  border: isActive ? "2px solid #e50914" : "2px solid transparent",
                 }}
               >
-                {cat.name}
-                {categoryCounts[cat.slug] > 0 && (
-                  <span className="ml-1 opacity-60">({categoryCounts[cat.slug]})</span>
+                {/* Background image or gradient */}
+                {thumbImg ? (
+                  <img
+                    src={thumbImg}
+                    alt={cat.name}
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover/cat:scale-110"
+                  />
+                ) : (
+                  <div
+                    className="absolute inset-0"
+                    style={{
+                      background: isActive
+                        ? "linear-gradient(135deg, #e50914 0%, #831010 100%)"
+                        : "linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%)",
+                    }}
+                  />
                 )}
-              </button>
+
+                {/* Dark overlay */}
+                <div
+                  className="absolute inset-0 transition-opacity duration-300"
+                  style={{
+                    background: isActive
+                      ? "linear-gradient(to top, rgba(229,9,20,0.6) 0%, rgba(0,0,0,0.3) 100%)"
+                      : "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.1) 100%)",
+                  }}
+                />
+
+                {/* Hover red glow line at bottom */}
+                <div
+                  className="absolute bottom-0 left-0 right-0 h-[3px] transition-all duration-300"
+                  style={{
+                    background: isActive ? "#e50914" : "transparent",
+                    boxShadow: isActive ? "0 0 8px #e50914" : "none",
+                  }}
+                />
+
+                {/* Content */}
+                <div className="relative z-10 h-full flex flex-col items-center justify-center px-2">
+                  <span
+                    className="font-bold text-xs md:text-sm text-white drop-shadow-lg text-center leading-tight"
+                    style={{ textShadow: "0 2px 8px rgba(0,0,0,0.8)" }}
+                  >
+                    {cat.name}
+                  </span>
+                  {count > 0 && (
+                    <span
+                      className="mt-1 text-[9px] font-medium px-2 py-0.5 rounded-full"
+                      style={{
+                        background: isActive ? "rgba(255,255,255,0.25)" : "rgba(255,255,255,0.1)",
+                        color: "rgba(255,255,255,0.8)",
+                      }}
+                    >
+                      {count} {count === 1 ? "título" : "títulos"}
+                    </span>
+                  )}
+                </div>
+
+                {/* Active pulse ring */}
+                {isActive && (
+                  <motion.div
+                    className="absolute inset-0 rounded-lg pointer-events-none"
+                    initial={{ opacity: 0.6 }}
+                    animate={{ opacity: [0.6, 0.2, 0.6] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                    style={{ border: "1px solid rgba(229,9,20,0.4)" }}
+                  />
+                )}
+              </motion.button>
             );
           })}
         </div>
