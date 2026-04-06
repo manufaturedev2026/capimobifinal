@@ -175,16 +175,26 @@ async function generateMarketingImage(
   const scale = width / 1080;
   const font = s.fontFamily;
 
-  // Seller logo (top-left)
+  // Seller photo (circular, top-left)
   if (sellerLogo) {
     try {
       const logoImg = await loadImage(sellerLogo);
-      const logoSize = Math.round(48 * scale);
+      const logoSize = Math.round(56 * scale);
+      const logoX = pad;
+      const logoY = pad;
       ctx.save();
-      drawRoundedRect(ctx, pad, pad, logoSize, logoSize, Math.round(8 * scale));
+      ctx.beginPath();
+      ctx.arc(logoX + logoSize / 2, logoY + logoSize / 2, logoSize / 2, 0, Math.PI * 2);
+      ctx.closePath();
       ctx.clip();
-      ctx.drawImage(logoImg, pad, pad, logoSize, logoSize);
+      ctx.drawImage(logoImg, logoX, logoY, logoSize, logoSize);
       ctx.restore();
+      // White border
+      ctx.strokeStyle = "rgba(255,255,255,0.4)";
+      ctx.lineWidth = Math.round(2 * scale);
+      ctx.beginPath();
+      ctx.arc(logoX + logoSize / 2, logoY + logoSize / 2, logoSize / 2, 0, Math.PI * 2);
+      ctx.stroke();
     } catch { /* skip logo */ }
   }
 
@@ -289,6 +299,7 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
   const [generating, setGenerating] = useState<ImageFormat | null>(null);
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
   const [selectedStyle, setSelectedStyle] = useState<ImageStyle>("verde");
+  const [showBrokerPhoto, setShowBrokerPhoto] = useState(true);
 
   useEffect(() => {
     (async () => {
@@ -329,7 +340,7 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
     setGenerating(format);
     try {
       const chosenPhoto = photos[selectedPhotoIndex] || photos[0];
-      const dataUrl = await generateMarketingImage(selectedItem, format, sellerName, sellerPhone, sellerCreci, sellerLogo, selectedStyle, chosenPhoto);
+      const dataUrl = await generateMarketingImage(selectedItem, format, sellerName, sellerPhone, sellerCreci, showBrokerPhoto ? sellerLogo : null, selectedStyle, chosenPhoto);
       const link = document.createElement("a");
       link.download = `${selectedItem.title.replace(/[^a-zA-Z0-9À-ÿ ]/g, "").trim().replace(/\s+/g, "-")}_${format}.jpg`;
       link.href = dataUrl;
@@ -341,7 +352,7 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
     } finally {
       setGenerating(null);
     }
-  }, [selectedItem, sellerName, sellerPhone, sellerCreci, sellerLogo, selectedStyle, toast, photos, selectedPhotoIndex]);
+  }, [selectedItem, sellerName, sellerPhone, sellerCreci, sellerLogo, selectedStyle, showBrokerPhoto, toast, photos, selectedPhotoIndex]);
 
   if (loading) {
     return (
@@ -455,8 +466,8 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
               <div className="absolute bottom-0 left-0 right-0 h-1" style={{ backgroundColor: stylePreview.accentBar }} />
             )}
             <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6">
-              {sellerLogo && (
-                <img src={sellerLogo} alt="" className="w-8 h-8 rounded-lg object-cover mb-2 border border-white/20" />
+              {showBrokerPhoto && sellerLogo && (
+                <img src={sellerLogo} alt="" className="w-10 h-10 rounded-full object-cover mb-2 border-2 border-white/30 shadow-lg" />
               )}
               <h2 className="font-extrabold text-lg sm:text-2xl leading-tight line-clamp-2" style={titleStyle}>{selectedItem?.title}</h2>
               <div className="flex items-center gap-3 mt-2 flex-wrap">
@@ -553,6 +564,21 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
             </div>
           </div>
 
+          {/* Broker photo toggle */}
+          {sellerLogo && (
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={showBrokerPhoto}
+                onChange={(e) => setShowBrokerPhoto(e.target.checked)}
+                className="w-4 h-4 rounded border-border text-primary focus:ring-primary"
+              />
+              <span className="text-[11px] font-semibold text-muted-foreground">Incluir foto do corretor</span>
+              {showBrokerPhoto && sellerLogo && (
+                <img src={sellerLogo} alt="" className="w-5 h-5 rounded-full object-cover border border-border" />
+              )}
+            </label>
+          )}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             {(Object.keys(FORMAT_CONFIG) as ImageFormat[]).map((fmt) => {
               const cfg = FORMAT_CONFIG[fmt];
