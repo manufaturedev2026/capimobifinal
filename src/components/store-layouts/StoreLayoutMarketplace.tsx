@@ -213,6 +213,16 @@ export default function StoreLayoutMarketplace({
 
         <FloatingParticles color={storeTheme.primary} />
 
+        {/* Painel / Entrar button */}
+        <div className="absolute top-4 left-4 z-20">
+          <Link
+            to={isOwner ? "/painel" : "/login"}
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/15 backdrop-blur-md text-white text-xs font-medium hover:bg-white/25 transition-colors"
+          >
+            <LayoutDashboard size={14} /> {isOwner ? "Painel" : "Entrar"}
+          </Link>
+        </div>
+
         {/* Hero content */}
         <div className="relative z-10 h-full flex flex-col justify-end p-5 md:p-12 max-w-6xl mx-auto">
           <motion.div
