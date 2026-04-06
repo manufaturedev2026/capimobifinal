@@ -479,6 +479,16 @@ export default function RentalManagementTab({ userId, sellerId }: Props) {
               const cfg = STATUS_CONFIG[contract.status];
               const reminder = getPaymentReminders(contract);
               const property = properties.find(p => p.id === contract.item_id);
+              
+              // Calculate days until next payment
+              const now = new Date();
+              const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+              let nextDue = new Date(now.getFullYear(), now.getMonth(), contract.due_day);
+              if (nextDue < today) nextDue = new Date(now.getFullYear(), now.getMonth() + 1, contract.due_day);
+              const daysUntil = Math.round((nextDue.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+              const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+              const isPaidThisMonth = payments.some(p => p.contract_id === contract.id && p.reference_month === currentMonth && p.status === "pago");
+
               return (
                 <motion.div
                   key={contract.id}
@@ -511,9 +521,31 @@ export default function RentalManagementTab({ userId, sellerId }: Props) {
                       )}
                     </div>
                   </div>
-                  <div className="flex items-center gap-4 mt-3 pt-3 border-t border-border text-[11px] text-muted-foreground">
-                    <span className="flex items-center gap-1"><Calendar size={10} /> Vence dia {contract.due_day}</span>
-                    <span className="flex items-center gap-1"><Calendar size={10} /> {fmtDate(contract.start_date)}{contract.end_date ? ` → ${fmtDate(contract.end_date)}` : ""}</span>
+                  {/* Next payment countdown */}
+                  <div className="flex items-center gap-3 mt-3 pt-3 border-t border-border">
+                    {contract.status === "ativo" && (
+                      <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-bold ${
+                        isPaidThisMonth
+                          ? "bg-emerald-500/10 text-emerald-600"
+                          : daysUntil === 0
+                            ? "bg-orange-500/10 text-orange-600"
+                            : daysUntil <= 3
+                              ? "bg-amber-500/10 text-amber-600"
+                              : "bg-primary/10 text-primary"
+                      }`}>
+                        {isPaidThisMonth ? (
+                          <><CheckCircle2 size={12} /> Pago este mês</>
+                        ) : daysUntil === 0 ? (
+                          <><AlertTriangle size={12} /> Vence HOJE</>
+                        ) : (
+                          <><Clock size={12} /> {daysUntil} dia{daysUntil !== 1 ? "s" : ""} p/ próximo pgto</>
+                        )}
+                      </div>
+                    )}
+                    <div className="flex items-center gap-3 ml-auto text-[11px] text-muted-foreground">
+                      <span className="flex items-center gap-1"><Calendar size={10} /> Dia {contract.due_day}</span>
+                      <span className="flex items-center gap-1"><Calendar size={10} /> {fmtDate(contract.start_date)}{contract.end_date ? ` → ${fmtDate(contract.end_date)}` : ""}</span>
+                    </div>
                   </div>
                 </motion.div>
               );
