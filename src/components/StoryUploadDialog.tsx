@@ -5,8 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
-import { useSubscription } from "@/hooks/useSubscription";
-import { useMyStoryCount, getStoryLimit } from "@/hooks/useStories";
+import { useMyStoryCount } from "@/hooks/useStories";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ImagePlus, Loader2, Link as LinkIcon, Type, FileText, Package, Users } from "lucide-react";
@@ -37,9 +36,7 @@ interface TeamMemberOption {
 
 export default function StoryUploadDialog({ open, onOpenChange, sellerId, onUploaded }: StoryUploadDialogProps) {
   const { user, profile } = useAuth();
-  const { currentTier } = useSubscription(user?.id);
   const currentCount = useMyStoryCount(user?.id);
-  const limit = getStoryLimit(currentTier);
   const { toast } = useToast();
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
@@ -60,9 +57,7 @@ export default function StoryUploadDialog({ open, onOpenChange, sellerId, onUplo
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
   const [showMemberPicker, setShowMemberPicker] = useState(false);
 
-  const isEmpresa = ["essencial_empresa", "premium_empresa", "prime_empresa"].includes(currentTier);
-
-  const canPost = currentCount < limit;
+  const isEmpresa = false; // no tier-based restrictions anymore
 
   // Load seller items + team members
   useEffect(() => {
@@ -193,15 +188,9 @@ export default function StoryUploadDialog({ open, onOpenChange, sellerId, onUplo
         <ScrollArea className="max-h-[70vh] pr-2">
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              {currentCount}/{limit} stories usados (plano {currentTier})
+              {currentCount} stories ativos
             </p>
 
-            {!canPost ? (
-              <div className="text-center py-6">
-                <p className="text-sm text-destructive font-medium">Você atingiu o limite de stories do seu plano.</p>
-                <p className="text-xs text-muted-foreground mt-1">Faça upgrade para publicar mais.</p>
-              </div>
-            ) : (
               <>
                 {/* Team member selector for empresa plans */}
                 {isEmpresa && teamMembers.length > 0 && (
@@ -367,7 +356,7 @@ export default function StoryUploadDialog({ open, onOpenChange, sellerId, onUplo
                   </Button>
                 </div>
               </>
-            )}
+
           </div>
         </ScrollArea>
       </DialogContent>

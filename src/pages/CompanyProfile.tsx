@@ -27,6 +27,7 @@ import { useStories } from "@/hooks/useStories";
 import WhatsAppLeadCapture from "@/components/WhatsAppLeadCapture";
 import StoreInstallButton from "@/components/StoreInstallButton";
 import StoriesBar from "@/components/StoriesBar";
+import StoryUploadDialog from "@/components/StoryUploadDialog";
 
 const propertySubcategories = [
   { slug: "todos", name: "Todos", icon: Store, img: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=300&h=200&fit=crop" },
@@ -97,6 +98,7 @@ export default function CompanyProfile() {
   const { sellerStories } = useStories();
   const [storyViewerOpen, setStoryViewerOpen] = useState(false);
   const [leadCaptureOpen, setLeadCaptureOpen] = useState(false);
+  const [storyUploadOpen, setStoryUploadOpen] = useState(false);
   const [pendingWhatsAppAction, setPendingWhatsAppAction] = useState<(() => void) | null>(null);
 
   const searchParams = new URLSearchParams(location.search);
@@ -1379,7 +1381,9 @@ export default function CompanyProfile() {
                 availableCities,
                 onCinemaMode: () => setGalleryLightbox(0),
                 onShareLink: () => { navigator.clipboard.writeText(window.location.href); },
-                storiesBar: sellerStories.some(s => s.sellerId === dbProfile?.id) ? <StoriesBar /> : undefined,
+                storiesBar: sellerStories.some(s => s.sellerId === dbProfile?.id) || (user && dbProfile && user.id === dbProfile.user_id)
+                  ? <StoriesBar onAddStory={user && dbProfile && user.id === dbProfile.user_id ? () => setStoryUploadOpen(true) : undefined} />
+                  : undefined,
               };
 
               const layout = (dbProfile as any)?.store_layout || "showcase";
@@ -2177,6 +2181,15 @@ export default function CompanyProfile() {
               setPendingWhatsAppAction(null);
             }
           }}
+        />
+      )}
+
+      {dbProfile && (
+        <StoryUploadDialog
+          open={storyUploadOpen}
+          onOpenChange={setStoryUploadOpen}
+          sellerId={dbProfile.id}
+          onUploaded={() => window.location.reload()}
         />
       )}
     </div>

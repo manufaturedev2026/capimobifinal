@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { useMyStoryCount, getStoryLimit } from "@/hooks/useStories";
-import { useSubscription } from "@/hooks/useSubscription";
+import { useMyStoryCount } from "@/hooks/useStories";
+
 import { Trash2, Plus, Clock, ExternalLink, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
@@ -29,9 +29,7 @@ interface StoryRow {
 
 export default function StoriesTab({ userId, sellerId }: StoriesTabProps) {
   const { toast } = useToast();
-  const { currentTier } = useSubscription(userId);
   const storyCount = useMyStoryCount(userId);
-  const limit = getStoryLimit(currentTier);
   const [stories, setStories] = useState<StoryRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploadOpen, setUploadOpen] = useState(false);
@@ -96,7 +94,7 @@ export default function StoriesTab({ userId, sellerId }: StoriesTabProps) {
         <div>
           <h2 className="text-xl font-bold text-foreground">📸 Meus Stories</h2>
           <p className="text-sm text-muted-foreground mt-1">
-            {storyCount}/{limit} stories ativos · Expira em 24h automaticamente
+            {storyCount} stories ativos · Expira em 24h automaticamente
           </p>
         </div>
         <Button onClick={() => setUploadOpen(true)} className="gap-2">

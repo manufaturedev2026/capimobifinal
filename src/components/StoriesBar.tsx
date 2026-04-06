@@ -40,7 +40,7 @@ export default function StoriesBar({ onAddStory }: StoriesBarProps) {
 
           {sellerStories.map((seller, i) => (
             <button
-              key={seller.sellerId}
+              key={`${seller.stories[0]?.id || seller.sellerId}-${i}`}
               onClick={() => handleOpen(i)}
               className="flex flex-col items-center gap-1.5 shrink-0 group"
             >
@@ -63,7 +63,7 @@ export default function StoriesBar({ onAddStory }: StoriesBarProps) {
                   />
                 </div>
               </div>
-              <span className="text-[11px] text-foreground/80 font-medium truncate max-w-[72px]">
+              <span className="text-[11px] text-foreground font-semibold truncate max-w-[72px]">
                 {seller.sellerName.split(" ")[0]}
               </span>
             </button>
