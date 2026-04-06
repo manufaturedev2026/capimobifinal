@@ -410,7 +410,7 @@ export default function AdminPanel() {
           {sidebarItems.map((item) => (
             <button
               key={item.key}
-              onClick={() => setTab(item.key)}
+              onClick={() => item.key === "vendas" ? window.open("/vender", "_blank") : setTab(item.key)}
               className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
                 tab === item.key ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
               }`}
