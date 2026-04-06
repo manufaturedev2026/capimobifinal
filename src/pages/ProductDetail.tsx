@@ -344,25 +344,55 @@ export default function ProductDetail() {
       {/* Gallery Mosaic - Airbnb style */}
       {images.length > 0 && (
         <div className="container max-w-6xl mx-auto px-4 -mt-16 md:-mt-20 z-10 relative">
-          {/* Mobile: horizontal scroll */}
-          <div className="md:hidden flex gap-2 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-2">
-            {images.map((img: string, i: number) => (
-              <motion.button
-                key={i}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.05 }}
-                onClick={() => { setActiveImage(i); setLightboxOpen(true); }}
-                className={`relative flex-shrink-0 w-20 h-20 snap-start rounded-xl overflow-hidden border-2 transition-all group ${
-                  activeImage === i ? "border-primary shadow-lg ring-2 ring-primary/30" : "border-border hover:border-primary/50"
-                }`}
-              >
-                <img src={img} alt={`Foto ${i + 1}`} className="w-full h-full object-cover" loading="lazy" />
-                <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/10 transition-colors flex items-center justify-center">
-                  <ZoomIn size={16} className="text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg" />
-                </div>
+          {/* Mobile: Mosaic grid */}
+          <div className="md:hidden">
+            {images.length === 1 && (
+              <motion.button initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} onClick={() => { setActiveImage(0); setLightboxOpen(true); }} className="w-full aspect-[16/9] rounded-2xl overflow-hidden relative group">
+                <img src={images[0]} alt="Foto 1" className="w-full h-full object-cover" />
+                <div className="absolute bottom-2 right-2 bg-black/60 text-white text-[10px] font-bold px-2 py-1 rounded-lg backdrop-blur-sm">1 foto</div>
               </motion.button>
-            ))}
+            )}
+            {images.length === 2 && (
+              <div className="grid grid-cols-2 gap-1.5 h-[220px]">
+                {images.map((img: string, i: number) => (
+                  <motion.button key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} onClick={() => { setActiveImage(i); setLightboxOpen(true); }} className="rounded-xl overflow-hidden relative group">
+                    <img src={img} alt={`Foto ${i + 1}`} className="w-full h-full object-cover" loading="lazy" />
+                  </motion.button>
+                ))}
+              </div>
+            )}
+            {images.length === 3 && (
+              <div className="grid grid-cols-2 gap-1.5 h-[260px]">
+                <motion.button initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} onClick={() => { setActiveImage(0); setLightboxOpen(true); }} className="row-span-2 rounded-xl overflow-hidden relative group">
+                  <img src={images[0]} alt="Foto 1" className="w-full h-full object-cover" />
+                </motion.button>
+                {images.slice(1, 3).map((img: string, i: number) => (
+                  <motion.button key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: (i + 1) * 0.05 }} onClick={() => { setActiveImage(i + 1); setLightboxOpen(true); }} className="rounded-xl overflow-hidden relative group">
+                    <img src={img} alt={`Foto ${i + 2}`} className="w-full h-full object-cover" loading="lazy" />
+                  </motion.button>
+                ))}
+              </div>
+            )}
+            {images.length >= 4 && (
+              <div className="grid grid-cols-3 grid-rows-2 gap-1.5 h-[280px]">
+                <motion.button initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} onClick={() => { setActiveImage(0); setLightboxOpen(true); }} className="col-span-2 row-span-2 rounded-xl overflow-hidden relative group">
+                  <img src={images[0]} alt="Foto 1" className="w-full h-full object-cover" />
+                  <div className="absolute bottom-2 left-2 bg-black/60 text-white text-[10px] font-bold px-2 py-1 rounded-lg backdrop-blur-sm flex items-center gap-1">
+                    <ZoomIn size={10} /> {images.length} fotos
+                  </div>
+                </motion.button>
+                {images.slice(1, 3).map((img: string, i: number) => (
+                  <motion.button key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: (i + 1) * 0.05 }} onClick={() => { setActiveImage(i + 1); setLightboxOpen(true); }} className="rounded-xl overflow-hidden relative group">
+                    <img src={img} alt={`Foto ${i + 2}`} className="w-full h-full object-cover" loading="lazy" />
+                    {i === 1 && images.length > 3 && (
+                      <div className="absolute inset-0 bg-black/50 flex items-center justify-center rounded-xl">
+                        <span className="text-white font-bold text-sm">+{images.length - 3}</span>
+                      </div>
+                    )}
+                  </motion.button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Desktop: Mosaic grid */}
