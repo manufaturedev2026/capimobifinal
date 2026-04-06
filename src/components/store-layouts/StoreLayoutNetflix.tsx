@@ -562,7 +562,8 @@ export default function StoreLayoutNetflix({
                 >
                   <Link
                     to={productLink}
-                    className="block overflow-hidden rounded-lg bg-[#181818] border border-white/10"
+                    className="block overflow-hidden rounded-lg"
+                    style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}
                   >
                     <div className="relative aspect-[4/3] overflow-hidden">
                       {product.image ? (
