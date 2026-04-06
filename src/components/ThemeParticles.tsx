@@ -51,13 +51,13 @@ export default function ThemeParticles({ color, glowColor, count = 35, sellerId 
   if (disabled) return null;
 
   return (
-    <div className="fixed inset-0 pointer-events-none z-30 overflow-hidden">
+    <div className="fixed inset-0 pointer-events-none z-30" style={{ overflow: "hidden", contain: "strict" }}>
       <style>{`
         @keyframes themeFloatUp {
           0% { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
           10% { opacity: var(--tp-opacity); }
           90% { opacity: 0.3; }
-          100% { transform: translateY(-100vh) translateX(var(--tp-drift)) scale(0.2); opacity: 0; }
+          100% { transform: translateY(calc(-100% - 20px)) translateX(var(--tp-drift)) scale(0.2); opacity: 0; }
         }
       `}</style>
       {particles.map((p) => (

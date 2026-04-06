@@ -25,7 +25,7 @@ export default function PushSubscribeButton({ sellerId, primaryColor }: PushSubs
     <button
       onClick={handleSubscribe}
       disabled={loading}
-      className="fixed bottom-20 md:bottom-6 right-4 z-40 flex items-center gap-2 px-4 py-2.5 rounded-full shadow-lg text-white text-xs font-bold animate-bounce hover:animate-none transition-all active:scale-95"
+      className="fixed bottom-20 md:bottom-6 right-4 z-40 flex items-center gap-2 px-4 py-2.5 rounded-full shadow-lg text-white text-xs font-bold transition-all active:scale-95"
       style={{ background: primaryColor || "#3B82F6" }}
     >
       <BellRing className="w-4 h-4" />
