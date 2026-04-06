@@ -281,26 +281,7 @@ export default function StoreLayoutNetflix({
               </div>
             )}
           </div>
-          <div className="absolute top-4 right-4 md:top-6 md:right-12 z-20 flex items-center gap-2">
-            {onShareLink && (
-              <button
-                onClick={onShareLink}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-medium text-white/80 hover:text-white transition-colors"
-                style={{ background: "rgba(255,255,255,0.1)", backdropFilter: "blur(8px)" }}
-              >
-                <Share2 size={14} /> Compartilhar
-              </button>
-            )}
-            {onCinemaMode && (
-              <button
-                onClick={onCinemaMode}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-medium text-white/80 hover:text-white transition-colors"
-                style={{ background: "rgba(255,255,255,0.1)", backdropFilter: "blur(8px)" }}
-              >
-                <Clapperboard size={14} /> Modo Cinema
-              </button>
-            )}
-          </div>
+          {/* Cinema/Share buttons moved to category section */}
 
           {/* Billboard content — Netflix style */}
           <div className="absolute bottom-[12%] md:bottom-[15%] left-4 md:left-12 z-10 max-w-lg">
