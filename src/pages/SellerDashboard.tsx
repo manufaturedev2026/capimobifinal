@@ -12,6 +12,7 @@ import BrokerAnalytics from "@/components/BrokerAnalytics";
 
 import SellerCrmTab from "@/components/SellerCrmTab";
 import SellerGalleryTab from "@/components/SellerGalleryTab";
+import RentalManagementTab from "@/components/RentalManagementTab";
 import { getTagStyle, getTagLabel } from "@/data/products";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
