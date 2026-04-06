@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
 const SUBSCRIPTION_TIMEOUT_MS = 15000;
-const PUSH_SERVICE_WORKER_URL = "/sw.js";
+const PUSH_SW_URL = "/push-sw.js";
 
 export function usePushSubscription(sellerId?: string) {
   const [isSubscribed, setIsSubscribed] = useState(false);
@@ -72,12 +72,21 @@ export function usePushSubscription(sellerId?: string) {
       }
       console.log("[Push] VAPID key received");
 
-      // Step 3: Ensure the root PWA service worker is active
+      // Step 3: Register the dedicated push service worker
       console.log("[Push] Registering service worker...");
-      let registration = await navigator.serviceWorker.getRegistration("/");
-      if (!registration || !isRootPushRegistration(registration)) {
+      let registration: ServiceWorkerRegistration | undefined;
+
+      // Look for existing push-sw registration
+      const allRegs = await navigator.serviceWorker.getRegistrations();
+      registration = allRegs.find((r) => {
+        const url = r.active?.scriptURL || r.installing?.scriptURL || r.waiting?.scriptURL || "";
+        return url.includes("push-sw");
+      });
+
+      if (!registration) {
+        console.log("[Push] No push-sw found, registering...");
         registration = await withTimeout(
-          navigator.serviceWorker.register(PUSH_SERVICE_WORKER_URL, { scope: "/" }),
+          navigator.serviceWorker.register(PUSH_SW_URL),
           SUBSCRIPTION_TIMEOUT_MS,
           "Tempo esgotado ao registrar o app para push."
         );
@@ -87,18 +96,18 @@ export function usePushSubscription(sellerId?: string) {
         console.log("[Push] SW registered, waiting for activation...");
         await waitForActivation(registration);
       }
-      console.log("[Push] SW ready, state:", registration.active?.state);
+      console.log("[Push] push-sw state:", registration.active?.state);
 
       // Step 4: Subscribe to push
-      const readyRegistration = await withTimeout(
-        navigator.serviceWorker.ready,
-        SUBSCRIPTION_TIMEOUT_MS,
-        "O app demorou demais para ficar pronto para notificações."
-      );
+      // Wait for THIS specific registration to be active (not navigator.serviceWorker.ready which waits for the PWA sw)
+      if (!registration.active) {
+        console.log("[Push] Waiting for push-sw to activate...");
+        await waitForActivation(registration);
+      }
 
       const applicationServerKey = urlBase64ToUint8Array(vapidData.publicKey);
       let subscription = await withTimeout(
-        readyRegistration.pushManager.getSubscription(),
+        registration.pushManager.getSubscription(),
         SUBSCRIPTION_TIMEOUT_MS,
         "Não foi possível verificar a inscrição atual deste dispositivo."
       );
@@ -106,7 +115,7 @@ export function usePushSubscription(sellerId?: string) {
       if (!subscription) {
         console.log("[Push] Creating new subscription...");
         subscription = await withTimeout(
-          readyRegistration.pushManager.subscribe({
+          registration.pushManager.subscribe({
             userVisibleOnly: true,
             applicationServerKey,
           }),
@@ -181,21 +190,6 @@ function withTimeout<T>(promise: PromiseLike<T>, timeoutMs: number, message: str
       window.setTimeout(() => reject(new Error(message)), timeoutMs);
     }),
   ]);
-}
-
-function getRegistrationScriptPath(registration: ServiceWorkerRegistration) {
-  const scriptUrl = registration.active?.scriptURL || registration.waiting?.scriptURL || registration.installing?.scriptURL || "";
-
-  try {
-    return new URL(scriptUrl).pathname;
-  } catch {
-    return scriptUrl;
-  }
-}
-
-function isRootPushRegistration(registration: ServiceWorkerRegistration) {
-  const scriptPath = getRegistrationScriptPath(registration);
-  return scriptPath.endsWith("/sw.js") || scriptPath.endsWith("/dev-sw.js");
 }
 
 async function waitForActivation(registration: ServiceWorkerRegistration) {
