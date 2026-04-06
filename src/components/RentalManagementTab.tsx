@@ -508,9 +508,9 @@ export default function RentalManagementTab({ userId, sellerId }: Props) {
                       </div>
                       <div>
                         <h3 className="text-sm font-bold text-foreground">{contract.tenant_name}</h3>
-                        {property && (
+                        {(property || (contract as any).item_label) && (
                           <p className="text-[11px] text-muted-foreground flex items-center gap-1">
-                            <Home size={10} /> {property.title}
+                            <Home size={10} /> {property?.title || (contract as any).item_label}
                           </p>
                         )}
                         <p className="text-xs font-bold text-primary mt-0.5">{fmt(contract.rent_amount)}/mês</p>
