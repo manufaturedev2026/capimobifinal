@@ -169,7 +169,7 @@ export default function StoreLayoutMarketplace({
                 style={{ y: heroY, scale: heroScale }}
               />
             ) : (
-              <div className="w-full h-full" style={{ background: `linear-gradient(135deg, ${storeTheme.bg}, ${storeTheme.primary})` }} />
+              <div className="w-full h-full" style={{ background: `linear-gradient(135deg, ${darkBase}, ${darkMid}, ${storeTheme.primary})` }} />
             )}
           </motion.div>
         </AnimatePresence>
