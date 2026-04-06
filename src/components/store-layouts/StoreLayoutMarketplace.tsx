@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import type { StoreLayoutProps } from "./types";
 import { isIOSStandaloneApp } from "@/lib/pwaInstall";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const QUICK_ACTIONS = [
   { slug: "casa", name: "Casas", desc: "Residenciais", icon: Home },
@@ -123,6 +124,7 @@ export default function StoreLayoutMarketplace({
   const promoScrollRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
   const isIOSStandalone = isIOSStandaloneApp();
+  const isMobile = useIsMobile();
 
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const heroY = useTransform(scrollYProgress, [0, 1], [0, 120]);
@@ -161,10 +163,10 @@ export default function StoreLayoutMarketplace({
 
   // Auto-rotate hero
   useEffect(() => {
-    if (heroImages.length <= 1) return;
+    if (heroImages.length <= 1 || isMobile) return;
     const t = setInterval(() => setHeroIdx(prev => (prev + 1) % heroImages.length), 5000);
     return () => clearInterval(t);
-  }, [heroImages.length]);
+  }, [heroImages.length, isMobile]);
 
   const scrollPromoCardIntoView = (index: number) => {
     const el = promoScrollRef.current;
@@ -179,7 +181,7 @@ export default function StoreLayoutMarketplace({
 
   // Auto-scroll promo banners on mobile
   useEffect(() => {
-    if (isIOSStandalone) return;
+    if (isIOSStandalone || isMobile) return;
 
     const el = promoScrollRef.current;
     if (!el) return;
@@ -195,7 +197,7 @@ export default function StoreLayoutMarketplace({
     }, 4000);
 
     return () => clearInterval(t);
-  }, [filteredProducts.length, categoryCounts, isIOSStandalone]);
+  }, [filteredProducts.length, categoryCounts, isIOSStandalone, isMobile]);
 
   const scrollToGrid = () =>
     setTimeout(() => {
