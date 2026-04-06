@@ -468,6 +468,7 @@ export default function CompanyProfile() {
   const isMarketplace = currentLayout === "marketplace";
   const isMinimal = currentLayout === "minimal";
   const isShowcase = currentLayout === "showcase";
+  const isNetflix = currentLayout === "netflix";
 
   return (
     <div
@@ -539,7 +540,7 @@ export default function CompanyProfile() {
 
       {isDbProfile && dbProfile?.id && <StoreEffects sellerId={dbProfile.id} />}
       {/* ═══════════ MOBILE PROFILE HERO ═══════════ */}
-      <section className={`lg:hidden relative overflow-hidden ${isMinimal || isMarketplace ? "hidden" : ""}`}>
+      <section className={`lg:hidden relative overflow-hidden ${isMinimal || isMarketplace || isNetflix ? "hidden" : ""}`}>
         {isMarketplace ? (
           /* ── Marketplace-style compact hero ── */
           <>
@@ -850,7 +851,7 @@ export default function CompanyProfile() {
         </div>
       )}
 
-      <section className={`hidden lg:block relative overflow-hidden ${isMinimal || isMarketplace ? "!hidden" : ""} ${hasVideoHero ? "h-[70vh]" : "h-[60vh]"}`}>
+      <section className={`hidden lg:block relative overflow-hidden ${isMinimal || isMarketplace || isNetflix ? "!hidden" : ""} ${hasVideoHero ? "h-[70vh]" : "h-[60vh]"}`}>
         {/* Video background or sliding images */}
         {hasVideoHero ? (
           <iframe
@@ -1093,7 +1094,7 @@ export default function CompanyProfile() {
       <div className={`max-w-[1800px] mx-auto px-4 md:px-8 ${isMinimal || isMarketplace ? "py-0" : "py-6"}`}>
         <div className="flex gap-8">
           {/* ═══════════ DESKTOP SIDEBAR ═══════════ */}
-          <aside className={`hidden lg:block w-[280px] flex-shrink-0 ${isMarketplace ? "!hidden" : ""}`}>
+          <aside className={`hidden lg:block w-[280px] flex-shrink-0 ${isMarketplace || isNetflix ? "!hidden" : ""}`}>
             <div className={`sticky ${isMinimal ? "top-4" : "top-20"} space-y-4`}>
               {/* Company Card */}
               <div className="rounded-2xl overflow-hidden" style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}>
@@ -1895,7 +1896,7 @@ export default function CompanyProfile() {
           </div>
         </section>
       )}
-      <section className={`${isMarketplace ? "" : "lg:hidden"} px-4 mt-6 mb-6`}>
+      <section className={`${isMarketplace || isNetflix ? "" : "lg:hidden"} px-4 mt-6 mb-6`}>
         <div className="max-w-[1800px] mx-auto">
           {/* ── Bloco 1: Card do Corretor ── */}
           <div className="rounded-2xl" style={{ border: `1px solid ${storeTheme.border}`, background: storeTheme.card }}>
