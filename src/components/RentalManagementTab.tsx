@@ -118,6 +118,41 @@ export default function RentalManagementTab({ userId, sellerId }: Props) {
     setLoading(false);
   };
 
+  // ── Reminder helpers (moved before metrics so metrics can use it) ──
+  const getPaymentReminders = (contract: RentalContract) => {
+    const now = new Date();
+    const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+    
+    // Check if there's already a paid payment for current month
+    const monthPayment = payments.find(p => p.contract_id === contract.id && p.reference_month === currentMonth);
+    if (monthPayment?.status === "pago") return null;
+
+    // Check contract end_date — if expired, always show overdue
+    if (contract.end_date) {
+      const endDate = new Date(contract.end_date + "T23:59:59");
+      if (endDate < now) {
+        const daysExpired = Math.floor((now.getTime() - endDate.getTime()) / (1000 * 60 * 60 * 24));
+        return { type: "atrasado" as const, label: `Contrato vencido há ${daysExpired} dia${daysExpired !== 1 ? 's' : ''}`, color: "text-red-500" };
+      }
+    }
+
+    // Check current month's due day
+    const dueDate = new Date(now.getFullYear(), now.getMonth(), contract.due_day);
+    const diff = (dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24);
+    
+    if (diff < -1) {
+      const overdueDays = Math.abs(Math.floor(diff));
+      // Check if payment exists and is marked atrasado, or if no payment exists at all
+      if (!monthPayment || monthPayment.status === "atrasado" || monthPayment.status === "pendente") {
+        return { type: "atrasado" as const, label: `Atrasado ${overdueDays} dia${overdueDays !== 1 ? 's' : ''}`, color: "text-red-500" };
+      }
+    }
+    if (diff <= 0 && diff >= -1) return { type: "no_vencimento" as const, label: "Vence hoje!", color: "text-orange-500" };
+    if (diff <= 3 && diff > 0) return { type: "antes_vencimento" as const, label: `Vence em ${Math.ceil(diff)} dia${Math.ceil(diff) !== 1 ? 's' : ''}`, color: "text-amber-500" };
+    if (diff <= 7 && diff > 3) return { type: "antes_vencimento" as const, label: `Vence em ${Math.ceil(diff)} dias`, color: "text-blue-500" };
+    return null;
+  };
+
   // ── Dashboard metrics ──
   const metrics = useMemo(() => {
     const now = new Date();
@@ -126,14 +161,21 @@ export default function RentalManagementTab({ userId, sellerId }: Props) {
     const monthPayments = payments.filter(p => p.reference_month === currentMonth);
     const totalToReceive = activeContracts.reduce((s, c) => s + c.rent_amount, 0);
     const totalReceived = monthPayments.filter(p => p.status === "pago").reduce((s, p) => s + (p.amount_paid || 0), 0);
-    const overdue = payments.filter(p => p.status === "atrasado").length;
-    const upcoming = payments.filter(p => {
-      if (p.status !== "pendente") return false;
-      const due = new Date(p.due_date + "T12:00:00");
-      const diff = (due.getTime() - now.getTime()) / (1000 * 60 * 60 * 24);
-      return diff >= 0 && diff <= 7;
-    });
-    return { totalToReceive, totalReceived, overdue, upcoming: upcoming.length, activeContracts: activeContracts.length, monthPayments };
+    
+    // Count overdue: explicit atrasado payments + active contracts past due day with no payment
+    const explicitOverdue = payments.filter(p => p.status === "atrasado").length;
+    const implicitOverdue = activeContracts.filter(c => {
+      const reminder = getPaymentReminders(c);
+      return reminder?.type === "atrasado";
+    }).length;
+    const overdue = Math.max(explicitOverdue, implicitOverdue);
+    
+    const upcoming = activeContracts.filter(c => {
+      const reminder = getPaymentReminders(c);
+      return reminder?.type === "antes_vencimento" || reminder?.type === "no_vencimento";
+    }).length;
+    
+    return { totalToReceive, totalReceived, overdue, upcoming, activeContracts: activeContracts.length, monthPayments };
   }, [contracts, payments]);
 
   // ── Filtered contracts ──
@@ -144,17 +186,6 @@ export default function RentalManagementTab({ userId, sellerId }: Props) {
       return true;
     });
   }, [contracts, statusFilter, search]);
-
-  // ── Reminder helpers ──
-  const getPaymentReminders = (contract: RentalContract) => {
-    const now = new Date();
-    const dueDate = new Date(now.getFullYear(), now.getMonth(), contract.due_day);
-    const diff = (dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24);
-    if (diff <= 3 && diff > 0) return { type: "antes_vencimento" as const, label: `Vence em ${Math.ceil(diff)} dias`, color: "text-amber-500" };
-    if (diff <= 0 && diff > -1) return { type: "no_vencimento" as const, label: "Vence hoje!", color: "text-orange-500" };
-    if (diff < -1) return { type: "atrasado" as const, label: `Atrasado ${Math.abs(Math.floor(diff))} dias`, color: "text-red-500" };
-    return null;
-  };
 
   const sendWhatsAppReminder = (contract: RentalContract, type: string) => {
     if (!contract.tenant_phone) {
@@ -266,46 +297,49 @@ export default function RentalManagementTab({ userId, sellerId }: Props) {
           </button>
         </div>
 
-        {/* ── Active contracts with reminders ── */}
-        {contracts.filter(c => c.status === "ativo").length > 0 && (
-          <div>
-            <h3 className="font-bold text-sm text-foreground mb-3 flex items-center gap-2">
-              <Calendar size={16} className="text-primary" /> Alertas de Vencimento
-            </h3>
-            <div className="space-y-2">
-              {contracts.filter(c => c.status === "ativo").map(contract => {
-                const reminder = getPaymentReminders(contract);
-                if (!reminder) return null;
-                return (
+        {/* ── All contracts with reminders (active or expired) ── */}
+        {(() => {
+          const alertContracts = contracts
+            .filter(c => c.status === "ativo" || c.status === "renovacao")
+            .map(c => ({ contract: c, reminder: getPaymentReminders(c) }))
+            .filter(x => x.reminder !== null);
+          if (alertContracts.length === 0) return null;
+          return (
+            <div>
+              <h3 className="font-bold text-sm text-foreground mb-3 flex items-center gap-2">
+                <AlertTriangle size={16} className="text-red-500" /> Alertas de Vencimento ({alertContracts.length})
+              </h3>
+              <div className="space-y-2">
+                {alertContracts.map(({ contract, reminder }) => (
                   <motion.div
                     key={contract.id}
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
-                    className="flex items-center justify-between p-3 rounded-xl border border-border bg-card"
+                    className={`flex items-center justify-between p-3 rounded-xl border bg-card ${reminder!.type === "atrasado" ? "border-red-500/40" : "border-border"}`}
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-lg bg-muted flex items-center justify-center">
-                        <User size={16} className="text-muted-foreground" />
+                      <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${reminder!.type === "atrasado" ? "bg-red-500/15" : "bg-muted"}`}>
+                        {reminder!.type === "atrasado" ? <AlertTriangle size={16} className="text-red-500" /> : <Clock size={16} className="text-muted-foreground" />}
                       </div>
                       <div>
                         <p className="text-sm font-bold text-foreground">{contract.tenant_name}</p>
-                        <p className={`text-xs font-medium ${reminder.color}`}>{reminder.label} — {fmt(contract.rent_amount)}</p>
+                        <p className={`text-xs font-medium ${reminder!.color}`}>{reminder!.label} — {fmt(contract.rent_amount)}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
                       <button
-                        onClick={() => sendWhatsAppReminder(contract, reminder.type)}
+                        onClick={() => sendWhatsAppReminder(contract, reminder!.type)}
                         className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-green-500 text-white hover:bg-green-600 transition-colors"
                       >
                         <Send size={12} /> WhatsApp
                       </button>
                     </div>
                   </motion.div>
-                );
-              })}
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
       </div>
     );
   }
