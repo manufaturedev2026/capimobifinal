@@ -140,6 +140,23 @@ export default function StoreLayoutMarketplace({
     return () => clearInterval(t);
   }, [heroImages.length]);
 
+  // Auto-scroll promo banners on mobile
+  useEffect(() => {
+    const el = promoScrollRef.current;
+    if (!el) return;
+    const totalBanners = el.children.length;
+    if (totalBanners <= 1) return;
+    const t = setInterval(() => {
+      setPromoIdx(prev => {
+        const next = (prev + 1) % totalBanners;
+        const card = el.children[next] as HTMLElement;
+        card?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+        return next;
+      });
+    }, 4000);
+    return () => clearInterval(t);
+  }, [filteredProducts.length, categoryCounts]);
+
   const scrollToGrid = () => setTimeout(() => document.getElementById("marketplace-grid")?.scrollIntoView({ behavior: "smooth" }), 100);
 
   return (
