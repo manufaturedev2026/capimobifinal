@@ -333,6 +333,9 @@ export default function StoreLayoutMarketplace({
           >
             <button
               onClick={() => {
+                if (currentHeroCity && currentHeroCity !== "sua cidade") {
+                  setFilterCity?.(currentHeroCity);
+                }
                 const el = document.getElementById("marketplace-grid");
                 el?.scrollIntoView({ behavior: "smooth" });
               }}
@@ -342,7 +345,7 @@ export default function StoreLayoutMarketplace({
                 boxShadow: `0 8px 32px ${storeTheme.primary}40`,
               }}
             >
-              Ver ofertas
+              Ver ofertas em {currentHeroCity}
               <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
             </button>
             <span className="text-xs text-white/40">{filteredProducts.length} imóveis</span>
