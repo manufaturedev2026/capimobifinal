@@ -314,6 +314,9 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
   const [selectedStyle, setSelectedStyle] = useState<ImageStyle>("verde");
   const [showBrokerPhoto, setShowBrokerPhoto] = useState(true);
   const [selectedFont, setSelectedFont] = useState<FontStyle>("moderna");
+  const [previewFormat, setPreviewFormat] = useState<ImageFormat | null>(null);
+  const [previewDataUrl, setPreviewDataUrl] = useState<string | null>(null);
+  const [generatingPreview, setGeneratingPreview] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -349,24 +352,40 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
   };
 
-  const handleDownload = useCallback(async (format: ImageFormat) => {
+  const handlePreview = useCallback(async (format: ImageFormat) => {
     if (!selectedItem) return;
-    setGenerating(format);
+    setPreviewFormat(format);
+    setGeneratingPreview(true);
+    setPreviewDataUrl(null);
     try {
       const chosenPhoto = photos[selectedPhotoIndex] || photos[0];
       const dataUrl = await generateMarketingImage(selectedItem, format, sellerName, sellerPhone, sellerCreci, showBrokerPhoto ? sellerLogo : null, selectedStyle, chosenPhoto, selectedFont);
-      const link = document.createElement("a");
-      link.download = `${selectedItem.title.replace(/[^a-zA-Z0-9À-ÿ ]/g, "").trim().replace(/\s+/g, "-")}_${format}.jpg`;
-      link.href = dataUrl;
-      link.click();
-      toast({ title: "Imagem gerada! 📸", description: `Formato ${FORMAT_CONFIG[format].label} baixado com sucesso.` });
+      setPreviewDataUrl(dataUrl);
     } catch (err) {
-      console.error("Error generating image:", err);
-      toast({ title: "Erro ao gerar imagem", variant: "destructive" });
+      console.error("Error generating preview:", err);
+      toast({ title: "Erro ao gerar preview", variant: "destructive" });
+      setPreviewFormat(null);
     } finally {
-      setGenerating(null);
+      setGeneratingPreview(false);
     }
   }, [selectedItem, sellerName, sellerPhone, sellerCreci, sellerLogo, selectedStyle, showBrokerPhoto, selectedFont, toast, photos, selectedPhotoIndex]);
+
+  const handleDownloadFromPreview = useCallback(() => {
+    if (!previewDataUrl || !previewFormat || !selectedItem) return;
+    const link = document.createElement("a");
+    link.download = `${selectedItem.title.replace(/[^a-zA-Z0-9À-ÿ ]/g, "").trim().replace(/\s+/g, "-")}_${previewFormat}.jpg`;
+    link.href = previewDataUrl;
+    link.click();
+    toast({ title: "Imagem baixada! 📸", description: `Formato ${FORMAT_CONFIG[previewFormat].label} baixado com sucesso.` });
+  }, [previewDataUrl, previewFormat, selectedItem, toast]);
+
+  // Regenerate preview when style/font/photo/broker changes
+  useEffect(() => {
+    if (previewFormat && selectedItem) {
+      handlePreview(previewFormat);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedStyle, selectedFont, showBrokerPhoto, selectedPhotoIndex]);
 
   if (loading) {
     return (
@@ -450,17 +469,58 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
         </div>
       </div>
 
-      {/* Hero Banner — preview da foto selecionada com estilo */}
-      {photos.length > 0 && (() => {
+      {/* Format Preview — shows generated image for selected format */}
+      {previewFormat && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="space-y-3"
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Eye size={16} className="text-primary" />
+              <span className="text-sm font-bold text-foreground">Preview — {FORMAT_CONFIG[previewFormat].label}</span>
+            </div>
+            <button onClick={() => { setPreviewFormat(null); setPreviewDataUrl(null); }} className="text-xs text-muted-foreground hover:text-foreground transition-colors">✕ Fechar</button>
+          </div>
+          <div className="flex justify-center rounded-2xl overflow-hidden border border-border bg-muted/30 p-4">
+            {generatingPreview ? (
+              <div className="flex flex-col items-center justify-center py-20 gap-3">
+                <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                <span className="text-xs text-muted-foreground">Gerando preview...</span>
+              </div>
+            ) : previewDataUrl ? (
+              <img
+                src={previewDataUrl}
+                alt={`Preview ${FORMAT_CONFIG[previewFormat].label}`}
+                className={`rounded-xl shadow-lg ${
+                  previewFormat === "story" ? "max-h-[500px]" : previewFormat === "card" ? "max-h-[400px] max-w-[400px]" : "max-w-full"
+                }`}
+                style={{ objectFit: "contain" }}
+              />
+            ) : null}
+          </div>
+          {previewDataUrl && (
+            <button
+              onClick={handleDownloadFromPreview}
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:bg-primary/90 transition-all"
+            >
+              <Download size={18} />
+              Baixar {FORMAT_CONFIG[previewFormat].label}
+            </button>
+          )}
+        </motion.div>
+      )}
+
+      {/* Hero Banner — preview da foto selecionada com estilo (hidden when format preview is active) */}
+      {!previewFormat && photos.length > 0 && (() => {
         const stylePreview = STYLE_CONFIG[selectedStyle];
         const fontPreview = FONT_CONFIG[selectedFont];
-        const titleStyle = { color: stylePreview.titleColor, fontFamily: fontPreview.family };
         return (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="relative rounded-2xl overflow-hidden cursor-pointer group"
-            onClick={() => setLightboxIndex(selectedPhotoIndex)}
+            className="relative rounded-2xl overflow-hidden group"
           >
             <AnimatePresence mode="wait">
               <motion.img
@@ -508,7 +568,7 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
               </div>
             )}
             <div className="absolute top-3 left-3 bg-black/50 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded-lg flex items-center gap-1">
-              <Eye size={12} /> Preview — {stylePreview.label}
+              <Eye size={12} /> Selecione um formato abaixo
             </div>
           </motion.div>
         );
@@ -624,20 +684,19 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             {(Object.keys(FORMAT_CONFIG) as ImageFormat[]).map((fmt) => {
               const cfg = FORMAT_CONFIG[fmt];
-              const isGenerating = generating === fmt;
+              const isActive = previewFormat === fmt;
               return (
                 <button
                   key={fmt}
-                  onClick={() => handleDownload(fmt)}
-                  disabled={!!generating}
-                  className="flex items-center gap-3 px-4 py-3 rounded-xl border border-border hover:border-primary/50 hover:bg-primary/5 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-left"
+                  onClick={() => handlePreview(fmt)}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl border-2 transition-all text-left ${
+                    isActive
+                      ? "border-primary bg-primary/10"
+                      : "border-border hover:border-primary/50 hover:bg-primary/5"
+                  }`}
                 >
                   <div className="flex-shrink-0">
-                    {isGenerating ? (
-                      <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                    ) : (
-                      <Download size={18} className="text-primary" />
-                    )}
+                    <Eye size={18} className="text-primary" />
                   </div>
                   <div>
                     <p className="text-xs font-bold text-foreground">{cfg.label}</p>
