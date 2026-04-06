@@ -441,57 +441,68 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
         </div>
       </div>
 
-      {/* Hero Banner — preview da foto selecionada */}
-      {photos.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="relative rounded-2xl overflow-hidden cursor-pointer group"
-          onClick={() => setLightboxIndex(selectedPhotoIndex)}
-        >
-          <AnimatePresence mode="wait">
-            <motion.img
-              key={selectedPhotoIndex}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              src={photos[selectedPhotoIndex]}
-              alt={selectedItem?.title}
-              className="w-full aspect-[16/9] sm:aspect-[21/9] object-cover group-hover:scale-[1.02] transition-transform duration-700"
-            />
-          </AnimatePresence>
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-          <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6">
-            <h2 className="text-white font-extrabold text-lg sm:text-2xl leading-tight line-clamp-2">{selectedItem?.title}</h2>
-            <div className="flex items-center gap-3 mt-2 flex-wrap">
-              {selectedItem?.price && selectedItem.price > 0 && (
-                <span className="text-white font-black text-base sm:text-xl">R$ {selectedItem.price.toLocaleString("pt-BR")}</span>
+      {/* Hero Banner — preview da foto selecionada com estilo */}
+      {photos.length > 0 && (() => {
+        const stylePreview = STYLE_CONFIG[selectedStyle];
+        const titleStyle = { color: stylePreview.titleColor, fontFamily: selectedStyle === "gold" ? "Georgia, serif" : selectedStyle === "moderno" ? "'Trebuchet MS', sans-serif" : "inherit" };
+        return (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="relative rounded-2xl overflow-hidden cursor-pointer group"
+            onClick={() => setLightboxIndex(selectedPhotoIndex)}
+          >
+            <AnimatePresence mode="wait">
+              <motion.img
+                key={`${selectedPhotoIndex}-${selectedStyle}`}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                src={photos[selectedPhotoIndex]}
+                alt={selectedItem?.title}
+                className="w-full aspect-[16/9] sm:aspect-[21/9] object-cover group-hover:scale-[1.02] transition-transform duration-700"
+              />
+            </AnimatePresence>
+            <div className="absolute inset-0" style={{
+              background: `linear-gradient(to top, ${stylePreview.gradientStops[2]}, ${stylePreview.gradientStops[1]} 50%, ${stylePreview.gradientStops[0]})`
+            }} />
+            {stylePreview.accentBar && (
+              <div className="absolute bottom-0 left-0 right-0 h-1" style={{ backgroundColor: stylePreview.accentBar }} />
+            )}
+            <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6">
+              {sellerLogo && (
+                <img src={sellerLogo} alt="" className="w-8 h-8 rounded-lg object-cover mb-2 border border-white/20" />
               )}
-              {selectedItem?.city && (
-                <span className="text-white/70 text-xs">📍 {selectedItem.neighborhood ? `${selectedItem.neighborhood}, ${selectedItem.city}` : selectedItem.city}</span>
-              )}
+              <h2 className="font-extrabold text-lg sm:text-2xl leading-tight line-clamp-2" style={titleStyle}>{selectedItem?.title}</h2>
+              <div className="flex items-center gap-3 mt-2 flex-wrap">
+                {selectedItem?.price && selectedItem.price > 0 && (
+                  <span className="font-black text-base sm:text-xl" style={{ color: stylePreview.titleColor }}>R$ {selectedItem.price.toLocaleString("pt-BR")}</span>
+                )}
+                {selectedItem?.city && (
+                  <span className="text-xs" style={{ color: stylePreview.locationColor }}>📍 {selectedItem.neighborhood ? `${selectedItem.neighborhood}, ${selectedItem.city}` : selectedItem.city}</span>
+                )}
+              </div>
+              <div className="flex items-center gap-3 mt-1.5 text-[11px]" style={{ color: stylePreview.detailColor }}>
+                {selectedItem?.bedrooms && <span>🛏 {selectedItem.bedrooms} quartos</span>}
+                {selectedItem?.bathrooms && <span>🚿 {selectedItem.bathrooms} banheiros</span>}
+                {selectedItem?.area && <span>📐 {selectedItem.area}m²</span>}
+              </div>
+              <p className="mt-1.5 text-[10px]" style={{ color: stylePreview.sellerColor }}>
+                {sellerName}{sellerCreci ? ` • CRECI ${sellerCreci}` : ""}{sellerPhone ? ` • ${sellerPhone}` : ""}
+              </p>
             </div>
-            <div className="flex items-center gap-3 mt-1.5 text-white/60 text-[11px]">
-              {selectedItem?.bedrooms && <span>🛏 {selectedItem.bedrooms} quartos</span>}
-              {selectedItem?.bathrooms && <span>🚿 {selectedItem.bathrooms} banheiros</span>}
-              {selectedItem?.area && <span>📐 {selectedItem.area}m²</span>}
+            {selectedItem?.price && selectedItem.price > 0 && (
+              <div className="absolute top-3 right-3 text-xs font-black px-3 py-1.5 rounded-lg" style={{ backgroundColor: stylePreview.priceBg, color: stylePreview.priceFg }}>
+                {formatPrice(selectedItem.price)}
+              </div>
+            )}
+            <div className="absolute top-3 left-3 bg-black/50 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded-lg flex items-center gap-1">
+              <Eye size={12} /> Preview — {stylePreview.label}
             </div>
-            {/* Seller branding preview */}
-            <p className="mt-1.5 text-white/50 text-[10px]">
-              {sellerName}{sellerCreci ? ` • CRECI ${sellerCreci}` : ""}{sellerPhone ? ` • ${sellerPhone}` : ""}
-            </p>
-          </div>
-          {selectedItem?.price && selectedItem.price > 0 && (
-            <div className="absolute top-3 left-3 bg-primary text-primary-foreground text-xs font-black px-3 py-1.5 rounded-lg">
-              {formatPrice(selectedItem.price)}
-            </div>
-          )}
-          <div className="absolute top-3 right-3 bg-black/50 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded-lg flex items-center gap-1">
-            <Eye size={12} /> Preview do anúncio
-          </div>
-        </motion.div>
-      )}
+          </motion.div>
+        );
+      })()}
 
       {/* Download Marketing Images */}
       {photos.length > 0 && selectedItem && (
