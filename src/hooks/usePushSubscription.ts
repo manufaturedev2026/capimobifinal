@@ -53,8 +53,14 @@ export function usePushSubscription(sellerId?: string) {
 
       // Step 2: Get VAPID key
       console.log("[Push] Fetching VAPID key...");
-      const { data: vapidData, error: vapidError } = await withTimeout(
-        supabase.functions.invoke("get-vapid-key"),
+      const { data: vapidData, error: vapidError } = await withTimeout<{
+        data: { publicKey?: string } | null;
+        error: { message?: string } | null;
+      }>(
+        supabase.functions.invoke("get-vapid-key") as Promise<{
+          data: { publicKey?: string } | null;
+          error: { message?: string } | null;
+        }>,
         SUBSCRIPTION_TIMEOUT_MS,
         "Tempo esgotado ao carregar a configuração do push."
       );
@@ -115,17 +121,19 @@ export function usePushSubscription(sellerId?: string) {
       console.log("[Push] Saving to DB, seller_id:", sellerId);
       
       // Upsert: update if endpoint exists, insert if new
-      const { error: saveError } = await withTimeout(
-        supabase.from("push_subscriptions" as any).upsert(
-          {
-            seller_id: sellerId,
-            endpoint: subJson.endpoint,
-            p256dh: subJson.keys?.p256dh || "",
-            auth: subJson.keys?.auth || "",
-            user_agent: navigator.userAgent,
-          },
-          { onConflict: "endpoint" }
-        ),
+      const { error: saveError } = await withTimeout<{ error: { message: string; code?: string } | null }>(
+        Promise.resolve(
+          supabase.from("push_subscriptions" as any).upsert(
+            {
+              seller_id: sellerId,
+              endpoint: subJson.endpoint,
+              p256dh: subJson.keys?.p256dh || "",
+              auth: subJson.keys?.auth || "",
+              user_agent: navigator.userAgent,
+            },
+            { onConflict: "endpoint" }
+          )
+        ) as Promise<{ error: { message: string; code?: string } | null }>,
         SUBSCRIPTION_TIMEOUT_MS,
         "O salvamento da inscrição demorou demais para responder."
       );
@@ -166,9 +174,9 @@ function urlBase64ToUint8Array(base64String: string) {
   return outputArray;
 }
 
-function withTimeout<T>(promise: Promise<T>, timeoutMs: number, message: string): Promise<T> {
+function withTimeout<T>(promise: PromiseLike<T>, timeoutMs: number, message: string): Promise<T> {
   return Promise.race([
-    promise,
+    Promise.resolve(promise),
     new Promise<T>((_, reject) => {
       window.setTimeout(() => reject(new Error(message)), timeoutMs);
     }),
