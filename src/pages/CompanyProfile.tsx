@@ -2193,6 +2193,10 @@ export default function CompanyProfile() {
           onUploaded={() => window.location.reload()}
         />
       )}
+
+      {dbProfile?.id && (
+        <PushSubscribeButton sellerId={dbProfile.id} primaryColor={storeTheme.primary} />
+      )}
     </div>
   );
 }
