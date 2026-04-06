@@ -492,7 +492,8 @@ export default function ProductDetail() {
           )}
 
           <Link to={companyUrl}
-            className="mt-3 w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-accent text-accent-foreground font-bold text-sm hover:bg-accent/90 transition-colors shadow-md">
+            className="mt-3 w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-accent font-bold text-sm hover:bg-accent/90 transition-colors shadow-md"
+            style={{ color: "#000" }}>
             <Store size={16} /> Ver Loja Completa
           </Link>
 
