@@ -453,7 +453,8 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
       {/* Hero Banner — preview da foto selecionada com estilo */}
       {photos.length > 0 && (() => {
         const stylePreview = STYLE_CONFIG[selectedStyle];
-        const titleStyle = { color: stylePreview.titleColor, fontFamily: stylePreview.fontFamily };
+        const fontPreview = FONT_CONFIG[selectedFont];
+        const titleStyle = { color: stylePreview.titleColor, fontFamily: fontPreview.family };
         return (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
