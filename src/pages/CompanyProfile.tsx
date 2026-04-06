@@ -538,7 +538,7 @@ export default function CompanyProfile() {
 
       {isDbProfile && dbProfile?.id && <StoreEffects sellerId={dbProfile.id} />}
       {/* ═══════════ MOBILE PROFILE HERO ═══════════ */}
-      <section className={`lg:hidden relative overflow-hidden ${isMinimal ? "hidden" : ""}`}>
+      <section className={`lg:hidden relative overflow-hidden ${isMinimal || isMarketplace ? "hidden" : ""}`}>
         {isMarketplace ? (
           /* ── Marketplace-style compact hero ── */
           <>
@@ -808,7 +808,7 @@ export default function CompanyProfile() {
 
       {/* ═══ MARKETPLACE SCROLLING PROPERTY BANNER ═══ */}
       {isMarketplace && products.length > 0 && (
-        <div className="lg:hidden overflow-hidden" style={{ background: `${storeTheme.primary}e6` }}>
+        <div className="hidden overflow-hidden" style={{ background: `${storeTheme.primary}e6` }}>
           <motion.div
             className="flex gap-3 py-3 px-4"
             animate={{ x: ["0%", "-50%"] }}
