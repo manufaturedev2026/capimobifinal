@@ -593,9 +593,14 @@ export default function AdminPanel() {
                   <div key={tier} className={`rounded-xl border-2 ${config.borderColor} p-4`}>
                     <h4 className="font-display font-bold text-foreground">{config.name}</h4>
                     <p className="text-2xl font-bold text-foreground mt-1">{count} <span className="text-sm font-normal text-muted-foreground">assinantes</span></p>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Receita mensal: <strong className="text-green-500">R$ {revenue.toFixed(2).replace(".", ",")}</strong>
-                    </p>
+                    {tier !== "basico" && (
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Receita mensal: <strong className="text-green-500">R$ {revenue.toFixed(2).replace(".", ",")}</strong>
+                      </p>
+                    )}
+                    {tier === "basico" && (
+                      <p className="text-xs text-muted-foreground mt-1">Plano gratuito</p>
+                    )}
                   </div>
                 );
               })}
