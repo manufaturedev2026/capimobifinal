@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Home, Phone, User, MapPin, DollarSign, FileText, CheckCircle2, Loader2, Building2, Shield, Zap, TrendingUp } from "lucide-react";
+import { Home, Phone, User, MapPin, DollarSign, FileText, CheckCircle2, Loader2, Building2, Shield, Zap, TrendingUp, Instagram, Mail, Award, MapPinned } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 
