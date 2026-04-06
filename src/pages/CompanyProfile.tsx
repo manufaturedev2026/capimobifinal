@@ -1628,7 +1628,7 @@ export default function CompanyProfile() {
       {/* Mobile "Sobre" section - simplified since bio is in hero */}
       {/* Minimal layout: Profile card moved here, above "Mais informações" */}
       {isMinimal && (
-        <section className="px-4 mt-6 mb-2">
+        <section className="lg:hidden px-4 mt-6 mb-2">
           <div className="max-w-[1800px] mx-auto">
             <div className="rounded-2xl overflow-hidden" style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}>
               {/* Mini hero banner */}
