@@ -808,9 +808,9 @@ export default function CompanyProfile() {
         )}
       </section>
 
-      {/* ═══════════ SHOWCASE MOBILE HERO — Featured Item ═══════════ */}
+      {/* ═══════════ SHOWCASE HERO — Featured Item ═══════════ */}
       {isShowcase && (
-        <section className="lg:hidden relative overflow-hidden">
+        <section className="relative overflow-hidden" style={{ minHeight: "50vh" }}>
           {heroImages.length > 0 ? (
             <>
               <AnimatePresence mode="wait">
@@ -951,7 +951,7 @@ export default function CompanyProfile() {
         </div>
       )}
 
-      <section className={`hidden lg:block relative overflow-hidden ${isMinimal || isMarketplace || isNetflix ? "!hidden" : ""} ${hasVideoHero ? "h-[70vh]" : "h-[60vh]"}`}>
+      <section className={`hidden lg:block relative overflow-hidden ${isMinimal || isMarketplace || isNetflix || isShowcase ? "!hidden" : ""} ${hasVideoHero ? "h-[70vh]" : "h-[60vh]"}`}>
         {/* Video background or sliding images */}
         {hasVideoHero ? (
           <iframe
