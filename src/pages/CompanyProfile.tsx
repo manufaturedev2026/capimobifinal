@@ -4,7 +4,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { toast } from "@/hooks/use-toast";
 import { useParams, Link, useLocation, Navigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Star, MapPin, MessageCircle, Share2, Key, Home, Building2, Landmark, Store, Warehouse, MoreHorizontal, Image, Eye, Instagram, Phone, ExternalLink, Clock, Shield, Zap, ChevronLeft, ChevronRight, Heart, BadgeCheck, Clapperboard, Play, X, Volume2, VolumeX, LayoutDashboard } from "lucide-react";
+import { ArrowLeft, Star, MapPin, MessageCircle, Share2, Key, Home, Building2, Landmark, Store, Warehouse, MoreHorizontal, Image, Eye, Instagram, Phone, ExternalLink, Clock, Shield, Zap, ChevronLeft, ChevronRight, Heart, BadgeCheck, Clapperboard, Play, X, Volume2, VolumeX, LayoutDashboard, Bed, Bath, Car, Maximize, Sword, Trophy, Sparkles } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import StoreEffects from "@/components/StoreEffects";
 import {
@@ -467,6 +467,7 @@ export default function CompanyProfile() {
   const currentLayout = (dbProfile as any)?.store_layout || "showcase";
   const isMarketplace = currentLayout === "marketplace";
   const isMinimal = currentLayout === "minimal";
+  const isShowcase = currentLayout === "showcase";
 
   return (
     <div
@@ -1293,86 +1294,216 @@ export default function CompanyProfile() {
             <div className="hidden lg:block">
             {/* Products Header */}
             <div className="flex items-center justify-between mb-4">
-              <h2 className="font-display font-bold text-lg md:text-xl" style={{ color: storeTheme.text }}>
-                {activeCategory === "todos"
-                  ? `Todos os Anúncios`
-                  : subcategories.find(c => c.slug === activeCategory)?.name}
-                {filterCity && <span className="font-normal text-sm ml-2" style={{ color: storeTheme.textMuted }}>em {filterCity}</span>}
-                <span className="font-normal text-sm ml-2" style={{ color: storeTheme.textMuted }}>({filteredProducts.length})</span>
-              </h2>
+              {isShowcase ? (
+                <div className="flex items-center gap-3">
+                  <Trophy size={16} style={{ color: storeTheme.primary }} />
+                  <h2 className="font-display font-black text-lg uppercase tracking-wider" style={{ color: storeTheme.text }}>
+                    {activeCategory === "todos" ? "Inventário" : subcategories.find(c => c.slug === activeCategory)?.name}
+                  </h2>
+                  <span className="text-[10px] font-bold px-2 py-0.5 uppercase tracking-wider"
+                    style={{ background: `${storeTheme.primary}20`, color: storeTheme.primary, border: `1px solid ${storeTheme.primary}30` }}>
+                    {filteredProducts.length} itens
+                  </span>
+                  <div className="flex-1 h-px" style={{ background: `linear-gradient(to right, ${storeTheme.primary}30, transparent)` }} />
+                </div>
+              ) : (
+                <h2 className="font-display font-bold text-lg md:text-xl" style={{ color: storeTheme.text }}>
+                  {activeCategory === "todos"
+                    ? `Todos os Anúncios`
+                    : subcategories.find(c => c.slug === activeCategory)?.name}
+                  {filterCity && <span className="font-normal text-sm ml-2" style={{ color: storeTheme.textMuted }}>em {filterCity}</span>}
+                  <span className="font-normal text-sm ml-2" style={{ color: storeTheme.textMuted }}>({filteredProducts.length})</span>
+                </h2>
+              )}
             </div>
 
             {/* Products Grid — Desktop only */}
             {filteredProducts.length > 0 ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-5">
-                {filteredProducts.map((product: any, i: number) => {
-                  const productLink = `/imoveis/produto/${product.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`;
-                  return (
-                    <motion.div
-                      key={product.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.03 + i * 0.03 }}
-                    >
-                      <Link to={productLink} className={`group block rounded-2xl overflow-hidden hover:shadow-lg transition-all duration-300 ${
-                        isDbProfile && ((dbProfile as any)?.destaque_item_ids || []).includes(product.id)
-                          ? "ring-2 ring-amber-400/60 shadow-[0_0_20px_rgba(251,191,36,0.15)] border-amber-400/40"
-                          : ""
-                      }`} style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}>
-                        <div className="relative aspect-[4/3] overflow-hidden bg-muted">
-                          {product.image ? (
-                            <img src={product.image} alt={product.title} className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 ${product.status === "vendido" ? "brightness-50 blur-[1px]" : ""}`} loading="lazy" />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center">
-                              <Image size={32} className="text-muted-foreground" />
-                            </div>
-                          )}
-                          {product.status === "vendido" && (
-                            <div className="absolute inset-0 flex flex-col items-center justify-center z-10">
-                              <span className="px-4 py-2 rounded-xl bg-red-600/90 text-white font-bold text-sm shadow-lg">❌ Vendido</span>
-                            </div>
-                          )}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                          {product.tag && (
-                            <span className={`absolute top-2 left-2 px-2.5 py-1 rounded-lg text-[10px] font-bold shadow-md ${getTagStyle(product.tag)}`}>
-                              {getTagLabel(product.tag)}
-                            </span>
-                          )}
-                          {isDbProfile && ((product.tags || []).includes("aluguel_flex") || product.category === "aluguel") && (
-                            <span className="absolute top-2 right-2 px-2 py-0.5 rounded-lg text-[10px] font-bold shadow-md bg-primary text-primary-foreground">
-                              🏠 Aluguel
-                            </span>
-                          )}
-                        </div>
-                        <div className="p-3 md:p-4">
-                          <h3 className="font-display font-semibold text-sm leading-tight line-clamp-2 transition-colors" style={{ color: storeTheme.text }}>
-                            {product.title}
-                          </h3>
-                          {product.price > 0 && (
-                            <div className="flex items-center gap-2 mt-1.5">
-                              <p className="font-display font-bold text-base md:text-lg" style={{ color: storeTheme.primary }}>
+              isShowcase ? (
+                /* ── RPG-style grid ── */
+                <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+                  {filteredProducts.map((product: any, i: number) => {
+                    const productLink = `/imoveis/produto/${product.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`;
+                    const accentColor = storeTheme.primary;
+                    return (
+                      <motion.div
+                        key={product.id}
+                        initial={{ opacity: 0, y: 16 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.04 }}
+                      >
+                        <Link
+                          to={productLink}
+                          className="group block relative overflow-hidden transition-all hover:scale-[1.02] hover:shadow-xl"
+                          style={{
+                            background: "rgba(0,0,0,0.55)",
+                            border: `1px solid ${accentColor}20`,
+                            clipPath: "polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))",
+                          }}
+                        >
+                          <div className="relative aspect-[4/3] overflow-hidden">
+                            {product.image ? (
+                              <img src={product.image} alt={product.title}
+                                className={`w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ${product.status === "vendido" ? "brightness-50" : ""}`} loading="lazy" />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center" style={{ background: "#111" }}>
+                                <Image size={28} style={{ color: accentColor }} />
+                              </div>
+                            )}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+
+                            {product.tag && (
+                              <span className="absolute top-2 left-2 px-2 py-0.5 text-[9px] font-bold text-white/90"
+                                style={{ background: "rgba(0,0,0,0.5)", border: "1px solid rgba(255,255,255,0.15)" }}>
+                                {getTagLabel(product.tag)}
+                              </span>
+                            )}
+                            {isDbProfile && ((product.tags || []).includes("aluguel_flex") || product.category === "aluguel") && (
+                              <span className="absolute top-2 right-2 px-2 py-0.5 text-[9px] font-bold text-white/90"
+                                style={{ background: `${accentColor}80`, border: `1px solid ${accentColor}40` }}>
+                                🏠 Aluguel
+                              </span>
+                            )}
+                            {product.status === "vendido" && (
+                              <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                                <span className="text-red-400 font-black text-xs uppercase tracking-widest"
+                                  style={{ textShadow: "0 0 10px rgba(248,113,113,0.5)" }}>
+                                  VENDIDO
+                                </span>
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="p-3 md:p-4" style={{ background: "rgba(0,0,0,0.65)" }}>
+                            <h4 className="font-display font-bold text-xs md:text-sm text-white/90 line-clamp-2 leading-tight">
+                              {product.title}
+                            </h4>
+                            {product.price > 0 && (
+                              <p className="font-display font-black text-base md:text-lg mt-1" style={{ color: accentColor }}>
                                 R$ {product.price.toLocaleString("pt-BR")}
                                 {isDbProfile && ((product.tags || []).includes("aluguel_flex") || product.category === "aluguel") && (
-                                  <span className="text-sm font-normal text-muted-foreground"> /mês</span>
+                                  <span className="text-xs font-normal text-white/40"> /mês</span>
                                 )}
                               </p>
-                            </div>
-                          )}
-                          {product.city && (
-                            <p className="text-[11px] mt-1.5 flex items-center gap-1" style={{ color: storeTheme.textMuted }}>
-                              <MapPin size={10} /> {product.city}
-                            </p>
-                          )}
-                        </div>
-                      </Link>
-                    </motion.div>
-                  );
-                })}
-              </div>
+                            )}
+                            {product.city && (
+                              <p className="text-[10px] mt-1.5 flex items-center gap-0.5 text-white/40">
+                                <MapPin size={9} /> {product.city}
+                              </p>
+                            )}
+                            {(product.bedrooms || product.area) && (
+                              <div className="flex gap-1.5 mt-2 flex-wrap">
+                                {product.bedrooms && (
+                                  <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[9px] text-white/60 font-semibold"
+                                    style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}>
+                                    <Bed size={9} className="text-white/40" /> {product.bedrooms}
+                                  </span>
+                                )}
+                                {product.bathrooms && (
+                                  <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[9px] text-white/60 font-semibold"
+                                    style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}>
+                                    <Bath size={9} className="text-white/40" /> {product.bathrooms}
+                                  </span>
+                                )}
+                                {product.area && (
+                                  <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[9px] text-white/60 font-semibold"
+                                    style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}>
+                                    <Maximize size={9} className="text-white/40" /> {product.area}m²
+                                  </span>
+                                )}
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Bottom glow */}
+                          <div className="absolute bottom-0 left-0 right-0 h-0.5"
+                            style={{ background: `linear-gradient(90deg, transparent, ${accentColor}40, transparent)` }} />
+                        </Link>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              ) : (
+                /* ── Standard grid ── */
+                <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-5">
+                  {filteredProducts.map((product: any, i: number) => {
+                    const productLink = `/imoveis/produto/${product.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`;
+                    return (
+                      <motion.div
+                        key={product.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.03 + i * 0.03 }}
+                      >
+                        <Link to={productLink} className={`group block rounded-2xl overflow-hidden hover:shadow-lg transition-all duration-300 ${
+                          isDbProfile && ((dbProfile as any)?.destaque_item_ids || []).includes(product.id)
+                            ? "ring-2 ring-amber-400/60 shadow-[0_0_20px_rgba(251,191,36,0.15)] border-amber-400/40"
+                            : ""
+                        }`} style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}>
+                          <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+                            {product.image ? (
+                              <img src={product.image} alt={product.title} className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 ${product.status === "vendido" ? "brightness-50 blur-[1px]" : ""}`} loading="lazy" />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center">
+                                <Image size={32} className="text-muted-foreground" />
+                              </div>
+                            )}
+                            {product.status === "vendido" && (
+                              <div className="absolute inset-0 flex flex-col items-center justify-center z-10">
+                                <span className="px-4 py-2 rounded-xl bg-red-600/90 text-white font-bold text-sm shadow-lg">❌ Vendido</span>
+                              </div>
+                            )}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                            {product.tag && (
+                              <span className={`absolute top-2 left-2 px-2.5 py-1 rounded-lg text-[10px] font-bold shadow-md ${getTagStyle(product.tag)}`}>
+                                {getTagLabel(product.tag)}
+                              </span>
+                            )}
+                            {isDbProfile && ((product.tags || []).includes("aluguel_flex") || product.category === "aluguel") && (
+                              <span className="absolute top-2 right-2 px-2 py-0.5 rounded-lg text-[10px] font-bold shadow-md bg-primary text-primary-foreground">
+                                🏠 Aluguel
+                              </span>
+                            )}
+                          </div>
+                          <div className="p-3 md:p-4">
+                            <h3 className="font-display font-semibold text-sm leading-tight line-clamp-2 transition-colors" style={{ color: storeTheme.text }}>
+                              {product.title}
+                            </h3>
+                            {product.price > 0 && (
+                              <div className="flex items-center gap-2 mt-1.5">
+                                <p className="font-display font-bold text-base md:text-lg" style={{ color: storeTheme.primary }}>
+                                  R$ {product.price.toLocaleString("pt-BR")}
+                                  {isDbProfile && ((product.tags || []).includes("aluguel_flex") || product.category === "aluguel") && (
+                                    <span className="text-sm font-normal text-muted-foreground"> /mês</span>
+                                  )}
+                                </p>
+                              </div>
+                            )}
+                            {product.city && (
+                              <p className="text-[11px] mt-1.5 flex items-center gap-1" style={{ color: storeTheme.textMuted }}>
+                                <MapPin size={10} /> {product.city}
+                              </p>
+                            )}
+                          </div>
+                        </Link>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              )
             ) : (
               <div className="text-center py-20 rounded-2xl" style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}>
-                <Image size={48} className="text-muted-foreground mx-auto mb-3" />
-                <p className="text-muted-foreground text-lg font-medium">Nenhum anúncio nesta categoria</p>
+                {isShowcase ? (
+                  <>
+                    <Sparkles size={48} className="mx-auto mb-3" style={{ color: storeTheme.primary }} />
+                    <p className="font-semibold text-lg" style={{ color: storeTheme.textMuted }}>Nenhum item no inventário</p>
+                  </>
+                ) : (
+                  <>
+                    <Image size={48} className="text-muted-foreground mx-auto mb-3" />
+                    <p className="text-muted-foreground text-lg font-medium">Nenhum anúncio nesta categoria</p>
+                  </>
+                )}
                 <button onClick={() => setActiveCategory("todos")} className="text-primary text-sm mt-2 hover:underline">Ver todos</button>
               </div>
             )}
