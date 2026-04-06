@@ -174,14 +174,14 @@ export default function StoreLayoutElegant({
               />
               <select
                 value={minBedrooms} onChange={(e) => setMinBedrooms(e.target.value)}
-                className="rounded-lg px-3 py-2 text-xs bg-transparent outline-none"
-                style={{ color: storeTheme.text, border: `1px solid ${storeTheme.border}` }}
+                className="rounded-lg px-3 py-2 text-xs outline-none"
+                style={{ color: storeTheme.text, background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}
               >
-                <option value="">Quartos</option>
-                <option value="1">1+</option>
-                <option value="2">2+</option>
-                <option value="3">3+</option>
-                <option value="4">4+</option>
+                <option value="" style={{ background: storeTheme.card, color: storeTheme.text }}>Quartos</option>
+                <option value="1" style={{ background: storeTheme.card, color: storeTheme.text }}>1+</option>
+                <option value="2" style={{ background: storeTheme.card, color: storeTheme.text }}>2+</option>
+                <option value="3" style={{ background: storeTheme.card, color: storeTheme.text }}>3+</option>
+                <option value="4" style={{ background: storeTheme.card, color: storeTheme.text }}>4+</option>
               </select>
             </div>
           </motion.div>
