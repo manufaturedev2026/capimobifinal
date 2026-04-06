@@ -1763,69 +1763,100 @@ export default function CompanyProfile() {
       )}
       <section className={`${isMarketplace ? "" : "lg:hidden"} px-4 mt-6 mb-6`}>
         <div className="max-w-[1800px] mx-auto">
-          <div className="rounded-2xl p-5" style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}>
-            <h3 className="font-display font-bold text-base mb-3 flex items-center gap-2" style={{ color: storeTheme.text }}>
-              <BadgeCheck size={16} style={{ color: storeTheme.primary }} /> Mais informações
-            </h3>
-            {/* Corretor photo + name + CRECI */}
-            <div className="flex items-center gap-3 mb-4 p-3 rounded-xl" style={{ background: `${storeTheme.primary}10` }}>
-              {company.logo ? (
-                <img src={company.logo} alt={company.name} className="w-14 h-14 rounded-xl object-cover shadow" style={{ border: `2px solid ${storeTheme.primary}30` }} />
-              ) : (
-                <div className="w-14 h-14 rounded-xl flex items-center justify-center shadow" style={{ background: storeTheme.primary }}>
-                  <span className="text-white font-bold text-lg">{company.name?.charAt(0)}</span>
-                </div>
-              )}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-1.5">
-                  <p className="text-sm font-bold truncate" style={{ color: storeTheme.text }}>{company.name}</p>
-                  {isPaid && <BadgeCheck size={14} style={{ color: storeTheme.primary }} />}
-                </div>
-                <p className="text-[11px] mt-0.5" style={{ color: storeTheme.textMuted }}>
-                  {dbProfile?.seller_category
-                    ? ({ imobiliaria: "Imobiliária", corretor: "Corretor(a) de Imóveis", proprietario: "Proprietário", construtora: "Construtora", loja_veiculos: "Loja de Veículos", autonomo: "Vendedor Autônomo", concessionaria: "Concessionária" } as Record<string, string>)[dbProfile.seller_category] || "Especialista em imóveis"
-                    : "Especialista em imóveis"}
-                </p>
-                {["corretor", "imobiliaria", "construtora"].includes(dbProfile?.seller_category) && dbProfile?.creci && (
-                  <p className="text-[11px] font-semibold mt-0.5" style={{ color: storeTheme.primary }}>CRECI: {dbProfile.creci}</p>
-                )}
-                {dbProfile?.cnpj && (
-                  <p className="text-[10px] mt-0.5" style={{ color: storeTheme.textMuted }}>CNPJ: {dbProfile.cnpj}</p>
-                )}
+          {/* ── Bloco 1: Card do Corretor ── */}
+          <div className="rounded-2xl overflow-hidden" style={{ border: `1px solid ${storeTheme.border}` }}>
+            {/* Header com cor primária */}
+            <div className="relative px-5 pt-5 pb-10" style={{ background: `linear-gradient(135deg, ${storeTheme.primary}, ${storeTheme.primary}dd)` }}>
+              <div className="flex items-center gap-2">
+                <BadgeCheck size={16} className="text-white/90" />
+                <span className="text-white/90 text-xs font-semibold uppercase tracking-wider">Profissional verificado</span>
               </div>
             </div>
-            {/* Company info for team members */}
-            {teamMember && dbProfile?.logo_url && (
-              <div className="flex items-center gap-3 mb-3 p-2 rounded-xl" style={{ background: `${storeTheme.primary}08` }}>
-                <img src={dbProfile.logo_url} alt={dbProfile.company_name || dbProfile.full_name} className="w-10 h-10 rounded-lg object-cover" style={{ border: `1px solid ${storeTheme.border}` }} />
-                <div>
-                  <p className="text-xs font-bold" style={{ color: storeTheme.text }}>{dbProfile.company_name || dbProfile.full_name}</p>
-                  {dbProfile.cnpj && <p className="text-[10px]" style={{ color: storeTheme.textMuted }}>CNPJ: {dbProfile.cnpj}</p>}
+            {/* Foto + dados sobrepondo */}
+            <div className="px-5 -mt-8 pb-5" style={{ background: storeTheme.card }}>
+              <div className="flex items-start gap-3.5">
+                {company.logo ? (
+                  <img src={company.logo} alt={company.name} className="w-16 h-16 rounded-xl object-cover shadow-lg ring-2 ring-white" style={{ borderColor: storeTheme.primary }} />
+                ) : (
+                  <div className="w-16 h-16 rounded-xl flex items-center justify-center shadow-lg ring-2 ring-white" style={{ background: storeTheme.primary }}>
+                    <span className="text-white font-bold text-xl">{company.name?.charAt(0)}</span>
+                  </div>
+                )}
+                <div className="flex-1 min-w-0 pt-2">
+                  <div className="flex items-center gap-1.5">
+                    <p className="font-display font-bold text-sm truncate" style={{ color: storeTheme.text }}>{company.name}</p>
+                    {isPaid && <BadgeCheck size={14} style={{ color: storeTheme.primary }} />}
+                  </div>
+                  <p className="text-[11px] mt-0.5" style={{ color: storeTheme.textMuted }}>
+                    {dbProfile?.seller_category
+                      ? ({ imobiliaria: "Imobiliária", corretor: "Corretor(a) de Imóveis", proprietario: "Proprietário", construtora: "Construtora", loja_veiculos: "Loja de Veículos", autonomo: "Vendedor Autônomo", concessionaria: "Concessionária" } as Record<string, string>)[dbProfile.seller_category] || "Especialista em imóveis"
+                      : "Especialista em imóveis"}
+                  </p>
                 </div>
               </div>
-            )}
-            <div className="space-y-3 text-xs" style={{ color: storeTheme.textMuted }}>
-              <div className="flex items-center gap-2">
-                <Store size={13} className="flex-shrink-0" />
-                <span>
-                  {dbProfile?.seller_category
-                    ? ({ imobiliaria: "Imobiliária", corretor: "Corretor(a) de Imóveis", proprietario: "Proprietário", construtora: "Construtora", loja_veiculos: "Loja de Veículos", autonomo: "Vendedor Autônomo", concessionaria: "Concessionária" } as Record<string, string>)[dbProfile.seller_category] || "Especialista em imóveis"
-                    : "Especialista em imóveis"}
-                </span>
+              {/* Credenciais */}
+              <div className="mt-4 space-y-2">
+                {["corretor", "imobiliaria", "construtora"].includes(dbProfile?.seller_category) && dbProfile?.creci && (
+                  <div className="flex items-center gap-2.5 px-3 py-2 rounded-xl" style={{ background: `${storeTheme.primary}12` }}>
+                    <Shield size={14} style={{ color: storeTheme.primary }} />
+                    <span className="text-xs font-bold" style={{ color: storeTheme.primary }}>CRECI {dbProfile.creci}</span>
+                  </div>
+                )}
+                {dbProfile?.cnpj && (
+                  <div className="flex items-center gap-2.5 px-3 py-2 rounded-xl" style={{ background: `${storeTheme.primary}08` }}>
+                    <Store size={14} style={{ color: storeTheme.textMuted }} />
+                    <span className="text-xs" style={{ color: storeTheme.textMuted }}>CNPJ: {dbProfile.cnpj}</span>
+                  </div>
+                )}
               </div>
-              {["corretor", "imobiliaria", "construtora"].includes(dbProfile?.seller_category) && dbProfile?.creci && (
-                <div className="flex items-center gap-2">
-                  <Shield size={13} className="flex-shrink-0" style={{ color: storeTheme.primary }} />
-                  <span className="font-semibold" style={{ color: storeTheme.primary }}>{dbProfile.creci}</span>
+              {/* Team member - company info */}
+              {teamMember && dbProfile?.logo_url && (
+                <div className="flex items-center gap-3 mt-3 p-2.5 rounded-xl" style={{ background: `${storeTheme.primary}08` }}>
+                  <img src={dbProfile.logo_url} alt={dbProfile.company_name || dbProfile.full_name} className="w-10 h-10 rounded-lg object-cover" style={{ border: `1px solid ${storeTheme.border}` }} />
+                  <div>
+                    <p className="text-xs font-bold" style={{ color: storeTheme.text }}>{dbProfile.company_name || dbProfile.full_name}</p>
+                    {dbProfile.cnpj && <p className="text-[10px]" style={{ color: storeTheme.textMuted }}>CNPJ: {dbProfile.cnpj}</p>}
+                  </div>
                 </div>
               )}
-              <div className="flex items-center gap-2">
-                <Zap size={13} className="flex-shrink-0" />
-                <span>Contato direto via WhatsApp</span>
+              {/* Bio */}
+              {dbProfile?.bio && (
+                <p className="text-xs leading-relaxed mt-3" style={{ color: storeTheme.textMuted }}>
+                  {dbProfile.bio}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* ── Bloco 2: Benefícios / Garantias ── */}
+          <div className="rounded-2xl p-5 mt-4" style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}>
+            <h3 className="font-display font-bold text-sm mb-3 flex items-center gap-2" style={{ color: storeTheme.text }}>
+              <Shield size={15} style={{ color: storeTheme.primary }} /> Por que escolher
+            </h3>
+            <div className="grid grid-cols-2 gap-2.5">
+              <div className="flex flex-col items-center text-center gap-1.5 p-3 rounded-xl" style={{ background: `${storeTheme.primary}10` }}>
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: storeTheme.primary }}>
+                  <Zap size={14} className="text-white" />
+                </div>
+                <span className="text-[11px] font-semibold leading-tight" style={{ color: storeTheme.text }}>Resposta rápida via WhatsApp</span>
               </div>
-              <div className="flex items-center gap-2">
-                <Shield size={13} className="flex-shrink-0" />
-                <span>{isPaid ? "Vendedor verificado e premium" : "Vendedor ativo na plataforma"}</span>
+              <div className="flex flex-col items-center text-center gap-1.5 p-3 rounded-xl" style={{ background: `${storeTheme.primary}10` }}>
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: storeTheme.primary }}>
+                  <BadgeCheck size={14} className="text-white" />
+                </div>
+                <span className="text-[11px] font-semibold leading-tight" style={{ color: storeTheme.text }}>{isPaid ? "Vendedor premium verificado" : "Vendedor ativo"}</span>
+              </div>
+              <div className="flex flex-col items-center text-center gap-1.5 p-3 rounded-xl" style={{ background: `${storeTheme.primary}10` }}>
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: storeTheme.primary }}>
+                  <Store size={14} className="text-white" />
+                </div>
+                <span className="text-[11px] font-semibold leading-tight" style={{ color: storeTheme.text }}>{products.length} imóveis disponíveis</span>
+              </div>
+              <div className="flex flex-col items-center text-center gap-1.5 p-3 rounded-xl" style={{ background: `${storeTheme.primary}10` }}>
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: storeTheme.primary }}>
+                  <MapPin size={14} className="text-white" />
+                </div>
+                <span className="text-[11px] font-semibold leading-tight" style={{ color: storeTheme.text }}>{dbProfile?.city || "Espírito Santo"}</span>
               </div>
             </div>
           </div>
