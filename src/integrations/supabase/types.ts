@@ -460,6 +460,57 @@ export type Database = {
           },
         ]
       }
+      property_capture_leads: {
+        Row: {
+          address: string | null
+          created_at: string
+          description: string | null
+          desired_price: number | null
+          full_name: string
+          id: string
+          notes: string | null
+          phone: string
+          photos: string[] | null
+          property_type: string
+          seller_id: string
+          seller_user_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          created_at?: string
+          description?: string | null
+          desired_price?: number | null
+          full_name: string
+          id?: string
+          notes?: string | null
+          phone: string
+          photos?: string[] | null
+          property_type?: string
+          seller_id: string
+          seller_user_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          created_at?: string
+          description?: string | null
+          desired_price?: number | null
+          full_name?: string
+          id?: string
+          notes?: string | null
+          phone?: string
+          photos?: string[] | null
+          property_type?: string
+          seller_id?: string
+          seller_user_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       property_captures: {
         Row: {
           broker_id: string
