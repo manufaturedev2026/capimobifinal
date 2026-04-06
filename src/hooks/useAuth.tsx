@@ -91,6 +91,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           : authUser.email?.split("@")[0] ?? "Novo usuário",
       email: authUser.email ?? "",
       phone: typeof metadata.phone === "string" && metadata.phone.trim() ? metadata.phone.trim() : null,
+      store_layout: "marketplace",
+      store_theme: "luxury",
     };
 
     const { data, error } = await supabase
