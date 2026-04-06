@@ -69,6 +69,7 @@ async function generateMarketingImage(
   sellerName: string,
   sellerPhone: string | null,
   sellerCreci: string | null,
+  photoUrl?: string,
 ): Promise<string> {
   const { width, height } = FORMAT_CONFIG[format];
   const canvas = document.createElement("canvas");
@@ -77,9 +78,10 @@ async function generateMarketingImage(
   const ctx = canvas.getContext("2d")!;
 
   // Draw background photo
-  if (item.photos?.[0]) {
+  const imgSrc = photoUrl || item.photos?.[0];
+  if (imgSrc) {
     try {
-      const img = await loadImage(item.photos[0]);
+      const img = await loadImage(imgSrc);
       const imgRatio = img.width / img.height;
       const canvasRatio = width / height;
       let sx = 0, sy = 0, sw = img.width, sh = img.height;
@@ -219,6 +221,7 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [copied, setCopied] = useState(false);
   const [generating, setGenerating] = useState<ImageFormat | null>(null);
+  const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
 
   useEffect(() => {
     (async () => {
@@ -232,6 +235,8 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
       setLoading(false);
     })();
   }, [sellerId]);
+
+  useEffect(() => setSelectedPhotoIndex(0), [selectedItemId]);
 
   const selectedItem = items.find((i) => i.id === selectedItemId);
   const photos = selectedItem?.photos || [];
@@ -256,7 +261,8 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
     if (!selectedItem) return;
     setGenerating(format);
     try {
-      const dataUrl = await generateMarketingImage(selectedItem, format, sellerName, sellerPhone, sellerCreci);
+      const chosenPhoto = photos[selectedPhotoIndex] || photos[0];
+      const dataUrl = await generateMarketingImage(selectedItem, format, sellerName, sellerPhone, sellerCreci, chosenPhoto);
       const link = document.createElement("a");
       link.download = `${selectedItem.title.replace(/[^a-zA-Z0-9À-ÿ ]/g, "").trim().replace(/\s+/g, "-")}_${format}.jpg`;
       link.href = dataUrl;
@@ -268,7 +274,7 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
     } finally {
       setGenerating(null);
     }
-  }, [selectedItem, sellerName, sellerPhone, sellerCreci, toast]);
+  }, [selectedItem, sellerName, sellerPhone, sellerCreci, toast, photos, selectedPhotoIndex]);
 
   if (loading) {
     return (
@@ -392,8 +398,35 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
             <h3 className="font-bold text-sm text-foreground">Baixar Imagem para Anúncio</h3>
           </div>
           <p className="text-xs text-muted-foreground">
-            Gere uma imagem profissional com foto, preço, localização e seus dados de corretor para usar em anúncios.
+            Selecione a foto e o formato para gerar uma imagem profissional com preço, localização e seus dados.
           </p>
+
+          {/* Photo selector */}
+          {photos.length > 1 && (
+            <div className="space-y-1.5">
+              <p className="text-[11px] font-semibold text-muted-foreground">Selecione a foto:</p>
+              <div className="flex gap-2 overflow-x-auto pb-1">
+                {photos.map((photo, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setSelectedPhotoIndex(i)}
+                    className={`relative flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all ${
+                      selectedPhotoIndex === i
+                        ? "border-primary ring-2 ring-primary/30"
+                        : "border-border hover:border-primary/40"
+                    }`}
+                  >
+                    <img src={photo} alt={`Foto ${i + 1}`} className="w-full h-full object-cover" loading="lazy" />
+                    {selectedPhotoIndex === i && (
+                      <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
+                        <CheckCircle2 size={16} className="text-primary-foreground drop-shadow-md" />
+                      </div>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             {(Object.keys(FORMAT_CONFIG) as ImageFormat[]).map((fmt) => {
               const cfg = FORMAT_CONFIG[fmt];
