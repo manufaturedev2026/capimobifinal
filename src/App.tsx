@@ -115,6 +115,7 @@ const AppLayout = () => {
               <Route path="/painel/perfil" element={<RequireAuth><SellerProfile /></RequireAuth>} />
               <Route path="/pacotes" element={<RequireAuth><PackagesPage /></RequireAuth>} />
               <Route path="/admin" element={<RequireAuth><AdminPanel /></RequireAuth>} />
+              <Route path="/captar-imovel/:slug" element={<CapturePropertyPage />} />
               <Route path="/privacidade" element={<PrivacyPage />} />
               <Route path="/termos" element={<TermsPage />} />
               <Route path="*" element={<HomeRedirect />} />
