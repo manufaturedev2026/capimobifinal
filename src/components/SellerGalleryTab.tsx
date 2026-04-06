@@ -28,7 +28,7 @@ interface Props {
 }
 
 type ImageFormat = "card" | "banner" | "story";
-type ImageStyle = "classico" | "gold" | "moderno";
+type ImageStyle = "verde" | "azul" | "vermelho" | "rosa" | "gold" | "roxo";
 
 const FORMAT_CONFIG: Record<ImageFormat, { label: string; width: number; height: number; description: string }> = {
   card: { label: "Post (1:1)", width: 1080, height: 1080, description: "Instagram / Facebook" },
@@ -36,9 +36,29 @@ const FORMAT_CONFIG: Record<ImageFormat, { label: string; width: number; height:
   story: { label: "Story (9:16)", width: 1080, height: 1920, description: "Instagram Stories / Status" },
 };
 
+function makeStyle(
+  label: string,
+  accent: string,
+  accentRgba: string,
+  bgClass: string,
+): typeof STYLE_CONFIG[ImageStyle] {
+  return {
+    label,
+    priceBg: accent,
+    priceFg: "#ffffff",
+    gradientStops: ["rgba(0,0,0,0)", "rgba(0,0,0,0.65)", "rgba(0,0,0,0.95)"],
+    titleColor: "#f0f0f0",
+    detailColor: accentRgba,
+    sellerColor: "rgba(255,255,255,0.5)",
+    locationColor: "rgba(255,255,255,0.75)",
+    accentBar: accent,
+    fontFamily: "'Trebuchet MS', 'Helvetica Neue', Arial, sans-serif",
+    preview: { bg: bgClass },
+  };
+}
+
 const STYLE_CONFIG: Record<ImageStyle, {
   label: string;
-  description: string;
   priceBg: string;
   priceFg: string;
   gradientStops: [string, string, string];
@@ -48,50 +68,14 @@ const STYLE_CONFIG: Record<ImageStyle, {
   locationColor: string;
   accentBar: string | null;
   fontFamily: string;
-  preview: { bg: string; accent: string; text: string };
+  preview: { bg: string };
 }> = {
-  classico: {
-    label: "Clássico",
-    description: "Azul profissional",
-    priceBg: "#2563eb",
-    priceFg: "#ffffff",
-    gradientStops: ["rgba(0,0,0,0)", "rgba(0,0,0,0.5)", "rgba(0,0,0,0.85)"],
-    titleColor: "#ffffff",
-    detailColor: "rgba(255,255,255,0.8)",
-    sellerColor: "rgba(255,255,255,0.7)",
-    locationColor: "rgba(255,255,255,0.85)",
-    accentBar: null,
-    fontFamily: "'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif",
-    preview: { bg: "bg-blue-600", accent: "border-blue-500", text: "Azul" },
-  },
-  gold: {
-    label: "Gold Luxo",
-    description: "Dourado premium",
-    priceBg: "#b8860b",
-    priceFg: "#ffffff",
-    gradientStops: ["rgba(0,0,0,0)", "rgba(20,15,5,0.6)", "rgba(15,10,0,0.92)"],
-    titleColor: "#ffd700",
-    detailColor: "rgba(255,215,0,0.7)",
-    sellerColor: "rgba(255,215,0,0.6)",
-    locationColor: "rgba(255,215,0,0.8)",
-    accentBar: "#b8860b",
-    fontFamily: "'Georgia', 'Times New Roman', serif",
-    preview: { bg: "bg-yellow-700", accent: "border-yellow-600", text: "Dourado" },
-  },
-  moderno: {
-    label: "Moderno Escuro",
-    description: "Escuro sofisticado",
-    priceBg: "#10b981",
-    priceFg: "#ffffff",
-    gradientStops: ["rgba(0,0,0,0)", "rgba(0,0,0,0.65)", "rgba(0,0,0,0.95)"],
-    titleColor: "#f0f0f0",
-    detailColor: "rgba(16,185,129,0.8)",
-    sellerColor: "rgba(255,255,255,0.5)",
-    locationColor: "rgba(255,255,255,0.75)",
-    accentBar: "#10b981",
-    fontFamily: "'Trebuchet MS', 'Helvetica Neue', Arial, sans-serif",
-    preview: { bg: "bg-emerald-600", accent: "border-emerald-500", text: "Verde" },
-  },
+  verde: makeStyle("Verde", "#10b981", "rgba(16,185,129,0.8)", "bg-emerald-500"),
+  azul: makeStyle("Azul", "#2563eb", "rgba(37,99,235,0.8)", "bg-blue-600"),
+  vermelho: makeStyle("Vermelho", "#ef4444", "rgba(239,68,68,0.8)", "bg-red-500"),
+  rosa: makeStyle("Rosa", "#ec4899", "rgba(236,72,153,0.8)", "bg-pink-500"),
+  gold: makeStyle("Gold", "#d97706", "rgba(217,119,6,0.8)", "bg-amber-600"),
+  roxo: makeStyle("Roxo", "#8b5cf6", "rgba(139,92,246,0.8)", "bg-violet-500"),
 };
 
 function formatPrice(price: number): string {
