@@ -304,12 +304,16 @@ export default function NotificationsTab({ userId, sellerId }: NotificationsTabP
       {/* History */}
       {logs.length > 0 && (
         <div className="space-y-3">
-          <h3 className="text-base font-bold text-foreground flex items-center gap-2">
-            <Clock className="w-4 h-4" /> Histórico
-          </h3>
-          <Button size="sm" variant="ghost" className="text-xs text-destructive gap-1" onClick={handleClearAll}>
-            <Trash2 className="w-3.5 h-3.5" /> Limpar tudo
-          </Button>
+          <div className="flex items-center justify-between">
+            <h3 className="text-base font-bold text-foreground flex items-center gap-2">
+              <Clock className="w-4 h-4" /> Histórico
+            </h3>
+            <Button size="sm" variant="ghost" className="text-xs text-destructive gap-1" onClick={handleClearAll}>
+              <Trash2 className="w-3.5 h-3.5" /> Limpar tudo
+            </Button>
+          </div>
+
+          <div className="space-y-2">
             {logs.map((log) => (
               <div key={log.id} className="p-4 rounded-xl border border-border bg-card">
                 <div className="flex items-start justify-between gap-3">
@@ -320,20 +324,25 @@ export default function NotificationsTab({ userId, sellerId }: NotificationsTabP
                       <p className="text-[10px] text-primary mt-1 truncate">🔗 {log.url}</p>
                     )}
                   </div>
-                  <div className="text-right shrink-0">
-                    <div className="flex items-center gap-1 text-xs">
-                      <CheckCircle2 className="w-3 h-3 text-green-500" />
-                      <span className="text-green-600 font-medium">{log.sent_count}</span>
-                      {log.failed_count > 0 && (
-                        <>
-                          <XCircle className="w-3 h-3 text-red-400 ml-1" />
-                          <span className="text-red-400 font-medium">{log.failed_count}</span>
-                        </>
-                      )}
+                  <div className="flex items-start gap-2 shrink-0">
+                    <div className="text-right">
+                      <div className="flex items-center gap-1 text-xs">
+                        <CheckCircle2 className="w-3 h-3 text-green-500" />
+                        <span className="text-green-600 font-medium">{log.sent_count}</span>
+                        {log.failed_count > 0 && (
+                          <>
+                            <XCircle className="w-3 h-3 text-red-400 ml-1" />
+                            <span className="text-red-400 font-medium">{log.failed_count}</span>
+                          </>
+                        )}
+                      </div>
+                      <p className="text-[10px] text-muted-foreground mt-1">
+                        {new Date(log.created_at).toLocaleDateString("pt-BR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}
+                      </p>
                     </div>
-                    <p className="text-[10px] text-muted-foreground mt-1">
-                      {new Date(log.created_at).toLocaleDateString("pt-BR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}
-                    </p>
+                    <Button size="icon" variant="ghost" className="h-6 w-6 text-muted-foreground hover:text-destructive" onClick={() => handleDeleteLog(log.id)}>
+                      <Trash2 className="w-3 h-3" />
+                    </Button>
                   </div>
                 </div>
               </div>
