@@ -1574,7 +1574,7 @@ export default function CompanyProfile() {
                           <p className="text-white/50 text-sm md:text-lg mt-3 line-clamp-3 max-w-xl">{lbProduct.description}</p>
                         )}
                         {lbProduct.price > 0 && (
-                          <p className="font-display font-bold text-2xl md:text-4xl text-emerald-500 mt-4 drop-shadow-lg">
+                          <p className="font-display font-bold text-2xl md:text-4xl mt-4 drop-shadow-lg" style={{ color: storeTheme.primary }}>
                             {isDbProfile ? `R$ ${lbProduct.price.toLocaleString("pt-BR")}` : formatPrice(lbProduct.price)}
                             {isDbProfile && (((lbProduct as any).tags || []).includes("aluguel_flex") || (lbProduct as any).category === "aluguel") && (
                               <span className="text-lg font-normal text-muted-foreground"> /mês</span>
