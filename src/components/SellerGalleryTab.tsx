@@ -396,8 +396,35 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
             <h3 className="font-bold text-sm text-foreground">Baixar Imagem para Anúncio</h3>
           </div>
           <p className="text-xs text-muted-foreground">
-            Gere uma imagem profissional com foto, preço, localização e seus dados de corretor para usar em anúncios.
+            Selecione a foto e o formato para gerar uma imagem profissional com preço, localização e seus dados.
           </p>
+
+          {/* Photo selector */}
+          {photos.length > 1 && (
+            <div className="space-y-1.5">
+              <p className="text-[11px] font-semibold text-muted-foreground">Selecione a foto:</p>
+              <div className="flex gap-2 overflow-x-auto pb-1">
+                {photos.map((photo, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setSelectedPhotoIndex(i)}
+                    className={`relative flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all ${
+                      selectedPhotoIndex === i
+                        ? "border-primary ring-2 ring-primary/30"
+                        : "border-border hover:border-primary/40"
+                    }`}
+                  >
+                    <img src={photo} alt={`Foto ${i + 1}`} className="w-full h-full object-cover" loading="lazy" />
+                    {selectedPhotoIndex === i && (
+                      <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
+                        <CheckCircle2 size={16} className="text-primary-foreground drop-shadow-md" />
+                      </div>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             {(Object.keys(FORMAT_CONFIG) as ImageFormat[]).map((fmt) => {
               const cfg = FORMAT_CONFIG[fmt];
