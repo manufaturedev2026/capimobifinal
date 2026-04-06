@@ -237,7 +237,7 @@ export default function StoreLayoutMarketplace({
                 return (
                   <button
                     key={cat.slug}
-                    onClick={() => setActiveCategory(isActive ? "todos" : cat.slug)}
+                    onClick={() => { setActiveCategory(isActive ? "todos" : cat.slug); setTimeout(() => document.getElementById("marketplace-grid")?.scrollIntoView({ behavior: "smooth" }), 100); }}
                     className="flex flex-col items-center gap-2 group"
                   >
                     <div
