@@ -307,8 +307,9 @@ export default function NotificationsTab({ userId, sellerId }: NotificationsTabP
           <h3 className="text-base font-bold text-foreground flex items-center gap-2">
             <Clock className="w-4 h-4" /> Histórico
           </h3>
-
-          <div className="space-y-2">
+          <Button size="sm" variant="ghost" className="text-xs text-destructive gap-1" onClick={handleClearAll}>
+            <Trash2 className="w-3.5 h-3.5" /> Limpar tudo
+          </Button>
             {logs.map((log) => (
               <div key={log.id} className="p-4 rounded-xl border border-border bg-card">
                 <div className="flex items-start justify-between gap-3">
