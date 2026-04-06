@@ -193,7 +193,8 @@ export default function StoreLayoutNetflix({
   const [billboardIdx, setBillboardIdx] = useState(0);
   const accent = "#e50914";
 
-  const billboard = filteredProducts.filter((p: any) => p.image).slice(0, 6);
+  const allProducts = products || filteredProducts;
+  const billboard = allProducts.filter((p: any) => p.image).slice(0, 6);
   const currentBillboard = billboard[billboardIdx];
 
   // Auto-rotate billboard
