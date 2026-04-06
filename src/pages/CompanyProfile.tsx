@@ -1761,7 +1761,7 @@ export default function CompanyProfile() {
           </div>
         </section>
       )}
-      <section className="lg:hidden px-4 mt-6 mb-6">
+      <section className={`${isMarketplace ? "" : "lg:hidden"} px-4 mt-6 mb-6`}>
         <div className="max-w-[1800px] mx-auto">
           <div className="rounded-2xl p-5" style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}>
             <h3 className="font-display font-bold text-base mb-3 flex items-center gap-2" style={{ color: storeTheme.text }}>
