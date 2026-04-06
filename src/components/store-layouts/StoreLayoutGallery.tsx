@@ -59,6 +59,9 @@ export default function StoreLayoutGallery({
                     {product.price > 0 && (
                       <p className="text-emerald-400 text-xs font-bold mt-0.5">R$ {product.price.toLocaleString("pt-BR")}</p>
                     )}
+                    {product.city && (
+                      <p className="text-white/70 text-[10px] mt-0.5 flex items-center gap-1"><MapPin size={9} /> {product.neighborhood ? `${product.neighborhood}, ${product.city}` : product.city}</p>
+                    )}
                   </div>
                   {product.tag && (
                     <span className={`absolute top-2 left-2 px-2 py-0.5 rounded-lg text-[9px] font-bold ${getTagStyle(product.tag)}`}>
