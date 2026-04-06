@@ -9,7 +9,7 @@ interface StoriesBarProps {
   textColor?: string;
 }
 
-export default function StoriesBar({ onAddStory }: StoriesBarProps) {
+export default function StoriesBar({ onAddStory, textColor }: StoriesBarProps) {
   const { sellerStories, loading } = useStories();
   const { user } = useAuth();
   const [viewerOpen, setViewerOpen] = useState(false);
