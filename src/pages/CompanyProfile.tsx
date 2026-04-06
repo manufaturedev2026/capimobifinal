@@ -1767,19 +1767,41 @@ export default function CompanyProfile() {
             <h3 className="font-display font-bold text-base mb-3 flex items-center gap-2" style={{ color: storeTheme.text }}>
               <BadgeCheck size={16} style={{ color: storeTheme.primary }} /> Mais informações
             </h3>
+            {/* Corretor photo + name + CRECI */}
+            <div className="flex items-center gap-3 mb-4 p-3 rounded-xl" style={{ background: `${storeTheme.primary}10` }}>
+              {company.logo ? (
+                <img src={company.logo} alt={company.name} className="w-14 h-14 rounded-xl object-cover shadow" style={{ border: `2px solid ${storeTheme.primary}30` }} />
+              ) : (
+                <div className="w-14 h-14 rounded-xl flex items-center justify-center shadow" style={{ background: storeTheme.primary }}>
+                  <span className="text-white font-bold text-lg">{company.name?.charAt(0)}</span>
+                </div>
+              )}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-1.5">
+                  <p className="text-sm font-bold truncate" style={{ color: storeTheme.text }}>{company.name}</p>
+                  {isPaid && <BadgeCheck size={14} style={{ color: storeTheme.primary }} />}
+                </div>
+                <p className="text-[11px] mt-0.5" style={{ color: storeTheme.textMuted }}>
+                  {dbProfile?.seller_category
+                    ? ({ imobiliaria: "Imobiliária", corretor: "Corretor(a) de Imóveis", proprietario: "Proprietário", construtora: "Construtora", loja_veiculos: "Loja de Veículos", autonomo: "Vendedor Autônomo", concessionaria: "Concessionária" } as Record<string, string>)[dbProfile.seller_category] || "Especialista em imóveis"
+                    : "Especialista em imóveis"}
+                </p>
+                {["corretor", "imobiliaria", "construtora"].includes(dbProfile?.seller_category) && dbProfile?.creci && (
+                  <p className="text-[11px] font-semibold mt-0.5" style={{ color: storeTheme.primary }}>CRECI: {dbProfile.creci}</p>
+                )}
+                {dbProfile?.cnpj && (
+                  <p className="text-[10px] mt-0.5" style={{ color: storeTheme.textMuted }}>CNPJ: {dbProfile.cnpj}</p>
+                )}
+              </div>
+            </div>
+            {/* Company info for team members */}
             {teamMember && dbProfile?.logo_url && (
-              <div className="flex items-center gap-3 mb-3 p-2 rounded-xl" style={{ background: `${storeTheme.primary}10` }}>
+              <div className="flex items-center gap-3 mb-3 p-2 rounded-xl" style={{ background: `${storeTheme.primary}08` }}>
                 <img src={dbProfile.logo_url} alt={dbProfile.company_name || dbProfile.full_name} className="w-10 h-10 rounded-lg object-cover" style={{ border: `1px solid ${storeTheme.border}` }} />
                 <div>
                   <p className="text-xs font-bold" style={{ color: storeTheme.text }}>{dbProfile.company_name || dbProfile.full_name}</p>
                   {dbProfile.cnpj && <p className="text-[10px]" style={{ color: storeTheme.textMuted }}>CNPJ: {dbProfile.cnpj}</p>}
                 </div>
-              </div>
-            )}
-            {!teamMember && dbProfile?.cnpj && (
-              <div className="flex items-center gap-2 mb-3 text-xs" style={{ color: storeTheme.textMuted }}>
-                <Shield size={13} className="flex-shrink-0" style={{ color: storeTheme.primary }} />
-                <span>CNPJ: {dbProfile.cnpj}</span>
               </div>
             )}
             <div className="space-y-3 text-xs" style={{ color: storeTheme.textMuted }}>
