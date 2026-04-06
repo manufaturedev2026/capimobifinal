@@ -536,15 +536,7 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "rental_contracts_item_id_fkey"
-            columns: ["item_id"]
-            isOneToOne: false
-            referencedRelation: "seller_items"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       rental_payments: {
         Row: {
