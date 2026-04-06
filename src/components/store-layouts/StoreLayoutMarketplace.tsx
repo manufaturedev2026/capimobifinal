@@ -428,7 +428,7 @@ export default function StoreLayoutMarketplace({
               <Star size={14} style={{ color: storeTheme.primary }} />
               <h2 className="font-display font-bold text-lg" style={{ color: storeTheme.text }}>Categorias</h2>
             </div>
-            <div className="grid grid-cols-4 md:grid-cols-8 gap-3">
+            <div className="grid grid-cols-3 md:grid-cols-8 gap-3">
               {activeCats.filter(c => c.slug !== "todos").map((cat, cIdx) => {
                 const isActive = activeCategory === cat.slug;
                 const Icon = QUICK_ACTIONS.find(a => a.slug === cat.slug)?.icon || Home;
