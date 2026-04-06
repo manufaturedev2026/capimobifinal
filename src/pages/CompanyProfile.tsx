@@ -808,7 +808,88 @@ export default function CompanyProfile() {
         )}
       </section>
 
-      {/* ═══ MARKETPLACE SCROLLING PROPERTY BANNER ═══ */}
+      {/* ═══════════ SHOWCASE MOBILE HERO — Featured Item ═══════════ */}
+      {isShowcase && (
+        <section className="lg:hidden relative overflow-hidden">
+          {heroImages.length > 0 ? (
+            <>
+              <AnimatePresence mode="wait">
+                <motion.img
+                  key={heroSlide}
+                  src={heroImages[heroSlide].image}
+                  alt={heroImages[heroSlide].title}
+                  initial={{ opacity: 0, scale: 1.08 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 1 }}
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+              </AnimatePresence>
+              {heroImages.length > 1 && (
+                <div className="absolute top-14 left-0 right-0 z-20 flex justify-center gap-1.5">
+                  {heroImages.map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setHeroSlide(idx)}
+                      className={`h-1 rounded-full transition-all duration-300 ${idx === heroSlide ? "w-6 bg-white" : "w-1.5 bg-white/40"}`}
+                    />
+                  ))}
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${storeTheme.primary}, ${storeTheme.accent})` }} />
+          )}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/50 to-black/90" />
+
+          {/* Top bar */}
+          <div className="relative z-10 flex items-center justify-between px-4 pt-4">
+            <Link
+              to={user && dbProfile && user.id === dbProfile.user_id ? "/painel" : "/login"}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-white text-xs font-medium"
+            >
+              <LayoutDashboard size={14} /> {user && dbProfile && user.id === dbProfile.user_id ? "Painel" : "Entrar"}
+            </Link>
+            {isPaid && <PackageBadge tier={sellerTier} size="sm" />}
+          </div>
+
+          {/* Featured item content */}
+          <div className="relative z-10 flex flex-col items-start px-5 pt-16 pb-8">
+            {heroProduct && (
+              <>
+                <span className="text-[10px] font-bold uppercase tracking-[0.2em] mb-2" style={{ color: storeTheme.primary }}>
+                  ✦ Imóvel em Destaque
+                </span>
+                <h1 className="font-display font-black text-2xl text-white leading-tight mb-2">
+                  {heroProduct.title}
+                </h1>
+                {heroProduct.city && (
+                  <p className="text-white/50 text-xs flex items-center gap-1 mb-2">
+                    <MapPin size={11} /> {heroProduct.neighborhood ? `${heroProduct.neighborhood}, ${heroProduct.city}` : heroProduct.city}
+                  </p>
+                )}
+                {heroProduct.price > 0 && (
+                  <p className="font-display font-black text-2xl mb-3" style={{ color: storeTheme.primary }}>
+                    R$ {heroProduct.price.toLocaleString("pt-BR")}
+                  </p>
+                )}
+                {heroProduct.description && (
+                  <p className="text-white/60 text-xs leading-relaxed line-clamp-3 max-w-sm mb-4">
+                    {heroProduct.description}
+                  </p>
+                )}
+                <Link
+                  to={`/imoveis/produto/${heroProduct.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`}
+                  className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold text-sm text-white shadow-lg active:scale-95 transition-transform"
+                  style={{ background: storeTheme.primary }}
+                >
+                  <Eye size={16} /> Saiba Mais
+                </Link>
+              </>
+            )}
+          </div>
+        </section>
+      )}
       {isMarketplace && products.length > 0 && (
         <div className="hidden overflow-hidden" style={{ background: `${storeTheme.primary}e6` }}>
           <motion.div
