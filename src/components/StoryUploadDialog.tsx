@@ -188,15 +188,9 @@ export default function StoryUploadDialog({ open, onOpenChange, sellerId, onUplo
         <ScrollArea className="max-h-[70vh] pr-2">
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              {currentCount}/{limit} stories usados (plano {currentTier})
+              {currentCount} stories ativos
             </p>
 
-            {!canPost ? (
-              <div className="text-center py-6">
-                <p className="text-sm text-destructive font-medium">Você atingiu o limite de stories do seu plano.</p>
-                <p className="text-xs text-muted-foreground mt-1">Faça upgrade para publicar mais.</p>
-              </div>
-            ) : (
               <>
                 {/* Team member selector for empresa plans */}
                 {isEmpresa && teamMembers.length > 0 && (

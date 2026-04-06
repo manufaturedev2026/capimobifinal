@@ -94,7 +94,7 @@ export default function StoriesTab({ userId, sellerId }: StoriesTabProps) {
         <div>
           <h2 className="text-xl font-bold text-foreground">📸 Meus Stories</h2>
           <p className="text-sm text-muted-foreground mt-1">
-            {storyCount}/{limit} stories ativos · Expira em 24h automaticamente
+            {storyCount} stories ativos · Expira em 24h automaticamente
           </p>
         </div>
         <Button onClick={() => setUploadOpen(true)} className="gap-2">
