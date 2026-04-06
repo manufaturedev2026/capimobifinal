@@ -456,8 +456,8 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
               <div className="absolute bottom-0 left-0 right-0 h-1" style={{ backgroundColor: stylePreview.accentBar }} />
             )}
             <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6">
-              {sellerLogo && (
-                <img src={sellerLogo} alt="" className="w-8 h-8 rounded-lg object-cover mb-2 border border-white/20" />
+              {showBrokerPhoto && sellerLogo && (
+                <img src={sellerLogo} alt="" className="w-10 h-10 rounded-full object-cover mb-2 border-2 border-white/30 shadow-lg" />
               )}
               <h2 className="font-extrabold text-lg sm:text-2xl leading-tight line-clamp-2" style={titleStyle}>{selectedItem?.title}</h2>
               <div className="flex items-center gap-3 mt-2 flex-wrap">
