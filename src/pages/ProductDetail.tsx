@@ -20,6 +20,46 @@ import { useToast } from "@/hooks/use-toast";
 import MapEmbed from "@/components/MapEmbed";
 import WhatsAppLeadCapture from "@/components/WhatsAppLeadCapture";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { getStoreTheme } from "@/components/StoreThemePicker";
+
+/* ── hex→HSL for CSS vars ── */
+function hexToHSL(hex: string): string {
+  let r = 0, g = 0, b = 0;
+  hex = hex.replace("#", "");
+  if (hex.length === 3) { r = parseInt(hex[0]+hex[0],16); g = parseInt(hex[1]+hex[1],16); b = parseInt(hex[2]+hex[2],16); }
+  else { r = parseInt(hex.substring(0,2),16); g = parseInt(hex.substring(2,4),16); b = parseInt(hex.substring(4,6),16); }
+  r /= 255; g /= 255; b /= 255;
+  const max = Math.max(r,g,b), min = Math.min(r,g,b);
+  let h = 0, s = 0, l = (max+min)/2;
+  if (max !== min) {
+    const d = max-min;
+    s = l > 0.5 ? d/(2-max-min) : d/(max+min);
+    switch(max) { case r: h = ((g-b)/d + (g<b?6:0))*60; break; case g: h = ((b-r)/d+2)*60; break; case b: h = ((r-g)/d+4)*60; break; }
+  }
+  return `${Math.round(h)} ${Math.round(s*100)}% ${Math.round(l*100)}%`;
+}
+
+function buildThemeCSSVars(themeId: string | null | undefined): React.CSSProperties {
+  const t = getStoreTheme(themeId);
+  const isDark = t.id === "dark" || t.id === "neon_red" || ["#0f1623","#0a0a0a","#1a1a2e","#0c1821","#0a1628","#1a0a2e"].includes(t.bg);
+  return {
+    "--background": hexToHSL(t.bg),
+    "--foreground": hexToHSL(t.text),
+    "--card": hexToHSL(t.card),
+    "--card-foreground": hexToHSL(t.text),
+    "--primary": hexToHSL(t.primary),
+    "--primary-foreground": isDark ? "0 0% 100%" : "0 0% 100%",
+    "--secondary": hexToHSL(t.card),
+    "--secondary-foreground": hexToHSL(t.text),
+    "--muted": hexToHSL(t.border),
+    "--muted-foreground": hexToHSL(t.textMuted),
+    "--accent": hexToHSL(t.accent),
+    "--accent-foreground": isDark ? "0 0% 100%" : hexToHSL(t.text),
+    "--border": hexToHSL(t.border),
+    "--input": hexToHSL(t.border),
+    "--ring": hexToHSL(t.primary),
+  } as React.CSSProperties;
+}
 
 function isUUID(str: string) {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
@@ -463,8 +503,10 @@ export default function ProductDetail() {
     </div>
   );
 
+  const themeVars = buildThemeCSSVars(dbSeller?.store_theme);
+
   return (
-    <div className="min-h-screen bg-background pb-24 lg:pb-0">
+    <div className="min-h-screen bg-background pb-24 lg:pb-0" style={themeVars}>
       {/* ── Hero Banner ── */}
       <section className="relative">
         <div className="aspect-[16/9] md:aspect-[21/7] overflow-hidden bg-muted">
