@@ -643,20 +643,19 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             {(Object.keys(FORMAT_CONFIG) as ImageFormat[]).map((fmt) => {
               const cfg = FORMAT_CONFIG[fmt];
-              const isGenerating = generating === fmt;
+              const isActive = previewFormat === fmt;
               return (
                 <button
                   key={fmt}
-                  onClick={() => handleDownload(fmt)}
-                  disabled={!!generating}
-                  className="flex items-center gap-3 px-4 py-3 rounded-xl border border-border hover:border-primary/50 hover:bg-primary/5 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-left"
+                  onClick={() => handlePreview(fmt)}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl border-2 transition-all text-left ${
+                    isActive
+                      ? "border-primary bg-primary/10"
+                      : "border-border hover:border-primary/50 hover:bg-primary/5"
+                  }`}
                 >
                   <div className="flex-shrink-0">
-                    {isGenerating ? (
-                      <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                    ) : (
-                      <Download size={18} className="text-primary" />
-                    )}
+                    <Eye size={18} className="text-primary" />
                   </div>
                   <div>
                     <p className="text-xs font-bold text-foreground">{cfg.label}</p>
