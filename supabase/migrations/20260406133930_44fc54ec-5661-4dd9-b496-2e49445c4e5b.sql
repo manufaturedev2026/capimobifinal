@@ -1,0 +1,1 @@
+ALTER TABLE public.rental_contracts ADD COLUMN item_label text;

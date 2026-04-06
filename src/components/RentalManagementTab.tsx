@@ -17,6 +17,7 @@ interface RentalContract {
   user_id: string;
   seller_id: string;
   item_id: string | null;
+  item_label: string | null;
   tenant_name: string;
   tenant_cpf_cnpj: string | null;
   tenant_phone: string | null;
@@ -507,9 +508,9 @@ export default function RentalManagementTab({ userId, sellerId }: Props) {
                       </div>
                       <div>
                         <h3 className="text-sm font-bold text-foreground">{contract.tenant_name}</h3>
-                        {property && (
+                        {(property || (contract as any).item_label) && (
                           <p className="text-[11px] text-muted-foreground flex items-center gap-1">
-                            <Home size={10} /> {property.title}
+                            <Home size={10} /> {property?.title || (contract as any).item_label}
                           </p>
                         )}
                         <p className="text-xs font-bold text-primary mt-0.5">{fmt(contract.rent_amount)}/mês</p>
@@ -607,7 +608,7 @@ export default function RentalManagementTab({ userId, sellerId }: Props) {
           <div className="flex items-start justify-between mb-4">
             <div>
               <h2 className="text-lg font-bold text-foreground">{contract.tenant_name}</h2>
-              {property && <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5"><Home size={11} /> {property.title}</p>}
+              {(property || (contract as any).item_label) && <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5"><Home size={11} /> {property?.title || (contract as any).item_label}</p>}
             </div>
             <span className={`px-2.5 py-1 rounded-lg text-xs font-bold border ${cfg.color}`}>{cfg.label}</span>
           </div>
@@ -798,6 +799,7 @@ function ContractForm({ userId, sellerId, properties, editing, onSave, onCancel 
     tenant_phone: editing?.tenant_phone || "",
     tenant_email: editing?.tenant_email || "",
     item_id: editing?.item_id || "",
+    item_label: (editing as any)?.item_label || "",
     rent_amount: editing?.rent_amount?.toString() || "",
     due_day: editing?.due_day?.toString() || "10",
     late_fee_percent: editing?.late_fee_percent?.toString() || "2",
@@ -826,6 +828,7 @@ function ContractForm({ userId, sellerId, properties, editing, onSave, onCancel 
       tenant_phone: form.tenant_phone || null,
       tenant_email: form.tenant_email || null,
       item_id: form.item_id || null,
+      item_label: form.item_label || null,
       rent_amount: parseFloat(form.rent_amount),
       due_day: parseInt(form.due_day) || 10,
       late_fee_percent: parseFloat(form.late_fee_percent) || 2,
@@ -878,11 +881,21 @@ function ContractForm({ userId, sellerId, properties, editing, onSave, onCancel 
           <h3 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2"><Home size={14} className="text-primary" /> Imóvel e Proprietário</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className={labelCls}>Imóvel Vinculado</label>
-              <select value={form.item_id} onChange={e => set("item_id", e.target.value)} className={inputCls}>
-                <option value="">Selecionar imóvel...</option>
+              <label className={labelCls}>Selecionar Imóvel</label>
+              <select value={form.item_id} onChange={e => {
+                const selectedProp = properties.find(p => p.id === e.target.value);
+                set("item_id", e.target.value);
+                if (selectedProp && !form.item_label) {
+                  set("item_label", `${selectedProp.title}${selectedProp.city ? ` — ${selectedProp.city}` : ""}`);
+                }
+              }} className={inputCls}>
+                <option value="">Nenhum (manual)</option>
                 {properties.map(p => <option key={p.id} value={p.id}>{p.title}{p.city ? ` — ${p.city}` : ""}</option>)}
               </select>
+            </div>
+            <div>
+              <label className={labelCls}>Imóvel Vinculado (texto)</label>
+              <input value={form.item_label} onChange={e => set("item_label", e.target.value)} placeholder="Ex: Apt 302, Ed. Solar, Centro" className={inputCls} />
             </div>
             <div><label className={labelCls}>Nome do Proprietário</label><input value={form.owner_name} onChange={e => set("owner_name", e.target.value)} placeholder="Nome do proprietário" className={inputCls} /></div>
             <div><label className={labelCls}>Telefone do Proprietário</label><input value={form.owner_phone} onChange={e => set("owner_phone", e.target.value)} placeholder="(27) 99999-9999" className={inputCls} /></div>
