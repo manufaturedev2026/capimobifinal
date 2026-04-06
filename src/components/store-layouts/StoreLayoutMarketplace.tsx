@@ -276,7 +276,7 @@ export default function StoreLayoutMarketplace({
         className="max-w-6xl mx-auto px-4 -mt-7 relative z-20"
       >
         <div
-          className="flex items-center gap-3 rounded-2xl px-5 py-4 backdrop-blur-xl"
+          className="flex items-center gap-2 md:gap-3 rounded-2xl px-4 py-3 md:px-5 md:py-4 backdrop-blur-xl"
           style={{
             background: `${storeTheme.card}ee`,
             border: `1px solid ${storeTheme.border}`,
