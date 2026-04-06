@@ -29,6 +29,7 @@ import StoreInstallButton from "@/components/StoreInstallButton";
 import StoriesBar from "@/components/StoriesBar";
 import StoryUploadDialog from "@/components/StoryUploadDialog";
 import PushSubscribeButton from "@/components/PushSubscribeButton";
+import { isIOSStandaloneApp } from "@/lib/pwaInstall";
 
 const propertySubcategories = [
   { slug: "todos", name: "Todos", icon: Store, img: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=300&h=200&fit=crop" },
@@ -479,13 +480,18 @@ export default function CompanyProfile() {
   const isNetflix = currentLayout === "netflix";
   const isElegant = currentLayout === "elegant";
   const isMagazine = currentLayout === "magazine";
+  const isIOSStandalone = isIOSStandaloneApp();
 
   return (
     <div
-      className="min-h-screen pb-20 md:pb-0"
+      className="min-h-screen pb-20 md:pb-0 overflow-x-hidden max-w-full"
       style={{
         background: storeTheme.bg,
         color: storeTheme.text,
+        width: "100%",
+        maxWidth: "100vw",
+        overflowX: "clip",
+        overscrollBehaviorX: "none",
         ["--store-bg" as any]: storeTheme.bg,
         ["--store-card" as any]: storeTheme.card,
         ["--store-text" as any]: storeTheme.text,
@@ -549,7 +555,7 @@ export default function CompanyProfile() {
       )}
 
       {isDbProfile && dbProfile?.id && <StoreEffects sellerId={dbProfile.id} />}
-      <ThemeParticles color={storeTheme.primary} sellerId={dbProfile?.id} />
+      {!isIOSStandalone && <ThemeParticles color={storeTheme.primary} sellerId={dbProfile?.id} />}
       {/* ═══════════ MOBILE PROFILE HERO ═══════════ */}
       <section className={`lg:hidden relative overflow-hidden ${isMinimal || isMarketplace || isNetflix || isShowcase ? "hidden" : ""}`}>
         {isMarketplace ? (

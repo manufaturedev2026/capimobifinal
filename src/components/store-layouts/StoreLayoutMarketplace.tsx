@@ -8,6 +8,7 @@ import {
   ArrowRight, X, Sparkles, Crown, Star, LayoutDashboard,
 } from "lucide-react";
 import type { StoreLayoutProps } from "./types";
+import { isIOSStandaloneApp } from "@/lib/pwaInstall";
 
 const QUICK_ACTIONS = [
   { slug: "casa", name: "Casas", desc: "Residenciais", icon: Home },
@@ -121,6 +122,7 @@ export default function StoreLayoutMarketplace({
   const [showCityPicker, setShowCityPicker] = useState(false);
   const promoScrollRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
+  const isIOSStandalone = isIOSStandaloneApp();
 
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const heroY = useTransform(scrollYProgress, [0, 1], [0, 120]);
@@ -164,27 +166,47 @@ export default function StoreLayoutMarketplace({
     return () => clearInterval(t);
   }, [heroImages.length]);
 
+  const scrollPromoCardIntoView = (index: number) => {
+    const el = promoScrollRef.current;
+    if (!el) return;
+
+    const card = el.children[index] as HTMLElement | undefined;
+    if (!card) return;
+
+    const targetLeft = Math.max(0, card.offsetLeft - (el.clientWidth - card.clientWidth) / 2);
+    el.scrollTo({ left: targetLeft, behavior: isIOSStandalone ? "auto" : "smooth" });
+  };
+
   // Auto-scroll promo banners on mobile
   useEffect(() => {
+    if (isIOSStandalone) return;
+
     const el = promoScrollRef.current;
     if (!el) return;
     const totalBanners = el.children.length;
     if (totalBanners <= 1) return;
+
     const t = setInterval(() => {
-      setPromoIdx(prev => {
+      setPromoIdx((prev) => {
         const next = (prev + 1) % totalBanners;
-        const card = el.children[next] as HTMLElement;
-        card?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+        scrollPromoCardIntoView(next);
         return next;
       });
     }, 4000);
-    return () => clearInterval(t);
-  }, [filteredProducts.length, categoryCounts]);
 
-  const scrollToGrid = () => setTimeout(() => document.getElementById("marketplace-grid")?.scrollIntoView({ behavior: "smooth" }), 100);
+    return () => clearInterval(t);
+  }, [filteredProducts.length, categoryCounts, isIOSStandalone]);
+
+  const scrollToGrid = () =>
+    setTimeout(() => {
+      document.getElementById("marketplace-grid")?.scrollIntoView({
+        behavior: isIOSStandalone ? "auto" : "smooth",
+        block: "start",
+      });
+    }, 100);
 
   return (
-    <div style={{ background: storeTheme.bg }}>
+    <div style={{ background: storeTheme.bg, overflowX: "clip", maxWidth: "100%" }}>
 
       {/* ═══ HERO — Parallax + Particles + Auto-slide ═══ */}
       <motion.section
@@ -337,7 +359,7 @@ export default function StoreLayoutMarketplace({
                   setFilterCity?.(currentHeroCity);
                 }
                 const el = document.getElementById("marketplace-grid");
-                el?.scrollIntoView({ behavior: "smooth" });
+                el?.scrollIntoView({ behavior: isIOSStandalone ? "auto" : "smooth", block: "start" });
               }}
               className="group inline-flex items-center gap-2 px-5 py-2.5 md:px-7 md:py-3.5 rounded-2xl font-bold text-xs md:text-sm text-white shadow-2xl transition-all hover:scale-105"
               style={{
@@ -513,8 +535,9 @@ export default function StoreLayoutMarketplace({
               <div className="md:hidden relative">
                 <div
                   ref={promoScrollRef}
-                  className="flex gap-3 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-2"
+                  className="flex gap-3 overflow-x-auto overflow-y-hidden scrollbar-hide snap-x snap-mandatory pb-2"
                   onTouchStart={() => {}}
+                  style={{ overscrollBehaviorX: "contain" }}
                 >
                   {promoBanners.map((banner, bIdx) => (
                     <motion.div
@@ -553,8 +576,7 @@ export default function StoreLayoutMarketplace({
                       onClick={() => {
                         const el = promoScrollRef.current;
                         if (el) {
-                          const card = el.children[i] as HTMLElement;
-                          card?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+                          scrollPromoCardIntoView(i);
                         }
                         setPromoIdx(i);
                       }}

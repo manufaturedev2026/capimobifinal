@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import type { StoreLayoutProps } from "./types";
 import { useAuth } from "@/hooks/useAuth";
+import { isIOSStandaloneApp } from "@/lib/pwaInstall";
 
 /* ── Color helpers ── */
 function hexToHsl(hex: string): [number, number, number] {
@@ -51,6 +52,7 @@ export default function StoreLayoutMinimal({
   const [heroIdx, setHeroIdx] = useState(0);
   const [showCityPicker, setShowCityPicker] = useState(false);
   const heroRef = useRef<HTMLDivElement>(null);
+  const isIOSStandalone = isIOSStandaloneApp();
 
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const heroScale = useTransform(scrollYProgress, [0, 1], [1, 1.1]);
@@ -79,10 +81,15 @@ export default function StoreLayoutMinimal({
   }, [heroImages.length]);
 
   const scrollToGrid = () =>
-    setTimeout(() => document.getElementById("minimal-grid")?.scrollIntoView({ behavior: "smooth" }), 100);
+    setTimeout(() => {
+      document.getElementById("minimal-grid")?.scrollIntoView({
+        behavior: isIOSStandalone ? "auto" : "smooth",
+        block: "start",
+      });
+    }, 100);
 
   return (
-    <div style={{ background: storeTheme.bg }}>
+    <div style={{ background: storeTheme.bg, overflowX: "clip", maxWidth: "100%" }}>
 
       {/* ═══ HERO — Cinematic parallax with auto-rotating images ═══ */}
       <motion.section
@@ -90,7 +97,7 @@ export default function StoreLayoutMinimal({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
-        className="relative h-[260px] md:h-[380px] overflow-hidden -mx-4 md:-mx-6 -mt-6 md:-mt-6 mb-0"
+        className={`relative h-[260px] md:h-[380px] overflow-hidden ${isIOSStandalone ? "mx-0" : "-mx-4 md:-mx-6"} -mt-6 md:-mt-6 mb-0`}
       >
         {/* Auto-rotating background images */}
         <AnimatePresence mode="wait">

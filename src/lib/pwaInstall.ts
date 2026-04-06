@@ -39,7 +39,7 @@ function isPreviewHost() {
   return hostname.includes("id-preview--") || hostname.includes("lovableproject.com");
 }
 
-function detectIOS() {
+export function detectIOS() {
   if (typeof navigator === "undefined") return false;
 
   const userAgent = navigator.userAgent.toLowerCase();
@@ -48,13 +48,21 @@ function detectIOS() {
   return /iphone|ipad|ipod/.test(userAgent) || isTouchMac;
 }
 
-export function isAppInstalled() {
+export function isStandaloneDisplayMode() {
   if (typeof window === "undefined") return false;
 
   return (
     window.matchMedia("(display-mode: standalone)").matches ||
     (window.navigator as Navigator & { standalone?: boolean }).standalone === true
   );
+}
+
+export function isAppInstalled() {
+  return isStandaloneDisplayMode();
+}
+
+export function isIOSStandaloneApp() {
+  return detectIOS() && isStandaloneDisplayMode();
 }
 
 function buildSnapshot(): PwaInstallSnapshot {
