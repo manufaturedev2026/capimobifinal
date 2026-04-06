@@ -1511,7 +1511,7 @@ export default function CompanyProfile() {
                 <button onClick={() => setActiveCategory("todos")} className="text-primary text-sm mt-2 hover:underline">Ver todos</button>
               </div>
             )}
-            </div>}
+            </div>
           </div>
         </div>
       </div>
