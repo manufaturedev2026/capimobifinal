@@ -592,19 +592,6 @@ export default function CompanyProfile() {
                       <MapPin size={9} /> {company.address}
                     </span>
                   )}
-                  {/* WhatsApp & Instagram buttons below profile info */}
-                  <div className="flex gap-2 mt-2">
-                    {company.whatsapp && (
-                      <button onClick={() => handleWhatsApp(heroProduct?.title || company.name, heroProduct?.id)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#25d366] text-white font-bold text-[11px] active:scale-95 transition-transform">
-                        <MessageCircle size={13} /> WhatsApp
-                      </button>
-                    )}
-                    {(company as any).instagram && ["start", "vip", "premium", "essencial_empresa", "premium_empresa", "prime_empresa"].includes(sellerTier || "") && (
-                      <a href={`https://instagram.com/${(company as any).instagram.replace(/^@/, "")}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-[#833AB4] via-[#E1306C] to-[#F77737] text-white font-bold text-[11px] active:scale-95 transition-transform">
-                        <Instagram size={13} /> Instagram
-                      </a>
-                    )}
-                  </div>
                 </div>
               </div>
 
@@ -894,6 +881,18 @@ export default function CompanyProfile() {
                 {dbProfile?.bio && (
                   <p className="text-white/70 text-xs leading-relaxed mb-3">{dbProfile.bio}</p>
                 )}
+                <div className="flex gap-2 w-full mb-4 lg:hidden">
+                  {company.whatsapp && (
+                    <button onClick={() => handleWhatsApp(heroProduct?.title || company.name, heroProduct?.id)} className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#25d366] text-white font-bold text-xs active:scale-95 transition-transform">
+                      <MessageCircle size={14} /> WhatsApp
+                    </button>
+                  )}
+                  {(company as any).instagram && ["start", "vip", "premium", "essencial_empresa", "premium_empresa", "prime_empresa"].includes(sellerTier || "") && (
+                    <a href={`https://instagram.com/${(company as any).instagram.replace(/^@/, "")}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-gradient-to-r from-[#833AB4] via-[#E1306C] to-[#F77737] text-white font-bold text-xs active:scale-95 transition-transform">
+                      <Instagram size={14} /> Instagram
+                    </a>
+                  )}
+                </div>
                 <Link
                   to={`/imoveis/produto/${heroProduct.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`}
                   className="flex items-center justify-center gap-2 px-6 py-3 font-black text-sm uppercase tracking-wider text-white shadow-lg active:scale-95 transition-transform"
