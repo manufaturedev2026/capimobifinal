@@ -14,6 +14,7 @@ import SellerCrmTab from "@/components/SellerCrmTab";
 import SellerGalleryTab from "@/components/SellerGalleryTab";
 import RentalManagementTab from "@/components/RentalManagementTab";
 import ContractsTab from "@/components/ContractsTab";
+import CaptacaoOnlineTab from "@/components/CaptacaoOnlineTab";
 import { getTagStyle, getTagLabel } from "@/data/products";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
