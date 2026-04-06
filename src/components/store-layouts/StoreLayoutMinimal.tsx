@@ -132,8 +132,7 @@ export default function StoreLayoutMinimal({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="font-display font-light text-2xl md:text-5xl leading-tight"
-            style={{ color: storeTheme.text }}
+            className="font-display font-light text-2xl md:text-5xl leading-tight text-white drop-shadow-lg"
           >
             Imóveis em{" "}
             <span className="font-bold" style={{ color: storeTheme.primary }}>{cityName}</span>
@@ -142,23 +141,41 @@ export default function StoreLayoutMinimal({
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
-            className="text-xs md:text-sm mt-2 max-w-md"
-            style={{ color: storeTheme.textMuted }}
+            className="text-xs md:text-sm mt-2 max-w-md text-white/70"
           >
             {totalCount} {totalCount === 1 ? "imóvel selecionado" : "imóveis selecionados"} com cuidado
           </motion.p>
 
-          <motion.button
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7 }}
-            onClick={scrollToGrid}
-            className="mt-4 inline-flex items-center gap-2 text-xs font-semibold group"
-            style={{ color: storeTheme.primary }}
-          >
-            Explorar
-            <ChevronDown size={14} className="group-hover:translate-y-1 transition-transform" />
-          </motion.button>
+          <div className="flex items-center gap-4 mt-4">
+            <motion.button
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7 }}
+              onClick={scrollToGrid}
+              className="inline-flex items-center gap-2 text-xs font-semibold group"
+              style={{ color: storeTheme.primary }}
+            >
+              Explorar
+              <ChevronDown size={14} className="group-hover:translate-y-1 transition-transform" />
+            </motion.button>
+
+            {/* Slide indicators */}
+            {heroImages.length > 1 && (
+              <div className="flex gap-1.5">
+                {heroImages.map((_: string, i: number) => (
+                  <button
+                    key={i}
+                    onClick={() => setHeroIdx(i)}
+                    className="h-1 rounded-full transition-all duration-500"
+                    style={{
+                      width: i === heroIdx ? 20 : 6,
+                      background: i === heroIdx ? storeTheme.primary : "rgba(255,255,255,0.3)",
+                    }}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </motion.section>
 
