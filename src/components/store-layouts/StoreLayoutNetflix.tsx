@@ -253,7 +253,7 @@ export default function StoreLayoutNetflix({
           </AnimatePresence>
 
           {/* Top bar buttons */}
-          <div className="absolute top-4 left-4 md:top-6 md:left-12 z-20">
+          <div className="absolute top-4 left-4 md:top-6 md:left-12 z-20 flex items-center gap-2">
             <Link
               to={user && dbProfile && user.id === dbProfile.user_id ? "/painel" : "/login"}
               className="flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-medium text-white/80 hover:text-white transition-colors"
@@ -261,6 +261,22 @@ export default function StoreLayoutNetflix({
             >
               <LayoutDashboard size={14} /> {user && dbProfile && user.id === dbProfile.user_id ? "Painel" : "Entrar"}
             </Link>
+            {availableCities && availableCities.length > 1 && setFilterCity && (
+              <div className="relative">
+                <select
+                  value={filterCity || ""}
+                  onChange={(e) => setFilterCity(e.target.value)}
+                  className="appearance-none px-3 py-2 pr-7 rounded-md text-xs font-medium text-white/90 cursor-pointer border-none outline-none"
+                  style={{ background: "rgba(255,255,255,0.1)", backdropFilter: "blur(8px)" }}
+                >
+                  <option value="" style={{ background: "#141414", color: "#fff" }}>Todas as cidades</option>
+                  {availableCities.map(city => (
+                    <option key={city} value={city} style={{ background: "#141414", color: "#fff" }}>{city}</option>
+                  ))}
+                </select>
+                <MapPin size={12} className="absolute right-2 top-1/2 -translate-y-1/2 text-white/60 pointer-events-none" />
+              </div>
+            )}
           </div>
           <div className="absolute top-4 right-4 md:top-6 md:right-12 z-20 flex items-center gap-2">
             {onShareLink && (
