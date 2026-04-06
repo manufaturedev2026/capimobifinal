@@ -530,6 +530,37 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
               </div>
             </div>
           )}
+
+          {/* Style selector */}
+          <div className="space-y-1.5">
+            <p className="text-[11px] font-semibold text-muted-foreground flex items-center gap-1">
+              <Palette size={12} /> Estilo do anúncio:
+            </p>
+            <div className="flex gap-2">
+              {(Object.keys(STYLE_CONFIG) as ImageStyle[]).map((key) => {
+                const cfg = STYLE_CONFIG[key];
+                const isActive = selectedStyle === key;
+                return (
+                  <button
+                    key={key}
+                    onClick={() => setSelectedStyle(key)}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-xl border-2 transition-all text-left ${
+                      isActive
+                        ? "border-primary bg-primary/10"
+                        : "border-border hover:border-primary/40"
+                    }`}
+                  >
+                    <div className={`w-4 h-4 rounded-full ${cfg.preview.bg}`} />
+                    <div>
+                      <p className="text-[11px] font-bold text-foreground">{cfg.label}</p>
+                      <p className="text-[9px] text-muted-foreground">{cfg.description}</p>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             {(Object.keys(FORMAT_CONFIG) as ImageFormat[]).map((fmt) => {
               const cfg = FORMAT_CONFIG[fmt];
