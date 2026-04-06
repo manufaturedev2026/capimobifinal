@@ -186,7 +186,7 @@ async function generateMarketingImage(
   const pad = Math.round(width * 0.045);
   const isStory = format === "story";
   const scale = width / 1080;
-  const font = s.fontFamily;
+  // font is already set from FONT_CONFIG
 
   // Seller photo (circular, top-left)
   if (sellerLogo) {
