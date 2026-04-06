@@ -276,7 +276,7 @@ export default function StoreLayoutNetflix({
               transition={{ delay: 0.3 }}
               className="flex items-center gap-2 mb-3"
             >
-              <span className="text-[#e50914] font-black text-2xl md:text-3xl leading-none" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>N</span>
+              <span className="font-black text-2xl md:text-3xl leading-none" style={{ fontFamily: "'Bebas Neue', sans-serif", color: storeTheme.primary }}>I</span>
               <span className="text-[10px] md:text-xs text-gray-300 uppercase tracking-[0.25em] font-semibold border-l border-gray-500 pl-2">
                 Imóvel em Destaque
               </span>
