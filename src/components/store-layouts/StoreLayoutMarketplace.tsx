@@ -401,7 +401,7 @@ export default function StoreLayoutMarketplace({
               <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent" />
               <FloatingParticles color={storeTheme.primary} />
               <div className="relative z-10 h-full flex flex-col justify-center p-6">
-                <h3 className="font-display font-black text-2xl md:text-3xl text-white leading-tight">
+                <h3 className="font-display font-black text-xl md:text-3xl text-white leading-tight">
                   {banner.title[0]}<br />{banner.title[1]}
                 </h3>
                 <p className="text-white/60 text-xs mt-2 max-w-[200px]">{banner.desc}</p>
