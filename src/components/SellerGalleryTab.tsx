@@ -257,7 +257,7 @@ async function generateMarketingImage(
 
   if (details.length > 0) {
     const detailFontSize = Math.round(18 * scale);
-    ctx.font = `500 ${detailFontSize}px ${font}`;
+    ctx.font = `500 ${detailFontSize}px ${baseFont}`;
     ctx.fillStyle = s.detailColor;
     ctx.fillText(details.join("   "), pad, y);
     y -= detailFontSize + Math.round(8 * scale);
