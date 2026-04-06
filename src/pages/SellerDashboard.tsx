@@ -263,7 +263,7 @@ export default function SellerDashboard() {
     { id: "events", label: "Efeitos", icon: Sparkles },
     
     { id: "crm" as DashboardTab, label: "Meu CRM", icon: MessageCircle },
-    { id: "gallery" as DashboardTab, label: "Galeria", icon: Image },
+    { id: "gallery" as DashboardTab, label: "Galeria de Anúncios", icon: Image },
     { id: "rentals" as DashboardTab, label: "Aluguéis", icon: Building2 },
     { id: "contracts" as DashboardTab, label: "Contratos", icon: FileText },
     { id: "captacao" as DashboardTab, label: "Captação", icon: Magnet },
