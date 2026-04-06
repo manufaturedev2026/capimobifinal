@@ -849,7 +849,7 @@ export default function CompanyProfile() {
         </div>
       )}
 
-      <section className={`hidden lg:block relative overflow-hidden ${isMinimal ? "!hidden" : ""} ${hasVideoHero ? "h-[70vh]" : "h-[60vh]"}`}>
+      <section className={`hidden lg:block relative overflow-hidden ${hasVideoHero ? "h-[70vh]" : "h-[60vh]"}`}>
         {/* Video background or sliding images */}
         {hasVideoHero ? (
           <iframe
@@ -1043,7 +1043,7 @@ export default function CompanyProfile() {
       </section>
 
       {/* ═══════════ STATS BAR ═══════════ */}
-      <section className={`hidden lg:block ${isMinimal ? "!hidden" : ""}`} style={{ borderBottom: `1px solid ${storeTheme.border}`, background: storeTheme.card }}>
+      <section className="hidden lg:block" style={{ borderBottom: `1px solid ${storeTheme.border}`, background: storeTheme.card }}>
         <div className="max-w-[1800px] mx-auto px-4 md:px-8">
           <div className="flex items-center gap-6 py-3 overflow-x-auto scrollbar-hide">
             <div className="flex items-center gap-2 text-sm flex-shrink-0">
@@ -1092,7 +1092,7 @@ export default function CompanyProfile() {
       <div className="max-w-[1800px] mx-auto px-4 md:px-8 py-6">
         <div className="flex gap-8">
           {/* ═══════════ DESKTOP SIDEBAR ═══════════ */}
-          <aside className={`hidden lg:block w-[280px] flex-shrink-0 ${isMinimal ? "!hidden" : ""}`}>
+          <aside className="hidden lg:block w-[280px] flex-shrink-0">
             <div className="sticky top-20 space-y-4">
               {/* Company Card */}
               <div className="rounded-2xl overflow-hidden" style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}>
@@ -1287,7 +1287,7 @@ export default function CompanyProfile() {
             })()}
 
             {/* Desktop: keep original grid */}
-            <div className={`hidden lg:block ${isMinimal ? "!hidden" : ""}`}>
+            <div className="hidden lg:block">
             {/* Products Header */}
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-display font-bold text-lg md:text-xl" style={{ color: storeTheme.text }}>
@@ -1628,7 +1628,7 @@ export default function CompanyProfile() {
       {/* Mobile "Sobre" section - simplified since bio is in hero */}
       {/* Minimal layout: Profile card moved here, above "Mais informações" */}
       {isMinimal && (
-        <section className="px-4 mt-6 mb-2">
+        <section className="lg:hidden px-4 mt-6 mb-2">
           <div className="max-w-[1800px] mx-auto">
             <div className="rounded-2xl overflow-hidden" style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}>
               {/* Mini hero banner */}
