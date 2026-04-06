@@ -134,7 +134,25 @@ export default function StoreLayoutMarketplace({
       )
     : filteredProducts;
 
-  const heroProducts = filteredProducts.slice(0, 5).filter((p: any) => p.image);
+  // Build hero products with city diversity
+  const heroProducts = (() => {
+    const withImage = filteredProducts.filter((p: any) => p.image);
+    const citySeen = new Set<string>();
+    const diverse: any[] = [];
+    // First pass: one per city
+    for (const p of withImage) {
+      if (p.city && !citySeen.has(p.city)) {
+        citySeen.add(p.city);
+        diverse.push(p);
+      }
+    }
+    // Fill remaining slots
+    for (const p of withImage) {
+      if (diverse.length >= 5) break;
+      if (!diverse.includes(p)) diverse.push(p);
+    }
+    return diverse.slice(0, 5);
+  })();
   const heroImages = heroProducts.map((p: any) => p.image);
   const currentHeroCity = heroProducts[heroIdx]?.city || filterCity || dbProfile?.city || "sua cidade";
   const activeCats = subcategories.filter(c => c.slug === "todos" || (categoryCounts[c.slug] || 0) > 0);
