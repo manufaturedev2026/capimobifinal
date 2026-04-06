@@ -1,0 +1,1 @@
+CREATE POLICY "Anyone can update push subscriptions" ON public.push_subscriptions FOR UPDATE TO public USING (true) WITH CHECK (true);
