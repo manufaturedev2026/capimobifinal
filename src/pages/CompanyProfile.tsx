@@ -2015,6 +2015,26 @@ export default function CompanyProfile() {
                       ? ({ imobiliaria: "Imobiliária", corretor: "Corretor(a) de Imóveis", proprietario: "Proprietário", construtora: "Construtora", loja_veiculos: "Loja de Veículos", autonomo: "Vendedor Autônomo", concessionaria: "Concessionária" } as Record<string, string>)[dbProfile.seller_category] || "Especialista em imóveis"
                       : "Especialista em imóveis"}
                   </p>
+                  <div className="flex gap-2 mt-3 flex-wrap">
+                    {company.whatsapp && (
+                      <button
+                        onClick={() => handleWhatsApp(heroProduct?.title || company.name, heroProduct?.id)}
+                        className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#25d366] text-white font-bold text-[11px] active:scale-95 transition-transform"
+                      >
+                        <MessageCircle size={13} /> WhatsApp
+                      </button>
+                    )}
+                    {(company as any).instagram && ["start", "vip", "premium", "essencial_empresa", "premium_empresa", "prime_empresa"].includes(sellerTier || "") && (
+                      <a
+                        href={`https://instagram.com/${(company as any).instagram.replace(/^@/, "")}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-gradient-to-r from-[#833AB4] via-[#E1306C] to-[#F77737] text-white font-bold text-[11px] active:scale-95 transition-transform"
+                      >
+                        <Instagram size={13} /> Instagram
+                      </a>
+                    )}
+                  </div>
                 </div>
               </div>
               {/* Credenciais */}
