@@ -196,8 +196,8 @@ export default function StoreLayoutMarketplace({
             transition={{ duration: 0.7, delay: 0.2 }}
             className="flex items-center gap-2 mb-2"
           >
-            <Sparkles size={16} style={{ color: storeTheme.primary }} />
-            <span className="text-xs font-bold uppercase tracking-widest" style={{ color: storeTheme.primary }}>
+            <Sparkles size={14} style={{ color: storeTheme.primary }} />
+            <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest" style={{ color: storeTheme.primary }}>
               Marketplace Imobiliário
             </span>
           </motion.div>
