@@ -236,6 +236,8 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
     })();
   }, [sellerId]);
 
+  useEffect(() => setSelectedPhotoIndex(0), [selectedItemId]);
+
   const selectedItem = items.find((i) => i.id === selectedItemId);
   const photos = selectedItem?.photos || [];
 
