@@ -96,7 +96,7 @@ export default function CapturePropertyPage() {
     return { primary, primaryDarker, primaryLighter, bg, card, text, textMuted, border, glowBg, btnTextColor };
   }, [theme, dark]);
 
-  const isLuxury = broker?.store_theme === "luxury";
+  
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
