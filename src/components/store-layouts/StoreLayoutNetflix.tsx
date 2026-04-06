@@ -535,6 +535,89 @@ export default function StoreLayoutNetflix({
         </div>
       </div>
 
+      {filteredProducts.length > 0 && (
+        <section id="products-grid" className="lg:hidden px-4 pb-10">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-bold text-base text-white">
+              {activeCategory === "todos"
+                ? "Todos os Anúncios"
+                : subcategories.find((c) => c.slug === activeCategory)?.name || "Anúncios"}
+              <span className="text-white/60 font-medium ml-2">({filteredProducts.length})</span>
+            </h3>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            {filteredProducts.map((product: any, index: number) => {
+              const productLink = `/imoveis/produto/${product.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`;
+
+              return (
+                <motion.div
+                  key={product.id}
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.03, duration: 0.35 }}
+                >
+                  <Link
+                    to={productLink}
+                    className="block overflow-hidden rounded-lg bg-[#181818] border border-white/10"
+                  >
+                    <div className="relative aspect-[4/3] overflow-hidden">
+                      {product.image ? (
+                        <img
+                          src={product.image}
+                          alt={product.title}
+                          className="w-full h-full object-cover"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-[#232323] flex items-center justify-center">
+                          <Image size={24} className="text-white/30" />
+                        </div>
+                      )}
+
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+
+                      {product.tag && (
+                        <span className="absolute top-2 left-2 px-2 py-0.5 rounded text-[9px] font-bold bg-white text-black">
+                          {getTagLabel(product.tag)}
+                        </span>
+                      )}
+
+                      {product.status === "vendido" && (
+                        <div className="absolute inset-0 bg-black/70 flex items-center justify-center">
+                          <span className="text-red-400 font-bold text-[10px] uppercase tracking-[0.2em]">Vendido</span>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="p-3">
+                      {product.price > 0 && (
+                        <p className="text-sm font-bold text-green-400 mb-1">
+                          R$ {product.price.toLocaleString("pt-BR")}
+                        </p>
+                      )}
+
+                      <h4 className="text-white text-[11px] font-semibold leading-tight line-clamp-2 mb-1.5">
+                        {product.title}
+                      </h4>
+
+                      {product.city && (
+                        <p className="text-[10px] text-white/55 flex items-center gap-1 line-clamp-1">
+                          <MapPin size={10} />
+                          {product.neighborhood
+                            ? `${product.neighborhood}, ${product.city}`
+                            : product.city}
+                        </p>
+                      )}
+                    </div>
+                  </Link>
+                </motion.div>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
       {filteredProducts.length === 0 && (
         <div className="text-center py-20 px-4">
           <Image size={48} className="mx-auto mb-3 text-gray-600" />
