@@ -164,12 +164,12 @@ async function generateMarketingImage(
     ctx.fillRect(0, 0, width, height);
   }
 
-  // Gradient overlay
+  // Gradient overlay using style
   const gradH = height * 0.55;
   const grad = ctx.createLinearGradient(0, height - gradH, 0, height);
-  grad.addColorStop(0, "rgba(0,0,0,0)");
-  grad.addColorStop(0.3, "rgba(0,0,0,0.5)");
-  grad.addColorStop(1, "rgba(0,0,0,0.85)");
+  grad.addColorStop(0, s.gradientStops[0]);
+  grad.addColorStop(0.3, s.gradientStops[1]);
+  grad.addColorStop(1, s.gradientStops[2]);
   ctx.fillStyle = grad;
   ctx.fillRect(0, height - gradH, width, gradH);
 
@@ -180,15 +180,35 @@ async function generateMarketingImage(
   ctx.fillStyle = topGrad;
   ctx.fillRect(0, 0, width, height * 0.15);
 
+  // Accent bar at bottom (for gold/moderno styles)
+  if (s.accentBar) {
+    ctx.fillStyle = s.accentBar;
+    ctx.fillRect(0, height - Math.round(4 * (width / 1080)), width, Math.round(4 * (width / 1080)));
+  }
+
   const pad = Math.round(width * 0.045);
   const isStory = format === "story";
   const scale = width / 1080;
+  const font = s.fontFamily;
+
+  // Seller logo (top-left)
+  if (sellerLogo) {
+    try {
+      const logoImg = await loadImage(sellerLogo);
+      const logoSize = Math.round(48 * scale);
+      ctx.save();
+      drawRoundedRect(ctx, pad, pad, logoSize, logoSize, Math.round(8 * scale));
+      ctx.clip();
+      ctx.drawImage(logoImg, pad, pad, logoSize, logoSize);
+      ctx.restore();
+    } catch { /* skip logo */ }
+  }
 
   // Price badge (top-right)
   if (item.price && item.price > 0) {
     const priceText = formatPrice(item.price);
     const priceFontSize = Math.round(28 * scale);
-    ctx.font = `900 ${priceFontSize}px 'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif`;
+    ctx.font = `900 ${priceFontSize}px ${font}`;
     const priceMetrics = ctx.measureText(priceText);
     const badgePad = Math.round(16 * scale);
     const badgeW = priceMetrics.width + badgePad * 2;
@@ -196,23 +216,23 @@ async function generateMarketingImage(
     const badgeX = width - pad - badgeW;
     const badgeY = pad;
 
-    ctx.fillStyle = "#2563eb";
+    ctx.fillStyle = s.priceBg;
     drawRoundedRect(ctx, badgeX, badgeY, badgeW, badgeH, Math.round(10 * scale));
     ctx.fill();
 
-    ctx.fillStyle = "#ffffff";
+    ctx.fillStyle = s.priceFg;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText(priceText, badgeX + badgeW / 2, badgeY + badgeH / 2);
   }
 
   // Bottom content area
-  let y = height - pad;
+  let y = height - pad - (s.accentBar ? Math.round(6 * scale) : 0);
 
   // Seller info
   const sellerFontSize = Math.round(16 * scale);
-  ctx.font = `600 ${sellerFontSize}px 'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif`;
-  ctx.fillStyle = "rgba(255,255,255,0.7)";
+  ctx.font = `600 ${sellerFontSize}px ${font}`;
+  ctx.fillStyle = s.sellerColor;
   ctx.textAlign = "left";
   ctx.textBaseline = "bottom";
 
@@ -230,8 +250,8 @@ async function generateMarketingImage(
 
   if (details.length > 0) {
     const detailFontSize = Math.round(18 * scale);
-    ctx.font = `500 ${detailFontSize}px 'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif`;
-    ctx.fillStyle = "rgba(255,255,255,0.8)";
+    ctx.font = `500 ${detailFontSize}px ${font}`;
+    ctx.fillStyle = s.detailColor;
     ctx.fillText(details.join("   "), pad, y);
     y -= detailFontSize + Math.round(8 * scale);
   }
@@ -240,16 +260,16 @@ async function generateMarketingImage(
   const location = item.neighborhood ? `📍 ${item.neighborhood}, ${item.city}` : item.city ? `📍 ${item.city}` : "";
   if (location) {
     const locFontSize = Math.round(20 * scale);
-    ctx.font = `600 ${locFontSize}px 'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif`;
-    ctx.fillStyle = "rgba(255,255,255,0.85)";
+    ctx.font = `600 ${locFontSize}px ${font}`;
+    ctx.fillStyle = s.locationColor;
     ctx.fillText(location, pad, y);
     y -= locFontSize + Math.round(10 * scale);
   }
 
   // Title
   const titleFontSize = Math.round((isStory ? 36 : 32) * scale);
-  ctx.font = `800 ${titleFontSize}px 'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif`;
-  ctx.fillStyle = "#ffffff";
+  ctx.font = `800 ${titleFontSize}px ${font}`;
+  ctx.fillStyle = s.titleColor;
   const maxTitleWidth = width - pad * 2;
   const words = item.title.split(" ");
   const titleLines: string[] = [];
