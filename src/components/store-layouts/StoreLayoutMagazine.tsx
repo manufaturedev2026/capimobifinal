@@ -231,6 +231,8 @@ export default function StoreLayoutMagazine({
   handleWhatsApp, getTagStyle, getTagLabel, formatPrice, dbProfile,
 }: StoreLayoutProps) {
 
+  const cardProps = { corretorSlug, storeTheme, getTagStyle, getTagLabel };
+
   // Categories with items (exclude "todos" for visual cards, keep it as a reset)
   const visualCategories = subcategories.filter(c => c.slug !== "todos" && (categoryCounts[c.slug] || 0) > 0);
 
