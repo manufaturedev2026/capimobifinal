@@ -1383,16 +1383,29 @@ export default function CompanyProfile() {
 
               const layout = (dbProfile as any)?.store_layout || "showcase";
 
-              switch (layout) {
-                case "netflix": return <StoreLayoutNetflix {...layoutProps} />;
-                case "minimal": return <StoreLayoutMinimal {...layoutProps} />;
-                case "magazine": return <StoreLayoutMagazine {...layoutProps} />;
-                case "gallery": return <StoreLayoutGallery {...layoutProps} />;
-                case "elegant": return <StoreLayoutElegant {...layoutProps} />;
-                case "showcase": return <StoreLayoutShowcase {...layoutProps} />;
-                case "marketplace": return <StoreLayoutMarketplace {...layoutProps} />;
-                default: return <StoreLayoutShowcase {...layoutProps} />;
-              }
+              const sellerStoriesFiltered = sellerStories.filter(s => s.sellerId === dbProfile?.id);
+
+              return (
+                <>
+                  {sellerStoriesFiltered.length > 0 && (
+                    <div className="mb-2">
+                      <StoriesBar />
+                    </div>
+                  )}
+                  {(() => {
+                    switch (layout) {
+                      case "netflix": return <StoreLayoutNetflix {...layoutProps} />;
+                      case "minimal": return <StoreLayoutMinimal {...layoutProps} />;
+                      case "magazine": return <StoreLayoutMagazine {...layoutProps} />;
+                      case "gallery": return <StoreLayoutGallery {...layoutProps} />;
+                      case "elegant": return <StoreLayoutElegant {...layoutProps} />;
+                      case "showcase": return <StoreLayoutShowcase {...layoutProps} />;
+                      case "marketplace": return <StoreLayoutMarketplace {...layoutProps} />;
+                      default: return <StoreLayoutShowcase {...layoutProps} />;
+                    }
+                  })()}
+                </>
+              );
             })()}
 
             {/* Desktop: keep original grid */}
