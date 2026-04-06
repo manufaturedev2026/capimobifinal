@@ -445,11 +445,12 @@ export default function CompanyProfile() {
       || (navigator as any).standalone === true;
 
     const openUrl = (url: string) => {
+      // Avoid popup blocking after lead capture or async flows
       if (isStandalone) {
         window.location.href = url;
-      } else {
-        window.open(url, "_blank");
+        return;
       }
+      window.location.assign(url);
     };
 
     if (teamMember && teamMember.phone) {

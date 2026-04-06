@@ -62,16 +62,10 @@ function sendToWhatsApp(phone: string, name: string, title: string, link: string
   const isStandalone = window.matchMedia("(display-mode: standalone)").matches
     || (navigator as any).standalone === true;
   if (isStandalone) {
-    const a = document.createElement("a");
-    a.href = url;
-    a.target = "_blank";
-    a.rel = "noopener noreferrer";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-  } else {
-    window.open(url, "_blank");
+    window.location.href = url;
+    return;
   }
+  window.location.assign(url);
 }
 
 export function WhatsAppTeamPickerProvider({ children }: { children: React.ReactNode }) {
