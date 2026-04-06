@@ -41,10 +41,12 @@ function NetflixRow({ title, items, corretorSlug, getTagLabel, accent }: {
 
   return (
     <div className="mb-6 md:mb-8 group/row relative">
-      <h3 className="font-bold text-sm md:text-base text-white mb-2 md:mb-3 px-4 md:px-12 flex items-center gap-2 hover:text-[#e50914] transition-colors cursor-default">
-        {title}
-        <ChevronRight size={14} className="opacity-0 group-hover/row:opacity-100 transition-opacity text-[#e50914]" />
-      </h3>
+      {title && (
+        <h3 className="font-bold text-sm md:text-base text-white mb-2 md:mb-3 px-4 md:px-12 flex items-center gap-2 hover:text-[#e50914] transition-colors cursor-default">
+          {title}
+          <ChevronRight size={14} className="opacity-0 group-hover/row:opacity-100 transition-opacity text-[#e50914]" />
+        </h3>
+      )}
 
       <div className="relative">
         {showLeft && (
@@ -452,11 +454,44 @@ export default function StoreLayoutNetflix({
         </div>
       )}
 
-      {/* ══════ CONTENT ROWS BY CATEGORY ══════ */}
+      {/* ══════ NETFLIX CATEGORY NAV + CONTENT ══════ */}
       <div className="pb-8 pt-4">
-        {rows.map((row) => (
-          <NetflixRow key={row.name} title={row.name} items={row.items} corretorSlug={corretorSlug} getTagLabel={getTagLabel} accent={accent} />
-        ))}
+        {/* Category scroll bar */}
+        <div className="relative mb-6">
+          <div className="flex gap-1 overflow-x-auto scrollbar-hide scroll-smooth px-4 md:px-12 py-2">
+            <button
+              onClick={() => setActiveCategory("todos")}
+              className="flex-shrink-0 px-5 py-2 rounded-sm text-sm font-semibold transition-all duration-300 whitespace-nowrap"
+              style={{
+                background: activeCategory === "todos" ? "#e50914" : "transparent",
+                color: activeCategory === "todos" ? "#fff" : "rgba(255,255,255,0.65)",
+                borderBottom: activeCategory === "todos" ? "2px solid #e50914" : "2px solid transparent",
+              }}
+            >
+              Todos
+            </button>
+            {subcategories
+              .filter(c => c.slug !== "todos" && (categoryCounts[c.slug] || 0) > 0)
+              .map(c => (
+                <button
+                  key={c.slug}
+                  onClick={() => setActiveCategory(c.slug)}
+                  className="flex-shrink-0 px-5 py-2 rounded-sm text-sm font-semibold transition-all duration-300 whitespace-nowrap hover:text-white"
+                  style={{
+                    background: activeCategory === c.slug ? "#e50914" : "transparent",
+                    color: activeCategory === c.slug ? "#fff" : "rgba(255,255,255,0.65)",
+                    borderBottom: activeCategory === c.slug ? "2px solid #e50914" : "2px solid transparent",
+                  }}
+                >
+                  {c.name}
+                </button>
+              ))}
+          </div>
+          <div className="absolute bottom-0 left-4 right-4 md:left-12 md:right-12 h-px bg-white/10" />
+        </div>
+
+        {/* Items row */}
+        <NetflixRow title="" items={filteredProducts} corretorSlug={corretorSlug} getTagLabel={getTagLabel} accent={accent} />
       </div>
 
       {filteredProducts.length === 0 && (
