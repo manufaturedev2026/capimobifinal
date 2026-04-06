@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Image, X, ChevronLeft, ChevronRight, Eye, Share2, Copy, CheckCircle2, Sparkles, Download } from "lucide-react";
+import { Image, X, ChevronLeft, ChevronRight, Eye, Share2, Copy, CheckCircle2, Sparkles, Download, Palette } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 
@@ -28,11 +28,70 @@ interface Props {
 }
 
 type ImageFormat = "card" | "banner" | "story";
+type ImageStyle = "classico" | "gold" | "moderno";
 
 const FORMAT_CONFIG: Record<ImageFormat, { label: string; width: number; height: number; description: string }> = {
   card: { label: "Post (1:1)", width: 1080, height: 1080, description: "Instagram / Facebook" },
   banner: { label: "Banner (16:9)", width: 1920, height: 1080, description: "Facebook Ads / WhatsApp" },
   story: { label: "Story (9:16)", width: 1080, height: 1920, description: "Instagram Stories / Status" },
+};
+
+const STYLE_CONFIG: Record<ImageStyle, {
+  label: string;
+  description: string;
+  priceBg: string;
+  priceFg: string;
+  gradientStops: [string, string, string];
+  titleColor: string;
+  detailColor: string;
+  sellerColor: string;
+  locationColor: string;
+  accentBar: string | null;
+  fontFamily: string;
+  preview: { bg: string; accent: string; text: string };
+}> = {
+  classico: {
+    label: "Clássico",
+    description: "Azul profissional",
+    priceBg: "#2563eb",
+    priceFg: "#ffffff",
+    gradientStops: ["rgba(0,0,0,0)", "rgba(0,0,0,0.5)", "rgba(0,0,0,0.85)"],
+    titleColor: "#ffffff",
+    detailColor: "rgba(255,255,255,0.8)",
+    sellerColor: "rgba(255,255,255,0.7)",
+    locationColor: "rgba(255,255,255,0.85)",
+    accentBar: null,
+    fontFamily: "'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif",
+    preview: { bg: "bg-blue-600", accent: "border-blue-500", text: "Azul" },
+  },
+  gold: {
+    label: "Gold Luxo",
+    description: "Dourado premium",
+    priceBg: "#b8860b",
+    priceFg: "#ffffff",
+    gradientStops: ["rgba(0,0,0,0)", "rgba(20,15,5,0.6)", "rgba(15,10,0,0.92)"],
+    titleColor: "#ffd700",
+    detailColor: "rgba(255,215,0,0.7)",
+    sellerColor: "rgba(255,215,0,0.6)",
+    locationColor: "rgba(255,215,0,0.8)",
+    accentBar: "#b8860b",
+    fontFamily: "'Georgia', 'Times New Roman', serif",
+    preview: { bg: "bg-yellow-700", accent: "border-yellow-600", text: "Dourado" },
+  },
+  moderno: {
+    label: "Moderno Escuro",
+    description: "Escuro sofisticado",
+    priceBg: "#10b981",
+    priceFg: "#ffffff",
+    gradientStops: ["rgba(0,0,0,0)", "rgba(0,0,0,0.65)", "rgba(0,0,0,0.95)"],
+    titleColor: "#f0f0f0",
+    detailColor: "rgba(16,185,129,0.8)",
+    sellerColor: "rgba(255,255,255,0.5)",
+    locationColor: "rgba(255,255,255,0.75)",
+    accentBar: "#10b981",
+    fontFamily: "'Trebuchet MS', 'Helvetica Neue', Arial, sans-serif",
+    preview: { bg: "bg-emerald-600", accent: "border-emerald-500", text: "Verde" },
+  },
 };
 
 function formatPrice(price: number): string {
@@ -69,9 +128,12 @@ async function generateMarketingImage(
   sellerName: string,
   sellerPhone: string | null,
   sellerCreci: string | null,
+  sellerLogo: string | null,
+  style: ImageStyle = "classico",
   photoUrl?: string,
 ): Promise<string> {
   const { width, height } = FORMAT_CONFIG[format];
+  const s = STYLE_CONFIG[style];
   const canvas = document.createElement("canvas");
   canvas.width = width;
   canvas.height = height;
@@ -102,12 +164,12 @@ async function generateMarketingImage(
     ctx.fillRect(0, 0, width, height);
   }
 
-  // Gradient overlay
+  // Gradient overlay using style
   const gradH = height * 0.55;
   const grad = ctx.createLinearGradient(0, height - gradH, 0, height);
-  grad.addColorStop(0, "rgba(0,0,0,0)");
-  grad.addColorStop(0.3, "rgba(0,0,0,0.5)");
-  grad.addColorStop(1, "rgba(0,0,0,0.85)");
+  grad.addColorStop(0, s.gradientStops[0]);
+  grad.addColorStop(0.3, s.gradientStops[1]);
+  grad.addColorStop(1, s.gradientStops[2]);
   ctx.fillStyle = grad;
   ctx.fillRect(0, height - gradH, width, gradH);
 
@@ -118,15 +180,35 @@ async function generateMarketingImage(
   ctx.fillStyle = topGrad;
   ctx.fillRect(0, 0, width, height * 0.15);
 
+  // Accent bar at bottom (for gold/moderno styles)
+  if (s.accentBar) {
+    ctx.fillStyle = s.accentBar;
+    ctx.fillRect(0, height - Math.round(4 * (width / 1080)), width, Math.round(4 * (width / 1080)));
+  }
+
   const pad = Math.round(width * 0.045);
   const isStory = format === "story";
   const scale = width / 1080;
+  const font = s.fontFamily;
+
+  // Seller logo (top-left)
+  if (sellerLogo) {
+    try {
+      const logoImg = await loadImage(sellerLogo);
+      const logoSize = Math.round(48 * scale);
+      ctx.save();
+      drawRoundedRect(ctx, pad, pad, logoSize, logoSize, Math.round(8 * scale));
+      ctx.clip();
+      ctx.drawImage(logoImg, pad, pad, logoSize, logoSize);
+      ctx.restore();
+    } catch { /* skip logo */ }
+  }
 
   // Price badge (top-right)
   if (item.price && item.price > 0) {
     const priceText = formatPrice(item.price);
     const priceFontSize = Math.round(28 * scale);
-    ctx.font = `900 ${priceFontSize}px 'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif`;
+    ctx.font = `900 ${priceFontSize}px ${font}`;
     const priceMetrics = ctx.measureText(priceText);
     const badgePad = Math.round(16 * scale);
     const badgeW = priceMetrics.width + badgePad * 2;
@@ -134,23 +216,23 @@ async function generateMarketingImage(
     const badgeX = width - pad - badgeW;
     const badgeY = pad;
 
-    ctx.fillStyle = "#2563eb";
+    ctx.fillStyle = s.priceBg;
     drawRoundedRect(ctx, badgeX, badgeY, badgeW, badgeH, Math.round(10 * scale));
     ctx.fill();
 
-    ctx.fillStyle = "#ffffff";
+    ctx.fillStyle = s.priceFg;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText(priceText, badgeX + badgeW / 2, badgeY + badgeH / 2);
   }
 
   // Bottom content area
-  let y = height - pad;
+  let y = height - pad - (s.accentBar ? Math.round(6 * scale) : 0);
 
   // Seller info
   const sellerFontSize = Math.round(16 * scale);
-  ctx.font = `600 ${sellerFontSize}px 'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif`;
-  ctx.fillStyle = "rgba(255,255,255,0.7)";
+  ctx.font = `600 ${sellerFontSize}px ${font}`;
+  ctx.fillStyle = s.sellerColor;
   ctx.textAlign = "left";
   ctx.textBaseline = "bottom";
 
@@ -168,8 +250,8 @@ async function generateMarketingImage(
 
   if (details.length > 0) {
     const detailFontSize = Math.round(18 * scale);
-    ctx.font = `500 ${detailFontSize}px 'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif`;
-    ctx.fillStyle = "rgba(255,255,255,0.8)";
+    ctx.font = `500 ${detailFontSize}px ${font}`;
+    ctx.fillStyle = s.detailColor;
     ctx.fillText(details.join("   "), pad, y);
     y -= detailFontSize + Math.round(8 * scale);
   }
@@ -178,16 +260,16 @@ async function generateMarketingImage(
   const location = item.neighborhood ? `📍 ${item.neighborhood}, ${item.city}` : item.city ? `📍 ${item.city}` : "";
   if (location) {
     const locFontSize = Math.round(20 * scale);
-    ctx.font = `600 ${locFontSize}px 'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif`;
-    ctx.fillStyle = "rgba(255,255,255,0.85)";
+    ctx.font = `600 ${locFontSize}px ${font}`;
+    ctx.fillStyle = s.locationColor;
     ctx.fillText(location, pad, y);
     y -= locFontSize + Math.round(10 * scale);
   }
 
   // Title
   const titleFontSize = Math.round((isStory ? 36 : 32) * scale);
-  ctx.font = `800 ${titleFontSize}px 'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif`;
-  ctx.fillStyle = "#ffffff";
+  ctx.font = `800 ${titleFontSize}px ${font}`;
+  ctx.fillStyle = s.titleColor;
   const maxTitleWidth = width - pad * 2;
   const words = item.title.split(" ");
   const titleLines: string[] = [];
@@ -222,6 +304,7 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
   const [copied, setCopied] = useState(false);
   const [generating, setGenerating] = useState<ImageFormat | null>(null);
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
+  const [selectedStyle, setSelectedStyle] = useState<ImageStyle>("classico");
 
   useEffect(() => {
     (async () => {
@@ -262,7 +345,7 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
     setGenerating(format);
     try {
       const chosenPhoto = photos[selectedPhotoIndex] || photos[0];
-      const dataUrl = await generateMarketingImage(selectedItem, format, sellerName, sellerPhone, sellerCreci, chosenPhoto);
+      const dataUrl = await generateMarketingImage(selectedItem, format, sellerName, sellerPhone, sellerCreci, sellerLogo, selectedStyle, chosenPhoto);
       const link = document.createElement("a");
       link.download = `${selectedItem.title.replace(/[^a-zA-Z0-9À-ÿ ]/g, "").trim().replace(/\s+/g, "-")}_${format}.jpg`;
       link.href = dataUrl;
@@ -274,7 +357,7 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
     } finally {
       setGenerating(null);
     }
-  }, [selectedItem, sellerName, sellerPhone, sellerCreci, toast, photos, selectedPhotoIndex]);
+  }, [selectedItem, sellerName, sellerPhone, sellerCreci, sellerLogo, selectedStyle, toast, photos, selectedPhotoIndex]);
 
   if (loading) {
     return (
@@ -358,57 +441,68 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
         </div>
       </div>
 
-      {/* Hero Banner — preview da foto selecionada */}
-      {photos.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="relative rounded-2xl overflow-hidden cursor-pointer group"
-          onClick={() => setLightboxIndex(selectedPhotoIndex)}
-        >
-          <AnimatePresence mode="wait">
-            <motion.img
-              key={selectedPhotoIndex}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              src={photos[selectedPhotoIndex]}
-              alt={selectedItem?.title}
-              className="w-full aspect-[16/9] sm:aspect-[21/9] object-cover group-hover:scale-[1.02] transition-transform duration-700"
-            />
-          </AnimatePresence>
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-          <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6">
-            <h2 className="text-white font-extrabold text-lg sm:text-2xl leading-tight line-clamp-2">{selectedItem?.title}</h2>
-            <div className="flex items-center gap-3 mt-2 flex-wrap">
-              {selectedItem?.price && selectedItem.price > 0 && (
-                <span className="text-white font-black text-base sm:text-xl">R$ {selectedItem.price.toLocaleString("pt-BR")}</span>
+      {/* Hero Banner — preview da foto selecionada com estilo */}
+      {photos.length > 0 && (() => {
+        const stylePreview = STYLE_CONFIG[selectedStyle];
+        const titleStyle = { color: stylePreview.titleColor, fontFamily: selectedStyle === "gold" ? "Georgia, serif" : selectedStyle === "moderno" ? "'Trebuchet MS', sans-serif" : "inherit" };
+        return (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="relative rounded-2xl overflow-hidden cursor-pointer group"
+            onClick={() => setLightboxIndex(selectedPhotoIndex)}
+          >
+            <AnimatePresence mode="wait">
+              <motion.img
+                key={`${selectedPhotoIndex}-${selectedStyle}`}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                src={photos[selectedPhotoIndex]}
+                alt={selectedItem?.title}
+                className="w-full aspect-[16/9] sm:aspect-[21/9] object-cover group-hover:scale-[1.02] transition-transform duration-700"
+              />
+            </AnimatePresence>
+            <div className="absolute inset-0" style={{
+              background: `linear-gradient(to top, ${stylePreview.gradientStops[2]}, ${stylePreview.gradientStops[1]} 50%, ${stylePreview.gradientStops[0]})`
+            }} />
+            {stylePreview.accentBar && (
+              <div className="absolute bottom-0 left-0 right-0 h-1" style={{ backgroundColor: stylePreview.accentBar }} />
+            )}
+            <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6">
+              {sellerLogo && (
+                <img src={sellerLogo} alt="" className="w-8 h-8 rounded-lg object-cover mb-2 border border-white/20" />
               )}
-              {selectedItem?.city && (
-                <span className="text-white/70 text-xs">📍 {selectedItem.neighborhood ? `${selectedItem.neighborhood}, ${selectedItem.city}` : selectedItem.city}</span>
-              )}
+              <h2 className="font-extrabold text-lg sm:text-2xl leading-tight line-clamp-2" style={titleStyle}>{selectedItem?.title}</h2>
+              <div className="flex items-center gap-3 mt-2 flex-wrap">
+                {selectedItem?.price && selectedItem.price > 0 && (
+                  <span className="font-black text-base sm:text-xl" style={{ color: stylePreview.titleColor }}>R$ {selectedItem.price.toLocaleString("pt-BR")}</span>
+                )}
+                {selectedItem?.city && (
+                  <span className="text-xs" style={{ color: stylePreview.locationColor }}>📍 {selectedItem.neighborhood ? `${selectedItem.neighborhood}, ${selectedItem.city}` : selectedItem.city}</span>
+                )}
+              </div>
+              <div className="flex items-center gap-3 mt-1.5 text-[11px]" style={{ color: stylePreview.detailColor }}>
+                {selectedItem?.bedrooms && <span>🛏 {selectedItem.bedrooms} quartos</span>}
+                {selectedItem?.bathrooms && <span>🚿 {selectedItem.bathrooms} banheiros</span>}
+                {selectedItem?.area && <span>📐 {selectedItem.area}m²</span>}
+              </div>
+              <p className="mt-1.5 text-[10px]" style={{ color: stylePreview.sellerColor }}>
+                {sellerName}{sellerCreci ? ` • CRECI ${sellerCreci}` : ""}{sellerPhone ? ` • ${sellerPhone}` : ""}
+              </p>
             </div>
-            <div className="flex items-center gap-3 mt-1.5 text-white/60 text-[11px]">
-              {selectedItem?.bedrooms && <span>🛏 {selectedItem.bedrooms} quartos</span>}
-              {selectedItem?.bathrooms && <span>🚿 {selectedItem.bathrooms} banheiros</span>}
-              {selectedItem?.area && <span>📐 {selectedItem.area}m²</span>}
+            {selectedItem?.price && selectedItem.price > 0 && (
+              <div className="absolute top-3 right-3 text-xs font-black px-3 py-1.5 rounded-lg" style={{ backgroundColor: stylePreview.priceBg, color: stylePreview.priceFg }}>
+                {formatPrice(selectedItem.price)}
+              </div>
+            )}
+            <div className="absolute top-3 left-3 bg-black/50 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded-lg flex items-center gap-1">
+              <Eye size={12} /> Preview — {stylePreview.label}
             </div>
-            {/* Seller branding preview */}
-            <p className="mt-1.5 text-white/50 text-[10px]">
-              {sellerName}{sellerCreci ? ` • CRECI ${sellerCreci}` : ""}{sellerPhone ? ` • ${sellerPhone}` : ""}
-            </p>
-          </div>
-          {selectedItem?.price && selectedItem.price > 0 && (
-            <div className="absolute top-3 left-3 bg-primary text-primary-foreground text-xs font-black px-3 py-1.5 rounded-lg">
-              {formatPrice(selectedItem.price)}
-            </div>
-          )}
-          <div className="absolute top-3 right-3 bg-black/50 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded-lg flex items-center gap-1">
-            <Eye size={12} /> Preview do anúncio
-          </div>
-        </motion.div>
-      )}
+          </motion.div>
+        );
+      })()}
 
       {/* Download Marketing Images */}
       {photos.length > 0 && selectedItem && (
@@ -447,6 +541,37 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
               </div>
             </div>
           )}
+
+          {/* Style selector */}
+          <div className="space-y-1.5">
+            <p className="text-[11px] font-semibold text-muted-foreground flex items-center gap-1">
+              <Palette size={12} /> Estilo do anúncio:
+            </p>
+            <div className="flex gap-2">
+              {(Object.keys(STYLE_CONFIG) as ImageStyle[]).map((key) => {
+                const cfg = STYLE_CONFIG[key];
+                const isActive = selectedStyle === key;
+                return (
+                  <button
+                    key={key}
+                    onClick={() => setSelectedStyle(key)}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-xl border-2 transition-all text-left ${
+                      isActive
+                        ? "border-primary bg-primary/10"
+                        : "border-border hover:border-primary/40"
+                    }`}
+                  >
+                    <div className={`w-4 h-4 rounded-full ${cfg.preview.bg}`} />
+                    <div>
+                      <p className="text-[11px] font-bold text-foreground">{cfg.label}</p>
+                      <p className="text-[9px] text-muted-foreground">{cfg.description}</p>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             {(Object.keys(FORMAT_CONFIG) as ImageFormat[]).map((fmt) => {
               const cfg = FORMAT_CONFIG[fmt];
