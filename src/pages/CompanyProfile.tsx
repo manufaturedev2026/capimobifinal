@@ -1960,12 +1960,6 @@ export default function CompanyProfile() {
                   </div>
                 </div>
               )}
-              {/* Bio */}
-              {dbProfile?.bio && (
-                <p className="text-xs leading-relaxed mt-3" style={{ color: storeTheme.textMuted }}>
-                  {dbProfile.bio}
-                </p>
-              )}
               {/* Stats bar inline for Netflix */}
               {isNetflix && (
                 <div className="flex items-center gap-4 flex-wrap mt-4 pt-3" style={{ borderTop: `1px solid ${storeTheme.border}` }}>
