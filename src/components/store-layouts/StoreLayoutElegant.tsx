@@ -82,7 +82,8 @@ export default function StoreLayoutElegant({
   return (
     <div className="space-y-6">
 
-
+      {/* Stories Bar */}
+      {storiesBar && <div className="mb-2">{storiesBar}</div>}
 
       {/* ─── Search & Filters ─── */}
       <div className="space-y-3">

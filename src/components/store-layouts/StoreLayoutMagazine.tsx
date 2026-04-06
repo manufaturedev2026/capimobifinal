@@ -238,6 +238,8 @@ export default function StoreLayoutMagazine({
 
   return (
     <div className="space-y-6">
+      {/* Stories Bar */}
+      {storiesBar && <div className="mb-2">{storiesBar}</div>}
       {/* ─── Visual Category Cards ─── */}
       <div>
         <div className="flex items-center justify-between mb-3">

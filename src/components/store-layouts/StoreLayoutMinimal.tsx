@@ -277,6 +277,9 @@ export default function StoreLayoutMinimal({
         </div>
       </motion.div>
 
+      {/* Stories Bar */}
+      {storiesBar && <div className="max-w-5xl mx-auto mb-6">{storiesBar}</div>}
+
       {/* ═══ CATEGORY TABS — Elegant underline style ═══ */}
       <motion.div
         initial={{ opacity: 0 }}
