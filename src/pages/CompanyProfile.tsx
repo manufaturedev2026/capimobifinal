@@ -1820,9 +1820,9 @@ export default function CompanyProfile() {
                 </div>
               )}
               {/* Bio */}
-              {company.bio && (
+              {dbProfile?.bio && (
                 <p className="text-xs leading-relaxed mt-3" style={{ color: storeTheme.textMuted }}>
-                  {company.bio}
+                  {dbProfile.bio}
                 </p>
               )}
             </div>
