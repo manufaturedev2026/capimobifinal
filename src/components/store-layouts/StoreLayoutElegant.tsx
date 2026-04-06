@@ -14,7 +14,7 @@ import type { StoreLayoutProps } from "./types";
 export default function StoreLayoutElegant({
   filteredProducts, products, subcategories, activeCategory, setActiveCategory,
   categoryCounts, categoryCardImages, storeTheme, corretorSlug, getTagStyle, getTagLabel,
-  formatPrice, dbProfile,
+  formatPrice, dbProfile, storiesBar,
 }: StoreLayoutProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [minPrice, setMinPrice] = useState("");
@@ -82,7 +82,8 @@ export default function StoreLayoutElegant({
   return (
     <div className="space-y-6">
 
-
+      {/* Stories Bar */}
+      {storiesBar && <div className="mb-2">{storiesBar}</div>}
 
       {/* ─── Search & Filters ─── */}
       <div className="space-y-3">

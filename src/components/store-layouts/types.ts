@@ -21,6 +21,7 @@ export interface StoreLayoutProps {
   availableCities?: string[];
   onCinemaMode?: () => void;
   onShareLink?: () => void;
+  storiesBar?: React.ReactNode;
 }
 
 export const STORE_LAYOUTS = [

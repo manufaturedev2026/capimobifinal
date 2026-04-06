@@ -109,7 +109,7 @@ function getDarkMid(primary: string): string {
 export default function StoreLayoutMarketplace({
   filteredProducts, subcategories, activeCategory, setActiveCategory,
   categoryCounts, storeTheme, corretorSlug, dbProfile, getTagStyle, getTagLabel, handleWhatsApp,
-  filterCity, setFilterCity, availableCities,
+  filterCity, setFilterCity, availableCities, storiesBar,
 }: StoreLayoutProps) {
   const { user } = useAuth();
   const isOwner = !!(user && dbProfile && user.id === dbProfile.user_id);
@@ -416,6 +416,13 @@ export default function StoreLayoutMarketplace({
           </button>
         </div>
       </motion.div>
+
+      {/* Stories Bar */}
+      {storiesBar && (
+        <div className="max-w-6xl mx-auto px-4 mt-4">
+          {storiesBar}
+        </div>
+      )}
 
       <div className="max-w-6xl mx-auto px-4">
 

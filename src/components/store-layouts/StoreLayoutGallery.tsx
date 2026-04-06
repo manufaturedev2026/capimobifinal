@@ -8,7 +8,7 @@ import type { StoreLayoutProps } from "./types";
  */
 export default function StoreLayoutGallery({
   filteredProducts, subcategories, activeCategory, setActiveCategory,
-  categoryCounts, storeTheme, corretorSlug, getTagStyle, getTagLabel,
+  categoryCounts, storeTheme, corretorSlug, getTagStyle, getTagLabel, storiesBar,
 }: StoreLayoutProps) {
   // Alternate tall/short cards for masonry effect
   const getAspect = (i: number) => {
@@ -18,6 +18,8 @@ export default function StoreLayoutGallery({
 
   return (
     <div>
+      {/* Stories Bar */}
+      {storiesBar && <div className="mb-4">{storiesBar}</div>}
       {/* Minimal pill filters */}
       <div className="lg:hidden mb-5 flex gap-2 overflow-x-auto scrollbar-hide -mx-4 px-4 pb-1">
         {subcategories.filter(c => c.slug === "todos" || (categoryCounts[c.slug] || 0) > 0).map((cat) => {

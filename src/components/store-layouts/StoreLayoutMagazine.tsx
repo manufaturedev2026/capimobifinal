@@ -228,7 +228,7 @@ function MediumCard({ product, corretorSlug, storeTheme, getTagStyle, getTagLabe
 export default function StoreLayoutMagazine({
   filteredProducts, products, subcategories, activeCategory, setActiveCategory,
   categoryCounts, categoryCardImages, storeTheme, corretorSlug,
-  handleWhatsApp, getTagStyle, getTagLabel, formatPrice, dbProfile,
+  handleWhatsApp, getTagStyle, getTagLabel, formatPrice, dbProfile, storiesBar,
 }: StoreLayoutProps) {
 
   const cardProps = { corretorSlug, storeTheme, getTagStyle, getTagLabel };
@@ -238,6 +238,8 @@ export default function StoreLayoutMagazine({
 
   return (
     <div className="space-y-6">
+      {/* Stories Bar */}
+      {storiesBar && <div className="mb-2">{storiesBar}</div>}
       {/* ─── Visual Category Cards ─── */}
       <div>
         <div className="flex items-center justify-between mb-3">

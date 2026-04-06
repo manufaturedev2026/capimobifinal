@@ -187,7 +187,7 @@ export default function StoreLayoutNetflix({
   filteredProducts, products, subcategories, activeCategory, setActiveCategory,
   categoryCounts, categoryCardImages, storeTheme, corretorSlug,
   isDbProfile, dbProfile, handleWhatsApp, getTagStyle, getTagLabel,
-  onCinemaMode, onShareLink, filterCity, setFilterCity, availableCities,
+  onCinemaMode, onShareLink, filterCity, setFilterCity, availableCities, storiesBar,
 }: StoreLayoutProps) {
   const { user } = useAuth();
   const [billboardIdx, setBillboardIdx] = useState(0);
@@ -419,6 +419,9 @@ export default function StoreLayoutNetflix({
           </div>
         </div>
       )}
+
+      {/* Stories Bar */}
+      {storiesBar && <div className="px-4 md:px-12 pt-4">{storiesBar}</div>}
 
       {/* ══════ NETFLIX CATEGORY CARDS + CONTENT ══════ */}
       <div className="pb-8 pt-6">
