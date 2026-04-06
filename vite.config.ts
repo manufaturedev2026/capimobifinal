@@ -19,7 +19,6 @@ export default defineConfig(({ mode }) => ({
       registerType: "autoUpdate",
       includeAssets: ["favicon.png", "robots.txt", "pwa-icon-192.png", "pwa-icon-512.png"],
       workbox: {
-        importScripts: ["push-sw.js"],
         navigateFallbackDenylist: [/^\/~oauth/, /^\/sitemap\.xml/],
         globPatterns: ["**/*.{js,css,html,ico,png,svg,webp,jpg,jpeg}"],
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
