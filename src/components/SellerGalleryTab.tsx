@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Image, X, ChevronLeft, ChevronRight, Eye, Share2, Copy, CheckCircle2, Sparkles } from "lucide-react";
+import { Image, X, ChevronLeft, ChevronRight, Eye, Share2, Copy, CheckCircle2, Sparkles, Download } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 
@@ -21,15 +21,204 @@ interface Props {
   userId: string;
   sellerId: string;
   sellerSlug: string | null;
+  sellerName: string;
+  sellerPhone: string | null;
+  sellerLogo: string | null;
+  sellerCreci: string | null;
 }
 
-export default function SellerGalleryTab({ userId, sellerId, sellerSlug }: Props) {
+type ImageFormat = "card" | "banner" | "story";
+
+const FORMAT_CONFIG: Record<ImageFormat, { label: string; width: number; height: number; description: string }> = {
+  card: { label: "Post (1:1)", width: 1080, height: 1080, description: "Instagram / Facebook" },
+  banner: { label: "Banner (16:9)", width: 1920, height: 1080, description: "Facebook Ads / WhatsApp" },
+  story: { label: "Story (9:16)", width: 1080, height: 1920, description: "Instagram Stories / Status" },
+};
+
+function formatPrice(price: number): string {
+  return `R$ ${price.toLocaleString("pt-BR")}`;
+}
+
+async function loadImage(src: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const img = new window.Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
+  });
+}
+
+function drawRoundedRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+async function generateMarketingImage(
+  item: GalleryItem,
+  format: ImageFormat,
+  sellerName: string,
+  sellerPhone: string | null,
+  sellerCreci: string | null,
+): Promise<string> {
+  const { width, height } = FORMAT_CONFIG[format];
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext("2d")!;
+
+  // Draw background photo
+  if (item.photos?.[0]) {
+    try {
+      const img = await loadImage(item.photos[0]);
+      const imgRatio = img.width / img.height;
+      const canvasRatio = width / height;
+      let sx = 0, sy = 0, sw = img.width, sh = img.height;
+      if (imgRatio > canvasRatio) {
+        sw = img.height * canvasRatio;
+        sx = (img.width - sw) / 2;
+      } else {
+        sh = img.width / canvasRatio;
+        sy = (img.height - sh) / 2;
+      }
+      ctx.drawImage(img, sx, sy, sw, sh, 0, 0, width, height);
+    } catch {
+      ctx.fillStyle = "#1a1a2e";
+      ctx.fillRect(0, 0, width, height);
+    }
+  } else {
+    ctx.fillStyle = "#1a1a2e";
+    ctx.fillRect(0, 0, width, height);
+  }
+
+  // Gradient overlay
+  const gradH = height * 0.55;
+  const grad = ctx.createLinearGradient(0, height - gradH, 0, height);
+  grad.addColorStop(0, "rgba(0,0,0,0)");
+  grad.addColorStop(0.3, "rgba(0,0,0,0.5)");
+  grad.addColorStop(1, "rgba(0,0,0,0.85)");
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, height - gradH, width, gradH);
+
+  // Top gradient for branding
+  const topGrad = ctx.createLinearGradient(0, 0, 0, height * 0.15);
+  topGrad.addColorStop(0, "rgba(0,0,0,0.6)");
+  topGrad.addColorStop(1, "rgba(0,0,0,0)");
+  ctx.fillStyle = topGrad;
+  ctx.fillRect(0, 0, width, height * 0.15);
+
+  const pad = Math.round(width * 0.045);
+  const isStory = format === "story";
+  const scale = width / 1080;
+
+  // Price badge (top-right)
+  if (item.price && item.price > 0) {
+    const priceText = formatPrice(item.price);
+    const priceFontSize = Math.round(28 * scale);
+    ctx.font = `900 ${priceFontSize}px 'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif`;
+    const priceMetrics = ctx.measureText(priceText);
+    const badgePad = Math.round(16 * scale);
+    const badgeW = priceMetrics.width + badgePad * 2;
+    const badgeH = priceFontSize + badgePad * 1.2;
+    const badgeX = width - pad - badgeW;
+    const badgeY = pad;
+
+    ctx.fillStyle = "#2563eb";
+    drawRoundedRect(ctx, badgeX, badgeY, badgeW, badgeH, Math.round(10 * scale));
+    ctx.fill();
+
+    ctx.fillStyle = "#ffffff";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(priceText, badgeX + badgeW / 2, badgeY + badgeH / 2);
+  }
+
+  // Bottom content area
+  let y = height - pad;
+
+  // Seller info
+  const sellerFontSize = Math.round(16 * scale);
+  ctx.font = `600 ${sellerFontSize}px 'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif`;
+  ctx.fillStyle = "rgba(255,255,255,0.7)";
+  ctx.textAlign = "left";
+  ctx.textBaseline = "bottom";
+
+  let sellerLine = sellerName;
+  if (sellerCreci) sellerLine += ` • CRECI ${sellerCreci}`;
+  if (sellerPhone) sellerLine += ` • ${sellerPhone}`;
+  ctx.fillText(sellerLine, pad, y);
+  y -= sellerFontSize + Math.round(12 * scale);
+
+  // Details row
+  const details: string[] = [];
+  if (item.bedrooms) details.push(`🛏 ${item.bedrooms} quartos`);
+  if (item.bathrooms) details.push(`🚿 ${item.bathrooms} banheiros`);
+  if (item.area) details.push(`📐 ${item.area}m²`);
+
+  if (details.length > 0) {
+    const detailFontSize = Math.round(18 * scale);
+    ctx.font = `500 ${detailFontSize}px 'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif`;
+    ctx.fillStyle = "rgba(255,255,255,0.8)";
+    ctx.fillText(details.join("   "), pad, y);
+    y -= detailFontSize + Math.round(8 * scale);
+  }
+
+  // Location
+  const location = item.neighborhood ? `📍 ${item.neighborhood}, ${item.city}` : item.city ? `📍 ${item.city}` : "";
+  if (location) {
+    const locFontSize = Math.round(20 * scale);
+    ctx.font = `600 ${locFontSize}px 'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif`;
+    ctx.fillStyle = "rgba(255,255,255,0.85)";
+    ctx.fillText(location, pad, y);
+    y -= locFontSize + Math.round(10 * scale);
+  }
+
+  // Title
+  const titleFontSize = Math.round((isStory ? 36 : 32) * scale);
+  ctx.font = `800 ${titleFontSize}px 'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif`;
+  ctx.fillStyle = "#ffffff";
+  const maxTitleWidth = width - pad * 2;
+  const words = item.title.split(" ");
+  const titleLines: string[] = [];
+  let currentLine = "";
+  for (const word of words) {
+    const test = currentLine ? `${currentLine} ${word}` : word;
+    if (ctx.measureText(test).width > maxTitleWidth && currentLine) {
+      titleLines.push(currentLine);
+      currentLine = word;
+    } else {
+      currentLine = test;
+    }
+  }
+  if (currentLine) titleLines.push(currentLine);
+  const maxLines = isStory ? 4 : 3;
+  const visibleLines = titleLines.slice(0, maxLines);
+
+  for (let i = visibleLines.length - 1; i >= 0; i--) {
+    ctx.fillText(visibleLines[i], pad, y);
+    y -= titleFontSize + Math.round(4 * scale);
+  }
+
+  return canvas.toDataURL("image/jpeg", 0.92);
+}
+
+export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerName, sellerPhone, sellerLogo, sellerCreci }: Props) {
   const { toast } = useToast();
   const [items, setItems] = useState<GalleryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [copied, setCopied] = useState(false);
+  const [generating, setGenerating] = useState<ImageFormat | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -62,6 +251,24 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug }: Props
     const text = `🏠 Confira este imóvel: *${selectedItem?.title}*\n\n📍 ${selectedItem?.city || ""}\n💰 ${selectedItem?.price ? `R$ ${selectedItem.price.toLocaleString("pt-BR")}` : "Consulte"}\n\n👉 ${galleryUrl}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
   };
+
+  const handleDownload = useCallback(async (format: ImageFormat) => {
+    if (!selectedItem) return;
+    setGenerating(format);
+    try {
+      const dataUrl = await generateMarketingImage(selectedItem, format, sellerName, sellerPhone, sellerCreci);
+      const link = document.createElement("a");
+      link.download = `${selectedItem.title.replace(/[^a-zA-Z0-9À-ÿ ]/g, "").trim().replace(/\s+/g, "-")}_${format}.jpg`;
+      link.href = dataUrl;
+      link.click();
+      toast({ title: "Imagem gerada! 📸", description: `Formato ${FORMAT_CONFIG[format].label} baixado com sucesso.` });
+    } catch (err) {
+      console.error("Error generating image:", err);
+      toast({ title: "Erro ao gerar imagem", variant: "destructive" });
+    } finally {
+      setGenerating(null);
+    }
+  }, [selectedItem, sellerName, sellerPhone, sellerCreci, toast]);
 
   if (loading) {
     return (
@@ -175,6 +382,45 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug }: Props
             <Eye size={12} /> Clique para ampliar
           </div>
         </motion.div>
+      )}
+
+      {/* Download Marketing Images */}
+      {photos.length > 0 && selectedItem && (
+        <div className="rounded-2xl border border-border p-4 sm:p-5 space-y-3">
+          <div className="flex items-center gap-2">
+            <Download size={18} className="text-primary" />
+            <h3 className="font-bold text-sm text-foreground">Baixar Imagem para Anúncio</h3>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Gere uma imagem profissional com foto, preço, localização e seus dados de corretor para usar em anúncios.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            {(Object.keys(FORMAT_CONFIG) as ImageFormat[]).map((fmt) => {
+              const cfg = FORMAT_CONFIG[fmt];
+              const isGenerating = generating === fmt;
+              return (
+                <button
+                  key={fmt}
+                  onClick={() => handleDownload(fmt)}
+                  disabled={!!generating}
+                  className="flex items-center gap-3 px-4 py-3 rounded-xl border border-border hover:border-primary/50 hover:bg-primary/5 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-left"
+                >
+                  <div className="flex-shrink-0">
+                    {isGenerating ? (
+                      <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <Download size={18} className="text-primary" />
+                    )}
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-foreground">{cfg.label}</p>
+                    <p className="text-[10px] text-muted-foreground">{cfg.description}</p>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
       )}
 
       {/* Photo Grid */}
