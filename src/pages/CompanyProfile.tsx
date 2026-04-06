@@ -1089,11 +1089,11 @@ export default function CompanyProfile() {
 
 
       {/* ═══════════ MAIN LAYOUT ═══════════ */}
-      <div className="max-w-[1800px] mx-auto px-4 md:px-8 py-6">
+      <div className={`max-w-[1800px] mx-auto px-4 md:px-8 ${isMinimal ? "py-0 -mt-[380px] relative z-10" : "py-6"}`}>
         <div className="flex gap-8">
           {/* ═══════════ DESKTOP SIDEBAR ═══════════ */}
           <aside className="hidden lg:block w-[280px] flex-shrink-0">
-            <div className="sticky top-20 space-y-4">
+            <div className={`sticky ${isMinimal ? "top-4" : "top-20"} space-y-4`}>
               {/* Company Card */}
               <div className="rounded-2xl overflow-hidden" style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}>
                 {/* Mini banner */}
