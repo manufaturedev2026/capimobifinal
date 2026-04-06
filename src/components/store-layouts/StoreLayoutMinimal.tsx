@@ -43,6 +43,8 @@ export default function StoreLayoutMinimal({
   filteredProducts, subcategories, activeCategory, setActiveCategory,
   categoryCounts, storeTheme, corretorSlug, dbProfile, getTagStyle, getTagLabel, handleWhatsApp,
 }: StoreLayoutProps) {
+  const { user } = useAuth();
+  const isOwner = !!(user && dbProfile && user.id === dbProfile.user_id);
   const [searchTerm, setSearchTerm] = useState("");
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [heroIdx, setHeroIdx] = useState(0);
