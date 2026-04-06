@@ -10,7 +10,7 @@ import { Home, Phone, User, MapPin, DollarSign, FileText, CheckCircle2, Loader2,
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { getStoreTheme, type StoreTheme } from "@/components/StoreThemePicker";
-import { LuxuryGoldDust } from "@/components/LuxuryGoldDust";
+import LuxuryGoldDust from "@/components/LuxuryGoldDust";
 
 const PROPERTY_TYPES = [
   { value: "casa", label: "🏠 Casa" },
