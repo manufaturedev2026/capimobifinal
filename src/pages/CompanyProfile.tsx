@@ -902,7 +902,7 @@ export default function CompanyProfile() {
                     clipPath: "polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%)",
                   }}
                 >
-                  <Eye size={16} /> Explorar
+                  <Eye size={16} /> Saiba Mais
                 </Link>
               </>
             )}
