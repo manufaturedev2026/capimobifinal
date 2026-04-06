@@ -41,10 +41,12 @@ function NetflixRow({ title, items, corretorSlug, getTagLabel, accent }: {
 
   return (
     <div className="mb-6 md:mb-8 group/row relative">
-      <h3 className="font-bold text-sm md:text-base text-white mb-2 md:mb-3 px-4 md:px-12 flex items-center gap-2 hover:text-[#e50914] transition-colors cursor-default">
-        {title}
-        <ChevronRight size={14} className="opacity-0 group-hover/row:opacity-100 transition-opacity text-[#e50914]" />
-      </h3>
+      {title && (
+        <h3 className="font-bold text-sm md:text-base text-white mb-2 md:mb-3 px-4 md:px-12 flex items-center gap-2 hover:text-[#e50914] transition-colors cursor-default">
+          {title}
+          <ChevronRight size={14} className="opacity-0 group-hover/row:opacity-100 transition-opacity text-[#e50914]" />
+        </h3>
+      )}
 
       <div className="relative">
         {showLeft && (
