@@ -2040,6 +2040,31 @@ export default function CompanyProfile() {
                       </a>
                     )}
                   </div>
+                  {/* Bio */}
+                  {dbProfile?.bio && (
+                    <p className="text-[11px] leading-relaxed mt-2" style={{ color: storeTheme.textMuted }}>{dbProfile.bio}</p>
+                  )}
+                  {/* Stats */}
+                  <div className="flex items-center gap-4 mt-3 text-xs" style={{ color: storeTheme.text }}>
+                    <div className="text-center">
+                      <p className="font-bold text-sm">{products.length}</p>
+                      <p className="text-[9px]" style={{ color: storeTheme.textMuted }}>Imóveis</p>
+                    </div>
+                    <div className="w-px h-6" style={{ background: storeTheme.border }} />
+                    <div className="text-center">
+                      <p className="font-bold text-sm">{isPaid ? "✓" : "—"}</p>
+                      <p className="text-[9px]" style={{ color: storeTheme.textMuted }}>{isPaid ? "Verificado" : "Ativo"}</p>
+                    </div>
+                    {availableCities.length > 0 && (
+                      <>
+                        <div className="w-px h-6" style={{ background: storeTheme.border }} />
+                        <div className="text-center">
+                          <p className="font-bold text-sm">{availableCities.length}</p>
+                          <p className="text-[9px]" style={{ color: storeTheme.textMuted }}>Cidades</p>
+                        </div>
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
               {/* Credenciais */}
