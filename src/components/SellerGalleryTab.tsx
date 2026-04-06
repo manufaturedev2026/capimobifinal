@@ -565,20 +565,21 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
           </div>
 
           {/* Broker photo toggle */}
-          {sellerLogo && (
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={showBrokerPhoto}
-                onChange={(e) => setShowBrokerPhoto(e.target.checked)}
-                className="w-4 h-4 rounded border-border text-primary focus:ring-primary"
-              />
-              <span className="text-[11px] font-semibold text-muted-foreground">Incluir foto do corretor</span>
-              {showBrokerPhoto && sellerLogo && (
-                <img src={sellerLogo} alt="" className="w-5 h-5 rounded-full object-cover border border-border" />
-              )}
-            </label>
-          )}
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={showBrokerPhoto}
+              onChange={(e) => setShowBrokerPhoto(e.target.checked)}
+              className="w-4 h-4 rounded border-border text-primary focus:ring-primary"
+            />
+            <span className="text-[11px] font-semibold text-muted-foreground">Incluir foto do corretor</span>
+            {showBrokerPhoto && sellerLogo && (
+              <img src={sellerLogo} alt="" className="w-5 h-5 rounded-full object-cover border border-border" />
+            )}
+            {!sellerLogo && (
+              <span className="text-[10px] text-muted-foreground/60">(adicione logo no perfil)</span>
+            )}
+          </label>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             {(Object.keys(FORMAT_CONFIG) as ImageFormat[]).map((fmt) => {
               const cfg = FORMAT_CONFIG[fmt];
