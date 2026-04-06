@@ -17,6 +17,7 @@ interface RentalContract {
   user_id: string;
   seller_id: string;
   item_id: string | null;
+  item_label: string | null;
   tenant_name: string;
   tenant_cpf_cnpj: string | null;
   tenant_phone: string | null;
