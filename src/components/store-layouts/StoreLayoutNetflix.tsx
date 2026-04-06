@@ -452,9 +452,11 @@ export default function StoreLayoutNetflix({
         </div>
       )}
 
-      {/* ══════ CONTENT ROW ══════ */}
+      {/* ══════ CONTENT ROWS BY CATEGORY ══════ */}
       <div className="pb-8 pt-4">
-        <NetflixRow title="Todos os Imóveis" items={filteredProducts} corretorSlug={corretorSlug} getTagLabel={getTagLabel} accent={accent} />
+        {rows.map((row) => (
+          <NetflixRow key={row.name} title={row.name} items={row.items} corretorSlug={corretorSlug} getTagLabel={getTagLabel} accent={accent} />
+        ))}
       </div>
 
       {filteredProducts.length === 0 && (
