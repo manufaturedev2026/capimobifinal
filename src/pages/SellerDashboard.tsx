@@ -957,7 +957,7 @@ export default function SellerDashboard() {
 
             {/* Gallery Tab */}
             {activeTab === "gallery" && user?.id && profile?.id && (
-              <SellerGalleryTab userId={user.id} sellerId={profile.id} sellerSlug={profile.slug || null} />
+              <SellerGalleryTab userId={user.id} sellerId={profile.id} sellerSlug={profile.slug || null} sellerName={profile.company_name || profile.full_name} sellerPhone={profile.phone || null} sellerLogo={profile.logo_url || null} sellerCreci={profile.creci || null} />
             )}
 
             {/* Rentals Tab */}
