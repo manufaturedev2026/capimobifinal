@@ -486,7 +486,7 @@ export default function ProductDetail() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-foreground/95 flex items-center justify-center"
+            className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center"
             onClick={() => setLightboxOpen(false)}
           >
             <button className="absolute top-4 right-4 z-50 w-10 h-10 rounded-full bg-card/20 backdrop-blur flex items-center justify-center text-white hover:bg-card/40 transition-colors">
