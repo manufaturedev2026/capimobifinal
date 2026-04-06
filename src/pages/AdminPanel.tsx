@@ -605,9 +605,7 @@ export default function AdminPanel() {
                 <strong>Receita mensal total estimada: </strong>
                 <span className="text-green-500 font-bold text-lg">
                   R$ {(
-                    totalByTier.start * PACKAGE_CONFIG.start.price +
-                    totalByTier.premium * PACKAGE_CONFIG.premium.price +
-                    totalByTier.vip * PACKAGE_CONFIG.vip.price
+                    (["start", "basico", "premium", "vip"] as const).reduce((sum, t) => sum + (totalByTier[t] || 0) * PACKAGE_CONFIG[t].price, 0)
                   ).toFixed(2).replace(".", ",")}
                 </span>
               </p>
