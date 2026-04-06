@@ -258,6 +258,7 @@ export default function SellerDashboard() {
     { id: "events", label: "Efeitos", icon: Sparkles },
     
     { id: "crm" as DashboardTab, label: "Meu CRM", icon: MessageCircle },
+    { id: "gallery" as DashboardTab, label: "Galeria", icon: Image },
     { id: "domain", label: "Meu Domínio", icon: Globe, locked: lockedTabs.includes("domain") },
     ...(showTeamTab ? [{ id: "team" as DashboardTab, label: "Empresa", icon: Users }] : []),
   ];
