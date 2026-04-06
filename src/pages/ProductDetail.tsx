@@ -292,14 +292,8 @@ export default function ProductDetail() {
 
     const openUrl = (url: string) => {
       if (isStandalone) {
-        // iOS PWA blocks window.open — use direct navigation
-        const a = document.createElement("a");
-        a.href = url;
-        a.target = "_blank";
-        a.rel = "noopener noreferrer";
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
+        // iOS PWA blocks window.open and target=_blank after async — use location.href
+        window.location.href = url;
       } else {
         window.open(url, "_blank");
       }
