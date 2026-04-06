@@ -4,8 +4,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   MapPin, Image, ChevronLeft, ChevronRight, Play, Plus,
   MessageCircle, Bed, Bath, Maximize, Car, Info, ChevronDown,
-  Volume2, VolumeX, Share2, Clapperboard,
+  Volume2, VolumeX, Share2, Clapperboard, LayoutDashboard,
 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 import type { StoreLayoutProps } from "./types";
 
 /* ═══════════════════════════════════════════
@@ -186,6 +187,7 @@ export default function StoreLayoutNetflix({
   isDbProfile, dbProfile, handleWhatsApp, getTagStyle, getTagLabel,
   onCinemaMode, onShareLink,
 }: StoreLayoutProps) {
+  const { user } = useAuth();
   const [billboardIdx, setBillboardIdx] = useState(0);
   const accent = "#e50914";
 
@@ -251,6 +253,15 @@ export default function StoreLayoutNetflix({
           </AnimatePresence>
 
           {/* Top bar buttons */}
+          <div className="absolute top-4 left-4 md:top-6 md:left-12 z-20">
+            <Link
+              to={user && dbProfile && user.id === dbProfile.user_id ? "/painel" : "/login"}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-medium text-white/80 hover:text-white transition-colors"
+              style={{ background: "rgba(255,255,255,0.1)", backdropFilter: "blur(8px)" }}
+            >
+              <LayoutDashboard size={14} /> {user && dbProfile && user.id === dbProfile.user_id ? "Painel" : "Entrar"}
+            </Link>
+          </div>
           <div className="absolute top-4 right-4 md:top-6 md:right-12 z-20 flex items-center gap-2">
             {onShareLink && (
               <button
