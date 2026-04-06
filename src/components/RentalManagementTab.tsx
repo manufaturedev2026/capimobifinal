@@ -118,6 +118,41 @@ export default function RentalManagementTab({ userId, sellerId }: Props) {
     setLoading(false);
   };
 
+  // ── Reminder helpers (moved before metrics so metrics can use it) ──
+  const getPaymentReminders = (contract: RentalContract) => {
+    const now = new Date();
+    const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+    
+    // Check if there's already a paid payment for current month
+    const monthPayment = payments.find(p => p.contract_id === contract.id && p.reference_month === currentMonth);
+    if (monthPayment?.status === "pago") return null;
+
+    // Check contract end_date — if expired, always show overdue
+    if (contract.end_date) {
+      const endDate = new Date(contract.end_date + "T23:59:59");
+      if (endDate < now) {
+        const daysExpired = Math.floor((now.getTime() - endDate.getTime()) / (1000 * 60 * 60 * 24));
+        return { type: "atrasado" as const, label: `Contrato vencido há ${daysExpired} dia${daysExpired !== 1 ? 's' : ''}`, color: "text-red-500" };
+      }
+    }
+
+    // Check current month's due day
+    const dueDate = new Date(now.getFullYear(), now.getMonth(), contract.due_day);
+    const diff = (dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24);
+    
+    if (diff < -1) {
+      const overdueDays = Math.abs(Math.floor(diff));
+      // Check if payment exists and is marked atrasado, or if no payment exists at all
+      if (!monthPayment || monthPayment.status === "atrasado" || monthPayment.status === "pendente") {
+        return { type: "atrasado" as const, label: `Atrasado ${overdueDays} dia${overdueDays !== 1 ? 's' : ''}`, color: "text-red-500" };
+      }
+    }
+    if (diff <= 0 && diff >= -1) return { type: "no_vencimento" as const, label: "Vence hoje!", color: "text-orange-500" };
+    if (diff <= 3 && diff > 0) return { type: "antes_vencimento" as const, label: `Vence em ${Math.ceil(diff)} dia${Math.ceil(diff) !== 1 ? 's' : ''}`, color: "text-amber-500" };
+    if (diff <= 7 && diff > 3) return { type: "antes_vencimento" as const, label: `Vence em ${Math.ceil(diff)} dias`, color: "text-blue-500" };
+    return null;
+  };
+
   // ── Dashboard metrics ──
   const metrics = useMemo(() => {
     const now = new Date();
@@ -126,14 +161,21 @@ export default function RentalManagementTab({ userId, sellerId }: Props) {
     const monthPayments = payments.filter(p => p.reference_month === currentMonth);
     const totalToReceive = activeContracts.reduce((s, c) => s + c.rent_amount, 0);
     const totalReceived = monthPayments.filter(p => p.status === "pago").reduce((s, p) => s + (p.amount_paid || 0), 0);
-    const overdue = payments.filter(p => p.status === "atrasado").length;
-    const upcoming = payments.filter(p => {
-      if (p.status !== "pendente") return false;
-      const due = new Date(p.due_date + "T12:00:00");
-      const diff = (due.getTime() - now.getTime()) / (1000 * 60 * 60 * 24);
-      return diff >= 0 && diff <= 7;
-    });
-    return { totalToReceive, totalReceived, overdue, upcoming: upcoming.length, activeContracts: activeContracts.length, monthPayments };
+    
+    // Count overdue: explicit atrasado payments + active contracts past due day with no payment
+    const explicitOverdue = payments.filter(p => p.status === "atrasado").length;
+    const implicitOverdue = activeContracts.filter(c => {
+      const reminder = getPaymentReminders(c);
+      return reminder?.type === "atrasado";
+    }).length;
+    const overdue = Math.max(explicitOverdue, implicitOverdue);
+    
+    const upcoming = activeContracts.filter(c => {
+      const reminder = getPaymentReminders(c);
+      return reminder?.type === "antes_vencimento" || reminder?.type === "no_vencimento";
+    }).length;
+    
+    return { totalToReceive, totalReceived, overdue, upcoming, activeContracts: activeContracts.length, monthPayments };
   }, [contracts, payments]);
 
   // ── Filtered contracts ──
@@ -144,17 +186,6 @@ export default function RentalManagementTab({ userId, sellerId }: Props) {
       return true;
     });
   }, [contracts, statusFilter, search]);
-
-  // ── Reminder helpers ──
-  const getPaymentReminders = (contract: RentalContract) => {
-    const now = new Date();
-    const dueDate = new Date(now.getFullYear(), now.getMonth(), contract.due_day);
-    const diff = (dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24);
-    if (diff <= 3 && diff > 0) return { type: "antes_vencimento" as const, label: `Vence em ${Math.ceil(diff)} dias`, color: "text-amber-500" };
-    if (diff <= 0 && diff > -1) return { type: "no_vencimento" as const, label: "Vence hoje!", color: "text-orange-500" };
-    if (diff < -1) return { type: "atrasado" as const, label: `Atrasado ${Math.abs(Math.floor(diff))} dias`, color: "text-red-500" };
-    return null;
-  };
 
   const sendWhatsAppReminder = (contract: RentalContract, type: string) => {
     if (!contract.tenant_phone) {
