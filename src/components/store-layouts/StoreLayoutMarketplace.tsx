@@ -216,7 +216,7 @@ export default function StoreLayoutMarketplace({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.45 }}
-            className="text-white/60 text-sm md:text-base mt-3 max-w-md"
+            className="text-white/60 text-xs md:text-base mt-2 md:mt-3 max-w-md hidden md:block"
           >
             Encontre casas, apartamentos e terrenos com os melhores corretores da região.
           </motion.p>
