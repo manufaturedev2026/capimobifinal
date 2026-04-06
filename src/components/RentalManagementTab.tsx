@@ -828,6 +828,7 @@ function ContractForm({ userId, sellerId, properties, editing, onSave, onCancel 
       tenant_phone: form.tenant_phone || null,
       tenant_email: form.tenant_email || null,
       item_id: form.item_id || null,
+      item_label: form.item_label || null,
       rent_amount: parseFloat(form.rent_amount),
       due_day: parseInt(form.due_day) || 10,
       late_fee_percent: parseFloat(form.late_fee_percent) || 2,
