@@ -352,24 +352,40 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
   };
 
-  const handleDownload = useCallback(async (format: ImageFormat) => {
+  const handlePreview = useCallback(async (format: ImageFormat) => {
     if (!selectedItem) return;
-    setGenerating(format);
+    setPreviewFormat(format);
+    setGeneratingPreview(true);
+    setPreviewDataUrl(null);
     try {
       const chosenPhoto = photos[selectedPhotoIndex] || photos[0];
       const dataUrl = await generateMarketingImage(selectedItem, format, sellerName, sellerPhone, sellerCreci, showBrokerPhoto ? sellerLogo : null, selectedStyle, chosenPhoto, selectedFont);
-      const link = document.createElement("a");
-      link.download = `${selectedItem.title.replace(/[^a-zA-Z0-9À-ÿ ]/g, "").trim().replace(/\s+/g, "-")}_${format}.jpg`;
-      link.href = dataUrl;
-      link.click();
-      toast({ title: "Imagem gerada! 📸", description: `Formato ${FORMAT_CONFIG[format].label} baixado com sucesso.` });
+      setPreviewDataUrl(dataUrl);
     } catch (err) {
-      console.error("Error generating image:", err);
-      toast({ title: "Erro ao gerar imagem", variant: "destructive" });
+      console.error("Error generating preview:", err);
+      toast({ title: "Erro ao gerar preview", variant: "destructive" });
+      setPreviewFormat(null);
     } finally {
-      setGenerating(null);
+      setGeneratingPreview(false);
     }
   }, [selectedItem, sellerName, sellerPhone, sellerCreci, sellerLogo, selectedStyle, showBrokerPhoto, selectedFont, toast, photos, selectedPhotoIndex]);
+
+  const handleDownloadFromPreview = useCallback(() => {
+    if (!previewDataUrl || !previewFormat || !selectedItem) return;
+    const link = document.createElement("a");
+    link.download = `${selectedItem.title.replace(/[^a-zA-Z0-9À-ÿ ]/g, "").trim().replace(/\s+/g, "-")}_${previewFormat}.jpg`;
+    link.href = previewDataUrl;
+    link.click();
+    toast({ title: "Imagem baixada! 📸", description: `Formato ${FORMAT_CONFIG[previewFormat].label} baixado com sucesso.` });
+  }, [previewDataUrl, previewFormat, selectedItem, toast]);
+
+  // Regenerate preview when style/font/photo/broker changes
+  useEffect(() => {
+    if (previewFormat && selectedItem) {
+      handlePreview(previewFormat);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedStyle, selectedFont, showBrokerPhoto, selectedPhotoIndex]);
 
   if (loading) {
     return (
