@@ -175,7 +175,7 @@ export default function StoreLayoutShowcase({
                         clipPath: "polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%)",
                       }}
                     >
-                      <Sword size={14} /> Explorar
+                      <Sword size={14} /> Saiba Mais
                     </Link>
                     <button
                       onClick={() => handleWhatsApp(heroProduct.title, heroProduct.id)}
