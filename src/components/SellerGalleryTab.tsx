@@ -214,7 +214,7 @@ async function generateMarketingImage(
   // Price badge (top-right)
   if (item.price && item.price > 0) {
     const priceText = formatPrice(item.price);
-    const priceFontSize = Math.round((isStory ? 36 : 34) * scale);
+    const priceFontSize = Math.round((isStory ? 52 : 34) * scale);
     ctx.font = `900 ${priceFontSize}px ${baseFont}`;
     const priceMetrics = ctx.measureText(priceText);
     const badgePad = Math.round(16 * scale);
@@ -237,7 +237,7 @@ async function generateMarketingImage(
   let y = height - pad - (s.accentBar ? Math.round(6 * scale) : 0);
 
   // Seller info
-  const sellerFontSize = Math.round((isStory ? 28 : 24) * scale);
+  const sellerFontSize = Math.round((isStory ? 38 : 24) * scale);
   ctx.font = `600 ${sellerFontSize}px ${baseFont}`;
   ctx.fillStyle = s.sellerColor;
   ctx.textAlign = "left";
@@ -256,7 +256,7 @@ async function generateMarketingImage(
   if (item.area) details.push(`📐 ${item.area}m²`);
 
   if (details.length > 0) {
-    const detailFontSize = Math.round((isStory ? 30 : 26) * scale);
+    const detailFontSize = Math.round((isStory ? 42 : 26) * scale);
     ctx.font = `500 ${detailFontSize}px ${baseFont}`;
     ctx.fillStyle = s.detailColor;
     ctx.fillText(details.join("   "), pad, y);
@@ -266,7 +266,7 @@ async function generateMarketingImage(
   // Location
   const location = item.neighborhood ? `📍 ${item.neighborhood}, ${item.city}` : item.city ? `📍 ${item.city}` : "";
   if (location) {
-    const locFontSize = Math.round((isStory ? 32 : 28) * scale);
+    const locFontSize = Math.round((isStory ? 44 : 28) * scale);
     ctx.font = `600 ${locFontSize}px ${baseFont}`;
     ctx.fillStyle = s.locationColor;
     ctx.fillText(location, pad, y);
@@ -274,7 +274,7 @@ async function generateMarketingImage(
   }
 
   // Title
-  const titleFontSize = Math.round((isStory ? 52 : 44) * scale);
+  const titleFontSize = Math.round((isStory ? 68 : 44) * scale);
   ctx.font = `800 ${titleFontSize}px ${titleFont}`;
   ctx.fillStyle = s.titleColor;
   const maxTitleWidth = width - pad * 2;
