@@ -470,6 +470,7 @@ export default function CompanyProfile() {
   const isShowcase = currentLayout === "showcase";
   const isNetflix = currentLayout === "netflix";
   const isElegant = currentLayout === "elegant";
+  const isMagazine = currentLayout === "magazine";
 
   return (
     <div
@@ -1139,7 +1140,7 @@ export default function CompanyProfile() {
       </section>
 
       {/* ═══════════ STATS BAR ═══════════ */}
-      <section className={`${isElegant ? "block" : "hidden lg:block"} relative z-20 ${isNetflix ? "!hidden" : ""}`} style={{ borderBottom: `1px solid ${storeTheme.border}`, background: storeTheme.card }}>
+      <section className={`${isElegant || isMagazine ? "block" : "hidden lg:block"} relative z-20 ${isNetflix ? "!hidden" : ""}`} style={{ borderBottom: `1px solid ${storeTheme.border}`, background: storeTheme.card }}>
         <div className="max-w-[1800px] mx-auto px-4 md:px-8">
           <div className="flex items-center gap-6 py-3 overflow-x-auto scrollbar-hide">
             <div className="flex items-center gap-2 text-sm flex-shrink-0">
@@ -1188,7 +1189,7 @@ export default function CompanyProfile() {
       <div className={`max-w-[1800px] mx-auto px-4 md:px-8 ${isMinimal || isMarketplace ? "py-0" : "py-6"}`}>
         <div className="flex gap-8">
           {/* ═══════════ DESKTOP SIDEBAR ═══════════ */}
-          <aside className={`hidden lg:block w-[280px] flex-shrink-0 ${isMarketplace || isNetflix || isElegant ? "!hidden" : ""}`}>
+          <aside className={`hidden lg:block w-[280px] flex-shrink-0 ${isMarketplace || isNetflix || isElegant || isMagazine ? "!hidden" : ""}`}>
             <div className={`sticky ${isMinimal ? "top-4" : "top-20"} space-y-4`}>
               {/* Company Card */}
               <div className="rounded-2xl overflow-hidden" style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}>
