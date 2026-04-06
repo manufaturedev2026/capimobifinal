@@ -67,7 +67,7 @@ export default function StoreLayoutMagazine({
                     <h3 className="font-display font-bold text-base" style={{ color: storeTheme.text }}>{product.title}</h3>
                     {product.city && (
                       <p className="text-xs mt-1 flex items-center gap-1" style={{ color: storeTheme.textMuted }}>
-                        <MapPin size={11} /> {product.city}
+                        <MapPin size={11} /> {product.neighborhood ? `${product.neighborhood}, ${product.city}` : product.city}
                       </p>
                     )}
                     {product.description && (

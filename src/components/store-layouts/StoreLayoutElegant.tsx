@@ -73,7 +73,7 @@ export default function StoreLayoutElegant({
                       <h3 className="font-display font-bold text-sm line-clamp-2 leading-tight" style={{ color: storeTheme.text }}>{product.title}</h3>
                       {product.city && (
                         <p className="text-[10px] mt-1 flex items-center gap-1" style={{ color: storeTheme.textMuted }}>
-                          <MapPin size={9} /> {product.city}
+                          <MapPin size={9} /> {product.neighborhood ? `${product.neighborhood}, ${product.city}` : product.city}
                         </p>
                       )}
                     </div>
