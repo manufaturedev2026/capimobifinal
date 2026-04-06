@@ -317,7 +317,7 @@ export default function StoreLayoutMarketplace({
                         {product.title}
                       </h3>
                       {product.price > 0 && (
-                        <p className="text-base font-bold text-emerald-500">
+                        <p className="text-base font-bold" style={{ color: storeTheme.primary }}>
                           R$ {product.price.toLocaleString("pt-BR")}
                           {product.isAluguel && <span className="text-[10px] font-normal ml-0.5" style={{ color: storeTheme.textMuted }}>/mês</span>}
                         </p>
