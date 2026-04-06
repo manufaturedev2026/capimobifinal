@@ -45,11 +45,18 @@ export function usePushSubscription(sellerId?: string) {
     setPermission(Notification.permission);
 
     navigator.serviceWorker
-      .getRegistration("/")
-      .then(async (registration) => {
-        if (!registration) return;
-        const subscription = await registration.pushManager.getSubscription();
-        setIsSubscribed(!!subscription);
+      .getRegistrations()
+      .then(async (registrations) => {
+        for (const reg of registrations) {
+          const url = reg.active?.scriptURL || reg.installing?.scriptURL || reg.waiting?.scriptURL || "";
+          if (url.includes("push-sw")) {
+            const subscription = await reg.pushManager.getSubscription();
+            if (subscription) {
+              setIsSubscribed(true);
+              return;
+            }
+          }
+        }
       })
       .catch(() => {});
   }, [sellerId]);
