@@ -1275,11 +1275,14 @@ export default function CompanyProfile() {
                 filterCity,
                 setFilterCity,
                 availableCities,
+                onCinemaMode: () => setGalleryLightbox(0),
+                onShareLink: () => { navigator.clipboard.writeText(window.location.href); },
               };
 
               const layout = (dbProfile as any)?.store_layout || "showcase";
 
               switch (layout) {
+                case "netflix": return <StoreLayoutNetflix {...layoutProps} />;
                 case "minimal": return <StoreLayoutMinimal {...layoutProps} />;
                 case "magazine": return <StoreLayoutMagazine {...layoutProps} />;
                 case "gallery": return <StoreLayoutGallery {...layoutProps} />;

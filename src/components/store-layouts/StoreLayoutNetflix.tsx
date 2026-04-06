@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   MapPin, Image, ChevronLeft, ChevronRight, Play, Plus,
   MessageCircle, Bed, Bath, Maximize, Car, Info, ChevronDown,
-  Volume2, VolumeX,
+  Volume2, VolumeX, Share2, Clapperboard,
 } from "lucide-react";
 import type { StoreLayoutProps } from "./types";
 
@@ -46,7 +46,6 @@ function NetflixRow({ title, items, corretorSlug, getTagLabel, accent }: {
       </h3>
 
       <div className="relative">
-        {/* Arrows */}
         {showLeft && (
           <button onClick={() => scroll(-1)}
             className="absolute left-0 top-0 bottom-0 w-10 md:w-12 z-20 flex items-center justify-center bg-black/60 opacity-0 group-hover/row:opacity-100 transition-opacity rounded-r"
@@ -96,7 +95,6 @@ function NetflixCard({ product, index, corretorSlug, getTagLabel, accent }: {
           className="relative rounded-md overflow-visible"
           style={{ transformOrigin: index === 0 ? "left center" : "center center" }}
         >
-          {/* Poster */}
           <div className="relative aspect-[16/9] rounded-md overflow-hidden">
             {product.image ? (
               <img src={product.image} alt={product.title} className="w-full h-full object-cover" loading="lazy" />
@@ -105,15 +103,11 @@ function NetflixCard({ product, index, corretorSlug, getTagLabel, accent }: {
                 <Image size={24} className="text-gray-600" />
               </div>
             )}
-
-            {/* Sold */}
             {product.status === "vendido" && (
               <div className="absolute inset-0 bg-black/70 flex items-center justify-center">
                 <span className="text-red-500 font-bold text-[10px] uppercase tracking-widest">Vendido</span>
               </div>
             )}
-
-            {/* Tag */}
             {product.tag && (
               <span className="absolute top-1 left-1 px-1.5 py-0.5 rounded text-[8px] font-bold bg-[#e50914] text-white">
                 {getTagLabel(product.tag)}
@@ -121,7 +115,6 @@ function NetflixCard({ product, index, corretorSlug, getTagLabel, accent }: {
             )}
           </div>
 
-          {/* Hover expanded panel */}
           <AnimatePresence>
             {hovered && (
               <motion.div
@@ -133,7 +126,6 @@ function NetflixCard({ product, index, corretorSlug, getTagLabel, accent }: {
                 style={{ boxShadow: "0 8px 30px rgba(0,0,0,0.8)" }}
               >
                 <div className="p-3">
-                  {/* Action buttons */}
                   <div className="flex items-center gap-1.5 mb-2">
                     <span className="w-7 h-7 rounded-full bg-white flex items-center justify-center hover:bg-white/80 transition">
                       <Play size={14} fill="#000" className="text-black ml-0.5" />
@@ -145,20 +137,14 @@ function NetflixCard({ product, index, corretorSlug, getTagLabel, accent }: {
                       <ChevronDown size={14} className="text-white" />
                     </span>
                   </div>
-
-                  {/* Price */}
                   {product.price > 0 && (
                     <p className="font-bold text-sm text-green-400 mb-1">
                       R$ {product.price.toLocaleString("pt-BR")}
                     </p>
                   )}
-
-                  {/* Title */}
                   <p className="text-white text-[11px] font-semibold leading-tight line-clamp-2 mb-1.5">
                     {product.title}
                   </p>
-
-                  {/* Stats */}
                   <div className="flex gap-2 flex-wrap">
                     {product.bedrooms && (
                       <span className="text-[9px] text-gray-400 flex items-center gap-0.5">
@@ -176,8 +162,6 @@ function NetflixCard({ product, index, corretorSlug, getTagLabel, accent }: {
                       </span>
                     )}
                   </div>
-
-                  {/* Location */}
                   {product.city && (
                     <p className="text-[9px] text-gray-500 mt-1 flex items-center gap-0.5">
                       <MapPin size={8} /> {product.city}
@@ -200,18 +184,32 @@ export default function StoreLayoutNetflix({
   filteredProducts, subcategories, activeCategory, setActiveCategory,
   categoryCounts, categoryCardImages, storeTheme, corretorSlug,
   isDbProfile, dbProfile, handleWhatsApp, getTagStyle, getTagLabel,
+  onCinemaMode, onShareLink,
 }: StoreLayoutProps) {
   const [billboardIdx, setBillboardIdx] = useState(0);
-  const accent = "#e50914"; // Netflix red
+  const accent = "#e50914";
 
   const billboard = filteredProducts.filter((p: any) => p.image).slice(0, 6);
   const currentBillboard = billboard[billboardIdx];
 
+  // Auto-rotate billboard
   useEffect(() => {
     if (billboard.length <= 1) return;
     const t = setInterval(() => setBillboardIdx(p => (p + 1) % billboard.length), 7000);
     return () => clearInterval(t);
   }, [billboard.length]);
+
+  // Progress bar for current billboard
+  const [progress, setProgress] = useState(0);
+  useEffect(() => {
+    setProgress(0);
+    const start = Date.now();
+    const interval = setInterval(() => {
+      const elapsed = Date.now() - start;
+      setProgress(Math.min((elapsed / 7000) * 100, 100));
+    }, 50);
+    return () => clearInterval(interval);
+  }, [billboardIdx]);
 
   // Build category rows
   const categoryMap: Record<string, string[]> = {
@@ -231,86 +229,175 @@ export default function StoreLayoutNetflix({
     <div className="-mx-4 md:-mx-8" style={{ background: "#141414" }}>
       {/* ══════ BILLBOARD ══════ */}
       {billboard.length > 0 && currentBillboard && (
-        <div className="relative w-full mb-4" style={{ aspectRatio: "16/7" }}>
+        <div className="relative w-full" style={{ aspectRatio: "16/7", minHeight: 320 }}>
           <AnimatePresence mode="wait">
             <motion.div
               key={currentBillboard.id}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              initial={{ opacity: 0, scale: 1.05 }}
+              animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 1.2 }}
+              transition={{ duration: 1.5, ease: "easeOut" }}
               className="absolute inset-0"
             >
               <img src={currentBillboard.image} alt={currentBillboard.title} className="w-full h-full object-cover" />
               {/* Netflix-style gradients */}
               <div className="absolute inset-0" style={{
-                background: "linear-gradient(to right, #141414 0%, rgba(20,20,20,0.7) 30%, transparent 60%)",
+                background: "linear-gradient(to right, #141414 0%, rgba(20,20,20,0.85) 25%, rgba(20,20,20,0.4) 50%, transparent 70%)",
               }} />
               <div className="absolute inset-0" style={{
-                background: "linear-gradient(to top, #141414 0%, rgba(20,20,20,0.4) 40%, transparent 70%)",
+                background: "linear-gradient(to top, #141414 0%, rgba(20,20,20,0.6) 30%, transparent 60%)",
               }} />
             </motion.div>
           </AnimatePresence>
 
-          {/* Billboard content */}
-          <div className="absolute bottom-[15%] left-4 md:left-12 z-10 max-w-md">
-            {/* Fake Netflix "N" badge */}
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-[#e50914] font-black text-lg leading-none">N</span>
-              <span className="text-[10px] text-gray-300 uppercase tracking-[0.3em] font-semibold">Imóvel em Destaque</span>
-            </div>
+          {/* Top bar buttons */}
+          <div className="absolute top-4 right-4 md:top-6 md:right-12 z-20 flex items-center gap-2">
+            {onShareLink && (
+              <button
+                onClick={onShareLink}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-medium text-white/80 hover:text-white transition-colors"
+                style={{ background: "rgba(255,255,255,0.1)", backdropFilter: "blur(8px)" }}
+              >
+                <Share2 size={14} /> Compartilhar
+              </button>
+            )}
+            {onCinemaMode && (
+              <button
+                onClick={onCinemaMode}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-medium text-white/80 hover:text-white transition-colors"
+                style={{ background: "rgba(255,255,255,0.1)", backdropFilter: "blur(8px)" }}
+              >
+                <Clapperboard size={14} /> Modo Cinema
+              </button>
+            )}
+          </div>
 
-            <h2 className="font-black text-2xl md:text-4xl lg:text-5xl text-white leading-[1.1] drop-shadow-lg">
+          {/* Billboard content — Netflix style */}
+          <div className="absolute bottom-[12%] md:bottom-[15%] left-4 md:left-12 z-10 max-w-lg">
+            {/* Netflix badge */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.3 }}
+              className="flex items-center gap-2 mb-3"
+            >
+              <span className="text-[#e50914] font-black text-2xl md:text-3xl leading-none" style={{ fontFamily: "'Bebas Neue', sans-serif" }}>N</span>
+              <span className="text-[10px] md:text-xs text-gray-300 uppercase tracking-[0.25em] font-semibold border-l border-gray-500 pl-2">
+                Imóvel em Destaque
+              </span>
+            </motion.div>
+
+            {/* Title — big and bold */}
+            <motion.h2
+              key={`title-${currentBillboard.id}`}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2, duration: 0.6 }}
+              className="font-black text-2xl md:text-4xl lg:text-5xl text-white leading-[1.05] drop-shadow-2xl mb-2"
+            >
               {currentBillboard.title}
-            </h2>
+            </motion.h2>
 
+            {/* Location */}
             {currentBillboard.city && (
-              <p className="text-white/60 text-xs md:text-sm mt-2 flex items-center gap-1">
-                <MapPin size={12} /> {currentBillboard.neighborhood ? `${currentBillboard.neighborhood}, ${currentBillboard.city}` : currentBillboard.city}
-              </p>
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4 }}
+                className="text-white/50 text-xs md:text-sm flex items-center gap-1 mb-2"
+              >
+                <MapPin size={12} />
+                {currentBillboard.neighborhood
+                  ? `${currentBillboard.neighborhood}, ${currentBillboard.city}`
+                  : currentBillboard.city}
+              </motion.p>
             )}
 
+            {/* Price */}
             {currentBillboard.price > 0 && (
-              <p className="font-black text-xl md:text-2xl text-green-400 mt-2">
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+                className="font-black text-lg md:text-2xl text-green-400 mb-2"
+              >
                 R$ {currentBillboard.price.toLocaleString("pt-BR")}
-              </p>
+              </motion.p>
             )}
 
-            {/* Description snippet */}
-            {currentBillboard.description && (
-              <p className="text-gray-300 text-xs md:text-sm mt-2 line-clamp-2 max-w-sm">
-                {currentBillboard.description}
-              </p>
-            )}
+            {/* Description — Netflix synopsis style */}
+            <motion.p
+              key={`desc-${currentBillboard.id}`}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.6 }}
+              className="text-gray-300 text-xs md:text-sm leading-relaxed line-clamp-3 max-w-md mb-4"
+            >
+              {currentBillboard.description || buildAutoDescription(currentBillboard)}
+            </motion.p>
 
-            {/* Action buttons */}
-            <div className="flex gap-2 mt-4">
+            {/* Property specs pills */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.7 }}
+              className="flex items-center gap-2 flex-wrap mb-4"
+            >
+              {currentBillboard.bedrooms && (
+                <span className="flex items-center gap-1 px-2 py-1 rounded bg-white/10 text-white/80 text-[10px] md:text-xs font-medium">
+                  <Bed size={12} /> {currentBillboard.bedrooms} quartos
+                </span>
+              )}
+              {currentBillboard.bathrooms && (
+                <span className="flex items-center gap-1 px-2 py-1 rounded bg-white/10 text-white/80 text-[10px] md:text-xs font-medium">
+                  <Bath size={12} /> {currentBillboard.bathrooms} banheiros
+                </span>
+              )}
+              {currentBillboard.area && (
+                <span className="flex items-center gap-1 px-2 py-1 rounded bg-white/10 text-white/80 text-[10px] md:text-xs font-medium">
+                  <Maximize size={12} /> {currentBillboard.area}m²
+                </span>
+              )}
+              {currentBillboard.parking_spots && (
+                <span className="flex items-center gap-1 px-2 py-1 rounded bg-white/10 text-white/80 text-[10px] md:text-xs font-medium">
+                  <Car size={12} /> {currentBillboard.parking_spots} vagas
+                </span>
+              )}
+            </motion.div>
+
+            {/* Action buttons — Netflix CTA style */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8 }}
+              className="flex items-center gap-3"
+            >
               <Link
                 to={`/imoveis/produto/${currentBillboard.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`}
-                className="inline-flex items-center gap-2 px-5 md:px-7 py-2 md:py-2.5 rounded font-bold text-sm md:text-base bg-white text-black hover:bg-white/80 transition-all"
+                className="inline-flex items-center gap-2 px-6 md:px-8 py-2.5 md:py-3 rounded-md font-bold text-sm md:text-base bg-white text-black hover:bg-white/90 transition-all shadow-lg"
               >
-                <Play size={18} fill="black" /> Ver Detalhes
+                <Info size={18} /> Saiba Mais
               </Link>
               <button
                 onClick={() => handleWhatsApp(currentBillboard.title, currentBillboard.id)}
-                className="inline-flex items-center gap-2 px-5 md:px-7 py-2 md:py-2.5 rounded font-bold text-sm md:text-base text-white transition-all"
+                className="inline-flex items-center gap-2 px-6 md:px-8 py-2.5 md:py-3 rounded-md font-bold text-sm md:text-base text-white transition-all"
                 style={{ background: "rgba(109,109,110,0.7)" }}
               >
                 <MessageCircle size={16} /> WhatsApp
               </button>
-            </div>
+            </motion.div>
           </div>
 
-          {/* Episode indicators (Netflix style) */}
+          {/* Episode indicators */}
           {billboard.length > 1 && (
-            <div className="absolute right-4 md:right-12 bottom-[15%] z-10 flex flex-col gap-0.5">
+            <div className="absolute right-4 md:right-12 bottom-[15%] z-10 flex flex-col gap-1">
               {billboard.map((_, idx) => (
                 <button
                   key={idx}
                   onClick={() => setBillboardIdx(idx)}
                   className="w-1 transition-all rounded-full"
                   style={{
-                    height: idx === billboardIdx ? 20 : 8,
+                    height: idx === billboardIdx ? 24 : 8,
                     background: idx === billboardIdx ? "#e50914" : "rgba(255,255,255,0.3)",
                   }}
                 />
@@ -318,9 +405,20 @@ export default function StoreLayoutNetflix({
             </div>
           )}
 
-          {/* Maturity rating style badge */}
+          {/* Progress bar at bottom */}
+          <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-white/5 z-20">
+            <div
+              className="h-full transition-all duration-100 ease-linear"
+              style={{
+                width: `${progress}%`,
+                background: "linear-gradient(to right, #e50914, #ff4d4d)",
+              }}
+            />
+          </div>
+
+          {/* Maturity rating badge */}
           <div className="absolute right-4 md:right-12 bottom-[5%] z-10 flex items-center gap-2">
-            <span className="px-2 py-0.5 border border-white/30 text-white/70 text-[10px] font-semibold">
+            <span className="px-2.5 py-1 border-l-2 border-white/40 text-white/60 text-[10px] font-semibold bg-black/30 backdrop-blur-sm">
               {filteredProducts.length} imóveis
             </span>
           </div>
@@ -328,22 +426,24 @@ export default function StoreLayoutNetflix({
       )}
 
       {/* ══════ CATEGORY TABS ══════ */}
-      <div className="px-4 md:px-12 mb-4">
-        <div className="flex gap-1 overflow-x-auto scrollbar-hide pb-1">
+      <div className="px-4 md:px-12 py-4" style={{ background: "linear-gradient(to bottom, rgba(20,20,20,0.8), #141414)" }}>
+        <div className="flex gap-1.5 overflow-x-auto scrollbar-hide pb-1">
           {subcategories.filter(c => c.slug === "todos" || (categoryCounts[c.slug] || 0) > 0).map((cat) => {
             const isActive = activeCategory === cat.slug;
             return (
               <button
                 key={cat.slug}
                 onClick={() => setActiveCategory(cat.slug)}
-                className="flex-shrink-0 px-3 py-1.5 text-xs font-semibold transition-all rounded"
+                className="flex-shrink-0 px-4 py-2 text-xs font-semibold transition-all rounded-full"
                 style={{
-                  background: isActive ? "rgba(255,255,255,0.1)" : "transparent",
-                  color: isActive ? "#fff" : "rgba(255,255,255,0.5)",
-                  borderBottom: isActive ? `2px solid ${accent}` : "2px solid transparent",
+                  background: isActive ? "#e50914" : "rgba(255,255,255,0.08)",
+                  color: isActive ? "#fff" : "rgba(255,255,255,0.55)",
                 }}
               >
                 {cat.name}
+                {categoryCounts[cat.slug] > 0 && (
+                  <span className="ml-1 opacity-60">({categoryCounts[cat.slug]})</span>
+                )}
               </button>
             );
           })}
@@ -380,4 +480,25 @@ export default function StoreLayoutNetflix({
       )}
     </div>
   );
+}
+
+/** Auto-generate a description if none exists */
+function buildAutoDescription(product: any): string {
+  const parts: string[] = [];
+  if (product.category) {
+    const catNames: Record<string, string> = {
+      casa: "Casa", apartamento: "Apartamento", terreno: "Terreno",
+      comercial: "Imóvel comercial", aluguel: "Imóvel para aluguel",
+    };
+    parts.push(catNames[product.category] || "Imóvel");
+  }
+  if (product.neighborhood && product.city) {
+    parts.push(`localizado em ${product.neighborhood}, ${product.city}`);
+  } else if (product.city) {
+    parts.push(`em ${product.city}`);
+  }
+  if (product.area) parts.push(`com ${product.area}m²`);
+  if (product.bedrooms) parts.push(`${product.bedrooms} quartos`);
+  if (product.bathrooms) parts.push(`e ${product.bathrooms} banheiros`);
+  return parts.join(" ") + ".";
 }
