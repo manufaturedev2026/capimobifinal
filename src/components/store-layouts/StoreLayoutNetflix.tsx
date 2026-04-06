@@ -85,7 +85,7 @@ function NetflixCard({ product, index, corretorSlug, getTagLabel, accent }: {
   return (
     <div
       className="flex-shrink-0 relative"
-      style={{ width: "clamp(130px, 18vw, 230px)" }}
+      style={{ width: "clamp(180px, 22vw, 300px)" }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
