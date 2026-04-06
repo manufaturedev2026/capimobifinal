@@ -439,7 +439,7 @@ export default function StoreLayoutNetflix({
       {/* ══════ CATEGORY TABS — Cinematic genre cards ══════ */}
       <div className="px-4 md:px-12 py-5" style={{ background: "linear-gradient(to bottom, rgba(20,20,20,0.9), #141414)" }}>
         <div className="flex gap-2 md:gap-3 overflow-x-auto scrollbar-hide pb-2 snap-x snap-mandatory">
-          {subcategories.filter(c => c.slug === "todos" || (categoryCounts[c.slug] || 0) > 0).map((cat) => {
+          {subcategories.filter(c => c.slug !== "todos" && (categoryCounts[c.slug] || 0) > 0).map((cat) => {
             const isActive = activeCategory === cat.slug;
             const count = categoryCounts[cat.slug] || 0;
             const thumbImg = categoryCardImages[cat.slug];
