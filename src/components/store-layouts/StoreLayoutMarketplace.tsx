@@ -632,7 +632,7 @@ export default function StoreLayoutMarketplace({
         >
           <div
             className="relative rounded-2xl p-8 md:p-14 text-center overflow-hidden"
-            style={{ background: `linear-gradient(135deg, ${storeTheme.bg}, ${storeTheme.primary}90)` }}
+            style={{ background: `linear-gradient(135deg, ${darkBase}, ${darkMid}, ${storeTheme.primary}90)` }}
           >
             <FloatingParticles color="#ffffff" />
             <motion.div
