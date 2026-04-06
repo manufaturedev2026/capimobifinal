@@ -187,6 +187,7 @@ export default function StoreLayoutNetflix({
   isDbProfile, dbProfile, handleWhatsApp, getTagStyle, getTagLabel,
   onCinemaMode, onShareLink,
 }: StoreLayoutProps) {
+  const { user } = useAuth();
   const [billboardIdx, setBillboardIdx] = useState(0);
   const accent = "#e50914";
 
