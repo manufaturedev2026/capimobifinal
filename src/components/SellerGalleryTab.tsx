@@ -275,7 +275,7 @@ async function generateMarketingImage(
 
   // Title
   const titleFontSize = Math.round((isStory ? 36 : 32) * scale);
-  ctx.font = `800 ${titleFontSize}px ${font}`;
+  ctx.font = `800 ${titleFontSize}px ${titleFont}`;
   ctx.fillStyle = s.titleColor;
   const maxTitleWidth = width - pad * 2;
   const words = item.title.split(" ");
