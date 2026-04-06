@@ -397,7 +397,7 @@ export default function StoreLayoutMarketplace({
               onClick={() => { setActiveCategory(banner.slug); scrollToGrid(); }}
               style={{ boxShadow: `0 8px 32px ${storeTheme.primary}18` }}
             >
-              <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${storeTheme.bg}, ${storeTheme.primary}${bIdx === 0 ? "" : "cc"})` }} />
+              <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${darkBase}, ${storeTheme.primary}${bIdx === 0 ? "" : "cc"})` }} />
               <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent" />
               <FloatingParticles color={storeTheme.primary} />
               <div className="relative z-10 h-full flex flex-col justify-center p-6">
