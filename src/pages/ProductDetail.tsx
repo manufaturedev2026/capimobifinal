@@ -859,6 +859,20 @@ export default function ProductDetail() {
           </div>
         </div>
 
+        {/* ── Mobile Seller Card (below main content) ── */}
+        <div className="lg:hidden mt-8">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
+            <SellerCard />
+          </motion.div>
+
+          {/* Sidebar - desktop only */}
+          <div className="hidden lg:block space-y-4">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="sticky top-20">
+              <SellerCard />
+            </motion.div>
+          </div>
+        </div>
+
         {/* Related */}
         {relatedProducts.length > 0 && (
           <motion.section initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="mt-16">
