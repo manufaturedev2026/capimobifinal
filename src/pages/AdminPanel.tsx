@@ -44,7 +44,7 @@ export default function AdminPanel() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [tierFilter, setTierFilter] = useState<string>("todos");
-  const [tab, setTab] = useState<"sellers" | "billing" | "referrals" | "crm" | "seo">("sellers");
+  const [tab, setTab] = useState<"sellers" | "billing" | "referrals" | "crm" | "seo" | "vendas">("sellers");
   const [adRequests, setAdRequests] = useState<any[]>([]);
   const [adsLoading, setAdsLoading] = useState(false);
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
@@ -341,9 +341,9 @@ export default function AdminPanel() {
   const sidebarItems = [
     { key: "sellers" as const, label: "Vendedores", icon: Users },
     { key: "billing" as const, label: "Faturamento", icon: DollarSign },
-    
     { key: "crm" as const, label: "CRM WhatsApp", icon: MessageCircle },
     { key: "seo" as const, label: "SEO / Sitemaps", icon: Globe },
+    { key: "vendas" as const, label: "Página de Vendas", icon: Rocket },
   ];
 
   return (
@@ -386,7 +386,7 @@ export default function AdminPanel() {
             {sidebarItems.map((item) => (
               <button
                 key={item.key}
-                onClick={() => setTab(item.key)}
+                onClick={() => item.key === "vendas" ? window.open("/vender", "_blank") : setTab(item.key)}
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
                   tab === item.key
                     ? "bg-primary text-primary-foreground shadow-sm"
@@ -410,7 +410,7 @@ export default function AdminPanel() {
           {sidebarItems.map((item) => (
             <button
               key={item.key}
-              onClick={() => setTab(item.key)}
+              onClick={() => item.key === "vendas" ? window.open("/vender", "_blank") : setTab(item.key)}
               className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
                 tab === item.key ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
               }`}
