@@ -100,32 +100,26 @@ export function usePushSubscription(sellerId?: string) {
 
       // Step 5: Save to database
       const subJson = subscription.toJSON();
-      const { error: saveError } = await supabase.from("push_subscriptions" as any).upsert(
+      console.log("[Push] Saving to DB, seller_id:", sellerId);
+      
+      // Delete existing subscription for this endpoint first, then insert fresh
+      await supabase.from("push_subscriptions" as any)
+        .delete()
+        .eq("endpoint", subJson.endpoint);
+      
+      const { error: saveError } = await supabase.from("push_subscriptions" as any).insert(
         {
           seller_id: sellerId,
           endpoint: subJson.endpoint,
           p256dh: subJson.keys?.p256dh || "",
           auth: subJson.keys?.auth || "",
           user_agent: navigator.userAgent,
-        },
-        { onConflict: "endpoint" }
+        }
       );
 
       if (saveError) {
-        // Try insert if upsert fails (no unique constraint on endpoint)
-        console.warn("[Push] Upsert failed, trying insert:", saveError.message);
-        const { error: insertError } = await supabase.from("push_subscriptions" as any).insert({
-          seller_id: sellerId,
-          endpoint: subJson.endpoint,
-          p256dh: subJson.keys?.p256dh || "",
-          auth: subJson.keys?.auth || "",
-          user_agent: navigator.userAgent,
-        });
-        
-        if (insertError && insertError.code !== "23505") {
-          console.error("[Push] Failed to save subscription:", insertError);
-          return false;
-        }
+        console.error("[Push] Failed to save subscription:", saveError.message, saveError.code);
+        return false;
       }
 
       console.log("[Push] Subscription saved successfully!");
