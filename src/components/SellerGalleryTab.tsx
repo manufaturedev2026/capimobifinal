@@ -29,6 +29,17 @@ interface Props {
 
 type ImageFormat = "card" | "banner" | "story";
 type ImageStyle = "verde" | "azul" | "vermelho" | "rosa" | "gold" | "roxo";
+type FontStyle = "moderna" | "elegante" | "negrito" | "suave" | "tech" | "classica" | "manuscrita";
+
+const FONT_CONFIG: Record<FontStyle, { label: string; family: string; preview: string }> = {
+  moderna: { label: "Moderna", family: "'Trebuchet MS', 'Helvetica Neue', Arial, sans-serif", preview: "Aa" },
+  elegante: { label: "Elegante", family: "'Georgia', 'Times New Roman', serif", preview: "Aa" },
+  negrito: { label: "Negrito", family: "'Impact', 'Arial Black', sans-serif", preview: "Aa" },
+  suave: { label: "Suave", family: "'Segoe UI', 'Verdana', sans-serif", preview: "Aa" },
+  tech: { label: "Tech", family: "'Courier New', 'Lucida Console', monospace", preview: "Aa" },
+  classica: { label: "Clássica", family: "'Palatino Linotype', 'Book Antiqua', Palatino, serif", preview: "Aa" },
+  manuscrita: { label: "Manuscrita", family: "'Brush Script MT', 'Comic Sans MS', cursive", preview: "Aa" },
+};
 
 const FORMAT_CONFIG: Record<ImageFormat, { label: string; width: number; height: number; description: string }> = {
   card: { label: "Post (1:1)", width: 1080, height: 1080, description: "Instagram / Facebook" },
