@@ -109,6 +109,8 @@ export default function StoreLayoutMarketplace({
   filteredProducts, subcategories, activeCategory, setActiveCategory,
   categoryCounts, storeTheme, corretorSlug, dbProfile, getTagStyle, getTagLabel, handleWhatsApp,
 }: StoreLayoutProps) {
+  const darkBase = getDarkBase(storeTheme.primary);
+  const darkMid = getDarkMid(storeTheme.primary);
   const [searchTerm, setSearchTerm] = useState("");
   const [heroIdx, setHeroIdx] = useState(0);
   const heroRef = useRef<HTMLDivElement>(null);
