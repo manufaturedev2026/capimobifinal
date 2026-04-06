@@ -833,7 +833,7 @@ export default function CompanyProfile() {
                   <div className="px-2.5 py-2">
                     <h4 className="text-[11px] font-semibold line-clamp-1" style={{ color: storeTheme.text }}>{product.title}</h4>
                     {product.price > 0 && (
-                      <p className="text-xs font-bold text-emerald-500 mt-0.5">R$ {product.price.toLocaleString("pt-BR")}</p>
+                      <p className="text-xs font-bold mt-0.5" style={{ color: storeTheme.primary }}>R$ {product.price.toLocaleString("pt-BR")}</p>
                     )}
                     {product.city && (
                       <p className="text-[9px] mt-0.5 flex items-center gap-0.5" style={{ color: storeTheme.textMuted }}>
