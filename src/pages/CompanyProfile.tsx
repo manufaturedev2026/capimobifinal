@@ -468,6 +468,7 @@ export default function CompanyProfile() {
   const isMarketplace = currentLayout === "marketplace";
   const isMinimal = currentLayout === "minimal";
   const isShowcase = currentLayout === "showcase";
+  const isNetflix = currentLayout === "netflix";
 
   return (
     <div
