@@ -1294,8 +1294,8 @@ export default function CompanyProfile() {
               }
             })()}
 
-            {/* Desktop: keep original grid */}
-            <div id="products-grid" className="hidden lg:block">
+            {/* Desktop: keep original grid (hidden for netflix layout) */}
+            {layout !== "netflix" && <div id="products-grid" className="hidden lg:block">
             {/* Products Header */}
             <div className="flex items-center justify-between mb-4">
               {isShowcase ? (
