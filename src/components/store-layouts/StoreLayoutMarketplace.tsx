@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import {
   MapPin, Image, Search, Bed, Bath, Ruler, Home, Building2,
