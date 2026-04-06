@@ -253,6 +253,15 @@ export default function StoreLayoutNetflix({
           </AnimatePresence>
 
           {/* Top bar buttons */}
+          <div className="absolute top-4 left-4 md:top-6 md:left-12 z-20">
+            <Link
+              to={user && dbProfile && user.id === dbProfile.user_id ? "/painel" : "/login"}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-medium text-white/80 hover:text-white transition-colors"
+              style={{ background: "rgba(255,255,255,0.1)", backdropFilter: "blur(8px)" }}
+            >
+              <LayoutDashboard size={14} /> {user && dbProfile && user.id === dbProfile.user_id ? "Painel" : "Entrar"}
+            </Link>
+          </div>
           <div className="absolute top-4 right-4 md:top-6 md:right-12 z-20 flex items-center gap-2">
             {onShareLink && (
               <button
