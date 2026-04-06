@@ -259,7 +259,8 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
     if (!selectedItem) return;
     setGenerating(format);
     try {
-      const dataUrl = await generateMarketingImage(selectedItem, format, sellerName, sellerPhone, sellerCreci);
+      const chosenPhoto = photos[selectedPhotoIndex] || photos[0];
+      const dataUrl = await generateMarketingImage(selectedItem, format, sellerName, sellerPhone, sellerCreci, chosenPhoto);
       const link = document.createElement("a");
       link.download = `${selectedItem.title.replace(/[^a-zA-Z0-9À-ÿ ]/g, "").trim().replace(/\s+/g, "-")}_${format}.jpg`;
       link.href = dataUrl;
