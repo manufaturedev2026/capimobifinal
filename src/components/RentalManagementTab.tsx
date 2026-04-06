@@ -682,7 +682,7 @@ function ContractForm({ userId, sellerId, properties, editing, onSave, onCancel 
       daily_interest_percent: parseFloat(form.daily_interest_percent) || 0.033,
       start_date: form.start_date,
       end_date: form.end_date || null,
-      status: form.status as any,
+      status: form.status as "ativo" | "encerrado" | "cancelado" | "renovacao",
       notes: form.notes || null,
       owner_name: form.owner_name || null,
       owner_phone: form.owner_phone || null,
