@@ -149,7 +149,8 @@ export default function StoreLayoutMinimal({
             className="text-[10px] md:text-xs font-semibold uppercase tracking-[0.25em] mb-2"
             style={{ color: storeTheme.primary }}
           >
-            Curadoria imobiliária
+            <MapPin size={12} className="inline mr-1 -mt-0.5" />
+            {cityName}
           </motion.p>
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
