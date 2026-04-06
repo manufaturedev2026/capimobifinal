@@ -44,13 +44,13 @@ export default function StoreLayoutMinimal({
 }: StoreLayoutProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const [heroIdx, setHeroIdx] = useState(0);
   const heroRef = useRef<HTMLDivElement>(null);
 
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
-  const heroOpacity = useTransform(scrollYProgress, [0, 1], [1, 0]);
   const heroScale = useTransform(scrollYProgress, [0, 1], [1, 1.1]);
 
-  const heroImage = filteredProducts.find((p: any) => p.image)?.image;
+  const heroImages = filteredProducts.filter((p: any) => p.image).slice(0, 8).map((p: any) => p.image);
   const cityName = dbProfile?.city || "sua região";
   const totalCount = filteredProducts.length;
 
@@ -64,38 +64,49 @@ export default function StoreLayoutMinimal({
       )
     : filteredProducts;
 
+  // Auto-rotate hero images
+  useEffect(() => {
+    if (heroImages.length <= 1) return;
+    const t = setInterval(() => setHeroIdx(prev => (prev + 1) % heroImages.length), 5000);
+    return () => clearInterval(t);
+  }, [heroImages.length]);
+
   const scrollToGrid = () =>
     setTimeout(() => document.getElementById("minimal-grid")?.scrollIntoView({ behavior: "smooth" }), 100);
 
   return (
     <div style={{ background: storeTheme.bg }}>
 
-      {/* ═══ HERO — Cinematic parallax ═══ */}
+      {/* ═══ HERO — Cinematic parallax with auto-rotating images ═══ */}
       <motion.section
         ref={heroRef}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
-        className="relative h-[220px] md:h-[380px] overflow-hidden -mx-4 md:-mx-6 -mt-4 md:-mt-6 mb-0"
+        className="relative h-[260px] md:h-[380px] overflow-hidden -mx-4 md:-mx-6 -mt-6 md:-mt-6 mb-0"
       >
-        {heroImage ? (
-          <motion.img
-            src={heroImage}
-            alt="Hero"
-            className="absolute inset-0 w-full h-full object-cover"
-            style={{ scale: heroScale, opacity: heroOpacity }}
-          />
-        ) : (
-          <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${storeTheme.bg}, ${storeTheme.primary}30)` }} />
-        )}
+        {/* Auto-rotating background images */}
+        <AnimatePresence mode="wait">
+          {heroImages.length > 0 ? (
+            <motion.img
+              key={heroIdx}
+              src={heroImages[heroIdx]}
+              alt="Hero"
+              initial={{ opacity: 0, scale: 1.08 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 1.2 }}
+              className="absolute inset-0 w-full h-full object-cover"
+              style={{ scale: heroScale }}
+            />
+          ) : (
+            <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${storeTheme.bg}, ${storeTheme.primary}30)` }} />
+          )}
+        </AnimatePresence>
 
-        {/* Refined gradient overlays */}
-        <div className="absolute inset-0" style={{
-          background: `linear-gradient(to bottom, ${storeTheme.bg}00 0%, ${storeTheme.bg}40 40%, ${storeTheme.bg}cc 75%, ${storeTheme.bg} 100%)`,
-        }} />
-        <div className="absolute inset-0" style={{
-          background: `linear-gradient(to right, ${storeTheme.bg}90 0%, ${storeTheme.bg}20 50%, transparent 100%)`,
-        }} />
+        {/* Dark gradient overlays for readability */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-black/25" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent" />
 
         {/* Subtle accent line */}
         <motion.div
@@ -121,8 +132,7 @@ export default function StoreLayoutMinimal({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="font-display font-light text-2xl md:text-5xl leading-tight"
-            style={{ color: storeTheme.text }}
+            className="font-display font-light text-2xl md:text-5xl leading-tight text-white drop-shadow-lg"
           >
             Imóveis em{" "}
             <span className="font-bold" style={{ color: storeTheme.primary }}>{cityName}</span>
@@ -131,23 +141,41 @@ export default function StoreLayoutMinimal({
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
-            className="text-xs md:text-sm mt-2 max-w-md"
-            style={{ color: storeTheme.textMuted }}
+            className="text-xs md:text-sm mt-2 max-w-md text-white/70"
           >
             {totalCount} {totalCount === 1 ? "imóvel selecionado" : "imóveis selecionados"} com cuidado
           </motion.p>
 
-          <motion.button
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7 }}
-            onClick={scrollToGrid}
-            className="mt-4 inline-flex items-center gap-2 text-xs font-semibold group"
-            style={{ color: storeTheme.primary }}
-          >
-            Explorar
-            <ChevronDown size={14} className="group-hover:translate-y-1 transition-transform" />
-          </motion.button>
+          <div className="flex items-center gap-4 mt-4">
+            <motion.button
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7 }}
+              onClick={scrollToGrid}
+              className="inline-flex items-center gap-2 text-xs font-semibold group"
+              style={{ color: storeTheme.primary }}
+            >
+              Explorar
+              <ChevronDown size={14} className="group-hover:translate-y-1 transition-transform" />
+            </motion.button>
+
+            {/* Slide indicators */}
+            {heroImages.length > 1 && (
+              <div className="flex gap-1.5">
+                {heroImages.map((_: string, i: number) => (
+                  <button
+                    key={i}
+                    onClick={() => setHeroIdx(i)}
+                    className="h-1 rounded-full transition-all duration-500"
+                    style={{
+                      width: i === heroIdx ? 20 : 6,
+                      background: i === heroIdx ? storeTheme.primary : "rgba(255,255,255,0.3)",
+                    }}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </motion.section>
 
