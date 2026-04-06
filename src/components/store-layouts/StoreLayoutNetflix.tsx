@@ -184,7 +184,7 @@ function NetflixCard({ product, index, corretorSlug, getTagLabel, accent }: {
    Main Netflix Layout
    ═══════════════════════════════════════════ */
 export default function StoreLayoutNetflix({
-  filteredProducts, subcategories, activeCategory, setActiveCategory,
+  filteredProducts, products, subcategories, activeCategory, setActiveCategory,
   categoryCounts, categoryCardImages, storeTheme, corretorSlug,
   isDbProfile, dbProfile, handleWhatsApp, getTagStyle, getTagLabel,
   onCinemaMode, onShareLink, filterCity, setFilterCity, availableCities,
