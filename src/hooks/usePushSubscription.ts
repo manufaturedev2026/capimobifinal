@@ -28,6 +28,14 @@ export function usePushSubscription(sellerId?: string) {
     if (!isSupported || !sellerId) return false;
     setLoading(true);
     try {
+      // Request permission first (iOS requires this before SW registration)
+      const perm = await Notification.requestPermission();
+      setPermission(perm);
+      if (perm !== "granted") {
+        setLoading(false);
+        return false;
+      }
+
       // Get VAPID public key from edge function
       const { data: vapidData, error: vapidError } = await supabase.functions.invoke("get-vapid-key");
       if (vapidError || !vapidData?.publicKey) {
@@ -36,14 +44,18 @@ export function usePushSubscription(sellerId?: string) {
         return false;
       }
 
-      // Register service worker if not already
-      const registration = await navigator.serviceWorker.register("/push-sw.js");
-      await navigator.serviceWorker.ready;
-
-      // Request permission
-      const perm = await Notification.requestPermission();
-      setPermission(perm);
-      if (perm !== "granted") {
+      // Register service worker
+      let registration: ServiceWorkerRegistration;
+      try {
+        registration = await navigator.serviceWorker.register("/push-sw.js");
+        // Wait for the SW to be ready with a timeout
+        const readyPromise = navigator.serviceWorker.ready;
+        const timeoutPromise = new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error("SW ready timeout")), 10000)
+        );
+        await Promise.race([readyPromise, timeoutPromise]);
+      } catch (swErr) {
+        console.error("Service Worker registration failed:", swErr);
         setLoading(false);
         return false;
       }
