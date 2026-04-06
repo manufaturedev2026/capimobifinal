@@ -1089,7 +1089,7 @@ export default function CompanyProfile() {
 
 
       {/* ═══════════ MAIN LAYOUT ═══════════ */}
-      <div className={`max-w-[1800px] mx-auto px-4 md:px-8 ${isMinimal ? "py-0" : "py-6"}`}>
+      <div className={`max-w-[1800px] mx-auto px-4 md:px-8 ${isMinimal || isMarketplace ? "py-0" : "py-6"}`}>
         <div className="flex gap-8">
           {/* ═══════════ DESKTOP SIDEBAR ═══════════ */}
           <aside className={`hidden lg:block w-[280px] flex-shrink-0 ${isMarketplace ? "!hidden" : ""}`}>
