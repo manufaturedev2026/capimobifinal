@@ -128,8 +128,12 @@ async function generateMarketingImage(
   sellerName: string,
   sellerPhone: string | null,
   sellerCreci: string | null,
+  sellerLogo: string | null,
+  style: ImageStyle = "classico",
   photoUrl?: string,
 ): Promise<string> {
+  const { width, height } = FORMAT_CONFIG[format];
+  const s = STYLE_CONFIG[style];
   const { width, height } = FORMAT_CONFIG[format];
   const canvas = document.createElement("canvas");
   canvas.width = width;
