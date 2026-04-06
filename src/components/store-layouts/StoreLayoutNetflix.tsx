@@ -547,6 +547,22 @@ export default function StoreLayoutNetflix({
                 : subcategories.find((c) => c.slug === activeCategory)?.name || "Anúncios"}
               <span className="text-white/60 font-medium ml-2">({filteredProducts.length})</span>
             </h3>
+            {availableCities && availableCities.length > 1 && setFilterCity && (
+              <div className="relative">
+                <select
+                  value={filterCity || ""}
+                  onChange={(e) => setFilterCity(e.target.value)}
+                  className="appearance-none px-3 py-1.5 pr-7 rounded-md text-[11px] font-medium text-white/90 cursor-pointer border border-white/15 outline-none"
+                  style={{ background: "rgba(255,255,255,0.08)" }}
+                >
+                  <option value="" style={{ background: "#141414", color: "#fff" }}>Todas as cidades</option>
+                  {availableCities.map(city => (
+                    <option key={city} value={city} style={{ background: "#141414", color: "#fff" }}>{city}</option>
+                  ))}
+                </select>
+                <MapPin size={10} className="absolute right-2 top-1/2 -translate-y-1/2 text-white/50 pointer-events-none" />
+              </div>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-3">
