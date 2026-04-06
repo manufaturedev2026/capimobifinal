@@ -188,8 +188,37 @@ export default function RentalManagementTab({ userId, sellerId }: Props) {
       return true;
     });
   }, [contracts, statusFilter, search]);
+  // ── Quick actions from alerts ──
+  const markAsPaid = async (contract: RentalContract) => {
+    const now = new Date();
+    const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+    const dueDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(contract.due_day).padStart(2, "0")}`;
+    
+    // Check if payment record exists
+    const existing = payments.find(p => p.contract_id === contract.id && p.reference_month === currentMonth);
+    if (existing) {
+      await supabase.from("rental_payments").update({ status: "pago", amount_paid: contract.rent_amount, paid_at: now.toISOString(), payment_method: "manual" }).eq("id", existing.id);
+    } else {
+      await supabase.from("rental_payments").insert({
+        user_id: userId, contract_id: contract.id, reference_month: currentMonth,
+        amount_due: contract.rent_amount, total_due: contract.rent_amount, amount_paid: contract.rent_amount,
+        due_date: dueDate, status: "pago" as any, paid_at: now.toISOString(), payment_method: "manual",
+      });
+    }
+    toast({ title: "✅ Pago!", description: `Pagamento de ${contract.tenant_name} registrado.` });
+    setExpandedAlertId(null);
+    fetchAll();
+  };
 
-  const sendWhatsAppReminder = (contract: RentalContract, type: string) => {
+  const updateContractStatus = async (contract: RentalContract, newStatus: "ativo" | "encerrado" | "cancelado" | "renovacao") => {
+    await supabase.from("rental_contracts").update({ status: newStatus }).eq("id", contract.id);
+    const labels = { ativo: "Ativado", encerrado: "Encerrado", cancelado: "Cancelado", renovacao: "Em Renovação" };
+    toast({ title: `📋 ${labels[newStatus]}`, description: `Contrato de ${contract.tenant_name} atualizado.` });
+    setExpandedAlertId(null);
+    fetchAll();
+  };
+
+
     if (!contract.tenant_phone) {
       toast({ title: "Sem telefone", description: "O inquilino não tem telefone cadastrado." });
       return;
