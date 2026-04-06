@@ -800,6 +800,7 @@ function ContractForm({ userId, sellerId, properties, editing, onSave, onCancel 
     tenant_email: editing?.tenant_email || "",
     item_id: editing?.item_id || "",
     item_label: (editing as any)?.item_label || "",
+    rent_amount: editing?.rent_amount?.toString() || "",
     due_day: editing?.due_day?.toString() || "10",
     late_fee_percent: editing?.late_fee_percent?.toString() || "2",
     daily_interest_percent: editing?.daily_interest_percent?.toString() || "0.033",
