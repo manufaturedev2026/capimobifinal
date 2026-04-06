@@ -251,7 +251,7 @@ export default function StoreLayoutMarketplace({
           >
             <Sparkles size={14} style={{ color: storeTheme.primary }} />
             <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest" style={{ color: storeTheme.primary }}>
-              Marketplace Imobiliário
+              {dbProfile?.full_name || "Corretor"} — Corretor Imobiliário
             </span>
           </motion.div>
 
