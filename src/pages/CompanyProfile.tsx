@@ -880,6 +880,18 @@ export default function CompanyProfile() {
                 )}
                 {dbProfile?.bio && (
                   <p className="text-white/70 text-xs leading-relaxed mb-3">{dbProfile.bio}</p>
+                  <div className="flex gap-2 w-full mb-4 lg:hidden">
+                    {company.whatsapp && (
+                      <button onClick={() => handleWhatsApp(heroProduct?.title || company.name, heroProduct?.id)} className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-[#25d366] text-white font-bold text-sm shadow-lg active:scale-95 transition-transform">
+                        <MessageCircle size={16} /> WhatsApp
+                      </button>
+                    )}
+                    {(company as any).instagram && ["start", "vip", "premium", "essencial_empresa", "premium_empresa", "prime_empresa"].includes(sellerTier || "") && (
+                      <a href={`https://instagram.com/${(company as any).instagram.replace(/^@/, "")}`} target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-gradient-to-r from-[#833AB4] via-[#E1306C] to-[#F77737] text-white font-bold text-sm shadow-lg active:scale-95 transition-transform">
+                        <Instagram size={16} /> Instagram
+                      </a>
+                    )}
+                  </div>
                 )}
                 <Link
                   to={`/imoveis/produto/${heroProduct.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`}
