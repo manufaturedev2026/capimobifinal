@@ -624,9 +624,9 @@ export default function StoreLayoutNetflix({
 
       {filteredProducts.length === 0 && (
         <div className="text-center py-20 px-4">
-          <Image size={48} className="mx-auto mb-3 text-gray-600" />
-          <p className="text-lg font-medium text-gray-400">Nenhum imóvel encontrado</p>
-          <button onClick={() => setActiveCategory("todos")} className="text-[#e50914] text-sm mt-2 hover:underline">Ver todos</button>
+          <Image size={48} className="mx-auto mb-3" style={{ color: storeTheme.textMuted }} />
+          <p className="text-lg font-medium" style={{ color: storeTheme.textMuted }}>Nenhum imóvel encontrado</p>
+          <button onClick={() => setActiveCategory("todos")} className="text-sm mt-2 hover:underline" style={{ color: storeTheme.primary }}>Ver todos</button>
         </div>
       )}
     </div>
