@@ -608,7 +608,7 @@ export default function RentalManagementTab({ userId, sellerId }: Props) {
           <div className="flex items-start justify-between mb-4">
             <div>
               <h2 className="text-lg font-bold text-foreground">{contract.tenant_name}</h2>
-              {property && <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5"><Home size={11} /> {property.title}</p>}
+              {(property || (contract as any).item_label) && <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5"><Home size={11} /> {property?.title || (contract as any).item_label}</p>}
             </div>
             <span className={`px-2.5 py-1 rounded-lg text-xs font-bold border ${cfg.color}`}>{cfg.label}</span>
           </div>
