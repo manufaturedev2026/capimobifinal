@@ -509,8 +509,8 @@ export default function StoreLayoutNetflix({
                   style={{
                     width: "clamp(120px, 18vw, 180px)",
                     aspectRatio: "2/3",
-                    outline: isActive ? "2px solid #e50914" : "2px solid transparent",
-                    outlineOffset: 2,
+                     outline: isActive ? "2px solid #fff" : "2px solid transparent",
+                     outlineOffset: 2,
                   }}
                 >
                   {coverImg ? (
