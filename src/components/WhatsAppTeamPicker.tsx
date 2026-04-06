@@ -58,7 +58,20 @@ async function fetchTeamMembers(sellerId: string): Promise<TeamMember[]> {
 
 function sendToWhatsApp(phone: string, name: string, title: string, link: string) {
   const msg = `Olá ${name}! 🏠 Vi o imóvel *${title}* no Brokers App e gostaria de mais informações.\n\n🔗 ${link}`;
-  window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, "_blank");
+  const url = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+  const isStandalone = window.matchMedia("(display-mode: standalone)").matches
+    || (navigator as any).standalone === true;
+  if (isStandalone) {
+    const a = document.createElement("a");
+    a.href = url;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  } else {
+    window.open(url, "_blank");
+  }
 }
 
 export function WhatsAppTeamPickerProvider({ children }: { children: React.ReactNode }) {
