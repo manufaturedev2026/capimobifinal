@@ -215,7 +215,7 @@ async function generateMarketingImage(
   if (item.price && item.price > 0) {
     const priceText = formatPrice(item.price);
     const priceFontSize = Math.round(28 * scale);
-    ctx.font = `900 ${priceFontSize}px ${font}`;
+    ctx.font = `900 ${priceFontSize}px ${baseFont}`;
     const priceMetrics = ctx.measureText(priceText);
     const badgePad = Math.round(16 * scale);
     const badgeW = priceMetrics.width + badgePad * 2;
