@@ -849,7 +849,7 @@ export default function CompanyProfile() {
         </div>
       )}
 
-      <section className={`hidden lg:block relative overflow-hidden ${hasVideoHero ? "h-[70vh]" : "h-[60vh]"}`}>
+      <section className={`hidden lg:block relative overflow-hidden ${isMinimal ? "!hidden" : ""} ${hasVideoHero ? "h-[70vh]" : "h-[60vh]"}`}>
         {/* Video background or sliding images */}
         {hasVideoHero ? (
           <iframe
@@ -1043,7 +1043,7 @@ export default function CompanyProfile() {
       </section>
 
       {/* ═══════════ STATS BAR ═══════════ */}
-      <section className="hidden lg:block" style={{ borderBottom: `1px solid ${storeTheme.border}`, background: storeTheme.card }}>
+      <section className={`hidden lg:block ${isMinimal ? "!hidden" : ""}`} style={{ borderBottom: `1px solid ${storeTheme.border}`, background: storeTheme.card }}>
         <div className="max-w-[1800px] mx-auto px-4 md:px-8">
           <div className="flex items-center gap-6 py-3 overflow-x-auto scrollbar-hide">
             <div className="flex items-center gap-2 text-sm flex-shrink-0">
