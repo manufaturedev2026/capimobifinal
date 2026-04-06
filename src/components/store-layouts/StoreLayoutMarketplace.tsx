@@ -232,7 +232,7 @@ export default function StoreLayoutMarketplace({
                 const el = document.getElementById("marketplace-grid");
                 el?.scrollIntoView({ behavior: "smooth" });
               }}
-              className="group inline-flex items-center gap-2 px-7 py-3.5 rounded-2xl font-bold text-sm text-white shadow-2xl transition-all hover:scale-105 hover:shadow-[0_0_30px_rgba(0,0,0,0.3)]"
+              className="group inline-flex items-center gap-2 px-5 py-2.5 md:px-7 md:py-3.5 rounded-2xl font-bold text-xs md:text-sm text-white shadow-2xl transition-all hover:scale-105"
               style={{
                 background: `linear-gradient(135deg, ${storeTheme.primary}, ${storeTheme.primary}bb)`,
                 boxShadow: `0 8px 32px ${storeTheme.primary}40`,
