@@ -64,7 +64,7 @@ export default function StoriesBar({ onAddStory, textColor }: StoriesBarProps) {
                   />
                 </div>
               </div>
-              <span className="text-[11px] text-foreground font-semibold truncate max-w-[72px]">
+              <span className="text-[11px] font-semibold truncate max-w-[72px]" style={textColor ? { color: textColor } : undefined}>
                 {seller.sellerName.split(" ")[0]}
               </span>
             </button>
