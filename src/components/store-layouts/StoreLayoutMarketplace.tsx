@@ -381,42 +381,112 @@ export default function StoreLayoutMarketplace({
 
         <ShimmerLine color={storeTheme.primary} />
 
-        {/* ═══ PROMO BANNERS — Glow + hover lift ═══ */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="grid grid-cols-1 md:grid-cols-2 gap-4 my-8"
-        >
-          {[
+        {/* ═══ PROMO BANNERS — Auto-scroll on mobile + swipeable ═══ */}
+        {(() => {
+          const promoBanners = [
             { slug: "todos", title: ["Todos os", "Imóveis"], desc: "Veja todos os imóveis disponíveis na região", icon: Home },
             { slug: "casa", title: ["Casa", "Própria"], desc: "As melhores casas para você e sua família", icon: Building2 },
-          ].map((banner, bIdx) => (
-            <motion.div
-              key={banner.slug}
-              whileHover={{ y: -4, transition: { duration: 0.25 } }}
-              className="relative h-36 md:h-52 rounded-2xl overflow-hidden group cursor-pointer"
-              onClick={() => { setActiveCategory(banner.slug); scrollToGrid(); }}
-              style={{ boxShadow: `0 8px 32px ${storeTheme.primary}18` }}
+            { slug: "apartamento", title: ["Aptos", "Modernos"], desc: "Apartamentos com a melhor localização", icon: Building2 },
+            { slug: "aluguel", title: ["Para", "Alugar"], desc: "Opções de aluguel com ótimo custo-benefício", icon: Key },
+          ].filter(b => b.slug === "todos" || (categoryCounts[b.slug] || 0) > 0);
+
+          return (
+            <motion.section
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="my-8"
             >
-              <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${darkBase}, ${storeTheme.primary}${bIdx === 0 ? "" : "cc"})` }} />
-              <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent" />
-              <FloatingParticles color={storeTheme.primary} />
-              <div className="relative z-10 h-full flex flex-col justify-center p-6">
-                <h3 className="font-display font-black text-xl md:text-3xl text-white leading-tight">
-                  {banner.title[0]}<br />{banner.title[1]}
-                </h3>
-                <p className="text-white/60 text-xs mt-2 max-w-[200px]">{banner.desc}</p>
-                <span className="inline-flex items-center gap-1.5 text-white/90 text-xs font-bold mt-3 group-hover:gap-3 transition-all">
-                  Explorar <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-                </span>
+              {/* Mobile: horizontal auto-scroll carousel */}
+              <div className="md:hidden relative">
+                <div
+                  ref={promoScrollRef}
+                  className="flex gap-3 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-2"
+                  onTouchStart={() => {}}
+                >
+                  {promoBanners.map((banner, bIdx) => (
+                    <motion.div
+                      key={banner.slug}
+                      className="relative h-40 rounded-2xl overflow-hidden cursor-pointer snap-center flex-shrink-0"
+                      style={{
+                        width: "85%",
+                        minWidth: "85%",
+                        boxShadow: `0 8px 32px ${storeTheme.primary}18`,
+                      }}
+                      onClick={() => { setActiveCategory(banner.slug); scrollToGrid(); }}
+                    >
+                      <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${darkBase}, ${storeTheme.primary}${bIdx === 0 ? "" : "cc"})` }} />
+                      <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent" />
+                      <FloatingParticles color={storeTheme.primary} />
+                      <div className="relative z-10 h-full flex flex-col justify-center p-5">
+                        <h3 className="font-display font-black text-xl text-white leading-tight">
+                          {banner.title[0]}<br />{banner.title[1]}
+                        </h3>
+                        <p className="text-white/60 text-xs mt-2 max-w-[200px]">{banner.desc}</p>
+                        <span className="inline-flex items-center gap-1.5 text-white/90 text-xs font-bold mt-3">
+                          Explorar <ArrowRight size={14} />
+                        </span>
+                      </div>
+                      <div className="absolute right-0 top-0 bottom-0 w-1/3 opacity-10">
+                        <banner.icon size={120} className="absolute -right-4 top-1/2 -translate-y-1/2 text-white" />
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+                {/* Dots */}
+                <div className="flex justify-center gap-1.5 mt-3">
+                  {promoBanners.map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => {
+                        const el = promoScrollRef.current;
+                        if (el) {
+                          const card = el.children[i] as HTMLElement;
+                          card?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+                        }
+                        setPromoIdx(i);
+                      }}
+                      className="h-1.5 rounded-full transition-all duration-300"
+                      style={{
+                        width: i === promoIdx ? 24 : 8,
+                        background: i === promoIdx ? storeTheme.primary : `${storeTheme.textMuted}40`,
+                      }}
+                    />
+                  ))}
+                </div>
               </div>
-              <div className="absolute right-0 top-0 bottom-0 w-1/3 opacity-10">
-                <banner.icon size={140} className="absolute -right-6 top-1/2 -translate-y-1/2 text-white" />
+
+              {/* Desktop: grid */}
+              <div className="hidden md:grid md:grid-cols-2 gap-4">
+                {promoBanners.slice(0, 2).map((banner, bIdx) => (
+                  <motion.div
+                    key={banner.slug}
+                    whileHover={{ y: -4, transition: { duration: 0.25 } }}
+                    className="relative h-52 rounded-2xl overflow-hidden group cursor-pointer"
+                    onClick={() => { setActiveCategory(banner.slug); scrollToGrid(); }}
+                    style={{ boxShadow: `0 8px 32px ${storeTheme.primary}18` }}
+                  >
+                    <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${darkBase}, ${storeTheme.primary}${bIdx === 0 ? "" : "cc"})` }} />
+                    <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent" />
+                    <FloatingParticles color={storeTheme.primary} />
+                    <div className="relative z-10 h-full flex flex-col justify-center p-6">
+                      <h3 className="font-display font-black text-3xl text-white leading-tight">
+                        {banner.title[0]}<br />{banner.title[1]}
+                      </h3>
+                      <p className="text-white/60 text-xs mt-2 max-w-[200px]">{banner.desc}</p>
+                      <span className="inline-flex items-center gap-1.5 text-white/90 text-xs font-bold mt-3 group-hover:gap-3 transition-all">
+                        Explorar <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                      </span>
+                    </div>
+                    <div className="absolute right-0 top-0 bottom-0 w-1/3 opacity-10">
+                      <banner.icon size={140} className="absolute -right-6 top-1/2 -translate-y-1/2 text-white" />
+                    </div>
+                  </motion.div>
+                ))}
               </div>
-            </motion.div>
-          ))}
-        </motion.section>
+            </motion.section>
+          );
+        })()}
 
         {/* ═══ CATEGORY CIRCLES — Animated borders ═══ */}
         {activeCats.length > 2 && (
