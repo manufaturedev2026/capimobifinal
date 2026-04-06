@@ -525,11 +525,11 @@ export default function StoreLayoutNetflix({
       {filteredProducts.length > 0 && (
         <section id="products-grid" className="lg:hidden px-4 pb-10">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-bold text-base text-white">
+            <h3 className="font-bold text-base" style={{ color: storeTheme.text }}>
               {activeCategory === "todos"
                 ? "Todos os Anúncios"
                 : subcategories.find((c) => c.slug === activeCategory)?.name || "Anúncios"}
-              <span className="text-white/60 font-medium ml-2">({filteredProducts.length})</span>
+              <span className="font-medium ml-2" style={{ color: storeTheme.textMuted }}>({filteredProducts.length})</span>
             </h3>
             {availableCities && availableCities.length > 1 && setFilterCity && (
               <div className="relative">
