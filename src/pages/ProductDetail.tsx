@@ -523,7 +523,71 @@ export default function ProductDetail() {
 
   const themeVars = buildThemeCSSVars(dbSeller?.store_theme);
 
+  const seoTitle = `${product.title} — ${product.city ? `Imóvel em ${product.city}` : "Imóvel"} | ${company.name}`;
+  const seoDesc = [
+    product.title,
+    product.city && `em ${product.city}`,
+    product.neighborhood && `(${product.neighborhood})`,
+    product.price && `por R$ ${Number(product.price).toLocaleString("pt-BR")}`,
+    product.bedrooms && `${product.bedrooms} quartos`,
+    product.area && `${product.area}m²`,
+    `— ${company.name}`,
+  ].filter(Boolean).join(" ").slice(0, 160);
+  const seoImage = product.photos?.[0] || company.logo || "";
+  const seoUrl = `https://brokergb.lovable.app/imoveis/produto/${product.id}`;
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "RealEstateListing",
+    name: product.title,
+    description: product.description || seoDesc,
+    url: seoUrl,
+    ...(seoImage && { image: product.photos || [seoImage] }),
+    ...(product.price && {
+      offers: {
+        "@type": "Offer",
+        price: product.price,
+        priceCurrency: "BRL",
+        availability: "https://schema.org/InStock",
+      },
+    }),
+    address: {
+      "@type": "PostalAddress",
+      ...(product.neighborhood && { addressLocality: product.neighborhood }),
+      ...(product.city && { addressRegion: product.city }),
+      ...(product.state && { addressCountry: "BR" }),
+    },
+    ...(product.area && { floorSize: { "@type": "QuantitativeValue", value: product.area, unitCode: "MTK" } }),
+    ...(product.bedrooms && { numberOfRooms: product.bedrooms }),
+    ...(product.bathrooms && { numberOfBathroomsTotal: product.bathrooms }),
+    broker: {
+      "@type": "RealEstateAgent",
+      name: company.name,
+      ...(company.logo && { image: company.logo }),
+      ...(company.whatsapp && { telephone: company.whatsapp }),
+    },
+  };
+
   return (
+    <>
+      <Helmet>
+        <title>{seoTitle}</title>
+        <meta name="description" content={seoDesc} />
+        <link rel="canonical" href={seoUrl} />
+
+        <meta property="og:type" content="product" />
+        <meta property="og:title" content={seoTitle} />
+        <meta property="og:description" content={seoDesc} />
+        <meta property="og:url" content={seoUrl} />
+        {seoImage && <meta property="og:image" content={seoImage} />}
+
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={seoTitle} />
+        <meta name="twitter:description" content={seoDesc} />
+        {seoImage && <meta name="twitter:image" content={seoImage} />}
+
+        <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
+      </Helmet>
     <div className="min-h-screen bg-background pb-24 lg:pb-0 relative overflow-hidden" style={themeVars}>
       {isDb && dbSeller?.id && <StoreEffects sellerId={dbSeller.id} />}
       <ThemeParticles color={getStoreTheme(dbSeller?.store_theme).primary} sellerId={dbSeller?.id} />
