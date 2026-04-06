@@ -358,15 +358,26 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
         </div>
       </div>
 
-      {/* Hero Banner */}
+      {/* Hero Banner — preview da foto selecionada */}
       {photos.length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           className="relative rounded-2xl overflow-hidden cursor-pointer group"
-          onClick={() => setLightboxIndex(0)}
+          onClick={() => setLightboxIndex(selectedPhotoIndex)}
         >
-          <img src={photos[0]} alt={selectedItem?.title} className="w-full aspect-[16/9] sm:aspect-[21/9] object-cover group-hover:scale-[1.02] transition-transform duration-700" />
+          <AnimatePresence mode="wait">
+            <motion.img
+              key={selectedPhotoIndex}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              src={photos[selectedPhotoIndex]}
+              alt={selectedItem?.title}
+              className="w-full aspect-[16/9] sm:aspect-[21/9] object-cover group-hover:scale-[1.02] transition-transform duration-700"
+            />
+          </AnimatePresence>
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
           <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6">
             <h2 className="text-white font-extrabold text-lg sm:text-2xl leading-tight line-clamp-2">{selectedItem?.title}</h2>
@@ -383,9 +394,18 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
               {selectedItem?.bathrooms && <span>🚿 {selectedItem.bathrooms} banheiros</span>}
               {selectedItem?.area && <span>📐 {selectedItem.area}m²</span>}
             </div>
+            {/* Seller branding preview */}
+            <p className="mt-1.5 text-white/50 text-[10px]">
+              {sellerName}{sellerCreci ? ` • CRECI ${sellerCreci}` : ""}{sellerPhone ? ` • ${sellerPhone}` : ""}
+            </p>
           </div>
+          {selectedItem?.price && selectedItem.price > 0 && (
+            <div className="absolute top-3 left-3 bg-primary text-primary-foreground text-xs font-black px-3 py-1.5 rounded-lg">
+              {formatPrice(selectedItem.price)}
+            </div>
+          )}
           <div className="absolute top-3 right-3 bg-black/50 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded-lg flex items-center gap-1">
-            <Eye size={12} /> Clique para ampliar
+            <Eye size={12} /> Preview do anúncio
           </div>
         </motion.div>
       )}
