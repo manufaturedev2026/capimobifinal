@@ -86,14 +86,14 @@ function NetflixCard({ product, index, corretorSlug, getTagLabel, accent }: {
 
   return (
     <div
-      className="flex-shrink-0 relative"
-      style={{ width: "clamp(180px, 22vw, 300px)" }}
+      className="flex-shrink-0 relative overflow-visible"
+      style={{ width: "clamp(180px, 22vw, 300px)", zIndex: hovered ? 30 : 1 }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
       <Link to={productLink} className="block">
         <motion.div
-          animate={hovered ? { scale: 1.3, zIndex: 30 } : { scale: 1, zIndex: 1 }}
+          animate={hovered ? { scale: 1.15 } : { scale: 1 }}
           transition={{ duration: 0.25, ease: "easeOut" }}
           className="relative rounded-md overflow-visible"
           style={{ transformOrigin: index === 0 ? "left center" : "center center" }}
