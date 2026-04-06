@@ -35,7 +35,7 @@ export default function StoriesBar({ onAddStory, textColor }: StoriesBarProps) {
               <div className="w-16 h-16 md:w-[72px] md:h-[72px] rounded-full border-2 border-dashed border-muted-foreground/40 flex items-center justify-center bg-muted/50 hover:bg-muted transition-colors">
                 <Plus className="w-6 h-6 text-muted-foreground" />
               </div>
-              <span className="text-[11px] text-muted-foreground font-medium truncate max-w-[72px]">Publicar</span>
+              <span className="text-[11px] font-medium truncate max-w-[72px]" style={textColor ? { color: textColor } : undefined}>Publicar</span>
             </button>
           )}
 
