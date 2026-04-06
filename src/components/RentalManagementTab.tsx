@@ -297,46 +297,49 @@ export default function RentalManagementTab({ userId, sellerId }: Props) {
           </button>
         </div>
 
-        {/* ── Active contracts with reminders ── */}
-        {contracts.filter(c => c.status === "ativo").length > 0 && (
-          <div>
-            <h3 className="font-bold text-sm text-foreground mb-3 flex items-center gap-2">
-              <Calendar size={16} className="text-primary" /> Alertas de Vencimento
-            </h3>
-            <div className="space-y-2">
-              {contracts.filter(c => c.status === "ativo").map(contract => {
-                const reminder = getPaymentReminders(contract);
-                if (!reminder) return null;
-                return (
+        {/* ── All contracts with reminders (active or expired) ── */}
+        {(() => {
+          const alertContracts = contracts
+            .filter(c => c.status === "ativo" || c.status === "renovacao")
+            .map(c => ({ contract: c, reminder: getPaymentReminders(c) }))
+            .filter(x => x.reminder !== null);
+          if (alertContracts.length === 0) return null;
+          return (
+            <div>
+              <h3 className="font-bold text-sm text-foreground mb-3 flex items-center gap-2">
+                <AlertTriangle size={16} className="text-red-500" /> Alertas de Vencimento ({alertContracts.length})
+              </h3>
+              <div className="space-y-2">
+                {alertContracts.map(({ contract, reminder }) => (
                   <motion.div
                     key={contract.id}
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
-                    className="flex items-center justify-between p-3 rounded-xl border border-border bg-card"
+                    className={`flex items-center justify-between p-3 rounded-xl border bg-card ${reminder!.type === "atrasado" ? "border-red-500/40" : "border-border"}`}
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-lg bg-muted flex items-center justify-center">
-                        <User size={16} className="text-muted-foreground" />
+                      <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${reminder!.type === "atrasado" ? "bg-red-500/15" : "bg-muted"}`}>
+                        {reminder!.type === "atrasado" ? <AlertTriangle size={16} className="text-red-500" /> : <Clock size={16} className="text-muted-foreground" />}
                       </div>
                       <div>
                         <p className="text-sm font-bold text-foreground">{contract.tenant_name}</p>
-                        <p className={`text-xs font-medium ${reminder.color}`}>{reminder.label} — {fmt(contract.rent_amount)}</p>
+                        <p className={`text-xs font-medium ${reminder!.color}`}>{reminder!.label} — {fmt(contract.rent_amount)}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
                       <button
-                        onClick={() => sendWhatsAppReminder(contract, reminder.type)}
+                        onClick={() => sendWhatsAppReminder(contract, reminder!.type)}
                         className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-green-500 text-white hover:bg-green-600 transition-colors"
                       >
                         <Send size={12} /> WhatsApp
                       </button>
                     </div>
                   </motion.div>
-                );
-              })}
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
       </div>
     );
   }
