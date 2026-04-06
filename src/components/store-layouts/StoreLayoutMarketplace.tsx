@@ -79,7 +79,7 @@ export default function StoreLayoutMarketplace({
                 el?.scrollIntoView({ behavior: "smooth" });
               }}
               className="mt-4 inline-flex items-center gap-2 px-6 py-3 rounded-2xl font-bold text-sm text-white shadow-lg transition-transform hover:scale-105"
-              style={{ background: `linear-gradient(135deg, ${storeTheme.primary}, #1a5fcc)` }}
+              style={{ background: `linear-gradient(135deg, ${storeTheme.primary}, ${storeTheme.primary}cc)` }}
             >
               Ver ofertas <ArrowRight size={16} />
             </button>
