@@ -476,26 +476,6 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
         </div>
       )}
 
-      {/* Photo Grid */}
-      {photos.length > 1 && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
-          {photos.slice(1).map((photo, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: i * 0.03 }}
-              className="aspect-square rounded-xl overflow-hidden cursor-pointer group relative"
-              onClick={() => setLightboxIndex(i + 1)}
-            >
-              <img src={photo} alt={`Foto ${i + 2}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
-                <Eye size={20} className="text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg" />
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      )}
 
       {photos.length === 0 && (
         <div className="text-center py-16 rounded-2xl border border-dashed border-border">
