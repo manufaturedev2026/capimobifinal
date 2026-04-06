@@ -139,7 +139,10 @@ export default function StoreLayoutMarketplace({
               return (
                 <button
                   key={action.slug}
-                  onClick={() => setActiveCategory(isActive ? "todos" : action.slug)}
+                  onClick={() => {
+                    setActiveCategory(isActive ? "todos" : action.slug);
+                    setTimeout(() => document.getElementById("marketplace-grid")?.scrollIntoView({ behavior: "smooth" }), 100);
+                  }}
                   className="flex-shrink-0 flex flex-col items-center gap-2 p-4 rounded-2xl transition-all min-w-[100px] group"
                   style={{
                     background: isActive ? `${storeTheme.primary}12` : storeTheme.card,
