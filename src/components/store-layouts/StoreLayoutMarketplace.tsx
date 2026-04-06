@@ -490,7 +490,7 @@ export default function StoreLayoutMarketplace({
 
         {/* ═══ PRODUCT GRID — Staggered reveal + hover glow ═══ */}
         {visibleProducts.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-12">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 mb-12">
             {visibleProducts.map((product: any, i: number) => {
               const productLink = `/imoveis/produto/${product.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`;
               return (
