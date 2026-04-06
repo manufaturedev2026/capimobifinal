@@ -231,7 +231,7 @@ export default function StoreLayoutNetflix({
     .filter(r => r.items.length > 0);
 
   return (
-    <div className="-mx-4 md:-mx-8" style={{ background: "#141414" }}>
+    <div className="-mx-4 md:-mx-8" style={{ background: storeTheme.bg }}>
       {/* ══════ BILLBOARD ══════ */}
       {billboard.length > 0 && currentBillboard && (
         <div className="relative w-full" style={{ aspectRatio: "16/7", minHeight: 320 }}>
@@ -525,11 +525,11 @@ export default function StoreLayoutNetflix({
       {filteredProducts.length > 0 && (
         <section id="products-grid" className="lg:hidden px-4 pb-10">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-bold text-base text-white">
+            <h3 className="font-bold text-base" style={{ color: storeTheme.text }}>
               {activeCategory === "todos"
                 ? "Todos os Anúncios"
                 : subcategories.find((c) => c.slug === activeCategory)?.name || "Anúncios"}
-              <span className="text-white/60 font-medium ml-2">({filteredProducts.length})</span>
+              <span className="font-medium ml-2" style={{ color: storeTheme.textMuted }}>({filteredProducts.length})</span>
             </h3>
             {availableCities && availableCities.length > 1 && setFilterCity && (
               <div className="relative">
@@ -562,7 +562,8 @@ export default function StoreLayoutNetflix({
                 >
                   <Link
                     to={productLink}
-                    className="block overflow-hidden rounded-lg bg-[#181818] border border-white/10"
+                    className="block overflow-hidden rounded-lg"
+                    style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}
                   >
                     <div className="relative aspect-[4/3] overflow-hidden">
                       {product.image ? (
@@ -573,8 +574,8 @@ export default function StoreLayoutNetflix({
                           loading="lazy"
                         />
                       ) : (
-                        <div className="w-full h-full bg-[#232323] flex items-center justify-center">
-                          <Image size={24} className="text-white/30" />
+                        <div className="w-full h-full flex items-center justify-center" style={{ background: storeTheme.card }}>
+                          <Image size={24} style={{ color: storeTheme.textMuted }} />
                         </div>
                       )}
 
@@ -595,17 +596,17 @@ export default function StoreLayoutNetflix({
 
                     <div className="p-3">
                       {product.price > 0 && (
-                        <p className="text-sm font-bold text-green-400 mb-1">
+                        <p className="text-sm font-bold mb-1" style={{ color: storeTheme.primary }}>
                           R$ {product.price.toLocaleString("pt-BR")}
                         </p>
                       )}
 
-                      <h4 className="text-white text-[11px] font-semibold leading-tight line-clamp-2 mb-1.5">
+                      <h4 className="text-[11px] font-semibold leading-tight line-clamp-2 mb-1.5" style={{ color: storeTheme.text }}>
                         {product.title}
                       </h4>
 
                       {product.city && (
-                        <p className="text-[10px] text-white/55 flex items-center gap-1 line-clamp-1">
+                        <p className="text-[10px] flex items-center gap-1 line-clamp-1" style={{ color: storeTheme.textMuted }}>
                           <MapPin size={10} />
                           {product.neighborhood
                             ? `${product.neighborhood}, ${product.city}`
@@ -623,9 +624,9 @@ export default function StoreLayoutNetflix({
 
       {filteredProducts.length === 0 && (
         <div className="text-center py-20 px-4">
-          <Image size={48} className="mx-auto mb-3 text-gray-600" />
-          <p className="text-lg font-medium text-gray-400">Nenhum imóvel encontrado</p>
-          <button onClick={() => setActiveCategory("todos")} className="text-[#e50914] text-sm mt-2 hover:underline">Ver todos</button>
+          <Image size={48} className="mx-auto mb-3" style={{ color: storeTheme.textMuted }} />
+          <p className="text-lg font-medium" style={{ color: storeTheme.textMuted }}>Nenhum imóvel encontrado</p>
+          <button onClick={() => setActiveCategory("todos")} className="text-sm mt-2 hover:underline" style={{ color: storeTheme.primary }}>Ver todos</button>
         </div>
       )}
     </div>
