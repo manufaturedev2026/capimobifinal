@@ -40,14 +40,16 @@ const CATEGORY_ICONS: Record<string, React.ElementType> = {
  * Minimal Layout — Elegant & immersive with refined typography
  */
 export default function StoreLayoutMinimal({
-  filteredProducts, subcategories, activeCategory, setActiveCategory,
+  filteredProducts, products, subcategories, activeCategory, setActiveCategory,
   categoryCounts, storeTheme, corretorSlug, dbProfile, getTagStyle, getTagLabel, handleWhatsApp,
+  filterCity, setFilterCity, availableCities,
 }: StoreLayoutProps) {
   const { user } = useAuth();
   const isOwner = !!(user && dbProfile && user.id === dbProfile.user_id);
   const [searchTerm, setSearchTerm] = useState("");
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [heroIdx, setHeroIdx] = useState(0);
+  const [showCityPicker, setShowCityPicker] = useState(false);
   const heroRef = useRef<HTMLDivElement>(null);
 
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
@@ -163,17 +165,65 @@ export default function StoreLayoutMinimal({
           </motion.p>
 
           <div className="flex items-center gap-4 mt-4">
-            <motion.button
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.7 }}
-              onClick={scrollToGrid}
-              className="inline-flex items-center gap-2 text-xs font-semibold group"
-              style={{ color: storeTheme.primary }}
-            >
-              Explorar
-              <ChevronDown size={14} className="group-hover:translate-y-1 transition-transform" />
-            </motion.button>
+            <div className="relative">
+              <motion.button
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.7 }}
+                onClick={() => {
+                  if (availableCities && availableCities.length > 1) {
+                    setShowCityPicker(prev => !prev);
+                  } else {
+                    scrollToGrid();
+                  }
+                }}
+                className="inline-flex items-center gap-2 text-xs font-semibold group"
+                style={{ color: storeTheme.primary }}
+              >
+                {filterCity ? `📍 ${filterCity}` : "Explorar"}
+                <ChevronDown size={14} className={`transition-transform ${showCityPicker ? "rotate-180" : "group-hover:translate-y-1"}`} />
+              </motion.button>
+
+              {/* City picker dropdown */}
+              <AnimatePresence>
+                {showCityPicker && availableCities && availableCities.length > 1 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -5, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -5, scale: 0.95 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute bottom-full mb-2 left-0 min-w-[180px] rounded-xl overflow-hidden backdrop-blur-xl shadow-2xl z-30"
+                    style={{ background: `${storeTheme.card}ee`, border: `1px solid ${storeTheme.border}` }}
+                  >
+                    {/* "Todas" option */}
+                    <button
+                      onClick={() => { setFilterCity?.(""); setShowCityPicker(false); scrollToGrid(); }}
+                      className="w-full text-left px-4 py-2.5 text-xs font-medium transition-colors flex items-center gap-2"
+                      style={{
+                        color: !filterCity ? storeTheme.primary : storeTheme.text,
+                        background: !filterCity ? `${storeTheme.primary}15` : "transparent",
+                      }}
+                    >
+                      <MapPin size={11} /> Todas as cidades
+                    </button>
+                    <div className="h-px" style={{ background: storeTheme.border }} />
+                    {availableCities.map(city => (
+                      <button
+                        key={city}
+                        onClick={() => { setFilterCity?.(city); setShowCityPicker(false); scrollToGrid(); }}
+                        className="w-full text-left px-4 py-2.5 text-xs font-medium transition-colors flex items-center gap-2"
+                        style={{
+                          color: filterCity === city ? storeTheme.primary : storeTheme.text,
+                          background: filterCity === city ? `${storeTheme.primary}15` : "transparent",
+                        }}
+                      >
+                        <MapPin size={11} /> {city}
+                      </button>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
 
             {/* Slide indicators */}
             {heroImages.length > 1 && (
