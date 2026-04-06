@@ -250,7 +250,7 @@ export default function StoreLayoutMarketplace({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.8 }}
-              className="flex gap-1.5 mt-5"
+              className="flex gap-1.5 mt-3 md:mt-5"
             >
               {heroImages.map((_: string, i: number) => (
                 <button
