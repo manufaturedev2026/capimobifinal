@@ -78,8 +78,8 @@ async function generateMarketingImage(
   const ctx = canvas.getContext("2d")!;
 
   // Draw background photo
-  if (item.photos?.[0]) {
-    try {
+  const imgSrc = photoUrl || item.photos?.[0];
+  if (imgSrc) {
       const img = await loadImage(item.photos[0]);
       const imgRatio = img.width / img.height;
       const canvasRatio = width / height;
