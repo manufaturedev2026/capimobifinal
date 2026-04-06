@@ -372,9 +372,6 @@ export default function AdminPanel() {
               { label: "Básico", value: totalByTier.basico, icon: Zap, color: "text-muted-foreground" },
               { label: "Premium", value: totalByTier.premium, icon: Star, color: "text-amber-500" },
               { label: "VIP", value: totalByTier.vip, icon: Crown, color: "text-purple-500" },
-              { label: "Ess. Empresa", value: totalByTier.essencial_empresa, icon: Building2, color: "text-blue-500" },
-              { label: "Prem. Empresa", value: totalByTier.premium_empresa, icon: Building2, color: "text-indigo-500" },
-              { label: "Black Empresa", value: totalByTier.prime_empresa, icon: Crown, color: "text-zinc-400" },
             ].map((s) => (
               <div key={s.label} className="bg-secondary rounded-xl p-2.5 text-center">
                 <s.icon size={14} className={`${s.color} mx-auto mb-0.5`} />
