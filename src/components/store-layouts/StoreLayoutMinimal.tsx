@@ -40,14 +40,16 @@ const CATEGORY_ICONS: Record<string, React.ElementType> = {
  * Minimal Layout — Elegant & immersive with refined typography
  */
 export default function StoreLayoutMinimal({
-  filteredProducts, subcategories, activeCategory, setActiveCategory,
+  filteredProducts, products, subcategories, activeCategory, setActiveCategory,
   categoryCounts, storeTheme, corretorSlug, dbProfile, getTagStyle, getTagLabel, handleWhatsApp,
+  filterCity, setFilterCity, availableCities,
 }: StoreLayoutProps) {
   const { user } = useAuth();
   const isOwner = !!(user && dbProfile && user.id === dbProfile.user_id);
   const [searchTerm, setSearchTerm] = useState("");
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [heroIdx, setHeroIdx] = useState(0);
+  const [showCityPicker, setShowCityPicker] = useState(false);
   const heroRef = useRef<HTMLDivElement>(null);
 
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
