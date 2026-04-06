@@ -82,29 +82,7 @@ export default function StoreLayoutElegant({
   return (
     <div className="space-y-6">
 
-      {/* ─── Stats Bar ─── */}
-      <div
-        className="flex items-center justify-center gap-6 py-3 px-4 rounded-xl text-xs font-semibold"
-        style={{ background: `${storeTheme.primary}10`, border: `1px solid ${storeTheme.primary}20` }}
-      >
-        <div className="flex items-center gap-1.5" style={{ color: storeTheme.primary }}>
-          <Building2 size={15} />
-          <span style={{ color: storeTheme.text }}>{totalItems}</span> imóveis
-        </div>
-        <div className="w-px h-4" style={{ background: storeTheme.border }} />
-        <div className="flex items-center gap-1.5" style={{ color: storeTheme.primary }}>
-          <MapPin size={15} />
-          <span style={{ color: storeTheme.text }}>{uniqueCities}</span> {uniqueCities === 1 ? "cidade" : "cidades"}
-        </div>
-        {dbProfile?.creci && (
-          <>
-            <div className="w-px h-4" style={{ background: storeTheme.border }} />
-            <div className="flex items-center gap-1.5 text-[11px]" style={{ color: storeTheme.textMuted }}>
-              CRECI {dbProfile.creci}
-            </div>
-          </>
-        )}
-      </div>
+
 
       {/* ─── Search & Filters ─── */}
       <div className="space-y-3">
