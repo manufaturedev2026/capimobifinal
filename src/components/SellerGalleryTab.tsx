@@ -266,7 +266,7 @@ async function generateMarketingImage(
   // Location
   const location = item.neighborhood ? `📍 ${item.neighborhood}, ${item.city}` : item.city ? `📍 ${item.city}` : "";
   if (location) {
-    const locFontSize = Math.round((isStory ? 44 : 28) * scale);
+    const locFontSize = Math.round((isStory ? 44 : 34) * scale);
     ctx.font = `600 ${locFontSize}px ${baseFont}`;
     ctx.fillStyle = s.locationColor;
     ctx.fillText(location, pad, y);
