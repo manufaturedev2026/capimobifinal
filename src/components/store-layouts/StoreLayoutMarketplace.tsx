@@ -111,6 +111,8 @@ export default function StoreLayoutMarketplace({
   categoryCounts, storeTheme, corretorSlug, dbProfile, getTagStyle, getTagLabel, handleWhatsApp,
   filterCity, setFilterCity, availableCities,
 }: StoreLayoutProps) {
+  const { user } = useAuth();
+  const isOwner = !!(user && dbProfile && user.id === dbProfile.user_id);
   const darkBase = getDarkBase(storeTheme.primary);
   const darkMid = getDarkMid(storeTheme.primary);
   const [searchTerm, setSearchTerm] = useState("");
