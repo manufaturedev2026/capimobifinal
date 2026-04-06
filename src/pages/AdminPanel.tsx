@@ -756,6 +756,106 @@ export default function AdminPanel() {
         {tab === "crm" && (
           <AdminCrmTab />
         )}
+
+        {tab === "seo" && (
+          <div className="space-y-4">
+            <div className="bg-card border border-border rounded-2xl p-5">
+              <h3 className="font-display font-bold text-lg text-foreground mb-1 flex items-center gap-2">
+                <Globe size={20} className="text-primary" /> Sitemaps & SEO
+              </h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                Links dos sitemaps para submeter ao Google Search Console. Cada corretor possui um sitemap individual com seus imóveis.
+              </p>
+
+              {/* Global Sitemap */}
+              <div className="rounded-xl border border-border p-4 mb-4">
+                <h4 className="font-bold text-sm text-foreground mb-2">🌐 Sitemap Global</h4>
+                <p className="text-xs text-muted-foreground mb-2">Inclui todos os corretores e imóveis ativos da plataforma.</p>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <code className="text-xs bg-secondary px-3 py-1.5 rounded-lg text-foreground break-all">
+                    {`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/global-sitemap`}
+                  </code>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/global-sitemap`);
+                      toast({ title: "Link copiado!" });
+                    }}
+                    className="px-3 py-1.5 rounded-lg text-xs font-bold bg-primary text-primary-foreground hover:opacity-90"
+                  >
+                    <Copy size={12} className="inline mr-1" /> Copiar
+                  </button>
+                  <a
+                    href={`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/global-sitemap`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-3 py-1.5 rounded-lg text-xs font-bold bg-secondary text-foreground hover:bg-secondary/80"
+                  >
+                    <ExternalLink size={12} className="inline mr-1" /> Abrir
+                  </a>
+                </div>
+              </div>
+
+              {/* Per-seller sitemaps */}
+              <h4 className="font-bold text-sm text-foreground mb-3">📋 Sitemaps por Corretor</h4>
+              <div className="space-y-2 max-h-[500px] overflow-y-auto">
+                {sellers.map((seller) => {
+                  const sitemapUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/seller-sitemap?seller_id=${seller.id}`;
+                  const fbFeedUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/seller-sitemap?seller_id=${seller.id}&format=facebook`;
+                  const name = seller.company_name || seller.full_name;
+                  const tierLabel = seller.subscription?.tier || "sem plano";
+
+                  return (
+                    <div key={seller.id} className="rounded-xl border border-border p-3 hover:border-primary/30 transition-colors">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <MapPin size={14} className="text-primary" />
+                          <span className="text-sm font-bold text-foreground">{name}</span>
+                          <span className="text-[10px] bg-secondary px-1.5 py-0.5 rounded-md text-muted-foreground">{tierLabel}</span>
+                        </div>
+                        {seller.city && <span className="text-[10px] text-muted-foreground">{seller.city}</span>}
+                      </div>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <button
+                          onClick={() => {
+                            navigator.clipboard.writeText(sitemapUrl);
+                            toast({ title: "Sitemap Google copiado!" });
+                          }}
+                          className="px-2 py-1 rounded-md text-[10px] font-bold bg-secondary text-foreground hover:bg-secondary/80"
+                        >
+                          <Copy size={10} className="inline mr-0.5" /> Google
+                        </button>
+                        <button
+                          onClick={() => {
+                            navigator.clipboard.writeText(fbFeedUrl);
+                            toast({ title: "Feed Facebook copiado!" });
+                          }}
+                          className="px-2 py-1 rounded-md text-[10px] font-bold bg-secondary text-foreground hover:bg-secondary/80"
+                        >
+                          <Copy size={10} className="inline mr-0.5" /> Facebook
+                        </button>
+                        <a href={sitemapUrl} target="_blank" rel="noopener noreferrer" className="px-2 py-1 rounded-md text-[10px] font-bold bg-secondary text-foreground hover:bg-secondary/80">
+                          <ExternalLink size={10} className="inline mr-0.5" /> Abrir
+                        </a>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Google Search Console instructions */}
+            <div className="bg-card border border-border rounded-2xl p-5">
+              <h4 className="font-bold text-sm text-foreground mb-2">📖 Como submeter ao Google</h4>
+              <ol className="text-xs text-muted-foreground space-y-1.5 list-decimal list-inside">
+                <li>Acesse o <strong>Google Search Console</strong> e adicione a propriedade do domínio.</li>
+                <li>Vá em <strong>Sitemaps</strong> no menu lateral.</li>
+                <li>Cole o link do sitemap global ou individual e clique em <strong>Enviar</strong>.</li>
+                <li>O Google vai indexar as páginas dos corretores e imóveis automaticamente.</li>
+                <li>Para Facebook Ads, use o feed no formato Facebook no <strong>Gerenciador de Catálogos</strong>.</li>
+              </ol>
+            </div>
+          </div>
+        )}
         </main>
       </div>
 
