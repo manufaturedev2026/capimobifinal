@@ -6,7 +6,7 @@ import {
   Home, Plus, ArrowLeft, Edit, Trash2, Phone, Mail, Calendar,
   DollarSign, AlertTriangle, CheckCircle2, Clock, TrendingUp,
   Send, MessageCircle, X, FileText, User, Building2, Search,
-  ChevronRight, Eye, Filter,
+  ChevronRight, Eye, Filter, MoreVertical, Ban, RefreshCw, Receipt,
 } from "lucide-react";
 
 /* ═══════════════════════════════════════
@@ -99,6 +99,7 @@ export default function RentalManagementTab({ userId, sellerId }: Props) {
   const [editingContract, setEditingContract] = useState<RentalContract | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>("todos");
   const [search, setSearch] = useState("");
+  const [expandedAlertId, setExpandedAlertId] = useState<string | null>(null);
 
   // ── Fetch data ──
   useEffect(() => {
@@ -187,6 +188,35 @@ export default function RentalManagementTab({ userId, sellerId }: Props) {
       return true;
     });
   }, [contracts, statusFilter, search]);
+  // ── Quick actions from alerts ──
+  const markAsPaid = async (contract: RentalContract) => {
+    const now = new Date();
+    const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+    const dueDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(contract.due_day).padStart(2, "0")}`;
+    
+    // Check if payment record exists
+    const existing = payments.find(p => p.contract_id === contract.id && p.reference_month === currentMonth);
+    if (existing) {
+      await supabase.from("rental_payments").update({ status: "pago", amount_paid: contract.rent_amount, paid_at: now.toISOString(), payment_method: "manual" }).eq("id", existing.id);
+    } else {
+      await supabase.from("rental_payments").insert({
+        user_id: userId, contract_id: contract.id, reference_month: currentMonth,
+        amount_due: contract.rent_amount, total_due: contract.rent_amount, amount_paid: contract.rent_amount,
+        due_date: dueDate, status: "pago" as any, paid_at: now.toISOString(), payment_method: "manual",
+      });
+    }
+    toast({ title: "✅ Pago!", description: `Pagamento de ${contract.tenant_name} registrado.` });
+    setExpandedAlertId(null);
+    fetchAll();
+  };
+
+  const updateContractStatus = async (contract: RentalContract, newStatus: "ativo" | "encerrado" | "cancelado" | "renovacao") => {
+    await supabase.from("rental_contracts").update({ status: newStatus }).eq("id", contract.id);
+    const labels = { ativo: "Ativado", encerrado: "Encerrado", cancelado: "Cancelado", renovacao: "Em Renovação" };
+    toast({ title: `📋 ${labels[newStatus]}`, description: `Contrato de ${contract.tenant_name} atualizado.` });
+    setExpandedAlertId(null);
+    fetchAll();
+  };
 
   const sendWhatsAppReminder = (contract: RentalContract, type: string) => {
     if (!contract.tenant_phone) {
@@ -311,32 +341,82 @@ export default function RentalManagementTab({ userId, sellerId }: Props) {
                 <AlertTriangle size={16} className="text-red-500" /> Alertas de Vencimento ({alertContracts.length})
               </h3>
               <div className="space-y-2">
-                {alertContracts.map(({ contract, reminder }) => (
-                  <motion.div
-                    key={contract.id}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className={`flex items-center justify-between p-3 rounded-xl border bg-card ${reminder!.type === "atrasado" ? "border-red-500/40" : "border-border"}`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${reminder!.type === "atrasado" ? "bg-red-500/15" : "bg-muted"}`}>
-                        {reminder!.type === "atrasado" ? <AlertTriangle size={16} className="text-red-500" /> : <Clock size={16} className="text-muted-foreground" />}
-                      </div>
-                      <div>
-                        <p className="text-sm font-bold text-foreground">{contract.tenant_name}</p>
-                        <p className={`text-xs font-medium ${reminder!.color}`}>{reminder!.label} — {fmt(contract.rent_amount)}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
+                {alertContracts.map(({ contract, reminder }) => {
+                  const isExpanded = expandedAlertId === contract.id;
+                  return (
+                    <motion.div
+                      key={contract.id}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      className={`rounded-xl border bg-card overflow-hidden transition-all ${reminder!.type === "atrasado" ? "border-red-500/40" : "border-border"}`}
+                    >
+                      {/* Main row - clickable */}
                       <button
-                        onClick={() => sendWhatsAppReminder(contract, reminder!.type)}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-green-500 text-white hover:bg-green-600 transition-colors"
+                        onClick={() => setExpandedAlertId(isExpanded ? null : contract.id)}
+                        className="w-full flex items-center justify-between p-3 text-left hover:bg-muted/30 transition-colors"
                       >
-                        <Send size={12} /> WhatsApp
+                        <div className="flex items-center gap-3">
+                          <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${reminder!.type === "atrasado" ? "bg-red-500/15" : reminder!.type === "no_vencimento" ? "bg-orange-500/15" : "bg-muted"}`}>
+                            {reminder!.type === "atrasado" ? <AlertTriangle size={16} className="text-red-500" /> : reminder!.type === "no_vencimento" ? <AlertTriangle size={16} className="text-orange-500" /> : <Clock size={16} className="text-muted-foreground" />}
+                          </div>
+                          <div>
+                            <p className="text-sm font-bold text-foreground">{contract.tenant_name}</p>
+                            <p className={`text-xs font-medium ${reminder!.color}`}>{reminder!.label} — {fmt(contract.rent_amount)}</p>
+                          </div>
+                        </div>
+                        <ChevronRight size={16} className={`text-muted-foreground transition-transform ${isExpanded ? "rotate-90" : ""}`} />
                       </button>
-                    </div>
-                  </motion.div>
-                ))}
+
+                      {/* Expanded actions */}
+                      <AnimatePresence>
+                        {isExpanded && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                            className="overflow-hidden"
+                          >
+                            <div className="px-3 pb-3 pt-1 grid grid-cols-2 sm:grid-cols-4 gap-2">
+                              <button
+                                onClick={() => markAsPaid(contract)}
+                                className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-xs font-bold bg-emerald-500 text-white hover:bg-emerald-600 transition-colors"
+                              >
+                                <CheckCircle2 size={14} /> Marcar Pago
+                              </button>
+                              <button
+                                onClick={() => sendWhatsAppReminder(contract, reminder!.type)}
+                                className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-xs font-bold bg-green-500 text-white hover:bg-green-600 transition-colors"
+                              >
+                                <Send size={14} /> WhatsApp
+                              </button>
+                              <button
+                                onClick={() => updateContractStatus(contract, "renovacao")}
+                                className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-xs font-bold bg-blue-500 text-white hover:bg-blue-600 transition-colors"
+                              >
+                                <RefreshCw size={14} /> Renovar
+                              </button>
+                              <button
+                                onClick={() => updateContractStatus(contract, "cancelado")}
+                                className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-xs font-bold bg-red-500/80 text-white hover:bg-red-600 transition-colors"
+                              >
+                                <Ban size={14} /> Cancelar
+                              </button>
+                            </div>
+                            {/* Extra info */}
+                            <div className="px-3 pb-3 flex flex-wrap gap-3 text-xs text-muted-foreground">
+                              {contract.tenant_phone && (
+                                <span className="flex items-center gap-1"><Phone size={12} /> {contract.tenant_phone}</span>
+                              )}
+                              <span className="flex items-center gap-1"><Calendar size={12} /> Vence dia {contract.due_day}</span>
+                              <span className="flex items-center gap-1"><DollarSign size={12} /> Multa {contract.late_fee_percent || 2}% + Juros {contract.daily_interest_percent || 0.033}%/dia</span>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </motion.div>
+                  );
+                })}
               </div>
             </div>
           );
