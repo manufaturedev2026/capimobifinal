@@ -81,7 +81,10 @@ const PAYMENT_STATUS_CONFIG = {
 };
 
 const fmt = (v: number) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-const fmtDate = (d: string) => new Date(d + "T12:00:00").toLocaleDateString("pt-BR");
+const fmtDate = (d: string) => {
+  const [y, m, day] = d.split("-");
+  return `${day}/${m}/${y}`;
+};
 
 type View = "dashboard" | "contracts" | "form" | "detail" | "payments";
 
