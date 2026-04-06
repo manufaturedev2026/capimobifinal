@@ -1,0 +1,1 @@
+ALTER TABLE public.rental_contracts DROP CONSTRAINT rental_contracts_item_id_fkey;
