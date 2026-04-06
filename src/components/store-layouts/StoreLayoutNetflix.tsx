@@ -533,9 +533,6 @@ export default function StoreLayoutNetflix({
               );
             })}
         </div>
-
-        {/* Items row */}
-        <NetflixRow title="" items={filteredProducts} corretorSlug={corretorSlug} getTagLabel={getTagLabel} accent={accent} />
       </div>
 
       {filteredProducts.length === 0 && (
