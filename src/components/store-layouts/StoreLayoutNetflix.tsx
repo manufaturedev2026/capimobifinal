@@ -185,7 +185,7 @@ export default function StoreLayoutNetflix({
   filteredProducts, subcategories, activeCategory, setActiveCategory,
   categoryCounts, categoryCardImages, storeTheme, corretorSlug,
   isDbProfile, dbProfile, handleWhatsApp, getTagStyle, getTagLabel,
-  onCinemaMode, onShareLink,
+  onCinemaMode, onShareLink, filterCity, setFilterCity, availableCities,
 }: StoreLayoutProps) {
   const { user } = useAuth();
   const [billboardIdx, setBillboardIdx] = useState(0);
