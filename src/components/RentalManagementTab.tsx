@@ -426,11 +426,11 @@ export default function RentalManagementTab({ userId, sellerId }: Props) {
       fetchAll();
     };
 
-    const handleStatusChange = async (newStatus: string) => {
-      await supabase.from("rental_contracts").update({ status: newStatus }).eq("id", contract.id);
-      toast({ title: `Status alterado para ${STATUS_CONFIG[newStatus as keyof typeof STATUS_CONFIG]?.label}` });
+    const handleStatusChange = async (newStatus: "ativo" | "encerrado" | "cancelado" | "renovacao") => {
+      await supabase.from("rental_contracts").update({ status: newStatus as any }).eq("id", contract.id);
+      toast({ title: `Status alterado para ${STATUS_CONFIG[newStatus]?.label}` });
       fetchAll();
-      setSelectedContract({ ...contract, status: newStatus as any });
+      setSelectedContract({ ...contract, status: newStatus });
     };
 
     return (
