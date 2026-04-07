@@ -239,7 +239,7 @@ export default function StoreLayoutNetflix({
     .filter(r => r.items.length > 0);
 
   return (
-    <div className={isIOSStandalone ? "overflow-x-hidden max-w-full" : "-mx-4 md:-mx-8 overflow-x-hidden max-w-full"} style={{ background: storeTheme.bg, overflowX: "clip", maxWidth: "100%" }}>
+    <div className={isIOSStandalone ? "overflow-x-hidden max-w-full" : "overflow-x-hidden max-w-full"} style={{ background: storeTheme.bg, overflowX: "clip", maxWidth: "100%" }}>
       {/* ══════ BILLBOARD ══════ */}
       {billboard.length > 0 && currentBillboard && (
         <div className="relative w-full" style={{ aspectRatio: "16/7", minHeight: 320 }}>
