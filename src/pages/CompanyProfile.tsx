@@ -877,14 +877,14 @@ export default function CompanyProfile() {
           <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/50 to-black/90" />
 
           {/* Top bar */}
-          <div className="relative z-10 flex items-center justify-between px-4 pt-4">
+          <div className="absolute top-4 right-4 z-20 flex items-center gap-2">
+            {isPaid && <PackageBadge tier={sellerTier} size="sm" />}
             <Link
               to={user && dbProfile && user.id === dbProfile.user_id ? "/painel" : "/login"}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-white text-xs font-medium"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-white text-xs font-medium hover:bg-white/20 transition-colors"
             >
               <LayoutDashboard size={14} /> {user && dbProfile && user.id === dbProfile.user_id ? "Painel" : "Entrar"}
             </Link>
-            {isPaid && <PackageBadge tier={sellerTier} size="sm" />}
           </div>
 
           {/* Featured item content */}
