@@ -731,7 +731,11 @@ export default function MarketplaceHome() {
             }
             return a;
           };
-          const sorted = shuffle(realSellers).sort((a, b) => {
+          const cityFiltered = filterCity
+            ? realSellers.filter((s) => (s.city || "").toLowerCase() === filterCity.toLowerCase())
+            : realSellers;
+          const pool = cityFiltered.length > 0 ? cityFiltered : realSellers;
+          const sorted = shuffle(pool).sort((a, b) => {
             const pa = TIER_PRIORITY[a.tier || "basico"] ?? 99;
             const pb = TIER_PRIORITY[b.tier || "basico"] ?? 99;
             return pa - pb;
