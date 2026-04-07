@@ -629,6 +629,10 @@ export default function AdminPanel() {
           <AdminCrmTab />
         )}
 
+        {tab === "push" && user && (
+          <AdminPushTab userId={user.id} />
+        )}
+
         {tab === "seo" && (
           <div className="space-y-4">
             <div className="bg-card border border-border rounded-2xl p-5">
