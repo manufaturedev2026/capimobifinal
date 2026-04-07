@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { BellRing, X } from "lucide-react";
+import { BellRing } from "lucide-react";
 import { detectIOS, isStandaloneDisplayMode } from "@/lib/pwaInstall";
 import { usePushSubscription } from "@/hooks/usePushSubscription";
 
@@ -9,42 +8,23 @@ interface PushSubscribeButtonProps {
 }
 
 export default function PushSubscribeButton({ sellerId, primaryColor }: PushSubscribeButtonProps) {
-  const { isSubscribed, isSupported, permission, subscribe, loading } = usePushSubscription(sellerId);
-  const [dismissed, setDismissed] = useState(false);
+  const { isSubscribed, isSupported, subscribe, loading } = usePushSubscription(sellerId);
 
-  // Hide on iOS browser (not installed as PWA) — push only works in standalone mode on iOS
   const isIOSBrowser = detectIOS() && !isStandaloneDisplayMode();
 
-  // Don't show if not supported, already subscribed, denied, dismissed, or iOS browser
-  if (!isSupported || isSubscribed || permission === "denied" || dismissed || isIOSBrowser) return null;
-
-  const handleSubscribe = async () => {
-    const ok = await subscribe();
-    if (!ok && permission !== "granted") {
-      setDismissed(true);
-    }
-  };
+  if (!isSupported || isSubscribed || isIOSBrowser) return null;
 
   return (
-    <div className="fixed bottom-20 md:bottom-6 right-4 z-40 flex items-center gap-2">
+    <div className="fixed bottom-20 right-4 z-40 md:bottom-6">
       <button
         type="button"
-        onClick={handleSubscribe}
+        onClick={subscribe}
         disabled={loading}
-        className="flex items-center gap-2 px-4 py-2.5 rounded-full shadow-lg text-white text-xs font-bold transition-all active:scale-95 disabled:opacity-70"
+        className="flex items-center gap-2 rounded-full px-4 py-2.5 text-xs font-bold text-white shadow-lg transition-all active:scale-95 disabled:opacity-70"
         style={{ background: primaryColor || "#3B82F6" }}
       >
-        <BellRing className="w-4 h-4" />
+        <BellRing className="h-4 w-4" />
         {loading ? "Ativando..." : "Ativar Notificações"}
-      </button>
-
-      <button
-        type="button"
-        aria-label="Fechar aviso de notificações"
-        onClick={() => setDismissed(true)}
-        className="flex h-9 w-9 items-center justify-center rounded-full bg-background/90 text-foreground shadow-lg backdrop-blur-sm"
-      >
-        <X className="w-3.5 h-3.5" />
       </button>
     </div>
   );
