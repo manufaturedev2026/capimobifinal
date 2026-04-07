@@ -233,7 +233,7 @@ export default function VenderPage() {
               </h1>
 
               <p className="text-base md:text-lg text-white/60 max-w-lg leading-relaxed">
-                Pare de depender de plataformas como OLX e portais caros.
+                Pare de depender de plataformas e portais caros.
                 Tenha seu próprio site, seus próprios clientes e controle total das suas vendas.
               </p>
 
