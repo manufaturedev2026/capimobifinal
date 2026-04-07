@@ -256,7 +256,7 @@ export default function StoreLayoutMagazine({
             </button>
           )}
         </div>
-        <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-3">
+        <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2 -mx-4 px-4 lg:-mx-12 lg:px-12">
           {visualCategories.map((cat) => {
             const isActive = activeCategory === cat.slug;
             const count = categoryCounts[cat.slug] || 0;
@@ -267,7 +267,7 @@ export default function StoreLayoutMagazine({
                 onClick={() => setActiveCategory(isActive ? "todos" : cat.slug)}
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
-                className="relative rounded-2xl overflow-hidden h-20 sm:h-24 group transition-all"
+                className="relative rounded-2xl overflow-hidden h-20 w-28 sm:w-32 flex-shrink-0 group transition-all"
                 style={{
                   border: `2px solid ${isActive ? storeTheme.primary : storeTheme.border}`,
                   boxShadow: isActive ? `0 0 20px ${storeTheme.primary}40` : "none",
