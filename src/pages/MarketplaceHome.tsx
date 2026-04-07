@@ -885,11 +885,16 @@ export default function MarketplaceHome() {
                         </div>
 
 
-                        {/* Seller badge */}
+                        {/* Seller badge + plan */}
                         {seller && (
-                          <div className="absolute bottom-2 left-2 flex items-center gap-1.5 px-2 py-1 rounded-lg bg-black/60 backdrop-blur-sm">
-                            {seller.logo && <img src={seller.logo} alt="" className="w-4 h-4 rounded-full object-cover" />}
-                            <span className="text-[10px] text-white font-medium truncate max-w-[100px]">{seller.name}</span>
+                          <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between">
+                            <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-black/60 backdrop-blur-sm">
+                              {seller.logo && <img src={seller.logo} alt="" className="w-4 h-4 rounded-full object-cover" />}
+                              <span className="text-[10px] text-white font-medium truncate max-w-[100px]">{seller.name}</span>
+                            </div>
+                            {seller.tier && seller.tier !== "basico" && (
+                              <PackageBadge tier={seller.tier as any} size="sm" />
+                            )}
                           </div>
                         )}
                       </div>
