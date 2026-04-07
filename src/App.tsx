@@ -38,6 +38,7 @@ const CapturePropertyPage = lazyPage(() => import("@/pages/CapturePropertyPage")
 const VenderPage = lazyPage(() => import("@/pages/VenderPage"));
 const SearchPage = lazyPage(() => import("@/pages/SearchPage"));
 const SeoLandingPage = lazyPage(() => import("@/pages/SeoLandingPage"));
+const SeoBrokersPage = lazyPage(() => import("@/pages/SeoBrokersPage"));
 
 const queryClient = new QueryClient();
 
@@ -139,6 +140,10 @@ const AppLayout = () => {
               <Route path="/imoveis/:cidade/:categoria" element={<SeoLandingPage />} />
               <Route path="/imoveis/:cidade/bairro/:bairro" element={<SeoLandingPage />} />
               <Route path="/imoveis/categoria/:categoria" element={<SeoLandingPage />} />
+              {/* SEO broker pages */}
+              <Route path="/corretores" element={<SeoBrokersPage />} />
+              <Route path="/corretores/:estado" element={<SeoBrokersPage />} />
+              <Route path="/corretores/:estado/:cidade" element={<SeoBrokersPage />} />
               <Route path="/anunciar" element={<VenderPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/entrar" element={<Navigate to="/login" replace />} />

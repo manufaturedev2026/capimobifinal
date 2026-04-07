@@ -75,6 +75,7 @@ Deno.serve(async (req) => {
   <!-- Páginas estáticas -->
   <url><loc>${baseUrl}/</loc><lastmod>${now}</lastmod><changefreq>daily</changefreq><priority>1.0</priority></url>
   <url><loc>${baseUrl}/imoveis</loc><lastmod>${now}</lastmod><changefreq>daily</changefreq><priority>0.9</priority></url>
+  <url><loc>${baseUrl}/corretores</loc><lastmod>${now}</lastmod><changefreq>daily</changefreq><priority>0.9</priority></url>
   <url><loc>${baseUrl}/buscar</loc><lastmod>${now}</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>
   <url><loc>${baseUrl}/anunciar</loc><lastmod>${now}</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>${baseUrl}/blog</loc><lastmod>${now}</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
@@ -124,6 +125,25 @@ Deno.serve(async (req) => {
       <image:title>Logo - ${esc(storeName)}</image:title>
     </image:image>` : ""}
   </url>`;
+  }
+
+  // Broker SEO pages by state and city
+  xml += `\n\n  <!-- Páginas SEO de corretores por estado/cidade -->`;
+  const brokerStateMap = new Map<string, Set<string>>();
+  for (const profile of (profiles || [])) {
+    if (profile.state) {
+      const st = profile.state.toLowerCase();
+      if (!brokerStateMap.has(st)) brokerStateMap.set(st, new Set());
+      if (profile.city) brokerStateMap.get(st)!.add(profile.city);
+    }
+  }
+  for (const [st, cities] of brokerStateMap) {
+    xml += `
+  <url><loc>${baseUrl}/corretores/${esc(st)}</loc><lastmod>${now}</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>`;
+    for (const city of cities) {
+      xml += `
+  <url><loc>${baseUrl}/corretores/${esc(st)}/${esc(slugify(city))}</loc><lastmod>${now}</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>`;
+    }
   }
 
   // Property pages
