@@ -349,6 +349,7 @@ export default function AdminPanel() {
     { key: "crm" as const, label: "CRM WhatsApp", icon: MessageCircle },
     { key: "seo" as const, label: "SEO / Sitemaps", icon: Globe },
     { key: "vendas" as const, label: "Página de Vendas", icon: Rocket },
+    { key: "config" as const, label: "Configurações", icon: LayoutDashboard },
   ];
 
   return (
