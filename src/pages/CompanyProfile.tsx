@@ -1948,7 +1948,7 @@ export default function CompanyProfile() {
           </div>
 
           {/* ── Bloco 2: Benefícios / Garantias ── */}
-          <div className="rounded-2xl p-5 mt-4" style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}>
+          <div className="rounded-2xl p-5 mt-4 lg:max-w-2xl lg:mx-auto" style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}>
             <h3 className="font-display font-bold text-sm mb-3 flex items-center gap-2" style={{ color: storeTheme.text }}>
               <Shield size={15} style={{ color: storeTheme.primary }} /> Por que escolher
             </h3>
