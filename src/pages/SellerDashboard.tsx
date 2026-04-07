@@ -302,7 +302,7 @@ export default function SellerDashboard() {
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
       {/* Mobile Header — Premium Gradient */}
-      <div className="dashboard-header-gradient py-6 lg:py-4">
+      <div className="py-6 lg:py-4" style={{ background: dashTheme.dashboardGradient }}>
         <div className="container max-w-6xl mx-auto px-4 lg:hidden">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
