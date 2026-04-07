@@ -42,9 +42,9 @@ function NetflixRow({ title, items, corretorSlug, getTagLabel, accent }: {
   if (!items.length) return null;
 
   return (
-    <div className="mb-6 md:mb-8 group/row relative">
+    <div className="mb-6 lg:mb-8 group/row relative">
       {title && (
-        <h3 className="font-bold text-sm md:text-base text-white mb-2 md:mb-3 px-4 md:px-12 flex items-center gap-2 hover:text-[#e50914] transition-colors cursor-default">
+        <h3 className="font-bold text-sm md:text-base text-white mb-2 lg:mb-3 px-4 lg:px-12 flex items-center gap-2 hover:text-[#e50914] transition-colors cursor-default">
           {title}
           <ChevronRight size={14} className="opacity-0 group-hover/row:opacity-100 transition-opacity text-[#e50914]" />
         </h3>
@@ -67,7 +67,7 @@ function NetflixRow({ title, items, corretorSlug, getTagLabel, accent }: {
         )}
 
         <div ref={scrollRef} onScroll={checkArrows}
-          className="flex gap-1 md:gap-1.5 overflow-x-auto overflow-y-visible scrollbar-hide scroll-smooth px-4 md:px-12 py-8 -my-8">
+          className="flex gap-1 lg:gap-1.5 overflow-x-auto overflow-y-visible scrollbar-hide scroll-smooth px-4 lg:px-12 py-8 -my-8">
           {items.map((product: any, i: number) => (
             <NetflixCard key={product.id} product={product} index={i} corretorSlug={corretorSlug} getTagLabel={getTagLabel} accent={accent} />
           ))}
@@ -435,7 +435,7 @@ export default function StoreLayoutNetflix({
       {/* ══════ NETFLIX CATEGORY CARDS + CONTENT ══════ */}
       <div className="pb-8 pt-6">
         {/* Category cards — movie poster style */}
-        <div className="flex items-center justify-between px-4 md:px-12 mb-3">
+        <div className="flex items-center justify-between px-4 lg:px-12 mb-3">
           <h3 className="font-bold text-sm md:text-base text-white">Explorar por Categoria</h3>
           <div className="flex items-center gap-2">
             {onCinemaMode && (
@@ -449,7 +449,7 @@ export default function StoreLayoutNetflix({
             )}
           </div>
         </div>
-        <div className="flex gap-2 md:gap-3 overflow-x-auto scrollbar-hide scroll-smooth px-4 md:px-12 pb-6">
+        <div className="flex gap-2 lg:gap-3 overflow-x-auto scrollbar-hide scroll-smooth px-4 lg:px-12 pb-6">
           {/* "Todos" card */}
           {(() => {
             const allImages = filteredProducts.filter((p: any) => p.image).slice(0, 4);
