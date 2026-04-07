@@ -61,7 +61,7 @@ export default function SellerProfile() {
     video_description: "",
     slug: "",
     store_theme: "dark",
-    store_layout: "showcase",
+    store_layout: "gamer",
     store_video_url: "",
     store_video_title: "",
     store_video_description: "",
