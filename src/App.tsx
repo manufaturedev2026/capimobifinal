@@ -36,6 +36,8 @@ const TermsPage = lazyPage(() => import("@/pages/TermsPage"));
 const NotFound = lazyPage(() => import("@/pages/NotFound"));
 const CapturePropertyPage = lazyPage(() => import("@/pages/CapturePropertyPage"));
 const VenderPage = lazyPage(() => import("@/pages/VenderPage"));
+const SearchPage = lazyPage(() => import("@/pages/SearchPage"));
+const SeoLandingPage = lazyPage(() => import("@/pages/SeoLandingPage"));
 
 const queryClient = new QueryClient();
 
