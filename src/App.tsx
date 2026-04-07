@@ -18,6 +18,8 @@ import { CustomDomainRedirect } from "@/components/CustomDomainRedirect";
 import RouteErrorBoundary from "@/components/RouteErrorBoundary";
 import { lazyPage } from "@/lib/chunkRecovery";
 
+const MarketplaceHome = lazyPage(() => import("@/pages/MarketplaceHome"));
+
 const CompanyProfile = lazyPage(() => import("@/pages/CompanyProfile"));
 const ProductDetail = lazyPage(() => import("@/pages/ProductDetail"));
 const CreateListing = lazyPage(() => import("@/pages/CreateListing"));
@@ -48,9 +50,29 @@ const HomeRedirect = () => {
   const { user, profile, loading } = useAuth();
   const [target, setTarget] = useState<string | null>(null);
   const [checking, setChecking] = useState(true);
+  const [homepageMode, setHomepageMode] = useState<string | null>(null);
 
   useEffect(() => {
-    if (loading) return;
+    // Fetch homepage mode setting
+    supabase
+      .from("platform_settings")
+      .select("value")
+      .eq("key", "homepage_mode")
+      .maybeSingle()
+      .then(({ data }) => {
+        setHomepageMode(data?.value || "single");
+      });
+  }, []);
+
+  useEffect(() => {
+    if (loading || homepageMode === null) return;
+
+    // Marketplace mode → show marketplace page
+    if (homepageMode === "marketplace") {
+      setTarget("__marketplace__");
+      setChecking(false);
+      return;
+    }
 
     // Logged-in user → their store
     if (user) {
@@ -74,9 +96,10 @@ const HomeRedirect = () => {
         }
         setChecking(false);
       });
-  }, [user, profile, loading]);
+  }, [user, profile, loading, homepageMode]);
 
   if (loading || checking) return null;
+  if (target === "__marketplace__") return <MarketplaceHome />;
   return <Navigate to={target!} replace />;
 };
 

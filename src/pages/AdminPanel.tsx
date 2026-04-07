@@ -44,7 +44,8 @@ export default function AdminPanel() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [tierFilter, setTierFilter] = useState<string>("todos");
-  const [tab, setTab] = useState<"sellers" | "billing" | "referrals" | "crm" | "seo" | "vendas">("sellers");
+  const [tab, setTab] = useState<"sellers" | "billing" | "referrals" | "crm" | "seo" | "vendas" | "config">("sellers");
+  const [homepageMode, setHomepageMode] = useState<string>("single");
   const [adRequests, setAdRequests] = useState<any[]>([]);
   const [adsLoading, setAdsLoading] = useState(false);
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
@@ -79,6 +80,10 @@ export default function AdminPanel() {
       fetchSellers();
       fetchAdRequests();
       fetchBans();
+      // Fetch homepage mode
+      supabase.from("platform_settings").select("value").eq("key", "homepage_mode").maybeSingle().then(({ data }) => {
+        if (data?.value) setHomepageMode(data.value);
+      });
     }
   }, [isAdmin]);
 
@@ -344,6 +349,7 @@ export default function AdminPanel() {
     { key: "crm" as const, label: "CRM WhatsApp", icon: MessageCircle },
     { key: "seo" as const, label: "SEO / Sitemaps", icon: Globe },
     { key: "vendas" as const, label: "Página de Vendas", icon: Rocket },
+    { key: "config" as const, label: "Configurações", icon: LayoutDashboard },
   ];
 
   return (
@@ -807,6 +813,59 @@ export default function AdminPanel() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Config Tab */}
+      {tab === "config" && (
+        <div className="space-y-4">
+          <div className="bg-card border border-border rounded-2xl p-5">
+            <h3 className="font-display font-bold text-lg text-foreground mb-1 flex items-center gap-2">
+              <LayoutDashboard size={20} className="text-primary" /> Página Inicial
+            </h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              Escolha o que os visitantes veem ao acessar a raiz do site.
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {[
+                {
+                  value: "marketplace",
+                  title: "🏪 Marketplace",
+                  desc: "Mostra todos os imóveis de todos os corretores em uma vitrine única.",
+                },
+                {
+                  value: "single",
+                  title: "👤 Corretor Único",
+                  desc: "Redireciona para a loja do primeiro corretor cadastrado.",
+                },
+              ].map((opt) => (
+                <button
+                  key={opt.value}
+                  onClick={async () => {
+                    setHomepageMode(opt.value);
+                    await supabase
+                      .from("platform_settings" as any)
+                      .upsert({ key: "homepage_mode", value: opt.value } as any, { onConflict: "key" });
+                    toast({ title: "Página inicial atualizada!", description: `Modo: ${opt.title}` });
+                  }}
+                  className={`text-left p-4 rounded-xl border-2 transition-all ${
+                    homepageMode === opt.value
+                      ? "border-primary bg-primary/5"
+                      : "border-border hover:border-primary/30"
+                  }`}
+                >
+                  <p className="font-bold text-sm text-foreground">{opt.title}</p>
+                  <p className="text-xs text-muted-foreground mt-1">{opt.desc}</p>
+                  {homepageMode === opt.value && (
+                    <span className="inline-flex items-center gap-1 mt-2 text-[10px] font-bold text-primary">
+                      <Check size={12} /> Ativo
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Ban Dialog */}
       {banDialogOpen && banSeller && (
