@@ -10,7 +10,7 @@ import StoreEffects from "@/components/StoreEffects";
 import ThemeParticles from "@/components/ThemeParticles";
 import {
   StoreLayoutNetflix, StoreLayoutMinimal, StoreLayoutMagazine,
-  StoreLayoutGallery, StoreLayoutElegant, StoreLayoutGamer,
+  StoreLayoutGallery, StoreLayoutElegant,
   StoreLayoutMarketplace,
 } from "@/components/store-layouts";
 import type { StoreLayoutProps } from "@/components/store-layouts";
@@ -486,10 +486,10 @@ export default function CompanyProfile() {
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
   const hasVideoHero = !!(videoId && sellerTier && sellerTier !== "basico" && sellerTier !== "start" && !isIOS);
   const storeTheme = getStoreTheme((dbProfile as any)?.store_theme);
-  const currentLayout = (dbProfile as any)?.store_layout || "gamer";
+  const currentLayout = (dbProfile as any)?.store_layout || "marketplace";
   const isMarketplace = currentLayout === "marketplace";
   const isMinimal = currentLayout === "minimal";
-  const isGamer = currentLayout === "gamer";
+  const false = currentLayout === "gamer";
   const isNetflix = currentLayout === "netflix";
   const isElegant = currentLayout === "elegant";
   const isGallery = currentLayout === "gallery";
@@ -498,13 +498,13 @@ export default function CompanyProfile() {
 
   return (
     <div
-      className={`${isGamer ? "h-screen overflow-hidden" : "min-h-screen pb-20 md:pb-0 overflow-x-hidden max-w-full"}`}
+      className={`${false ? "h-screen overflow-hidden" : "min-h-screen pb-20 md:pb-0 overflow-x-hidden max-w-full"}`}
       style={{
         background: storeTheme.bg,
         color: storeTheme.text,
         width: "100%",
         maxWidth: "100vw",
-        ...(isGamer ? {} : { overflowX: "clip" as any, overscrollBehaviorX: "none" }),
+        ...(false ? {} : { overflowX: "clip" as any, overscrollBehaviorX: "none" }),
         ["--store-bg" as any]: storeTheme.bg,
         ["--store-card" as any]: storeTheme.card,
         ["--store-text" as any]: storeTheme.text,
@@ -570,7 +570,7 @@ export default function CompanyProfile() {
       {isDbProfile && dbProfile?.id && <StoreEffects sellerId={dbProfile.id} />}
       {!isIOSStandalone && <ThemeParticles color={storeTheme.primary} sellerId={dbProfile?.id} />}
       {/* ═══════════ MOBILE PROFILE HERO ═══════════ */}
-      <section className={`lg:hidden relative overflow-hidden ${isMinimal || isMarketplace || isNetflix || isGamer ? "hidden" : ""}`}>
+      <section className={`lg:hidden relative overflow-hidden ${isMinimal || isMarketplace || isNetflix || false ? "hidden" : ""}`}>
         {isMarketplace ? (
           /* ── Marketplace-style compact hero ── */
           <>
@@ -886,7 +886,7 @@ export default function CompanyProfile() {
         </div>
       )}
 
-      <section className={`hidden lg:block relative overflow-hidden ${isMinimal || isMarketplace || isNetflix || isGamer ? "!hidden" : ""} ${hasVideoHero ? "h-[70vh]" : "h-[60vh]"}`}>
+      <section className={`hidden lg:block relative overflow-hidden ${isMinimal || isMarketplace || isNetflix || false ? "!hidden" : ""} ${hasVideoHero ? "h-[70vh]" : "h-[60vh]"}`}>
         {/* Video background or sliding images */}
         {hasVideoHero ? (
           <iframe
@@ -1080,7 +1080,7 @@ export default function CompanyProfile() {
       </section>
 
       {/* ═══════════ STATS BAR ═══════════ */}
-      <section className={`${isElegant || isMagazine ? "block" : "hidden lg:block"} relative z-20 ${isNetflix || isGamer ? "!hidden" : ""}`} style={{ borderBottom: `1px solid ${storeTheme.border}`, background: storeTheme.card }}>
+      <section className={`${isElegant || isMagazine ? "block" : "hidden lg:block"} relative z-20 ${isNetflix || false ? "!hidden" : ""}`} style={{ borderBottom: `1px solid ${storeTheme.border}`, background: storeTheme.card }}>
         <div className="max-w-[1800px] mx-auto px-4 md:px-8">
           <div className="flex items-center gap-6 py-3 overflow-x-auto scrollbar-hide">
             <div className="flex items-center gap-2 text-sm flex-shrink-0">
@@ -1129,7 +1129,7 @@ export default function CompanyProfile() {
       <div className={`${isNetflix ? "w-full" : "max-w-[1800px] mx-auto px-4 md:px-8"} ${isMinimal || isMarketplace || isNetflix ? "py-0" : "py-6"}`}>
         <div className={`flex ${isNetflix ? "gap-0" : "gap-8"}`}>
           {/* ═══════════ DESKTOP SIDEBAR ═══════════ */}
-          <aside className={`hidden lg:block w-[280px] flex-shrink-0 ${isMarketplace || isNetflix || isElegant || isMagazine || isGamer || isGallery ? "!hidden" : ""}`}>
+          <aside className={`hidden lg:block w-[280px] flex-shrink-0 ${isMarketplace || isNetflix || isElegant || isMagazine || false || isGallery ? "!hidden" : ""}`}>
             <div className={`sticky ${isMinimal ? "top-4" : "top-20"} space-y-4`}>
               {/* Company Card */}
               <div className="rounded-2xl overflow-hidden" style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}>
@@ -1318,7 +1318,7 @@ export default function CompanyProfile() {
                   : undefined,
               };
 
-              const layout = (dbProfile as any)?.store_layout || "gamer";
+              const layout = (dbProfile as any)?.store_layout || "marketplace";
 
               switch (layout) {
                 case "netflix": return <StoreLayoutNetflix {...layoutProps} />;
@@ -1326,9 +1326,9 @@ export default function CompanyProfile() {
                 case "magazine": return <StoreLayoutMagazine {...layoutProps} />;
                 case "gallery": return <StoreLayoutGallery {...layoutProps} />;
                 case "elegant": return <StoreLayoutElegant {...layoutProps} />;
-                case "gamer": return <StoreLayoutGamer {...layoutProps} />;
+                
                 case "marketplace": return <StoreLayoutMarketplace {...layoutProps} />;
-                default: return <StoreLayoutGamer {...layoutProps} />;
+                default: return <StoreLayoutMarketplace {...layoutProps} />;
               }
             })()}
 
@@ -1336,7 +1336,7 @@ export default function CompanyProfile() {
             <div id="products-grid" className="hidden lg:block">
             {/* Products Header */}
             <div className="flex items-center justify-between mb-4">
-              {isGamer ? (
+              {false ? (
                 <div className="flex items-center gap-3">
                   <Trophy size={16} style={{ color: storeTheme.primary }} />
                   <h2 className="font-display font-black text-lg uppercase tracking-wider" style={{ color: storeTheme.text }}>
@@ -1361,7 +1361,7 @@ export default function CompanyProfile() {
 
             {/* Products Grid — Desktop only */}
             {filteredProducts.length > 0 ? (
-              isGamer ? (
+              false ? (
                 /* ── RPG-style grid ── */
                 <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
                   {filteredProducts.map((product: any, i: number) => {
@@ -1535,7 +1535,7 @@ export default function CompanyProfile() {
               )
             ) : (
               <div className="text-center py-20 rounded-2xl" style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}>
-                {isGamer ? (
+                {false ? (
                   <>
                     <Sparkles size={48} className="mx-auto mb-3" style={{ color: storeTheme.primary }} />
                     <p className="font-semibold text-lg" style={{ color: storeTheme.textMuted }}>Nenhum item no inventário</p>
