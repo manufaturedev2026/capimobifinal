@@ -25,6 +25,8 @@ import PackageBadge from "@/components/PackageBadge";
 import { useSellerAnalytics } from "@/hooks/useSellerAnalytics";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, CartesianGrid } from "recharts";
 import gabrielImg from "@/assets/gabriel-gerente.jpg";
+import PwaInstallGuide from "@/components/PwaInstallGuide";
+import { usePwaInstall } from "@/hooks/usePwaInstall";
 
 type SellerItem = {
   id: string;
