@@ -461,9 +461,6 @@ export default function Index() {
                 ))}
               </div>
 
-              <div className="mt-8">
-                <StoreInstallButton />
-              </div>
             </motion.div>
 
             <motion.div
