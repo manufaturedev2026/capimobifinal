@@ -302,8 +302,8 @@ export default function MarketplaceHome() {
             transition={{ duration: 0.7, delay: 0.2 }}
             className="flex items-center gap-2 mb-2"
           >
-            <Sparkles size={14} style={{ color: PRIMARY }} />
-            <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest" style={{ color: PRIMARY }}>
+            <Sparkles size={14} style={{ color: theme.promoAccent || PRIMARY }} />
+            <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest" style={{ color: theme.promoAccent || PRIMARY }}>
               Marketplace de Imóveis
             </span>
           </motion.div>
