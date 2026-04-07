@@ -44,7 +44,7 @@ function NetflixRow({ title, items, corretorSlug, getTagLabel, accent }: {
   return (
     <div className="mb-6 lg:mb-8 group/row relative">
       {title && (
-        <h3 className="font-bold text-sm md:text-base text-white mb-2 lg:mb-3 px-4 lg:px-12 flex items-center gap-2 hover:text-[#e50914] transition-colors cursor-default">
+        <h3 className="font-bold text-sm lg:text-base text-white mb-2 lg:mb-3 px-4 lg:px-12 flex items-center gap-2 hover:text-[#e50914] transition-colors cursor-default">
           {title}
           <ChevronRight size={14} className="opacity-0 group-hover/row:opacity-100 transition-opacity text-[#e50914]" />
         </h3>
@@ -436,7 +436,7 @@ export default function StoreLayoutNetflix({
       <div className="pb-8 pt-6">
         {/* Category cards — movie poster style */}
         <div className="flex items-center justify-between px-4 lg:px-12 mb-3">
-          <h3 className="font-bold text-sm md:text-base text-white">Explorar por Categoria</h3>
+          <h3 className="font-bold text-sm lg:text-base text-white">Explorar por Categoria</h3>
           <div className="flex items-center gap-2">
             {onCinemaMode && (
               <button
