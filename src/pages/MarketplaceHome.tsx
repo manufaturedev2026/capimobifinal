@@ -250,7 +250,7 @@ export default function MarketplaceHome() {
         <meta name="description" content="Encontre imóveis de diversos corretores verificados. Casas, apartamentos, terrenos e muito mais." />
       </Helmet>
 
-      <MarketplaceNavbar theme={currentTheme} user={user} showImoveisScroll={true} />
+      <MarketplaceNavbar theme={theme} user={user} showImoveisScroll={true} />
 
       {/* ═══ HERO — Parallax + Particles ═══ */}
       <motion.section
