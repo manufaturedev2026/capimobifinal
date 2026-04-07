@@ -130,7 +130,7 @@ const AppLayout = () => {
               <Route path="/" element={<HomeRedirect />} />
               <Route path="/empresa/:id" element={<CompanyProfile />} />
               <Route path="/imoveis/produto/:productId" element={<ProductDetail />} />
-              <Route path="/anunciar" element={<CreateListing />} />
+              <Route path="/anunciar" element={<VenderPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/entrar" element={<Navigate to="/login" replace />} />
               <Route path="/painel" element={<RequireAuth><SellerDashboard /></RequireAuth>} />
