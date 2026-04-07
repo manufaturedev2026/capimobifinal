@@ -140,6 +140,10 @@ const AppLayout = () => {
               <Route path="/imoveis/:cidade/:categoria" element={<SeoLandingPage />} />
               <Route path="/imoveis/:cidade/bairro/:bairro" element={<SeoLandingPage />} />
               <Route path="/imoveis/categoria/:categoria" element={<SeoLandingPage />} />
+              {/* SEO broker pages */}
+              <Route path="/corretores" element={<SeoBrokersPage />} />
+              <Route path="/corretores/:estado" element={<SeoBrokersPage />} />
+              <Route path="/corretores/:estado/:cidade" element={<SeoBrokersPage />} />
               <Route path="/anunciar" element={<VenderPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/entrar" element={<Navigate to="/login" replace />} />
