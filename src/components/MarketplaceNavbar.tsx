@@ -17,8 +17,8 @@ export default function MarketplaceNavbar({ theme, user, showImoveisScroll = tru
 
   return (
     <nav
-      className="sticky top-0 z-50 backdrop-blur-xl border-b"
-      style={{ background: `${DARK_BASE}ee`, borderColor: BORDER }}
+      className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl"
+      style={{ background: `${DARK_BASE}ee` }}
     >
       <div className="max-w-6xl mx-auto px-4 flex items-center justify-between h-14">
         <Link to="/" className="font-display font-bold text-lg" style={{ color: TEXT }}>
