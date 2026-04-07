@@ -370,7 +370,7 @@ export default function MarketplaceHome() {
 
           {/* City selector */}
           {availableCities.length > 1 && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="relative mt-1">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="relative mt-1 lg:hidden">
               <button
                 onClick={() => setShowCityPicker(!showCityPicker)}
                 className="flex items-center gap-1.5 text-sm font-semibold text-white/80 hover:text-white transition-colors bg-white/10 hover:bg-white/20 px-4 py-2 rounded-full backdrop-blur-md"
