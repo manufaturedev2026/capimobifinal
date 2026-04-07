@@ -869,6 +869,56 @@ export default function AdminPanel() {
               ))}
             </div>
           </div>
+
+          {/* Theme Picker */}
+          <div className="bg-card border border-border rounded-2xl p-5">
+            <h3 className="font-display font-bold text-lg text-foreground mb-1 flex items-center gap-2">
+              <Palette size={20} className="text-primary" /> Tema da Página Inicial
+            </h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              Escolha o tema visual do Marketplace e do painel dos corretores.
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {MARKETPLACE_THEMES.map((t) => (
+                <button
+                  key={t.id}
+                  onClick={async () => {
+                    setHomepageTheme(t.id);
+                    await supabase
+                      .from("platform_settings" as any)
+                      .upsert({ key: "homepage_theme", value: t.id } as any, { onConflict: "key" });
+                    toast({ title: "Tema atualizado!", description: `Tema: ${t.icon} ${t.name}` });
+                  }}
+                  className={`text-left rounded-xl border-2 overflow-hidden transition-all ${
+                    homepageTheme === t.id
+                      ? "border-primary ring-2 ring-primary/30"
+                      : "border-border hover:border-primary/30"
+                  }`}
+                >
+                  {/* Preview gradient */}
+                  <div className="h-16 w-full relative" style={{ background: t.dashboardGradient }}>
+                    <div className="absolute bottom-2 left-3 flex items-center gap-1.5">
+                      <div className="w-3 h-3 rounded-full" style={{ background: t.primary }} />
+                      <div className="h-1.5 w-12 rounded-full bg-white/50" />
+                    </div>
+                  </div>
+                  <div className="p-3" style={{ background: t.darkBase }}>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-bold" style={{ color: t.text }}>
+                        {t.icon} {t.name}
+                      </span>
+                      {homepageTheme === t.id && (
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-primary">
+                          <Check size={12} /> Ativo
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       )}
 
