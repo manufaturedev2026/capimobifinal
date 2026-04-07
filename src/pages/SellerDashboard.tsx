@@ -64,7 +64,15 @@ export default function SellerDashboard() {
   const [dragOverItemId, setDragOverItemId] = useState<string | null>(null);
   const [teamMembers, setTeamMembers] = useState<{ id: string; full_name: string; photo_url: string | null; phone: string | null; is_active: boolean }[]>([]);
   const [showInstallGuide, setShowInstallGuide] = useState(false);
+  const [dashThemeId, setDashThemeId] = useState("azul");
   const { guideMode, installed, requestInstall } = usePwaInstall();
+
+  useEffect(() => {
+    supabase.from("platform_settings").select("value").eq("key", "homepage_theme").maybeSingle().then(({ data }) => {
+      if (data?.value) setDashThemeId(data.value);
+    });
+  }, []);
+  const dashTheme = getMarketplaceTheme(dashThemeId);
   useEffect(() => {
     if (!authLoading && !user) navigate("/login");
   }, [user, authLoading, navigate]);
