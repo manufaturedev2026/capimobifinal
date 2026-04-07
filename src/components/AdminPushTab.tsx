@@ -1,0 +1,250 @@
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { Bell, Send, Users, Clock, CheckCircle2, XCircle, Loader2, Trash2, MessageSquare, Megaphone } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+
+interface AdminPushTabProps {
+  userId: string;
+}
+
+interface NotificationLog {
+  id: string;
+  title: string;
+  body: string;
+  url: string | null;
+  sent_count: number;
+  failed_count: number;
+  created_at: string;
+}
+
+export default function AdminPushTab({ userId }: AdminPushTabProps) {
+  const { toast } = useToast();
+  const [totalSubscribers, setTotalSubscribers] = useState(0);
+  const [totalSellers, setTotalSellers] = useState(0);
+  const [logs, setLogs] = useState<NotificationLog[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [sending, setSending] = useState(false);
+
+  const [title, setTitle] = useState("");
+  const [body, setBody] = useState("");
+  const [url, setUrl] = useState("");
+
+  const fetchData = async () => {
+    const { count: subCount } = await supabase
+      .from("push_subscriptions" as any)
+      .select("id", { count: "exact", head: true });
+
+    setTotalSubscribers(subCount || 0);
+
+    // Count unique seller_ids with subscriptions
+    const { data: sellerData } = await supabase
+      .from("push_subscriptions" as any)
+      .select("seller_id");
+
+    const uniqueSellers = new Set((sellerData || []).map((s: any) => s.seller_id));
+    setTotalSellers(uniqueSellers.size);
+
+    const { data: logData } = await supabase
+      .from("push_notifications_log" as any)
+      .select("*")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(20);
+
+    setLogs((logData as unknown as NotificationLog[]) || []);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [userId]);
+
+  const handleSend = async () => {
+    if (!title.trim() || !body.trim()) {
+      toast({ title: "Preencha título e mensagem", variant: "destructive" });
+      return;
+    }
+
+    setSending(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("send-push-admin", {
+        body: {
+          title: title.trim(),
+          body: body.trim(),
+          url: url.trim() || undefined,
+        },
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Notificação enviada para todos! 🚀",
+        description: `${data.sent} enviadas, ${data.failed} falharam de ${data.total} dispositivos`,
+      });
+
+      setTitle("");
+      setBody("");
+      setUrl("");
+      fetchData();
+    } catch (err: any) {
+      toast({ title: "Erro ao enviar", description: err.message, variant: "destructive" });
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const handleDeleteLog = async (id: string) => {
+    await supabase.from("push_notifications_log" as any).delete().eq("id", id);
+    setLogs((prev) => prev.filter((l) => l.id !== id));
+    toast({ title: "Registro removido" });
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
+          <Megaphone className="w-5 h-5" /> Push para Corretores
+        </h2>
+        <p className="text-sm text-muted-foreground mt-1">
+          Envie notificações push para todos os corretores que instalaram o app
+        </p>
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <div className="p-4 rounded-xl border border-border bg-card">
+          <div className="flex items-center gap-2 mb-1">
+            <Users className="w-4 h-4 text-primary" />
+            <span className="text-xs text-muted-foreground font-medium">Dispositivos</span>
+          </div>
+          <p className="text-2xl font-bold text-foreground">{totalSubscribers}</p>
+        </div>
+        <div className="p-4 rounded-xl border border-border bg-card">
+          <div className="flex items-center gap-2 mb-1">
+            <Bell className="w-4 h-4 text-primary" />
+            <span className="text-xs text-muted-foreground font-medium">Corretores</span>
+          </div>
+          <p className="text-2xl font-bold text-foreground">{totalSellers}</p>
+        </div>
+        <div className="p-4 rounded-xl border border-border bg-card hidden md:block">
+          <div className="flex items-center gap-2 mb-1">
+            <Send className="w-4 h-4 text-primary" />
+            <span className="text-xs text-muted-foreground font-medium">Enviadas</span>
+          </div>
+          <p className="text-2xl font-bold text-foreground">{logs.length}</p>
+        </div>
+      </div>
+
+      {/* Compose */}
+      <div className="p-6 rounded-xl border border-border bg-card space-y-4">
+        <h3 className="text-base font-bold text-foreground flex items-center gap-2">
+          <MessageSquare className="w-4 h-4" /> Enviar para Todos os Corretores
+        </h3>
+
+        {totalSubscribers === 0 ? (
+          <div className="text-center py-8">
+            <Bell className="w-12 h-12 mx-auto mb-3 text-muted-foreground/30" />
+            <p className="text-sm font-medium text-muted-foreground">Nenhum inscrito ainda</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              Quando corretores instalarem o app e aceitarem notificações, eles aparecerão aqui.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium">Título *</Label>
+              <Input
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Ex: Nova atualização disponível!"
+                maxLength={100}
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium">Mensagem *</Label>
+              <Textarea
+                value={body}
+                onChange={(e) => setBody(e.target.value)}
+                placeholder="Ex: Confira os novos recursos do painel"
+                maxLength={250}
+                rows={3}
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium">Link (opcional)</Label>
+              <Input
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                placeholder="Ex: /painel"
+              />
+              <p className="text-[10px] text-muted-foreground">URL para onde o corretor será levado ao clicar</p>
+            </div>
+
+            <Button onClick={handleSend} disabled={sending || !title.trim() || !body.trim()} className="w-full gap-2">
+              {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Megaphone className="w-4 h-4" />}
+              Enviar para {totalSubscribers} dispositivo{totalSubscribers !== 1 ? "s" : ""}
+            </Button>
+          </div>
+        )}
+      </div>
+
+      {/* History */}
+      {logs.length > 0 && (
+        <div className="space-y-3">
+          <h3 className="text-base font-bold text-foreground flex items-center gap-2">
+            <Clock className="w-4 h-4" /> Histórico de Broadcasts
+          </h3>
+          <div className="space-y-2">
+            {logs.map((log) => (
+              <div key={log.id} className="p-4 rounded-xl border border-border bg-card">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-bold text-sm text-foreground">{log.title}</h4>
+                    <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{log.body}</p>
+                    {log.url && (
+                      <p className="text-[10px] text-primary mt-1 truncate">🔗 {log.url}</p>
+                    )}
+                  </div>
+                  <div className="flex items-start gap-2 shrink-0">
+                    <div className="text-right">
+                      <div className="flex items-center gap-1 text-xs">
+                        <CheckCircle2 className="w-3 h-3 text-green-500" />
+                        <span className="text-green-600 font-medium">{log.sent_count}</span>
+                        {log.failed_count > 0 && (
+                          <>
+                            <XCircle className="w-3 h-3 text-red-400 ml-1" />
+                            <span className="text-red-400 font-medium">{log.failed_count}</span>
+                          </>
+                        )}
+                      </div>
+                      <p className="text-[10px] text-muted-foreground mt-1">
+                        {new Date(log.created_at).toLocaleDateString("pt-BR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}
+                      </p>
+                    </div>
+                    <Button size="icon" variant="ghost" className="h-6 w-6 text-muted-foreground hover:text-destructive" onClick={() => handleDeleteLog(log.id)}>
+                      <Trash2 className="w-3 h-3" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

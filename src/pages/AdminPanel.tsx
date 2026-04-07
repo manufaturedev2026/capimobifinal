@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Shield, Users, Package, DollarSign, Search, Check, X, RefreshCw, ArrowLeft, Crown, Star, Zap, Globe, Plus, Trash2, ExternalLink, Copy, Megaphone, LayoutDashboard, Building2, Rocket, FileText, UserCog, Filter, Camera, Phone, Ban, ShieldOff, Clock, MessageCircle, MapPin, Palette } from "lucide-react";
+import { Shield, Users, Package, DollarSign, Search, Check, X, RefreshCw, ArrowLeft, Crown, Star, Zap, Globe, Plus, Trash2, ExternalLink, Copy, Megaphone, LayoutDashboard, Building2, Rocket, FileText, UserCog, Filter, Camera, Phone, Ban, ShieldOff, Clock, MessageCircle, MapPin, Palette, Bell } from "lucide-react";
 import { Link } from "react-router-dom";
 import { MARKETPLACE_THEMES } from "@/lib/marketplaceThemes";
 import { useAuth } from "@/hooks/useAuth";
@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 import AdminCrmTab from "@/components/AdminCrmTab";
+import AdminPushTab from "@/components/AdminPushTab";
 
 interface SellerWithSub {
   id: string;
@@ -45,7 +46,7 @@ export default function AdminPanel() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [tierFilter, setTierFilter] = useState<string>("todos");
-  const [tab, setTab] = useState<"sellers" | "billing" | "referrals" | "crm" | "seo" | "vendas" | "config">("sellers");
+  const [tab, setTab] = useState<"sellers" | "billing" | "referrals" | "crm" | "seo" | "vendas" | "config" | "push">("sellers");
   const [homepageMode, setHomepageMode] = useState<string>("single");
   const [homepageTheme, setHomepageTheme] = useState<string>("azul");
   const [adRequests, setAdRequests] = useState<any[]>([]);
@@ -352,6 +353,7 @@ export default function AdminPanel() {
     { key: "sellers" as const, label: "Vendedores", icon: Users },
     { key: "billing" as const, label: "Faturamento", icon: DollarSign },
     { key: "crm" as const, label: "CRM WhatsApp", icon: MessageCircle },
+    { key: "push" as const, label: "Push Broadcast", icon: Bell },
     { key: "seo" as const, label: "SEO / Sitemaps", icon: Globe },
     { key: "vendas" as const, label: "Página de Vendas", icon: Rocket },
     { key: "config" as const, label: "Configurações", icon: LayoutDashboard },
@@ -625,6 +627,10 @@ export default function AdminPanel() {
 
         {tab === "crm" && (
           <AdminCrmTab />
+        )}
+
+        {tab === "push" && user && (
+          <AdminPushTab userId={user.id} />
         )}
 
         {tab === "seo" && (
