@@ -375,7 +375,7 @@ export default function VenderPage() {
         <section id="planos" className="py-20 md:py-28">
           <div className="max-w-6xl mx-auto px-4">
             <div className="text-center max-w-2xl mx-auto mb-14">
-              <p className="text-blue-400 font-semibold text-sm uppercase tracking-wide mb-3">Planos e preços</p>
+              <p className="font-semibold text-sm uppercase tracking-wide mb-3" style={{ color: theme.primary }}>Planos e preços</p>
               <h2 className="font-display text-3xl md:text-4xl font-black">
                 Comece de graça ou escolha seu plano
               </h2>
