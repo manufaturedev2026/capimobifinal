@@ -1,4 +1,5 @@
 import { useState, useMemo, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { Link, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
@@ -374,68 +375,64 @@ export default function MarketplaceHome() {
               </button>
 
               {/* Overlay + City list */}
-              <AnimatePresence>
-                {showCityPicker && (
-                  <>
-                    {/* Backdrop */}
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      className="fixed inset-0 z-[9998] bg-black/70 backdrop-blur-md"
-                      onClick={() => setShowCityPicker(false)}
-                    />
-                    {/* Panel */}
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 20 }}
-                      transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                      className="fixed bottom-0 left-0 right-0 md:bottom-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-[360px] z-[9999] rounded-t-2xl md:rounded-2xl shadow-2xl overflow-hidden"
-                      style={{ background: "#1a1a2e", border: `1px solid ${BORDER}` }}
-                    >
-                      {/* Drag handle (mobile) */}
-                      <div className="md:hidden flex justify-center py-2">
-                        <div className="w-10 h-1 rounded-full" style={{ background: BORDER }} />
-                      </div>
-                      <div className="px-4 py-3 flex items-center justify-between" style={{ borderBottom: `1px solid ${BORDER}` }}>
-                        <p className="text-sm font-bold" style={{ color: TEXT }}>Selecionar cidade</p>
-                        <button onClick={() => setShowCityPicker(false)} className="p-1 rounded-lg hover:opacity-70">
-                          <X size={16} style={{ color: TEXT_MUTED }} />
-                        </button>
-                      </div>
-                      <div className="max-h-[60vh] overflow-y-auto overscroll-contain">
-                        <button
-                          onClick={() => { setFilterCity(""); setShowCityPicker(false); setPage(1); }}
-                          className="w-full text-left px-4 py-3.5 text-sm font-medium flex items-center gap-2.5 transition-colors active:opacity-70"
-                          style={{
-                            color: !filterCity ? PRIMARY : TEXT,
-                            background: !filterCity ? `${PRIMARY}15` : "transparent",
-                          }}
-                        >
-                          <Globe size={15} style={{ color: !filterCity ? PRIMARY : TEXT_MUTED }} />
-                          Todas as cidades
-                        </button>
-                        {availableCities.map((city) => (
+              {showCityPicker && typeof document !== "undefined"
+                ? createPortal(
+                    <>
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="fixed inset-0 z-[2147483646] bg-black/75 backdrop-blur-md"
+                        onClick={() => setShowCityPicker(false)}
+                      />
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                        className="fixed bottom-0 left-0 right-0 md:bottom-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-[360px] z-[2147483647] rounded-t-2xl md:rounded-2xl shadow-2xl overflow-hidden"
+                        style={{ background: CARD_BG, border: `1px solid ${BORDER}`, boxShadow: "0 24px 80px rgba(0,0,0,0.45)" }}
+                      >
+                        <div className="md:hidden flex justify-center py-2">
+                          <div className="w-10 h-1 rounded-full" style={{ background: BORDER }} />
+                        </div>
+                        <div className="px-4 py-3 flex items-center justify-between" style={{ borderBottom: `1px solid ${BORDER}` }}>
+                          <p className="text-sm font-bold" style={{ color: TEXT }}>Selecionar cidade</p>
+                          <button onClick={() => setShowCityPicker(false)} className="p-1 rounded-lg hover:opacity-70">
+                            <X size={16} style={{ color: TEXT_MUTED }} />
+                          </button>
+                        </div>
+                        <div className="max-h-[60vh] overflow-y-auto overscroll-contain">
                           <button
-                            key={city}
-                            onClick={() => { setFilterCity(city); setShowCityPicker(false); setHeroIdx(0); setPage(1); }}
+                            onClick={() => { setFilterCity(""); setShowCityPicker(false); setPage(1); }}
                             className="w-full text-left px-4 py-3.5 text-sm font-medium flex items-center gap-2.5 transition-colors active:opacity-70"
                             style={{
-                              color: filterCity === city ? PRIMARY : TEXT,
-                              background: filterCity === city ? `${PRIMARY}15` : "transparent",
-                              borderTop: `1px solid ${BORDER}40`,
+                              color: !filterCity ? PRIMARY : TEXT,
+                              background: !filterCity ? `${PRIMARY}15` : "transparent",
                             }}
                           >
-                            <MapPin size={15} style={{ color: filterCity === city ? PRIMARY : TEXT_MUTED }} />
-                            {city}
+                            <Globe size={15} style={{ color: !filterCity ? PRIMARY : TEXT_MUTED }} />
+                            Todas as cidades
                           </button>
-                        ))}
-                      </div>
-                    </motion.div>
-                  </>
-                )}
-              </AnimatePresence>
+                          {availableCities.map((city) => (
+                            <button
+                              key={city}
+                              onClick={() => { setFilterCity(city); setShowCityPicker(false); setHeroIdx(0); setPage(1); }}
+                              className="w-full text-left px-4 py-3.5 text-sm font-medium flex items-center gap-2.5 transition-colors active:opacity-70"
+                              style={{
+                                color: filterCity === city ? PRIMARY : TEXT,
+                                background: filterCity === city ? `${PRIMARY}15` : "transparent",
+                                borderTop: `1px solid ${BORDER}40`,
+                              }}
+                            >
+                              <MapPin size={15} style={{ color: filterCity === city ? PRIMARY : TEXT_MUTED }} />
+                              {city}
+                            </button>
+                          ))}
+                        </div>
+                      </motion.div>
+                    </>,
+                    document.body
+                  )
+                : null}
             </motion.div>
           )}
 
