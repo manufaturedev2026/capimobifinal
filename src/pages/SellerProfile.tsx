@@ -15,7 +15,7 @@ import layoutMinimal from "@/assets/layout-previews/layout-minimal.jpg";
 import layoutMagazine from "@/assets/layout-previews/layout-magazine.jpg";
 import layoutGallery from "@/assets/layout-previews/layout-gallery.jpg";
 import layoutElegant from "@/assets/layout-previews/layout-elegant.jpg";
-import layoutShowcase from "@/assets/layout-previews/layout-showcase.jpg";
+import layoutGamer from "@/assets/layout-previews/layout-gamer.jpg";
 import layoutMarketplace from "@/assets/layout-previews/layout-marketplace.jpg";
 
 const LAYOUT_PREVIEWS: Record<string, string> = {
