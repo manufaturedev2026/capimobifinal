@@ -216,6 +216,28 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
               <p className="text-[10px] text-muted-foreground">URL para onde o corretor será levado ao clicar</p>
             </div>
 
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium">Imagem (opcional)</Label>
+              {image ? (
+                <div className="relative w-full max-w-[200px]">
+                  <img src={image} alt="Preview" className="rounded-lg w-full h-24 object-cover border border-border" />
+                  <button
+                    type="button"
+                    onClick={() => setImage("")}
+                    className="absolute -top-2 -right-2 h-5 w-5 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              ) : (
+                <label className="flex items-center gap-2 cursor-pointer text-xs text-muted-foreground hover:text-foreground transition-colors">
+                  <ImagePlus className="w-4 h-4" />
+                  {uploadingImage ? "Enviando..." : "Adicionar imagem"}
+                  <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={uploadingImage} />
+                </label>
+              )}
+            </div>
+
             <Button onClick={handleSend} disabled={sending || !title.trim() || !body.trim()} className="w-full gap-2">
               {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Megaphone className="w-4 h-4" />}
               Enviar para {totalSubscribers} dispositivo{totalSubscribers !== 1 ? "s" : ""}
