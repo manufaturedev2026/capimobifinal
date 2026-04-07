@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { BellRing, X } from "lucide-react";
+import { detectIOS, isStandaloneDisplayMode } from "@/lib/pwaInstall";
 import { usePushSubscription } from "@/hooks/usePushSubscription";
 
 interface PushSubscribeButtonProps {
