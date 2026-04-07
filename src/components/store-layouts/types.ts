@@ -28,7 +28,7 @@ export const STORE_LAYOUTS = [
   { id: "netflix", name: "Netflix", desc: "Carrossel de categorias + grid de cards", preview: "🎬" },
   { id: "minimal", name: "Minimal", desc: "Limpo e elegante, sem distrações", preview: "✨" },
   { id: "marketplace", name: "Marketplace", desc: "Estilo Mercado Livre com busca e badges", preview: "🛒" },
-  { id: "showcase", name: "Showcase", desc: "Foco em um imóvel por vez", preview: "🏆" },
+  { id: "gamer", name: "Gamer", desc: "Scroll horizontal fullscreen imersivo", preview: "🎮" },
   { id: "magazine", name: "Magazine", desc: "Cards grandes estilo revista", preview: "📰" },
   { id: "gallery", name: "Galeria", desc: "Mosaico estilo Pinterest", preview: "🖼️" },
   { id: "elegant", name: "Elegant", desc: "Estilo site de imobiliária profissional", preview: "🏢" },
@@ -38,13 +38,13 @@ export type StoreLayoutId = typeof STORE_LAYOUTS[number]["id"];
 
 /** Layouts allowed per subscription tier */
 export const LAYOUTS_BY_TIER: Record<string, string[]> = {
-  basico: ["showcase"],
-  start: ["showcase"],
-  vip: ["showcase", "netflix", "minimal", "marketplace"],
-  premium: ["showcase", "netflix", "minimal", "marketplace", "magazine", "gallery", "elegant"],
-  essencial_empresa: ["showcase", "netflix", "minimal", "marketplace"],
-  premium_empresa: ["showcase", "netflix", "minimal", "marketplace", "magazine", "gallery", "elegant"],
-  prime_empresa: ["showcase", "netflix", "minimal", "marketplace", "magazine", "gallery", "elegant"],
+  basico: ["gamer"],
+  start: ["gamer"],
+  vip: ["gamer", "netflix", "minimal", "marketplace"],
+  premium: ["gamer", "netflix", "minimal", "marketplace", "magazine", "gallery", "elegant"],
+  essencial_empresa: ["gamer", "netflix", "minimal", "marketplace"],
+  premium_empresa: ["gamer", "netflix", "minimal", "marketplace", "magazine", "gallery", "elegant"],
+  prime_empresa: ["gamer", "netflix", "minimal", "marketplace", "magazine", "gallery", "elegant"],
 };
 
 export function isLayoutAllowed(layoutId: string, tier: string | null | undefined): boolean {
