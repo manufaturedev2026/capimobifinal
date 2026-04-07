@@ -345,7 +345,7 @@ export default function MarketplaceHome() {
                     </Link>
 
                     <div className="p-3">
-                      <Link to={productUrl}>
+                      <Link to={pUrl}>
                         <h3 className="text-sm font-bold text-foreground line-clamp-1 group-hover:text-primary transition-colors">
                           {item.title}
                         </h3>
