@@ -1,12 +1,13 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import {
   Search, Home, Building2, Key, Trees, Store, Landmark,
-  MapPin, Bed, Bath, Ruler, ArrowRight, X, Filter,
-  ChevronRight, Sparkles, Crown, Star, Zap, Users, Shield,
+  MapPin, Bed, Bath, Ruler, ArrowRight, X,
+  Sparkles, Crown, Star, Users, Shield,
   Phone, ShieldCheck, Globe, Megaphone, UserPlus, LogIn,
+  LayoutDashboard, Image,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useRealListings } from "@/hooks/useRealListings";
@@ -21,23 +22,77 @@ import PropertyCardSkeleton from "@/components/PropertyCardSkeleton";
 import { getStoreUrl } from "@/lib/storeUrl";
 import { productUrl } from "@/lib/productUrl";
 import FooterSimple from "@/components/FooterSimple";
+import { useIsMobile } from "@/hooks/use-mobile";
 
-const CATEGORIES = [
-  { slug: "todos", label: "Todos", icon: Sparkles },
-  { slug: "casa", label: "Casas", icon: Home },
-  { slug: "apartamento", label: "Apartamentos", icon: Building2 },
-  { slug: "aluguel", label: "Aluguel", icon: Key },
-  { slug: "terreno", label: "Terrenos", icon: Trees },
-  { slug: "comercial", label: "Comerciais", icon: Store },
-  { slug: "flat", label: "Flats", icon: Landmark },
+/* ── Theme constants ── */
+const PRIMARY = "#3B82F6";
+const DARK_BASE = "hsl(220, 40%, 8%)";
+const DARK_MID = "hsl(220, 45%, 15%)";
+const CARD_BG = "hsl(220, 30%, 12%)";
+const BORDER = "hsl(220, 20%, 18%)";
+const TEXT = "#f0f0f0";
+const TEXT_MUTED = "#8a8a9a";
+
+const QUICK_ACTIONS = [
+  { slug: "casa", name: "Casas", desc: "Residenciais", icon: Home },
+  { slug: "apartamento", name: "Apartamentos", desc: "Condomínios", icon: Building2 },
+  { slug: "aluguel", name: "Aluguel", desc: "Locação", icon: Key },
+  { slug: "terreno", name: "Terrenos", desc: "Lotes & áreas", icon: Trees },
+  { slug: "comercial", name: "Comerciais", desc: "Salas & lojas", icon: Store },
+  { slug: "flat", name: "Flats", desc: "Compactos", icon: Landmark },
 ];
 
 const BENEFITS = [
-  { icon: Phone, title: "Contato Direto", desc: "Fale com o corretor via WhatsApp" },
+  { icon: Phone, title: "Contato Direto", desc: "Fale direto com o corretor via WhatsApp" },
   { icon: Globe, title: "Cobertura Regional", desc: "Imóveis em diversas cidades" },
-  { icon: ShieldCheck, title: "Verificados", desc: "Corretores com CRECI ativo" },
+  { icon: ShieldCheck, title: "Corretores Verificados", desc: "Profissionais com CRECI ativo" },
   { icon: Megaphone, title: "Anuncie Grátis", desc: "Cadastre seu imóvel sem custo" },
 ];
+
+/* ── Floating particles ── */
+function FloatingParticles({ color }: { color: string }) {
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {Array.from({ length: 20 }).map((_, i) => (
+        <motion.div
+          key={i}
+          className="absolute rounded-full"
+          style={{
+            width: Math.random() * 4 + 2,
+            height: Math.random() * 4 + 2,
+            background: color,
+            opacity: 0.15 + Math.random() * 0.2,
+            left: `${Math.random() * 100}%`,
+            top: `${Math.random() * 100}%`,
+          }}
+          animate={{
+            y: [0, -40 - Math.random() * 60, 0],
+            x: [0, (Math.random() - 0.5) * 30, 0],
+            opacity: [0.1, 0.35, 0.1],
+          }}
+          transition={{
+            duration: 4 + Math.random() * 4,
+            repeat: Infinity,
+            delay: Math.random() * 3,
+            ease: "easeInOut",
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+/* ── Shimmer line ── */
+function ShimmerLine() {
+  return (
+    <motion.div
+      className="h-[1px] w-full"
+      style={{ background: `linear-gradient(90deg, transparent, ${PRIMARY}60, transparent)` }}
+      animate={{ opacity: [0.3, 0.8, 0.3] }}
+      transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+    />
+  );
+}
 
 export default function MarketplaceHome() {
   const { user, profile } = useAuth();
@@ -46,13 +101,22 @@ export default function MarketplaceHome() {
   const { sellers: realSellers, items: realItems, loading } = useRealListings("imoveis");
   const { toggleFavorite, isFavorite } = useFavorites();
   const { addItem, isInCompare } = useCompare();
+  const isMobile = useIsMobile();
 
   const [activeCategory, setActiveCategory] = useState("todos");
   const [filterCity, setFilterCity] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
+  const [heroIdx, setHeroIdx] = useState(0);
+  const [showCityPicker, setShowCityPicker] = useState(false);
+  const [promoIdx, setPromoIdx] = useState(0);
   const ITEMS_PER_PAGE = 24;
-  const catScrollRef = useRef<HTMLDivElement>(null);
+  const heroRef = useRef<HTMLDivElement>(null);
+  const promoScrollRef = useRef<HTMLDivElement>(null);
+
+  const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
+  const heroY = useTransform(scrollYProgress, [0, 1], [0, 120]);
+  const heroScale = useTransform(scrollYProgress, [0, 1], [1, 1.15]);
 
   useEffect(() => {
     if (detectedCity && !filterCity) setFilterCity(detectedCity);
@@ -72,10 +136,21 @@ export default function MarketplaceHome() {
     return map;
   }, [realSellers]);
 
+  const categoryCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    realItems.forEach((i) => {
+      if ((i as any).status === "vendido" || (i as any).status === "inativo") return;
+      const cat = i.category || "outros";
+      counts[cat] = (counts[cat] || 0) + 1;
+      if ((i.tags || []).includes("aluguel_flex") || cat === "aluguel") {
+        counts["aluguel"] = (counts["aluguel"] || 0) + (cat !== "aluguel" ? 1 : 0);
+      }
+    });
+    return counts;
+  }, [realItems]);
+
   const filteredItems = useMemo(() => {
     let items = [...realItems];
-
-    // Category filter
     if (activeCategory !== "todos") {
       if (activeCategory === "aluguel") {
         items = items.filter((i) => (i.tags || []).includes("aluguel_flex") || i.category === "aluguel");
@@ -83,14 +158,10 @@ export default function MarketplaceHome() {
         items = items.filter((i) => i.category === activeCategory);
       }
     }
-
-    // City filter
     if (filterCity) {
       const city = filterCity.trim().toLowerCase();
       items = items.filter((i) => i.city?.trim().toLowerCase() === city);
     }
-
-    // Search
     if (searchQuery.trim()) {
       const q = searchQuery.trim().toLowerCase();
       items = items.filter((i) =>
@@ -99,229 +170,469 @@ export default function MarketplaceHome() {
         i.neighborhood?.toLowerCase().includes(q)
       );
     }
-
-    // Only active
     items = items.filter((i) => (i as any).status !== "vendido" && (i as any).status !== "inativo");
-
     return items;
   }, [realItems, activeCategory, filterCity, searchQuery]);
 
-  const paginatedItems = useMemo(() => {
-    return filteredItems.slice(0, page * ITEMS_PER_PAGE);
-  }, [filteredItems, page]);
-
+  const paginatedItems = useMemo(() => filteredItems.slice(0, page * ITEMS_PER_PAGE), [filteredItems, page]);
   const hasMore = paginatedItems.length < filteredItems.length;
 
-  const totalBrokers = realSellers.length;
-  const totalItems = realItems.length;
+  // Hero products with city diversity
+  const heroProducts = useMemo(() => {
+    const withImage = realItems.filter((p) => p.image && (p as any).status === "ativo");
+    const citySeen = new Set<string>();
+    const diverse: typeof withImage = [];
+    for (const p of withImage) {
+      if (p.city && !citySeen.has(p.city)) { citySeen.add(p.city); diverse.push(p); }
+    }
+    for (const p of withImage) {
+      if (diverse.length >= 5) break;
+      if (!diverse.includes(p)) diverse.push(p);
+    }
+    return diverse.slice(0, 5);
+  }, [realItems]);
+
+  const heroImages = heroProducts.map((p) => p.image);
+  const currentHeroCity = heroProducts[heroIdx]?.city || filterCity || "sua região";
+
+  // Auto-rotate hero
+  useEffect(() => {
+    if (heroImages.length <= 1 || isMobile) return;
+    const t = setInterval(() => setHeroIdx((prev) => (prev + 1) % heroImages.length), 5000);
+    return () => clearInterval(t);
+  }, [heroImages.length, isMobile]);
+
+  // Auto-scroll promo on desktop
+  useEffect(() => {
+    if (isMobile) return;
+    const el = promoScrollRef.current;
+    if (!el || el.children.length <= 1) return;
+    const t = setInterval(() => {
+      setPromoIdx((prev) => {
+        const next = (prev + 1) % el.children.length;
+        const card = el.children[next] as HTMLElement | undefined;
+        if (card) {
+          const targetLeft = Math.max(0, card.offsetLeft - (el.clientWidth - card.clientWidth) / 2);
+          el.scrollTo({ left: targetLeft, behavior: "smooth" });
+        }
+        return next;
+      });
+    }, 4000);
+    return () => clearInterval(t);
+  }, [realItems.length, isMobile]);
+
+  const scrollToGrid = () =>
+    setTimeout(() => {
+      document.getElementById("marketplace-grid")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 100);
+
+  const promoBanners = [
+    { slug: "todos", title: ["Todos os", "Imóveis"], desc: "Veja todos os imóveis disponíveis", icon: Home },
+    { slug: "casa", title: ["Casa", "Própria"], desc: "As melhores casas para sua família", icon: Building2 },
+    { slug: "apartamento", title: ["Aptos", "Modernos"], desc: "Apartamentos com ótima localização", icon: Building2 },
+    { slug: "aluguel", title: ["Para", "Alugar"], desc: "Opções de aluguel com ótimo custo-benefício", icon: Key },
+  ].filter((b) => b.slug === "todos" || (categoryCounts[b.slug] || 0) > 0);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div style={{ background: DARK_BASE, color: TEXT, overflowX: "clip", maxWidth: "100%" }} className="min-h-screen">
       <Helmet>
         <title>Brokers App – Marketplace de Imóveis</title>
         <meta name="description" content="Encontre imóveis de diversos corretores verificados. Casas, apartamentos, terrenos e muito mais." />
       </Helmet>
 
-      {/* ── Header ── */}
-      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-xl border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between gap-4">
-          <Link to="/" className="font-display font-bold text-lg text-foreground shrink-0">
-            Brokers<span className="text-primary">App</span>
-          </Link>
-
-          {/* Search bar */}
-          <div className="flex-1 max-w-lg relative">
-            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
-              placeholder="Buscar imóveis, cidades, bairros..."
-              className="w-full pl-9 pr-4 py-2 rounded-xl border border-border bg-secondary text-sm text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/30 focus:outline-none"
-            />
-            {searchQuery && (
-              <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
-                <X size={14} />
-              </button>
+      {/* ═══ HERO — Parallax + Particles ═══ */}
+      <motion.section
+        ref={heroRef}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8 }}
+        className="relative h-[280px] md:h-[480px] overflow-hidden rounded-b-[2rem]"
+      >
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={heroIdx}
+            className="absolute inset-0"
+            initial={{ opacity: 0, scale: 1.1 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.2 }}
+          >
+            {heroImages[heroIdx] ? (
+              <motion.img
+                src={heroImages[heroIdx]}
+                alt="Hero"
+                className="w-full h-full object-cover"
+                style={{ y: heroY, scale: heroScale }}
+              />
+            ) : (
+              <div className="w-full h-full" style={{ background: `linear-gradient(135deg, ${DARK_BASE}, ${DARK_MID}, ${PRIMARY})` }} />
             )}
-          </div>
+          </motion.div>
+        </AnimatePresence>
 
-          {/* Auth buttons */}
-          <div className="flex items-center gap-2 shrink-0">
+        <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/50 to-black/20" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+
+        <motion.div
+          className="absolute -bottom-20 -right-20 w-80 h-80 rounded-full blur-3xl pointer-events-none"
+          style={{ background: PRIMARY, opacity: 0.12 }}
+          animate={{ scale: [1, 1.3, 1], opacity: [0.08, 0.18, 0.08] }}
+          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+        />
+
+        <FloatingParticles color={PRIMARY} />
+
+        {/* Top nav */}
+        <div className="absolute top-4 left-4 right-4 z-20 flex items-center justify-between">
+          <Link to="/" className="font-display font-bold text-lg text-white">
+            Brokers<span style={{ color: PRIMARY }}>App</span>
+          </Link>
+          <div className="flex items-center gap-2">
             {user ? (
-              <Link to="/painel" className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-bold hover:bg-primary/90 transition-colors">
-                <Shield size={14} /> Painel
+              <Link
+                to="/painel"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/15 backdrop-blur-md text-white text-xs font-medium hover:bg-white/25 transition-colors"
+              >
+                <LayoutDashboard size={14} /> Painel
               </Link>
             ) : (
               <>
-                <Link to="/login" className="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl border border-border text-xs font-medium text-foreground hover:bg-secondary transition-colors">
+                <Link
+                  to="/login"
+                  className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/10 backdrop-blur-md text-white text-xs font-medium hover:bg-white/20 transition-colors"
+                >
                   <LogIn size={14} /> Entrar
                 </Link>
-                <Link to="/anunciar" className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-bold hover:bg-primary/90 transition-colors">
+                <Link
+                  to="/anunciar"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl font-bold text-xs text-white transition-all hover:scale-105"
+                  style={{ background: PRIMARY, boxShadow: `0 4px 16px ${PRIMARY}40` }}
+                >
                   <Megaphone size={14} /> Anunciar
                 </Link>
               </>
             )}
           </div>
         </div>
-      </header>
 
-      {/* ── Hero Section ── */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-background to-accent/5 py-12 lg:py-20">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="grid lg:grid-cols-2 gap-8 items-center">
-            <div className="max-w-2xl">
-              <motion.h1
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="font-display font-bold text-3xl lg:text-5xl text-foreground leading-tight"
+        {/* Hero content */}
+        <div className="relative z-10 h-full flex flex-col justify-end p-5 md:p-12 max-w-6xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.7, delay: 0.2 }}
+            className="flex items-center gap-2 mb-2"
+          >
+            <Sparkles size={14} style={{ color: PRIMARY }} />
+            <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest" style={{ color: PRIMARY }}>
+              Marketplace de Imóveis
+            </span>
+          </motion.div>
+
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.3 }}
+            className="font-display font-black text-2xl md:text-6xl text-white leading-[1.1] drop-shadow-2xl"
+          >
+            Imóveis em<br />
+            <span style={{ color: PRIMARY }}>{currentHeroCity}</span>
+          </motion.h1>
+
+          {/* City selector */}
+          {availableCities.length > 1 && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="relative mt-1">
+              <button
+                onClick={() => setShowCityPicker(!showCityPicker)}
+                className="flex items-center gap-1.5 text-xs font-medium text-white/70 hover:text-white transition-colors"
               >
-                Encontre o imóvel
-                <span className="text-primary"> ideal</span>
-              </motion.h1>
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="mt-3 text-muted-foreground text-base lg:text-lg max-w-lg"
-              >
-                {totalItems}+ imóveis de {totalBrokers} corretores verificados em um só lugar.
-              </motion.p>
+                <MapPin size={12} />
+                {filterCity || "Todas as cidades"}
+                <span className="text-[10px]">▾</span>
+              </button>
+              <AnimatePresence>
+                {showCityPicker && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -5 }}
+                    className="absolute left-0 top-8 z-50 rounded-xl overflow-hidden shadow-2xl backdrop-blur-xl max-h-60 overflow-y-auto"
+                    style={{ background: `${CARD_BG}f0`, border: `1px solid ${BORDER}` }}
+                  >
+                    <button
+                      onClick={() => { setFilterCity(""); setShowCityPicker(false); setPage(1); }}
+                      className="w-full text-left px-4 py-2.5 text-xs font-medium hover:opacity-80 transition-opacity"
+                      style={{ color: !filterCity ? PRIMARY : TEXT }}
+                    >
+                      Todas as cidades
+                    </button>
+                    {availableCities.map((city) => (
+                      <button
+                        key={city}
+                        onClick={() => { setFilterCity(city); setShowCityPicker(false); setHeroIdx(0); setPage(1); }}
+                        className="w-full text-left px-4 py-2.5 text-xs font-medium hover:opacity-80 transition-opacity"
+                        style={{ color: filterCity === city ? PRIMARY : TEXT, borderTop: `1px solid ${BORDER}` }}
+                      >
+                        {city}
+                      </button>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          )}
 
-              {/* Stats */}
-              <div className="flex items-center gap-6 mt-6">
-                <div className="flex items-center gap-2 text-sm text-foreground">
-                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <Home size={14} className="text-primary" />
-                  </div>
-                  <div>
-                    <p className="font-bold">{totalItems}</p>
-                    <p className="text-[10px] text-muted-foreground">Imóveis</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-foreground">
-                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <Users size={14} className="text-primary" />
-                  </div>
-                  <div>
-                    <p className="font-bold">{totalBrokers}</p>
-                    <p className="text-[10px] text-muted-foreground">Corretores</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-foreground">
-                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <MapPin size={14} className="text-primary" />
-                  </div>
-                  <div>
-                    <p className="font-bold">{availableCities.length}</p>
-                    <p className="text-[10px] text-muted-foreground">Cidades</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.45 }}
+            className="text-white/60 text-xs md:text-base mt-2 md:mt-3 max-w-md hidden md:block"
+          >
+            {realItems.length}+ imóveis de {realSellers.length} corretores verificados em um só lugar.
+          </motion.p>
 
-            {/* CTA para corretores */}
-            {!user && (
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.2 }}
-                className="hidden lg:flex flex-col items-center text-center p-8 rounded-3xl bg-card border border-border shadow-lg"
-              >
-                <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
-                  <Sparkles size={24} className="text-primary" />
-                </div>
-                <h3 className="font-display font-bold text-xl text-foreground">
-                  É corretor de imóveis?
-                </h3>
-                <p className="text-sm text-muted-foreground mt-2 max-w-xs">
-                  Crie sua loja profissional, com app próprio, CRM, notificações push e SEO otimizado.
-                </p>
-                <Link
-                  to="/anunciar"
-                  className="inline-flex items-center gap-2 mt-5 px-6 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:bg-primary/90 transition-colors"
-                >
-                  <Megaphone size={16} /> Comece a Anunciar
-                </Link>
-                <p className="text-[11px] text-muted-foreground mt-2">Gratuito para começar • Sem cartão de crédito</p>
-              </motion.div>
-            )}
-          </div>
-        </div>
-      </section>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.6 }}
+            className="flex items-center gap-3 mt-3 md:mt-5"
+          >
+            <button
+              onClick={() => {
+                if (currentHeroCity && currentHeroCity !== "sua região") setFilterCity(currentHeroCity);
+                scrollToGrid();
+              }}
+              className="group inline-flex items-center gap-2 px-5 py-2.5 md:px-7 md:py-3.5 rounded-2xl font-bold text-xs md:text-sm text-white shadow-2xl transition-all hover:scale-105"
+              style={{ background: `linear-gradient(135deg, ${PRIMARY}, ${PRIMARY}bb)`, boxShadow: `0 8px 32px ${PRIMARY}40` }}
+            >
+              Ver ofertas em {currentHeroCity}
+              <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+            </button>
+            <span className="text-xs text-white/40">{filteredItems.length} imóveis</span>
+          </motion.div>
 
-      {/* ── Filters ── */}
-      <div className="sticky top-14 z-40 bg-background/95 backdrop-blur-xl border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 py-3 flex flex-col gap-3">
-          {/* Categories scroll */}
-          <div ref={catScrollRef} className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
-            {CATEGORIES.map((cat) => {
-              const isActive = activeCategory === cat.slug;
-              return (
+          {/* Hero indicators */}
+          {heroImages.length > 1 && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }} className="flex gap-1.5 mt-3 md:mt-5">
+              {heroImages.map((_: string, i: number) => (
                 <button
-                  key={cat.slug}
-                  onClick={() => { setActiveCategory(cat.slug); setPage(1); }}
-                  className={`flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all shrink-0 ${
-                    isActive
-                      ? "bg-primary text-primary-foreground shadow-md"
-                      : "bg-secondary text-muted-foreground hover:bg-secondary/80 hover:text-foreground"
-                  }`}
+                  key={i}
+                  onClick={() => setHeroIdx(i)}
+                  className="h-1 rounded-full transition-all duration-500"
+                  style={{ width: i === heroIdx ? 28 : 8, background: i === heroIdx ? PRIMARY : "rgba(255,255,255,0.25)" }}
+                />
+              ))}
+            </motion.div>
+          )}
+        </div>
+      </motion.section>
+
+      {/* ═══ FLOATING SEARCH BAR ═══ */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.3 }}
+        className="max-w-6xl mx-auto px-4 -mt-7 relative z-20"
+      >
+        <div
+          className="flex items-center gap-2 md:gap-3 rounded-2xl px-4 py-3 md:px-5 md:py-4 backdrop-blur-xl"
+          style={{ background: `${CARD_BG}ee`, border: `1px solid ${BORDER}`, boxShadow: `0 8px 40px ${PRIMARY}15, 0 2px 8px rgba(0,0,0,0.1)` }}
+        >
+          <Search size={20} style={{ color: PRIMARY }} />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
+            placeholder="Buscar por tipo, bairro ou cidade..."
+            className="flex-1 bg-transparent text-sm outline-none placeholder:opacity-40"
+            style={{ color: TEXT }}
+          />
+          {searchQuery && (
+            <button onClick={() => setSearchQuery("")} className="p-1 rounded-lg hover:opacity-70">
+              <X size={16} style={{ color: TEXT_MUTED }} />
+            </button>
+          )}
+          <button
+            className="hidden sm:flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm text-white transition-all hover:scale-105"
+            style={{ background: PRIMARY, boxShadow: `0 4px 16px ${PRIMARY}30` }}
+            onClick={scrollToGrid}
+          >
+            Buscar
+          </button>
+        </div>
+      </motion.div>
+
+      <div className="max-w-6xl mx-auto px-4">
+
+        {/* ═══ QUICK ACTIONS ═══ */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.15 }}
+          className="mt-6 md:mt-10 mb-6 md:mb-8"
+        >
+          <div className="flex items-center gap-2 mb-5">
+            <Crown size={16} style={{ color: PRIMARY }} />
+            <h2 className="font-display font-bold text-lg" style={{ color: TEXT }}>O que você procura?</h2>
+          </div>
+          <div className="flex gap-2.5 md:gap-3 overflow-x-auto scrollbar-hide pb-2 md:grid md:grid-cols-6 md:overflow-visible">
+            {QUICK_ACTIONS.map((action, idx) => {
+              const Icon = action.icon;
+              const isActive = activeCategory === action.slug;
+              const count = categoryCounts[action.slug] || 0;
+              return (
+                <motion.button
+                  key={action.slug}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 + idx * 0.06 }}
+                  whileHover={{ y: -4, transition: { duration: 0.2 } }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={() => { setActiveCategory(isActive ? "todos" : action.slug); setPage(1); scrollToGrid(); }}
+                  className="flex-shrink-0 flex flex-col items-center gap-1.5 md:gap-2.5 p-3 md:p-4 rounded-2xl transition-all min-w-[85px] md:min-w-[100px] relative overflow-hidden"
+                  style={{
+                    background: isActive ? `${PRIMARY}18` : CARD_BG,
+                    border: `1.5px solid ${isActive ? PRIMARY : BORDER}`,
+                    boxShadow: isActive ? `0 8px 24px ${PRIMARY}25, inset 0 1px 0 ${PRIMARY}20` : `0 2px 8px rgba(0,0,0,0.06)`,
+                  }}
                 >
-                  <cat.icon size={14} />
-                  {cat.label}
-                </button>
+                  <div
+                    className="w-12 h-12 rounded-xl flex items-center justify-center transition-all"
+                    style={{
+                      background: isActive ? `${PRIMARY}25` : `${BORDER}60`,
+                      color: isActive ? PRIMARY : TEXT_MUTED,
+                      boxShadow: isActive ? `0 0 16px ${PRIMARY}20` : "none",
+                    }}
+                  >
+                    <Icon size={20} />
+                  </div>
+                  <span className="text-xs font-bold" style={{ color: isActive ? PRIMARY : TEXT }}>{action.name}</span>
+                  <span className="text-[10px] leading-tight" style={{ color: TEXT_MUTED }}>
+                    {count > 0 ? `${count} imóveis` : action.desc}
+                  </span>
+                </motion.button>
               );
             })}
           </div>
+        </motion.section>
 
-          {/* City filter */}
-          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
-            <button
-              onClick={() => { setFilterCity(""); setPage(1); }}
-              className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-[11px] font-medium whitespace-nowrap shrink-0 transition-all ${
-                !filterCity ? "bg-accent text-accent-foreground" : "bg-secondary/60 text-muted-foreground hover:bg-secondary"
-              }`}
+        <ShimmerLine />
+
+        {/* ═══ PROMO BANNERS ═══ */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="my-8"
+        >
+          {/* Mobile carousel */}
+          <div className="md:hidden relative">
+            <div
+              ref={promoScrollRef}
+              className="flex gap-3 overflow-x-auto overflow-y-hidden scrollbar-hide snap-x snap-mandatory pb-2"
+              style={{ overscrollBehaviorX: "contain" }}
             >
-              <Globe size={12} /> Todas Cidades
-            </button>
-            {availableCities.map((city) => (
-              <button
-                key={city}
-                onClick={() => { setFilterCity(city); setPage(1); }}
-                className={`px-3 py-1.5 rounded-full text-[11px] font-medium whitespace-nowrap shrink-0 transition-all ${
-                  filterCity === city ? "bg-accent text-accent-foreground" : "bg-secondary/60 text-muted-foreground hover:bg-secondary"
-                }`}
+              {promoBanners.map((banner, bIdx) => (
+                <motion.div
+                  key={banner.slug}
+                  className="relative h-40 rounded-2xl overflow-hidden cursor-pointer snap-center flex-shrink-0"
+                  style={{ width: "85%", minWidth: "85%", boxShadow: `0 8px 32px ${PRIMARY}18` }}
+                  onClick={() => { setActiveCategory(banner.slug); setPage(1); scrollToGrid(); }}
+                >
+                  <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${DARK_BASE}, ${PRIMARY}${bIdx === 0 ? "" : "cc"})` }} />
+                  <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent" />
+                  <FloatingParticles color={PRIMARY} />
+                  <div className="relative z-10 h-full flex flex-col justify-center p-5">
+                    <h3 className="font-display font-black text-xl text-white leading-tight">
+                      {banner.title[0]}<br />{banner.title[1]}
+                    </h3>
+                    <p className="text-white/60 text-xs mt-2 max-w-[200px]">{banner.desc}</p>
+                    <span className="inline-flex items-center gap-1.5 text-white/90 text-xs font-bold mt-3">
+                      Explorar <ArrowRight size={14} />
+                    </span>
+                  </div>
+                  <div className="absolute right-0 top-0 bottom-0 w-1/3 opacity-10">
+                    <banner.icon size={120} className="absolute -right-4 top-1/2 -translate-y-1/2 text-white" />
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+            <div className="flex justify-center gap-1.5 mt-3">
+              {promoBanners.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setPromoIdx(i)}
+                  className="h-1.5 rounded-full transition-all duration-300"
+                  style={{ width: i === promoIdx ? 24 : 8, background: i === promoIdx ? PRIMARY : `${TEXT_MUTED}40` }}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Desktop grid */}
+          <div className="hidden md:grid md:grid-cols-2 gap-4">
+            {promoBanners.slice(0, 2).map((banner, bIdx) => (
+              <motion.div
+                key={banner.slug}
+                whileHover={{ y: -4, transition: { duration: 0.25 } }}
+                className="relative h-52 rounded-2xl overflow-hidden group cursor-pointer"
+                onClick={() => { setActiveCategory(banner.slug); setPage(1); scrollToGrid(); }}
+                style={{ boxShadow: `0 8px 32px ${PRIMARY}18` }}
               >
-                {city}
-              </button>
+                <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${DARK_BASE}, ${PRIMARY}${bIdx === 0 ? "" : "cc"})` }} />
+                <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent" />
+                <FloatingParticles color={PRIMARY} />
+                <div className="relative z-10 h-full flex flex-col justify-center p-6">
+                  <h3 className="font-display font-black text-3xl text-white leading-tight">
+                    {banner.title[0]}<br />{banner.title[1]}
+                  </h3>
+                  <p className="text-white/60 text-xs mt-2 max-w-[200px]">{banner.desc}</p>
+                  <span className="inline-flex items-center gap-1.5 text-white/90 text-xs font-bold mt-3 group-hover:gap-3 transition-all">
+                    Explorar <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                  </span>
+                </div>
+                <div className="absolute right-0 top-0 bottom-0 w-1/3 opacity-10">
+                  <banner.icon size={140} className="absolute -right-6 top-1/2 -translate-y-1/2 text-white" />
+                </div>
+              </motion.div>
             ))}
           </div>
-        </div>
-      </div>
+        </motion.section>
 
-      {/* ── Properties Grid ── */}
-      <main className="max-w-7xl mx-auto px-4 py-6">
-        <div className="flex items-center justify-between mb-4">
-          <p className="text-sm text-muted-foreground">
-            <span className="font-bold text-foreground">{filteredItems.length}</span> imóveis encontrados
-            {filterCity && <span> em <span className="font-medium text-foreground">{filterCity}</span></span>}
-          </p>
+        <ShimmerLine />
+
+        {/* ═══ RESULTS HEADER ═══ */}
+        <div id="marketplace-grid" className="mt-6 mb-4 flex items-center justify-between scroll-mt-20">
+          <div className="flex items-center gap-2">
+            <Sparkles size={14} style={{ color: PRIMARY }} />
+            <p className="text-xs font-bold uppercase tracking-wider" style={{ color: TEXT_MUTED }}>
+              {filteredItems.length} {filteredItems.length === 1 ? "resultado" : "resultados"}
+              {filterCity && <span> em <span style={{ color: TEXT }}>{filterCity}</span></span>}
+            </p>
+          </div>
+          {searchQuery && (
+            <button onClick={() => setSearchQuery("")} className="text-xs font-semibold" style={{ color: PRIMARY }}>
+              Limpar busca
+            </button>
+          )}
         </div>
 
+        {/* ═══ PRODUCT GRID ═══ */}
         {loading ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 mb-12">
             {Array.from({ length: 8 }).map((_, i) => <PropertyCardSkeleton key={i} />)}
           </div>
         ) : filteredItems.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-center">
-            <Search size={48} className="text-muted-foreground/30 mb-4" />
-            <h3 className="text-lg font-bold text-foreground">Nenhum imóvel encontrado</h3>
-            <p className="text-sm text-muted-foreground mt-1">Tente ajustar os filtros ou buscar em outra cidade.</p>
+          <div className="text-center py-20 rounded-2xl mb-10" style={{ background: CARD_BG, border: `1px solid ${BORDER}` }}>
+            <Search size={40} className="mx-auto mb-4 opacity-20" style={{ color: TEXT_MUTED }} />
+            <p className="text-sm font-medium" style={{ color: TEXT_MUTED }}>
+              {searchQuery ? "Nenhum resultado para essa busca" : "Nenhum anúncio encontrado"}
+            </p>
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {paginatedItems.map((item) => {
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 mb-12">
+              {paginatedItems.map((item, i) => {
                 const seller = sellersMap[item.sellerId];
                 const firstTag = (item.tags || [])[0];
                 const isAluguel = (item.tags || []).includes("aluguel_flex") || item.category === "aluguel";
@@ -330,89 +641,92 @@ export default function MarketplaceHome() {
                 return (
                   <motion.div
                     key={item.id}
-                    initial={{ opacity: 0, y: 10 }}
+                    initial={{ opacity: 0, y: 24 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="group relative rounded-2xl overflow-hidden border border-border bg-card shadow-sm hover:shadow-lg transition-all"
+                    transition={{ delay: i * 0.04, duration: 0.5 }}
+                    whileHover={{ y: -6, transition: { duration: 0.25 } }}
                   >
-                    <Link to={pUrl}>
+                    <Link
+                      to={pUrl}
+                      className="block rounded-2xl overflow-hidden group transition-all"
+                      style={{ background: CARD_BG, border: `1px solid ${BORDER}`, boxShadow: `0 2px 8px rgba(0,0,0,0.06)` }}
+                      onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = `0 12px 40px ${PRIMARY}20, 0 4px 12px rgba(0,0,0,0.1)`; }}
+                      onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = `0 2px 8px rgba(0,0,0,0.06)`; }}
+                    >
                       <div className="relative aspect-[4/3] overflow-hidden">
-                        <img
-                          src={item.image}
-                          alt={item.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                          loading="lazy"
+                        {item.image ? (
+                          <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center" style={{ background: BORDER }}>
+                            <Image size={28} style={{ color: TEXT_MUTED }} />
+                          </div>
+                        )}
+                        <div
+                          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                          style={{ background: `linear-gradient(to top, ${PRIMARY}30, transparent 60%)` }}
                         />
                         {/* Tags */}
                         <div className="absolute top-2 left-2 flex flex-wrap gap-1">
                           {firstTag && firstTag !== "aluguel_flex" && (
-                            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-black/60 text-white">
+                            <span className={`px-2.5 py-1 rounded-lg text-[9px] font-bold shadow-lg backdrop-blur-sm ${getTagStyle(firstTag)}`}>
                               {getTagLabel(firstTag)}
                             </span>
                           )}
                           {isAluguel && (
-                            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-500 text-white">
+                            <span className="px-2.5 py-1 rounded-lg text-[9px] font-bold shadow-lg backdrop-blur-sm text-white" style={{ background: `${PRIMARY}dd` }}>
                               🏠 Aluguel
                             </span>
                           )}
                         </div>
 
                         {/* Favorites */}
-                        <div className="absolute top-2 right-2 flex flex-col gap-1">
+                        <div className="absolute top-2 right-2">
                           <FavoriteButton isFavorite={isFavorite(item.id)} onClick={(e) => { e.preventDefault(); toggleFavorite(item.id); }} />
                         </div>
 
                         {/* Seller badge */}
                         {seller && (
                           <div className="absolute bottom-2 left-2 flex items-center gap-1.5 px-2 py-1 rounded-lg bg-black/60 backdrop-blur-sm">
-                            {seller.logo && (
-                              <img src={seller.logo} alt="" className="w-4 h-4 rounded-full object-cover" />
-                            )}
+                            {seller.logo && <img src={seller.logo} alt="" className="w-4 h-4 rounded-full object-cover" />}
                             <span className="text-[10px] text-white font-medium truncate max-w-[100px]">{seller.name}</span>
                           </div>
                         )}
                       </div>
-                    </Link>
 
-                    <div className="p-3">
-                      <Link to={pUrl}>
-                        <h3 className="text-sm font-bold text-foreground line-clamp-1 group-hover:text-primary transition-colors">
+                      <div className="p-2.5 md:p-3.5">
+                        <h3 className="text-[11px] md:text-xs font-bold line-clamp-2 leading-snug mb-1.5" style={{ color: TEXT }}>
                           {item.title}
                         </h3>
-                        {item.city && (
-                          <p className="text-[11px] text-muted-foreground mt-0.5 flex items-center gap-1">
-                            <MapPin size={10} /> {item.neighborhood ? `${item.neighborhood}, ` : ""}{item.city}
+                        {item.price && (
+                          <p className="text-sm md:text-lg font-black" style={{ color: PRIMARY }}>
+                            {formatPrice(item.price)}
+                            {isAluguel && <span className="text-[10px] font-normal ml-1" style={{ color: TEXT_MUTED }}>/mês</span>}
                           </p>
                         )}
-                        <p className="text-base font-bold text-primary mt-1.5">
-                          {item.price ? formatPrice(item.price) : "Consulte"}
-                          {isAluguel && <span className="text-xs font-normal text-muted-foreground">/mês</span>}
-                        </p>
-
-                        {/* Specs */}
-                        <div className="flex items-center gap-3 mt-2 text-[11px] text-muted-foreground">
-                          {item.bedrooms && (
-                            <span className="flex items-center gap-0.5"><Bed size={12} /> {item.bedrooms}</span>
-                          )}
-                          {(item as any).bathrooms && (
-                            <span className="flex items-center gap-0.5"><Bath size={12} /> {(item as any).bathrooms}</span>
-                          )}
-                          {item.area && (
-                            <span className="flex items-center gap-0.5"><Ruler size={12} /> {item.area}m²</span>
-                          )}
+                        <div className="flex items-center gap-2.5 mt-2.5 text-[10px]" style={{ color: TEXT_MUTED }}>
+                          {item.bedrooms && <span className="flex items-center gap-0.5"><Bed size={10} /> {item.bedrooms}</span>}
+                          {(item as any).bathrooms && <span className="flex items-center gap-0.5"><Bath size={10} /> {(item as any).bathrooms}</span>}
+                          {item.area && <span className="flex items-center gap-0.5"><Ruler size={10} /> {item.area}m²</span>}
                         </div>
-                      </Link>
-                    </div>
+                        {item.city && (
+                          <p className="text-[10px] mt-2 flex items-center gap-1 truncate" style={{ color: TEXT_MUTED }}>
+                            <MapPin size={9} className="flex-shrink-0" />
+                            {item.neighborhood ? `${item.neighborhood}, ${item.city}` : item.city}
+                          </p>
+                        )}
+                      </div>
+                    </Link>
                   </motion.div>
                 );
               })}
             </div>
 
-            {/* Load more */}
             {hasMore && (
-              <div className="flex justify-center mt-8">
+              <div className="flex justify-center mb-12">
                 <button
                   onClick={() => setPage((p) => p + 1)}
-                  className="px-6 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:bg-primary/90 transition-colors"
+                  className="px-6 py-3 rounded-xl font-bold text-sm text-white transition-all hover:scale-105"
+                  style={{ background: PRIMARY, boxShadow: `0 4px 16px ${PRIMARY}30` }}
                 >
                   Carregar mais imóveis
                 </button>
@@ -420,107 +734,138 @@ export default function MarketplaceHome() {
             )}
           </>
         )}
-      </main>
 
-      {/* ── Benefits ── */}
-      <section className="border-t border-border bg-secondary/30 py-10">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            {BENEFITS.map((b) => (
-              <div key={b.title} className="flex items-start gap-3 p-4 rounded-2xl bg-card border border-border">
-                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                  <b.icon size={18} className="text-primary" />
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-foreground">{b.title}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">{b.desc}</p>
-                </div>
+        {/* ═══ BROKERS ═══ */}
+        {realSellers.length > 0 && (
+          <>
+            <ShimmerLine />
+            <motion.section
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.25 }}
+              className="my-8"
+            >
+              <div className="flex items-center gap-2 mb-5">
+                <Users size={16} style={{ color: PRIMARY }} />
+                <h2 className="font-display font-bold text-lg" style={{ color: TEXT }}>Corretores na plataforma</h2>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Brokers Section ── */}
-      {realSellers.length > 0 && (
-        <section className="py-10 max-w-7xl mx-auto px-4">
-          <h2 className="font-display font-bold text-xl text-foreground mb-6">Corretores na plataforma</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-            {realSellers.slice(0, 10).map((seller) => (
-              <Link
-                key={seller.id}
-                to={`/empresa/${(seller as any).slug || seller.id}`}
-                className="flex flex-col items-center gap-2 p-4 rounded-2xl border border-border bg-card hover:shadow-lg transition-all group"
-              >
-                {seller.logo ? (
-                  <img src={seller.logo} alt={seller.name} className="w-14 h-14 rounded-full object-cover ring-2 ring-border group-hover:ring-primary transition-all" />
-                ) : (
-                  <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-lg">
-                    {seller.name.charAt(0)}
-                  </div>
-                )}
-                <p className="text-xs font-bold text-foreground text-center line-clamp-1">{seller.name}</p>
-                {seller.city && (
-                  <p className="text-[10px] text-muted-foreground flex items-center gap-0.5">
-                    <MapPin size={9} /> {seller.city}
-                  </p>
-                )}
-                <PackageBadge tier={seller.tier as any} size="sm" />
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* ── CTA for brokers ── */}
-      {!user && (
-        <section className="py-16 bg-gradient-to-r from-primary/10 via-accent/5 to-primary/10">
-          <div className="max-w-7xl mx-auto px-4">
-            <div className="grid md:grid-cols-2 gap-8 items-center">
-              <div>
-                <h2 className="font-display font-bold text-2xl lg:text-3xl text-foreground">
-                  Quer anunciar seus imóveis?
-                </h2>
-                <p className="text-muted-foreground mt-3 text-sm max-w-md leading-relaxed">
-                  Crie sua loja profissional com app próprio, CRM, galeria de anúncios, notificações push, WhatsApp integrado e muito mais. Comece gratuitamente.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-3 mt-6">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+                {realSellers.slice(0, 10).map((seller) => (
                   <Link
-                    to="/anunciar"
-                    className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:bg-primary/90 transition-colors"
+                    key={seller.id}
+                    to={`/empresa/${(seller as any).slug || seller.id}`}
+                    className="flex flex-col items-center gap-2 p-4 rounded-2xl transition-all group hover:scale-[1.02]"
+                    style={{ background: CARD_BG, border: `1px solid ${BORDER}` }}
+                    onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = `0 8px 24px ${PRIMARY}20`; }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = "none"; }}
                   >
-                    <Megaphone size={16} /> Saiba como anunciar
+                    {seller.logo ? (
+                      <img src={seller.logo} alt={seller.name} className="w-14 h-14 rounded-full object-cover ring-2 transition-all" style={{ borderColor: BORDER }} />
+                    ) : (
+                      <div className="w-14 h-14 rounded-full flex items-center justify-center font-bold text-lg" style={{ background: `${PRIMARY}20`, color: PRIMARY }}>
+                        {seller.name.charAt(0)}
+                      </div>
+                    )}
+                    <p className="text-xs font-bold text-center line-clamp-1" style={{ color: TEXT }}>{seller.name}</p>
+                    {seller.city && (
+                      <p className="text-[10px] flex items-center gap-0.5" style={{ color: TEXT_MUTED }}>
+                        <MapPin size={9} /> {seller.city}
+                      </p>
+                    )}
+                    <PackageBadge tier={seller.tier as any} size="sm" />
                   </Link>
-                  <Link
-                    to="/login?trial=7"
-                    className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-border bg-card text-foreground font-bold text-sm hover:bg-secondary transition-colors"
-                  >
-                    <UserPlus size={16} /> Criar conta grátis
-                  </Link>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                {[
-                  { icon: Globe, title: "App próprio", desc: "Loja instalável no celular" },
-                  { icon: Users, title: "CRM integrado", desc: "Gerencie seus leads" },
-                  { icon: Shield, title: "Push notifications", desc: "Engaje seus clientes" },
-                  { icon: Star, title: "SEO otimizado", desc: "Apareça no Google" },
-                ].map((b) => (
-                  <div key={b.title} className="flex items-start gap-2.5 p-3 rounded-xl bg-card border border-border">
-                    <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                      <b.icon size={14} className="text-primary" />
-                    </div>
-                    <div>
-                      <p className="text-xs font-bold text-foreground">{b.title}</p>
-                      <p className="text-[10px] text-muted-foreground">{b.desc}</p>
-                    </div>
-                  </div>
                 ))}
               </div>
-            </div>
-          </div>
-        </section>
-      )}
+            </motion.section>
+          </>
+        )}
+
+        {/* ═══ BENEFITS ═══ */}
+        <ShimmerLine />
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="grid grid-cols-2 md:grid-cols-4 gap-4 my-8"
+        >
+          {BENEFITS.map((benefit, i) => {
+            const Icon = benefit.icon;
+            return (
+              <motion.div
+                key={i}
+                whileHover={{ y: -4, transition: { duration: 0.2 } }}
+                className="flex flex-col items-center text-center gap-3 p-5 rounded-2xl relative overflow-hidden"
+                style={{ background: CARD_BG, border: `1px solid ${BORDER}` }}
+              >
+                <div
+                  className="w-12 h-12 rounded-xl flex items-center justify-center relative"
+                  style={{ background: `${PRIMARY}15`, color: PRIMARY }}
+                >
+                  <motion.div
+                    className="absolute inset-0 rounded-xl"
+                    style={{ background: `${PRIMARY}10` }}
+                    animate={{ scale: [1, 1.4, 1], opacity: [0.3, 0, 0.3] }}
+                    transition={{ duration: 3, repeat: Infinity, delay: i * 0.5 }}
+                  />
+                  <Icon size={20} />
+                </div>
+                <h4 className="text-xs font-bold" style={{ color: TEXT }}>{benefit.title}</h4>
+                <p className="text-[10px] leading-relaxed" style={{ color: TEXT_MUTED }}>{benefit.desc}</p>
+              </motion.div>
+            );
+          })}
+        </motion.section>
+
+        {/* ═══ CTA FOR BROKERS ═══ */}
+        {!user && (
+          <>
+            <ShimmerLine />
+            <motion.section
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.35 }}
+              className="my-8"
+            >
+              <div
+                className="relative rounded-2xl p-8 md:p-14 text-center overflow-hidden"
+                style={{ background: `linear-gradient(135deg, ${DARK_BASE}, ${DARK_MID}, ${PRIMARY}90)` }}
+              >
+                <FloatingParticles color="#ffffff" />
+                <motion.div
+                  className="absolute top-0 right-0 w-60 h-60 rounded-full blur-3xl pointer-events-none"
+                  style={{ background: PRIMARY, opacity: 0.15 }}
+                  animate={{ scale: [1, 1.5, 1], x: [0, 20, 0] }}
+                  transition={{ duration: 8, repeat: Infinity }}
+                />
+                <div className="relative z-10">
+                  <Crown size={32} className="mx-auto mb-4 text-white/80" />
+                  <h2 className="font-display font-black text-2xl md:text-3xl text-white mb-3">
+                    Quer anunciar seus imóveis?
+                  </h2>
+                  <p className="text-white/50 text-sm max-w-md mx-auto mb-6">
+                    Crie sua loja profissional com app próprio, CRM, galeria de anúncios, notificações push, WhatsApp integrado e muito mais. Comece gratuitamente.
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                    <Link
+                      to="/anunciar"
+                      className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-2xl font-bold text-sm text-white transition-all hover:scale-105 shadow-xl"
+                      style={{ background: PRIMARY, boxShadow: `0 8px 32px ${PRIMARY}40` }}
+                    >
+                      <Megaphone size={16} /> Saiba como anunciar
+                    </Link>
+                    <Link
+                      to="/login?trial=7"
+                      className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-2xl font-bold text-sm text-white/80 transition-all hover:text-white border border-white/20 hover:border-white/40"
+                    >
+                      <UserPlus size={16} /> Criar conta grátis
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </motion.section>
+          </>
+        )}
+      </div>
 
       <FooterSimple />
     </div>
