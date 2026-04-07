@@ -85,6 +85,9 @@ export default function AdminPanel() {
       supabase.from("platform_settings").select("value").eq("key", "homepage_mode").maybeSingle().then(({ data }) => {
         if (data?.value) setHomepageMode(data.value);
       });
+      supabase.from("platform_settings").select("value").eq("key", "homepage_theme").maybeSingle().then(({ data }) => {
+        if (data?.value) setHomepageTheme(data.value);
+      });
     }
   }, [isAdmin]);
 
