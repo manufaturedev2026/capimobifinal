@@ -1804,17 +1804,17 @@ export default function CompanyProfile() {
       <section className={`${isMarketplace || isNetflix ? "" : "lg:hidden"} px-4 mt-6 mb-6`}>
         <div className="max-w-[1800px] mx-auto">
           {/* ── Bloco 1: Card do Corretor ── */}
-          <div className="rounded-2xl" style={{ border: `1px solid ${storeTheme.border}`, background: storeTheme.card }}>
+          <div className="rounded-2xl lg:max-w-2xl lg:mx-auto" style={{ border: `1px solid ${storeTheme.border}`, background: storeTheme.card }}>
             {/* Header com cor primária */}
-            <div className="rounded-t-2xl px-5 pt-4 pb-4" style={{ background: dbProfile?.cover_color || `linear-gradient(135deg, ${storeTheme.primary}, ${storeTheme.primary}dd)` }}>
-              <div className="flex items-center gap-2">
+            <div className="rounded-t-2xl px-5 pt-4 pb-4 lg:text-center" style={{ background: dbProfile?.cover_color || `linear-gradient(135deg, ${storeTheme.primary}, ${storeTheme.primary}dd)` }}>
+              <div className="flex items-center gap-2 lg:justify-center">
                 <BadgeCheck size={16} className="text-white/90" />
                 <span className="text-white/90 text-xs font-semibold uppercase tracking-wider">Profissional verificado</span>
               </div>
             </div>
             {/* Foto + dados abaixo do header */}
             <div className="px-5 pt-4 pb-5">
-              <div className="flex items-start gap-3.5">
+              <div className="flex items-start gap-3.5 lg:flex-col lg:items-center lg:text-center">
                 {company.logo ? (
                   <img src={company.logo} alt={company.name} className="w-16 h-16 rounded-xl object-cover shadow-lg ring-2 ring-white" style={{ borderColor: storeTheme.primary }} />
                 ) : (
@@ -1832,7 +1832,7 @@ export default function CompanyProfile() {
                       ? ({ imobiliaria: "Imobiliária", corretor: "Corretor(a) de Imóveis", proprietario: "Proprietário", construtora: "Construtora", loja_veiculos: "Loja de Veículos", autonomo: "Vendedor Autônomo", concessionaria: "Concessionária" } as Record<string, string>)[dbProfile.seller_category] || "Especialista em imóveis"
                       : "Especialista em imóveis"}
                   </p>
-                  <div className="flex gap-2 mt-3 flex-wrap">
+                  <div className="flex gap-2 mt-3 flex-wrap lg:justify-center">
                     {company.whatsapp && (
                       <button
                         onClick={() => handleWhatsApp(heroProduct?.title || company.name, heroProduct?.id)}
@@ -1857,7 +1857,7 @@ export default function CompanyProfile() {
                     <p className="text-[11px] leading-relaxed mt-2" style={{ color: storeTheme.textMuted }}>{dbProfile.bio}</p>
                   )}
                   {/* Stats */}
-                  <div className="flex items-center gap-4 mt-3 text-xs" style={{ color: storeTheme.text }}>
+                  <div className="flex items-center gap-4 mt-3 text-xs lg:justify-center" style={{ color: storeTheme.text }}>
                     <div className="text-center">
                       <p className="font-bold text-sm">{products.length}</p>
                       <p className="text-[9px]" style={{ color: storeTheme.textMuted }}>Imóveis</p>
@@ -1906,7 +1906,7 @@ export default function CompanyProfile() {
               )}
               {/* Stats bar inline for Netflix */}
               {isNetflix && (
-                <div className="flex items-center gap-4 flex-wrap mt-4 pt-3" style={{ borderTop: `1px solid ${storeTheme.border}` }}>
+                <div className="flex items-center gap-4 flex-wrap mt-4 pt-3 lg:justify-center" style={{ borderTop: `1px solid ${storeTheme.border}` }}>
                   <div className="flex items-center gap-2 text-sm">
                     <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: `${storeTheme.primary}18` }}>
                       <Store size={14} style={{ color: storeTheme.primary }} />
