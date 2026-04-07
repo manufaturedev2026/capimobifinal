@@ -1857,7 +1857,7 @@ export default function CompanyProfile() {
                     <p className="text-[11px] leading-relaxed mt-2" style={{ color: storeTheme.textMuted }}>{dbProfile.bio}</p>
                   )}
                   {/* Stats */}
-                  <div className="flex items-center gap-4 mt-3 text-xs" style={{ color: storeTheme.text }}>
+                  <div className="flex items-center gap-4 mt-3 text-xs lg:justify-center" style={{ color: storeTheme.text }}>
                     <div className="text-center">
                       <p className="font-bold text-sm">{products.length}</p>
                       <p className="text-[9px]" style={{ color: storeTheme.textMuted }}>Imóveis</p>
