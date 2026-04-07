@@ -7,7 +7,7 @@ import {
   MapPin, Bed, Bath, Ruler, ArrowRight, X,
   Sparkles, Crown, Star, Users, Shield,
   Phone, ShieldCheck, Globe, Megaphone, UserPlus, LogIn,
-  LayoutDashboard, Image,
+  LayoutDashboard, Image, Menu, ChevronDown,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useRealListings } from "@/hooks/useRealListings";
@@ -118,6 +118,7 @@ export default function MarketplaceHome() {
   const [heroIdx, setHeroIdx] = useState(0);
   const [showCityPicker, setShowCityPicker] = useState(false);
   const [promoIdx, setPromoIdx] = useState(0);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const ITEMS_PER_PAGE = 24;
   const heroRef = useRef<HTMLDivElement>(null);
   const promoScrollRef = useRef<HTMLDivElement>(null);
@@ -248,13 +249,129 @@ export default function MarketplaceHome() {
         <meta name="description" content="Encontre imóveis de diversos corretores verificados. Casas, apartamentos, terrenos e muito mais." />
       </Helmet>
 
+      {/* ═══ STICKY NAVBAR ═══ */}
+      <nav
+        className="sticky top-0 z-50 backdrop-blur-xl border-b"
+        style={{ background: `${DARK_BASE}ee`, borderColor: BORDER }}
+      >
+        <div className="max-w-6xl mx-auto px-4 flex items-center justify-between h-14">
+          <Link to="/" className="font-display font-bold text-lg" style={{ color: TEXT }}>
+            Brokers<span style={{ color: PRIMARY }}>App</span>
+          </Link>
+
+          {/* Desktop links */}
+          <div className="hidden md:flex items-center gap-1">
+            <Link to="/" className="px-3 py-2 rounded-lg text-xs font-medium transition-colors hover:bg-white/10" style={{ color: TEXT }}>
+              Início
+            </Link>
+            <button
+              onClick={() => { document.getElementById("marketplace-grid")?.scrollIntoView({ behavior: "smooth" }); }}
+              className="px-3 py-2 rounded-lg text-xs font-medium transition-colors hover:bg-white/10"
+              style={{ color: TEXT_MUTED }}
+            >
+              Imóveis
+            </button>
+            <Link to="/anunciar" className="px-3 py-2 rounded-lg text-xs font-medium transition-colors hover:bg-white/10" style={{ color: TEXT_MUTED }}>
+              Anunciar
+            </Link>
+          </div>
+
+          <div className="flex items-center gap-2">
+            {user ? (
+              <Link
+                to="/painel"
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white transition-all hover:scale-105"
+                style={{ background: PRIMARY, boxShadow: `0 4px 16px ${PRIMARY}40` }}
+              >
+                <LayoutDashboard size={14} /> Painel
+              </Link>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-medium transition-colors hover:bg-white/10"
+                  style={{ color: TEXT }}
+                >
+                  <LogIn size={14} /> Entrar
+                </Link>
+                <Link
+                  to="/anunciar"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl font-bold text-xs text-white transition-all hover:scale-105"
+                  style={{ background: PRIMARY, boxShadow: `0 4px 16px ${PRIMARY}40` }}
+                >
+                  <Megaphone size={14} /> Anunciar
+                </Link>
+              </>
+            )}
+
+            {/* Mobile menu */}
+            <div className="relative md:hidden">
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="p-2 rounded-lg hover:bg-white/10 transition-colors"
+                style={{ color: TEXT }}
+              >
+                <Menu size={20} />
+              </button>
+              <AnimatePresence>
+                {mobileMenuOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -8, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -8, scale: 0.95 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute right-0 top-12 w-48 rounded-xl overflow-hidden shadow-2xl py-1"
+                    style={{ background: CARD_BG, border: `1px solid ${BORDER}` }}
+                  >
+                    <Link
+                      to="/anunciar"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center gap-2 px-4 py-3 text-xs font-medium transition-colors hover:bg-white/5"
+                      style={{ color: TEXT }}
+                    >
+                      <Megaphone size={14} style={{ color: PRIMARY }} /> Anunciar Imóvel
+                    </Link>
+                    {user ? (
+                      <Link
+                        to="/painel"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="flex items-center gap-2 px-4 py-3 text-xs font-medium transition-colors hover:bg-white/5"
+                        style={{ color: TEXT }}
+                      >
+                        <LayoutDashboard size={14} style={{ color: PRIMARY }} /> Meu Painel
+                      </Link>
+                    ) : (
+                      <Link
+                        to="/login"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="flex items-center gap-2 px-4 py-3 text-xs font-medium transition-colors hover:bg-white/5"
+                        style={{ color: TEXT }}
+                      >
+                        <LogIn size={14} style={{ color: PRIMARY }} /> Entrar / Cadastrar
+                      </Link>
+                    )}
+                    <button
+                      onClick={() => { setMobileMenuOpen(false); document.getElementById("marketplace-grid")?.scrollIntoView({ behavior: "smooth" }); }}
+                      className="w-full flex items-center gap-2 px-4 py-3 text-xs font-medium transition-colors hover:bg-white/5"
+                      style={{ color: TEXT_MUTED }}
+                    >
+                      <Search size={14} /> Ver Imóveis
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+        </div>
+      </nav>
+
       {/* ═══ HERO — Parallax + Particles ═══ */}
       <motion.section
         ref={heroRef}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
-        className="relative h-[280px] md:h-[480px] overflow-hidden rounded-b-[2rem]"
+        className="relative h-[280px] md:h-[480px] overflow-hidden"
       >
         <AnimatePresence mode="wait">
           <motion.div
@@ -289,39 +406,6 @@ export default function MarketplaceHome() {
         />
 
         <FloatingParticles color={PRIMARY} />
-
-        {/* Top nav */}
-        <div className="absolute top-4 left-4 right-4 z-20 flex items-center justify-between">
-          <Link to="/" className="font-display font-bold text-lg text-white">
-            Brokers<span style={{ color: PRIMARY }}>App</span>
-          </Link>
-          <div className="flex items-center gap-2">
-            {user ? (
-              <Link
-                to="/painel"
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/15 backdrop-blur-md text-white text-xs font-medium hover:bg-white/25 transition-colors"
-              >
-                <LayoutDashboard size={14} /> Painel
-              </Link>
-            ) : (
-              <>
-                <Link
-                  to="/login"
-                  className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/10 backdrop-blur-md text-white text-xs font-medium hover:bg-white/20 transition-colors"
-                >
-                  <LogIn size={14} /> Entrar
-                </Link>
-                <Link
-                  to="/anunciar"
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl font-bold text-xs text-white transition-all hover:scale-105"
-                  style={{ background: PRIMARY, boxShadow: `0 4px 16px ${PRIMARY}40` }}
-                >
-                  <Megaphone size={14} /> Anunciar
-                </Link>
-              </>
-            )}
-          </div>
-        </div>
 
         {/* Hero content */}
         <div className="relative z-10 h-full flex flex-col justify-end p-5 md:p-12 max-w-6xl mx-auto">
