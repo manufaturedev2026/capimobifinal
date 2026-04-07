@@ -1100,6 +1100,18 @@ export default function SellerDashboard() {
                       <Shield size={16} /> Painel Admin
                     </Link>
                   )}
+                  {!installed && (
+                    <button
+                      onClick={async () => {
+                        setMobileMenuOpen(false);
+                        const result = await requestInstall();
+                        if (result.outcome === "unavailable") setShowInstallGuide(true);
+                      }}
+                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-emerald-500 hover:bg-emerald-500/10 transition-all"
+                    >
+                      <Download size={16} /> Instalar APP
+                    </button>
+                  )}
                 </div>
               </div>
 
