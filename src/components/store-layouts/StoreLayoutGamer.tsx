@@ -91,10 +91,12 @@ export default function StoreLayoutGamer({
   handleWhatsApp,
   storiesBar,
 }: StoreLayoutProps) {
+  const { user } = useAuth();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [activeSlide, setActiveSlide] = useState(0);
   const properties = filteredProducts.filter((p: any) => p.status !== "vendido");
   const totalSlides = 1 + properties.length + 1; // profile + properties + contact
+  const isOwner = user && dbProfile && user.id === dbProfile.user_id;
 
   const scrollToSlide = (index: number) => {
     const el = scrollRef.current;
