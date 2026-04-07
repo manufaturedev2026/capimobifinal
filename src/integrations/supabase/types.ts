@@ -968,6 +968,7 @@ export type Database = {
           seller_type: Database["public"]["Enums"]["seller_type"]
           service_area: boolean | null
           show_financing: boolean | null
+          slug: string | null
           sold_at: string | null
           state: string | null
           status: Database["public"]["Enums"]["item_status"]
@@ -1041,6 +1042,7 @@ export type Database = {
           seller_type: Database["public"]["Enums"]["seller_type"]
           service_area?: boolean | null
           show_financing?: boolean | null
+          slug?: string | null
           sold_at?: string | null
           state?: string | null
           status?: Database["public"]["Enums"]["item_status"]
@@ -1114,6 +1116,7 @@ export type Database = {
           seller_type?: Database["public"]["Enums"]["seller_type"]
           service_area?: boolean | null
           show_financing?: boolean | null
+          slug?: string | null
           sold_at?: string | null
           state?: string | null
           status?: Database["public"]["Enums"]["item_status"]
@@ -1492,6 +1495,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      generate_item_slug: {
+        Args: { p_item_id: string; p_title: string }
+        Returns: string
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1499,6 +1506,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      unaccent: { Args: { "": string }; Returns: string }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
