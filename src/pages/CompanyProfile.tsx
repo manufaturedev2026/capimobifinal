@@ -279,6 +279,7 @@ export default function CompanyProfile() {
 
   const dbDisplayItems = dbItems.map((item) => ({
     id: item.id,
+    slug: (item as any).slug as string | null,
     title: item.title,
     image: item.photos?.[0] || "",
     images: item.photos || [],
