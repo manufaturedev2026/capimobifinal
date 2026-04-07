@@ -521,7 +521,49 @@ export default function MarketplaceHome() {
         </div>
       </motion.div>
 
-      <div className="max-w-6xl mx-auto px-4">
+      {/* ═══ MAIN LAYOUT: SIDEBAR + CONTENT ═══ */}
+      <div className="max-w-7xl mx-auto px-4 flex gap-6">
+
+        {/* ── Desktop City Sidebar ── */}
+        <aside className="hidden lg:block w-[220px] flex-shrink-0 sticky top-4 self-start mt-8">
+          <div className="rounded-2xl overflow-hidden" style={{ background: CARD_BG, border: `1px solid ${BORDER}` }}>
+            <div className="px-4 py-3 flex items-center gap-2" style={{ borderBottom: `1px solid ${BORDER}` }}>
+              <MapPin size={14} style={{ color: PRIMARY }} />
+              <p className="text-xs font-bold uppercase tracking-wider" style={{ color: TEXT }}>Cidades</p>
+            </div>
+            <div className="max-h-[65vh] overflow-y-auto overscroll-contain">
+              <button
+                onClick={() => { setFilterCity(""); setPage(1); }}
+                className="w-full text-left px-4 py-2.5 text-sm font-medium flex items-center gap-2 transition-colors"
+                style={{
+                  color: !filterCity ? PRIMARY : TEXT,
+                  background: !filterCity ? `${PRIMARY}12` : "transparent",
+                }}
+              >
+                <Globe size={14} style={{ color: !filterCity ? PRIMARY : TEXT_MUTED }} />
+                Todas
+              </button>
+              {availableCities.map((city) => (
+                <button
+                  key={city}
+                  onClick={() => { setFilterCity(city); setHeroIdx(0); setPage(1); }}
+                  className="w-full text-left px-4 py-2.5 text-sm font-medium flex items-center gap-2 transition-colors"
+                  style={{
+                    color: filterCity === city ? PRIMARY : TEXT,
+                    background: filterCity === city ? `${PRIMARY}12` : "transparent",
+                    borderTop: `1px solid ${BORDER}30`,
+                  }}
+                >
+                  <MapPin size={14} style={{ color: filterCity === city ? PRIMARY : TEXT_MUTED }} />
+                  {city}
+                </button>
+              ))}
+            </div>
+          </div>
+        </aside>
+
+        {/* ── Main Content ── */}
+        <div className="flex-1 min-w-0">
 
         {/* ═══ QUICK ACTIONS ═══ */}
         <motion.section
