@@ -1045,7 +1045,12 @@ export default function SellerDashboard() {
               <NotificationsTab userId={user.id} sellerId={profile.id} />
             )}
 
-            {/* Team Tab */}
+            {/* Profit Calculator Tab */}
+            {activeTab === "profit" && (
+              <ProfitCalculatorTab />
+            )}
+
+
             {activeTab === "team" && showTeamTab && profile?.id && (
               <TeamMembersTab
                 profileId={profile.id}
