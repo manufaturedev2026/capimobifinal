@@ -6,13 +6,13 @@ import { formatPrice } from "@/data/products";
 import PackageBadge from "@/components/PackageBadge";
 
 const TIER_WEIGHT: Record<string, number> = {
-  prime_empresa: 7,
-  premium_empresa: 6,
-  essencial_empresa: 5,
-  vip: 4,
-  premium: 3,
-  start: 2,
-  basico: 1,
+  prime_empresa: 200,
+  premium_empresa: 140,
+  essencial_empresa: 100,
+  vip: 70,
+  premium: 40,
+  start: 20,
+  basico: 10,
 };
 
 export default function SearchPage() {
@@ -56,11 +56,11 @@ export default function SearchPage() {
   }, [query]);
 
   const sortedResults = useMemo(() => {
-    return [...results].sort((a, b) => {
-      const wa = TIER_WEIGHT[tiers[a.seller_id] || "basico"] || 1;
-      const wb = TIER_WEIGHT[tiers[b.seller_id] || "basico"] || 1;
-      return wb - wa;
-    });
+    return [...results].map((item) => {
+      const weight = TIER_WEIGHT[tiers[item.seller_id] || "basico"] || 10;
+      const score = weight * (0.7 + Math.random() * 0.6);
+      return { ...item, _score: score };
+    }).sort((a, b) => b._score - a._score);
   }, [results, tiers]);
 
   return (
