@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   MapPin, Image, ChevronLeft, ChevronRight, MessageCircle, Eye,
   Sword, Sparkles, Trophy, Bed, Bath, Car, Maximize,
+  Building2, Home, Building, LandPlot, Store, Zap,
 } from "lucide-react";
 import type { StoreLayoutProps } from "./types";
 import { useIsMobile } from "@/hooks/use-mobile";
