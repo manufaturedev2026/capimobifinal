@@ -42,9 +42,9 @@ function NetflixRow({ title, items, corretorSlug, getTagLabel, accent }: {
   if (!items.length) return null;
 
   return (
-    <div className="mb-6 md:mb-8 group/row relative">
+    <div className="mb-6 lg:mb-8 group/row relative">
       {title && (
-        <h3 className="font-bold text-sm md:text-base text-white mb-2 md:mb-3 px-4 md:px-12 flex items-center gap-2 hover:text-[#e50914] transition-colors cursor-default">
+        <h3 className="font-bold text-sm lg:text-base text-white mb-2 lg:mb-3 px-4 lg:px-12 flex items-center gap-2 hover:text-[#e50914] transition-colors cursor-default">
           {title}
           <ChevronRight size={14} className="opacity-0 group-hover/row:opacity-100 transition-opacity text-[#e50914]" />
         </h3>
@@ -67,7 +67,7 @@ function NetflixRow({ title, items, corretorSlug, getTagLabel, accent }: {
         )}
 
         <div ref={scrollRef} onScroll={checkArrows}
-          className="flex gap-1 md:gap-1.5 overflow-x-auto overflow-y-visible scrollbar-hide scroll-smooth px-4 md:px-12 py-8 -my-8">
+          className="flex gap-1 lg:gap-1.5 overflow-x-auto overflow-y-visible scrollbar-hide scroll-smooth px-4 lg:px-12 py-8 -my-8">
           {items.map((product: any, i: number) => (
             <NetflixCard key={product.id} product={product} index={i} corretorSlug={corretorSlug} getTagLabel={getTagLabel} accent={accent} />
           ))}
@@ -264,7 +264,7 @@ export default function StoreLayoutNetflix({
           </AnimatePresence>
 
           {/* Top bar buttons */}
-          <div className="absolute top-4 left-4 md:top-6 md:left-12 z-20 flex items-center gap-2">
+          <div className="absolute top-4 left-4 lg:top-6 lg:left-12 z-20 flex items-center gap-2">
             <Link
               to={user && dbProfile && user.id === dbProfile.user_id ? "/painel" : "/login"}
               className="flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-medium text-white/80 hover:text-white transition-colors"
@@ -276,16 +276,16 @@ export default function StoreLayoutNetflix({
           {/* Cinema/Share buttons moved to category section */}
 
           {/* Billboard content — Netflix style */}
-          <div className="absolute bottom-[8%] md:bottom-[15%] left-4 md:left-12 z-10 max-w-lg">
+          <div className="absolute bottom-[8%] lg:bottom-[15%] left-4 lg:left-12 z-10 max-w-lg">
             {/* Netflix badge */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.3 }}
-              className="flex items-center gap-1.5 mb-2 md:mb-3"
+              className="flex items-center gap-1.5 mb-2 lg:mb-3"
             >
-              <span className="font-black text-xl md:text-3xl leading-none" style={{ fontFamily: "'Bebas Neue', sans-serif", color: storeTheme.primary }}>I</span>
-              <span className="text-[8px] md:text-xs text-gray-300 uppercase tracking-[0.25em] font-semibold border-l border-gray-500 pl-2">
+              <span className="font-black text-xl lg:text-3xl leading-none" style={{ fontFamily: "'Bebas Neue', sans-serif", color: storeTheme.primary }}>I</span>
+              <span className="text-[8px] lg:text-xs text-gray-300 uppercase tracking-[0.25em] font-semibold border-l border-gray-500 pl-2">
                 Imóvel em Destaque
               </span>
             </motion.div>
@@ -296,7 +296,7 @@ export default function StoreLayoutNetflix({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.6 }}
-              className="font-black text-lg md:text-4xl lg:text-5xl text-white leading-[1.05] drop-shadow-2xl mb-1 md:mb-2"
+              className="font-black text-lg lg:text-4xl xl:text-5xl text-white leading-[1.05] drop-shadow-2xl mb-1 lg:mb-2"
             >
               {currentBillboard.title}
             </motion.h2>
@@ -307,7 +307,7 @@ export default function StoreLayoutNetflix({
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.4 }}
-                className="text-white/50 text-[10px] md:text-sm flex items-center gap-1 mb-1 md:mb-2"
+                className="text-white/50 text-[10px] lg:text-sm flex items-center gap-1 mb-1 lg:mb-2"
               >
                 <MapPin size={10} />
                 {currentBillboard.neighborhood
@@ -322,7 +322,7 @@ export default function StoreLayoutNetflix({
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5 }}
-                className="font-black text-base md:text-2xl mb-1 md:mb-2"
+                className="font-black text-base lg:text-2xl mb-1 lg:mb-2"
                 style={{ color: storeTheme.primary }}
               >
                 R$ {currentBillboard.price.toLocaleString("pt-BR")}
@@ -335,35 +335,35 @@ export default function StoreLayoutNetflix({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.6 }}
-              className="text-gray-300 text-[10px] md:text-sm leading-relaxed line-clamp-2 md:line-clamp-3 max-w-md mb-2 md:mb-4"
+              className="text-gray-300 text-[10px] lg:text-sm leading-relaxed line-clamp-2 lg:line-clamp-3 max-w-md mb-2 lg:mb-4"
             >
               {currentBillboard.description || buildAutoDescription(currentBillboard)}
             </motion.p>
 
-            {/* Property specs pills — hidden on mobile to save space */}
+            {/* Property specs pills — hidden below lg to save space */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.7 }}
-              className="hidden md:flex items-center gap-2 flex-wrap mb-4"
+              className="hidden lg:flex items-center gap-2 flex-wrap mb-4"
             >
               {currentBillboard.bedrooms && (
-                <span className="flex items-center gap-1 px-2 py-1 rounded bg-white/10 text-white/80 text-[10px] md:text-xs font-medium">
+                <span className="flex items-center gap-1 px-2 py-1 rounded bg-white/10 text-white/80 text-[10px] lg:text-xs font-medium">
                   <Bed size={12} /> {currentBillboard.bedrooms} quartos
                 </span>
               )}
               {currentBillboard.bathrooms && (
-                <span className="flex items-center gap-1 px-2 py-1 rounded bg-white/10 text-white/80 text-[10px] md:text-xs font-medium">
+                <span className="flex items-center gap-1 px-2 py-1 rounded bg-white/10 text-white/80 text-[10px] lg:text-xs font-medium">
                   <Bath size={12} /> {currentBillboard.bathrooms} banheiros
                 </span>
               )}
               {currentBillboard.area && (
-                <span className="flex items-center gap-1 px-2 py-1 rounded bg-white/10 text-white/80 text-[10px] md:text-xs font-medium">
+                <span className="flex items-center gap-1 px-2 py-1 rounded bg-white/10 text-white/80 text-[10px] lg:text-xs font-medium">
                   <Maximize size={12} /> {currentBillboard.area}m²
                 </span>
               )}
               {currentBillboard.parking_spots && (
-                <span className="flex items-center gap-1 px-2 py-1 rounded bg-white/10 text-white/80 text-[10px] md:text-xs font-medium">
+                <span className="flex items-center gap-1 px-2 py-1 rounded bg-white/10 text-white/80 text-[10px] lg:text-xs font-medium">
                   <Car size={12} /> {currentBillboard.parking_spots} vagas
                 </span>
               )}
@@ -374,17 +374,17 @@ export default function StoreLayoutNetflix({
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.8 }}
-              className="flex items-center gap-2 md:gap-3"
+              className="flex items-center gap-2 lg:gap-3"
             >
               <Link
                 to={`/imoveis/produto/${currentBillboard.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`}
-                className="inline-flex items-center gap-1.5 px-4 md:px-8 py-2 md:py-3 rounded-md font-bold text-xs md:text-base bg-white text-black hover:bg-white/90 transition-all shadow-lg"
+                className="inline-flex items-center gap-1.5 px-4 lg:px-8 py-2 lg:py-3 rounded-md font-bold text-xs lg:text-base bg-white text-black hover:bg-white/90 transition-all shadow-lg"
               >
                 <Info size={14} /> Saiba Mais
               </Link>
               <button
                 onClick={() => handleWhatsApp(currentBillboard.title, currentBillboard.id)}
-                className="inline-flex items-center gap-1.5 px-4 md:px-8 py-2 md:py-3 rounded-md font-bold text-xs md:text-base text-white transition-all"
+                className="inline-flex items-center gap-1.5 px-4 lg:px-8 py-2 lg:py-3 rounded-md font-bold text-xs lg:text-base text-white transition-all"
                 style={{ background: "rgba(109,109,110,0.7)" }}
               >
                 <MessageCircle size={14} /> WhatsApp
@@ -394,7 +394,7 @@ export default function StoreLayoutNetflix({
 
           {/* Episode indicators */}
           {billboard.length > 1 && (
-            <div className="absolute right-4 md:right-12 bottom-[15%] z-10 flex flex-col gap-1">
+            <div className="absolute right-4 lg:right-12 bottom-[15%] z-10 flex flex-col gap-1">
               {billboard.map((_, idx) => (
                 <button
                   key={idx}
@@ -421,7 +421,7 @@ export default function StoreLayoutNetflix({
           </div>
 
           {/* Maturity rating badge */}
-          <div className="absolute right-4 md:right-12 bottom-[5%] z-10 flex items-center gap-2">
+          <div className="absolute right-4 lg:right-12 bottom-[5%] z-10 flex items-center gap-2">
             <span className="px-2.5 py-1 border-l-2 border-white/40 text-white/60 text-[10px] font-semibold bg-black/30 backdrop-blur-sm">
               {filteredProducts.length} imóveis
             </span>
@@ -430,13 +430,13 @@ export default function StoreLayoutNetflix({
       )}
 
       {/* Stories Bar */}
-      {storiesBar && <div className="px-4 md:px-12 pt-4">{storiesBar}</div>}
+      {storiesBar && <div className="px-4 lg:px-12 pt-4">{storiesBar}</div>}
 
       {/* ══════ NETFLIX CATEGORY CARDS + CONTENT ══════ */}
       <div className="pb-8 pt-6">
         {/* Category cards — movie poster style */}
-        <div className="flex items-center justify-between px-4 md:px-12 mb-3">
-          <h3 className="font-bold text-sm md:text-base text-white">Explorar por Categoria</h3>
+        <div className="flex items-center justify-between px-4 lg:px-12 mb-3">
+          <h3 className="font-bold text-sm lg:text-base text-white">Explorar por Categoria</h3>
           <div className="flex items-center gap-2">
             {onCinemaMode && (
               <button
@@ -449,7 +449,7 @@ export default function StoreLayoutNetflix({
             )}
           </div>
         </div>
-        <div className="flex gap-2 md:gap-3 overflow-x-auto scrollbar-hide scroll-smooth px-4 md:px-12 pb-6">
+        <div className="flex gap-2 lg:gap-3 overflow-x-auto scrollbar-hide scroll-smooth px-4 lg:px-12 pb-6">
           {/* "Todos" card */}
           {(() => {
             const allImages = filteredProducts.filter((p: any) => p.image).slice(0, 4);
