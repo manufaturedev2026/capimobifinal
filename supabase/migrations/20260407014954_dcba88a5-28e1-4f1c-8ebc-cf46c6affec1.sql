@@ -1,0 +1,1 @@
+UPDATE profiles SET store_layout = 'gamer' WHERE store_layout = 'showcase' OR store_layout IS NULL;
