@@ -392,7 +392,7 @@ export default function AdminPanel() {
             {sidebarItems.map((item) => (
               <button
                 key={item.key}
-                onClick={() => item.key === "vendas" ? window.open("/vender", "_blank") : setTab(item.key)}
+                onClick={() => item.key === "vendas" ? window.open("/anunciar", "_blank") : setTab(item.key)}
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
                   tab === item.key
                     ? "bg-primary text-primary-foreground shadow-sm"
@@ -416,7 +416,7 @@ export default function AdminPanel() {
           {sidebarItems.map((item) => (
             <button
               key={item.key}
-              onClick={() => item.key === "vendas" ? window.open("/vender", "_blank") : setTab(item.key)}
+              onClick={() => item.key === "vendas" ? window.open("/anunciar", "_blank") : setTab(item.key)}
               className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
                 tab === item.key ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
               }`}
