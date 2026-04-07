@@ -1624,7 +1624,7 @@ export default function CompanyProfile() {
               )
             ) : (
               <div className="text-center py-20 rounded-2xl" style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}>
-                {isShowcase ? (
+                {isGamer ? (
                   <>
                     <Sparkles size={48} className="mx-auto mb-3" style={{ color: storeTheme.primary }} />
                     <p className="font-semibold text-lg" style={{ color: storeTheme.textMuted }}>Nenhum item no inventário</p>
