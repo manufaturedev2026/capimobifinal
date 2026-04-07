@@ -446,7 +446,7 @@ export default function VenderPage() {
         </section>
 
         {/* ═══ CTA FINAL ═══ */}
-        <section className="bg-gradient-to-br from-blue-600/20 to-cyan-600/10 border-t border-white/5 py-20 md:py-28">
+        <section className="border-t border-white/5 py-20 md:py-28" style={{ background: `linear-gradient(135deg, ${theme.primary}30, ${theme.promoAccent || theme.primary}18)` }}>
           <div className="max-w-3xl mx-auto px-4 text-center space-y-6">
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
               <Zap className="w-12 h-12 text-blue-400 mx-auto mb-4" />
