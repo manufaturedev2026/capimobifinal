@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, ReactNode } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import { Search, X, Sparkles } from "lucide-react";
@@ -22,6 +22,8 @@ export function useSeoTheme() {
   return getMarketplaceTheme(themeId);
 }
 
+const HERO_INTERVAL = 5000;
+
 interface SeoPageLayoutProps {
   theme: MarketplaceTheme;
   title: string;
@@ -29,6 +31,7 @@ interface SeoPageLayoutProps {
   canonical: string;
   jsonLd?: object;
   heroImage?: string | null;
+  heroImages?: string[];
   heroHeight?: string;
   breadcrumbs: Array<{ label: string; to?: string }>;
   heroTagline?: string;
@@ -47,7 +50,8 @@ export default function SeoPageLayout({
   canonical,
   jsonLd,
   heroImage,
-  heroHeight = "h-[240px] md:h-[380px]",
+  heroImages,
+  heroHeight = "h-[50vh] md:h-[65vh]",
   breadcrumbs,
   heroTagline,
   heroSubtitle,
@@ -64,6 +68,16 @@ export default function SeoPageLayout({
   const heroY = useTransform(scrollYProgress, [0, 1], [0, 100]);
   const heroScale = useTransform(scrollYProgress, [0, 1], [1, 1.15]);
 
+  // Auto-rotate hero images
+  const allHeroImages = heroImages?.length ? heroImages : heroImage ? [heroImage] : [];
+  const [heroIdx, setHeroIdx] = useState(0);
+  useEffect(() => {
+    if (allHeroImages.length <= 1) return;
+    const timer = setInterval(() => setHeroIdx(p => (p + 1) % allHeroImages.length), HERO_INTERVAL);
+    return () => clearInterval(timer);
+  }, [allHeroImages.length]);
+  const currentHeroImage = allHeroImages[heroIdx] || null;
+
   return (
     <div style={{ background: DARK_BASE, color: TEXT, overflowX: "clip", maxWidth: "100%" }} className="min-h-screen">
       <Helmet>
@@ -79,8 +93,20 @@ export default function SeoPageLayout({
 
       {/* ═══ HERO ═══ */}
       <motion.section ref={heroRef} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }} className={`relative ${heroHeight} overflow-hidden`}>
-        {heroImage ? (
-          <motion.img src={heroImage} alt={title} className="absolute inset-0 w-full h-full object-cover" style={{ y: heroY, scale: heroScale }} />
+        {currentHeroImage ? (
+          <AnimatePresence mode="wait">
+            <motion.img
+              key={currentHeroImage}
+              initial={{ opacity: 0, scale: 1.05 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.8 }}
+              src={currentHeroImage}
+              alt={title}
+              className="absolute inset-0 w-full h-full object-cover"
+              style={{ y: heroY }}
+            />
+          </AnimatePresence>
         ) : (
           <motion.div className="absolute inset-0" style={{ y: heroY, background: `linear-gradient(135deg, ${DARK_BASE}, ${DARK_MID} 40%, ${PRIMARY}90)` }} />
         )}
