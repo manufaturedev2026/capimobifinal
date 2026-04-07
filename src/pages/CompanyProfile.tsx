@@ -25,7 +25,7 @@ import { useWhatsAppPicker } from "@/components/WhatsAppTeamPicker";
 import StoryViewer from "@/components/StoryViewer";
 import { useStories } from "@/hooks/useStories";
 import WhatsAppLeadCapture from "@/components/WhatsAppLeadCapture";
-import StoreInstallButton from "@/components/StoreInstallButton";
+
 import StoriesBar from "@/components/StoriesBar";
 import StoryUploadDialog from "@/components/StoryUploadDialog";
 import PushSubscribeButton from "@/components/PushSubscribeButton";
