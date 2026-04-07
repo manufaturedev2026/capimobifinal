@@ -1213,8 +1213,8 @@ export default function CompanyProfile() {
 
 
       {/* ═══════════ MAIN LAYOUT ═══════════ */}
-      <div className={`max-w-[1800px] mx-auto px-4 md:px-8 ${isMinimal || isMarketplace || isNetflix ? "py-0" : "py-6"}`}>
-        <div className="flex gap-8">
+      <div className={`${isNetflix ? "w-full" : "max-w-[1800px] mx-auto px-4 md:px-8"} ${isMinimal || isMarketplace || isNetflix ? "py-0" : "py-6"}`}>
+        <div className={`flex ${isNetflix ? "gap-0" : "gap-8"}`}>
           {/* ═══════════ DESKTOP SIDEBAR ═══════════ */}
           <aside className={`hidden lg:block w-[280px] flex-shrink-0 ${isMarketplace || isNetflix || isElegant || isMagazine ? "!hidden" : ""}`}>
             <div className={`sticky ${isMinimal ? "top-4" : "top-20"} space-y-4`}>
