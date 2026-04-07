@@ -46,6 +46,7 @@ export default function AdminPanel() {
   const [tierFilter, setTierFilter] = useState<string>("todos");
   const [tab, setTab] = useState<"sellers" | "billing" | "referrals" | "crm" | "seo" | "vendas" | "config">("sellers");
   const [homepageMode, setHomepageMode] = useState<string>("single");
+  const [homepageTheme, setHomepageTheme] = useState<string>("azul");
   const [adRequests, setAdRequests] = useState<any[]>([]);
   const [adsLoading, setAdsLoading] = useState(false);
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
