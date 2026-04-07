@@ -97,10 +97,13 @@ export default function MarketplaceHome() {
   const { addItem, isInCompare } = useCompare();
   const isMobile = useIsMobile();
 
-  const [themeId, setThemeId] = useState("azul");
+  const [themeId, setThemeId] = useState(() => localStorage.getItem("marketplace_theme") || "azul");
   useEffect(() => {
     supabase.from("platform_settings").select("value").eq("key", "homepage_theme").maybeSingle().then(({ data }) => {
-      if (data?.value) setThemeId(data.value);
+      if (data?.value) {
+        setThemeId(data.value);
+        localStorage.setItem("marketplace_theme", data.value);
+      }
     });
   }, []);
   const theme = getMarketplaceTheme(themeId);
