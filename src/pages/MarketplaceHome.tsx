@@ -23,15 +23,8 @@ import { getStoreUrl } from "@/lib/storeUrl";
 import { productUrl } from "@/lib/productUrl";
 import FooterSimple from "@/components/FooterSimple";
 import { useIsMobile } from "@/hooks/use-mobile";
-
-/* ── Theme constants ── */
-const PRIMARY = "#3B82F6";
-const DARK_BASE = "hsl(220, 40%, 8%)";
-const DARK_MID = "hsl(220, 45%, 15%)";
-const CARD_BG = "hsl(220, 30%, 12%)";
-const BORDER = "hsl(220, 20%, 18%)";
-const TEXT = "#f0f0f0";
-const TEXT_MUTED = "#8a8a9a";
+import { getMarketplaceTheme } from "@/lib/marketplaceThemes";
+import { supabase } from "@/integrations/supabase/client";
 
 const QUICK_ACTIONS = [
   { slug: "casa", name: "Casas", desc: "Residenciais", icon: Home },
@@ -83,11 +76,11 @@ function FloatingParticles({ color }: { color: string }) {
 }
 
 /* ── Shimmer line ── */
-function ShimmerLine() {
+function ShimmerLine({ color = "#3B82F6" }: { color?: string }) {
   return (
     <motion.div
       className="h-[1px] w-full"
-      style={{ background: `linear-gradient(90deg, transparent, ${PRIMARY}60, transparent)` }}
+      style={{ background: `linear-gradient(90deg, transparent, ${color}60, transparent)` }}
       animate={{ opacity: [0.3, 0.8, 0.3] }}
       transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
     />
@@ -102,6 +95,21 @@ export default function MarketplaceHome() {
   const { toggleFavorite, isFavorite } = useFavorites();
   const { addItem, isInCompare } = useCompare();
   const isMobile = useIsMobile();
+
+  const [themeId, setThemeId] = useState("azul");
+  useEffect(() => {
+    supabase.from("platform_settings").select("value").eq("key", "homepage_theme").maybeSingle().then(({ data }) => {
+      if (data?.value) setThemeId(data.value);
+    });
+  }, []);
+  const theme = getMarketplaceTheme(themeId);
+  const PRIMARY = theme.primary;
+  const DARK_BASE = theme.darkBase;
+  const DARK_MID = theme.darkMid;
+  const CARD_BG = theme.cardBg;
+  const BORDER = theme.border;
+  const TEXT = theme.text;
+  const TEXT_MUTED = theme.textMuted;
 
   const [activeCategory, setActiveCategory] = useState("todos");
   const [filterCity, setFilterCity] = useState("");
@@ -516,7 +524,7 @@ export default function MarketplaceHome() {
           </div>
         </motion.section>
 
-        <ShimmerLine />
+        <ShimmerLine color={PRIMARY} />
 
         {/* ═══ PROMO BANNERS ═══ */}
         <motion.section
@@ -599,7 +607,7 @@ export default function MarketplaceHome() {
           </div>
         </motion.section>
 
-        <ShimmerLine />
+        <ShimmerLine color={PRIMARY} />
 
         {/* ═══ RESULTS HEADER ═══ */}
         <div id="marketplace-grid" className="mt-6 mb-4 flex items-center justify-between scroll-mt-20">
@@ -738,7 +746,7 @@ export default function MarketplaceHome() {
         {/* ═══ BROKERS ═══ */}
         {realSellers.length > 0 && (
           <>
-            <ShimmerLine />
+            <ShimmerLine color={PRIMARY} />
             <motion.section
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -781,7 +789,7 @@ export default function MarketplaceHome() {
         )}
 
         {/* ═══ BENEFITS ═══ */}
-        <ShimmerLine />
+        <ShimmerLine color={PRIMARY} />
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -819,7 +827,7 @@ export default function MarketplaceHome() {
         {/* ═══ CTA FOR BROKERS ═══ */}
         {!user && (
           <>
-            <ShimmerLine />
+            <ShimmerLine color={PRIMARY} />
             <motion.section
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { getStoreUrl, getStoreFullUrl } from "@/lib/storeUrl";
+import { getMarketplaceTheme } from "@/lib/marketplaceThemes";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -63,7 +64,15 @@ export default function SellerDashboard() {
   const [dragOverItemId, setDragOverItemId] = useState<string | null>(null);
   const [teamMembers, setTeamMembers] = useState<{ id: string; full_name: string; photo_url: string | null; phone: string | null; is_active: boolean }[]>([]);
   const [showInstallGuide, setShowInstallGuide] = useState(false);
+  const [dashThemeId, setDashThemeId] = useState("azul");
   const { guideMode, installed, requestInstall } = usePwaInstall();
+
+  useEffect(() => {
+    supabase.from("platform_settings").select("value").eq("key", "homepage_theme").maybeSingle().then(({ data }) => {
+      if (data?.value) setDashThemeId(data.value);
+    });
+  }, []);
+  const dashTheme = getMarketplaceTheme(dashThemeId);
   useEffect(() => {
     if (!authLoading && !user) navigate("/login");
   }, [user, authLoading, navigate]);
@@ -293,7 +302,7 @@ export default function SellerDashboard() {
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
       {/* Mobile Header — Premium Gradient */}
-      <div className="dashboard-header-gradient py-6 lg:py-4">
+      <div className="py-6 lg:py-4" style={{ background: dashTheme.dashboardGradient }}>
         <div className="container max-w-6xl mx-auto px-4 lg:hidden">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -445,7 +454,7 @@ export default function SellerDashboard() {
               <div className="space-y-6">
                 {/* Welcome Banner - Desktop */}
                 <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
-                  className="hidden lg:block dashboard-header-gradient rounded-2xl p-6 relative overflow-hidden">
+                  className="hidden lg:block rounded-2xl p-6 relative overflow-hidden" style={{ background: dashTheme.dashboardGradient }}>
                   <div className="absolute top-0 right-0 w-40 h-40 rounded-full bg-white/5 -translate-y-1/2 translate-x-1/4" />
                   <div className="absolute bottom-0 left-1/3 w-24 h-24 rounded-full bg-white/5 translate-y-1/2" />
                   <div className="relative">
