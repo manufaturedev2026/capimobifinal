@@ -472,20 +472,52 @@ export default function MarketplaceHome() {
         </section>
       )}
 
-      {/* ── CTA ── */}
+      {/* ── CTA for brokers ── */}
       {!user && (
-        <section className="py-12 bg-gradient-to-r from-primary/10 via-accent/5 to-primary/10">
-          <div className="max-w-7xl mx-auto px-4 text-center">
-            <h2 className="font-display font-bold text-2xl text-foreground">É corretor? Crie sua loja grátis</h2>
-            <p className="text-muted-foreground mt-2 text-sm max-w-md mx-auto">
-              Cadastre-se e tenha seu próprio app de imóveis com link personalizado, notificações push e muito mais.
-            </p>
-            <Link
-              to="/login?trial=7"
-              className="inline-flex items-center gap-2 mt-6 px-6 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:bg-primary/90 transition-colors"
-            >
-              <Sparkles size={16} /> Começar Agora
-            </Link>
+        <section className="py-16 bg-gradient-to-r from-primary/10 via-accent/5 to-primary/10">
+          <div className="max-w-7xl mx-auto px-4">
+            <div className="grid md:grid-cols-2 gap-8 items-center">
+              <div>
+                <h2 className="font-display font-bold text-2xl lg:text-3xl text-foreground">
+                  Quer anunciar seus imóveis?
+                </h2>
+                <p className="text-muted-foreground mt-3 text-sm max-w-md leading-relaxed">
+                  Crie sua loja profissional com app próprio, CRM, galeria de anúncios, notificações push, WhatsApp integrado e muito mais. Comece gratuitamente.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-3 mt-6">
+                  <Link
+                    to="/anunciar"
+                    className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:bg-primary/90 transition-colors"
+                  >
+                    <Megaphone size={16} /> Saiba como anunciar
+                  </Link>
+                  <Link
+                    to="/login?trial=7"
+                    className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl border border-border bg-card text-foreground font-bold text-sm hover:bg-secondary transition-colors"
+                  >
+                    <UserPlus size={16} /> Criar conta grátis
+                  </Link>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  { icon: Globe, title: "App próprio", desc: "Loja instalável no celular" },
+                  { icon: Users, title: "CRM integrado", desc: "Gerencie seus leads" },
+                  { icon: Shield, title: "Push notifications", desc: "Engaje seus clientes" },
+                  { icon: Star, title: "SEO otimizado", desc: "Apareça no Google" },
+                ].map((b) => (
+                  <div key={b.title} className="flex items-start gap-2.5 p-3 rounded-xl bg-card border border-border">
+                    <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                      <b.icon size={14} className="text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-foreground">{b.title}</p>
+                      <p className="text-[10px] text-muted-foreground">{b.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </section>
       )}
