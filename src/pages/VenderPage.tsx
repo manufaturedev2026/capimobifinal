@@ -423,7 +423,7 @@ export default function VenderPage() {
                   <ul className="space-y-2.5 flex-1 mb-6">
                     {plan.benefits.map((b) => (
                       <li key={b} className="flex items-start gap-2 text-sm text-white/60">
-                        <Check className="w-4 h-4 text-blue-400 mt-0.5 shrink-0" />
+                        <Check className="w-4 h-4 mt-0.5 shrink-0" style={{ color: theme.primary }} />
                         {b}
                       </li>
                     ))}
