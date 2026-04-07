@@ -127,6 +127,25 @@ Deno.serve(async (req) => {
   </url>`;
   }
 
+  // Broker SEO pages by state and city
+  xml += `\n\n  <!-- Páginas SEO de corretores por estado/cidade -->`;
+  const brokerStateMap = new Map<string, Set<string>>();
+  for (const profile of (profiles || [])) {
+    if (profile.state) {
+      const st = profile.state.toLowerCase();
+      if (!brokerStateMap.has(st)) brokerStateMap.set(st, new Set());
+      if (profile.city) brokerStateMap.get(st)!.add(profile.city);
+    }
+  }
+  for (const [st, cities] of brokerStateMap) {
+    xml += `
+  <url><loc>${baseUrl}/corretores/${esc(st)}</loc><lastmod>${now}</lastmod><changefreq>daily</changefreq><priority>0.85</priority></url>`;
+    for (const city of cities) {
+      xml += `
+  <url><loc>${baseUrl}/corretores/${esc(st)}/${esc(slugify(city))}</loc><lastmod>${now}</lastmod><changefreq>daily</changefreq><priority>0.8</priority></url>`;
+    }
+  }
+
   // Property pages
   xml += `\n\n  <!-- Anúncios de imóveis -->`;
   for (const item of allItems) {
