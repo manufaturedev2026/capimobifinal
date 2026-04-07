@@ -28,6 +28,7 @@ import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, 
 import gabrielImg from "@/assets/gabriel-gerente.jpg";
 import PwaInstallGuide from "@/components/PwaInstallGuide";
 import { usePwaInstall } from "@/hooks/usePwaInstall";
+import { usePushSubscription } from "@/hooks/usePushSubscription";
 
 type SellerItem = {
   id: string;
@@ -66,6 +67,7 @@ export default function SellerDashboard() {
   const [showInstallGuide, setShowInstallGuide] = useState(false);
   const [dashThemeId, setDashThemeId] = useState("azul");
   const { guideMode, installed, requestInstall } = usePwaInstall();
+  const pushSub = usePushSubscription(profile?.id);
 
   useEffect(() => {
     supabase.from("platform_settings").select("value").eq("key", "homepage_theme").maybeSingle().then(({ data }) => {
@@ -411,6 +413,23 @@ export default function SellerDashboard() {
                 >
                   <Download size={18} /> Instalar APP
                 </button>
+              )}
+              {pushSub.isSupported && !pushSub.isSubscribed && pushSub.permission !== "denied" && (
+                <button
+                  type="button"
+                  onClick={async () => {
+                    await pushSub.subscribe();
+                  }}
+                  disabled={pushSub.loading}
+                  className="sidebar-nav-item text-amber-500 hover:bg-amber-500/10"
+                >
+                  <Bell size={18} /> {pushSub.loading ? "Ativando..." : "Ativar Notificações"}
+                </button>
+              )}
+              {pushSub.isSubscribed && (
+                <div className="sidebar-nav-item text-muted-foreground cursor-default opacity-70">
+                  <Bell size={18} /> Notificações ativas ✓
+                </div>
               )}
             </div>
           </nav>
@@ -1157,6 +1176,23 @@ export default function SellerDashboard() {
                     >
                       <Download size={16} /> Instalar APP
                     </button>
+                  )}
+                  {pushSub.isSupported && !pushSub.isSubscribed && pushSub.permission !== "denied" && (
+                    <button
+                      onClick={async () => {
+                        await pushSub.subscribe();
+                        setMobileMenuOpen(false);
+                      }}
+                      disabled={pushSub.loading}
+                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-amber-500 hover:bg-amber-500/10 transition-all"
+                    >
+                      <Bell size={16} /> {pushSub.loading ? "Ativando..." : "Ativar Notificações"}
+                    </button>
+                  )}
+                  {pushSub.isSubscribed && (
+                    <div className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-muted-foreground opacity-70">
+                      <Bell size={16} /> Notificações ativas ✓
+                    </div>
                   )}
                 </div>
               </div>
