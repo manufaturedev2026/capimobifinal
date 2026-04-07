@@ -842,7 +842,7 @@ export default function CompanyProfile() {
         )}
       </section>
 
-      {/* Gamer layout handles its own hero internally */}
+      
       {isMarketplace && products.length > 0 && (
         <div className="hidden overflow-hidden" style={{ background: `${storeTheme.primary}e6` }}>
           <motion.div

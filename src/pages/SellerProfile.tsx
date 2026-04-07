@@ -15,7 +15,7 @@ import layoutMinimal from "@/assets/layout-previews/layout-minimal.jpg";
 import layoutMagazine from "@/assets/layout-previews/layout-magazine.jpg";
 import layoutGallery from "@/assets/layout-previews/layout-gallery.jpg";
 import layoutElegant from "@/assets/layout-previews/layout-elegant.jpg";
-import layoutGamer from "@/assets/layout-previews/layout-gamer.jpg";
+
 import layoutMarketplace from "@/assets/layout-previews/layout-marketplace.jpg";
 
 const LAYOUT_PREVIEWS: Record<string, string> = {
@@ -24,7 +24,7 @@ const LAYOUT_PREVIEWS: Record<string, string> = {
   magazine: layoutMagazine,
   gallery: layoutGallery,
   elegant: layoutElegant,
-  gamer: layoutGamer,
+  
   marketplace: layoutMarketplace,
 };
 
@@ -61,7 +61,7 @@ export default function SellerProfile() {
     video_description: "",
     slug: "",
     store_theme: "dark",
-    store_layout: "gamer",
+    store_layout: "marketplace",
     store_video_url: "",
     store_video_title: "",
     store_video_description: "",
@@ -100,7 +100,7 @@ export default function SellerProfile() {
         video_description: (profile as any).video_description || "",
         slug: (profile as any).slug || "",
         store_theme: (profile as any).store_theme || "dark",
-        store_layout: (profile as any).store_layout || "gamer",
+        store_layout: (profile as any).store_layout || "marketplace",
         store_video_url: (profile as any).store_video_url || "",
         store_video_title: (profile as any).store_video_title || "",
         store_video_description: (profile as any).store_video_description || "",
