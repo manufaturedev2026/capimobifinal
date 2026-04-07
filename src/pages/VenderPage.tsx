@@ -357,7 +357,7 @@ export default function VenderPage() {
               className="mt-12 max-w-xl mx-auto"
             >
               <div className="flex items-center gap-3 mb-3 justify-center">
-                <Diamond className="w-5 h-5 text-blue-400" />
+                <Diamond className="w-5 h-5" style={{ color: theme.primary }} />
                 <h3 className="font-display font-bold text-lg">Vantagem Competitiva</h3>
               </div>
               <p className="text-white/50 text-sm leading-relaxed">
