@@ -276,16 +276,16 @@ export default function StoreLayoutNetflix({
           {/* Cinema/Share buttons moved to category section */}
 
           {/* Billboard content — Netflix style */}
-          <div className="absolute bottom-[12%] md:bottom-[15%] left-4 md:left-12 z-10 max-w-lg">
+          <div className="absolute bottom-[8%] md:bottom-[15%] left-4 md:left-12 z-10 max-w-lg">
             {/* Netflix badge */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.3 }}
-              className="flex items-center gap-2 mb-3"
+              className="flex items-center gap-1.5 mb-2 md:mb-3"
             >
-              <span className="font-black text-2xl md:text-3xl leading-none" style={{ fontFamily: "'Bebas Neue', sans-serif", color: storeTheme.primary }}>I</span>
-              <span className="text-[10px] md:text-xs text-gray-300 uppercase tracking-[0.25em] font-semibold border-l border-gray-500 pl-2">
+              <span className="font-black text-xl md:text-3xl leading-none" style={{ fontFamily: "'Bebas Neue', sans-serif", color: storeTheme.primary }}>I</span>
+              <span className="text-[8px] md:text-xs text-gray-300 uppercase tracking-[0.25em] font-semibold border-l border-gray-500 pl-2">
                 Imóvel em Destaque
               </span>
             </motion.div>
@@ -296,7 +296,7 @@ export default function StoreLayoutNetflix({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.6 }}
-              className="font-black text-2xl md:text-4xl lg:text-5xl text-white leading-[1.05] drop-shadow-2xl mb-2"
+              className="font-black text-lg md:text-4xl lg:text-5xl text-white leading-[1.05] drop-shadow-2xl mb-1 md:mb-2"
             >
               {currentBillboard.title}
             </motion.h2>
@@ -307,9 +307,9 @@ export default function StoreLayoutNetflix({
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.4 }}
-                className="text-white/50 text-xs md:text-sm flex items-center gap-1 mb-2"
+                className="text-white/50 text-[10px] md:text-sm flex items-center gap-1 mb-1 md:mb-2"
               >
-                <MapPin size={12} />
+                <MapPin size={10} />
                 {currentBillboard.neighborhood
                   ? `${currentBillboard.neighborhood}, ${currentBillboard.city}`
                   : currentBillboard.city}
@@ -322,7 +322,7 @@ export default function StoreLayoutNetflix({
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5 }}
-                className="font-black text-lg md:text-2xl text-green-400 mb-2"
+                className="font-black text-base md:text-2xl text-green-400 mb-1 md:mb-2"
               >
                 R$ {currentBillboard.price.toLocaleString("pt-BR")}
               </motion.p>
@@ -334,17 +334,17 @@ export default function StoreLayoutNetflix({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.6 }}
-              className="text-gray-300 text-xs md:text-sm leading-relaxed line-clamp-3 max-w-md mb-4"
+              className="text-gray-300 text-[10px] md:text-sm leading-relaxed line-clamp-2 md:line-clamp-3 max-w-md mb-2 md:mb-4"
             >
               {currentBillboard.description || buildAutoDescription(currentBillboard)}
             </motion.p>
 
-            {/* Property specs pills */}
+            {/* Property specs pills — hidden on mobile to save space */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.7 }}
-              className="flex items-center gap-2 flex-wrap mb-4"
+              className="hidden md:flex items-center gap-2 flex-wrap mb-4"
             >
               {currentBillboard.bedrooms && (
                 <span className="flex items-center gap-1 px-2 py-1 rounded bg-white/10 text-white/80 text-[10px] md:text-xs font-medium">
@@ -373,20 +373,20 @@ export default function StoreLayoutNetflix({
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.8 }}
-              className="flex items-center gap-3"
+              className="flex items-center gap-2 md:gap-3"
             >
               <Link
                 to={`/imoveis/produto/${currentBillboard.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`}
-                className="inline-flex items-center gap-2 px-6 md:px-8 py-2.5 md:py-3 rounded-md font-bold text-sm md:text-base bg-white text-black hover:bg-white/90 transition-all shadow-lg"
+                className="inline-flex items-center gap-1.5 px-4 md:px-8 py-2 md:py-3 rounded-md font-bold text-xs md:text-base bg-white text-black hover:bg-white/90 transition-all shadow-lg"
               >
-                <Info size={18} /> Saiba Mais
+                <Info size={14} /> Saiba Mais
               </Link>
               <button
                 onClick={() => handleWhatsApp(currentBillboard.title, currentBillboard.id)}
-                className="inline-flex items-center gap-2 px-6 md:px-8 py-2.5 md:py-3 rounded-md font-bold text-sm md:text-base text-white transition-all"
+                className="inline-flex items-center gap-1.5 px-4 md:px-8 py-2 md:py-3 rounded-md font-bold text-xs md:text-base text-white transition-all"
                 style={{ background: "rgba(109,109,110,0.7)" }}
               >
-                <MessageCircle size={16} /> WhatsApp
+                <MessageCircle size={14} /> WhatsApp
               </button>
             </motion.div>
           </div>
