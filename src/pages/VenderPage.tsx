@@ -204,15 +204,15 @@ export default function VenderPage() {
         <meta name="description" content="Crie seu site imobiliário profissional com CRM completo, gestão de leads, contratos, stories e muito mais. Comece gratuitamente." />
       </Helmet>
 
-      <div className="min-h-screen bg-[#0a0f1a] text-white overflow-x-hidden">
+      <div className="min-h-screen text-white overflow-x-hidden" style={{ background: theme.darkBase }}>
 
         <MarketplaceNavbar theme={theme} user={user} showImoveisScroll={false} />
 
         {/* ═══ HERO ═══ */}
         <section className="relative overflow-hidden pt-14">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 via-transparent to-pink-600/10" />
-          <div className="absolute top-20 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-[120px]" />
-          <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-pink-500/8 rounded-full blur-[100px]" />
+          <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${theme.primary}18, transparent, ${theme.promoAccent || theme.primary}15)` }} />
+          <div className="absolute top-20 left-1/4 w-96 h-96 rounded-full blur-[120px]" style={{ background: `${theme.primary}18` }} />
+          <div className="absolute bottom-0 right-1/4 w-80 h-80 rounded-full blur-[100px]" style={{ background: `${theme.promoAccent || theme.primary}12` }} />
 
           <div className="relative max-w-6xl mx-auto px-4 py-20 md:py-28 grid md:grid-cols-2 gap-12 items-center">
             <motion.div
@@ -221,13 +221,13 @@ export default function VenderPage() {
               transition={{ duration: 0.7 }}
               className="space-y-6"
             >
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/15 border border-blue-500/30 text-blue-300 text-xs font-semibold">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold" style={{ background: `${theme.primary}25`, border: `1px solid ${theme.primary}50`, color: theme.primary }}>
                 <Rocket className="w-3.5 h-3.5" /> Plataforma para corretores e imobiliárias
               </div>
 
               <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-black leading-[1.1]">
                 Crie Seu Site Imobiliário Profissional com{" "}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-300">
+                <span className="text-transparent bg-clip-text" style={{ backgroundImage: `linear-gradient(to right, ${theme.primary}, ${theme.promoAccent || theme.primary})` }}>
                   CRM Completo
                 </span>
               </h1>
@@ -237,7 +237,7 @@ export default function VenderPage() {
                 Tenha seu próprio site, seus próprios clientes e controle total das suas vendas.
               </p>
 
-              <Button onClick={scrollToForm} size="lg" className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-bold rounded-xl px-8 text-base shadow-lg shadow-blue-500/25">
+              <Button onClick={scrollToForm} size="lg" className="text-white font-bold rounded-xl px-8 text-base shadow-lg" style={{ background: `linear-gradient(to right, ${theme.primary}, ${theme.promoAccent || theme.primary})`, boxShadow: `0 10px 25px ${theme.primary}40` }}>
                 Criar Meu Site Agora <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
             </motion.div>
@@ -256,30 +256,30 @@ export default function VenderPage() {
                 <div className="relative">
                   <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/60" />
                   <input type="text" placeholder="Seu nome completo *" value={fullName} onChange={(e) => setFullName(e.target.value)}
-                    className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-white/8 border border-white/15 text-white placeholder:text-white/60 outline-none focus:border-blue-400 transition-colors text-sm" required />
+                    className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-white/8 border border-white/15 text-white placeholder:text-white/60 outline-none transition-colors text-sm" style={{ '--tw-ring-color': theme.primary } as any} required />
                 </div>
                 <div className="relative">
                   <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/60" />
                   <input type="email" placeholder="Seu melhor e-mail *" value={email} onChange={(e) => setEmail(e.target.value)}
-                    className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-white/8 border border-white/15 text-white placeholder:text-white/60 outline-none focus:border-blue-400 transition-colors text-sm" required />
+                    className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-white/8 border border-white/15 text-white placeholder:text-white/60 outline-none transition-colors text-sm" required />
                 </div>
                 <div className="relative">
                   <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/60" />
                   <input type="tel" placeholder="WhatsApp (opcional)" value={phone} onChange={(e) => setPhone(e.target.value)}
-                    className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-white/8 border border-white/15 text-white placeholder:text-white/60 outline-none focus:border-blue-400 transition-colors text-sm" />
+                    className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-white/8 border border-white/15 text-white placeholder:text-white/60 outline-none transition-colors text-sm" />
                 </div>
                 <div className="relative">
                   <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/60" />
                   <input type="password" placeholder="Crie uma senha (mín. 6 caracteres) *" value={password} onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-white/8 border border-white/15 text-white placeholder:text-white/60 outline-none focus:border-blue-400 transition-colors text-sm" required minLength={6} />
+                    className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-white/8 border border-white/15 text-white placeholder:text-white/60 outline-none transition-colors text-sm" required minLength={6} />
                 </div>
-                <Button type="submit" disabled={submitting} className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-bold rounded-xl py-3.5 text-sm shadow-lg shadow-blue-500/25">
+                <Button type="submit" disabled={submitting} className="w-full text-white font-bold rounded-xl py-3.5 text-sm shadow-lg" style={{ background: `linear-gradient(to right, ${theme.primary}, ${theme.promoAccent || theme.primary})`, boxShadow: `0 10px 25px ${theme.primary}40` }}>
                   {submitting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
                   {submitting ? "Criando conta..." : "CRIAR MEU SITE AGORA"}
                   {!submitting && <ArrowRight className="ml-1.5 w-4 h-4" />}
                 </Button>
                 <p className="text-xs text-white/40 text-center">
-                  Já tem uma conta? <Link to="/login" className="text-blue-400 hover:underline">Faça login</Link>
+                  Já tem uma conta? <Link to="/login" className="hover:underline" style={{ color: theme.primary }}>Faça login</Link>
                 </p>
               </form>
             </motion.div>
@@ -289,7 +289,7 @@ export default function VenderPage() {
         {/* ═══ INTRO ═══ */}
         <section className="bg-white/[0.02] border-y border-white/5 py-16 md:py-20">
           <div className="max-w-4xl mx-auto px-4 text-center space-y-4">
-            <div className="inline-flex items-center gap-2 text-blue-400 font-semibold text-sm">
+            <div className="inline-flex items-center gap-2 font-semibold text-sm" style={{ color: theme.primary }}>
               <Rocket className="w-4 h-4" /> Tudo que você precisa em um só lugar
             </div>
             <h2 className="font-display text-2xl md:text-3xl font-black">
@@ -320,7 +320,7 @@ export default function VenderPage() {
                 <ul className="space-y-2">
                   {f.items.map((item) => (
                     <li key={item} className="flex items-start gap-2 text-sm text-white/60">
-                      <Check className="w-3.5 h-3.5 text-blue-400 mt-0.5 shrink-0" />
+                      <Check className="w-3.5 h-3.5 mt-0.5 shrink-0" style={{ color: theme.primary }} />
                       {item}
                     </li>
                   ))}
@@ -331,7 +331,7 @@ export default function VenderPage() {
         </section>
 
         {/* ═══ IDEAL FOR ═══ */}
-        <section className="bg-gradient-to-br from-blue-600/10 to-pink-600/5 border-y border-white/5 py-16 md:py-20">
+        <section className="border-y border-white/5 py-16 md:py-20" style={{ background: `linear-gradient(135deg, ${theme.primary}18, ${theme.promoAccent || theme.primary}0a)` }}>
           <div className="max-w-4xl mx-auto px-4 text-center">
             <div className="inline-flex items-center gap-2 text-orange-400 font-semibold text-sm mb-4">
               <Flame className="w-4 h-4" /> Ideal para
@@ -357,7 +357,7 @@ export default function VenderPage() {
               className="mt-12 max-w-xl mx-auto"
             >
               <div className="flex items-center gap-3 mb-3 justify-center">
-                <Diamond className="w-5 h-5 text-blue-400" />
+                <Diamond className="w-5 h-5" style={{ color: theme.primary }} />
                 <h3 className="font-display font-bold text-lg">Vantagem Competitiva</h3>
               </div>
               <p className="text-white/50 text-sm leading-relaxed">
@@ -375,7 +375,7 @@ export default function VenderPage() {
         <section id="planos" className="py-20 md:py-28">
           <div className="max-w-6xl mx-auto px-4">
             <div className="text-center max-w-2xl mx-auto mb-14">
-              <p className="text-blue-400 font-semibold text-sm uppercase tracking-wide mb-3">Planos e preços</p>
+              <p className="font-semibold text-sm uppercase tracking-wide mb-3" style={{ color: theme.primary }}>Planos e preços</p>
               <h2 className="font-display text-3xl md:text-4xl font-black">
                 Comece de graça ou escolha seu plano
               </h2>
@@ -423,7 +423,7 @@ export default function VenderPage() {
                   <ul className="space-y-2.5 flex-1 mb-6">
                     {plan.benefits.map((b) => (
                       <li key={b} className="flex items-start gap-2 text-sm text-white/60">
-                        <Check className="w-4 h-4 text-blue-400 mt-0.5 shrink-0" />
+                        <Check className="w-4 h-4 mt-0.5 shrink-0" style={{ color: theme.primary }} />
                         {b}
                       </li>
                     ))}
@@ -446,10 +446,10 @@ export default function VenderPage() {
         </section>
 
         {/* ═══ CTA FINAL ═══ */}
-        <section className="bg-gradient-to-br from-blue-600/20 to-cyan-600/10 border-t border-white/5 py-20 md:py-28">
+        <section className="border-t border-white/5 py-20 md:py-28" style={{ background: `linear-gradient(135deg, ${theme.primary}30, ${theme.promoAccent || theme.primary}18)` }}>
           <div className="max-w-3xl mx-auto px-4 text-center space-y-6">
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-              <Zap className="w-12 h-12 text-blue-400 mx-auto mb-4" />
+              <Zap className="w-12 h-12 mx-auto mb-4" style={{ color: theme.primary }} />
               <h2 className="font-display text-3xl md:text-4xl font-black">
                 Comece Agora
               </h2>
@@ -457,7 +457,7 @@ export default function VenderPage() {
                 Crie seu site imobiliário completo em poucos minutos e comece a gerar leads todos os dias.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center mt-8">
-                <Button onClick={scrollToForm} size="lg" className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-bold rounded-xl px-10 text-base shadow-lg shadow-blue-500/25">
+                <Button onClick={scrollToForm} size="lg" className="text-white font-bold rounded-xl px-10 text-base shadow-lg" style={{ background: `linear-gradient(to right, ${theme.primary}, ${theme.promoAccent || theme.primary})`, boxShadow: `0 10px 25px ${theme.primary}40` }}>
                   CRIAR MEU SITE AGORA <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
                 <Link to="/login">
