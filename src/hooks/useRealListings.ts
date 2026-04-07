@@ -62,6 +62,7 @@ function mapItem(item: any): RealItem {
     category: item.category,
     type: "imovel",
     city: item.city,
+    state: item.state,
     neighborhood: item.neighborhood,
     brand: item.brand,
     model: item.model,
