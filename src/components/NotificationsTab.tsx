@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Bell, Send, Users, Clock, CheckCircle2, XCircle, Loader2, Trash2, MessageSquare, BellRing, Smartphone, ImagePlus, X } from "lucide-react";
+import { Bell, Send, Users, Clock, CheckCircle2, XCircle, Loader2, Trash2, MessageSquare, BellRing, Smartphone, ImagePlus, X, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { usePushSubscription } from "@/hooks/usePushSubscription";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface NotificationsTabProps {
   userId: string;
@@ -34,9 +35,10 @@ export default function NotificationsTab({ userId, sellerId }: NotificationsTabP
   // Form state
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
-  const [url, setUrl] = useState("");
+  const [selectedItemId, setSelectedItemId] = useState<string>("");
   const [image, setImage] = useState("");
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [items, setItems] = useState<{ id: string; title: string; slug: string | null; photos: string[] | null }[]>([]);
 
   const fetchData = async () => {
     // Get subscriber count
@@ -56,6 +58,16 @@ export default function NotificationsTab({ userId, sellerId }: NotificationsTabP
       .limit(20);
 
     setLogs((logData as unknown as NotificationLog[]) || []);
+
+    // Fetch seller items for the item picker
+    const { data: itemsData } = await supabase
+      .from("seller_items")
+      .select("id, title, slug, photos")
+      .eq("seller_id", sellerId)
+      .eq("status", "ativo")
+      .order("title");
+
+    setItems((itemsData as any) || []);
     setLoading(false);
   };
 
@@ -101,12 +113,15 @@ export default function NotificationsTab({ userId, sellerId }: NotificationsTabP
 
     setSending(true);
     try {
+      const selectedItem = selectedItemId && selectedItemId !== "none" ? items.find(i => i.id === selectedItemId) : undefined;
+      const itemUrl = selectedItem?.slug ? `/imovel/${selectedItem.slug}` : undefined;
+
       const { data, error } = await supabase.functions.invoke("send-push", {
         body: {
           title: title.trim(),
           body: body.trim(),
-          url: url.trim() || undefined,
-          image: image || undefined,
+          url: itemUrl,
+          image: image || (selectedItem?.photos?.[0]) || undefined,
         },
       });
 
@@ -119,7 +134,7 @@ export default function NotificationsTab({ userId, sellerId }: NotificationsTabP
 
       setTitle("");
       setBody("");
-      setUrl("");
+      setSelectedItemId("");
       setImage("");
       fetchData();
     } catch (err: any) {
@@ -247,13 +262,23 @@ export default function NotificationsTab({ userId, sellerId }: NotificationsTabP
             </div>
 
             <div className="space-y-1.5">
-              <Label className="text-xs font-medium">Link (opcional)</Label>
-              <Input
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                placeholder="Ex: /imoveis/produto/abc123"
-              />
-              <p className="text-[10px] text-muted-foreground">URL para onde o usuário será levado ao clicar</p>
+              <Label className="text-xs font-medium flex items-center gap-1.5">
+                <Home className="w-3.5 h-3.5" /> Imóvel vinculado (opcional)
+              </Label>
+              <Select value={selectedItemId} onValueChange={setSelectedItemId}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione um imóvel" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">Nenhum (sem link)</SelectItem>
+                  {items.map((item) => (
+                    <SelectItem key={item.id} value={item.id}>
+                      {item.title}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-[10px] text-muted-foreground">O link e a foto do imóvel serão usados na notificação</p>
             </div>
 
             <div className="space-y-1.5">
