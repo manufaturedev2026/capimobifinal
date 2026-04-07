@@ -715,7 +715,26 @@ export default function MarketplaceHome() {
         )}
 
         {/* ═══ BROKERS ═══ */}
-        {realSellers.length > 0 && (
+        {realSellers.length > 0 && (() => {
+          const TIER_PRIORITY: Record<string, number> = {
+            prime_empresa: 1, premium_empresa: 2, essencial_empresa: 3,
+            vip: 4, premium: 5, start: 6, basico: 7,
+          };
+          const shuffle = <T,>(arr: T[]): T[] => {
+            const a = [...arr];
+            for (let i = a.length - 1; i > 0; i--) {
+              const j = Math.floor(Math.random() * (i + 1));
+              [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+          };
+          const sorted = shuffle(realSellers).sort((a, b) => {
+            const pa = TIER_PRIORITY[a.tier || "basico"] ?? 99;
+            const pb = TIER_PRIORITY[b.tier || "basico"] ?? 99;
+            return pa - pb;
+          });
+          const displayed = sorted.slice(0, 10);
+          return (
           <>
             <ShimmerLine color={PRIMARY} />
             <motion.section
@@ -726,20 +745,30 @@ export default function MarketplaceHome() {
             >
               <div className="flex items-center gap-2 mb-5">
                 <Users size={16} style={{ color: PRIMARY }} />
-                <h2 className="font-display font-bold text-lg" style={{ color: TEXT }}>Corretores na plataforma</h2>
+                <h2 className="font-display font-bold text-lg" style={{ color: TEXT }}>
+                  Corretores na plataforma
+                  <span className="text-xs font-normal ml-2" style={{ color: TEXT_MUTED }}>({realSellers.length})</span>
+                </h2>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-                {realSellers.slice(0, 10).map((seller) => (
+                {displayed.map((seller) => {
+                  const tier = (seller.tier || "basico") as string;
+                  const isPaid = tier !== "basico";
+                  return (
                   <Link
                     key={seller.id}
                     to={`/empresa/${(seller as any).slug || seller.id}`}
-                    className="flex flex-col items-center gap-2 p-4 rounded-2xl transition-all group hover:scale-[1.02]"
-                    style={{ background: CARD_BG, border: `1px solid ${BORDER}` }}
+                    className="flex flex-col items-center gap-2 p-4 rounded-2xl transition-all group hover:scale-[1.02] relative"
+                    style={{
+                      background: CARD_BG,
+                      border: `1px solid ${isPaid ? PRIMARY + "40" : BORDER}`,
+                      boxShadow: isPaid ? `0 0 12px ${PRIMARY}15` : "none",
+                    }}
                     onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = `0 8px 24px ${PRIMARY}20`; }}
-                    onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = "none"; }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = isPaid ? `0 0 12px ${PRIMARY}15` : "none"; }}
                   >
                     {seller.logo ? (
-                      <img src={seller.logo} alt={seller.name} className="w-14 h-14 rounded-full object-cover ring-2 transition-all" style={{ borderColor: BORDER }} />
+                      <img src={seller.logo} alt={seller.name} className="w-14 h-14 rounded-full object-cover ring-2 transition-all" style={{ borderColor: isPaid ? PRIMARY : BORDER }} />
                     ) : (
                       <div className="w-14 h-14 rounded-full flex items-center justify-center font-bold text-lg" style={{ background: `${PRIMARY}20`, color: PRIMARY }}>
                         {seller.name.charAt(0)}
@@ -751,13 +780,15 @@ export default function MarketplaceHome() {
                         <MapPin size={9} /> {seller.city}
                       </p>
                     )}
-                    <PackageBadge tier={seller.tier as any} size="sm" />
+                    <PackageBadge tier={tier as any} size="sm" />
                   </Link>
-                ))}
+                  );
+                })}
               </div>
             </motion.section>
           </>
-        )}
+          );
+        })()}
 
         {/* ═══ BENEFITS ═══ */}
         <ShimmerLine color={PRIMARY} />
