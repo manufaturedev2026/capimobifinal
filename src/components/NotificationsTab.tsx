@@ -35,9 +35,10 @@ export default function NotificationsTab({ userId, sellerId }: NotificationsTabP
   // Form state
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
-  const [url, setUrl] = useState("");
+  const [selectedItemId, setSelectedItemId] = useState<string>("");
   const [image, setImage] = useState("");
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [items, setItems] = useState<{ id: string; title: string; slug: string | null; photos: string[] | null }[]>([]);
 
   const fetchData = async () => {
     // Get subscriber count
