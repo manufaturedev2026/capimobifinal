@@ -10,7 +10,7 @@ import StoreEffects from "@/components/StoreEffects";
 import ThemeParticles from "@/components/ThemeParticles";
 import {
   StoreLayoutNetflix, StoreLayoutMinimal, StoreLayoutMagazine,
-  StoreLayoutGallery, StoreLayoutElegant, StoreLayoutShowcase,
+  StoreLayoutGallery, StoreLayoutElegant, StoreLayoutGamer,
   StoreLayoutMarketplace,
 } from "@/components/store-layouts";
 import type { StoreLayoutProps } from "@/components/store-layouts";
