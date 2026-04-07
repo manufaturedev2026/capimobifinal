@@ -372,11 +372,11 @@ export default function MarketplaceHome() {
               </button>
               <AnimatePresence>
                 {showCityPicker && (
-                  <motion.div
+                   <motion.div
                     initial={{ opacity: 0, y: -5 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -5 }}
-                    className="absolute left-0 top-8 z-50 rounded-xl overflow-hidden shadow-2xl backdrop-blur-xl max-h-60 overflow-y-auto"
+                    className="absolute left-0 top-full mt-1 z-[9999] rounded-xl shadow-2xl backdrop-blur-xl max-h-[50vh] overflow-y-auto min-w-[200px]"
                     style={{ background: `${CARD_BG}f0`, border: `1px solid ${BORDER}` }}
                   >
                     <button
