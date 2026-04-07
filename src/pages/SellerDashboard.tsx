@@ -1054,24 +1054,28 @@ export default function SellerDashboard() {
             </Link>
           )}
 
-          {sidebarNav.length > 2 && (
-            <button
-              onClick={() => { handleTabClick(sidebarNav[2].id); setMobileMenuOpen(false); }}
-              className={`flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-xl transition-all duration-200 min-w-0 ${
-                sidebarNav[2].locked
-                  ? "text-muted-foreground/40"
-                  : activeTab === sidebarNav[2].id
-                    ? "text-primary scale-105"
-                    : "text-muted-foreground"
-              }`}
-            >
-              {sidebarNav[2].locked ? <Lock size={20} /> : <sidebarNav[2].icon size={20} />}
-              <span className="text-[10px] font-semibold truncate">{sidebarNav[2].label}</span>
-              {activeTab === sidebarNav[2].id && (
-                <div className="w-1.5 h-1.5 rounded-full bg-primary mt-0.5" />
-              )}
-            </button>
-          )}
+          {sidebarNav.length > 2 && (() => {
+            const nav3 = sidebarNav[2];
+            const Icon3 = nav3.icon;
+            return (
+              <button
+                onClick={() => { handleTabClick(nav3.id); setMobileMenuOpen(false); }}
+                className={`flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-xl transition-all duration-200 min-w-0 ${
+                  nav3.locked
+                    ? "text-muted-foreground/40"
+                    : activeTab === nav3.id
+                      ? "text-primary scale-105"
+                      : "text-muted-foreground"
+                }`}
+              >
+                {nav3.locked ? <Lock size={20} /> : <Icon3 size={20} />}
+                <span className="text-[10px] font-semibold truncate">{nav3.label}</span>
+                {activeTab === nav3.id && (
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary mt-0.5" />
+                )}
+              </button>
+            );
+          })()}
 
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
