@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   MapPin, Image, ChevronLeft, ChevronRight, MessageCircle, Eye,
   Sword, Sparkles, Trophy, Bed, Bath, Car, Maximize,
+  Building2, Home, Building, LandPlot, Store, Zap,
 } from "lucide-react";
 import type { StoreLayoutProps } from "./types";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -31,9 +32,16 @@ function StatPill({ icon: Icon, value }: { icon: any; value: string | number }) 
   );
 }
 
+const categoryIcons: Record<string, React.ReactNode> = {
+  casa: <Home size={26} />,
+  apartamento: <Building size={26} />,
+  terreno: <LandPlot size={26} />,
+  comercial: <Store size={26} />,
+};
+
 export default function StoreLayoutShowcase({
   filteredProducts, subcategories, activeCategory, setActiveCategory,
-  categoryCounts, storeTheme, corretorSlug, handleWhatsApp, getTagStyle, getTagLabel, storiesBar,
+  categoryCounts, categoryCardImages, storeTheme, corretorSlug, handleWhatsApp, getTagStyle, getTagLabel, storiesBar,
 }: StoreLayoutProps) {
   const [heroIndex, setHeroIndex] = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -229,6 +237,76 @@ export default function StoreLayoutShowcase({
           </div>
         </div>
       )}
+
+      {/* ══════ EPIC MARVEL CATEGORIES ══════ */}
+      {(() => {
+        const visualCats = subcategories.filter(c => c.slug !== "todos" && (categoryCounts[c.slug] || 0) > 0);
+        if (visualCats.length === 0) return null;
+        return (
+          <div className="mb-6">
+            <div className="flex items-center gap-3 mb-4">
+              <Zap size={16} style={{ color: accentColor }} />
+              <h3 className="font-display font-black text-base uppercase tracking-[0.2em]" style={{ color: storeTheme.text }}>
+                Categorias
+              </h3>
+              {activeCategory !== "todos" && (
+                <button onClick={() => setActiveCategory("todos")} className="text-[10px] font-bold uppercase tracking-wider" style={{ color: accentColor }}>
+                  Ver todos ›
+                </button>
+              )}
+              <div className="flex-1 h-px" style={{ background: `linear-gradient(to right, ${accentColor}30, transparent)` }} />
+            </div>
+            <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2 -mx-4 px-4">
+              {visualCats.map((cat, idx) => {
+                const isActive = activeCategory === cat.slug;
+                const count = categoryCounts[cat.slug] || 0;
+                const bgImage = categoryCardImages?.[cat.slug];
+                return (
+                  <motion.button
+                    key={cat.slug}
+                    onClick={() => setActiveCategory(isActive ? "todos" : cat.slug)}
+                    initial={{ opacity: 0, y: 30, scale: 0.8 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    transition={{ delay: idx * 0.1, type: "spring", stiffness: 200 }}
+                    whileHover={{ scale: 1.05, y: -4 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="relative flex-shrink-0 w-32 sm:w-40 rounded-xl overflow-hidden group cursor-pointer"
+                    style={{
+                      height: "160px",
+                      border: isActive ? `2px solid ${accentColor}` : "2px solid transparent",
+                      boxShadow: isActive
+                        ? `0 0 25px ${accentColor}50, 0 0 50px ${accentColor}20`
+                        : "0 6px 24px rgba(0,0,0,0.4)",
+                    }}
+                  >
+                    {bgImage ? (
+                      <img src={bgImage} alt={cat.name} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                    ) : (
+                      <div className="absolute inset-0" style={{ background: `linear-gradient(160deg, ${accentColor}40 0%, ${storeTheme.bg} 50%, ${accentColor}20 100%)` }} />
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
+                    {isActive && (
+                      <motion.div className="absolute inset-0" animate={{ opacity: [0.3, 0.6, 0.3] }} transition={{ duration: 2, repeat: Infinity }}
+                        style={{ background: `linear-gradient(180deg, ${accentColor}30 0%, transparent 60%)` }} />
+                    )}
+                    <div className="absolute top-0 left-0 right-0 h-1" style={{ background: isActive ? accentColor : `linear-gradient(90deg, transparent, ${accentColor}60, transparent)` }} />
+                    <div className="relative z-10 h-full flex flex-col items-center justify-end pb-3 px-2">
+                      <div className="mb-2 p-2.5 rounded-lg backdrop-blur-sm" style={{ background: isActive ? `${accentColor}40` : "rgba(255,255,255,0.1)", boxShadow: isActive ? `0 0 15px ${accentColor}40` : "none" }}>
+                        <span style={{ color: isActive ? accentColor : "#fff" }}>{categoryIcons[cat.slug] || <Building2 size={26} />}</span>
+                      </div>
+                      <span className="text-xs font-black uppercase tracking-wider text-center drop-shadow-lg" style={{ color: isActive ? accentColor : "#fff" }}>{cat.name}</span>
+                      <span className="mt-1 text-[9px] font-bold px-2 py-0.5 rounded-full" style={{ background: isActive ? accentColor : "rgba(255,255,255,0.15)", color: isActive ? "#fff" : "rgba(255,255,255,0.7)" }}>
+                        {count} {count === 1 ? "imóvel" : "imóveis"}
+                      </span>
+                    </div>
+                    {isActive && <motion.div layoutId="showcase-cat-active" className="absolute bottom-0 left-0 right-0 h-1 rounded-t-full" style={{ background: accentColor }} />}
+                  </motion.button>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })()}
 
       {/* ══════ INVENTORY ══════ */}
       {restProducts.length > 0 && (
