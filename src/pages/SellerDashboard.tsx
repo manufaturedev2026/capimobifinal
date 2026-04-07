@@ -414,6 +414,23 @@ export default function SellerDashboard() {
                   <Download size={18} /> Instalar APP
                 </button>
               )}
+              {pushSub.isSupported && !pushSub.isSubscribed && pushSub.permission !== "denied" && (
+                <button
+                  type="button"
+                  onClick={async () => {
+                    await pushSub.subscribe();
+                  }}
+                  disabled={pushSub.loading}
+                  className="sidebar-nav-item text-amber-500 hover:bg-amber-500/10"
+                >
+                  <Bell size={18} /> {pushSub.loading ? "Ativando..." : "Ativar Notificações"}
+                </button>
+              )}
+              {pushSub.isSubscribed && (
+                <div className="sidebar-nav-item text-muted-foreground cursor-default opacity-70">
+                  <Bell size={18} /> Notificações ativas ✓
+                </div>
+              )}
             </div>
           </nav>
 
