@@ -171,6 +171,19 @@ export default function MarketplaceHome() {
     }
   }, [detectedCity, availableCities, citiesByState]);
 
+  // Keep the state expanded whenever filterCity changes
+  useEffect(() => {
+    if (filterCity && citiesByState.length > 0) {
+      const stateGroup = citiesByState.find((g) => g.cities.includes(filterCity));
+      if (stateGroup) {
+        setOpenStates((prev) => {
+          if (prev.has(stateGroup.state)) return prev;
+          return new Set([...prev, stateGroup.state]);
+        });
+      }
+    }
+  }, [filterCity, citiesByState]);
+
   const sellersMap = useMemo(() => {
     const map: Record<string, { id: string; name: string; logo: string; slug?: string | null; tier?: string }> = {};
     realSellers.forEach((s) => {
