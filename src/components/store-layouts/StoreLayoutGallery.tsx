@@ -1,45 +1,128 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Image, MapPin } from "lucide-react";
+import {
+  Image, MapPin, Building2, Home, Building, LandPlot, Store, Zap,
+} from "lucide-react";
 import type { StoreLayoutProps } from "./types";
 
 /**
- * Gallery Layout — Pinterest/Instagram-style masonry with no borders
+ * Gallery Layout — Pinterest/Instagram-style masonry with epic Marvel categories
  */
 export default function StoreLayoutGallery({
   filteredProducts, subcategories, activeCategory, setActiveCategory,
-  categoryCounts, storeTheme, corretorSlug, getTagStyle, getTagLabel, storiesBar,
+  categoryCounts, categoryCardImages, storeTheme, corretorSlug, getTagStyle, getTagLabel, storiesBar,
 }: StoreLayoutProps) {
-  // Alternate tall/short cards for masonry effect
   const getAspect = (i: number) => {
     const pattern = [1, 1.3, 0.85, 1.15, 1, 0.9];
     return pattern[i % pattern.length];
   };
 
+  const categoryIcons: Record<string, React.ReactNode> = {
+    casa: <Home size={26} />,
+    apartamento: <Building size={26} />,
+    terreno: <LandPlot size={26} />,
+    comercial: <Store size={26} />,
+  };
+
+  const visualCategories = subcategories.filter(c => c.slug !== "todos" && (categoryCounts[c.slug] || 0) > 0);
+
   return (
     <div>
       {/* Stories Bar */}
       {storiesBar && <div className="mb-4">{storiesBar}</div>}
-      {/* Minimal pill filters */}
-      <div className="lg:hidden mb-5 flex gap-2 overflow-x-auto scrollbar-hide -mx-4 px-4 pb-1">
-        {subcategories.filter(c => c.slug === "todos" || (categoryCounts[c.slug] || 0) > 0).map((cat) => {
-          const isActive = activeCategory === cat.slug;
-          return (
-            <button
-              key={cat.slug}
-              onClick={() => setActiveCategory(cat.slug)}
-              className="flex-shrink-0 px-3.5 py-1.5 rounded-full text-[11px] font-semibold transition-all"
-              style={{
-                background: isActive ? storeTheme.text : "transparent",
-                color: isActive ? storeTheme.bg : storeTheme.textMuted,
-                border: `1px solid ${isActive ? storeTheme.text : storeTheme.border}`,
-              }}
-            >
-              {cat.name}
-            </button>
-          );
-        })}
-      </div>
+
+      {/* ─── Epic Marvel-Style Categories ─── */}
+      {visualCategories.length > 0 && (
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <Zap size={18} style={{ color: storeTheme.primary }} />
+              <h2 className="text-sm font-black uppercase tracking-[0.2em]" style={{ color: storeTheme.text }}>
+                Categorias
+              </h2>
+            </div>
+            {activeCategory !== "todos" && (
+              <button
+                onClick={() => setActiveCategory("todos")}
+                className="text-[11px] font-bold uppercase tracking-wider"
+                style={{ color: storeTheme.primary }}
+              >
+                Ver todos ›
+              </button>
+            )}
+          </div>
+          <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2 -mx-4 px-4 lg:-mx-0 lg:px-0">
+            {visualCategories.map((cat, idx) => {
+              const isActive = activeCategory === cat.slug;
+              const count = categoryCounts[cat.slug] || 0;
+              const bgImage = categoryCardImages?.[cat.slug];
+              return (
+                <motion.button
+                  key={cat.slug}
+                  onClick={() => setActiveCategory(isActive ? "todos" : cat.slug)}
+                  initial={{ opacity: 0, y: 30, scale: 0.8 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ delay: idx * 0.1, type: "spring", stiffness: 200 }}
+                  whileHover={{ scale: 1.05, y: -4 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="relative flex-shrink-0 w-36 sm:w-44 rounded-2xl overflow-hidden group cursor-pointer"
+                  style={{
+                    height: "180px",
+                    border: isActive ? `3px solid ${storeTheme.primary}` : "3px solid transparent",
+                    boxShadow: isActive
+                      ? `0 0 30px ${storeTheme.primary}50, 0 0 60px ${storeTheme.primary}20`
+                      : "0 8px 30px rgba(0,0,0,0.3)",
+                  }}
+                >
+                  {bgImage ? (
+                    <img src={bgImage} alt={cat.name}
+                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                  ) : (
+                    <div className="absolute inset-0"
+                      style={{ background: `linear-gradient(160deg, ${storeTheme.primary}40 0%, ${storeTheme.bg} 50%, ${storeTheme.primary}20 100%)` }} />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
+                  {isActive && (
+                    <motion.div className="absolute inset-0"
+                      animate={{ opacity: [0.3, 0.6, 0.3] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                      style={{ background: `linear-gradient(180deg, ${storeTheme.primary}30 0%, transparent 60%)` }} />
+                  )}
+                  <div className="absolute top-0 left-0 right-0 h-1"
+                    style={{ background: isActive ? storeTheme.primary : `linear-gradient(90deg, transparent, ${storeTheme.primary}60, transparent)` }} />
+                  <div className="relative z-10 h-full flex flex-col items-center justify-end pb-4 px-3">
+                    <div className="mb-3 p-3 rounded-xl backdrop-blur-sm"
+                      style={{
+                        background: isActive ? `${storeTheme.primary}40` : "rgba(255,255,255,0.1)",
+                        boxShadow: isActive ? `0 0 20px ${storeTheme.primary}40` : "none",
+                      }}>
+                      <span style={{ color: isActive ? storeTheme.primary : "#fff" }}>
+                        {categoryIcons[cat.slug] || <Building2 size={26} />}
+                      </span>
+                    </div>
+                    <span className="text-sm font-black uppercase tracking-wider text-center leading-tight drop-shadow-lg"
+                      style={{ color: isActive ? storeTheme.primary : "#fff" }}>
+                      {cat.name}
+                    </span>
+                    <span className="mt-1 text-[10px] font-bold px-2.5 py-0.5 rounded-full"
+                      style={{
+                        background: isActive ? storeTheme.primary : "rgba(255,255,255,0.15)",
+                        color: isActive ? "#fff" : "rgba(255,255,255,0.7)",
+                      }}>
+                      {count} {count === 1 ? "imóvel" : "imóveis"}
+                    </span>
+                  </div>
+                  {isActive && (
+                    <motion.div layoutId="gallery-category-active"
+                      className="absolute bottom-0 left-0 right-0 h-1.5 rounded-t-full"
+                      style={{ background: storeTheme.primary }} />
+                  )}
+                </motion.button>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Masonry-style grid */}
       {filteredProducts.length > 0 ? (
