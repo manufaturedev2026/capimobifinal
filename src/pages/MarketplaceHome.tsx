@@ -9,6 +9,7 @@ import {
   Phone, ShieldCheck, Globe, Megaphone, UserPlus, LogIn,
   LayoutDashboard, Image, Menu, ChevronDown,
 } from "lucide-react";
+import MarketplaceNavbar from "@/components/MarketplaceNavbar";
 import { useAuth } from "@/hooks/useAuth";
 import { useRealListings } from "@/hooks/useRealListings";
 import { useCityDetection } from "@/hooks/useCityDetection";
