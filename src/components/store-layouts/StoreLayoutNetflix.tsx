@@ -264,7 +264,7 @@ export default function StoreLayoutNetflix({
           </AnimatePresence>
 
           {/* Top bar buttons */}
-          <div className="absolute top-4 left-4 md:top-6 md:left-12 z-20 flex items-center gap-2">
+          <div className="absolute top-4 left-4 lg:top-6 lg:left-12 z-20 flex items-center gap-2">
             <Link
               to={user && dbProfile && user.id === dbProfile.user_id ? "/painel" : "/login"}
               className="flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-medium text-white/80 hover:text-white transition-colors"
