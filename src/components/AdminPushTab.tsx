@@ -32,6 +32,26 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [url, setUrl] = useState("");
+  const [image, setImage] = useState("");
+  const [uploadingImage, setUploadingImage] = useState(false);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingImage(true);
+    try {
+      const ext = file.name.split(".").pop();
+      const path = `push-images/admin/${Date.now()}.${ext}`;
+      const { error } = await supabase.storage.from("seller-uploads").upload(path, file, { upsert: true });
+      if (error) throw error;
+      const { data: urlData } = supabase.storage.from("seller-uploads").getPublicUrl(path);
+      setImage(urlData.publicUrl);
+    } catch (err: any) {
+      toast({ title: "Erro ao enviar imagem", description: err.message, variant: "destructive" });
+    } finally {
+      setUploadingImage(false);
+    }
+  };
 
   const fetchData = async () => {
     const { count: subCount } = await supabase
