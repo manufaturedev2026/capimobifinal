@@ -27,14 +27,23 @@ export default function LoginPage() {
   const trialDays = searchParams.get("trial");
   const { toast } = useToast();
 
+  const [isNewSignup, setIsNewSignup] = useState(false);
+
   const getStoreRoute = (p?: { id: string; slug?: string | null } | null) => {
     const identifier = p?.slug || p?.id;
     return identifier ? `/empresa/${identifier}` : "/painel";
   };
 
   useEffect(() => {
-    if (user && profile) navigate(getStoreRoute(profile), { replace: true });
-  }, [user, profile, navigate]);
+    if (user && profile) {
+      // New signups go to dashboard, existing users go to their store
+      if (isNewSignup) {
+        navigate("/painel", { replace: true });
+      } else {
+        navigate(getStoreRoute(profile), { replace: true });
+      }
+    }
+  }, [user, profile, navigate, isNewSignup]);
 
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -57,6 +66,7 @@ export default function LoginPage() {
         toast({ title: "Erro ao cadastrar", description: error.message, variant: "destructive" });
       } else {
         setSignedUp(true);
+        setIsNewSignup(true);
         toast({
           title: "Cadastro realizado!",
           description: trialDays === "7"
