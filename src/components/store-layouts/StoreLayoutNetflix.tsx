@@ -394,7 +394,7 @@ export default function StoreLayoutNetflix({
 
           {/* Episode indicators */}
           {billboard.length > 1 && (
-            <div className="absolute right-4 md:right-12 bottom-[15%] z-10 flex flex-col gap-1">
+            <div className="absolute right-4 lg:right-12 bottom-[15%] z-10 flex flex-col gap-1">
               {billboard.map((_, idx) => (
                 <button
                   key={idx}
