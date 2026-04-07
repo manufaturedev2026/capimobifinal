@@ -385,23 +385,26 @@ export default function MarketplaceHome() {
                       className="fixed inset-0 z-[9998] bg-black/50 backdrop-blur-sm"
                       onClick={() => setShowCityPicker(false)}
                     />
-                    {/* Panel */}
+                    {/* Panel - always fixed/centered */}
                     <motion.div
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 20 }}
                       transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                      className="fixed bottom-0 left-0 right-0 md:absolute md:bottom-auto md:left-0 md:top-full md:mt-2 md:right-auto md:min-w-[260px] z-[9999] rounded-t-2xl md:rounded-2xl shadow-2xl overflow-hidden"
+                      className="fixed bottom-0 left-0 right-0 md:bottom-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-[360px] z-[9999] rounded-t-2xl md:rounded-2xl shadow-2xl overflow-hidden"
                       style={{ background: CARD_BG, border: `1px solid ${BORDER}` }}
                     >
                       {/* Drag handle (mobile) */}
                       <div className="md:hidden flex justify-center py-2">
                         <div className="w-10 h-1 rounded-full" style={{ background: BORDER }} />
                       </div>
-                      <div className="px-4 py-3 border-b" style={{ borderColor: BORDER }}>
+                      <div className="px-4 py-3 flex items-center justify-between" style={{ borderBottom: `1px solid ${BORDER}` }}>
                         <p className="text-sm font-bold" style={{ color: TEXT }}>Selecionar cidade</p>
+                        <button onClick={() => setShowCityPicker(false)} className="p-1 rounded-lg hover:opacity-70">
+                          <X size={16} style={{ color: TEXT_MUTED }} />
+                        </button>
                       </div>
-                      <div className="max-h-[50vh] overflow-y-auto overscroll-contain">
+                      <div className="max-h-[60vh] overflow-y-auto overscroll-contain">
                         <button
                           onClick={() => { setFilterCity(""); setShowCityPicker(false); setPage(1); }}
                           className="w-full text-left px-4 py-3.5 text-sm font-medium flex items-center gap-2.5 transition-colors active:opacity-70"
