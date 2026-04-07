@@ -262,13 +262,23 @@ export default function NotificationsTab({ userId, sellerId }: NotificationsTabP
             </div>
 
             <div className="space-y-1.5">
-              <Label className="text-xs font-medium">Link (opcional)</Label>
-              <Input
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                placeholder="Ex: /imoveis/produto/abc123"
-              />
-              <p className="text-[10px] text-muted-foreground">URL para onde o usuário será levado ao clicar</p>
+              <Label className="text-xs font-medium flex items-center gap-1.5">
+                <Home className="w-3.5 h-3.5" /> Imóvel vinculado (opcional)
+              </Label>
+              <Select value={selectedItemId} onValueChange={setSelectedItemId}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione um imóvel" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">Nenhum (sem link)</SelectItem>
+                  {items.map((item) => (
+                    <SelectItem key={item.id} value={item.id}>
+                      {item.title}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-[10px] text-muted-foreground">O link e a foto do imóvel serão usados na notificação</p>
             </div>
 
             <div className="space-y-1.5">
