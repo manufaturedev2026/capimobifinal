@@ -1906,7 +1906,7 @@ export default function CompanyProfile() {
               )}
               {/* Stats bar inline for Netflix */}
               {isNetflix && (
-                <div className="flex items-center gap-4 flex-wrap mt-4 pt-3" style={{ borderTop: `1px solid ${storeTheme.border}` }}>
+                <div className="flex items-center gap-4 flex-wrap mt-4 pt-3 lg:justify-center" style={{ borderTop: `1px solid ${storeTheme.border}` }}>
                   <div className="flex items-center gap-2 text-sm">
                     <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: `${storeTheme.primary}18` }}>
                       <Store size={14} style={{ color: storeTheme.primary }} />
