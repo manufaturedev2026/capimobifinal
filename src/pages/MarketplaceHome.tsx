@@ -560,7 +560,7 @@ export default function MarketplaceHome() {
               >
                 <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${bIdx === 0 && theme.promoAccent ? theme.promoAccent : DARK_BASE}, ${PRIMARY}${bIdx === 0 ? "" : "cc"})` }} />
                 <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent" />
-                <FloatingParticles color={PRIMARY} />
+                <FloatingParticles color={bIdx === 0 && theme.promoAccent ? theme.promoAccent : PRIMARY} />
                 <div className="relative z-10 h-full flex flex-col justify-center p-6">
                   <h3 className="font-display font-black text-3xl text-white leading-tight">
                     {banner.title[0]}<br />{banner.title[1]}
