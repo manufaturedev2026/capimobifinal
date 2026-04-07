@@ -22,6 +22,8 @@ export function useSeoTheme() {
   return getMarketplaceTheme(themeId);
 }
 
+const HERO_INTERVAL = 5000;
+
 interface SeoPageLayoutProps {
   theme: MarketplaceTheme;
   title: string;
@@ -29,6 +31,7 @@ interface SeoPageLayoutProps {
   canonical: string;
   jsonLd?: object;
   heroImage?: string | null;
+  heroImages?: string[];
   heroHeight?: string;
   breadcrumbs: Array<{ label: string; to?: string }>;
   heroTagline?: string;
