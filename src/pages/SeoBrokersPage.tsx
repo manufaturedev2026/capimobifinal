@@ -209,6 +209,7 @@ export default function SeoBrokersPage() {
   const { estado, cidade } = useParams<{ estado?: string; cidade?: string }>();
   const [profiles, setProfiles] = useState<any[]>([]);
   const [tiers, setTiers] = useState<Record<string, string>>({});
+  const [heroImages, setHeroImages] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
 
@@ -235,6 +236,25 @@ export default function SeoBrokersPage() {
         const map: Record<string, string> = {};
         subs?.forEach(s => { map[s.seller_id] = s.tier; });
         setTiers(map);
+
+        // Fetch property images from these brokers
+        const { data: itemsData } = await supabase
+          .from("seller_items")
+          .select("photos")
+          .in("seller_id", ids)
+          .eq("status", "ativo")
+          .not("photos", "is", null)
+          .limit(30);
+        const imgs: string[] = [];
+        (itemsData || []).forEach((item: any) => {
+          if (item.photos?.[0] && !imgs.includes(item.photos[0])) imgs.push(item.photos[0]);
+        });
+        // Shuffle
+        for (let i = imgs.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [imgs[i], imgs[j]] = [imgs[j], imgs[i]];
+        }
+        setHeroImages(imgs.slice(0, 12));
       }
       setLoading(false);
     };
@@ -323,6 +343,7 @@ export default function SeoBrokersPage() {
       canonical={`https://blackbroker.lovable.app${canonicalPath}`}
       jsonLd={jsonLd}
       breadcrumbs={breadcrumbs}
+      heroImages={heroImages}
       heroTagline="Corretores Verificados"
       heroSubtitle={
         <span className="flex items-center gap-2">
