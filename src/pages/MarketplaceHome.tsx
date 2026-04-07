@@ -96,6 +96,21 @@ export default function MarketplaceHome() {
   const { addItem, isInCompare } = useCompare();
   const isMobile = useIsMobile();
 
+  const [themeId, setThemeId] = useState("azul");
+  useEffect(() => {
+    supabase.from("platform_settings").select("value").eq("key", "homepage_theme").maybeSingle().then(({ data }) => {
+      if (data?.value) setThemeId(data.value);
+    });
+  }, []);
+  const theme = getMarketplaceTheme(themeId);
+  const PRIMARY = theme.primary;
+  const DARK_BASE = theme.darkBase;
+  const DARK_MID = theme.darkMid;
+  const CARD_BG = theme.cardBg;
+  const BORDER = theme.border;
+  const TEXT = theme.text;
+  const TEXT_MUTED = theme.textMuted;
+
   const [activeCategory, setActiveCategory] = useState("todos");
   const [filterCity, setFilterCity] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
