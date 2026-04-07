@@ -134,7 +134,7 @@ export default function NotificationsTab({ userId, sellerId }: NotificationsTabP
 
       setTitle("");
       setBody("");
-      setUrl("");
+      setSelectedItemId("");
       setImage("");
       fetchData();
     } catch (err: any) {
