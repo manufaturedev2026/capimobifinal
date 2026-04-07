@@ -63,7 +63,7 @@ export const MARKETPLACE_THEMES: MarketplaceTheme[] = [
     border: "hsl(340, 20%, 22%)",
     text: "#ffffff",
     textMuted: "#c0aab5",
-    dashboardGradient: "linear-gradient(135deg, #001d42 0%, #0050a0 25%, #f0f0f0 50%, #E8587A 75%, #a83060 100%)",
+    dashboardGradient: "linear-gradient(135deg, #004a8f 0%, #0099e6 25%, #f0f0f0 50%, #E8587A 75%, #a83060 100%)",
   },
 ];
 
