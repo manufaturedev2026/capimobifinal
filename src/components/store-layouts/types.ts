@@ -28,7 +28,6 @@ export const STORE_LAYOUTS = [
   { id: "netflix", name: "Netflix", desc: "Carrossel de categorias + grid de cards", preview: "🎬" },
   { id: "minimal", name: "Minimal", desc: "Limpo e elegante, sem distrações", preview: "✨" },
   { id: "marketplace", name: "Marketplace", desc: "Estilo Mercado Livre com busca e badges", preview: "🛒" },
-  { id: "gamer", name: "Gamer", desc: "Scroll horizontal fullscreen imersivo", preview: "🎮" },
   { id: "magazine", name: "Magazine", desc: "Cards grandes estilo revista", preview: "📰" },
   { id: "gallery", name: "Galeria", desc: "Mosaico estilo Pinterest", preview: "🖼️" },
   { id: "elegant", name: "Elegant", desc: "Estilo site de imobiliária profissional", preview: "🏢" },
@@ -38,13 +37,13 @@ export type StoreLayoutId = typeof STORE_LAYOUTS[number]["id"];
 
 /** Layouts allowed per subscription tier */
 export const LAYOUTS_BY_TIER: Record<string, string[]> = {
-  basico: ["gamer"],
-  start: ["gamer"],
-  vip: ["gamer", "netflix", "minimal", "marketplace"],
-  premium: ["gamer", "netflix", "minimal", "marketplace", "magazine", "gallery", "elegant"],
-  essencial_empresa: ["gamer", "netflix", "minimal", "marketplace"],
-  premium_empresa: ["gamer", "netflix", "minimal", "marketplace", "magazine", "gallery", "elegant"],
-  prime_empresa: ["gamer", "netflix", "minimal", "marketplace", "magazine", "gallery", "elegant"],
+  basico: ["marketplace"],
+  start: ["marketplace"],
+  vip: ["marketplace", "netflix", "minimal"],
+  premium: ["marketplace", "netflix", "minimal", "magazine", "gallery", "elegant"],
+  essencial_empresa: ["marketplace", "netflix", "minimal"],
+  premium_empresa: ["marketplace", "netflix", "minimal", "magazine", "gallery", "elegant"],
+  prime_empresa: ["marketplace", "netflix", "minimal", "magazine", "gallery", "elegant"],
 };
 
 export function isLayoutAllowed(layoutId: string, tier: string | null | undefined): boolean {
@@ -55,6 +54,6 @@ export function isLayoutAllowed(layoutId: string, tier: string | null | undefine
 /** Returns the minimum tier required for a layout */
 export function getMinTierForLayout(layoutId: string): string {
   if (["magazine", "gallery", "elegant"].includes(layoutId)) return "Premium";
-  if (["netflix", "minimal", "marketplace"].includes(layoutId)) return "VIP";
+  if (["netflix", "minimal"].includes(layoutId)) return "VIP";
   return "";
 }
