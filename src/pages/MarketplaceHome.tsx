@@ -132,9 +132,14 @@ export default function MarketplaceHome() {
   const heroY = useTransform(scrollYProgress, [0, 1], [0, 120]);
   const heroScale = useTransform(scrollYProgress, [0, 1], [1, 1.15]);
 
+  const availableCities = useMemo(() => {
+    const set = new Set<string>();
+    realItems.forEach((item) => { if (item.city) set.add(item.city.trim()); });
+    return Array.from(set).sort();
+  }, [realItems]);
+
   useEffect(() => {
     if (detectedCity && !filterCity && availableCities.length > 0) {
-      // detectedCity is a slug (e.g. "vila-velha"), match it to real city name
       const slug = detectedCity.toLowerCase().replace(/\s+/g, "-");
       const match = availableCities.find(
         (c) => c.trim().toLowerCase().replace(/\s+/g, "-").normalize("NFD").replace(/[\u0300-\u036f]/g, "") === slug
@@ -142,12 +147,6 @@ export default function MarketplaceHome() {
       if (match) setFilterCity(match);
     }
   }, [detectedCity, availableCities]);
-
-  const availableCities = useMemo(() => {
-    const set = new Set<string>();
-    realItems.forEach((item) => { if (item.city) set.add(item.city.trim()); });
-    return Array.from(set).sort();
-  }, [realItems]);
 
   const sellersMap = useMemo(() => {
     const map: Record<string, { id: string; name: string; logo: string; slug?: string | null; tier?: string }> = {};
