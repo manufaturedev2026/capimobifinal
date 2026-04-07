@@ -24,7 +24,7 @@ const LAYOUT_PREVIEWS: Record<string, string> = {
   magazine: layoutMagazine,
   gallery: layoutGallery,
   elegant: layoutElegant,
-  showcase: layoutShowcase,
+  gamer: layoutGamer,
   marketplace: layoutMarketplace,
 };
 
