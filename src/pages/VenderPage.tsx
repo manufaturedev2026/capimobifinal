@@ -331,7 +331,7 @@ export default function VenderPage() {
         </section>
 
         {/* ═══ IDEAL FOR ═══ */}
-        <section className="bg-gradient-to-br from-blue-600/10 to-pink-600/5 border-y border-white/5 py-16 md:py-20">
+        <section className="border-y border-white/5 py-16 md:py-20" style={{ background: `linear-gradient(135deg, ${theme.primary}18, ${theme.promoAccent || theme.primary}0a)` }}>
           <div className="max-w-4xl mx-auto px-4 text-center">
             <div className="inline-flex items-center gap-2 text-orange-400 font-semibold text-sm mb-4">
               <Flame className="w-4 h-4" /> Ideal para
