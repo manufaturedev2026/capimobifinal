@@ -29,7 +29,7 @@ function getSpecs(product: any) {
 
 /** Full-width hero card */
 function HeroCard({ product, corretorSlug, storeTheme, getTagStyle, getTagLabel, delay = 0 }: any) {
-  const link = `/imoveis/produto/${product.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`;
+  const link = `/imoveis/produto/${product.slug || product.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`;
   const specs = getSpecs(product);
   return (
     <Link to={link} className="block group">
@@ -103,7 +103,7 @@ function HeroCard({ product, corretorSlug, storeTheme, getTagStyle, getTagLabel,
 
 /** Compact card for 2-col grid */
 function CompactCard({ product, corretorSlug, storeTheme, getTagStyle, getTagLabel, delay = 0 }: any) {
-  const link = `/imoveis/produto/${product.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`;
+  const link = `/imoveis/produto/${product.slug || product.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`;
   const specs = getSpecs(product);
   return (
     <motion.div
@@ -163,7 +163,7 @@ function CompactCard({ product, corretorSlug, storeTheme, getTagStyle, getTagLab
 
 /** Medium card for single-col within alternating pattern */
 function MediumCard({ product, corretorSlug, storeTheme, getTagStyle, getTagLabel, delay = 0 }: any) {
-  const link = `/imoveis/produto/${product.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`;
+  const link = `/imoveis/produto/${product.slug || product.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`;
   const specs = getSpecs(product);
   return (
     <motion.div

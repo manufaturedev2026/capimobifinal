@@ -421,7 +421,7 @@ export default function PropertiesPage() {
                 transition={{ delay: i * 0.05 }}
                 className="flex-shrink-0 w-[200px] md:w-auto snap-start"
               >
-                <Link to={`/imoveis/produto/${product.id}`} className="group block">
+                <Link to={`/imoveis/produto/${product.slug || product.id}`} className="group block">
                   <div className="relative aspect-[3/2] rounded-2xl overflow-hidden shadow-md">
                     <img src={product.image} alt={product.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />

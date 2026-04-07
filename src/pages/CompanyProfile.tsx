@@ -916,7 +916,7 @@ export default function CompanyProfile() {
                   <p className="text-white/70 text-xs leading-relaxed mb-3">{dbProfile.bio}</p>
                 )}
                 <Link
-                  to={`/imoveis/produto/${heroProduct.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`}
+                  to={`/imoveis/produto/${heroProduct.slug || heroProduct.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`}
                   className="flex items-center justify-center gap-2 px-6 py-3 font-black text-sm uppercase tracking-wider text-white shadow-lg active:scale-95 transition-transform"
                   style={{
                     background: `linear-gradient(135deg, ${storeTheme.primary}, ${storeTheme.primary}aa)`,
@@ -939,7 +939,7 @@ export default function CompanyProfile() {
             transition={{ duration: products.length * 4, repeat: Infinity, ease: "linear" }}
           >
             {[...products, ...products].filter((p: any) => p.image).slice(0, 20).map((product: any, i: number) => {
-              const productLink = `/imoveis/produto/${product.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`;
+              const productLink = `/imoveis/produto/${product.slug || product.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`;
               return (
                 <Link
                   key={`scroll-${product.id}-${i}`}
@@ -1452,7 +1452,7 @@ export default function CompanyProfile() {
                 /* ── RPG-style grid ── */
                 <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
                   {filteredProducts.map((product: any, i: number) => {
-                    const productLink = `/imoveis/produto/${product.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`;
+                    const productLink = `/imoveis/produto/${product.slug || product.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`;
                     const accentColor = storeTheme.primary;
                     return (
                       <motion.div
@@ -1556,7 +1556,7 @@ export default function CompanyProfile() {
                 /* ── Standard grid ── */
                 <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-5">
                   {filteredProducts.map((product: any, i: number) => {
-                    const productLink = `/imoveis/produto/${product.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`;
+                    const productLink = `/imoveis/produto/${product.slug || product.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`;
                     return (
                       <motion.div
                         key={product.id}

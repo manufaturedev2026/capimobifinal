@@ -555,7 +555,7 @@ export default function ProductDetail() {
     `— ${company.name}`,
   ].filter(Boolean).join(" ").slice(0, 160);
   const seoImage = product.photos?.[0] || company.logo || "";
-  const seoUrl = `https://brokergb.lovable.app/imoveis/produto/${product.id}`;
+  const seoUrl = `https://brokergb.lovable.app/imoveis/produto/${product.slug || product.id}`;
 
   const jsonLd = {
     "@context": "https://schema.org",

@@ -53,7 +53,7 @@ export default function SearchPage() {
             <p className="text-sm text-muted-foreground mb-4">{results.length} resultado(s) para "{query}"</p>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
               {results.map((item) => (
-                <Link key={item.id} to={`/imoveis/produto/${item.id}`} className="group bg-card border border-border rounded-2xl overflow-hidden hover:shadow-lg transition-all">
+                <Link key={item.id} to={`/imoveis/produto/${item.slug || item.id}`} className="group bg-card border border-border rounded-2xl overflow-hidden hover:shadow-lg transition-all">
                   <div className="aspect-[4/3] overflow-hidden">
                     <img src={item.photos?.[0] || ""} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
                   </div>

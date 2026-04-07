@@ -65,7 +65,7 @@ export default function FavoritesPage() {
             {items.map((item, i) => (
               <motion.div key={item.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}>
                 <div className="group bg-card border border-border rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-                  <Link to={`/imoveis/produto/${item.id}`}>
+                  <Link to={`/imoveis/produto/${item.slug || item.id}`}>
                     <div className="relative aspect-[4/3] overflow-hidden">
                       <img src={item.photos?.[0] || "/placeholder.svg"} alt={item.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
                     </div>

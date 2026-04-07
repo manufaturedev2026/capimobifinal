@@ -84,7 +84,7 @@ function NetflixCard({ product, index, corretorSlug, getTagLabel, accent }: {
   product: any; index: number; corretorSlug: string | null; getTagLabel: (tag: string) => string; accent: string;
 }) {
   const [hovered, setHovered] = useState(false);
-  const productLink = `/imoveis/produto/${product.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`;
+  const productLink = `/imoveis/produto/${product.slug || product.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`;
 
   return (
     <div
@@ -554,7 +554,7 @@ export default function StoreLayoutNetflix({
 
           <div className="grid grid-cols-2 gap-3">
             {filteredProducts.map((product: any, index: number) => {
-              const productLink = `/imoveis/produto/${product.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`;
+              const productLink = `/imoveis/produto/${product.slug || product.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`;
 
               return (
                 <motion.div
