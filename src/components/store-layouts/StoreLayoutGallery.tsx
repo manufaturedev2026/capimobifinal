@@ -55,8 +55,8 @@ export default function StoreLayoutGallery({
                   ) : (
                     <div className="w-full h-full flex items-center justify-center bg-muted"><Image size={24} className="text-muted-foreground" /></div>
                   )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <div className="absolute bottom-0 left-0 right-0 p-2.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+                  <div className="absolute bottom-0 left-0 right-0 p-2.5">
                     <h3 className="text-white text-xs font-bold line-clamp-1">{product.title}</h3>
                     {product.price > 0 && (
                       <p className="text-xs font-bold mt-0.5" style={{ color: storeTheme.primary }}>R$ {product.price.toLocaleString("pt-BR")}</p>
