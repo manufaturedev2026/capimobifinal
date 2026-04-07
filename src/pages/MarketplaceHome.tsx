@@ -352,8 +352,11 @@ export default function MarketplaceHome() {
             transition={{ duration: 0.7, delay: 0.3 }}
             className="font-display font-black text-2xl md:text-6xl text-white leading-[1.1] drop-shadow-2xl"
           >
-            Imóveis em<br />
-            <span style={{ color: "#ffffff" }}>{currentHeroCity}</span>
+            {filterCity ? (
+              <>{currentHeroLabel}</>
+            ) : (
+              <>Imóveis em<br /><span style={{ color: "#ffffff" }}>{currentHeroLabel}</span></>
+            )}
           </motion.h1>
 
           {/* City selector */}
