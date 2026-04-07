@@ -419,13 +419,12 @@ export default function MarketplaceHome() {
           >
             <button
               onClick={() => {
-                if (currentHeroCity && currentHeroCity !== "sua região") setFilterCity(currentHeroCity);
                 scrollToGrid();
               }}
               className="group inline-flex items-center gap-2 px-5 py-2.5 md:px-7 md:py-3.5 rounded-2xl font-bold text-xs md:text-sm text-white shadow-2xl transition-all hover:scale-105"
               style={{ background: `linear-gradient(135deg, ${PRIMARY}, ${PRIMARY}bb)`, boxShadow: `0 8px 32px ${PRIMARY}40` }}
             >
-              Ver ofertas em {currentHeroCity}
+              Ver ofertas em {filterCity || "sua região"}
               <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
             </button>
             <span className="text-xs text-white/40">{filteredItems.length} imóveis</span>
