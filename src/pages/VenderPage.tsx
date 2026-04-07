@@ -320,7 +320,7 @@ export default function VenderPage() {
                 <ul className="space-y-2">
                   {f.items.map((item) => (
                     <li key={item} className="flex items-start gap-2 text-sm text-white/60">
-                      <Check className="w-3.5 h-3.5 text-blue-400 mt-0.5 shrink-0" />
+                      <Check className="w-3.5 h-3.5 mt-0.5 shrink-0" style={{ color: theme.primary }} />
                       {item}
                     </li>
                   ))}
