@@ -1177,6 +1177,23 @@ export default function SellerDashboard() {
                       <Download size={16} /> Instalar APP
                     </button>
                   )}
+                  {pushSub.isSupported && !pushSub.isSubscribed && pushSub.permission !== "denied" && (
+                    <button
+                      onClick={async () => {
+                        await pushSub.subscribe();
+                        setMobileMenuOpen(false);
+                      }}
+                      disabled={pushSub.loading}
+                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-amber-500 hover:bg-amber-500/10 transition-all"
+                    >
+                      <Bell size={16} /> {pushSub.loading ? "Ativando..." : "Ativar Notificações"}
+                    </button>
+                  )}
+                  {pushSub.isSubscribed && (
+                    <div className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-muted-foreground opacity-70">
+                      <Bell size={16} /> Notificações ativas ✓
+                    </div>
+                  )}
                 </div>
               </div>
 
