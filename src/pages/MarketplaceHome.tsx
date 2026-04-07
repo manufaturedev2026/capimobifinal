@@ -7,7 +7,7 @@ import {
   MapPin, Bed, Bath, Ruler, ArrowRight, X,
   Sparkles, Crown, Star, Users, Shield,
   Phone, ShieldCheck, Globe, Megaphone, UserPlus, LogIn,
-  LayoutDashboard, Image,
+  LayoutDashboard, Image, Menu, ChevronDown,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useRealListings } from "@/hooks/useRealListings";
