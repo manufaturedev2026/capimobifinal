@@ -17,26 +17,16 @@ export default function FavoritesPage() {
 
   useEffect(() => {
     const fetchItems = async () => {
-      if (!user || favoriteIds.size === 0) { setItems([]); setLoading(false); return; }
+      if (favoriteIds.size === 0) { setItems([]); setLoading(false); return; }
       const ids = Array.from(favoriteIds);
       const { data } = await supabase.from("seller_items").select("id, title, price, photos, city, neighborhood, category, status, slug").in("id", ids);
       setItems(data || []);
       setLoading(false);
     };
     fetchItems();
-  }, [user, favoriteIds]);
+  }, [favoriteIds]);
 
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-secondary/50 flex items-center justify-center px-4">
-        <div className="text-center">
-          <Heart size={48} className="mx-auto text-muted-foreground mb-4" />
-          <h1 className="font-display font-bold text-2xl text-foreground">Faça login para ver seus favoritos</h1>
-          <Link to="/login" className="mt-4 inline-block px-6 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-sm">Entrar</Link>
-        </div>
-      </div>
-    );
-  }
+  // Removed login gate — favorites work via localStorage for guests
 
   return (
     <div className="min-h-screen bg-secondary/50">
