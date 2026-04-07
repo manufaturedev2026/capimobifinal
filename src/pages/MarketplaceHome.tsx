@@ -462,9 +462,8 @@ export default function MarketplaceHome() {
                                 <button
                                   onClick={() => {
                                     setOpenStates((prev) => {
-                                      const next = new Set(prev);
-                                      if (next.has(uf)) next.delete(uf); else next.add(uf);
-                                      return next;
+                                      if (prev.has(uf)) return new Set();
+                                      return new Set([uf]);
                                     });
                                   }}
                                   className="w-full text-left px-4 py-3 text-xs font-bold uppercase tracking-wider flex items-center justify-between transition-colors active:opacity-70"
@@ -622,9 +621,8 @@ export default function MarketplaceHome() {
                     <button
                       onClick={() => {
                         setOpenStates((prev) => {
-                          const next = new Set(prev);
-                          if (next.has(uf)) next.delete(uf); else next.add(uf);
-                          return next;
+                          if (prev.has(uf)) return new Set();
+                          return new Set([uf]);
                         });
                       }}
                       className="w-full text-left px-4 py-2.5 text-xs font-bold uppercase tracking-wider flex items-center justify-between transition-colors"
