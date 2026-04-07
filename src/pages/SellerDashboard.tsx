@@ -18,6 +18,7 @@ import ContractsTab from "@/components/ContractsTab";
 import CaptacaoOnlineTab from "@/components/CaptacaoOnlineTab";
 import StoriesTab from "@/components/StoriesTab";
 import NotificationsTab from "@/components/NotificationsTab";
+import ProfitCalculatorTab from "@/components/ProfitCalculatorTab";
 import { getTagStyle, getTagLabel } from "@/data/products";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
