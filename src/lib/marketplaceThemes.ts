@@ -52,6 +52,19 @@ export const MARKETPLACE_THEMES: MarketplaceTheme[] = [
     textMuted: "#8a80a8",
     dashboardGradient: "linear-gradient(135deg, #1a0a3d 0%, #3b1a6b 25%, #6b2fa0 50%, #E8587A 80%, #F5A0B8 100%)",
   },
+  {
+    id: "espirito-santo",
+    name: "Espírito Santo",
+    icon: "🏖️",
+    primary: "#0077B6",
+    darkBase: "hsl(205, 60%, 8%)",
+    darkMid: "hsl(205, 55%, 16%)",
+    cardBg: "hsl(205, 45%, 11%)",
+    border: "hsl(205, 25%, 18%)",
+    text: "#e8f4f8",
+    textMuted: "#6ba3c2",
+    dashboardGradient: "linear-gradient(135deg, #001a2e 0%, #002F6C 25%, #0077B6 55%, #00B4D8 80%, #90E0EF 100%)",
+  },
 ];
 
 export function getMarketplaceTheme(id: string | null | undefined): MarketplaceTheme {
