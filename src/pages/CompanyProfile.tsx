@@ -1832,7 +1832,7 @@ export default function CompanyProfile() {
                       ? ({ imobiliaria: "Imobiliária", corretor: "Corretor(a) de Imóveis", proprietario: "Proprietário", construtora: "Construtora", loja_veiculos: "Loja de Veículos", autonomo: "Vendedor Autônomo", concessionaria: "Concessionária" } as Record<string, string>)[dbProfile.seller_category] || "Especialista em imóveis"
                       : "Especialista em imóveis"}
                   </p>
-                  <div className="flex gap-2 mt-3 flex-wrap">
+                  <div className="flex gap-2 mt-3 flex-wrap lg:justify-center">
                     {company.whatsapp && (
                       <button
                         onClick={() => handleWhatsApp(heroProduct?.title || company.name, heroProduct?.id)}
