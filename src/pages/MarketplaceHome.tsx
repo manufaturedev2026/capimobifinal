@@ -182,7 +182,7 @@ export default function MarketplaceHome() {
         i.city?.toLowerCase().includes(q) ||
         i.neighborhood?.toLowerCase().includes(q) ||
         i.category?.toLowerCase().includes(q) ||
-        i.address?.toLowerCase().includes(q)
+        (i as any).address?.toLowerCase().includes(q)
       );
     }
     items = items.filter((i) => (i as any).status !== "vendido" && (i as any).status !== "inativo");
