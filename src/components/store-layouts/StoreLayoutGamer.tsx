@@ -4,7 +4,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   MapPin, MessageCircle, Eye, Shield, ChevronLeft, ChevronRight,
   Phone, Mail, User, Bed, Bath, Car, Maximize, Building2, Home,
+  LayoutDashboard,
 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 import type { StoreLayoutProps } from "./types";
 
 /* ─── Portrait orientation warning ─── */
