@@ -449,7 +449,7 @@ export default function VenderPage() {
         <section className="border-t border-white/5 py-20 md:py-28" style={{ background: `linear-gradient(135deg, ${theme.primary}30, ${theme.promoAccent || theme.primary}18)` }}>
           <div className="max-w-3xl mx-auto px-4 text-center space-y-6">
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-              <Zap className="w-12 h-12 text-blue-400 mx-auto mb-4" />
+              <Zap className="w-12 h-12 mx-auto mb-4" style={{ color: theme.primary }} />
               <h2 className="font-display text-3xl md:text-4xl font-black">
                 Comece Agora
               </h2>
