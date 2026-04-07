@@ -789,8 +789,6 @@ export default function MarketplaceHome() {
           </>
           );
         })()}
-          </>
-        )}
 
         {/* ═══ BENEFITS ═══ */}
         <ShimmerLine color={PRIMARY} />
