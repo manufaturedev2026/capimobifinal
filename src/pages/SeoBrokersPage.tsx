@@ -1,17 +1,13 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
-import { Helmet } from "react-helmet-async";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 import {
-  MapPin, Users, Search, Building2, Phone, BadgeCheck, ArrowRight,
-  Sparkles, Crown, X,
+  MapPin, Users, Building2, Phone, BadgeCheck, ArrowRight,
+  Crown,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import PackageBadge from "@/components/PackageBadge";
-import { Input } from "@/components/ui/input";
-import FooterSimple from "@/components/FooterSimple";
-import MarketplaceNavbar from "@/components/MarketplaceNavbar";
-import { getMarketplaceTheme } from "@/lib/marketplaceThemes";
+import SeoPageLayout, { useSeoTheme, FloatingParticles, ShimmerLine } from "@/components/seo/SeoPageLayout";
 
 const SELLER_CATEGORY_LABELS: Record<string, string> = {
   imobiliaria: "Imobiliária", corretor: "Corretor(a)", construtora: "Construtora",
@@ -38,26 +34,6 @@ function slugify(str: string): string {
   return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
 }
 
-function FloatingParticles({ color }: { color: string }) {
-  return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {Array.from({ length: 15 }).map((_, i) => (
-        <motion.div key={i} className="absolute rounded-full" style={{ width: Math.random() * 4 + 2, height: Math.random() * 4 + 2, background: color, opacity: 0.15 + Math.random() * 0.2, left: `${Math.random() * 100}%`, top: `${Math.random() * 100}%` }}
-          animate={{ y: [0, -40 - Math.random() * 60, 0], x: [0, (Math.random() - 0.5) * 30, 0], opacity: [0.1, 0.35, 0.1] }}
-          transition={{ duration: 4 + Math.random() * 4, repeat: Infinity, delay: Math.random() * 3, ease: "easeInOut" }}
-        />
-      ))}
-    </div>
-  );
-}
-
-function ShimmerLine({ color = "#3B82F6" }: { color?: string }) {
-  return (
-    <motion.div className="h-[1px] w-full" style={{ background: `linear-gradient(90deg, transparent, ${color}60, transparent)` }}
-      animate={{ opacity: [0.3, 0.8, 0.3] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }} />
-  );
-}
-
 export default function SeoBrokersPage() {
   const { estado, cidade } = useParams<{ estado?: string; cidade?: string }>();
   const [profiles, setProfiles] = useState<any[]>([]);
@@ -65,14 +41,8 @@ export default function SeoBrokersPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
 
-  const [themeId, setThemeId] = useState(() => localStorage.getItem("marketplace_theme") || "azul");
-  useEffect(() => {
-    supabase.from("platform_settings").select("value").eq("key", "homepage_theme").maybeSingle().then(({ data }) => {
-      if (data?.value) { setThemeId(data.value); localStorage.setItem("marketplace_theme", data.value); }
-    });
-  }, []);
-  const theme = getMarketplaceTheme(themeId);
-  const { primary: PRIMARY, darkBase: DARK_BASE, darkMid: DARK_MID, cardBg: CARD_BG, border: BORDER, text: TEXT, textMuted: TEXT_MUTED } = theme;
+  const theme = useSeoTheme();
+  const { primary: PRIMARY, cardBg: CARD_BG, border: BORDER, text: TEXT, textMuted: TEXT_MUTED } = theme;
 
   const stateName = estado ? (BRAZILIAN_STATES[estado.toLowerCase()] || estado.toUpperCase()) : "";
   const stateCode = estado?.toUpperCase() || "";
@@ -145,62 +115,34 @@ export default function SeoBrokersPage() {
   };
 
   const canonicalPath = cityName && estado ? `/corretores/${estado}/${slugify(cityName)}` : estado ? `/corretores/${estado}` : "/corretores";
-  const heroRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
-  const heroY = useTransform(scrollYProgress, [0, 1], [0, 80]);
+
+  const breadcrumbs = [
+    { label: "Início", to: "/" },
+    { label: "Corretores", to: "/corretores" },
+    ...(stateName && cityName ? [{ label: stateName, to: `/corretores/${estado}` }] : []),
+    ...(stateName && !cityName ? [{ label: stateName }] : []),
+    ...(cityName ? [{ label: cityName }] : []),
+  ];
 
   return (
-    <div style={{ background: DARK_BASE, color: TEXT, overflowX: "clip", maxWidth: "100%" }} className="min-h-screen">
-      <Helmet>
-        <title>{`${pageTitle} | Brokers App`}</title>
-        <meta name="description" content={metaDesc} />
-        <link rel="canonical" href={`https://blackbroker.lovable.app${canonicalPath}`} />
-        <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
-      </Helmet>
-
-      <MarketplaceNavbar theme={theme} user={null} showImoveisScroll={false} />
-
-      {/* ═══ HERO ═══ */}
-      <motion.section ref={heroRef} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }} className="relative h-[240px] md:h-[380px] overflow-hidden">
-        <motion.div className="absolute inset-0" style={{ y: heroY, background: `linear-gradient(135deg, ${DARK_BASE}, ${DARK_MID} 40%, ${PRIMARY}90)` }} />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-        <motion.div className="absolute -bottom-20 -right-20 w-80 h-80 rounded-full blur-3xl pointer-events-none" style={{ background: PRIMARY, opacity: 0.15 }} animate={{ scale: [1, 1.3, 1], opacity: [0.1, 0.2, 0.1] }} transition={{ duration: 6, repeat: Infinity }} />
-        <FloatingParticles color={PRIMARY} />
-
-        <div className="relative z-10 h-full flex flex-col justify-end p-5 md:p-12 max-w-6xl mx-auto">
-          <div className="flex items-center gap-2 text-white/50 text-xs mb-3 flex-wrap">
-            <Link to="/" className="hover:text-white transition-colors">Início</Link>
-            <span>/</span>
-            <Link to="/corretores" className="hover:text-white transition-colors">Corretores</Link>
-            {stateName && <><span>/</span>{cityName ? <Link to={`/corretores/${estado}`} className="hover:text-white transition-colors">{stateName}</Link> : <span className="text-white/80">{stateName}</span>}</>}
-            {cityName && <><span>/</span><span className="text-white/80">{cityName}</span></>}
-          </div>
-
-          <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7, delay: 0.2 }} className="flex items-center gap-2 mb-2">
-            <Sparkles size={14} style={{ color: theme.promoAccent || PRIMARY }} />
-            <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest" style={{ color: theme.promoAccent || PRIMARY }}>Corretores Verificados</span>
-          </motion.div>
-
-          <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.3 }} className="font-display font-black text-2xl md:text-5xl text-white leading-[1.1] drop-shadow-2xl">
-            {pageTitle}
-          </motion.h1>
-
-          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="text-white/60 text-xs md:text-base mt-2 flex items-center gap-2">
-            <Users size={16} />
-            {loading ? "Carregando..." : `${filteredProfiles.length} profissionais encontrados`}
-          </motion.p>
-        </div>
-      </motion.section>
-
-      {/* ═══ SEARCH ═══ */}
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.3 }} className="max-w-6xl mx-auto px-4 -mt-7 relative z-20">
-        <div className="flex items-center gap-2 md:gap-3 rounded-2xl px-4 py-3 md:px-5 md:py-4 backdrop-blur-xl" style={{ background: `${CARD_BG}ee`, border: `1px solid ${BORDER}`, boxShadow: `0 8px 40px ${PRIMARY}15` }}>
-          <Search size={20} style={{ color: PRIMARY }} />
-          <input type="text" value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar por nome, CRECI, CNPJ ou cidade..." className="flex-1 bg-transparent text-sm outline-none placeholder:opacity-40" style={{ color: TEXT }} />
-          {search && <button onClick={() => setSearch("")} className="p-1 rounded-lg hover:opacity-70"><X size={16} style={{ color: TEXT_MUTED }} /></button>}
-        </div>
-      </motion.div>
-
+    <SeoPageLayout
+      theme={theme}
+      title={pageTitle}
+      metaDescription={metaDesc}
+      canonical={`https://blackbroker.lovable.app${canonicalPath}`}
+      jsonLd={jsonLd}
+      breadcrumbs={breadcrumbs}
+      heroTagline="Corretores Verificados"
+      heroSubtitle={
+        <span className="flex items-center gap-2">
+          <Users size={16} />
+          {loading ? "Carregando..." : `${filteredProfiles.length} profissionais encontrados`}
+        </span>
+      }
+      searchPlaceholder="Buscar por nome, CRECI, CNPJ ou cidade..."
+      searchValue={search}
+      onSearchChange={setSearch}
+    >
       {/* States links */}
       {!stateCode && statesAvailable.length > 0 && (
         <motion.section initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }} className="max-w-6xl mx-auto px-4 mt-6">
@@ -271,7 +213,6 @@ export default function SeoBrokersPage() {
               return (
                 <motion.div key={profile.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(i * 0.03, 0.5) }}>
                   <Link to={`/empresa/${profile.slug}`} className="block rounded-2xl overflow-hidden transition-all duration-300 group hover:scale-[1.02]" style={{ background: CARD_BG, border: `1.5px solid ${isPaid ? PRIMARY + "40" : BORDER}`, boxShadow: isPaid ? `0 0 16px ${PRIMARY}12` : "none" }}>
-                    {/* Header */}
                     <div className="relative h-24 flex items-center justify-center overflow-hidden" style={{ background: `linear-gradient(135deg, ${PRIMARY}20, ${PRIMARY}05)` }}>
                       <FloatingParticles color={PRIMARY} />
                       {profile.logo_url ? (
@@ -321,22 +262,6 @@ export default function SeoBrokersPage() {
           </div>
         )}
       </section>
-
-      {/* ═══ SEO TEXT ═══ */}
-      <ShimmerLine color={PRIMARY} />
-      <section className="max-w-4xl mx-auto px-4 py-8 pb-12">
-        <div className="rounded-2xl p-6 md:p-8" style={{ background: CARD_BG, border: `1px solid ${BORDER}` }}>
-          <h2 className="font-display font-bold text-xl mb-4" style={{ color: TEXT }}>
-            {cityName ? `Corretores em ${cityName}, ${stateName}` : stateName ? `Corretores no ${stateName}` : "Encontre Corretores de Imóveis"}
-          </h2>
-          <div className="text-sm leading-relaxed space-y-3" style={{ color: TEXT_MUTED }}>
-            <p>{metaDesc}</p>
-            <p>O Brokers App é a plataforma que conecta compradores e vendedores diretamente com corretores de imóveis verificados em todo o Brasil. Busque por estado, cidade, CRECI ou CNPJ para encontrar o profissional ideal.</p>
-          </div>
-        </div>
-      </section>
-
-      <FooterSimple theme={{ bg: DARK_BASE, text: TEXT, textMuted: TEXT_MUTED, border: BORDER, primary: PRIMARY }} />
-    </div>
+    </SeoPageLayout>
   );
 }
