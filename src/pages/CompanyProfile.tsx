@@ -1823,7 +1823,7 @@ export default function CompanyProfile() {
                   </div>
                 )}
                 <div className="flex-1 min-w-0 pt-2">
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1.5 lg:justify-center">
                     <p className="font-display font-bold text-sm truncate" style={{ color: storeTheme.text }}>{company.name}</p>
                     {isPaid && <BadgeCheck size={14} style={{ color: storeTheme.primary }} />}
                   </div>
