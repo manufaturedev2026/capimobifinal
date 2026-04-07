@@ -58,6 +58,16 @@ export default function NotificationsTab({ userId, sellerId }: NotificationsTabP
       .limit(20);
 
     setLogs((logData as unknown as NotificationLog[]) || []);
+
+    // Fetch seller items for the item picker
+    const { data: itemsData } = await supabase
+      .from("seller_items")
+      .select("id, title, slug, photos")
+      .eq("seller_id", sellerId)
+      .eq("status", "ativo")
+      .order("title");
+
+    setItems((itemsData as any) || []);
     setLoading(false);
   };
 
