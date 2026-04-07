@@ -56,11 +56,11 @@ export default function SearchPage() {
   }, [query]);
 
   const sortedResults = useMemo(() => {
-    return [...results].sort((a, b) => {
-      const wa = TIER_WEIGHT[tiers[a.seller_id] || "basico"] || 1;
-      const wb = TIER_WEIGHT[tiers[b.seller_id] || "basico"] || 1;
-      return wb - wa;
-    });
+    return [...results].map((item) => {
+      const weight = TIER_WEIGHT[tiers[item.seller_id] || "basico"] || 10;
+      const score = weight * (0.7 + Math.random() * 0.6);
+      return { ...item, _score: score };
+    }).sort((a, b) => b._score - a._score);
   }, [results, tiers]);
 
   return (
