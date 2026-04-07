@@ -210,9 +210,9 @@ export default function VenderPage() {
 
         {/* ═══ HERO ═══ */}
         <section className="relative overflow-hidden pt-14">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 via-transparent to-pink-600/10" />
-          <div className="absolute top-20 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-[120px]" />
-          <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-pink-500/8 rounded-full blur-[100px]" />
+          <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${theme.primary}18, transparent, ${theme.promoAccent || theme.primary}15)` }} />
+          <div className="absolute top-20 left-1/4 w-96 h-96 rounded-full blur-[120px]" style={{ background: `${theme.primary}18` }} />
+          <div className="absolute bottom-0 right-1/4 w-80 h-80 rounded-full blur-[100px]" style={{ background: `${theme.promoAccent || theme.primary}12` }} />
 
           <div className="relative max-w-6xl mx-auto px-4 py-20 md:py-28 grid md:grid-cols-2 gap-12 items-center">
             <motion.div
