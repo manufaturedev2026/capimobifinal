@@ -68,9 +68,9 @@ export default function CapturePropertyPage() {
     supabase
       .from("profiles")
       .select("id, user_id, full_name, company_name, logo_url, phone, slug, seller_category, creci, instagram, bio, city, state, email, store_theme")
-      .or(`slug.eq.${slug},id.eq.${slug}`)
+      .eq("slug", slug)
       .limit(1)
-      .single()
+      .maybeSingle()
       .then(({ data }) => {
         setBroker(data);
         setLoading(false);
