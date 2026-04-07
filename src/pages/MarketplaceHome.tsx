@@ -124,6 +124,7 @@ export default function MarketplaceHome() {
   const [showCityPicker, setShowCityPicker] = useState(false);
   const [promoIdx, setPromoIdx] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [openStates, setOpenStates] = useState<Set<string>>(new Set());
   const ITEMS_PER_PAGE = 24;
   const heroRef = useRef<HTMLDivElement>(null);
   const promoScrollRef = useRef<HTMLDivElement>(null);
