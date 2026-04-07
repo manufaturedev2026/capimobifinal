@@ -289,7 +289,7 @@ export default function VenderPage() {
         {/* ═══ INTRO ═══ */}
         <section className="bg-white/[0.02] border-y border-white/5 py-16 md:py-20">
           <div className="max-w-4xl mx-auto px-4 text-center space-y-4">
-            <div className="inline-flex items-center gap-2 text-blue-400 font-semibold text-sm">
+            <div className="inline-flex items-center gap-2 font-semibold text-sm" style={{ color: theme.primary }}>
               <Rocket className="w-4 h-4" /> Tudo que você precisa em um só lugar
             </div>
             <h2 className="font-display text-2xl md:text-3xl font-black">
