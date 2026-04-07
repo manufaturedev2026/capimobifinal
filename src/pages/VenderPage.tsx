@@ -390,7 +390,7 @@ export default function VenderPage() {
                   Criar minha conta grátis <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
                 <Link to="/login">
-                  <Button variant="outline" size="lg" className="rounded-full border-white/20 text-white hover:bg-white/10 px-8 text-base">
+                  <Button variant="outline" size="lg" className="rounded-full border-white/30 text-black bg-white/90 hover:bg-white px-8 text-base font-semibold">
                     Já tenho conta
                   </Button>
                 </Link>
