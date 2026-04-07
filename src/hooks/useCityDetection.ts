@@ -49,22 +49,11 @@ async function detectByGPS(): Promise<string | null> {
   });
 }
 
-async function detectByIP(): Promise<string | null> {
-  try {
-    const { data, error } = await supabase.functions.invoke("detect-city");
-    if (!error && data?.city) return data.city;
-  } catch {
-    // silent
-  }
-  return null;
-}
-
 export function useCityDetection() {
   const [detectedCity, setDetectedCity] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check localStorage first
     const saved = localStorage.getItem("preferred_city");
     if (saved) {
       setDetectedCity(saved);
@@ -73,20 +62,10 @@ export function useCityDetection() {
     }
 
     const detect = async () => {
-      // Try GPS first (real location)
       const gpsCity = await detectByGPS();
       if (gpsCity) {
         setDetectedCity(gpsCity);
         localStorage.setItem("preferred_city", gpsCity);
-        setLoading(false);
-        return;
-      }
-
-      // Fallback to IP detection
-      const ipCity = await detectByIP();
-      if (ipCity) {
-        setDetectedCity(ipCity);
-        localStorage.setItem("preferred_city", ipCity);
       }
       setLoading(false);
     };
