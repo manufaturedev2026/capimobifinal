@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
@@ -9,6 +9,10 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import heroImg from "@/assets/vender-hero.jpg";
+import MarketplaceNavbar from "@/components/MarketplaceNavbar";
+import { getMarketplaceTheme } from "@/lib/marketplaceThemes";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
 const PLANS = [
   {
