@@ -62,9 +62,17 @@ export function usePushSubscription(sellerId?: string) {
   }, [sellerId]);
 
   const subscribe = useCallback(async () => {
-    if (!isSupported || !sellerId) {
-      console.warn("[Push] Not supported or no sellerId");
-      toast({ title: "Push indisponível", description: unsupportedReason || "Seu navegador não suporta notificações push.", variant: "destructive" });
+    if (!sellerId) {
+      console.warn("[Push] No sellerId");
+      toast({ title: "Push indisponível", description: "ID do vendedor não encontrado.", variant: "destructive" });
+      return false;
+    }
+
+    // Re-check support at call time (not just from initial useEffect)
+    const hasPushApi = "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;
+    if (!hasPushApi) {
+      console.warn("[Push] Browser does not support push");
+      toast({ title: "Push indisponível", description: "Seu navegador não suporta notificações push.", variant: "destructive" });
       return false;
     }
 
