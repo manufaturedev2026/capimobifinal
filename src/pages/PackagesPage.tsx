@@ -1,15 +1,16 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Check, Crown, Star, Zap, ArrowLeft, Settings } from "lucide-react";
+import { Check, Crown, Star, Zap, ArrowLeft, Settings, Shield, Gem, Diamond } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription, PACKAGE_CONFIG } from "@/hooks/useSubscription";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
-const tiers = ["start", "premium", "vip"] as const;
-const tierIcons = { basico: Zap, start: Zap, premium: Star, vip: Crown };
+const individualTiers = ["start", "premium", "vip"] as const;
+const enterpriseTiers = ["essencial_empresa", "premium_empresa", "prime_empresa"] as const;
+const tierIcons: Record<string, any> = { basico: Zap, start: Zap, premium: Star, vip: Crown, essencial_empresa: Shield, premium_empresa: Gem, prime_empresa: Diamond };
 
 export default function PackagesPage() {
   const { user, profile } = useAuth();
