@@ -227,7 +227,7 @@ export default function VenderPage() {
 
               <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-black leading-[1.1]">
                 Crie Seu Site Imobiliário Profissional com{" "}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-300">
+                <span className="text-transparent bg-clip-text" style={{ backgroundImage: `linear-gradient(to right, ${theme.primary}, ${theme.promoAccent || theme.primary})` }}>
                   CRM Completo
                 </span>
               </h1>
