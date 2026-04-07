@@ -421,7 +421,7 @@ export default function StoreLayoutNetflix({
           </div>
 
           {/* Maturity rating badge */}
-          <div className="absolute right-4 md:right-12 bottom-[5%] z-10 flex items-center gap-2">
+          <div className="absolute right-4 lg:right-12 bottom-[5%] z-10 flex items-center gap-2">
             <span className="px-2.5 py-1 border-l-2 border-white/40 text-white/60 text-[10px] font-semibold bg-black/30 backdrop-blur-sm">
               {filteredProducts.length} imóveis
             </span>
