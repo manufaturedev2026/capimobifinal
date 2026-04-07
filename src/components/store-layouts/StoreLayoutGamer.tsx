@@ -138,6 +138,14 @@ export default function StoreLayoutGamer({
     <>
       <PortraitWarning />
 
+      {/* Floating panel button */}
+      <Link
+        to={isOwner ? "/painel" : "/login"}
+        className="fixed top-4 left-4 z-[100] inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 backdrop-blur-md text-white text-sm font-medium hover:bg-white/20 transition-all hover:scale-105"
+      >
+        <LayoutDashboard size={16} /> {isOwner ? "Painel" : "Entrar"}
+      </Link>
+
       {/* Horizontal scroll container */}
       <div
         ref={scrollRef}
