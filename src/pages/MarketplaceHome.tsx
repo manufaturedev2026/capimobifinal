@@ -366,39 +366,71 @@ export default function MarketplaceHome() {
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="relative mt-1">
               <button
                 onClick={() => setShowCityPicker(!showCityPicker)}
-                className="flex items-center gap-1.5 text-xs font-medium text-white/70 hover:text-white transition-colors"
+                className="flex items-center gap-1.5 text-sm font-semibold text-white/80 hover:text-white transition-colors bg-white/10 hover:bg-white/20 px-4 py-2 rounded-full backdrop-blur-md"
               >
-                <MapPin size={12} />
+                <MapPin size={14} />
                 {filterCity || "Todas as cidades"}
-                <span className="text-[10px]">▾</span>
+                <ChevronDown size={14} className={`transition-transform duration-200 ${showCityPicker ? "rotate-180" : ""}`} />
               </button>
+
+              {/* Overlay + City list */}
               <AnimatePresence>
                 {showCityPicker && (
-                   <motion.div
-                    initial={{ opacity: 0, y: -5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -5 }}
-                    className="absolute left-0 top-full mt-1 z-[9999] rounded-xl shadow-2xl backdrop-blur-xl max-h-[50vh] overflow-y-auto min-w-[200px]"
-                    style={{ background: `${CARD_BG}f0`, border: `1px solid ${BORDER}` }}
-                  >
-                    <button
-                      onClick={() => { setFilterCity(""); setShowCityPicker(false); setPage(1); }}
-                      className="w-full text-left px-4 py-2.5 text-xs font-medium hover:opacity-80 transition-opacity"
-                      style={{ color: !filterCity ? PRIMARY : TEXT }}
+                  <>
+                    {/* Backdrop */}
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="fixed inset-0 z-[9998] bg-black/50 backdrop-blur-sm"
+                      onClick={() => setShowCityPicker(false)}
+                    />
+                    {/* Panel */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 20 }}
+                      transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                      className="fixed bottom-0 left-0 right-0 md:absolute md:bottom-auto md:left-0 md:top-full md:mt-2 md:right-auto md:min-w-[260px] z-[9999] rounded-t-2xl md:rounded-2xl shadow-2xl overflow-hidden"
+                      style={{ background: CARD_BG, border: `1px solid ${BORDER}` }}
                     >
-                      Todas as cidades
-                    </button>
-                    {availableCities.map((city) => (
-                      <button
-                        key={city}
-                        onClick={() => { setFilterCity(city); setShowCityPicker(false); setHeroIdx(0); setPage(1); }}
-                        className="w-full text-left px-4 py-2.5 text-xs font-medium hover:opacity-80 transition-opacity"
-                        style={{ color: filterCity === city ? PRIMARY : TEXT, borderTop: `1px solid ${BORDER}` }}
-                      >
-                        {city}
-                      </button>
-                    ))}
-                  </motion.div>
+                      {/* Drag handle (mobile) */}
+                      <div className="md:hidden flex justify-center py-2">
+                        <div className="w-10 h-1 rounded-full" style={{ background: BORDER }} />
+                      </div>
+                      <div className="px-4 py-3 border-b" style={{ borderColor: BORDER }}>
+                        <p className="text-sm font-bold" style={{ color: TEXT }}>Selecionar cidade</p>
+                      </div>
+                      <div className="max-h-[50vh] overflow-y-auto overscroll-contain">
+                        <button
+                          onClick={() => { setFilterCity(""); setShowCityPicker(false); setPage(1); }}
+                          className="w-full text-left px-4 py-3.5 text-sm font-medium flex items-center gap-2.5 transition-colors active:opacity-70"
+                          style={{
+                            color: !filterCity ? PRIMARY : TEXT,
+                            background: !filterCity ? `${PRIMARY}15` : "transparent",
+                          }}
+                        >
+                          <Globe size={15} style={{ color: !filterCity ? PRIMARY : TEXT_MUTED }} />
+                          Todas as cidades
+                        </button>
+                        {availableCities.map((city) => (
+                          <button
+                            key={city}
+                            onClick={() => { setFilterCity(city); setShowCityPicker(false); setHeroIdx(0); setPage(1); }}
+                            className="w-full text-left px-4 py-3.5 text-sm font-medium flex items-center gap-2.5 transition-colors active:opacity-70"
+                            style={{
+                              color: filterCity === city ? PRIMARY : TEXT,
+                              background: filterCity === city ? `${PRIMARY}15` : "transparent",
+                              borderTop: `1px solid ${BORDER}40`,
+                            }}
+                          >
+                            <MapPin size={15} style={{ color: filterCity === city ? PRIMARY : TEXT_MUTED }} />
+                            {city}
+                          </button>
+                        ))}
+                      </div>
+                    </motion.div>
+                  </>
                 )}
               </AnimatePresence>
             </motion.div>
