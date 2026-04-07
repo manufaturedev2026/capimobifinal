@@ -68,6 +68,16 @@ export default function SeoPageLayout({
   const heroY = useTransform(scrollYProgress, [0, 1], [0, 100]);
   const heroScale = useTransform(scrollYProgress, [0, 1], [1, 1.15]);
 
+  // Auto-rotate hero images
+  const allHeroImages = heroImages?.length ? heroImages : heroImage ? [heroImage] : [];
+  const [heroIdx, setHeroIdx] = useState(0);
+  useEffect(() => {
+    if (allHeroImages.length <= 1) return;
+    const timer = setInterval(() => setHeroIdx(p => (p + 1) % allHeroImages.length), HERO_INTERVAL);
+    return () => clearInterval(timer);
+  }, [allHeroImages.length]);
+  const currentHeroImage = allHeroImages[heroIdx] || null;
+
   return (
     <div style={{ background: DARK_BASE, color: TEXT, overflowX: "clip", maxWidth: "100%" }} className="min-h-screen">
       <Helmet>
