@@ -343,6 +343,7 @@ export default function SeoBrokersPage() {
       canonical={`https://blackbroker.lovable.app${canonicalPath}`}
       jsonLd={jsonLd}
       breadcrumbs={breadcrumbs}
+      heroImages={heroImages}
       heroTagline="Corretores Verificados"
       heroSubtitle={
         <span className="flex items-center gap-2">
