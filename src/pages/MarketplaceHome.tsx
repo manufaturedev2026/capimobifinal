@@ -157,8 +157,8 @@ export default function MarketplaceHome() {
                 <Link to="/login" className="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl border border-border text-xs font-medium text-foreground hover:bg-secondary transition-colors">
                   <LogIn size={14} /> Entrar
                 </Link>
-                <Link to="/login?trial=7" className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-bold hover:bg-primary/90 transition-colors">
-                  <UserPlus size={14} /> Criar Loja
+                <Link to="/anunciar" className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-bold hover:bg-primary/90 transition-colors">
+                  <Megaphone size={14} /> Anunciar
                 </Link>
               </>
             )}
