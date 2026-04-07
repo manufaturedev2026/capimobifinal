@@ -1185,9 +1185,19 @@ export default function SellerDashboard() {
                       <Download size={16} /> Instalar APP
                     </button>
                   )}
-                  {pushSub.isSupported && !pushSub.isSubscribed && pushSub.permission !== "denied" && (
+                  {!pushSub.isSubscribed && (
                     <button
                       onClick={async () => {
+                        if (!pushSub.isSupported) {
+                          toast({ title: "Notificações não suportadas", description: pushSub.unsupportedReason || "Tente pelo app instalado.", variant: "destructive" });
+                          setMobileMenuOpen(false);
+                          return;
+                        }
+                        if (pushSub.permission === "denied") {
+                          toast({ title: "Notificações bloqueadas", description: "Desbloqueie nas configurações do navegador.", variant: "destructive" });
+                          setMobileMenuOpen(false);
+                          return;
+                        }
                         await pushSub.subscribe();
                         setMobileMenuOpen(false);
                       }}
