@@ -279,7 +279,7 @@ export default function VenderPage() {
                   {!submitting && <ArrowRight className="ml-1.5 w-4 h-4" />}
                 </Button>
                 <p className="text-xs text-white/40 text-center">
-                  Já tem uma conta? <Link to="/login" className="text-blue-400 hover:underline">Faça login</Link>
+                  Já tem uma conta? <Link to="/login" className="hover:underline" style={{ color: theme.primary }}>Faça login</Link>
                 </p>
               </form>
             </motion.div>
