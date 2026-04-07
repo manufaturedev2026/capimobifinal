@@ -110,6 +110,7 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
       setTitle("");
       setBody("");
       setUrl("");
+      setImage("");
       fetchData();
     } catch (err: any) {
       toast({ title: "Erro ao enviar", description: err.message, variant: "destructive" });
