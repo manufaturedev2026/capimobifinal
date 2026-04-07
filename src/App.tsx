@@ -125,7 +125,7 @@ const AppLayout = () => {
           </Suspense>
         </RouteErrorBoundary>
       </main>
-      <InstallPWA />
+      
     </div>
   );
 };

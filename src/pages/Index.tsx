@@ -738,7 +738,7 @@ export default function Index() {
                     <Sparkles size={18} /> Criar Meu App Grátis
                   </Link>
                 </Button>
-                <StoreInstallButton variant="hero-light" />
+                
               </div>
             </div>
           </motion.div>
