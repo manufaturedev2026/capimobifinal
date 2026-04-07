@@ -159,7 +159,8 @@ export default function SeoLandingPage() {
       canonical={canonical}
       jsonLd={jsonLd}
       heroImage={heroImage}
-      heroHeight="h-[260px] md:h-[420px]"
+      heroImages={heroImages}
+      heroHeight="h-[50vh] md:h-[65vh]"
       breadcrumbs={breadcrumbs}
       heroTagline={catInfo ? catInfo.plural : "Marketplace de Imóveis"}
       heroSubtitle={metaDescription}

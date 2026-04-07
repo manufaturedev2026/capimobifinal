@@ -93,8 +93,20 @@ export default function SeoPageLayout({
 
       {/* ═══ HERO ═══ */}
       <motion.section ref={heroRef} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }} className={`relative ${heroHeight} overflow-hidden`}>
-        {heroImage ? (
-          <motion.img src={heroImage} alt={title} className="absolute inset-0 w-full h-full object-cover" style={{ y: heroY, scale: heroScale }} />
+        {currentHeroImage ? (
+          <AnimatePresence mode="wait">
+            <motion.img
+              key={currentHeroImage}
+              initial={{ opacity: 0, scale: 1.05 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.8 }}
+              src={currentHeroImage}
+              alt={title}
+              className="absolute inset-0 w-full h-full object-cover"
+              style={{ y: heroY }}
+            />
+          </AnimatePresence>
         ) : (
           <motion.div className="absolute inset-0" style={{ y: heroY, background: `linear-gradient(135deg, ${DARK_BASE}, ${DARK_MID} 40%, ${PRIMARY}90)` }} />
         )}
