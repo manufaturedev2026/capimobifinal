@@ -454,21 +454,56 @@ export default function MarketplaceHome() {
                             <Globe size={15} style={{ color: !filterCity ? PRIMARY : TEXT_MUTED }} />
                             Todas as cidades
                           </button>
-                          {availableCities.map((city) => (
-                            <button
-                              key={city}
-                              onClick={() => { setFilterCity(city); setShowCityPicker(false); setHeroIdx(0); setPage(1); }}
-                              className="w-full text-left px-4 py-3.5 text-sm font-medium flex items-center gap-2.5 transition-colors active:opacity-70"
-                              style={{
-                                color: filterCity === city ? PRIMARY : TEXT,
-                                background: filterCity === city ? `${PRIMARY}15` : "transparent",
-                                borderTop: `1px solid ${BORDER}40`,
-                              }}
-                            >
-                              <MapPin size={15} style={{ color: filterCity === city ? PRIMARY : TEXT_MUTED }} />
-                              {city}
-                            </button>
-                          ))}
+                          {citiesByState.map(({ state: uf, cities }) => {
+                            const isOpen = openStates.has(uf);
+                            const hasActive = cities.includes(filterCity);
+                            return (
+                              <div key={uf}>
+                                <button
+                                  onClick={() => {
+                                    setOpenStates((prev) => {
+                                      const next = new Set(prev);
+                                      if (next.has(uf)) next.delete(uf); else next.add(uf);
+                                      return next;
+                                    });
+                                  }}
+                                  className="w-full text-left px-4 py-3 text-xs font-bold uppercase tracking-wider flex items-center justify-between transition-colors active:opacity-70"
+                                  style={{
+                                    color: hasActive ? PRIMARY : TEXT,
+                                    borderTop: `1px solid ${BORDER}40`,
+                                    background: hasActive ? `${PRIMARY}08` : "transparent",
+                                  }}
+                                >
+                                  <span className="flex items-center gap-2">
+                                    <MapPin size={13} style={{ color: hasActive ? PRIMARY : TEXT_MUTED }} />
+                                    {uf}
+                                  </span>
+                                  <ChevronDown
+                                    size={14}
+                                    style={{
+                                      color: TEXT_MUTED,
+                                      transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
+                                      transition: "transform 0.2s",
+                                    }}
+                                  />
+                                </button>
+                                {isOpen && cities.map((city) => (
+                                  <button
+                                    key={city}
+                                    onClick={() => { setFilterCity(city); setShowCityPicker(false); setHeroIdx(0); setPage(1); }}
+                                    className="w-full text-left pl-9 pr-4 py-3 text-sm font-medium flex items-center gap-2 transition-colors active:opacity-70"
+                                    style={{
+                                      color: filterCity === city ? PRIMARY : TEXT,
+                                      background: filterCity === city ? `${PRIMARY}15` : "transparent",
+                                    }}
+                                  >
+                                    <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: filterCity === city ? PRIMARY : TEXT_MUTED }} />
+                                    {city}
+                                  </button>
+                                ))}
+                              </div>
+                            );
+                          })}
                         </div>
                       </motion.div>
                     </>,
