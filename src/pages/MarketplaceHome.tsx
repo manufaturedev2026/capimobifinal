@@ -133,8 +133,15 @@ export default function MarketplaceHome() {
   const heroScale = useTransform(scrollYProgress, [0, 1], [1, 1.15]);
 
   useEffect(() => {
-    if (detectedCity && !filterCity) setFilterCity(detectedCity);
-  }, [detectedCity]);
+    if (detectedCity && !filterCity && availableCities.length > 0) {
+      // detectedCity is a slug (e.g. "vila-velha"), match it to real city name
+      const slug = detectedCity.toLowerCase().replace(/\s+/g, "-");
+      const match = availableCities.find(
+        (c) => c.trim().toLowerCase().replace(/\s+/g, "-").normalize("NFD").replace(/[\u0300-\u036f]/g, "") === slug
+      );
+      if (match) setFilterCity(match);
+    }
+  }, [detectedCity, availableCities]);
 
   const availableCities = useMemo(() => {
     const set = new Set<string>();
