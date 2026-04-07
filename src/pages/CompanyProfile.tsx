@@ -1376,7 +1376,7 @@ export default function CompanyProfile() {
           </aside>
 
           {/* ═══════════ MAIN CONTENT ═══════════ */}
-          <div className="flex-1 min-w-0">
+          <div className={`flex-1 min-w-0 ${isNetflix ? "w-full" : ""}`}>
             {/* ═══ DYNAMIC MOBILE LAYOUT ═══ */}
             {(() => {
               const layoutProps: StoreLayoutProps = {
