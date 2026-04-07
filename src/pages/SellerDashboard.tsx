@@ -1021,11 +1021,11 @@ export default function SellerDashboard() {
       {/* Mobile Bottom Nav — Premium */}
       <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-xl border-t border-border safe-area-bottom shadow-[0_-4px_20px_-4px_rgba(0,0,0,0.1)]">
         <div className="flex items-center justify-around h-[68px]">
-          {sidebarNav.slice(0, 3).map((nav) => (
+          {sidebarNav.slice(0, 2).map((nav) => (
             <button
               key={nav.id}
               onClick={() => { handleTabClick(nav.id); setMobileMenuOpen(false); }}
-              className={`flex flex-col items-center justify-center gap-0.5 px-3 py-1.5 rounded-xl transition-all duration-200 min-w-0 ${
+              className={`flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-xl transition-all duration-200 min-w-0 ${
                 nav.locked
                   ? "text-muted-foreground/40"
                   : activeTab === nav.id
@@ -1040,9 +1040,46 @@ export default function SellerDashboard() {
               )}
             </button>
           ))}
+
+          {/* Ver Minha Loja — Destacado */}
+          {profile?.id && (
+            <Link
+              to={getStoreUrl(profile)}
+              className="flex flex-col items-center justify-center gap-0.5 -mt-5"
+            >
+              <div className="w-14 h-14 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-lg ring-4 ring-card">
+                <Eye size={24} />
+              </div>
+              <span className="text-[10px] font-bold text-primary mt-0.5">Minha Loja</span>
+            </Link>
+          )}
+
+          {sidebarNav.length > 2 && (() => {
+            const nav3 = sidebarNav[2];
+            const Icon3 = nav3.icon;
+            return (
+              <button
+                onClick={() => { handleTabClick(nav3.id); setMobileMenuOpen(false); }}
+                className={`flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-xl transition-all duration-200 min-w-0 ${
+                  nav3.locked
+                    ? "text-muted-foreground/40"
+                    : activeTab === nav3.id
+                      ? "text-primary scale-105"
+                      : "text-muted-foreground"
+                }`}
+              >
+                {nav3.locked ? <Lock size={20} /> : <Icon3 size={20} />}
+                <span className="text-[10px] font-semibold truncate">{nav3.label}</span>
+                {activeTab === nav3.id && (
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary mt-0.5" />
+                )}
+              </button>
+            );
+          })()}
+
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className={`flex flex-col items-center justify-center gap-0.5 px-3 py-1.5 rounded-xl transition-all duration-200 ${mobileMenuOpen ? "text-primary scale-105" : "text-muted-foreground"}`}
+            className={`flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-xl transition-all duration-200 ${mobileMenuOpen ? "text-primary scale-105" : "text-muted-foreground"}`}
           >
             {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
             <span className="text-[10px] font-semibold">Mais</span>
