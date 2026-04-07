@@ -492,6 +492,7 @@ export default function CompanyProfile() {
   const isShowcase = currentLayout === "showcase";
   const isNetflix = currentLayout === "netflix";
   const isElegant = currentLayout === "elegant";
+  const isGallery = currentLayout === "gallery";
   const isMagazine = currentLayout === "magazine";
   const isIOSStandalone = isIOSStandaloneApp();
 
