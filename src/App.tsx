@@ -130,7 +130,7 @@ const AppLayout = () => {
               <Route path="/" element={<HomeRedirect />} />
               <Route path="/empresa/:id" element={<CompanyProfile />} />
               <Route path="/imoveis/produto/:productId" element={<ProductDetail />} />
-              <Route path="/anunciar" element={<CreateListing />} />
+              <Route path="/anunciar" element={<VenderPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/entrar" element={<Navigate to="/login" replace />} />
               <Route path="/painel" element={<RequireAuth><SellerDashboard /></RequireAuth>} />
@@ -139,7 +139,7 @@ const AppLayout = () => {
               <Route path="/painel/perfil" element={<RequireAuth><SellerProfile /></RequireAuth>} />
               <Route path="/pacotes" element={<RequireAuth><PackagesPage /></RequireAuth>} />
               <Route path="/admin" element={<RequireAuth><AdminPanel /></RequireAuth>} />
-              <Route path="/anunciar" element={<VenderPage />} />
+              <Route path="/criar-anuncio" element={<RequireAuth><CreateListing /></RequireAuth>} />
               <Route path="/vender" element={<Navigate to="/anunciar" replace />} />
               <Route path="/captar-imovel/:slug" element={<CapturePropertyPage />} />
               <Route path="/privacidade" element={<PrivacyPage />} />
