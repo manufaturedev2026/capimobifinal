@@ -228,7 +228,7 @@ export function useSubscription(userId?: string) {
 }
 
 export function useSellerSubscription(sellerId?: string) {
-  const [tier, setTier] = useState<"start" | "basico" | "premium" | "vip" | "essencial_empresa" | "premium_empresa">("basico");
+  const [tier, setTier] = useState<"start" | "basico" | "premium" | "vip" | "essencial_empresa" | "premium_empresa" | "prime_empresa">("basico");
 
   useEffect(() => {
     if (!sellerId) return;
