@@ -302,8 +302,8 @@ export default function MarketplaceHome() {
             transition={{ duration: 0.7, delay: 0.2 }}
             className="flex items-center gap-2 mb-2"
           >
-            <Sparkles size={14} style={{ color: PRIMARY }} />
-            <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest" style={{ color: PRIMARY }}>
+            <Sparkles size={14} style={{ color: theme.promoAccent || PRIMARY }} />
+            <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest" style={{ color: theme.promoAccent || PRIMARY }}>
               Marketplace de Imóveis
             </span>
           </motion.div>
@@ -315,7 +315,7 @@ export default function MarketplaceHome() {
             className="font-display font-black text-2xl md:text-6xl text-white leading-[1.1] drop-shadow-2xl"
           >
             Imóveis em<br />
-            <span style={{ color: PRIMARY }}>{currentHeroCity}</span>
+            <span style={{ color: theme.promoAccent || PRIMARY }}>{currentHeroCity}</span>
           </motion.h1>
 
           {/* City selector */}
