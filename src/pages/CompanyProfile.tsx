@@ -1407,7 +1407,7 @@ export default function CompanyProfile() {
                   : undefined,
               };
 
-              const layout = (dbProfile as any)?.store_layout || "showcase";
+              const layout = (dbProfile as any)?.store_layout || "gamer";
 
               switch (layout) {
                 case "netflix": return <StoreLayoutNetflix {...layoutProps} />;
