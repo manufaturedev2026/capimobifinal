@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Bell, Send, Users, Clock, CheckCircle2, XCircle, Loader2, Trash2, MessageSquare, Megaphone } from "lucide-react";
+import { Bell, Send, Users, Clock, CheckCircle2, XCircle, Loader2, Trash2, MessageSquare, Megaphone, ImagePlus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -32,6 +32,26 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [url, setUrl] = useState("");
+  const [image, setImage] = useState("");
+  const [uploadingImage, setUploadingImage] = useState(false);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingImage(true);
+    try {
+      const ext = file.name.split(".").pop();
+      const path = `push-images/admin/${Date.now()}.${ext}`;
+      const { error } = await supabase.storage.from("seller-uploads").upload(path, file, { upsert: true });
+      if (error) throw error;
+      const { data: urlData } = supabase.storage.from("seller-uploads").getPublicUrl(path);
+      setImage(urlData.publicUrl);
+    } catch (err: any) {
+      toast({ title: "Erro ao enviar imagem", description: err.message, variant: "destructive" });
+    } finally {
+      setUploadingImage(false);
+    }
+  };
 
   const fetchData = async () => {
     const { count: subCount } = await supabase
@@ -76,6 +96,7 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
           title: title.trim(),
           body: body.trim(),
           url: url.trim() || undefined,
+          image: image || undefined,
         },
       });
 
@@ -89,6 +110,7 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
       setTitle("");
       setBody("");
       setUrl("");
+      setImage("");
       fetchData();
     } catch (err: any) {
       toast({ title: "Erro ao enviar", description: err.message, variant: "destructive" });
@@ -192,6 +214,28 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
                 placeholder="Ex: /painel"
               />
               <p className="text-[10px] text-muted-foreground">URL para onde o corretor será levado ao clicar</p>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium">Imagem (opcional)</Label>
+              {image ? (
+                <div className="relative w-full max-w-[200px]">
+                  <img src={image} alt="Preview" className="rounded-lg w-full h-24 object-cover border border-border" />
+                  <button
+                    type="button"
+                    onClick={() => setImage("")}
+                    className="absolute -top-2 -right-2 h-5 w-5 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              ) : (
+                <label className="flex items-center gap-2 cursor-pointer text-xs text-muted-foreground hover:text-foreground transition-colors">
+                  <ImagePlus className="w-4 h-4" />
+                  {uploadingImage ? "Enviando..." : "Adicionar imagem"}
+                  <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={uploadingImage} />
+                </label>
+              )}
             </div>
 
             <Button onClick={handleSend} disabled={sending || !title.trim() || !body.trim()} className="w-full gap-2">
