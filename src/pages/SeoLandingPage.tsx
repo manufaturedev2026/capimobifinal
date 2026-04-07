@@ -158,7 +158,16 @@ export default function SeoLandingPage() {
         <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
       </Helmet>
 
-      <MarketplaceNavbar />
+      {/* Simple top nav */}
+      <nav className="sticky top-0 z-40 bg-background/90 backdrop-blur-xl border-b border-border px-4 py-3">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <Link to="/" className="font-display font-bold text-lg text-foreground">Brokers App</Link>
+          <div className="flex items-center gap-3">
+            <Link to="/buscar" className="text-sm text-muted-foreground hover:text-primary transition-colors">Buscar</Link>
+            <Link to="/login" className="text-sm text-muted-foreground hover:text-primary transition-colors">Entrar</Link>
+          </div>
+        </div>
+      </nav>
 
       <div className="container max-w-7xl mx-auto px-4 py-8">
         {/* Breadcrumbs */}
