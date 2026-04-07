@@ -19,7 +19,7 @@ import CompareButton from "@/components/CompareButton";
 import { useCompare } from "@/hooks/useCompare";
 import PropertyCardSkeleton from "@/components/PropertyCardSkeleton";
 import { getStoreUrl } from "@/lib/storeUrl";
-import { getProductUrl } from "@/lib/productUrl";
+import { productUrl } from "@/lib/productUrl";
 import FooterSimple from "@/components/FooterSimple";
 
 const CATEGORIES = [
