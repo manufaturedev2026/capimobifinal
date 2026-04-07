@@ -754,7 +754,7 @@ export default function MarketplaceHome() {
                 <Users size={16} style={{ color: PRIMARY }} />
                 <h2 className="font-display font-bold text-lg" style={{ color: TEXT }}>
                   Corretores na plataforma
-                  <span className="text-xs font-normal ml-2" style={{ color: TEXT_MUTED }}>({realSellers.length})</span>
+                  <span className="text-xs font-normal ml-2" style={{ color: TEXT_MUTED }}>({pool.length}{filterCity ? ` em ${filterCity}` : ""})</span>
                 </h2>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
