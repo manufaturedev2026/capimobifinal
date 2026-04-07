@@ -177,35 +177,51 @@ export default function ProductDetail() {
     }
   }, [productId]);
 
+  const loadItemData = async (item: any) => {
+    setDbItem(item);
+    const { data: seller } = await supabase.from("profiles").select("*").eq("id", item.seller_id).maybeSingle();
+    setDbSeller(seller);
+    if (corretorSlug) {
+      const { data: member } = await supabase
+        .from("team_members").select("*")
+        .eq("company_id", item.seller_id).eq("slug", corretorSlug).eq("is_active", true).maybeSingle();
+      if (member) setTeamMember(member);
+    }
+    const { data: subData } = await supabase
+      .from("seller_subscriptions").select("tier")
+      .eq("seller_id", item.seller_id).eq("is_active", true)
+      .order("created_at", { ascending: false }).limit(1);
+    if (subData && subData.length > 0) setSellerTier(subData[0].tier);
+    trackSellerEvent(item.seller_id, "view", item.id, undefined);
+    const { data: related } = await supabase
+      .from("seller_items").select("id, title, price, photos, city, neighborhood, category, finality, slug")
+      .eq("seller_id", item.seller_id).eq("status", "ativo").neq("id", item.id)
+      .order("created_at", { ascending: false }).limit(8);
+    setRelatedItems((related || []).map((r: any) => ({
+      id: r.id, title: r.title, price: r.price || 0,
+      image: r.photos?.[0] || "", city: r.city, neighborhood: r.neighborhood,
+      isAluguel: r.category === "aluguel" || r.finality === "aluguel",
+      slug: r.slug,
+    })));
+    setLoading(false);
+  };
+
   const fetchDbItem = async (id: string) => {
     const { data: item } = await supabase.from("seller_items").select("*").eq("id", id).maybeSingle();
     if (item) {
-      setDbItem(item);
-      const { data: seller } = await supabase.from("profiles").select("*").eq("id", item.seller_id).maybeSingle();
-      setDbSeller(seller);
-      if (corretorSlug) {
-        const { data: member } = await supabase
-          .from("team_members").select("*")
-          .eq("company_id", item.seller_id).eq("slug", corretorSlug).eq("is_active", true).maybeSingle();
-        if (member) setTeamMember(member);
-      }
-      const { data: subData } = await supabase
-        .from("seller_subscriptions").select("tier")
-        .eq("seller_id", item.seller_id).eq("is_active", true)
-        .order("created_at", { ascending: false }).limit(1);
-      if (subData && subData.length > 0) setSellerTier(subData[0].tier);
-      trackSellerEvent(item.seller_id, "view", item.id, undefined);
-      const { data: related } = await supabase
-        .from("seller_items").select("id, title, price, photos, city, neighborhood, category, finality")
-        .eq("seller_id", item.seller_id).eq("status", "ativo").neq("id", id)
-        .order("created_at", { ascending: false }).limit(8);
-      setRelatedItems((related || []).map((r: any) => ({
-        id: r.id, title: r.title, price: r.price || 0,
-        image: r.photos?.[0] || "", city: r.city, neighborhood: r.neighborhood,
-        isAluguel: r.category === "aluguel" || r.finality === "aluguel",
-      })));
+      await loadItemData(item);
+    } else {
+      setLoading(false);
     }
-    setLoading(false);
+  };
+
+  const fetchDbItemBySlug = async (slug: string) => {
+    const { data: item } = await supabase.from("seller_items").select("*").eq("slug" as any, slug).maybeSingle();
+    if (item) {
+      await loadItemData(item);
+    } else {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
