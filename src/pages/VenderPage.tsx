@@ -271,7 +271,7 @@ export default function VenderPage() {
                 <div className="relative">
                   <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/60" />
                   <input type="password" placeholder="Crie uma senha (mín. 6 caracteres) *" value={password} onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-white/8 border border-white/15 text-white placeholder:text-white/60 outline-none focus:border-blue-400 transition-colors text-sm" required minLength={6} />
+                    className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-white/8 border border-white/15 text-white placeholder:text-white/60 outline-none transition-colors text-sm" required minLength={6} />
                 </div>
                 <Button type="submit" disabled={submitting} className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-bold rounded-xl py-3.5 text-sm shadow-lg shadow-blue-500/25">
                   {submitting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
