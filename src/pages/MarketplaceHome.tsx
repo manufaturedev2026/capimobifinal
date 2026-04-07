@@ -1001,7 +1001,8 @@ export default function MarketplaceHome() {
             </motion.section>
           </>
         )}
-      </div>
+        </div>{/* end flex-1 main content */}
+      </div>{/* end flex sidebar+content */}
 
       <FooterSimple theme={{ bg: DARK_BASE, text: TEXT, textMuted: TEXT_MUTED, border: BORDER, primary: PRIMARY }} />
     </div>
