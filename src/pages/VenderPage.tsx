@@ -221,7 +221,7 @@ export default function VenderPage() {
               transition={{ duration: 0.7 }}
               className="space-y-6"
             >
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/15 border border-blue-500/30 text-blue-300 text-xs font-semibold">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold" style={{ background: `${theme.primary}25`, border: `1px solid ${theme.primary}50`, color: theme.primary }}>
                 <Rocket className="w-3.5 h-3.5" /> Plataforma para corretores e imobiliárias
               </div>
 
