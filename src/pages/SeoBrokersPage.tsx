@@ -302,7 +302,7 @@ export default function SeoBrokersPage() {
                           )}
                           {tier && (
                             <div className="absolute top-3 right-3">
-                              <PackageBadge tier={tier} />
+                              <PackageBadge tier={tier as any} />
                             </div>
                           )}
                         </div>
