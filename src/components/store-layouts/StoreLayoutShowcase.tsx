@@ -32,9 +32,16 @@ function StatPill({ icon: Icon, value }: { icon: any; value: string | number }) 
   );
 }
 
+const categoryIcons: Record<string, React.ReactNode> = {
+  casa: <Home size={26} />,
+  apartamento: <Building size={26} />,
+  terreno: <LandPlot size={26} />,
+  comercial: <Store size={26} />,
+};
+
 export default function StoreLayoutShowcase({
   filteredProducts, subcategories, activeCategory, setActiveCategory,
-  categoryCounts, storeTheme, corretorSlug, handleWhatsApp, getTagStyle, getTagLabel, storiesBar,
+  categoryCounts, categoryCardImages, storeTheme, corretorSlug, handleWhatsApp, getTagStyle, getTagLabel, storiesBar,
 }: StoreLayoutProps) {
   const [heroIndex, setHeroIndex] = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
