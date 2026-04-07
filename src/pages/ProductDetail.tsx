@@ -216,7 +216,7 @@ export default function ProductDetail() {
   };
 
   const fetchDbItemBySlug = async (slug: string) => {
-    const { data: item } = await supabase.from("seller_items").select("*").eq("slug" as any, slug).maybeSingle();
+    const { data: item } = await (supabase.from("seller_items").select("*") as any).eq("slug", slug).maybeSingle();
     if (item) {
       await loadItemData(item);
     } else {
