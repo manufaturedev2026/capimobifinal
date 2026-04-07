@@ -38,8 +38,9 @@ export function useFavorites() {
       const localIds = getLocalFavorites();
       const toSync = [...localIds].filter(id => !dbIds.has(id));
       if (toSync.length > 0) {
-        await supabase.from("favorites").insert(
-          toSync.map(item_id => ({ user_id: user.id, item_id }))
+        await supabase.from("favorites").upsert(
+          toSync.map(item_id => ({ user_id: user.id, item_id })),
+          { onConflict: "user_id,item_id", ignoreDuplicates: true }
         );
         toSync.forEach(id => dbIds.add(id));
         localStorage.removeItem(LOCAL_KEY);
