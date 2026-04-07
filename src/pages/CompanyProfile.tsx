@@ -498,14 +498,13 @@ export default function CompanyProfile() {
 
   return (
     <div
-      className="min-h-screen pb-20 md:pb-0 overflow-x-hidden max-w-full"
+      className={`${isGamer ? "h-screen overflow-hidden" : "min-h-screen pb-20 md:pb-0 overflow-x-hidden max-w-full"}`}
       style={{
         background: storeTheme.bg,
         color: storeTheme.text,
         width: "100%",
         maxWidth: "100vw",
-        overflowX: "clip",
-        overscrollBehaviorX: "none",
+        ...(isGamer ? {} : { overflowX: "clip" as any, overscrollBehaviorX: "none" }),
         ["--store-bg" as any]: storeTheme.bg,
         ["--store-card" as any]: storeTheme.card,
         ["--store-text" as any]: storeTheme.text,
