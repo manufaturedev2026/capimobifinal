@@ -171,7 +171,7 @@ export default function MarketplaceHome() {
         items = items.filter((i) => i.category === activeCategory);
       }
     }
-    if (filterCity) {
+    if (filterCity && !searchQuery.trim()) {
       const city = filterCity.trim().toLowerCase();
       items = items.filter((i) => i.city?.trim().toLowerCase() === city);
     }
@@ -180,7 +180,9 @@ export default function MarketplaceHome() {
       items = items.filter((i) =>
         i.title.toLowerCase().includes(q) ||
         i.city?.toLowerCase().includes(q) ||
-        i.neighborhood?.toLowerCase().includes(q)
+        i.neighborhood?.toLowerCase().includes(q) ||
+        i.category?.toLowerCase().includes(q) ||
+        i.address?.toLowerCase().includes(q)
       );
     }
     items = items.filter((i) => (i as any).status !== "vendido" && (i as any).status !== "inativo");
