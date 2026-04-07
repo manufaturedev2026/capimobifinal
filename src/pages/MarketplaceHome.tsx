@@ -959,7 +959,7 @@ export default function MarketplaceHome() {
         )}
       </div>
 
-      <FooterSimple />
+      <FooterSimple theme={{ bg: DARK_BASE, text: TEXT, textMuted: TEXT_MUTED, border: BORDER, primary: PRIMARY }} />
     </div>
   );
 }
