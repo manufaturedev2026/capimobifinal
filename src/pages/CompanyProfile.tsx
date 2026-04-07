@@ -845,7 +845,7 @@ export default function CompanyProfile() {
       </section>
 
       {/* ═══════════ SHOWCASE HERO — Featured Item ═══════════ */}
-      {isShowcase && (
+      {isGamer && (
         <section className="relative overflow-hidden" style={{ minHeight: "50vh" }}>
           {heroImages.length > 0 ? (
             <>
