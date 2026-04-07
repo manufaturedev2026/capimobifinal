@@ -38,6 +38,7 @@ const CapturePropertyPage = lazyPage(() => import("@/pages/CapturePropertyPage")
 const VenderPage = lazyPage(() => import("@/pages/VenderPage"));
 const SearchPage = lazyPage(() => import("@/pages/SearchPage"));
 const SeoLandingPage = lazyPage(() => import("@/pages/SeoLandingPage"));
+const SeoBrokersPage = lazyPage(() => import("@/pages/SeoBrokersPage"));
 
 const queryClient = new QueryClient();
 
