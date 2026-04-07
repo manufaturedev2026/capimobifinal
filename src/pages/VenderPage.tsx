@@ -273,7 +273,7 @@ export default function VenderPage() {
                   <input type="password" placeholder="Crie uma senha (mín. 6 caracteres) *" value={password} onChange={(e) => setPassword(e.target.value)}
                     className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-white/8 border border-white/15 text-white placeholder:text-white/60 outline-none transition-colors text-sm" required minLength={6} />
                 </div>
-                <Button type="submit" disabled={submitting} className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-bold rounded-xl py-3.5 text-sm shadow-lg shadow-blue-500/25">
+                <Button type="submit" disabled={submitting} className="w-full text-white font-bold rounded-xl py-3.5 text-sm shadow-lg" style={{ background: `linear-gradient(to right, ${theme.primary}, ${theme.promoAccent || theme.primary})`, boxShadow: `0 10px 25px ${theme.primary}40` }}>
                   {submitting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
                   {submitting ? "Criando conta..." : "CRIAR MEU SITE AGORA"}
                   {!submitting && <ArrowRight className="ml-1.5 w-4 h-4" />}
