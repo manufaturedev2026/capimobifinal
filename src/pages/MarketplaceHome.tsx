@@ -518,7 +518,7 @@ export default function MarketplaceHome() {
                   style={{ width: "85%", minWidth: "85%", boxShadow: `0 8px 32px ${PRIMARY}18` }}
                   onClick={() => { setActiveCategory(banner.slug); setPage(1); scrollToGrid(); }}
                 >
-                  <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${DARK_BASE}, ${PRIMARY}${bIdx === 0 ? "" : "cc"})` }} />
+                  <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${bIdx === 0 && theme.promoAccent ? theme.promoAccent : DARK_BASE}, ${PRIMARY}${bIdx === 0 ? "" : "cc"})` }} />
                   <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent" />
                   <FloatingParticles color={PRIMARY} />
                   <div className="relative z-10 h-full flex flex-col justify-center p-5">
@@ -526,7 +526,7 @@ export default function MarketplaceHome() {
                       {banner.title[0]}<br />{banner.title[1]}
                     </h3>
                     <p className="text-white/60 text-xs mt-2 max-w-[200px]">{banner.desc}</p>
-                    <span className="inline-flex items-center gap-1.5 text-white/90 text-xs font-bold mt-3">
+                    <span className="inline-flex items-center gap-1.5 text-xs font-bold mt-3" style={{ color: theme.promoExploreColor || "rgba(255,255,255,0.9)" }}>
                       Explorar <ArrowRight size={14} />
                     </span>
                   </div>
@@ -558,7 +558,7 @@ export default function MarketplaceHome() {
                 onClick={() => { setActiveCategory(banner.slug); setPage(1); scrollToGrid(); }}
                 style={{ boxShadow: `0 8px 32px ${PRIMARY}18` }}
               >
-                <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${DARK_BASE}, ${PRIMARY}${bIdx === 0 ? "" : "cc"})` }} />
+                <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${bIdx === 0 && theme.promoAccent ? theme.promoAccent : DARK_BASE}, ${PRIMARY}${bIdx === 0 ? "" : "cc"})` }} />
                 <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent" />
                 <FloatingParticles color={PRIMARY} />
                 <div className="relative z-10 h-full flex flex-col justify-center p-6">
@@ -566,7 +566,7 @@ export default function MarketplaceHome() {
                     {banner.title[0]}<br />{banner.title[1]}
                   </h3>
                   <p className="text-white/60 text-xs mt-2 max-w-[200px]">{banner.desc}</p>
-                  <span className="inline-flex items-center gap-1.5 text-white/90 text-xs font-bold mt-3 group-hover:gap-3 transition-all">
+                  <span className="inline-flex items-center gap-1.5 text-xs font-bold mt-3 group-hover:gap-3 transition-all" style={{ color: theme.promoExploreColor || "rgba(255,255,255,0.9)" }}>
                     Explorar <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
                   </span>
                 </div>

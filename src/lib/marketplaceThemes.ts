@@ -10,6 +10,8 @@ export interface MarketplaceTheme {
   text: string;
   textMuted: string;
   dashboardGradient: string;
+  promoAccent?: string;
+  promoExploreColor?: string;
 }
 
 export const MARKETPLACE_THEMES: MarketplaceTheme[] = [
@@ -64,6 +66,8 @@ export const MARKETPLACE_THEMES: MarketplaceTheme[] = [
     text: "#ffffff",
     textMuted: "#c0aab5",
     dashboardGradient: "linear-gradient(135deg, #004a8f 0%, #0099e6 25%, #f0f0f0 50%, #E8587A 75%, #a83060 100%)",
+    promoAccent: "#56C5E8",
+    promoExploreColor: "#E8587A",
   },
 ];
 
