@@ -211,7 +211,7 @@ export function usePushSubscription(sellerId?: string) {
     } finally {
       setLoading(false);
     }
-  }, [isSupported, sellerId, unsupportedReason]);
+  }, [sellerId]);
 
   return { isSubscribed, isSupported, permission, subscribe, loading, unsupportedReason };
 }
