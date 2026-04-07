@@ -85,8 +85,14 @@ export function usePushSubscription(sellerId?: string) {
       setPermission(perm);
 
       if (perm !== "granted") {
-        console.warn("[Push] Permission denied:", perm);
-        toast({ title: "Permissão negada", description: "Você precisa permitir notificações no navegador.", variant: "destructive" });
+        console.warn("[Push] Permission result:", perm);
+        toast({ 
+          title: "Permissão negada", 
+          description: perm === "denied" 
+            ? "Notificações foram bloqueadas. Vá nas configurações do navegador para permitir." 
+            : "Toque em 'Permitir' quando o navegador solicitar a permissão.", 
+          variant: "destructive" 
+        });
         return false;
       }
       console.log("[Push] Permission granted");
