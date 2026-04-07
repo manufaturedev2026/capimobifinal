@@ -316,7 +316,16 @@ export default function SeoLandingPage() {
         </section>
       </div>
 
-      <FooterSimple />
+      {/* Footer */}
+      <footer className="border-t border-border py-8 mt-16">
+        <div className="max-w-7xl mx-auto px-4 text-center text-sm text-muted-foreground">
+          <p>© {new Date().getFullYear()} Brokers App. Todos os direitos reservados.</p>
+          <div className="flex justify-center gap-4 mt-2">
+            <Link to="/privacidade" className="hover:text-primary transition-colors">Privacidade</Link>
+            <Link to="/termos" className="hover:text-primary transition-colors">Termos</Link>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
