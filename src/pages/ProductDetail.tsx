@@ -614,7 +614,7 @@ export default function ProductDetail() {
       <ThemeParticles color={getStoreTheme(dbSeller?.store_theme).primary} sellerId={dbSeller?.id} />
       {/* ── Hero Banner ── */}
       <section className="relative">
-        <div className="aspect-[16/9] md:aspect-[21/7] overflow-hidden bg-muted">
+        <div className={`overflow-hidden bg-muted ${isMobile ? "aspect-[4/3]" : "aspect-[21/7]"}`}>
           {images.length > 0 ? (
             <AnimatePresence mode="wait">
               <motion.img
@@ -625,7 +625,10 @@ export default function ProductDetail() {
                 transition={{ duration: 0.4 }}
                 src={images[activeImage]}
                 alt={title}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover cursor-pointer"
+                onClick={() => isMobile && setLightboxOpen(true)}
+                onTouchStart={isMobile ? handleTouchStart : undefined}
+                onTouchEnd={isMobile ? handleTouchEnd : undefined}
               />
             </AnimatePresence>
           ) : (
@@ -649,7 +652,21 @@ export default function ProductDetail() {
             ))}
           </div>
         )}
-        {images.length > 1 && (
+
+        {/* Mobile: counter + zoom hint */}
+        {isMobile && images.length > 0 && (
+          <div className="absolute bottom-3 left-0 right-0 z-20 flex items-center justify-between px-4">
+            <button onClick={() => setLightboxOpen(true)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-card/70 backdrop-blur-md text-xs font-bold text-foreground">
+              <ZoomIn size={12} /> Ampliar
+            </button>
+            <span className="px-3 py-1.5 rounded-lg bg-card/70 backdrop-blur-md text-xs font-bold text-foreground">
+              {activeImage + 1} / {images.length}
+            </span>
+          </div>
+        )}
+
+        {/* Desktop: arrows */}
+        {!isMobile && images.length > 1 && (
           <div className="absolute bottom-4 right-4 z-20 flex items-center gap-2">
             <button onClick={() => setActiveImage((p) => (p - 1 + images.length) % images.length)}
               className="w-9 h-9 rounded-full bg-card/70 backdrop-blur-md flex items-center justify-center text-foreground hover:bg-card/90 transition-colors">
@@ -666,60 +683,26 @@ export default function ProductDetail() {
         )}
       </section>
 
-      {/* ── Gallery Mosaic ── */}
+      {/* ── Mobile: Thumbnail strip (tap to change hero) ── */}
+      {isMobile && images.length > 1 && (
+        <div className="px-3 py-2 overflow-x-auto flex gap-2 scrollbar-hide" style={{ WebkitOverflowScrolling: "touch" }}>
+          {images.map((img: string, i: number) => (
+            <button
+              key={i}
+              onClick={() => setActiveImage(i)}
+              className={`flex-shrink-0 w-16 h-16 rounded-xl overflow-hidden border-2 transition-all ${
+                activeImage === i ? "border-primary scale-105 shadow-lg" : "border-border opacity-70"
+              }`}
+            >
+              <img src={img} alt={`Foto ${i + 1}`} className="w-full h-full object-cover" loading="lazy" />
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* ── Gallery Mosaic (desktop only) ── */}
       {images.length > 0 && (
         <div className="container max-w-6xl mx-auto px-4 -mt-16 md:-mt-20 z-10 relative">
-          {/* Mobile */}
-          <div className="md:hidden">
-            {images.length === 1 && (
-              <motion.button initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} onClick={() => { setActiveImage(0); setLightboxOpen(true); }} className="w-full aspect-[16/9] rounded-2xl overflow-hidden relative group">
-                <img src={images[0]} alt="Foto 1" className="w-full h-full object-cover" />
-                <div className="absolute bottom-2 right-2 bg-black/60 text-white text-[10px] font-bold px-2 py-1 rounded-lg backdrop-blur-sm">1 foto</div>
-              </motion.button>
-            )}
-            {images.length === 2 && (
-              <div className="grid grid-cols-2 gap-1.5 h-[220px]">
-                {images.map((img: string, i: number) => (
-                  <motion.button key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} onClick={() => { setActiveImage(i); setLightboxOpen(true); }} className="rounded-xl overflow-hidden relative group">
-                    <img src={img} alt={`Foto ${i + 1}`} className="w-full h-full object-cover" loading="lazy" />
-                  </motion.button>
-                ))}
-              </div>
-            )}
-            {images.length === 3 && (
-              <div className="grid grid-cols-2 gap-1.5 h-[260px]">
-                <motion.button initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} onClick={() => { setActiveImage(0); setLightboxOpen(true); }} className="row-span-2 rounded-xl overflow-hidden relative group">
-                  <img src={images[0]} alt="Foto 1" className="w-full h-full object-cover" />
-                </motion.button>
-                {images.slice(1, 3).map((img: string, i: number) => (
-                  <motion.button key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: (i + 1) * 0.05 }} onClick={() => { setActiveImage(i + 1); setLightboxOpen(true); }} className="rounded-xl overflow-hidden relative group">
-                    <img src={img} alt={`Foto ${i + 2}`} className="w-full h-full object-cover" loading="lazy" />
-                  </motion.button>
-                ))}
-              </div>
-            )}
-            {images.length >= 4 && (
-              <div className="grid grid-cols-3 grid-rows-2 gap-1.5 h-[280px]">
-                <motion.button initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} onClick={() => { setActiveImage(0); setLightboxOpen(true); }} className="col-span-2 row-span-2 rounded-xl overflow-hidden relative group">
-                  <img src={images[0]} alt="Foto 1" className="w-full h-full object-cover" />
-                  <div className="absolute bottom-2 left-2 bg-black/60 text-white text-[10px] font-bold px-2 py-1 rounded-lg backdrop-blur-sm flex items-center gap-1">
-                    <ZoomIn size={10} /> {images.length} fotos
-                  </div>
-                </motion.button>
-                {images.slice(1, 3).map((img: string, i: number) => (
-                  <motion.button key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: (i + 1) * 0.05 }} onClick={() => { setActiveImage(i + 1); setLightboxOpen(true); }} className="rounded-xl overflow-hidden relative group">
-                    <img src={img} alt={`Foto ${i + 2}`} className="w-full h-full object-cover" loading="lazy" />
-                    {i === 1 && images.length > 3 && (
-                      <div className="absolute inset-0 bg-black/50 flex items-center justify-center rounded-xl">
-                        <span className="text-white font-bold text-sm">+{images.length - 3}</span>
-                      </div>
-                    )}
-                  </motion.button>
-                ))}
-              </div>
-            )}
-          </div>
-
           {/* Desktop */}
           <div className="hidden md:block">
             {images.length === 1 && (
