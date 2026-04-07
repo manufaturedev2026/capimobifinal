@@ -461,7 +461,7 @@ export default function VenderPage() {
                   CRIAR MEU SITE AGORA <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
                 <Link to="/login">
-                  <Button variant="outline" size="lg" className="rounded-xl border-white/20 text-white hover:bg-white/10 px-8 text-base font-semibold">
+                  <Button variant="outline" size="lg" className="rounded-xl border-primary/40 text-primary hover:bg-primary/10 px-8 text-base font-semibold">
                     Já tenho conta
                   </Button>
                 </Link>
