@@ -23,15 +23,8 @@ import { getStoreUrl } from "@/lib/storeUrl";
 import { productUrl } from "@/lib/productUrl";
 import FooterSimple from "@/components/FooterSimple";
 import { useIsMobile } from "@/hooks/use-mobile";
-
-/* ── Theme constants ── */
-const PRIMARY = "#3B82F6";
-const DARK_BASE = "hsl(220, 40%, 8%)";
-const DARK_MID = "hsl(220, 45%, 15%)";
-const CARD_BG = "hsl(220, 30%, 12%)";
-const BORDER = "hsl(220, 20%, 18%)";
-const TEXT = "#f0f0f0";
-const TEXT_MUTED = "#8a8a9a";
+import { getMarketplaceTheme } from "@/lib/marketplaceThemes";
+import { supabase } from "@/integrations/supabase/client";
 
 const QUICK_ACTIONS = [
   { slug: "casa", name: "Casas", desc: "Residenciais", icon: Home },
