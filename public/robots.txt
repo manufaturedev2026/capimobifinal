@@ -16,4 +16,4 @@ Disallow: /painel/
 Disallow: /admin
 Disallow: /entrar
 
-Sitemap: https://brokergb.lovable.app/sitemap.xml
+Sitemap: https://blackbroker.lovable.app/sitemap.xml

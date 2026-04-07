@@ -36,6 +36,8 @@ const TermsPage = lazyPage(() => import("@/pages/TermsPage"));
 const NotFound = lazyPage(() => import("@/pages/NotFound"));
 const CapturePropertyPage = lazyPage(() => import("@/pages/CapturePropertyPage"));
 const VenderPage = lazyPage(() => import("@/pages/VenderPage"));
+const SearchPage = lazyPage(() => import("@/pages/SearchPage"));
+const SeoLandingPage = lazyPage(() => import("@/pages/SeoLandingPage"));
 
 const queryClient = new QueryClient();
 
@@ -130,6 +132,13 @@ const AppLayout = () => {
               <Route path="/" element={<HomeRedirect />} />
               <Route path="/empresa/:id" element={<CompanyProfile />} />
               <Route path="/imoveis/produto/:productId" element={<ProductDetail />} />
+              <Route path="/buscar" element={<SearchPage />} />
+              {/* SEO landing pages */}
+              <Route path="/imoveis" element={<SeoLandingPage />} />
+              <Route path="/imoveis/:cidade" element={<SeoLandingPage />} />
+              <Route path="/imoveis/:cidade/:categoria" element={<SeoLandingPage />} />
+              <Route path="/imoveis/:cidade/bairro/:bairro" element={<SeoLandingPage />} />
+              <Route path="/imoveis/categoria/:categoria" element={<SeoLandingPage />} />
               <Route path="/anunciar" element={<VenderPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/entrar" element={<Navigate to="/login" replace />} />
