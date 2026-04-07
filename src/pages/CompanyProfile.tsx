@@ -1425,7 +1425,7 @@ export default function CompanyProfile() {
             <div id="products-grid" className="hidden lg:block">
             {/* Products Header */}
             <div className="flex items-center justify-between mb-4">
-              {isShowcase ? (
+              {isGamer ? (
                 <div className="flex items-center gap-3">
                   <Trophy size={16} style={{ color: storeTheme.primary }} />
                   <h2 className="font-display font-black text-lg uppercase tracking-wider" style={{ color: storeTheme.text }}>
