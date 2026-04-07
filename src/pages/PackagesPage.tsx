@@ -1,15 +1,16 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Check, Crown, Star, Zap, ArrowLeft, Settings } from "lucide-react";
+import { Check, Crown, Star, Zap, ArrowLeft, Settings, Shield, Gem, Diamond } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription, PACKAGE_CONFIG } from "@/hooks/useSubscription";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
-const tiers = ["start", "premium", "vip"] as const;
-const tierIcons = { basico: Zap, start: Zap, premium: Star, vip: Crown };
+const individualTiers = ["start", "premium", "vip"] as const;
+const enterpriseTiers = ["essencial_empresa", "premium_empresa", "prime_empresa"] as const;
+const tierIcons: Record<string, any> = { basico: Zap, start: Zap, premium: Star, vip: Crown, essencial_empresa: Shield, premium_empresa: Gem, prime_empresa: Diamond };
 
 export default function PackagesPage() {
   const { user, profile } = useAuth();
@@ -99,8 +100,10 @@ export default function PackagesPage() {
       </div>
 
       <div className="container max-w-6xl mx-auto px-4 -mt-8 relative z-10 pb-24 lg:pb-16">
+        {/* Individual Plans */}
+        <h2 className="font-display font-extrabold text-xl text-foreground mb-4">Planos Individuais</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {tiers.map((tier, i) => {
+          {individualTiers.map((tier, i) => {
             const config = PACKAGE_CONFIG[tier];
             const Icon = tierIcons[tier];
             const isCurrent = currentTier === tier;
@@ -141,6 +144,70 @@ export default function PackagesPage() {
                         <span className="text-white/60 text-xs block">cobrado à vista no primeiro pagamento</span>
                       </div>
                     )}
+                  </div>
+                </div>
+
+                <div className="p-6">
+                  <ul className="space-y-3">
+                    {config.benefits.map((b) => (
+                      <li key={b} className="flex items-start gap-2 text-sm text-foreground">
+                        <Check size={16} className="text-green-500 mt-0.5 flex-shrink-0" />
+                        {b}
+                      </li>
+                    ))}
+                  </ul>
+
+                  <button
+                    onClick={() => handleSelect(tier as any)}
+                    disabled={isCurrent || selecting === tier}
+                    className={`w-full mt-3 py-3 rounded-xl font-bold text-sm transition-all ${
+                      isCurrent
+                        ? "bg-muted text-muted-foreground cursor-default"
+                        : `bg-gradient-to-r ${config.color} text-white hover:opacity-90 shadow-lg`
+                    }`}
+                  >
+                    {selecting === tier
+                      ? "Processando..."
+                      : isCurrent
+                      ? "Plano Atual"
+                      : "Contratar"}
+                  </button>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+
+        {/* Enterprise Plans */}
+        <h2 className="font-display font-extrabold text-xl text-foreground mt-10 mb-4">Planos Empresariais</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {enterpriseTiers.map((tier, i) => {
+            const config = PACKAGE_CONFIG[tier];
+            const Icon = tierIcons[tier];
+            const isCurrent = currentTier === tier;
+
+            return (
+              <motion.div
+                key={tier}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1 + 0.3 }}
+                className={`relative bg-card border-2 rounded-3xl overflow-hidden shadow-lg transition-all hover:shadow-2xl ${
+                  isCurrent ? "border-primary ring-4 ring-primary/20" : "border-border"
+                }`}
+              >
+                {isCurrent && (
+                  <div className="absolute top-0 left-0 px-4 py-1 bg-primary text-primary-foreground text-xs font-bold rounded-br-xl">
+                    ATUAL
+                  </div>
+                )}
+
+                <div className={`p-6 bg-gradient-to-br ${config.color} text-white`}>
+                  <Icon size={32} className="mb-3" />
+                  <h2 className="font-display font-extrabold text-2xl">{config.name}</h2>
+                  <div className="mt-2">
+                    <span className="font-display font-bold text-3xl">R$ {config.price.toFixed(2).replace(".", ",")}</span>
+                    <span className="text-white/70 text-sm">/mês</span>
                   </div>
                 </div>
 

@@ -5,7 +5,7 @@ export interface Subscription {
   id: string;
   user_id: string;
   seller_id: string;
-  tier: "start" | "basico" | "premium" | "vip" | "essencial_empresa" | "premium_empresa";
+  tier: "start" | "basico" | "premium" | "vip" | "essencial_empresa" | "premium_empresa" | "prime_empresa";
   max_items: number;
   started_at: string;
   expires_at: string;
@@ -79,13 +79,75 @@ export const PACKAGE_CONFIG = {
     benefits: [
       "Até 115 anúncios ativos",
       "7 Layouts Premium (todos)",
-      
       "Selo Premium exclusivo",
       "Destaque no topo da listagem",
       "Estatísticas completas",
       "Suporte VIP dedicado",
       "SEO Otimizado",
       "Instagram na loja",
+      "Botão Modo Cinema na loja",
+    ],
+  },
+  essencial_empresa: {
+    name: "Exclusive",
+    price: 199.99,
+    setupFee: 0,
+    maxItems: 9999,
+    color: "from-rose-600 to-red-700",
+    borderColor: "border-rose-500",
+    badgeColor: "bg-gradient-to-r from-rose-600 to-red-600 text-white",
+    benefits: [
+      "Anúncios ilimitados",
+      "Todos os layouts",
+      "Selo Exclusive",
+      "Até 5 corretores vinculados",
+      "CRM completo",
+      "Destaque máximo na listagem",
+      "Suporte dedicado",
+      "SEO Otimizado",
+      "Botão Modo Cinema na loja",
+    ],
+  },
+  premium_empresa: {
+    name: "Prime",
+    price: 349.99,
+    setupFee: 0,
+    maxItems: 9999,
+    color: "from-sky-600 to-blue-700",
+    borderColor: "border-sky-500",
+    badgeColor: "bg-gradient-to-r from-sky-600 to-blue-700 text-white",
+    benefits: [
+      "Anúncios ilimitados",
+      "Todos os layouts",
+      "Selo Prime",
+      "Até 10 corretores vinculados",
+      "CRM completo + Analytics",
+      "Destaque máximo na listagem",
+      "Suporte premium dedicado",
+      "SEO Otimizado",
+      "Domínio personalizado",
+      "Botão Modo Cinema na loja",
+    ],
+  },
+  prime_empresa: {
+    name: "Black",
+    price: 599.99,
+    setupFee: 0,
+    maxItems: 9999,
+    color: "from-zinc-800 to-zinc-950",
+    borderColor: "border-zinc-500",
+    badgeColor: "bg-gradient-to-r from-zinc-800 to-zinc-950 text-white",
+    benefits: [
+      "Anúncios ilimitados",
+      "Todos os layouts",
+      "Selo Black exclusivo",
+      "Corretores ilimitados",
+      "CRM completo + Analytics",
+      "Destaque máximo na listagem",
+      "Gerente de conta dedicado",
+      "SEO Otimizado",
+      "Domínio personalizado",
+      "API de integração",
       "Botão Modo Cinema na loja",
     ],
   },
@@ -166,7 +228,7 @@ export function useSubscription(userId?: string) {
 }
 
 export function useSellerSubscription(sellerId?: string) {
-  const [tier, setTier] = useState<"start" | "basico" | "premium" | "vip" | "essencial_empresa" | "premium_empresa">("basico");
+  const [tier, setTier] = useState<"start" | "basico" | "premium" | "vip" | "essencial_empresa" | "premium_empresa" | "prime_empresa">("basico");
 
   useEffect(() => {
     if (!sellerId) return;
