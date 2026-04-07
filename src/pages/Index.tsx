@@ -10,7 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
-import StoreInstallButton from "@/components/StoreInstallButton";
+
 import storePreviewApartment from "@/assets/store-preview-apartment.jpg";
 import storePreviewHouse from "@/assets/store-preview-house.jpg";
 import storePreviewLot from "@/assets/store-preview-lot.jpg";
@@ -195,15 +195,6 @@ export default function Index() {
                 </Button>
               </div>
 
-              {/* Install PWA CTA */}
-              <div className="flex items-center gap-3 mt-6 p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md max-w-md">
-                <Download size={20} className="text-primary shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <p className="text-white text-sm font-bold">Experimente agora!</p>
-                  <p className="text-white/50 text-xs">Instale este app no seu celular e veja como funciona</p>
-                </div>
-                <StoreInstallButton variant="hero-light" />
-              </div>
 
               <div className="flex items-center gap-6 mt-8 pt-8 border-t border-white/10">
                 <div>
@@ -470,9 +461,6 @@ export default function Index() {
                 ))}
               </div>
 
-              <div className="mt-8">
-                <StoreInstallButton />
-              </div>
             </motion.div>
 
             <motion.div
@@ -750,7 +738,7 @@ export default function Index() {
                     <Sparkles size={18} /> Criar Meu App Grátis
                   </Link>
                 </Button>
-                <StoreInstallButton variant="hero-light" />
+                
               </div>
             </div>
           </motion.div>

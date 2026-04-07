@@ -12,7 +12,7 @@ import { ThemeProvider } from "next-themes";
 import { WhatsAppTeamPickerProvider } from "@/components/WhatsAppTeamPicker";
 import { CompareProvider } from "@/hooks/useCompare";
 import CompareBar from "@/components/CompareBar";
-import InstallPWA from "@/components/InstallPWA";
+
 import ScrollToTop from "@/components/ScrollToTop";
 import { CustomDomainRedirect } from "@/components/CustomDomainRedirect";
 import RouteErrorBoundary from "@/components/RouteErrorBoundary";
@@ -125,7 +125,7 @@ const AppLayout = () => {
           </Suspense>
         </RouteErrorBoundary>
       </main>
-      <InstallPWA />
+      
     </div>
   );
 };

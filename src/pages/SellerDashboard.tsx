@@ -3,7 +3,7 @@ import { getStoreUrl, getStoreFullUrl } from "@/lib/storeUrl";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Package, Eye, Plus, Settings, Edit, Trash2, Copy, ToggleLeft, ToggleRight, Search, Image, LogOut, BarChart3, Star, Crown, Zap, AlertTriangle, Shield, MessageCircle, Home, UserCircle, Headphones, Globe, ExternalLink, CheckCircle2, ClipboardCopy, Lock, Clapperboard, Menu, X, Building2, Users, BadgeCheck, GripVertical, ChevronRight, Sparkles, FileText, Magnet, Camera, Bell } from "lucide-react";
+import { Package, Eye, Plus, Settings, Edit, Trash2, Copy, ToggleLeft, ToggleRight, Search, Image, LogOut, BarChart3, Star, Crown, Zap, AlertTriangle, Shield, MessageCircle, Home, UserCircle, Headphones, Globe, ExternalLink, CheckCircle2, ClipboardCopy, Lock, Clapperboard, Menu, X, Building2, Users, BadgeCheck, GripVertical, ChevronRight, Sparkles, FileText, Magnet, Camera, Bell, Download } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import SoldCountdown from "@/components/SoldCountdown";
 import TeamMembersTab from "@/components/TeamMembersTab";
@@ -25,6 +25,8 @@ import PackageBadge from "@/components/PackageBadge";
 import { useSellerAnalytics } from "@/hooks/useSellerAnalytics";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, CartesianGrid } from "recharts";
 import gabrielImg from "@/assets/gabriel-gerente.jpg";
+import PwaInstallGuide from "@/components/PwaInstallGuide";
+import { usePwaInstall } from "@/hooks/usePwaInstall";
 
 type SellerItem = {
   id: string;
@@ -60,6 +62,8 @@ export default function SellerDashboard() {
   const [draggedItemId, setDraggedItemId] = useState<string | null>(null);
   const [dragOverItemId, setDragOverItemId] = useState<string | null>(null);
   const [teamMembers, setTeamMembers] = useState<{ id: string; full_name: string; photo_url: string | null; phone: string | null; is_active: boolean }[]>([]);
+  const [showInstallGuide, setShowInstallGuide] = useState(false);
+  const { guideMode, installed, requestInstall } = usePwaInstall();
   useEffect(() => {
     if (!authLoading && !user) navigate("/login");
   }, [user, authLoading, navigate]);
@@ -386,6 +390,18 @@ export default function SellerDashboard() {
                   className="sidebar-nav-item text-purple-500 hover:bg-purple-500/10">
                   <Shield size={18} /> Painel Admin
                 </Link>
+              )}
+              {!installed && (
+                <button
+                  type="button"
+                  onClick={async () => {
+                    const result = await requestInstall();
+                    if (result.outcome === "unavailable") setShowInstallGuide(true);
+                  }}
+                  className="sidebar-nav-item text-emerald-500 hover:bg-emerald-500/10"
+                >
+                  <Download size={18} /> Instalar APP
+                </button>
               )}
             </div>
           </nav>
@@ -1084,6 +1100,18 @@ export default function SellerDashboard() {
                       <Shield size={16} /> Painel Admin
                     </Link>
                   )}
+                  {!installed && (
+                    <button
+                      onClick={async () => {
+                        setMobileMenuOpen(false);
+                        const result = await requestInstall();
+                        if (result.outcome === "unavailable") setShowInstallGuide(true);
+                      }}
+                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-emerald-500 hover:bg-emerald-500/10 transition-all"
+                    >
+                      <Download size={16} /> Instalar APP
+                    </button>
+                  )}
                 </div>
               </div>
 
@@ -1130,6 +1158,7 @@ export default function SellerDashboard() {
 
       {/* Spacer for bottom nav on mobile */}
       <div className="lg:hidden h-16" />
+      <PwaInstallGuide open={showInstallGuide} onClose={() => setShowInstallGuide(false)} mode={guideMode} />
     </div>
   );
 }
