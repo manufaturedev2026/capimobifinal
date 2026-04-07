@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import {
   Check, Smartphone, BarChart3, Layout, Palette, Globe, Shield,
   Sparkles, ArrowRight, Crown, Star, Zap, MessageCircle, Eye,
-  Layers, Users, Rocket, AppWindow, ChevronRight,
+  Layers, Users, Rocket, AppWindow, ChevronRight, User, Phone, Mail, Lock, Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import heroImg from "@/assets/vender-hero.jpg";
@@ -13,6 +13,7 @@ import MarketplaceNavbar from "@/components/MarketplaceNavbar";
 import { getMarketplaceTheme } from "@/lib/marketplaceThemes";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
 
 const PLANS = [
   {
@@ -56,107 +57,78 @@ const PLANS = [
   },
   {
     key: "premium",
-    name: "VIP",
-    subtitle: "Para quem quer se destacar e vender mais",
-    price: 59.99,
-    priceLabel: "R$59,99",
-    setupFee: 719,
+    name: "Premium",
+    subtitle: "Para corretores profissionais",
+    price: 49.99,
+    priceLabel: "R$49,99",
+    setupFee: 499,
     color: "border-amber-400",
     accent: "bg-gradient-to-r from-amber-500 to-orange-500",
     benefits: [
-      "Até 60 anúncios ativos",
-      "4 Layouts (Showcase, Netflix, Minimal, Marketplace)",
-      "Selo VIP nos anúncios",
-      "Destaque no topo da listagem",
-      "Estatísticas avançadas",
-      "Suporte prioritário",
-      "Modo Cinema na loja",
-      "Galeria de anúncios",
+      "Até 100 anúncios ativos",
+      "4 Layouts exclusivos",
+      "CRM + Galeria + Stories",
+      "Vídeo banner Netflix",
+      "Push Notifications",
+      "6 temas personalizáveis",
+      "Destaque máximo na listagem",
     ],
-    cta: "Assinar VIP",
+    cta: "Assinar Premium",
     popular: true,
   },
   {
     key: "vip",
-    name: "Premium",
-    subtitle: "Para profissionais que buscam o máximo",
-    price: 114.99,
-    priceLabel: "R$114,99",
-    setupFee: 1379,
-    color: "border-purple-500",
-    accent: "bg-gradient-to-r from-purple-600 to-indigo-600",
+    name: "VIP",
+    subtitle: "Para empresas e imobiliárias",
+    price: 99.99,
+    priceLabel: "R$99,99",
+    setupFee: 999,
+    color: "border-purple-400",
+    accent: "bg-gradient-to-r from-purple-500 to-pink-500",
     benefits: [
-      "Até 115 anúncios ativos",
-      "7 Layouts Premium (todos)",
-      "Selo Premium exclusivo",
-      "Destaque no topo da listagem",
-      "Estatísticas completas",
-      "Suporte VIP dedicado",
-      "SEO Otimizado",
-      "Instagram na loja",
-      "Modo Cinema na loja",
-      "Galeria de anúncios",
+      "Anúncios ilimitados",
+      "Todos os layouts + temas",
+      "Equipe de corretores",
+      "Domínio personalizado",
+      "Efeitos visuais na loja",
+      "Prioridade total no marketplace",
+      "Suporte prioritário",
     ],
-    cta: "Assinar Premium",
+    cta: "Falar com consultor",
     popular: false,
   },
 ];
 
 const FEATURES = [
-  {
-    icon: AppWindow,
-    title: "Seu próprio app de imóveis",
-    desc: "Loja PWA instalável direto no celular dos seus clientes, com sua marca e identidade.",
-  },
-  {
-    icon: Layout,
-    title: "7 layouts profissionais",
-    desc: "Escolha entre Showcase, Netflix, Minimal, Marketplace e mais. Todos responsivos e otimizados.",
-  },
-  {
-    icon: Palette,
-    title: "Temas personalizáveis",
-    desc: "8 temas de cores para combinar com sua marca: Luz, Escuro, Rose Gold, Esmeralda e mais.",
-  },
-  {
-    icon: BarChart3,
-    title: "Painel completo + CRM",
-    desc: "Gerencie leads, contratos, aluguéis e acompanhe estatísticas de visualização em tempo real.",
-  },
-  {
-    icon: Globe,
-    title: "SEO otimizado",
-    desc: "Páginas indexadas no Google com sitemap automático. Seus imóveis encontrados na busca.",
-  },
-  {
-    icon: MessageCircle,
-    title: "WhatsApp integrado",
-    desc: "Botão flutuante, captura de leads e templates prontos para WhatsApp. Contato direto com o cliente.",
-  },
-  {
-    icon: Layers,
-    title: "Galeria de anúncios",
-    desc: "Crie posts e stories prontos para Instagram com a foto do imóvel, preço e seus dados.",
-  },
-  {
-    icon: Shield,
-    title: "Notificações push",
-    desc: "Envie notificações push para clientes que instalaram seu app. Engajamento direto.",
-  },
+  { icon: Smartphone, title: "App Instalável", desc: "Sua loja vira um app no celular do cliente, sem precisar de loja de aplicativos." },
+  { icon: Layout, title: "6 Layouts Premium", desc: "Escolha entre layouts profissionais: Netflix, Magazine, Elegant, Marketplace e mais." },
+  { icon: Palette, title: "Temas Personalizáveis", desc: "8 temas de cores para combinar com sua marca pessoal ou da imobiliária." },
+  { icon: BarChart3, title: "Estatísticas", desc: "Acompanhe visitas, cliques no WhatsApp e desempenho de cada anúncio." },
+  { icon: MessageCircle, title: "WhatsApp Integrado", desc: "Leads direto no WhatsApp com captura de nome e telefone automática." },
+  { icon: Globe, title: "SEO Otimizado", desc: "Apareça no Google com páginas otimizadas por cidade e bairro." },
+  { icon: Shield, title: "CRM de Leads", desc: "Gerencie seus contatos com funil de vendas integrado ao painel." },
+  { icon: Eye, title: "Stories e Push", desc: "Publique stories e envie notificações push para seus clientes." },
 ];
 
 const STATS = [
-  { value: "7", label: "Layouts disponíveis" },
-  { value: "8", label: "Temas de cores" },
-  { value: "115", label: "Anúncios por plano" },
-  { value: "24/7", label: "Seu app sempre online" },
+  { value: "500+", label: "Corretores ativos" },
+  { value: "10k+", label: "Imóveis cadastrados" },
+  { value: "50k+", label: "Visitas mensais" },
+  { value: "98%", label: "Satisfação" },
 ];
 
 export default function VenderPage() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
   const { user } = useAuth();
+  const { toast } = useToast();
   const [themeId, setThemeId] = useState("azul");
+
+  // Form state
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [password, setPassword] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     supabase.from("platform_settings").select("value").eq("key", "homepage_theme").maybeSingle().then(({ data }) => {
@@ -165,8 +137,55 @@ export default function VenderPage() {
   }, []);
   const theme = getMarketplaceTheme(themeId);
 
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!fullName.trim() || !email.trim() || !password.trim()) {
+      toast({ title: "Preencha todos os campos obrigatórios", variant: "destructive" });
+      return;
+    }
+    if (password.length < 6) {
+      toast({ title: "A senha deve ter pelo menos 6 caracteres", variant: "destructive" });
+      return;
+    }
+    setSubmitting(true);
+    try {
+      // 1. Create account
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: email.trim(),
+        password,
+        options: { data: { full_name: fullName.trim(), phone: phone.trim() || undefined } },
+      });
+      if (authError) throw authError;
+
+      // 2. Send lead to admin CRM
+      try {
+        await supabase.from("crm_contacts").insert({
+          full_name: fullName.trim(),
+          email: email.trim(),
+          phone: phone.trim() || null,
+          funnel_stage: "novo",
+          notes: "Lead via /anunciar — cadastro de corretor",
+          profile_id: authData.user?.id || "",
+          user_id: authData.user?.id || "",
+        } as any);
+      } catch {
+        // CRM insert is non-critical
+      }
+
+      toast({ title: "Conta criada com sucesso!", description: "Verifique seu e-mail para confirmar o cadastro." });
+      navigate("/painel");
+    } catch (err: any) {
+      const msg = err?.message?.includes("already registered")
+        ? "Este e-mail já possui uma conta. Faça login."
+        : err?.message || "Erro ao criar conta";
+      toast({ title: msg, variant: "destructive" });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const handleCta = () => {
-    navigate(`/entrar${email ? `?email=${encodeURIComponent(email)}` : ""}`);
+    document.getElementById("signup-form")?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
@@ -181,7 +200,7 @@ export default function VenderPage() {
         <MarketplaceNavbar theme={theme} user={user} showImoveisScroll={false} />
 
         {/* Hero */}
-        <section className="relative overflow-hidden">
+        <section className="relative overflow-hidden pt-14">
           <div className="max-w-7xl mx-auto px-4 py-16 md:py-24 grid md:grid-cols-2 gap-10 items-center">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -202,22 +221,66 @@ export default function VenderPage() {
                 Sua loja profissional, instalável no celular, com CRM, galeria de anúncios, WhatsApp integrado e SEO otimizado. Comece gratuitamente.
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-3 max-w-lg">
-                <input
-                  type="email"
-                  placeholder="seu@email.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="flex-1 px-5 py-3.5 rounded-full bg-white/10 border border-white/20 text-white placeholder:text-white/40 outline-none focus:border-sky-400 transition-colors"
-                />
-                <Button onClick={handleCta} className="bg-sky-400 hover:bg-sky-500 text-[#002F6C] font-bold rounded-full px-7 py-3.5 text-sm whitespace-nowrap">
-                  Criar conta grátis <ArrowRight className="ml-1.5 w-4 h-4" />
+              {/* Signup Form */}
+              <form id="signup-form" onSubmit={handleSignup} className="space-y-3 max-w-md">
+                <div className="relative">
+                  <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+                  <input
+                    type="text"
+                    placeholder="Seu nome completo *"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-white/40 outline-none focus:border-sky-400 transition-colors text-sm"
+                    required
+                  />
+                </div>
+                <div className="relative">
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+                  <input
+                    type="email"
+                    placeholder="Seu e-mail *"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-white/40 outline-none focus:border-sky-400 transition-colors text-sm"
+                    required
+                  />
+                </div>
+                <div className="relative">
+                  <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+                  <input
+                    type="tel"
+                    placeholder="WhatsApp (opcional)"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-white/40 outline-none focus:border-sky-400 transition-colors text-sm"
+                  />
+                </div>
+                <div className="relative">
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+                  <input
+                    type="password"
+                    placeholder="Crie uma senha (mín. 6 caracteres) *"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-white/40 outline-none focus:border-sky-400 transition-colors text-sm"
+                    required
+                    minLength={6}
+                  />
+                </div>
+                <Button
+                  type="submit"
+                  disabled={submitting}
+                  className="w-full bg-sky-400 hover:bg-sky-500 text-[#002F6C] font-bold rounded-xl py-3.5 text-sm"
+                >
+                  {submitting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                  {submitting ? "Criando conta..." : "Criar conta grátis"}
+                  {!submitting && <ArrowRight className="ml-1.5 w-4 h-4" />}
                 </Button>
-              </div>
-
-              <p className="text-xs text-white/50">
-                Sem cartão de crédito. Cancele quando quiser.
-              </p>
+                <p className="text-xs text-white/50 text-center">
+                  Já tem uma conta?{" "}
+                  <Link to="/login" className="text-sky-400 hover:underline">Faça login</Link>
+                </p>
+              </form>
             </motion.div>
 
             <motion.div
