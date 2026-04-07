@@ -7,8 +7,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { formatPrice, getTagStyle, getTagLabel } from "@/data/products";
 import PackageBadge from "@/components/PackageBadge";
 import PropertyCardSkeleton from "@/components/PropertyCardSkeleton";
-import MarketplaceNavbar from "@/components/MarketplaceNavbar";
-import FooterSimple from "@/components/FooterSimple";
 
 const CATEGORY_MAP: Record<string, { dbValue: string; label: string; plural: string; icon: any; description: string }> = {
   casas: { dbValue: "casa", label: "Casa", plural: "Casas", icon: Home, description: "casas à venda e para alugar" },
