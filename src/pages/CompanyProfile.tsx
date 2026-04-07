@@ -1417,7 +1417,7 @@ export default function CompanyProfile() {
                 case "elegant": return <StoreLayoutElegant {...layoutProps} />;
                 case "gamer": return <StoreLayoutGamer {...layoutProps} />;
                 case "marketplace": return <StoreLayoutMarketplace {...layoutProps} />;
-                default: return <StoreLayoutShowcase {...layoutProps} />;
+                default: return <StoreLayoutGamer {...layoutProps} />;
               }
             })()}
 
