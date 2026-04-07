@@ -124,6 +124,7 @@ export default function MarketplaceHome() {
   const [showCityPicker, setShowCityPicker] = useState(false);
   const [promoIdx, setPromoIdx] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [openStates, setOpenStates] = useState<Set<string>>(new Set());
   const ITEMS_PER_PAGE = 24;
   const heroRef = useRef<HTMLDivElement>(null);
   const promoScrollRef = useRef<HTMLDivElement>(null);
@@ -138,15 +139,37 @@ export default function MarketplaceHome() {
     return Array.from(set).sort();
   }, [realItems]);
 
+  const citiesByState = useMemo(() => {
+    const map = new Map<string, Set<string>>();
+    realItems.forEach((item) => {
+      if (item.city) {
+        const st = item.state?.trim() || "Outros";
+        if (!map.has(st)) map.set(st, new Set());
+        map.get(st)!.add(item.city.trim());
+      }
+    });
+    const result: { state: string; cities: string[] }[] = [];
+    map.forEach((cities, state) => {
+      result.push({ state, cities: Array.from(cities).sort() });
+    });
+    result.sort((a, b) => a.state.localeCompare(b.state));
+    return result;
+  }, [realItems]);
+
   useEffect(() => {
     if (detectedCity && !filterCity && availableCities.length > 0) {
       const slug = detectedCity.toLowerCase().replace(/\s+/g, "-");
       const match = availableCities.find(
         (c) => c.trim().toLowerCase().replace(/\s+/g, "-").normalize("NFD").replace(/[\u0300-\u036f]/g, "") === slug
       );
-      if (match) setFilterCity(match);
+      if (match) {
+        setFilterCity(match);
+        // Auto-open the state that contains this city
+        const stateGroup = citiesByState.find((g) => g.cities.includes(match));
+        if (stateGroup) setOpenStates(new Set([stateGroup.state]));
+      }
     }
-  }, [detectedCity, availableCities]);
+  }, [detectedCity, availableCities, citiesByState]);
 
   const sellersMap = useMemo(() => {
     const map: Record<string, { id: string; name: string; logo: string; slug?: string | null; tier?: string }> = {};
@@ -529,7 +552,7 @@ export default function MarketplaceHome() {
           <div className="rounded-2xl overflow-hidden" style={{ background: CARD_BG, border: `1px solid ${BORDER}` }}>
             <div className="px-4 py-3 flex items-center gap-2" style={{ borderBottom: `1px solid ${BORDER}` }}>
               <MapPin size={14} style={{ color: PRIMARY }} />
-              <p className="text-xs font-bold uppercase tracking-wider" style={{ color: TEXT }}>Cidades</p>
+              <p className="text-xs font-bold uppercase tracking-wider" style={{ color: TEXT }}>Localização</p>
             </div>
             <div className="max-h-[65vh] overflow-y-auto overscroll-contain">
               <button
@@ -543,21 +566,56 @@ export default function MarketplaceHome() {
                 <Globe size={14} style={{ color: !filterCity ? PRIMARY : TEXT_MUTED }} />
                 Todas
               </button>
-              {availableCities.map((city) => (
-                <button
-                  key={city}
-                  onClick={() => { setFilterCity(city); setHeroIdx(0); setPage(1); }}
-                  className="w-full text-left px-4 py-2.5 text-sm font-medium flex items-center gap-2 transition-colors"
-                  style={{
-                    color: filterCity === city ? PRIMARY : TEXT,
-                    background: filterCity === city ? `${PRIMARY}12` : "transparent",
-                    borderTop: `1px solid ${BORDER}30`,
-                  }}
-                >
-                  <MapPin size={14} style={{ color: filterCity === city ? PRIMARY : TEXT_MUTED }} />
-                  {city}
-                </button>
-              ))}
+              {citiesByState.map(({ state: uf, cities }) => {
+                const isOpen = openStates.has(uf);
+                const hasActive = cities.includes(filterCity);
+                return (
+                  <div key={uf}>
+                    <button
+                      onClick={() => {
+                        setOpenStates((prev) => {
+                          const next = new Set(prev);
+                          if (next.has(uf)) next.delete(uf); else next.add(uf);
+                          return next;
+                        });
+                      }}
+                      className="w-full text-left px-4 py-2.5 text-xs font-bold uppercase tracking-wider flex items-center justify-between transition-colors"
+                      style={{
+                        color: hasActive ? PRIMARY : TEXT,
+                        borderTop: `1px solid ${BORDER}30`,
+                        background: hasActive ? `${PRIMARY}08` : "transparent",
+                      }}
+                    >
+                      <span className="flex items-center gap-2">
+                        <MapPin size={12} style={{ color: hasActive ? PRIMARY : TEXT_MUTED }} />
+                        {uf}
+                      </span>
+                      <ChevronDown
+                        size={14}
+                        style={{
+                          color: TEXT_MUTED,
+                          transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
+                          transition: "transform 0.2s",
+                        }}
+                      />
+                    </button>
+                    {isOpen && cities.map((city) => (
+                      <button
+                        key={city}
+                        onClick={() => { setFilterCity(city); setHeroIdx(0); setPage(1); }}
+                        className="w-full text-left pl-8 pr-4 py-2 text-sm font-medium flex items-center gap-2 transition-colors"
+                        style={{
+                          color: filterCity === city ? PRIMARY : TEXT,
+                          background: filterCity === city ? `${PRIMARY}12` : "transparent",
+                        }}
+                      >
+                        <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: filterCity === city ? PRIMARY : TEXT_MUTED }} />
+                        {city}
+                      </button>
+                    ))}
+                  </div>
+                );
+              })}
             </div>
           </div>
         </aside>
