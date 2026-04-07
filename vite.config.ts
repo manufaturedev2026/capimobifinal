@@ -17,6 +17,7 @@ export default defineConfig(({ mode }) => ({
     mode === "development" && componentTagger(),
     VitePWA({
       registerType: "autoUpdate",
+      devOptions: { enabled: false },
       includeAssets: ["favicon.png", "robots.txt", "pwa-icon-192.png", "pwa-icon-512.png"],
       workbox: {
         navigateFallbackDenylist: [/^\/~oauth/, /^\/sitemap\.xml/],
@@ -44,7 +45,7 @@ export default defineConfig(({ mode }) => ({
         display: "standalone",
         orientation: "portrait",
         scope: "/",
-        start_url: "/empresa/7bb85400-67b1-46d7-9879-91472ed1e81c",
+        start_url: "/empresa/66187c35-1659-4926-b64d-01879aa7a8ee",
         categories: ["business", "lifestyle"],
         icons: [
           {
