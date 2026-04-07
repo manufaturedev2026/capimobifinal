@@ -138,6 +138,23 @@ export default function MarketplaceHome() {
     return Array.from(set).sort();
   }, [realItems]);
 
+  const citiesByState = useMemo(() => {
+    const map = new Map<string, Set<string>>();
+    realItems.forEach((item) => {
+      if (item.city) {
+        const st = item.state?.trim() || "Outros";
+        if (!map.has(st)) map.set(st, new Set());
+        map.get(st)!.add(item.city.trim());
+      }
+    });
+    const result: { state: string; cities: string[] }[] = [];
+    map.forEach((cities, state) => {
+      result.push({ state, cities: Array.from(cities).sort() });
+    });
+    result.sort((a, b) => a.state.localeCompare(b.state));
+    return result;
+  }, [realItems]);
+
   useEffect(() => {
     if (detectedCity && !filterCity && availableCities.length > 0) {
       const slug = detectedCity.toLowerCase().replace(/\s+/g, "-");
