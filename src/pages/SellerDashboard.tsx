@@ -391,22 +391,18 @@ export default function SellerDashboard() {
                   <Shield size={18} /> Painel Admin
                 </Link>
               )}
-              {/* Install APP button */}
-              <button
-                type="button"
-                onClick={() => {
-                  import("@/lib/pwaInstall").then(({ requestPwaInstall }) => {
-                    requestPwaInstall().then((result) => {
-                      if (result.outcome === "unavailable") {
-                        setShowInstallGuide(true);
-                      }
-                    });
-                  });
-                }}
-                className="sidebar-nav-item text-emerald-500 hover:bg-emerald-500/10"
-              >
-                <Download size={18} /> Instalar APP
-              </button>
+              {!installed && (
+                <button
+                  type="button"
+                  onClick={async () => {
+                    const result = await requestInstall();
+                    if (result.outcome === "unavailable") setShowInstallGuide(true);
+                  }}
+                  className="sidebar-nav-item text-emerald-500 hover:bg-emerald-500/10"
+                >
+                  <Download size={18} /> Instalar APP
+                </button>
+              )}
             </div>
           </nav>
 
