@@ -163,9 +163,14 @@ export default function ProductDetail() {
   const [showAllSpecs, setShowAllSpecs] = useState(false);
 
   useEffect(() => {
-    if (productId && isUUID(productId)) {
+    if (productId) {
       setIsDb(true);
-      fetchDbItem(productId);
+      if (isUUID(productId)) {
+        fetchDbItem(productId);
+      } else {
+        // Slug-based lookup
+        fetchDbItemBySlug(productId);
+      }
     } else {
       setIsDb(false);
       setLoading(false);
