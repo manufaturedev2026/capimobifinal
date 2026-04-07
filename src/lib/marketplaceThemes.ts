@@ -69,6 +69,21 @@ export const MARKETPLACE_THEMES: MarketplaceTheme[] = [
     promoAccent: "#56C5E8",
     promoExploreColor: "#E8587A",
   },
+  {
+    id: "cyber",
+    name: "Cyber Blue",
+    icon: "⚡",
+    primary: "#22D3EE",
+    darkBase: "hsl(220, 50%, 5%)",
+    darkMid: "hsl(220, 48%, 12%)",
+    cardBg: "hsl(220, 42%, 9%)",
+    border: "hsl(200, 25%, 16%)",
+    text: "#f0f8ff",
+    textMuted: "#7aa8c0",
+    dashboardGradient: "linear-gradient(135deg, #0a0f1a 0%, #0c2d5e 30%, #0e7490 60%, #22D3EE 100%)",
+    promoAccent: "#3B82F6",
+    promoExploreColor: "#22D3EE",
+  },
 ];
 
 export function getMarketplaceTheme(id: string | null | undefined): MarketplaceTheme {
