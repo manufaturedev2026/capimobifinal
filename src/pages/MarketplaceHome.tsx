@@ -518,7 +518,7 @@ export default function MarketplaceHome() {
                   style={{ width: "85%", minWidth: "85%", boxShadow: `0 8px 32px ${PRIMARY}18` }}
                   onClick={() => { setActiveCategory(banner.slug); setPage(1); scrollToGrid(); }}
                 >
-                  <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${bIdx === 0 && theme.promoAccent ? theme.promoAccent : DARK_BASE}, ${PRIMARY}${bIdx === 0 ? "" : "cc"})` }} />
+                  <div className="absolute inset-0" style={{ background: bIdx === 1 && theme.promoAccent ? `linear-gradient(135deg, ${PRIMARY}, #ffffff 50%, ${theme.promoAccent})` : `linear-gradient(135deg, ${bIdx === 0 && theme.promoAccent ? theme.promoAccent : DARK_BASE}, ${PRIMARY}${bIdx === 0 ? "" : "cc"})` }} />
                   <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent" />
                   <FloatingParticles color={bIdx === 0 && theme.promoAccent ? theme.promoAccent : PRIMARY} />
                   <div className="relative z-10 h-full flex flex-col justify-center p-5">
