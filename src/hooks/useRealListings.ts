@@ -25,6 +25,7 @@ export interface RealItem {
   category: string;
   type: "imovel";
   city?: string;
+  state?: string;
   neighborhood?: string;
   brand?: string;
   model?: string;
