@@ -237,7 +237,7 @@ export default function VenderPage() {
                 Tenha seu próprio site, seus próprios clientes e controle total das suas vendas.
               </p>
 
-              <Button onClick={scrollToForm} size="lg" className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-bold rounded-xl px-8 text-base shadow-lg shadow-blue-500/25">
+              <Button onClick={scrollToForm} size="lg" className="text-white font-bold rounded-xl px-8 text-base shadow-lg" style={{ background: `linear-gradient(to right, ${theme.primary}, ${theme.promoAccent || theme.primary})`, boxShadow: `0 10px 25px ${theme.primary}40` }}>
                 Criar Meu Site Agora <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
             </motion.div>
