@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 import AdminCrmTab from "@/components/AdminCrmTab";
+import AdminPushTab from "@/components/AdminPushTab";
 
 interface SellerWithSub {
   id: string;
