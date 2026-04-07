@@ -31,7 +31,7 @@ export default function CitySEO({ city, segment = "imoveis", itemCount, items = 
     itemListElement: items.slice(0, 20).map((item, index) => ({
       "@type": "ListItem",
       position: index + 1,
-      url: `${baseUrl}/imoveis/produto/${item.id}`,
+      url: `${baseUrl}/imoveis/produto/${(item as any).slug || item.id}`,
       name: item.title,
       image: item.image,
     })),

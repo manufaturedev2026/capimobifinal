@@ -45,7 +45,7 @@ export default function StoreLayoutGallery({
       {filteredProducts.length > 0 ? (
         <div className="columns-2 gap-2 space-y-2">
           {filteredProducts.map((product: any, i: number) => {
-            const productLink = `/imoveis/produto/${product.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`;
+            const productLink = `/imoveis/produto/${product.slug || product.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`;
             const aspectRatio = getAspect(i);
             return (
               <motion.div key={product.id} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.03 }} className="break-inside-avoid">

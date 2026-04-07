@@ -279,6 +279,7 @@ export default function CompanyProfile() {
 
   const dbDisplayItems = dbItems.map((item) => ({
     id: item.id,
+    slug: (item as any).slug as string | null,
     title: item.title,
     image: item.photos?.[0] || "",
     images: item.photos || [],
@@ -916,7 +917,7 @@ export default function CompanyProfile() {
                   <p className="text-white/70 text-xs leading-relaxed mb-3">{dbProfile.bio}</p>
                 )}
                 <Link
-                  to={`/imoveis/produto/${heroProduct.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`}
+                  to={`/imoveis/produto/${heroProduct.slug || heroProduct.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`}
                   className="flex items-center justify-center gap-2 px-6 py-3 font-black text-sm uppercase tracking-wider text-white shadow-lg active:scale-95 transition-transform"
                   style={{
                     background: `linear-gradient(135deg, ${storeTheme.primary}, ${storeTheme.primary}aa)`,
@@ -939,7 +940,7 @@ export default function CompanyProfile() {
             transition={{ duration: products.length * 4, repeat: Infinity, ease: "linear" }}
           >
             {[...products, ...products].filter((p: any) => p.image).slice(0, 20).map((product: any, i: number) => {
-              const productLink = `/imoveis/produto/${product.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`;
+              const productLink = `/imoveis/produto/${product.slug || product.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`;
               return (
                 <Link
                   key={`scroll-${product.id}-${i}`}
@@ -1452,7 +1453,7 @@ export default function CompanyProfile() {
                 /* ── RPG-style grid ── */
                 <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
                   {filteredProducts.map((product: any, i: number) => {
-                    const productLink = `/imoveis/produto/${product.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`;
+                    const productLink = `/imoveis/produto/${product.slug || product.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`;
                     const accentColor = storeTheme.primary;
                     return (
                       <motion.div
@@ -1556,7 +1557,7 @@ export default function CompanyProfile() {
                 /* ── Standard grid ── */
                 <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-5">
                   {filteredProducts.map((product: any, i: number) => {
-                    const productLink = `/imoveis/produto/${product.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`;
+                    const productLink = `/imoveis/produto/${product.slug || product.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`;
                     return (
                       <motion.div
                         key={product.id}
@@ -1848,7 +1849,7 @@ export default function CompanyProfile() {
 
                         <div className="flex items-center gap-2 mt-4 flex-wrap">
                           <Link
-                            to={`/${seg}/produto/${lbProduct.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`}
+                            to={`/${seg}/produto/${lbProduct.slug || lbProduct.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`}
                             className="inline-flex items-center gap-1.5 px-3 py-2 md:px-6 md:py-3.5 rounded-lg md:rounded-xl bg-white text-black font-bold text-[11px] md:text-sm hover:bg-white/90 transition-all shadow-lg hover:scale-105"
                           >
                             <Eye size={12} className="md:w-4 md:h-4" /> Ver Imóvel

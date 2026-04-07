@@ -171,7 +171,7 @@ export default function StoreLayoutShowcase({
                   {/* Action buttons — RPG style */}
                   <div className="flex gap-2 mt-4">
                     <Link
-                      to={`/imoveis/produto/${heroProduct.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`}
+                      to={`/imoveis/produto/${heroProduct.slug || heroProduct.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`}
                       className="flex-1 flex items-center justify-center gap-2 py-3 font-black text-sm uppercase tracking-wider text-white transition-all hover:brightness-110"
                       style={{
                         background: `linear-gradient(135deg, ${accentColor}, ${accentColor}aa)`,
@@ -247,7 +247,7 @@ export default function StoreLayoutShowcase({
 
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {restProducts.map((product: any, i: number) => {
-              const productLink = `/imoveis/produto/${product.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`;
+              const productLink = `/imoveis/produto/${product.slug || product.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`;
               return (
                 <motion.div
                   key={product.id}
