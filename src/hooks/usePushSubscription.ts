@@ -62,9 +62,17 @@ export function usePushSubscription(sellerId?: string) {
   }, [sellerId]);
 
   const subscribe = useCallback(async () => {
-    if (!isSupported || !sellerId) {
-      console.warn("[Push] Not supported or no sellerId");
-      toast({ title: "Push indisponível", description: unsupportedReason || "Seu navegador não suporta notificações push.", variant: "destructive" });
+    if (!sellerId) {
+      console.warn("[Push] No sellerId");
+      toast({ title: "Push indisponível", description: "ID do vendedor não encontrado.", variant: "destructive" });
+      return false;
+    }
+
+    // Re-check support at call time (not just from initial useEffect)
+    const hasPushApi = "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;
+    if (!hasPushApi) {
+      console.warn("[Push] Browser does not support push");
+      toast({ title: "Push indisponível", description: "Seu navegador não suporta notificações push.", variant: "destructive" });
       return false;
     }
 
@@ -77,8 +85,14 @@ export function usePushSubscription(sellerId?: string) {
       setPermission(perm);
 
       if (perm !== "granted") {
-        console.warn("[Push] Permission denied:", perm);
-        toast({ title: "Permissão negada", description: "Você precisa permitir notificações no navegador.", variant: "destructive" });
+        console.warn("[Push] Permission result:", perm);
+        toast({ 
+          title: "Permissão negada", 
+          description: perm === "denied" 
+            ? "Notificações foram bloqueadas. Vá nas configurações do navegador para permitir." 
+            : "Toque em 'Permitir' quando o navegador solicitar a permissão.", 
+          variant: "destructive" 
+        });
         return false;
       }
       console.log("[Push] Permission granted");
@@ -197,7 +211,7 @@ export function usePushSubscription(sellerId?: string) {
     } finally {
       setLoading(false);
     }
-  }, [isSupported, sellerId, unsupportedReason]);
+  }, [sellerId]);
 
   return { isSubscribed, isSupported, permission, subscribe, loading, unsupportedReason };
 }
