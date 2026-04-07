@@ -315,7 +315,7 @@ export default function MarketplaceHome() {
             className="font-display font-black text-2xl md:text-6xl text-white leading-[1.1] drop-shadow-2xl"
           >
             Imóveis em<br />
-            <span style={{ color: theme.promoAccent || PRIMARY }}>{currentHeroCity}</span>
+            <span style={{ color: "#ffffff" }}>{currentHeroCity}</span>
           </motion.h1>
 
           {/* City selector */}
