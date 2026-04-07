@@ -190,9 +190,27 @@ export default function MarketplaceHome() {
   const paginatedItems = useMemo(() => filteredItems.slice(0, page * ITEMS_PER_PAGE), [filteredItems, page]);
   const hasMore = paginatedItems.length < filteredItems.length;
 
-  // Hero products with city diversity
+  // Hero products: when city is selected, show neighborhood diversity; otherwise city diversity
   const heroProducts = useMemo(() => {
     const withImage = realItems.filter((p) => p.image && (p as any).status === "ativo");
+
+    if (filterCity) {
+      // Filter to selected city, then diversify by neighborhood
+      const cityItems = withImage.filter((p) => p.city?.trim().toLowerCase() === filterCity.trim().toLowerCase());
+      const nhSeen = new Set<string>();
+      const diverse: typeof cityItems = [];
+      for (const p of cityItems) {
+        const nh = p.neighborhood?.trim();
+        if (nh && !nhSeen.has(nh)) { nhSeen.add(nh); diverse.push(p); }
+      }
+      for (const p of cityItems) {
+        if (diverse.length >= 8) break;
+        if (!diverse.includes(p)) diverse.push(p);
+      }
+      return diverse.slice(0, 8);
+    }
+
+    // No city filter: diversify by city
     const citySeen = new Set<string>();
     const diverse: typeof withImage = [];
     for (const p of withImage) {
@@ -203,10 +221,27 @@ export default function MarketplaceHome() {
       if (!diverse.includes(p)) diverse.push(p);
     }
     return diverse.slice(0, 5);
-  }, [realItems]);
+  }, [realItems, filterCity]);
 
   const heroImages = heroProducts.map((p) => p.image);
-  const currentHeroCity = heroProducts[heroIdx]?.city || filterCity || "sua região";
+
+  // Build hero label: "Casas em Bairro" or "Imóveis em Cidade"
+  const currentHeroLabel = useMemo(() => {
+    const item = heroProducts[heroIdx];
+    if (!item) return filterCity || "sua região";
+
+    if (filterCity && item.neighborhood) {
+      const catLabels: Record<string, string> = {
+        casa: "Casas", apartamento: "Apartamentos", terreno: "Terrenos",
+        comercial: "Comerciais", galpao: "Galpões", flat: "Flats",
+        aluguel: "Aluguéis", outros: "Imóveis",
+      };
+      const label = catLabels[item.category] || "Imóveis";
+      return `${label} em ${item.neighborhood}`;
+    }
+
+    return item.city || filterCity || "sua região";
+  }, [heroProducts, heroIdx, filterCity]);
 
   // Auto-rotate hero
   useEffect(() => {
