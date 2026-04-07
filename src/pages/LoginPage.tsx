@@ -200,7 +200,7 @@ export default function LoginPage() {
             </button>
           </form>
 
-          {!signedUp && isLogin && !hasStore && (
+          {!signedUp && isLogin && (
             <p className="text-center text-sm text-muted-foreground mt-8">
               <button onClick={() => setIsLogin(false)} className="text-accent font-semibold hover:underline">
                 Criar conta da loja
