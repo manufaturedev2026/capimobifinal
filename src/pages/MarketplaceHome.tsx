@@ -436,7 +436,7 @@ export default function MarketplaceHome() {
                     <MapPin size={9} /> {seller.city}
                   </p>
                 )}
-                <PackageBadge tier={seller.tier as any} size="xs" />
+                <PackageBadge tier={seller.tier as any} size="sm" />
               </Link>
             ))}
           </div>
