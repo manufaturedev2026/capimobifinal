@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
@@ -9,6 +9,10 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import heroImg from "@/assets/vender-hero.jpg";
+import MarketplaceNavbar from "@/components/MarketplaceNavbar";
+import { getMarketplaceTheme } from "@/lib/marketplaceThemes";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
 const PLANS = [
   {
@@ -151,6 +155,15 @@ const STATS = [
 export default function VenderPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
+  const { user } = useAuth();
+  const [themeId, setThemeId] = useState("azul");
+
+  useEffect(() => {
+    supabase.from("platform_settings").select("value").eq("key", "homepage_theme").maybeSingle().then(({ data }) => {
+      if (data?.value) setThemeId(data.value);
+    });
+  }, []);
+  const theme = getMarketplaceTheme(themeId);
 
   const handleCta = () => {
     navigate(`/entrar${email ? `?email=${encodeURIComponent(email)}` : ""}`);
@@ -165,26 +178,7 @@ export default function VenderPage() {
 
       <div className="min-h-screen bg-[#002F6C] text-white overflow-x-hidden">
 
-        {/* Navbar */}
-        <nav className="sticky top-0 z-50 bg-[#002F6C]/95 backdrop-blur-md border-b border-white/10">
-          <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-            <Link to="/" className="font-display text-xl font-black tracking-tight">
-              Brokers<span className="text-sky-400">App</span>
-            </Link>
-            <div className="hidden md:flex items-center gap-6 text-sm text-white/70">
-              <a href="#funcionalidades" className="hover:text-white transition-colors">Funcionalidades</a>
-              <a href="#planos" className="hover:text-white transition-colors">Planos</a>
-            </div>
-            <div className="flex items-center gap-3">
-              <Link to="/login" className="text-sm text-white/80 hover:text-white transition-colors">
-                Login
-              </Link>
-              <Button onClick={handleCta} size="sm" className="bg-white text-[#002F6C] hover:bg-white/90 font-bold rounded-full px-5">
-                Criar conta grátis
-              </Button>
-            </div>
-          </div>
-        </nav>
+        <MarketplaceNavbar theme={theme} user={user} showImoveisScroll={false} />
 
         {/* Hero */}
         <section className="relative overflow-hidden">
