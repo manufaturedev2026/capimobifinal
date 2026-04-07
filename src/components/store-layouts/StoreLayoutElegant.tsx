@@ -4,12 +4,12 @@ import { motion } from "framer-motion";
 import {
   MapPin, Image, Bed, Bath, Ruler, Car, ChevronRight,
   Building2, Home, Search, SlidersHorizontal, X,
-  TreePine, Store, Building, LandPlot,
+  TreePine, Store, Building, LandPlot, Zap,
 } from "lucide-react";
 import type { StoreLayoutProps } from "./types";
 
 /**
- * Elegant Layout — Professional real-estate agency style
+ * Elegant Layout — Professional real-estate agency style with epic Marvel-style categories
  */
 export default function StoreLayoutElegant({
   filteredProducts, products, subcategories, activeCategory, setActiveCategory,
@@ -22,7 +22,6 @@ export default function StoreLayoutElegant({
   const [minBedrooms, setMinBedrooms] = useState("");
   const [showFilters, setShowFilters] = useState(false);
 
-  // Derive unique cities from products
   const availableCities = useMemo(() => {
     const cities = new Set<string>();
     (products || []).forEach((p: any) => { if (p.city) cities.add(p.city); });
@@ -31,7 +30,6 @@ export default function StoreLayoutElegant({
 
   const [filterCity, setFilterCity] = useState("");
 
-  // Apply local filters on top of already-filtered products
   const localFiltered = useMemo(() => {
     let list = filteredProducts;
     if (searchQuery.trim()) {
@@ -52,16 +50,12 @@ export default function StoreLayoutElegant({
   const featuredProduct = localFiltered[0];
   const gridProducts = localFiltered.slice(1);
 
-  // Stats
-  const totalItems = (products || []).length;
-  const uniqueCities = availableCities.length;
-
   const categoryIcons: Record<string, React.ReactNode> = {
-    casa: <Home size={20} />,
-    apartamento: <Building size={20} />,
-    terreno: <LandPlot size={20} />,
-    comercial: <Store size={20} />,
-    todos: <Building2 size={20} />,
+    casa: <Home size={28} />,
+    apartamento: <Building size={28} />,
+    terreno: <LandPlot size={28} />,
+    comercial: <Store size={28} />,
+    todos: <Building2 size={28} />,
   };
 
   const getSpecIcons = (product: any) => {
@@ -74,16 +68,148 @@ export default function StoreLayoutElegant({
   };
 
   const hasActiveFilters = searchQuery || filterCity || minPrice || maxPrice || minBedrooms;
-
   const clearFilters = () => {
     setSearchQuery(""); setFilterCity(""); setMinPrice(""); setMaxPrice(""); setMinBedrooms("");
   };
+
+  const visualCategories = subcategories.filter(c => c.slug !== "todos" && (categoryCounts[c.slug] || 0) > 0);
 
   return (
     <div className="space-y-6">
 
       {/* Stories Bar */}
       {storiesBar && <div className="mb-2">{storiesBar}</div>}
+
+      {/* ─── Epic Marvel-Style Categories ─── */}
+      <div>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <Zap size={18} style={{ color: storeTheme.primary }} />
+            <h2 className="text-sm font-black uppercase tracking-[0.2em]" style={{ color: storeTheme.text }}>
+              Categorias
+            </h2>
+          </div>
+          {activeCategory !== "todos" && (
+            <button
+              onClick={() => setActiveCategory("todos")}
+              className="text-[11px] font-bold uppercase tracking-wider"
+              style={{ color: storeTheme.primary }}
+            >
+              Ver todos ›
+            </button>
+          )}
+        </div>
+        <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2 -mx-4 px-4 lg:-mx-0 lg:px-0">
+          {visualCategories.map((cat, idx) => {
+            const isActive = activeCategory === cat.slug;
+            const count = categoryCounts[cat.slug] || 0;
+            const bgImage = categoryCardImages?.[cat.slug];
+            return (
+              <motion.button
+                key={cat.slug}
+                onClick={() => setActiveCategory(isActive ? "todos" : cat.slug)}
+                initial={{ opacity: 0, y: 30, scale: 0.8 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ delay: idx * 0.1, type: "spring", stiffness: 200 }}
+                whileHover={{ scale: 1.05, y: -4 }}
+                whileTap={{ scale: 0.95 }}
+                className="relative flex-shrink-0 w-36 sm:w-44 rounded-2xl overflow-hidden group cursor-pointer"
+                style={{
+                  height: "180px",
+                  border: isActive ? `3px solid ${storeTheme.primary}` : "3px solid transparent",
+                  boxShadow: isActive
+                    ? `0 0 30px ${storeTheme.primary}50, 0 0 60px ${storeTheme.primary}20`
+                    : "0 8px 30px rgba(0,0,0,0.3)",
+                }}
+              >
+                {/* Background image or gradient */}
+                {bgImage ? (
+                  <img
+                    src={bgImage} alt={cat.name}
+                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                  />
+                ) : (
+                  <div
+                    className="absolute inset-0"
+                    style={{
+                      background: `linear-gradient(160deg, ${storeTheme.primary}40 0%, ${storeTheme.bg} 50%, ${storeTheme.primary}20 100%)`,
+                    }}
+                  />
+                )}
+
+                {/* Cinematic overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
+
+                {/* Active glow effect */}
+                {isActive && (
+                  <motion.div
+                    className="absolute inset-0"
+                    animate={{ opacity: [0.3, 0.6, 0.3] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                    style={{
+                      background: `linear-gradient(180deg, ${storeTheme.primary}30 0%, transparent 60%)`,
+                    }}
+                  />
+                )}
+
+                {/* Top accent line */}
+                <div
+                  className="absolute top-0 left-0 right-0 h-1"
+                  style={{
+                    background: isActive
+                      ? storeTheme.primary
+                      : `linear-gradient(90deg, transparent, ${storeTheme.primary}60, transparent)`,
+                  }}
+                />
+
+                {/* Content */}
+                <div className="relative z-10 h-full flex flex-col items-center justify-end pb-4 px-3">
+                  {/* Icon with glow */}
+                  <div
+                    className="mb-3 p-3 rounded-xl backdrop-blur-sm"
+                    style={{
+                      background: isActive ? `${storeTheme.primary}40` : "rgba(255,255,255,0.1)",
+                      boxShadow: isActive ? `0 0 20px ${storeTheme.primary}40` : "none",
+                    }}
+                  >
+                    <span style={{ color: isActive ? storeTheme.primary : "#fff" }}>
+                      {categoryIcons[cat.slug] || <Building2 size={28} />}
+                    </span>
+                  </div>
+
+                  {/* Name */}
+                  <span
+                    className="text-sm font-black uppercase tracking-wider text-center leading-tight drop-shadow-lg"
+                    style={{ color: isActive ? storeTheme.primary : "#fff" }}
+                  >
+                    {cat.name}
+                  </span>
+
+                  {/* Count badge */}
+                  <span
+                    className="mt-1 text-[10px] font-bold px-2.5 py-0.5 rounded-full"
+                    style={{
+                      background: isActive ? storeTheme.primary : "rgba(255,255,255,0.15)",
+                      color: isActive ? "#fff" : "rgba(255,255,255,0.7)",
+                    }}
+                  >
+                    {count} {count === 1 ? "imóvel" : "imóveis"}
+                  </span>
+                </div>
+
+                {/* Bottom active indicator */}
+                {isActive && (
+                  <motion.div
+                    layoutId="elegant-category-active"
+                    className="absolute bottom-0 left-0 right-0 h-1.5 rounded-t-full"
+                    style={{ background: storeTheme.primary }}
+                  />
+                )}
+              </motion.button>
+            );
+          })}
+        </div>
+      </div>
 
       {/* ─── Search & Filters ─── */}
       <div className="space-y-3">
@@ -121,7 +247,6 @@ export default function StoreLayoutElegant({
           </button>
         </div>
 
-        {/* Expandable filter row */}
         {showFilters && (
           <motion.div
             initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }}
@@ -181,44 +306,10 @@ export default function StoreLayoutElegant({
         )}
       </div>
 
-      {/* ─── Category Cards ─── */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        {subcategories.filter(c => c.slug !== "todos").slice(0, 4).map((cat) => {
-          const isActive = activeCategory === cat.slug;
-          const count = categoryCounts[cat.slug] || 0;
-          const bgImage = categoryCardImages?.[cat.slug];
-          return (
-            <button
-              key={cat.slug}
-              onClick={() => setActiveCategory(isActive ? "todos" : cat.slug)}
-              className="relative rounded-xl overflow-hidden h-24 sm:h-28 group transition-all"
-              style={{
-                border: `2px solid ${isActive ? storeTheme.primary : storeTheme.border}`,
-              }}
-            >
-              {bgImage ? (
-                <img src={bgImage} alt={cat.name} className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-              ) : (
-                <div className="absolute inset-0" style={{ background: `${storeTheme.primary}15` }} />
-              )}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
-              <div className="relative z-10 h-full flex flex-col items-center justify-center text-white">
-                {categoryIcons[cat.slug] || <Building2 size={20} />}
-                <span className="text-xs font-bold mt-1">{cat.name}</span>
-                <span className="text-[10px] opacity-70">{count} {count === 1 ? "imóvel" : "imóveis"}</span>
-              </div>
-              {isActive && (
-                <div className="absolute inset-0 border-2 rounded-xl" style={{ borderColor: storeTheme.primary }} />
-              )}
-            </button>
-          );
-        })}
-      </div>
-
       {/* ─── Featured (Hero) Card ─── */}
       {featuredProduct && (
         <Link
-          to={`/imoveis/produto/${featuredProduct.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`}
+          to={`/imoveis/produto/${featuredProduct.slug || featuredProduct.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`}
           className="block group"
         >
           <motion.div
@@ -238,13 +329,11 @@ export default function StoreLayoutElegant({
                 </div>
               )}
               <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent" />
-
               {featuredProduct.tag && (
                 <span className={`absolute top-4 left-4 px-3 py-1 rounded-md text-[10px] font-bold uppercase ${getTagStyle(featuredProduct.tag)}`}>
                   {getTagLabel(featuredProduct.tag)}
                 </span>
               )}
-
               <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-8">
                 <span
                   className="inline-block px-2.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-widest mb-2"
