@@ -524,7 +524,7 @@ export default function MarketplaceHome() {
           </div>
         </motion.section>
 
-        <ShimmerLine />
+        <ShimmerLine color={PRIMARY} />
 
         {/* ═══ PROMO BANNERS ═══ */}
         <motion.section
@@ -607,7 +607,7 @@ export default function MarketplaceHome() {
           </div>
         </motion.section>
 
-        <ShimmerLine />
+        <ShimmerLine color={PRIMARY} />
 
         {/* ═══ RESULTS HEADER ═══ */}
         <div id="marketplace-grid" className="mt-6 mb-4 flex items-center justify-between scroll-mt-20">
@@ -746,7 +746,7 @@ export default function MarketplaceHome() {
         {/* ═══ BROKERS ═══ */}
         {realSellers.length > 0 && (
           <>
-            <ShimmerLine />
+            <ShimmerLine color={PRIMARY} />
             <motion.section
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -789,7 +789,7 @@ export default function MarketplaceHome() {
         )}
 
         {/* ═══ BENEFITS ═══ */}
-        <ShimmerLine />
+        <ShimmerLine color={PRIMARY} />
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -827,7 +827,7 @@ export default function MarketplaceHome() {
         {/* ═══ CTA FOR BROKERS ═══ */}
         {!user && (
           <>
-            <ShimmerLine />
+            <ShimmerLine color={PRIMARY} />
             <motion.section
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
