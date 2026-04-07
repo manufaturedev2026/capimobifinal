@@ -162,9 +162,14 @@ export default function MarketplaceHome() {
       const match = availableCities.find(
         (c) => c.trim().toLowerCase().replace(/\s+/g, "-").normalize("NFD").replace(/[\u0300-\u036f]/g, "") === slug
       );
-      if (match) setFilterCity(match);
+      if (match) {
+        setFilterCity(match);
+        // Auto-open the state that contains this city
+        const stateGroup = citiesByState.find((g) => g.cities.includes(match));
+        if (stateGroup) setOpenStates(new Set([stateGroup.state]));
+      }
     }
-  }, [detectedCity, availableCities]);
+  }, [detectedCity, availableCities, citiesByState]);
 
   const sellersMap = useMemo(() => {
     const map: Record<string, { id: string; name: string; logo: string; slug?: string | null; tier?: string }> = {};
