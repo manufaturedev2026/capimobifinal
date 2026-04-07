@@ -209,6 +209,7 @@ export default function SeoBrokersPage() {
   const { estado, cidade } = useParams<{ estado?: string; cidade?: string }>();
   const [profiles, setProfiles] = useState<any[]>([]);
   const [tiers, setTiers] = useState<Record<string, string>>({});
+  const [heroImages, setHeroImages] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
 
