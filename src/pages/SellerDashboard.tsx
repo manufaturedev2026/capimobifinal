@@ -67,6 +67,7 @@ export default function SellerDashboard() {
   const [showInstallGuide, setShowInstallGuide] = useState(false);
   const [dashThemeId, setDashThemeId] = useState("azul");
   const { guideMode, installed, requestInstall } = usePwaInstall();
+  const pushSub = usePushSubscription(profile?.id);
 
   useEffect(() => {
     supabase.from("platform_settings").select("value").eq("key", "homepage_theme").maybeSingle().then(({ data }) => {
