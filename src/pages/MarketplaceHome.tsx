@@ -884,10 +884,6 @@ export default function MarketplaceHome() {
                           )}
                         </div>
 
-                        {/* Favorites */}
-                        <div className="absolute top-2 right-2">
-                          <FavoriteButton isFavorite={isFavorite(item.id)} onClick={(e) => { e.preventDefault(); toggleFavorite(item.id); }} />
-                        </div>
 
                         {/* Seller badge */}
                         {seller && (
