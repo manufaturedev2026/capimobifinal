@@ -1,9 +1,9 @@
 import { useState, useEffect, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   MapPin, Users, Building2, Phone, BadgeCheck, ArrowRight,
-  Crown,
+  Crown, Star, Shield, Sparkles, Award, TrendingUp, MessageCircle,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import PackageBadge from "@/components/PackageBadge";
@@ -20,6 +20,15 @@ const TIER_WEIGHT: Record<string, number> = {
   vip: 70, premium: 40, start: 20, basico: 10,
 };
 
+const TIER_GLOW: Record<string, string> = {
+  prime_empresa: "0 0 30px rgba(100,100,100,0.4), 0 0 60px rgba(100,100,100,0.15)",
+  premium_empresa: "0 0 30px rgba(14,165,233,0.35), 0 0 60px rgba(14,165,233,0.12)",
+  essencial_empresa: "0 0 30px rgba(225,29,72,0.3), 0 0 60px rgba(225,29,72,0.1)",
+  vip: "0 0 24px rgba(147,51,234,0.35), 0 0 50px rgba(147,51,234,0.1)",
+  premium: "0 0 20px rgba(245,158,11,0.3), 0 0 40px rgba(245,158,11,0.08)",
+  start: "0 0 16px rgba(16,185,129,0.25)",
+};
+
 const BRAZILIAN_STATES: Record<string, string> = {
   ac: "Acre", al: "Alagoas", ap: "Amapá", am: "Amazonas", ba: "Bahia",
   ce: "Ceará", df: "Distrito Federal", es: "Espírito Santo", go: "Goiás",
@@ -32,6 +41,168 @@ const BRAZILIAN_STATES: Record<string, string> = {
 
 function slugify(str: string): string {
   return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+}
+
+function AnimatedCounter({ target, label, icon: Icon, color }: { target: number; label: string; icon: any; color: string }) {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    if (target <= 0) return;
+    let frame: number;
+    const duration = 1200;
+    const start = performance.now();
+    const animate = (now: number) => {
+      const progress = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setCount(Math.round(eased * target));
+      if (progress < 1) frame = requestAnimationFrame(animate);
+    };
+    frame = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(frame);
+  }, [target]);
+
+  return (
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center">
+      <div className="w-10 h-10 md:w-12 md:h-12 rounded-2xl flex items-center justify-center mx-auto mb-2" style={{ background: `${color}15`, boxShadow: `0 4px 16px ${color}15` }}>
+        <Icon size={20} style={{ color }} />
+      </div>
+      <p className="font-display font-black text-2xl md:text-3xl" style={{ color }}>{count}</p>
+      <p className="text-[10px] md:text-xs mt-0.5 opacity-60">{label}</p>
+    </motion.div>
+  );
+}
+
+/* ═══ Featured broker card (top 3 premium) ═══ */
+function FeaturedBrokerCard({ profile, tier, theme, delay }: { profile: any; tier?: string; theme: any; delay: number }) {
+  const { primary: PRIMARY, cardBg: CARD_BG, border: BORDER, text: TEXT, textMuted: TEXT_MUTED } = theme;
+  const displayName = profile.company_name || profile.full_name;
+  const categoryLabel = profile.seller_category ? SELLER_CATEGORY_LABELS[profile.seller_category] : null;
+
+  return (
+    <motion.div initial={{ opacity: 0, y: 40, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ delay, duration: 0.6, type: "spring" }}>
+      <Link to={`/empresa/${profile.slug}`} className="block rounded-3xl overflow-hidden transition-all duration-500 group hover:scale-[1.03] relative" style={{ background: CARD_BG, border: `2px solid ${PRIMARY}50`, boxShadow: TIER_GLOW[tier || ""] || `0 8px 32px ${PRIMARY}20` }}>
+        {/* Glow overlay */}
+        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" style={{ background: `radial-gradient(circle at 50% 0%, ${PRIMARY}12 0%, transparent 70%)` }} />
+
+        {/* Header with gradient */}
+        <div className="relative h-32 md:h-40 flex items-center justify-center overflow-hidden" style={{ background: `linear-gradient(135deg, ${PRIMARY}25, ${PRIMARY}08 50%, ${CARD_BG})` }}>
+          <FloatingParticles color={PRIMARY} />
+          <motion.div className="absolute -top-10 -right-10 w-40 h-40 rounded-full blur-3xl pointer-events-none" style={{ background: PRIMARY, opacity: 0.08 }} animate={{ scale: [1, 1.4, 1], opacity: [0.05, 0.12, 0.05] }} transition={{ duration: 5, repeat: Infinity }} />
+
+          {profile.logo_url ? (
+            <img src={profile.logo_url} alt={displayName} className="w-20 h-20 md:w-24 md:h-24 rounded-2xl object-cover border-4 shadow-2xl z-10 group-hover:scale-110 transition-transform duration-500" style={{ borderColor: `${PRIMARY}30` }} />
+          ) : (
+            <div className="w-20 h-20 md:w-24 md:h-24 rounded-2xl flex items-center justify-center border-4 shadow-2xl z-10" style={{ background: `linear-gradient(135deg, ${PRIMARY}30, ${PRIMARY}10)`, color: PRIMARY, borderColor: `${PRIMARY}30` }}>
+              <Building2 size={32} />
+            </div>
+          )}
+
+          {tier && (
+            <div className="absolute top-3 right-3 z-10"><PackageBadge tier={tier as any} size="md" /></div>
+          )}
+          <div className="absolute top-3 left-3 z-10 flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold" style={{ background: `${PRIMARY}20`, color: PRIMARY, backdropFilter: "blur(8px)" }}>
+            <Award size={12} /> Destaque
+          </div>
+        </div>
+
+        <div className="p-4 md:p-5">
+          <h3 className="font-display font-black text-sm md:text-lg line-clamp-1" style={{ color: TEXT }}>{displayName}</h3>
+
+          {categoryLabel && (
+            <div className="flex items-center gap-1.5 mt-1.5">
+              <BadgeCheck size={14} style={{ color: PRIMARY }} />
+              <span className="text-[11px] md:text-xs font-semibold" style={{ color: PRIMARY }}>{categoryLabel}</span>
+            </div>
+          )}
+
+          {profile.bio && (
+            <p className="text-[11px] md:text-xs mt-2 line-clamp-2 leading-relaxed" style={{ color: TEXT_MUTED }}>{profile.bio}</p>
+          )}
+
+          {(profile.city || profile.state) && (
+            <p className="text-[11px] mt-2 flex items-center gap-1" style={{ color: TEXT_MUTED }}>
+              <MapPin size={11} className="flex-shrink-0" /> {[profile.city, profile.state].filter(Boolean).join(", ")}
+            </p>
+          )}
+
+          <div className="flex flex-wrap gap-1.5 mt-3">
+            {profile.creci && (
+              <span className="text-[10px] px-2.5 py-1 rounded-lg font-bold" style={{ background: `${PRIMARY}12`, color: PRIMARY, border: `1px solid ${PRIMARY}25` }}>
+                <Shield size={9} className="inline mr-1" />CRECI: {profile.creci}
+              </span>
+            )}
+            {profile.cnpj && (
+              <span className="text-[10px] px-2.5 py-1 rounded-lg font-medium" style={{ background: `${BORDER}60`, color: TEXT_MUTED }}>CNPJ: {profile.cnpj}</span>
+            )}
+          </div>
+
+          <div className="mt-3 pt-3 flex items-center justify-between" style={{ borderTop: `1px solid ${BORDER}` }}>
+            <span className="text-xs font-bold group-hover:underline flex items-center gap-1.5" style={{ color: PRIMARY }}>
+              Ver perfil <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+            </span>
+            {profile.phone && (
+              <span className="text-[10px] flex items-center gap-1 px-2 py-1 rounded-lg" style={{ background: "#25D36620", color: "#25D366" }}>
+                <MessageCircle size={10} /> WhatsApp
+              </span>
+            )}
+          </div>
+        </div>
+      </Link>
+    </motion.div>
+  );
+}
+
+/* ═══ Regular broker card ═══ */
+function BrokerCard({ profile, tier, theme, index }: { profile: any; tier?: string; theme: any; index: number }) {
+  const { primary: PRIMARY, cardBg: CARD_BG, border: BORDER, text: TEXT, textMuted: TEXT_MUTED } = theme;
+  const displayName = profile.company_name || profile.full_name;
+  const categoryLabel = profile.seller_category ? SELLER_CATEGORY_LABELS[profile.seller_category] : null;
+  const isPaid = tier && tier !== "basico";
+
+  return (
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(index * 0.04, 0.6) }}>
+      <Link to={`/empresa/${profile.slug}`} className="block rounded-2xl overflow-hidden transition-all duration-300 group hover:scale-[1.03] hover:-translate-y-1" style={{ background: CARD_BG, border: `1.5px solid ${isPaid ? PRIMARY + "40" : BORDER}`, boxShadow: isPaid ? (TIER_GLOW[tier!] || `0 0 16px ${PRIMARY}12`) : "none" }}>
+        <div className="relative h-28 flex items-center justify-center overflow-hidden" style={{ background: `linear-gradient(135deg, ${PRIMARY}18, ${PRIMARY}05)` }}>
+          {isPaid && <FloatingParticles color={PRIMARY} />}
+          {profile.logo_url ? (
+            <img src={profile.logo_url} alt={displayName} className="w-16 h-16 md:w-18 md:h-18 rounded-xl object-cover border-3 shadow-xl z-10 group-hover:scale-110 transition-transform duration-500" style={{ borderColor: CARD_BG }} />
+          ) : (
+            <div className="w-16 h-16 md:w-18 md:h-18 rounded-xl flex items-center justify-center border-3 shadow-xl z-10" style={{ background: `${PRIMARY}15`, color: PRIMARY, borderColor: CARD_BG }}>
+              <Building2 size={24} />
+            </div>
+          )}
+          {tier && tier !== "basico" && (
+            <div className="absolute top-2 right-2 z-10"><PackageBadge tier={tier as any} size="sm" /></div>
+          )}
+        </div>
+
+        <div className="p-3">
+          <h3 className="font-display font-bold text-xs md:text-sm line-clamp-1" style={{ color: TEXT }}>{displayName}</h3>
+          {categoryLabel && (
+            <div className="flex items-center gap-1 mt-1">
+              <BadgeCheck size={12} style={{ color: PRIMARY }} />
+              <span className="text-[10px] font-medium" style={{ color: PRIMARY }}>{categoryLabel}</span>
+            </div>
+          )}
+          {(profile.city || profile.state) && (
+            <p className="text-[10px] mt-1 flex items-center gap-1" style={{ color: TEXT_MUTED }}>
+              <MapPin size={10} /> {[profile.city, profile.state].filter(Boolean).join(", ")}
+            </p>
+          )}
+          <div className="flex flex-wrap gap-1 mt-2">
+            {profile.creci && (
+              <span className="text-[9px] px-2 py-0.5 rounded-full font-medium" style={{ background: `${PRIMARY}15`, color: PRIMARY }}>CRECI: {profile.creci}</span>
+            )}
+          </div>
+          <div className="mt-2 flex items-center justify-between">
+            <span className="text-[10px] font-semibold group-hover:underline" style={{ color: PRIMARY }}>Ver perfil →</span>
+            {profile.phone && (
+              <span className="text-[9px] flex items-center gap-0.5" style={{ color: TEXT_MUTED }}><Phone size={9} /> WhatsApp</span>
+            )}
+          </div>
+        </div>
+      </Link>
+    </motion.div>
+  );
 }
 
 export default function SeoBrokersPage() {
@@ -80,6 +251,19 @@ export default function SeoBrokersPage() {
     return list;
   }, [profiles, tiers, search]);
 
+  // Split featured (top paid) vs regular
+  const featuredProfiles = useMemo(() => {
+    return filteredProfiles.filter(p => {
+      const t = tiers[p.id];
+      return t && ["prime_empresa", "premium_empresa", "essencial_empresa", "vip"].includes(t);
+    }).slice(0, 3);
+  }, [filteredProfiles, tiers]);
+
+  const regularProfiles = useMemo(() => {
+    const featuredIds = new Set(featuredProfiles.map(p => p.id));
+    return filteredProfiles.filter(p => !featuredIds.has(p.id));
+  }, [filteredProfiles, featuredProfiles]);
+
   const citiesInState = useMemo(() => {
     if (!stateCode || cityName) return [];
     const map = new Map<string, string>();
@@ -93,6 +277,13 @@ export default function SeoBrokersPage() {
     profiles.forEach(p => { if (p.state) set.set(p.state, (set.get(p.state) || 0) + 1); });
     return Array.from(set.entries()).sort((a, b) => b[1] - a[1]);
   }, [profiles, stateCode]);
+
+  const stats = useMemo(() => {
+    const categories = new Set(profiles.map(p => p.seller_category).filter(Boolean));
+    const cities = new Set(profiles.map(p => p.city).filter(Boolean));
+    const withCreci = profiles.filter(p => p.creci).length;
+    return { total: filteredProfiles.length, categories: categories.size, cities: cities.size, verified: withCreci };
+  }, [profiles, filteredProfiles]);
 
   const pageTitle = useMemo(() => {
     if (cityName && stateName) return `Corretores de Imóveis em ${cityName}, ${stateName}`;
@@ -143,6 +334,18 @@ export default function SeoBrokersPage() {
       searchValue={search}
       onSearchChange={setSearch}
     >
+      {/* ═══ ANIMATED STATS ═══ */}
+      {!loading && stats.total > 0 && (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="max-w-6xl mx-auto px-4 mt-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 rounded-2xl p-5 md:p-6" style={{ background: CARD_BG, border: `1px solid ${BORDER}` }}>
+            <AnimatedCounter target={stats.total} label="Profissionais" icon={Users} color={PRIMARY} />
+            <AnimatedCounter target={stats.verified} label="CRECI Verificado" icon={Shield} color="#10B981" />
+            <AnimatedCounter target={stats.cities} label="Cidades" icon={MapPin} color={theme.promoAccent || "#F59E0B"} />
+            <AnimatedCounter target={stats.categories} label="Categorias" icon={TrendingUp} color={theme.promoExploreColor || "#8B5CF6"} />
+          </div>
+        </motion.div>
+      )}
+
       {/* States links */}
       {!stateCode && statesAvailable.length > 0 && (
         <motion.section initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }} className="max-w-6xl mx-auto px-4 mt-6">
@@ -152,8 +355,8 @@ export default function SeoBrokersPage() {
           </div>
           <div className="flex flex-wrap gap-2">
             {statesAvailable.map(([st, count]) => (
-              <Link key={st} to={`/corretores/${st.toLowerCase()}`} className="px-4 py-2 rounded-full text-sm font-medium transition-all hover:scale-105" style={{ background: CARD_BG, border: `1px solid ${BORDER}`, color: TEXT }}>
-                {BRAZILIAN_STATES[st.toLowerCase()] || st} ({count})
+              <Link key={st} to={`/corretores/${st.toLowerCase()}`} className="px-4 py-2 rounded-full text-sm font-medium transition-all hover:scale-105 hover:shadow-lg" style={{ background: CARD_BG, border: `1px solid ${BORDER}`, color: TEXT }}>
+                {BRAZILIAN_STATES[st.toLowerCase()] || st} <span className="ml-1 opacity-50">({count})</span>
               </Link>
             ))}
           </div>
@@ -169,7 +372,7 @@ export default function SeoBrokersPage() {
           </div>
           <div className="flex flex-wrap gap-2">
             {citiesInState.map(([slug, name]) => (
-              <Link key={slug} to={`/corretores/${estado}/${slug}`} className="px-4 py-2 rounded-full text-sm font-medium transition-all hover:scale-105" style={{ background: CARD_BG, border: `1px solid ${BORDER}`, color: TEXT }}>
+              <Link key={slug} to={`/corretores/${estado}/${slug}`} className="px-4 py-2 rounded-full text-sm font-medium transition-all hover:scale-105 hover:shadow-lg" style={{ background: CARD_BG, border: `1px solid ${BORDER}`, color: TEXT }}>
                 {name}
               </Link>
             ))}
@@ -179,12 +382,34 @@ export default function SeoBrokersPage() {
 
       <ShimmerLine color={PRIMARY} />
 
-      {/* ═══ PROFILES GRID ═══ */}
+      {/* ═══ FEATURED BROKERS ═══ */}
+      {featuredProfiles.length > 0 && (
+        <section className="max-w-6xl mx-auto px-4 pt-8 pb-2">
+          <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="flex items-center gap-2 mb-5">
+            <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${PRIMARY}, ${PRIMARY}aa)` }}>
+              <Star size={16} className="text-white" />
+            </div>
+            <div>
+              <h2 className="font-display font-black text-lg" style={{ color: TEXT }}>Corretores em Destaque</h2>
+              <p className="text-[10px]" style={{ color: TEXT_MUTED }}>Profissionais premium verificados</p>
+            </div>
+          </motion.div>
+          <div className={`grid gap-4 ${featuredProfiles.length === 1 ? "grid-cols-1 max-w-md" : featuredProfiles.length === 2 ? "grid-cols-1 md:grid-cols-2" : "grid-cols-1 md:grid-cols-3"}`}>
+            {featuredProfiles.map((p, i) => (
+              <FeaturedBrokerCard key={p.id} profile={p} tier={tiers[p.id]} theme={theme} delay={0.2 + i * 0.15} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {featuredProfiles.length > 0 && <ShimmerLine color={PRIMARY} />}
+
+      {/* ═══ ALL PROFILES GRID ═══ */}
       <section className="max-w-6xl mx-auto px-4 py-8">
         <div className="flex items-center gap-2 mb-6">
           <Users size={16} style={{ color: PRIMARY }} />
           <h2 className="font-display font-bold text-lg" style={{ color: TEXT }}>
-            {loading ? "Carregando..." : `${filteredProfiles.length} corretor(es)`}
+            {loading ? "Carregando..." : regularProfiles.length > 0 ? `${regularProfiles.length} corretor(es)` : featuredProfiles.length > 0 ? "" : `${filteredProfiles.length} corretor(es)`}
           </h2>
         </div>
 
@@ -194,7 +419,7 @@ export default function SeoBrokersPage() {
               <div key={i} className="h-64 rounded-2xl animate-pulse" style={{ background: CARD_BG }} />
             ))}
           </div>
-        ) : filteredProfiles.length === 0 ? (
+        ) : regularProfiles.length === 0 && featuredProfiles.length === 0 ? (
           <div className="text-center py-20">
             <Users size={48} className="mx-auto mb-4" style={{ color: TEXT_MUTED }} />
             <p style={{ color: TEXT_MUTED }}>Nenhum corretor encontrado</p>
@@ -202,65 +427,13 @@ export default function SeoBrokersPage() {
               Ver todos os corretores <ArrowRight size={16} />
             </Link>
           </div>
-        ) : (
+        ) : regularProfiles.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            {filteredProfiles.map((profile, i) => {
-              const tier = tiers[profile.id];
-              const displayName = profile.company_name || profile.full_name;
-              const categoryLabel = profile.seller_category ? SELLER_CATEGORY_LABELS[profile.seller_category] || profile.seller_category : null;
-              const isPaid = tier && tier !== "basico";
-
-              return (
-                <motion.div key={profile.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(i * 0.03, 0.5) }}>
-                  <Link to={`/empresa/${profile.slug}`} className="block rounded-2xl overflow-hidden transition-all duration-300 group hover:scale-[1.02]" style={{ background: CARD_BG, border: `1.5px solid ${isPaid ? PRIMARY + "40" : BORDER}`, boxShadow: isPaid ? `0 0 16px ${PRIMARY}12` : "none" }}>
-                    <div className="relative h-24 flex items-center justify-center overflow-hidden" style={{ background: `linear-gradient(135deg, ${PRIMARY}20, ${PRIMARY}05)` }}>
-                      <FloatingParticles color={PRIMARY} />
-                      {profile.logo_url ? (
-                        <img src={profile.logo_url} alt={displayName} className="w-16 h-16 rounded-full object-cover border-4 shadow-lg z-10" style={{ borderColor: CARD_BG }} />
-                      ) : (
-                        <div className="w-16 h-16 rounded-full flex items-center justify-center border-4 shadow-lg z-10" style={{ background: `${PRIMARY}20`, color: PRIMARY, borderColor: CARD_BG }}>
-                          <Building2 size={24} />
-                        </div>
-                      )}
-                      {tier && (
-                        <div className="absolute top-2 right-2 z-10"><PackageBadge tier={tier as any} size="sm" /></div>
-                      )}
-                    </div>
-
-                    <div className="p-3">
-                      <h3 className="font-display font-bold text-xs md:text-sm line-clamp-1" style={{ color: TEXT }}>{displayName}</h3>
-                      {categoryLabel && (
-                        <div className="flex items-center gap-1 mt-1">
-                          <BadgeCheck size={12} style={{ color: PRIMARY }} />
-                          <span className="text-[10px] font-medium" style={{ color: PRIMARY }}>{categoryLabel}</span>
-                        </div>
-                      )}
-                      {(profile.city || profile.state) && (
-                        <p className="text-[10px] mt-1 flex items-center gap-1" style={{ color: TEXT_MUTED }}>
-                          <MapPin size={10} /> {[profile.city, profile.state].filter(Boolean).join(", ")}
-                        </p>
-                      )}
-                      <div className="flex flex-wrap gap-1 mt-2">
-                        {profile.creci && (
-                          <span className="text-[9px] px-2 py-0.5 rounded-full font-medium" style={{ background: `${PRIMARY}15`, color: PRIMARY }}>CRECI: {profile.creci}</span>
-                        )}
-                        {profile.cnpj && (
-                          <span className="text-[9px] px-2 py-0.5 rounded-full font-medium" style={{ background: `${BORDER}80`, color: TEXT_MUTED }}>CNPJ: {profile.cnpj}</span>
-                        )}
-                      </div>
-                      <div className="mt-2 flex items-center justify-between">
-                        <span className="text-[10px] font-semibold group-hover:underline" style={{ color: PRIMARY }}>Ver perfil →</span>
-                        {profile.phone && (
-                          <span className="text-[9px] flex items-center gap-0.5" style={{ color: TEXT_MUTED }}><Phone size={9} /> WhatsApp</span>
-                        )}
-                      </div>
-                    </div>
-                  </Link>
-                </motion.div>
-              );
-            })}
+            {regularProfiles.map((profile, i) => (
+              <BrokerCard key={profile.id} profile={profile} tier={tiers[profile.id]} theme={theme} index={i} />
+            ))}
           </div>
-        )}
+        ) : null}
       </section>
     </SeoPageLayout>
   );
