@@ -10,7 +10,7 @@ import StoreEffects from "@/components/StoreEffects";
 import ThemeParticles from "@/components/ThemeParticles";
 import {
   StoreLayoutNetflix, StoreLayoutMinimal, StoreLayoutMagazine,
-  StoreLayoutGallery, StoreLayoutElegant, StoreLayoutShowcase,
+  StoreLayoutGallery, StoreLayoutElegant, StoreLayoutGamer,
   StoreLayoutMarketplace,
 } from "@/components/store-layouts";
 import type { StoreLayoutProps } from "@/components/store-layouts";
@@ -486,10 +486,10 @@ export default function CompanyProfile() {
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
   const hasVideoHero = !!(videoId && sellerTier && sellerTier !== "basico" && sellerTier !== "start" && !isIOS);
   const storeTheme = getStoreTheme((dbProfile as any)?.store_theme);
-  const currentLayout = (dbProfile as any)?.store_layout || "showcase";
+  const currentLayout = (dbProfile as any)?.store_layout || "gamer";
   const isMarketplace = currentLayout === "marketplace";
   const isMinimal = currentLayout === "minimal";
-  const isShowcase = currentLayout === "showcase";
+  const isGamer = currentLayout === "gamer";
   const isNetflix = currentLayout === "netflix";
   const isElegant = currentLayout === "elegant";
   const isGallery = currentLayout === "gallery";
@@ -498,14 +498,13 @@ export default function CompanyProfile() {
 
   return (
     <div
-      className="min-h-screen pb-20 md:pb-0 overflow-x-hidden max-w-full"
+      className={`${isGamer ? "h-screen overflow-hidden" : "min-h-screen pb-20 md:pb-0 overflow-x-hidden max-w-full"}`}
       style={{
         background: storeTheme.bg,
         color: storeTheme.text,
         width: "100%",
         maxWidth: "100vw",
-        overflowX: "clip",
-        overscrollBehaviorX: "none",
+        ...(isGamer ? {} : { overflowX: "clip" as any, overscrollBehaviorX: "none" }),
         ["--store-bg" as any]: storeTheme.bg,
         ["--store-card" as any]: storeTheme.card,
         ["--store-text" as any]: storeTheme.text,
@@ -571,7 +570,7 @@ export default function CompanyProfile() {
       {isDbProfile && dbProfile?.id && <StoreEffects sellerId={dbProfile.id} />}
       {!isIOSStandalone && <ThemeParticles color={storeTheme.primary} sellerId={dbProfile?.id} />}
       {/* ═══════════ MOBILE PROFILE HERO ═══════════ */}
-      <section className={`lg:hidden relative overflow-hidden ${isMinimal || isMarketplace || isNetflix || isShowcase ? "hidden" : ""}`}>
+      <section className={`lg:hidden relative overflow-hidden ${isMinimal || isMarketplace || isNetflix || isGamer ? "hidden" : ""}`}>
         {isMarketplace ? (
           /* ── Marketplace-style compact hero ── */
           <>
@@ -844,95 +843,7 @@ export default function CompanyProfile() {
         )}
       </section>
 
-      {/* ═══════════ SHOWCASE HERO — Featured Item ═══════════ */}
-      {isShowcase && (
-        <section className="relative overflow-hidden" style={{ minHeight: "50vh" }}>
-          {heroImages.length > 0 ? (
-            <>
-              <AnimatePresence mode="wait">
-                <motion.img
-                  key={heroSlide}
-                  src={heroImages[heroSlide].image}
-                  alt={heroImages[heroSlide].title}
-                  initial={{ opacity: 0, scale: 1.08 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 1 }}
-                  className="absolute inset-0 w-full h-full object-cover"
-                />
-              </AnimatePresence>
-              {heroImages.length > 1 && (
-                <div className="absolute top-14 left-0 right-0 z-20 flex justify-center gap-1.5">
-                  {heroImages.map((_, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => setHeroSlide(idx)}
-                      className={`h-1 rounded-full transition-all duration-300 ${idx === heroSlide ? "w-6 bg-white" : "w-1.5 bg-white/40"}`}
-                    />
-                  ))}
-                </div>
-              )}
-            </>
-          ) : (
-            <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${storeTheme.primary}, ${storeTheme.accent})` }} />
-          )}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/50 to-black/90" />
-
-          {/* Top bar */}
-          <div className="absolute top-4 right-4 z-20 flex items-center gap-2">
-            {isPaid && <PackageBadge tier={sellerTier} size="sm" />}
-            <Link
-              to={user && dbProfile && user.id === dbProfile.user_id ? "/painel" : "/login"}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-white text-xs font-medium hover:bg-white/20 transition-colors"
-            >
-              <LayoutDashboard size={14} /> {user && dbProfile && user.id === dbProfile.user_id ? "Painel" : "Entrar"}
-            </Link>
-          </div>
-
-          {/* Featured item content */}
-          <div className="relative z-10 flex flex-col items-start px-5 pt-16 pb-8">
-            {heroProduct && (
-              <>
-                <span className="text-[10px] font-bold uppercase tracking-[0.2em] mb-2" style={{ color: storeTheme.primary }}>
-                  ✦ Imóvel em Destaque
-                </span>
-                <h1 className="font-display font-black text-2xl text-white leading-tight mb-2">
-                  {heroProduct.title}
-                </h1>
-                {heroProduct.city && (
-                  <p className="text-white/50 text-xs flex items-center gap-1 mb-2">
-                    <MapPin size={11} /> {(heroProduct as any).neighborhood ? `${(heroProduct as any).neighborhood}, ${heroProduct.city}` : heroProduct.city}
-                  </p>
-                )}
-                {heroProduct.price > 0 && (
-                  <p className="font-display font-black text-2xl mb-3" style={{ color: storeTheme.primary }}>
-                    R$ {heroProduct.price.toLocaleString("pt-BR")}
-                  </p>
-                )}
-                {heroProduct.description && (
-                  <p className="text-white/60 text-xs leading-relaxed line-clamp-3 max-w-sm mb-4">
-                    {heroProduct.description}
-                  </p>
-                )}
-                {dbProfile?.bio && (
-                  <p className="text-white/70 text-xs leading-relaxed mb-3">{dbProfile.bio}</p>
-                )}
-                <Link
-                  to={`/imoveis/produto/${heroProduct.slug || heroProduct.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`}
-                  className="flex items-center justify-center gap-2 px-6 py-3 font-black text-sm uppercase tracking-wider text-white shadow-lg active:scale-95 transition-transform"
-                  style={{
-                    background: `linear-gradient(135deg, ${storeTheme.primary}, ${storeTheme.primary}aa)`,
-                    border: `1px solid ${storeTheme.primary}60`,
-                    clipPath: "polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%)",
-                  }}
-                >
-                  <Eye size={16} /> Saiba Mais
-                </Link>
-              </>
-            )}
-          </div>
-        </section>
-      )}
+      {/* Gamer layout handles its own hero internally */}
       {isMarketplace && products.length > 0 && (
         <div className="hidden overflow-hidden" style={{ background: `${storeTheme.primary}e6` }}>
           <motion.div
@@ -975,7 +886,7 @@ export default function CompanyProfile() {
         </div>
       )}
 
-      <section className={`hidden lg:block relative overflow-hidden ${isMinimal || isMarketplace || isNetflix || isShowcase ? "!hidden" : ""} ${hasVideoHero ? "h-[70vh]" : "h-[60vh]"}`}>
+      <section className={`hidden lg:block relative overflow-hidden ${isMinimal || isMarketplace || isNetflix || isGamer ? "!hidden" : ""} ${hasVideoHero ? "h-[70vh]" : "h-[60vh]"}`}>
         {/* Video background or sliding images */}
         {hasVideoHero ? (
           <iframe
@@ -1169,7 +1080,7 @@ export default function CompanyProfile() {
       </section>
 
       {/* ═══════════ STATS BAR ═══════════ */}
-      <section className={`${isElegant || isMagazine ? "block" : "hidden lg:block"} relative z-20 ${isNetflix ? "!hidden" : ""}`} style={{ borderBottom: `1px solid ${storeTheme.border}`, background: storeTheme.card }}>
+      <section className={`${isElegant || isMagazine ? "block" : "hidden lg:block"} relative z-20 ${isNetflix || isGamer ? "!hidden" : ""}`} style={{ borderBottom: `1px solid ${storeTheme.border}`, background: storeTheme.card }}>
         <div className="max-w-[1800px] mx-auto px-4 md:px-8">
           <div className="flex items-center gap-6 py-3 overflow-x-auto scrollbar-hide">
             <div className="flex items-center gap-2 text-sm flex-shrink-0">
@@ -1218,7 +1129,7 @@ export default function CompanyProfile() {
       <div className={`${isNetflix ? "w-full" : "max-w-[1800px] mx-auto px-4 md:px-8"} ${isMinimal || isMarketplace || isNetflix ? "py-0" : "py-6"}`}>
         <div className={`flex ${isNetflix ? "gap-0" : "gap-8"}`}>
           {/* ═══════════ DESKTOP SIDEBAR ═══════════ */}
-          <aside className={`hidden lg:block w-[280px] flex-shrink-0 ${isMarketplace || isNetflix || isElegant || isMagazine || isShowcase || isGallery ? "!hidden" : ""}`}>
+          <aside className={`hidden lg:block w-[280px] flex-shrink-0 ${isMarketplace || isNetflix || isElegant || isMagazine || isGamer || isGallery ? "!hidden" : ""}`}>
             <div className={`sticky ${isMinimal ? "top-4" : "top-20"} space-y-4`}>
               {/* Company Card */}
               <div className="rounded-2xl overflow-hidden" style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}>
@@ -1407,7 +1318,7 @@ export default function CompanyProfile() {
                   : undefined,
               };
 
-              const layout = (dbProfile as any)?.store_layout || "showcase";
+              const layout = (dbProfile as any)?.store_layout || "gamer";
 
               switch (layout) {
                 case "netflix": return <StoreLayoutNetflix {...layoutProps} />;
@@ -1415,9 +1326,9 @@ export default function CompanyProfile() {
                 case "magazine": return <StoreLayoutMagazine {...layoutProps} />;
                 case "gallery": return <StoreLayoutGallery {...layoutProps} />;
                 case "elegant": return <StoreLayoutElegant {...layoutProps} />;
-                case "showcase": return <StoreLayoutShowcase {...layoutProps} />;
+                case "gamer": return <StoreLayoutGamer {...layoutProps} />;
                 case "marketplace": return <StoreLayoutMarketplace {...layoutProps} />;
-                default: return <StoreLayoutShowcase {...layoutProps} />;
+                default: return <StoreLayoutGamer {...layoutProps} />;
               }
             })()}
 
@@ -1425,7 +1336,7 @@ export default function CompanyProfile() {
             <div id="products-grid" className="hidden lg:block">
             {/* Products Header */}
             <div className="flex items-center justify-between mb-4">
-              {isShowcase ? (
+              {isGamer ? (
                 <div className="flex items-center gap-3">
                   <Trophy size={16} style={{ color: storeTheme.primary }} />
                   <h2 className="font-display font-black text-lg uppercase tracking-wider" style={{ color: storeTheme.text }}>
@@ -1450,7 +1361,7 @@ export default function CompanyProfile() {
 
             {/* Products Grid — Desktop only */}
             {filteredProducts.length > 0 ? (
-              isShowcase ? (
+              isGamer ? (
                 /* ── RPG-style grid ── */
                 <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
                   {filteredProducts.map((product: any, i: number) => {
@@ -1624,7 +1535,7 @@ export default function CompanyProfile() {
               )
             ) : (
               <div className="text-center py-20 rounded-2xl" style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}>
-                {isShowcase ? (
+                {isGamer ? (
                   <>
                     <Sparkles size={48} className="mx-auto mb-3" style={{ color: storeTheme.primary }} />
                     <p className="font-semibold text-lg" style={{ color: storeTheme.textMuted }}>Nenhum item no inventário</p>
