@@ -1415,7 +1415,7 @@ export default function CompanyProfile() {
                 case "magazine": return <StoreLayoutMagazine {...layoutProps} />;
                 case "gallery": return <StoreLayoutGallery {...layoutProps} />;
                 case "elegant": return <StoreLayoutElegant {...layoutProps} />;
-                case "showcase": return <StoreLayoutShowcase {...layoutProps} />;
+                case "gamer": return <StoreLayoutGamer {...layoutProps} />;
                 case "marketplace": return <StoreLayoutMarketplace {...layoutProps} />;
                 default: return <StoreLayoutShowcase {...layoutProps} />;
               }
