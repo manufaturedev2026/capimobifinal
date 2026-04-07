@@ -489,7 +489,7 @@ export default function CompanyProfile() {
   const currentLayout = (dbProfile as any)?.store_layout || "gamer";
   const isMarketplace = currentLayout === "marketplace";
   const isMinimal = currentLayout === "minimal";
-  const isShowcase = currentLayout === "showcase";
+  const isGamer = currentLayout === "gamer";
   const isNetflix = currentLayout === "netflix";
   const isElegant = currentLayout === "elegant";
   const isGallery = currentLayout === "gallery";
