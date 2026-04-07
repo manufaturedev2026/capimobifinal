@@ -296,7 +296,7 @@ export default function MarketplaceHome() {
                 const seller = sellersMap[item.sellerId];
                 const firstTag = (item.tags || [])[0];
                 const isAluguel = (item.tags || []).includes("aluguel_flex") || item.category === "aluguel";
-                const productUrl = getProductUrl(item);
+                const pUrl = productUrl(item);
 
                 return (
                   <motion.div
@@ -305,7 +305,7 @@ export default function MarketplaceHome() {
                     animate={{ opacity: 1, y: 0 }}
                     className="group relative rounded-2xl overflow-hidden border border-border bg-card shadow-sm hover:shadow-lg transition-all"
                   >
-                    <Link to={productUrl}>
+                    <Link to={pUrl}>
                       <div className="relative aspect-[4/3] overflow-hidden">
                         <img
                           src={item.image}
@@ -316,7 +316,7 @@ export default function MarketplaceHome() {
                         {/* Tags */}
                         <div className="absolute top-2 left-2 flex flex-wrap gap-1">
                           {firstTag && firstTag !== "aluguel_flex" && (
-                            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold" style={getTagStyle(firstTag)}>
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-black/60 text-white">
                               {getTagLabel(firstTag)}
                             </span>
                           )}
@@ -327,9 +327,9 @@ export default function MarketplaceHome() {
                           )}
                         </div>
 
-                        {/* Favorites & Compare */}
+                        {/* Favorites */}
                         <div className="absolute top-2 right-2 flex flex-col gap-1">
-                          <FavoriteButton itemId={item.id} isFavorite={isFavorite(item.id)} onToggle={() => toggleFavorite(item.id)} size="sm" />
+                          <FavoriteButton isFavorite={isFavorite(item.id)} onClick={(e) => { e.preventDefault(); toggleFavorite(item.id); }} />
                         </div>
 
                         {/* Seller badge */}
