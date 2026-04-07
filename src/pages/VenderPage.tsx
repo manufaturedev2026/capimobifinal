@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import {
   Check, Smartphone, BarChart3, Layout, Palette, Globe, Shield,
   Sparkles, ArrowRight, Crown, Star, Zap, MessageCircle, Eye,
-  Layers, Users, Rocket, AppWindow, ChevronRight,
+  Layers, Users, Rocket, AppWindow, ChevronRight, User, Phone, Mail, Lock, Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import heroImg from "@/assets/vender-hero.jpg";
@@ -13,6 +13,7 @@ import MarketplaceNavbar from "@/components/MarketplaceNavbar";
 import { getMarketplaceTheme } from "@/lib/marketplaceThemes";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
 
 const PLANS = [
   {
@@ -54,120 +55,6 @@ const PLANS = [
     cta: "Começar agora",
     popular: false,
   },
-  {
-    key: "premium",
-    name: "VIP",
-    subtitle: "Para quem quer se destacar e vender mais",
-    price: 59.99,
-    priceLabel: "R$59,99",
-    setupFee: 719,
-    color: "border-amber-400",
-    accent: "bg-gradient-to-r from-amber-500 to-orange-500",
-    benefits: [
-      "Até 60 anúncios ativos",
-      "4 Layouts (Showcase, Netflix, Minimal, Marketplace)",
-      "Selo VIP nos anúncios",
-      "Destaque no topo da listagem",
-      "Estatísticas avançadas",
-      "Suporte prioritário",
-      "Modo Cinema na loja",
-      "Galeria de anúncios",
-    ],
-    cta: "Assinar VIP",
-    popular: true,
-  },
-  {
-    key: "vip",
-    name: "Premium",
-    subtitle: "Para profissionais que buscam o máximo",
-    price: 114.99,
-    priceLabel: "R$114,99",
-    setupFee: 1379,
-    color: "border-purple-500",
-    accent: "bg-gradient-to-r from-purple-600 to-indigo-600",
-    benefits: [
-      "Até 115 anúncios ativos",
-      "7 Layouts Premium (todos)",
-      "Selo Premium exclusivo",
-      "Destaque no topo da listagem",
-      "Estatísticas completas",
-      "Suporte VIP dedicado",
-      "SEO Otimizado",
-      "Instagram na loja",
-      "Modo Cinema na loja",
-      "Galeria de anúncios",
-    ],
-    cta: "Assinar Premium",
-    popular: false,
-  },
-];
-
-const FEATURES = [
-  {
-    icon: AppWindow,
-    title: "Seu próprio app de imóveis",
-    desc: "Loja PWA instalável direto no celular dos seus clientes, com sua marca e identidade.",
-  },
-  {
-    icon: Layout,
-    title: "7 layouts profissionais",
-    desc: "Escolha entre Showcase, Netflix, Minimal, Marketplace e mais. Todos responsivos e otimizados.",
-  },
-  {
-    icon: Palette,
-    title: "Temas personalizáveis",
-    desc: "8 temas de cores para combinar com sua marca: Luz, Escuro, Rose Gold, Esmeralda e mais.",
-  },
-  {
-    icon: BarChart3,
-    title: "Painel completo + CRM",
-    desc: "Gerencie leads, contratos, aluguéis e acompanhe estatísticas de visualização em tempo real.",
-  },
-  {
-    icon: Globe,
-    title: "SEO otimizado",
-    desc: "Páginas indexadas no Google com sitemap automático. Seus imóveis encontrados na busca.",
-  },
-  {
-    icon: MessageCircle,
-    title: "WhatsApp integrado",
-    desc: "Botão flutuante, captura de leads e templates prontos para WhatsApp. Contato direto com o cliente.",
-  },
-  {
-    icon: Layers,
-    title: "Galeria de anúncios",
-    desc: "Crie posts e stories prontos para Instagram com a foto do imóvel, preço e seus dados.",
-  },
-  {
-    icon: Shield,
-    title: "Notificações push",
-    desc: "Envie notificações push para clientes que instalaram seu app. Engajamento direto.",
-  },
-];
-
-const STATS = [
-  { value: "7", label: "Layouts disponíveis" },
-  { value: "8", label: "Temas de cores" },
-  { value: "115", label: "Anúncios por plano" },
-  { value: "24/7", label: "Seu app sempre online" },
-];
-
-export default function VenderPage() {
-  const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const { user } = useAuth();
-  const [themeId, setThemeId] = useState("azul");
-
-  useEffect(() => {
-    supabase.from("platform_settings").select("value").eq("key", "homepage_theme").maybeSingle().then(({ data }) => {
-      if (data?.value) setThemeId(data.value);
-    });
-  }, []);
-  const theme = getMarketplaceTheme(themeId);
-
-  const handleCta = () => {
-    navigate(`/entrar${email ? `?email=${encodeURIComponent(email)}` : ""}`);
-  };
 
   return (
     <>
