@@ -12,11 +12,11 @@ export default function PushSubscribeButton({ sellerId, primaryColor }: PushSubs
   const { isSubscribed, isSupported, permission, subscribe, loading } = usePushSubscription(sellerId);
   const [dismissed, setDismissed] = useState(false);
 
-  // Detect iOS (iPhone/iPad)
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  // Hide on iOS browser (not installed as PWA) — push only works in standalone mode on iOS
+  const isIOSBrowser = detectIOS() && !isStandaloneDisplayMode();
 
-  // Don't show if not supported, already subscribed, denied, dismissed, or iOS
-  if (!isSupported || isSubscribed || permission === "denied" || dismissed || isIOS) return null;
+  // Don't show if not supported, already subscribed, denied, dismissed, or iOS browser
+  if (!isSupported || isSubscribed || permission === "denied" || dismissed || isIOSBrowser) return null;
 
   const handleSubscribe = async () => {
     const ok = await subscribe();
