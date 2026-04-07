@@ -10,7 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
-import StoreInstallButton from "@/components/StoreInstallButton";
+
 import storePreviewApartment from "@/assets/store-preview-apartment.jpg";
 import storePreviewHouse from "@/assets/store-preview-house.jpg";
 import storePreviewLot from "@/assets/store-preview-lot.jpg";
