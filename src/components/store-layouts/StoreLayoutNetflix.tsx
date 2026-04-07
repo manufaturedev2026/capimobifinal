@@ -322,7 +322,8 @@ export default function StoreLayoutNetflix({
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5 }}
-                className="font-black text-base md:text-2xl text-green-400 mb-1 md:mb-2"
+                className="font-black text-base md:text-2xl mb-1 md:mb-2"
+                style={{ color: storeTheme.primary }}
               >
                 R$ {currentBillboard.price.toLocaleString("pt-BR")}
               </motion.p>
