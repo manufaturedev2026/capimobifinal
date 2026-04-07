@@ -110,7 +110,17 @@ export default function SeoLandingPage() {
     return { count: items.length, avg: prices.length ? Math.round(prices.reduce((a, b) => a + b, 0) / prices.length) : 0, min: prices.length ? Math.min(...prices) : 0, max: prices.length ? Math.max(...prices) : 0 };
   }, [items]);
 
-  const heroImage = items.find(i => i.photos?.[0])?.photos?.[0];
+  const heroImages = useMemo(() => {
+    const images: string[] = [];
+    for (const item of sortedItems) {
+      if (item.photos?.[0] && !images.includes(item.photos[0])) {
+        images.push(item.photos[0]);
+        if (images.length >= 10) break;
+      }
+    }
+    return images;
+  }, [sortedItems]);
+  const heroImage = heroImages[0] || null;
   const relatedCategories = Object.entries(CATEGORY_MAP).filter(([slug]) => slug !== categoria);
 
   const jsonLd = {
