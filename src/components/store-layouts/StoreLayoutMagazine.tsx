@@ -267,7 +267,7 @@ export default function StoreLayoutMagazine({
                 onClick={() => setActiveCategory(isActive ? "todos" : cat.slug)}
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
-                className="relative rounded-2xl overflow-hidden h-28 sm:h-32 group transition-all"
+                className="relative rounded-2xl overflow-hidden h-20 sm:h-24 group transition-all"
                 style={{
                   border: `2px solid ${isActive ? storeTheme.primary : storeTheme.border}`,
                   boxShadow: isActive ? `0 0 20px ${storeTheme.primary}40` : "none",
