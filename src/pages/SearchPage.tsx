@@ -1,12 +1,24 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Search } from "lucide-react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { formatPrice } from "@/data/products";
+import PackageBadge from "@/components/PackageBadge";
+
+const TIER_WEIGHT: Record<string, number> = {
+  prime_empresa: 7,
+  premium_empresa: 6,
+  essencial_empresa: 5,
+  vip: 4,
+  premium: 3,
+  start: 2,
+  basico: 1,
+};
 
 export default function SearchPage() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<any[]>([]);
+  const [tiers, setTiers] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -15,15 +27,41 @@ export default function SearchPage() {
       setLoading(true);
       const { data } = await supabase
         .from("seller_items")
-        .select("id, title, price, photos, city, neighborhood, category, status")
+        .select("id, title, price, photos, city, neighborhood, category, status, slug, seller_id")
         .eq("status", "ativo")
         .ilike("title", `%${query}%`)
-        .limit(30);
-      setResults(data || []);
+        .limit(60);
+
+      const items = data || [];
+
+      // Fetch tiers for sellers
+      const sellerIds = [...new Set(items.map((i) => i.seller_id).filter(Boolean))];
+      if (sellerIds.length > 0) {
+        const { data: subs } = await supabase
+          .from("seller_subscriptions")
+          .select("seller_id, tier")
+          .in("seller_id", sellerIds)
+          .eq("is_active", true);
+        const map: Record<string, string> = {};
+        (subs || []).forEach((s: any) => { map[s.seller_id] = s.tier; });
+        setTiers(map);
+      } else {
+        setTiers({});
+      }
+
+      setResults(items);
       setLoading(false);
     }, 300);
     return () => clearTimeout(timeout);
   }, [query]);
+
+  const sortedResults = useMemo(() => {
+    return [...results].sort((a, b) => {
+      const wa = TIER_WEIGHT[tiers[a.seller_id] || "basico"] || 1;
+      const wb = TIER_WEIGHT[tiers[b.seller_id] || "basico"] || 1;
+      return wb - wa;
+    });
+  }, [results, tiers]);
 
   return (
     <div className="container max-w-6xl mx-auto px-4 py-8">
@@ -48,22 +86,30 @@ export default function SearchPage() {
           </div>
         ) : query.length < 2 ? (
           <p className="text-muted-foreground text-center py-16">Digite pelo menos 2 caracteres para buscar</p>
-        ) : results.length > 0 ? (
+        ) : sortedResults.length > 0 ? (
           <>
-            <p className="text-sm text-muted-foreground mb-4">{results.length} resultado(s) para "{query}"</p>
+            <p className="text-sm text-muted-foreground mb-4">{sortedResults.length} resultado(s) para "{query}"</p>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-              {results.map((item) => (
-                <Link key={item.id} to={`/imoveis/produto/${item.slug || item.id}`} className="group bg-card border border-border rounded-2xl overflow-hidden hover:shadow-lg transition-all">
-                  <div className="aspect-[4/3] overflow-hidden">
-                    <img src={item.photos?.[0] || ""} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                  </div>
-                  <div className="p-3">
-                    <h3 className="font-semibold text-sm text-foreground line-clamp-2">{item.title}</h3>
-                    <p className="text-primary font-bold text-sm mt-1">{formatPrice(item.price || 0)}</p>
-                    <p className="text-xs text-muted-foreground mt-1">{[item.neighborhood, item.city].filter(Boolean).join(", ")}</p>
-                  </div>
-                </Link>
-              ))}
+              {sortedResults.map((item) => {
+                const tier = tiers[item.seller_id] || "basico";
+                return (
+                  <Link key={item.id} to={`/imoveis/produto/${item.slug || item.id}`} className="group bg-card border border-border rounded-2xl overflow-hidden hover:shadow-lg transition-all">
+                    <div className="aspect-[4/3] overflow-hidden relative">
+                      <img src={item.photos?.[0] || ""} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                      {tier !== "basico" && (
+                        <div className="absolute top-2 left-2">
+                          <PackageBadge tier={tier as any} size="sm" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-3">
+                      <h3 className="font-semibold text-sm text-foreground line-clamp-2">{item.title}</h3>
+                      <p className="text-primary font-bold text-sm mt-1">{formatPrice(item.price || 0)}</p>
+                      <p className="text-xs text-muted-foreground mt-1">{[item.neighborhood, item.city].filter(Boolean).join(", ")}</p>
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
           </>
         ) : (
