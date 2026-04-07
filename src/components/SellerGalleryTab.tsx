@@ -337,7 +337,7 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
   const photos = selectedItem?.photos || [];
 
   const galleryUrl = selectedItem
-    ? `${window.location.origin}/imoveis/produto/${selectedItem.slug || selectedItem.id}${sellerSlug ? `?corretor=${sellerSlug}` : ""}`
+    ? `${window.location.origin}/imoveis/produto/${(selectedItem as any).slug || selectedItem.id}${sellerSlug ? `?corretor=${sellerSlug}` : ""}`
     : "";
 
   const copyLink = () => {
