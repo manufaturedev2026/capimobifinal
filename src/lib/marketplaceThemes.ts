@@ -10,6 +10,8 @@ export interface MarketplaceTheme {
   text: string;
   textMuted: string;
   dashboardGradient: string;
+  promoAccent?: string;
+  promoExploreColor?: string;
 }
 
 export const MARKETPLACE_THEMES: MarketplaceTheme[] = [
