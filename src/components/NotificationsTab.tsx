@@ -113,7 +113,7 @@ export default function NotificationsTab({ userId, sellerId }: NotificationsTabP
 
     setSending(true);
     try {
-      const selectedItem = items.find(i => i.id === selectedItemId);
+      const selectedItem = selectedItemId && selectedItemId !== "none" ? items.find(i => i.id === selectedItemId) : undefined;
       const itemUrl = selectedItem?.slug ? `/imovel/${selectedItem.slug}` : undefined;
 
       const { data, error } = await supabase.functions.invoke("send-push", {
