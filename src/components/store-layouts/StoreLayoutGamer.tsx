@@ -4,7 +4,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   MapPin, MessageCircle, Eye, Shield, ChevronLeft, ChevronRight,
   Phone, Mail, User, Bed, Bath, Car, Maximize, Building2, Home,
+  LayoutDashboard,
 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 import type { StoreLayoutProps } from "./types";
 
 /* ─── Portrait orientation warning ─── */
@@ -89,10 +91,12 @@ export default function StoreLayoutGamer({
   handleWhatsApp,
   storiesBar,
 }: StoreLayoutProps) {
+  const { user } = useAuth();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [activeSlide, setActiveSlide] = useState(0);
   const properties = filteredProducts.filter((p: any) => p.status !== "vendido");
   const totalSlides = 1 + properties.length + 1; // profile + properties + contact
+  const isOwner = user && dbProfile && user.id === dbProfile.user_id;
 
   const scrollToSlide = (index: number) => {
     const el = scrollRef.current;
@@ -133,6 +137,14 @@ export default function StoreLayoutGamer({
   return (
     <>
       <PortraitWarning />
+
+      {/* Floating panel button */}
+      <Link
+        to={isOwner ? "/painel" : "/login"}
+        className="fixed top-4 left-4 z-[100] inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 backdrop-blur-md text-white text-sm font-medium hover:bg-white/20 transition-all hover:scale-105"
+      >
+        <LayoutDashboard size={16} /> {isOwner ? "Painel" : "Entrar"}
+      </Link>
 
       {/* Horizontal scroll container */}
       <div
