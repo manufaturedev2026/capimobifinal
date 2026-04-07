@@ -430,7 +430,7 @@ export default function StoreLayoutNetflix({
       )}
 
       {/* Stories Bar */}
-      {storiesBar && <div className="px-4 md:px-12 pt-4">{storiesBar}</div>}
+      {storiesBar && <div className="px-4 lg:px-12 pt-4">{storiesBar}</div>}
 
       {/* ══════ NETFLIX CATEGORY CARDS + CONTENT ══════ */}
       <div className="pb-8 pt-6">
