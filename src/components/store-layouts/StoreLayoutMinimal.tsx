@@ -201,7 +201,7 @@ export default function StoreLayoutMinimal({
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -5, scale: 0.95 }}
                     transition={{ duration: 0.2 }}
-                    className="absolute bottom-full mb-2 left-0 min-w-[180px] rounded-xl overflow-hidden backdrop-blur-xl shadow-2xl z-30"
+                    className="absolute bottom-full mb-2 left-0 min-w-[200px] rounded-xl overflow-hidden backdrop-blur-xl shadow-2xl z-[9999] max-h-[50vh] overflow-y-auto"
                     style={{ background: `${storeTheme.card}ee`, border: `1px solid ${storeTheme.border}` }}
                   >
                     {/* "Todas" option */}

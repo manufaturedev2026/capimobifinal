@@ -311,7 +311,7 @@ export default function StoreLayoutMarketplace({
                     initial={{ opacity: 0, y: -5 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -5 }}
-                    className="absolute left-0 top-8 z-50 rounded-xl overflow-hidden shadow-2xl backdrop-blur-xl"
+                    className="absolute left-0 top-full mt-1 z-[9999] rounded-xl overflow-hidden shadow-2xl backdrop-blur-xl max-h-[50vh] overflow-y-auto min-w-[200px]"
                     style={{ background: `${storeTheme.card}f0`, border: `1px solid ${storeTheme.border}` }}
                   >
                     <button
