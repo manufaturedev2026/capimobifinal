@@ -715,9 +715,11 @@ export default function StoreLayoutMarketplace({
                               onClick={() => { setActiveCategory(banner.slug); scrollToGrid(); }}
                               style={{ boxShadow: `0 8px 32px ${storeTheme.primary}18` }}
                             >
-                              <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${darkBase}, ${storeTheme.primary}${bIdx % 2 === 0 ? "" : "cc"})` }} />
-                              <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent" />
-                              <FloatingParticles color={storeTheme.primary} />
+                              {banner.coverImage ? (
+                                <img src={banner.coverImage} alt="" className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy" />
+                              ) : null}
+                              <div className="absolute inset-0" style={{ background: banner.coverImage ? `linear-gradient(135deg, ${darkBase}cc, ${storeTheme.primary}88)` : `linear-gradient(135deg, ${darkBase}, ${storeTheme.primary}${bIdx % 2 === 0 ? "" : "cc"})` }} />
+                              <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent" />
                               <div className="relative z-10 h-full flex flex-col justify-center p-6">
                                 <h3 className="font-display font-black text-3xl text-white leading-tight">
                                   {banner.title[0]}<br />{banner.title[1]}
