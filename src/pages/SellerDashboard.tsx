@@ -1092,6 +1092,14 @@ export default function SellerDashboard() {
                 maxMembers={maxTeamMembers}
               />
             )}
+
+            {activeTab === "partner" && profile?.id && (
+              isImobiliaria ? (
+                <PartnerAgencyTab profileId={profile.id} userId={user!.id} />
+              ) : (
+                <PartnerBrokerTab profileId={profile.id} userId={user!.id} />
+              )
+            )}
           </div>
         </main>
       </div>
