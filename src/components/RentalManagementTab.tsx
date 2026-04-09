@@ -473,6 +473,60 @@ export default function RentalManagementTab({ userId, sellerId }: Props) {
           );
         })()}
 
+        {/* ── Contract Expiry Alerts ── */}
+        {(() => {
+          const now = new Date();
+          const expiringContracts = contracts
+            .filter(c => (c.status === "ativo" || c.status === "renovacao") && c.end_date)
+            .map(c => {
+              const end = new Date(c.end_date! + "T23:59:59");
+              const diffDays = Math.ceil((end.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+              return { contract: c, diffDays };
+            })
+            .filter(x => x.diffDays <= 30)
+            .sort((a, b) => a.diffDays - b.diffDays);
+          if (expiringContracts.length === 0) return null;
+          return (
+            <div>
+              <h3 className="font-bold text-sm text-foreground mb-3 flex items-center gap-2">
+                <FileText size={16} className="text-orange-500" /> Contratos Próximos do Vencimento ({expiringContracts.length})
+              </h3>
+              <div className="space-y-2">
+                {expiringContracts.map(({ contract, diffDays }) => {
+                  const expired = diffDays <= 0;
+                  const absDays = Math.abs(diffDays);
+                  const label = expired
+                    ? `Contrato venceu há ${absDays} dia${absDays !== 1 ? "s" : ""}`
+                    : diffDays === 0
+                    ? "Contrato vence HOJE!"
+                    : `Contrato vence em ${diffDays} dia${diffDays !== 1 ? "s" : ""}`;
+                  const color = expired ? "text-red-500" : diffDays <= 7 ? "text-orange-500" : "text-amber-500";
+                  const bgIcon = expired ? "bg-red-500/15" : diffDays <= 7 ? "bg-orange-500/15" : "bg-amber-500/15";
+                  const endFormatted = contract.end_date ? new Date(contract.end_date + "T00:00:00").toLocaleDateString("pt-BR") : "";
+                  return (
+                    <div key={contract.id} className={`flex items-center justify-between p-3 rounded-xl border bg-card ${expired ? "border-red-500/40" : "border-border"}`}>
+                      <div className="flex items-center gap-3">
+                        <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${bgIcon}`}>
+                          <FileText size={16} className={color} />
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-foreground">{contract.tenant_name}</p>
+                          <p className={`text-xs font-medium ${color}`}>{label} — Término: {endFormatted}</p>
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <button onClick={() => updateContractStatus(contract, "renovacao")} className="px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-500 text-white hover:bg-blue-600 transition-colors flex items-center gap-1">
+                          <RefreshCw size={12} /> Renovar
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })()}
+
         {/* ── Rental Properties Grid ── */}
         {rentalProperties.length > 0 && (
           <div>
