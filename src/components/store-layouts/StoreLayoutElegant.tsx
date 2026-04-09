@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import {
   MapPin, Image, Bed, Bath, Ruler, Car, ChevronRight,
   Building2, Home, Search, SlidersHorizontal, X,
-  TreePine, Store, Building, LandPlot, Zap,
+  TreePine, Store, Building, LandPlot, Zap, ArrowRight,
 } from "lucide-react";
 import type { StoreLayoutProps } from "./types";
 
