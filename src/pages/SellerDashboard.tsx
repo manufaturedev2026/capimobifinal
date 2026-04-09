@@ -1187,7 +1187,7 @@ export default function SellerDashboard() {
                       <Eye size={16} /> Ver Minha Loja
                     </Link>
                   )}
-                  <Link to="/painel/perfil" onClick={() => setMobileMenuOpen(false)}
+                  <button onClick={() => { setActiveTab("profile"); setMobileMenuOpen(false); }}
                     className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-foreground hover:bg-secondary transition-all">
                     <UserCircle size={16} /> Meu Perfil
                   </Link>
