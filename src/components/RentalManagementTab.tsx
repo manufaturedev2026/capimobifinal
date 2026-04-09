@@ -920,10 +920,11 @@ export default function RentalManagementTab({ userId, sellerId }: Props) {
 /* ═══════════════════════════════════════
    CONTRACT FORM SUB-COMPONENT
    ═══════════════════════════════════════ */
-function ContractForm({ userId, sellerId, properties, editing, onSave, onCancel }: {
+function ContractForm({ userId, sellerId, properties, rentalProperties, editing, onSave, onCancel }: {
   userId: string;
   sellerId: string;
   properties: PropertyOption[];
+  rentalProperties: RentalProperty[];
   editing: RentalContract | null;
   onSave: () => void;
   onCancel: () => void;
