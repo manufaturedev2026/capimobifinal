@@ -29,6 +29,7 @@ const AuthPage = lazyPage(() => import("@/pages/AuthPage"));
 const SellerDashboard = lazyPage(() => import("@/pages/SellerDashboard"));
 const SellerItemForm = lazyPage(() => import("@/pages/SellerItemForm"));
 const SellerProfile = lazyPage(() => import("@/pages/SellerProfile"));
+const SellerCustomization = lazyPage(() => import("@/pages/SellerCustomization"));
 const PackagesPage = lazyPage(() => import("@/pages/PackagesPage"));
 const AdminPanel = lazyPage(() => import("@/pages/AdminPanel"));
 const PrivacyPage = lazyPage(() => import("@/pages/PrivacyPage"));
@@ -151,6 +152,7 @@ const AppLayout = () => {
               <Route path="/painel/novo" element={<RequireAuth><SellerItemForm /></RequireAuth>} />
               <Route path="/painel/editar/:id" element={<RequireAuth><SellerItemForm /></RequireAuth>} />
               <Route path="/painel/perfil" element={<RequireAuth><SellerProfile /></RequireAuth>} />
+              <Route path="/painel/personalizacao" element={<RequireAuth><SellerCustomization /></RequireAuth>} />
               <Route path="/pacotes" element={<RequireAuth><PackagesPage /></RequireAuth>} />
               <Route path="/admin" element={<RequireAuth><AdminPanel /></RequireAuth>} />
               <Route path="/criar-anuncio" element={<RequireAuth><CreateListing /></RequireAuth>} />
