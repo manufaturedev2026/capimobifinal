@@ -909,6 +909,7 @@ export default function RentalManagementTab({ userId, sellerId }: Props) {
       userId={userId}
       sellerId={sellerId}
       properties={properties}
+      rentalProperties={rentalProperties}
       editing={editingContract}
       onSave={() => { fetchAll(); setView("contracts"); }}
       onCancel={() => setView(editingContract ? "detail" : "dashboard")}
