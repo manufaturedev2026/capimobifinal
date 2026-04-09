@@ -130,14 +130,16 @@ export default function RentalManagementTab({ userId, sellerId }: Props) {
 
   const fetchAll = async () => {
     setLoading(true);
-    const [cRes, pRes, iRes] = await Promise.all([
+    const [cRes, pRes, iRes, rpRes] = await Promise.all([
       supabase.from("rental_contracts").select("*").eq("seller_id", sellerId).order("created_at", { ascending: false }),
       supabase.from("rental_payments").select("*").eq("user_id", userId).order("due_date", { ascending: false }),
       supabase.from("seller_items").select("id, title, city").eq("seller_id", sellerId).eq("status", "ativo"),
+      supabase.from("rental_properties" as any).select("*").eq("seller_id", sellerId).order("created_at", { ascending: false }),
     ]);
     setContracts((cRes.data as RentalContract[]) || []);
     setPayments((pRes.data as RentalPayment[]) || []);
     setProperties((iRes.data as PropertyOption[]) || []);
+    setRentalProperties((rpRes.data as RentalProperty[]) || []);
     setLoading(false);
   };
 
