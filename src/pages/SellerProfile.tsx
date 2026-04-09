@@ -36,18 +36,7 @@ export default function SellerProfile() {
     seller_category: "" as string,
     creci: "",
     cnpj: "",
-    cover_color: "",
-    video_url: "",
-    video_title: "",
-    video_description: "",
     slug: "",
-    store_theme: "dark",
-    store_layout: "marketplace",
-    store_video_url: "",
-    store_video_title: "",
-    store_video_description: "",
-    store_video_button_text: "",
-    store_video_button_url: "",
     show_floating_whatsapp: false,
   });
   const { cities: ibgeCities, loading: citiesLoading } = useCitiesByState(form.state);
