@@ -12,19 +12,24 @@ export default function StoreEffects({ sellerId }: StoreEffectsProps) {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
+    let mounted = true;
     const fetchEffect = async () => {
-      const { data } = await supabase
-        .from("store_effects")
-        .select("*")
-        .eq("seller_id", sellerId)
-        .eq("is_active", true)
-        .order("activated_at", { ascending: false })
-        .limit(1);
-      setActiveEffect(data && data.length > 0 ? (data[0] as any).effect_type as EffectType : null);
+      try {
+        const { data } = await supabase
+          .from("store_effects")
+          .select("*")
+          .eq("seller_id", sellerId)
+          .eq("is_active", true)
+          .order("activated_at", { ascending: false })
+          .limit(1);
+        if (mounted) setActiveEffect(data && data.length > 0 ? (data[0] as any).effect_type as EffectType : null);
+      } catch {
+        // silently ignore network errors
+      }
     };
     fetchEffect();
-    const interval = setInterval(fetchEffect, 30000);
-    return () => clearInterval(interval);
+    const interval = setInterval(fetchEffect, 60000);
+    return () => { mounted = false; clearInterval(interval); };
   }, [sellerId]);
 
   // Show for 5 seconds then hide, repeat every 30s
