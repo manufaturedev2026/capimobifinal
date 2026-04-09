@@ -171,6 +171,7 @@ export default function SellerCustomization({ embedded }: { embedded?: boolean }
                   onClick={() => {
                     if (allowed) {
                       setForm((f) => ({ ...f, store_layout: layout.id }));
+                      autoSaveField("store_layout", layout.id);
                     } else {
                       toast({ title: `Layout exclusivo do plano ${minTier}`, description: "Faça upgrade para desbloquear este layout.", variant: "destructive" });
                     }
