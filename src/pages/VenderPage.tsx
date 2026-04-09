@@ -253,7 +253,7 @@ export default function VenderPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.2 }}
             >
-              <form id="signup-form" onSubmit={handleSignup} className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 md:p-8 space-y-4">
+              <form id="signup-form" onSubmit={handleSignup} className="bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl p-6 md:p-8 space-y-4">
                 <div className="text-center mb-2">
                   <h2 className="font-display font-bold text-xl">Comece Gratuitamente</h2>
                   <p className="text-white/50 text-sm mt-1">Crie sua conta em menos de 1 minuto</p>
@@ -261,36 +261,36 @@ export default function VenderPage() {
                 <div className="relative">
                   <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/60" />
                   <input type="text" placeholder="Seu nome completo *" value={fullName} onChange={(e) => setFullName(e.target.value)}
-                    className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-white/8 border border-white/15 text-white placeholder:text-white/60 outline-none transition-colors text-sm" style={{ '--tw-ring-color': theme.primary } as any} required />
+                    className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-black/40 border border-white/15 text-white placeholder:text-white/60 outline-none transition-colors text-sm" style={{ '--tw-ring-color': theme.primary } as any} required />
                 </div>
                 <div className="relative">
                   <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/60" />
                   <input type="email" placeholder="Seu melhor e-mail *" value={email} onChange={(e) => setEmail(e.target.value)}
-                    className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-white/8 border border-white/15 text-white placeholder:text-white/60 outline-none transition-colors text-sm" required />
+                    className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-black/40 border border-white/15 text-white placeholder:text-white/60 outline-none transition-colors text-sm" required />
                 </div>
                 <div className="relative">
                   <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/60" />
                   <input type="tel" placeholder="WhatsApp (opcional)" value={phone} onChange={(e) => setPhone(e.target.value)}
-                    className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-white/8 border border-white/15 text-white placeholder:text-white/60 outline-none transition-colors text-sm" />
+                    className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-black/40 border border-white/15 text-white placeholder:text-white/60 outline-none transition-colors text-sm" />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="relative">
                     <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/60" />
                     <select value={state} onChange={(e) => setState(e.target.value)}
-                      className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-white/8 border border-white/15 text-white outline-none transition-colors text-sm appearance-none">
+                      className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-black/40 border border-white/15 text-white outline-none transition-colors text-sm appearance-none">
                       {BRAZIL_STATES.map(s => <option key={s.uf} value={s.uf} className="bg-gray-900">{s.uf}</option>)}
                     </select>
                   </div>
                   <div className="relative">
                     <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/60" />
                     <input type="text" placeholder="Sua cidade *" value={city} onChange={(e) => setCity(e.target.value)}
-                      className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-white/8 border border-white/15 text-white placeholder:text-white/60 outline-none transition-colors text-sm" required />
+                      className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-black/40 border border-white/15 text-white placeholder:text-white/60 outline-none transition-colors text-sm" required />
                   </div>
                 </div>
                 <div className="relative">
                   <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/60" />
                   <input type="password" placeholder="Crie uma senha (mín. 6 caracteres) *" value={password} onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-white/8 border border-white/15 text-white placeholder:text-white/60 outline-none transition-colors text-sm" required minLength={6} />
+                    className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-black/40 border border-white/15 text-white placeholder:text-white/60 outline-none transition-colors text-sm" required minLength={6} />
                 </div>
                 <Button type="submit" disabled={submitting} className="w-full text-white font-bold rounded-xl py-3.5 text-sm shadow-lg" style={{ background: `linear-gradient(to right, ${theme.primary}, ${theme.promoAccent || theme.primary})`, boxShadow: `0 10px 25px ${theme.primary}40` }}>
                   {submitting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
