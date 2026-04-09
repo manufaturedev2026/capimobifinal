@@ -57,7 +57,6 @@ const HomeRedirect = () => {
   const [homepageMode, setHomepageMode] = useState<string | null>(null);
 
   useEffect(() => {
-    // Fetch homepage mode setting
     supabase
       .from("platform_settings")
       .select("value")
@@ -65,6 +64,9 @@ const HomeRedirect = () => {
       .maybeSingle()
       .then(({ data }) => {
         setHomepageMode(data?.value || "single");
+      })
+      .catch(() => {
+        setHomepageMode("single");
       });
   }, []);
 
