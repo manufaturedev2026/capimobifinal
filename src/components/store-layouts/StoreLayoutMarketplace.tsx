@@ -936,7 +936,7 @@ export default function StoreLayoutMarketplace({
           transition={{ duration: 0.6, delay: 0.3 }}
           className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12"
         >
-          {getBenefits(dbProfile?.city || undefined).map((benefit, i) => {
+          {getBenefits(dbProfile?.city || undefined, dbProfile?.creci).map((benefit, i) => {
             const Icon = benefit.icon;
             return (
               <motion.div
