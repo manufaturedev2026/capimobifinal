@@ -19,6 +19,7 @@ interface RequestWithProfile {
     logo_url: string | null;
     city: string | null;
     state: string | null;
+    address: string | null;
   };
 }
 
@@ -46,7 +47,7 @@ export default function PartnerAgencyTab({ profileId, userId }: { profileId: str
       const profileIds = data.map(r => r.requester_profile_id);
       const { data: profiles } = await supabase
         .from("profiles")
-        .select("id, full_name, phone, email, creci, logo_url, city, state")
+        .select("id, full_name, phone, email, creci, logo_url, city, state, address")
         .in("id", profileIds);
 
       const enriched = data.map(r => ({
