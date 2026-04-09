@@ -475,6 +475,7 @@ export default function CompanyProfile() {
 
   const handleWhatsApp = (title: string, productId?: string) => {
     if (isDbProfile && dbProfile) {
+      setLeadCaptureContext(null); // Reset context for normal WhatsApp
       setPendingWhatsAppAction(() => () => doWhatsAppRedirect(title, productId));
       setLeadCaptureOpen(true);
     } else {
@@ -1612,26 +1613,13 @@ export default function CompanyProfile() {
         const svPropertyLabel = (dbProfile as any)?.store_video_property_label || svTitle;
 
         const handleScheduleVisit = () => {
-          // Use the lead capture flow but with "agendamento" context
           if (dbProfile) {
-            setPendingWhatsAppAction(() => async (leadName?: string, leadPhone?: string) => {
-              // Save to CRM as agendamento
-              if (leadName && leadPhone) {
-                try {
-                  await supabase.from("seller_crm_contacts").insert({
-                    seller_id: dbProfile.id,
-                    user_id: dbProfile.user_id,
-                    full_name: leadName.trim().slice(0, 100),
-                    phone: leadPhone.trim().slice(0, 20),
-                    funnel_stage: "agendamento",
-                    lead_source: "video_loja",
-                    notes: `📹 Agendamento via vídeo da loja\n🏠 Imóvel: ${svPropertyLabel}\n📋 Vídeo: ${svTitle}`,
-                  } as any);
-                } catch {}
-              }
-              // Redirect to WhatsApp
-              doWhatsAppRedirect(`Agendamento - ${svPropertyLabel}`);
+            setLeadCaptureContext({
+              funnelStage: "agendamento",
+              extraNotes: `📹 Agendamento via vídeo da loja\n🏠 Imóvel: ${svPropertyLabel}`,
+              leadSource: "video_loja",
             });
+            setPendingWhatsAppAction(() => () => doWhatsAppRedirect(`Agendamento - ${svPropertyLabel}`));
             setLeadCaptureOpen(true);
           } else {
             doWhatsAppRedirect(`Agendamento - ${svPropertyLabel}`);
