@@ -69,7 +69,7 @@ function NetflixRow({ title, items, corretorSlug, getTagLabel, accent }: {
         <div ref={scrollRef} onScroll={checkArrows}
           className="flex gap-1 lg:gap-1.5 overflow-x-auto overflow-y-visible scrollbar-hide scroll-smooth px-4 lg:px-12 py-8 -my-8">
           {items.map((product: any, i: number) => (
-            <NetflixCard key={product.id} product={product} index={i} corretorSlug={corretorSlug} getTagLabel={getTagLabel} accent={accent} />
+            <NetflixCard key={product.id} product={product} index={i} corretorSlug={corretorSlug} getTagLabel={getTagLabel} getTagStyle={getTagStyle} accent={accent} />
           ))}
         </div>
       </div>
@@ -80,8 +80,8 @@ function NetflixRow({ title, items, corretorSlug, getTagLabel, accent }: {
 /* ═══════════════════════════════════════════
    Netflix card with hover expansion
    ═══════════════════════════════════════════ */
-function NetflixCard({ product, index, corretorSlug, getTagLabel, accent }: {
-  product: any; index: number; corretorSlug: string | null; getTagLabel: (tag: string) => string; accent: string;
+function NetflixCard({ product, index, corretorSlug, getTagLabel, getTagStyle, accent }: {
+  product: any; index: number; corretorSlug: string | null; getTagLabel: (tag: string) => string; getTagStyle: (tag: string) => string; accent: string;
 }) {
   const [hovered, setHovered] = useState(false);
   const productLink = `/imoveis/produto/${product.slug || product.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`;
