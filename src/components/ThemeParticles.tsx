@@ -18,24 +18,29 @@ export default function ThemeParticles({ color, glowColor, count = 35, sellerId 
 
   useEffect(() => {
     if (!sellerId) return;
+    let mounted = true;
     const check = async () => {
-      // If there's an inactive particulas record (most recent), particles are disabled
-      const { data } = await supabase
-        .from("store_effects")
-        .select("is_active")
-        .eq("seller_id", sellerId)
-        .eq("effect_type", "particulas")
-        .order("activated_at", { ascending: false })
-        .limit(1);
-      if (data && data.length > 0 && !(data[0] as any).is_active) {
-        setDisabled(true);
-      } else {
-        setDisabled(false);
+      try {
+        const { data } = await supabase
+          .from("store_effects")
+          .select("is_active")
+          .eq("seller_id", sellerId)
+          .eq("effect_type", "particulas")
+          .order("activated_at", { ascending: false })
+          .limit(1);
+        if (!mounted) return;
+        if (data && data.length > 0 && !(data[0] as any).is_active) {
+          setDisabled(true);
+        } else {
+          setDisabled(false);
+        }
+      } catch {
+        // silently ignore network errors
       }
     };
     check();
-    const interval = setInterval(check, 30000);
-    return () => clearInterval(interval);
+    const interval = setInterval(check, 60000);
+    return () => { mounted = false; clearInterval(interval); };
   }, [sellerId]);
 
   const particles = useMemo(() => Array.from({ length: count }, (_, i) => ({
