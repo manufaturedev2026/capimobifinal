@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Building2, Send, Clock, CheckCircle2, XCircle, ExternalLink } from "lucide-react";
+import { Building2, Send, Clock, CheckCircle2, XCircle, ExternalLink, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -140,6 +140,32 @@ export default function PartnerBrokerTab({ profileId, userId }: { profileId: str
     setSelectedAgency(null);
   };
 
+  const leavePartnership = async (agencyId: string) => {
+    setSendingTo(agencyId);
+    // Remove team member entry
+    const { data: myProfile } = await supabase.from("profiles").select("full_name").eq("id", profileId).single();
+    if (myProfile) {
+      const { data: members } = await supabase
+        .from("team_members")
+        .select("id, full_name")
+        .eq("company_id", agencyId);
+      
+      if (members) {
+        const me = members.find(m => m.full_name === myProfile.full_name);
+        if (me) {
+          await supabase.from("team_members").delete().eq("id", me.id);
+        }
+      }
+    }
+    // Delete the request
+    await supabase.from("partnership_requests").delete().eq("requester_profile_id", profileId).eq("agency_profile_id", agencyId);
+    
+    toast({ title: "Parceria encerrada", description: "Você saiu da imobiliária." });
+    setPartnerLink(null);
+    fetchData();
+    setSendingTo(null);
+  };
+
   const getRequestStatus = (agencyId: string) => {
     return requests.find(r => r.agency_profile_id === agencyId);
   };
@@ -233,9 +259,21 @@ export default function PartnerBrokerTab({ profileId, userId }: { profileId: str
 
                     <div className="mt-2">
                       {req ? (
-                        <div className="flex items-center gap-1.5 text-xs">
+                        <div className="flex items-center gap-2 text-xs">
                           {statusIcon(req.status)}
                           <span className="text-muted-foreground">{statusLabel(req.status)}</span>
+                          {req.status === "aprovado" && (
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              className="text-xs ml-auto h-7 px-2"
+                              onClick={() => leavePartnership(agency.id)}
+                              disabled={sendingTo === agency.id}
+                            >
+                              <LogOut size={12} className="mr-1" />
+                              Sair
+                            </Button>
+                          )}
                         </div>
                       ) : (
                         <Dialog open={dialogOpen && selectedAgency?.id === agency.id} onOpenChange={(o) => {

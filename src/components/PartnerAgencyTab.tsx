@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { CheckCircle2, XCircle, Clock, User, Phone, Mail, MessageSquare, ExternalLink } from "lucide-react";
+import { CheckCircle2, XCircle, Clock, User, Phone, Mail, MessageSquare, ExternalLink, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -132,6 +132,31 @@ export default function PartnerAgencyTab({ profileId, userId }: { profileId: str
     setProcessingId(null);
   };
 
+  const removePartner = async (request: RequestWithProfile) => {
+    if (!request.profile) return;
+    setProcessingId(request.id);
+
+    // Remove team member
+    const { data: members } = await supabase
+      .from("team_members")
+      .select("id, full_name")
+      .eq("company_id", profileId);
+
+    if (members) {
+      const match = members.find(m => m.full_name === request.profile?.full_name);
+      if (match) {
+        await supabase.from("team_members").delete().eq("id", match.id);
+      }
+    }
+
+    // Delete the request entirely
+    await supabase.from("partnership_requests").delete().eq("id", request.id);
+
+    toast({ title: "Corretor removido", description: `${request.profile.full_name} foi desvinculado.` });
+    fetchRequests();
+    setProcessingId(null);
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
@@ -248,9 +273,21 @@ export default function PartnerAgencyTab({ profileId, userId }: { profileId: str
                 </p>
               </div>
               {req.status === "aprovado" ? (
-                <span className="flex items-center gap-1 text-xs text-green-500 font-medium">
-                  <CheckCircle2 size={14} /> Aprovado
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="flex items-center gap-1 text-xs text-green-500 font-medium">
+                    <CheckCircle2 size={14} /> Aprovado
+                  </span>
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    className="h-7 px-2 text-xs"
+                    onClick={() => removePartner(req)}
+                    disabled={processingId === req.id}
+                  >
+                    <Trash2 size={12} className="mr-1" />
+                    Remover
+                  </Button>
+                </div>
               ) : (
                 <span className="flex items-center gap-1 text-xs text-red-500 font-medium">
                   <XCircle size={14} /> Recusado
