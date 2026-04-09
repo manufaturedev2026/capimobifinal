@@ -21,6 +21,7 @@ import NotificationsTab from "@/components/NotificationsTab";
 import ProfitCalculatorTab from "@/components/ProfitCalculatorTab";
 import { lazy, Suspense } from "react";
 const SellerCustomization = lazy(() => import("@/pages/SellerCustomization"));
+const SellerProfile = lazy(() => import("@/pages/SellerProfile"));
 import { getTagStyle, getTagLabel } from "@/data/products";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
@@ -48,7 +49,7 @@ type SellerItem = {
   sold_at: string | null;
 };
 
-type DashboardTab = "overview" | "items" | "stats" | "domain" | "team" | "events" | "referral" | "crm" | "gallery" | "rentals" | "contracts" | "captacao" | "stories" | "notifications" | "profit" | "customization";
+type DashboardTab = "overview" | "items" | "stats" | "domain" | "team" | "events" | "referral" | "crm" | "gallery" | "rentals" | "contracts" | "captacao" | "stories" | "notifications" | "profit" | "customization" | "profile";
 
 export default function SellerDashboard() {
   const { user, profile, signOut, refreshProfile, loading: authLoading } = useAuth();
@@ -332,9 +333,9 @@ export default function SellerDashboard() {
                   <Eye size={16} />
                 </Link>
               )}
-              <Link to="/painel/perfil" className="p-2.5 rounded-xl bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 transition-colors">
+              <button onClick={() => setActiveTab("profile")} className="p-2.5 rounded-xl bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 transition-colors">
                 <Settings size={16} />
-              </Link>
+              </button>
               <button onClick={() => { signOut(); navigate("/"); }} className="p-2.5 rounded-xl bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 transition-colors">
                 <LogOut size={16} />
               </button>
@@ -393,10 +394,10 @@ export default function SellerDashboard() {
                   <Eye size={18} /> Ver Minha Loja
                 </Link>
               )}
-              <Link to="/painel/perfil"
-                className="sidebar-nav-item text-muted-foreground hover:text-foreground hover:bg-secondary">
+              <button onClick={() => setActiveTab("profile")}
+                className="sidebar-nav-item text-muted-foreground hover:text-foreground hover:bg-secondary w-full text-left">
                 <UserCircle size={18} /> Meu Perfil
-              </Link>
+              </button>
               <button onClick={() => setActiveTab("customization")}
                 className={`sidebar-nav-item ${activeTab === "customization" ? "active" : "text-muted-foreground hover:text-foreground hover:bg-secondary"}`}>
                 <Palette size={18} /> Personalização
