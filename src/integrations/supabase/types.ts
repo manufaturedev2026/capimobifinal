@@ -349,6 +349,7 @@ export type Database = {
           store_video_button_text: string | null
           store_video_button_url: string | null
           store_video_description: string | null
+          store_video_property_label: string | null
           store_video_title: string | null
           store_video_url: string | null
           updated_at: string
@@ -397,6 +398,7 @@ export type Database = {
           store_video_button_text?: string | null
           store_video_button_url?: string | null
           store_video_description?: string | null
+          store_video_property_label?: string | null
           store_video_title?: string | null
           store_video_url?: string | null
           updated_at?: string
@@ -445,6 +447,7 @@ export type Database = {
           store_video_button_text?: string | null
           store_video_button_url?: string | null
           store_video_description?: string | null
+          store_video_property_label?: string | null
           store_video_title?: string | null
           store_video_url?: string | null
           updated_at?: string

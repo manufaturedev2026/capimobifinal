@@ -1,0 +1,1 @@
+ALTER TABLE public.profiles ADD COLUMN store_video_property_label text DEFAULT NULL;
