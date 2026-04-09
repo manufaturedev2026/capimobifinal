@@ -634,19 +634,6 @@ export default function StoreLayoutNetflix({
         </div>
       )}
 
-      {/* ═══ CTA Captação ═══ */}
-      <section className="px-4 md:px-8 py-12">
-        <div className="rounded-2xl p-8 md:p-12 text-center" style={{ background: `linear-gradient(135deg, ${storeTheme.primary}20, ${storeTheme.primary}08)`, border: `1px solid ${storeTheme.primary}30` }}>
-          <Home size={32} className="mx-auto mb-4" style={{ color: storeTheme.primary }} />
-          <h2 className="font-display font-bold text-xl md:text-2xl mb-2" style={{ color: storeTheme.text }}>Quer anunciar seu imóvel?</h2>
-          <p className="text-sm mb-6 max-w-md mx-auto" style={{ color: storeTheme.textMuted }}>
-            Cadastre seu imóvel gratuitamente com {dbProfile?.company_name || dbProfile?.full_name || "o corretor"} e alcance mais compradores.
-          </p>
-          <Link to={`/captar-imovel/${corretorSlug}`} className="inline-flex items-center gap-2 px-8 py-3 rounded-xl font-bold text-sm text-white transition-all hover:scale-105" style={{ background: storeTheme.primary, boxShadow: `0 8px 24px ${storeTheme.primary}40` }}>
-            Anunciar meu imóvel <ArrowRight size={14} />
-          </Link>
-        </div>
-      </section>
     </div>
   );
 }
