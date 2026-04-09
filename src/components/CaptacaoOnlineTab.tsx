@@ -64,17 +64,18 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
   const fetchCaptureVideo = async () => {
     const { data } = await supabase
       .from("profiles")
-      .select("capture_video_url")
+      .select("capture_video_url, capture_video_title")
       .eq("id", sellerId)
       .maybeSingle();
     if (data?.capture_video_url) setCaptureVideoUrl(data.capture_video_url);
+    if ((data as any)?.capture_video_title) setCaptureVideoTitle((data as any).capture_video_title);
   };
 
   const saveCaptureVideo = async () => {
     setSavingVideo(true);
     await supabase
       .from("profiles")
-      .update({ capture_video_url: captureVideoUrl || null } as any)
+      .update({ capture_video_url: captureVideoUrl || null, capture_video_title: captureVideoTitle || null } as any)
       .eq("id", sellerId);
     toast({ title: "Vídeo salvo!" });
     setSavingVideo(false);
