@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { getStoreUrl, getStoreFullUrl } from "@/lib/storeUrl";
 import { getMarketplaceTheme } from "@/lib/marketplaceThemes";
-import { getMarketplaceThemeCssVars } from "@/lib/marketplaceThemeCssVars";
+import { getMarketplaceThemeCssVars, getStoreThemeCssVars } from "@/lib/marketplaceThemeCssVars";
+import { getStoreTheme } from "@/components/StoreThemePicker";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -80,7 +81,16 @@ export default function SellerDashboard() {
     });
   }, []);
   const dashTheme = getMarketplaceTheme(dashThemeId);
-  const dashThemeVars = getMarketplaceThemeCssVars(dashTheme);
+
+  // Use broker's own store_theme for dashboard if set, otherwise fall back to global marketplace theme
+  const brokerStoreTheme = getStoreTheme((profile as any)?.store_theme);
+  const hasBrokerTheme = !!(profile as any)?.store_theme && (profile as any)?.store_theme !== "default";
+  const dashThemeVars = hasBrokerTheme
+    ? getStoreThemeCssVars(brokerStoreTheme)
+    : getMarketplaceThemeCssVars(dashTheme);
+  const dashGradient = hasBrokerTheme
+    ? brokerStoreTheme.preview.heroBg
+    : dashTheme.dashboardGradient;
   useEffect(() => {
     if (!authLoading && !user) navigate("/login");
   }, [user, authLoading, navigate]);
@@ -312,7 +322,7 @@ export default function SellerDashboard() {
   return (
     <div className="min-h-screen bg-background overflow-x-hidden" style={dashThemeVars}>
       {/* Mobile Header — Premium Gradient */}
-      <div className="py-6 lg:py-4" style={{ background: dashTheme.dashboardGradient }}>
+      <div className="py-6 lg:py-4" style={{ background: dashGradient }}>
         <div className="container max-w-6xl mx-auto px-4 lg:hidden">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -493,7 +503,7 @@ export default function SellerDashboard() {
               <div className="space-y-6">
                 {/* Welcome Banner - Desktop */}
                 <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
-                  className="hidden lg:block rounded-2xl p-6 relative overflow-hidden" style={{ background: dashTheme.dashboardGradient }}>
+                  className="hidden lg:block rounded-2xl p-6 relative overflow-hidden" style={{ background: dashGradient }}>
                   <div className="absolute top-0 right-0 w-40 h-40 rounded-full bg-white/5 -translate-y-1/2 translate-x-1/4" />
                   <div className="absolute bottom-0 left-1/3 w-24 h-24 rounded-full bg-white/5 translate-y-1/2" />
                   <div className="relative">

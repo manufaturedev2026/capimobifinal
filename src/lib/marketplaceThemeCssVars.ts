@@ -74,34 +74,51 @@ export function getMarketplaceThemeCssVars(theme: MarketplaceTheme): CSSProperti
   const highlight = colorToHslTriplet(theme.promoExtra || theme.promoExploreColor || theme.promoAccent || theme.primary, accent);
   const mutedForeground = colorToHslTriplet(theme.textMuted, foreground);
 
+  return buildCssVars({ background, foreground, card, secondary, border, primary, accent, highlight, mutedForeground });
+}
+
+/** Convert a StoreTheme (from StoreThemePicker) into CSS variable overrides */
+export function getStoreThemeCssVars(theme: { bg: string; card: string; text: string; textMuted: string; primary: string; accent: string; border: string }): CSSProperties {
+  const background = colorToHslTriplet(theme.bg, "220 40% 8%");
+  const foreground = colorToHslTriplet(theme.text, "0 0% 100%");
+  const card = colorToHslTriplet(theme.card, background);
+  const border = colorToHslTriplet(theme.border, card);
+  const primary = colorToHslTriplet(theme.primary, "197 100% 47%");
+  const accent = colorToHslTriplet(theme.accent || theme.primary, primary);
+  const mutedForeground = colorToHslTriplet(theme.textMuted, foreground);
+
+  return buildCssVars({ background, foreground, card, secondary: card, border, primary, accent, highlight: accent, mutedForeground });
+}
+
+function buildCssVars(v: { background: string; foreground: string; card: string; secondary: string; border: string; primary: string; accent: string; highlight: string; mutedForeground: string }): CSSProperties {
   return {
-    "--background": background,
-    "--foreground": foreground,
-    "--card": card,
-    "--card-foreground": foreground,
-    "--popover": card,
-    "--popover-foreground": foreground,
-    "--primary": primary,
+    "--background": v.background,
+    "--foreground": v.foreground,
+    "--card": v.card,
+    "--card-foreground": v.foreground,
+    "--popover": v.card,
+    "--popover-foreground": v.foreground,
+    "--primary": v.primary,
     "--primary-foreground": "0 0% 100%",
-    "--secondary": secondary,
-    "--secondary-foreground": foreground,
-    "--muted": secondary,
-    "--muted-foreground": mutedForeground,
-    "--accent": accent,
+    "--secondary": v.secondary,
+    "--secondary-foreground": v.foreground,
+    "--muted": v.secondary,
+    "--muted-foreground": v.mutedForeground,
+    "--accent": v.accent,
     "--accent-foreground": "0 0% 100%",
     "--destructive": "0 84% 60%",
     "--destructive-foreground": "0 0% 98%",
-    "--border": border,
-    "--input": border,
-    "--ring": primary,
-    "--sidebar-background": background,
-    "--sidebar-foreground": foreground,
-    "--sidebar-primary": primary,
+    "--border": v.border,
+    "--input": v.border,
+    "--ring": v.primary,
+    "--sidebar-background": v.background,
+    "--sidebar-foreground": v.foreground,
+    "--sidebar-primary": v.primary,
     "--sidebar-primary-foreground": "0 0% 100%",
-    "--sidebar-accent": secondary,
-    "--sidebar-accent-foreground": foreground,
-    "--sidebar-border": border,
-    "--sidebar-ring": primary,
-    "--highlight": highlight,
+    "--sidebar-accent": v.secondary,
+    "--sidebar-accent-foreground": v.foreground,
+    "--sidebar-border": v.border,
+    "--sidebar-ring": v.primary,
+    "--highlight": v.highlight,
   } as CSSProperties;
 }
