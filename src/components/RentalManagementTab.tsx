@@ -450,6 +450,44 @@ export default function RentalManagementTab({ userId, sellerId }: Props) {
             </div>
           );
         })()}
+
+        {/* ── Rental Properties Grid ── */}
+        {rentalProperties.length > 0 && (
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
+                <Home size={16} className="text-blue-500" /> Imóveis Cadastrados ({rentalProperties.length})
+              </h3>
+              <button onClick={() => { setEditingRentalProp(null); setView("rental-property-form"); }} className="text-xs font-bold text-primary hover:underline flex items-center gap-1">
+                <Plus size={12} /> Cadastrar
+              </button>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+              {rentalProperties.slice(0, 8).map(rp => (
+                <div key={rp.id} className="rounded-xl border border-border bg-card overflow-hidden group cursor-pointer hover:border-primary/50 transition-colors"
+                  onClick={() => { setEditingRentalProp(rp); setView("rental-property-form"); }}>
+                  {rp.photo_url ? (
+                    <img src={rp.photo_url} alt={rp.title} className="w-full h-24 object-cover" />
+                  ) : (
+                    <div className="w-full h-24 bg-secondary flex items-center justify-center">
+                      <Home size={24} className="text-muted-foreground/30" />
+                    </div>
+                  )}
+                  <div className="p-2.5">
+                    <p className="text-xs font-bold text-foreground truncate">{rp.title}</p>
+                    {rp.city && <p className="text-[10px] text-muted-foreground flex items-center gap-1"><MapPin size={8} />{rp.city}</p>}
+                    {rp.owner_name && <p className="text-[10px] text-muted-foreground truncate">{rp.owner_name}</p>}
+                  </div>
+                </div>
+              ))}
+            </div>
+            {rentalProperties.length > 8 && (
+              <button onClick={() => setView("rental-properties")} className="text-xs font-bold text-primary hover:underline mt-2">
+                Ver todos ({rentalProperties.length})
+              </button>
+            )}
+          </div>
+        )}
       </div>
     );
   }
