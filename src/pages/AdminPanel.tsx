@@ -1037,8 +1037,8 @@ export default function AdminPanel() {
                   <button
                     key={preset.id}
                     onClick={async () => {
-                      setLoginHeroUrl(preset.src);
-                      await supabase.from("platform_settings" as any).upsert({ key: "login_hero_image", value: preset.src } as any, { onConflict: "key" });
+                      setLoginHeroUrl(preset.id);
+                      await supabase.from("platform_settings" as any).upsert({ key: "login_hero_image", value: preset.id } as any, { onConflict: "key" });
                       toast({ title: `Imagem "${preset.label}" aplicada!` });
                     }}
                     className={`relative rounded-xl overflow-hidden border-2 transition-all aspect-video group ${isActive ? "border-primary ring-2 ring-primary/40" : "border-border hover:border-primary/50"}`}
