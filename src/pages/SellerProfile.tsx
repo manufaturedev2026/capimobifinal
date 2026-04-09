@@ -8,25 +8,6 @@ import { useSellerSubscription } from "@/hooks/useSubscription";
 import type { Database } from "@/integrations/supabase/types";
 import { BRAZIL_STATES } from "@/data/brazilStates";
 import { useCitiesByState } from "@/hooks/useCitiesByState";
-import StoreThemePicker from "@/components/StoreThemePicker";
-import { STORE_LAYOUTS, isLayoutAllowed, getMinTierForLayout } from "@/components/store-layouts";
-import layoutNetflix from "@/assets/layout-previews/layout-netflix.jpg";
-import layoutMinimal from "@/assets/layout-previews/layout-minimal.jpg";
-import layoutMagazine from "@/assets/layout-previews/layout-magazine.jpg";
-import layoutGallery from "@/assets/layout-previews/layout-gallery.jpg";
-import layoutElegant from "@/assets/layout-previews/layout-elegant.jpg";
-
-import layoutMarketplace from "@/assets/layout-previews/layout-marketplace.jpg";
-
-const LAYOUT_PREVIEWS: Record<string, string> = {
-  netflix: layoutNetflix,
-  minimal: layoutMinimal,
-  magazine: layoutMagazine,
-  gallery: layoutGallery,
-  elegant: layoutElegant,
-  
-  marketplace: layoutMarketplace,
-};
 
 type SellerType = Database["public"]["Enums"]["seller_type"];
 
