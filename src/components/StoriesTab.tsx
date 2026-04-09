@@ -68,6 +68,20 @@ export default function StoriesTab({ userId, sellerId }: StoriesTabProps) {
 
   const isExpired = (expiresAt: string) => new Date(expiresAt) < new Date();
 
+  const republishStory = async (id: string) => {
+    const newExpires = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+    const { error } = await supabase
+      .from("seller_stories")
+      .update({ expires_at: newExpires, is_active: true })
+      .eq("id", id);
+    if (error) {
+      toast({ title: "Erro ao republicar", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Story republicado por mais 24h!" });
+      fetchStories();
+    }
+  };
+
   const timeRemaining = (expiresAt: string) => {
     const diff = new Date(expiresAt).getTime() - Date.now();
     if (diff <= 0) return "Expirado";
