@@ -3,11 +3,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Link2, Copy, ExternalLink, User, Phone, MapPin, Home, DollarSign, Clock,
-  Filter, Loader2, Inbox, Sparkles, ChevronDown, ChevronUp, Image as ImageIcon, Trash2
+  Filter, Loader2, Inbox, Sparkles, ChevronDown, ChevronUp, Image as ImageIcon, Trash2, Video
 } from "lucide-react";
 
 interface CaptacaoOnlineTabProps {
@@ -49,12 +50,34 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
   const [statusFilter, setStatusFilter] = useState("todos");
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [generatedAd, setGeneratedAd] = useState("");
+  const [captureVideoUrl, setCaptureVideoUrl] = useState("");
+  const [savingVideo, setSavingVideo] = useState(false);
 
   const captureUrl = `${window.location.origin}/captar-imovel/${sellerSlug || sellerId}`;
 
   useEffect(() => {
     fetchLeads();
+    fetchCaptureVideo();
   }, [sellerId]);
+
+  const fetchCaptureVideo = async () => {
+    const { data } = await supabase
+      .from("profiles")
+      .select("capture_video_url")
+      .eq("id", sellerId)
+      .maybeSingle();
+    if (data?.capture_video_url) setCaptureVideoUrl(data.capture_video_url);
+  };
+
+  const saveCaptureVideo = async () => {
+    setSavingVideo(true);
+    await supabase
+      .from("profiles")
+      .update({ capture_video_url: captureVideoUrl || null } as any)
+      .eq("id", sellerId);
+    toast({ title: "Vídeo salvo!" });
+    setSavingVideo(false);
+  };
 
   const fetchLeads = async () => {
     const { data } = await supabase
@@ -166,6 +189,39 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
             <Button onClick={copyAd} size="sm" className="gap-1.5 text-xs">
               <Copy size={12} /> Copiar Texto
             </Button>
+          </div>
+        )}
+      </div>
+
+      {/* Capture Video */}
+      <div className="rounded-2xl border border-border p-4 space-y-3">
+        <div className="flex items-center gap-2">
+          <Video size={16} className="text-primary" />
+          <span className="text-sm font-bold text-foreground">Vídeo da Página de Captação</span>
+        </div>
+        <p className="text-xs text-muted-foreground">
+          Cole o link de um vídeo do YouTube para exibir na parte inferior da sua página de captação.
+        </p>
+        <div className="flex gap-2">
+          <Input
+            value={captureVideoUrl}
+            onChange={e => setCaptureVideoUrl(e.target.value)}
+            placeholder="https://www.youtube.com/watch?v=..."
+            className="flex-1 text-sm"
+          />
+          <Button onClick={saveCaptureVideo} size="sm" disabled={savingVideo} className="gap-1.5 text-xs">
+            {savingVideo ? <Loader2 size={12} className="animate-spin" /> : null}
+            Salvar
+          </Button>
+        </div>
+        {captureVideoUrl && (
+          <div className="aspect-video rounded-xl overflow-hidden border border-border">
+            <iframe
+              src={captureVideoUrl.replace("watch?v=", "embed/").replace("youtu.be/", "youtube.com/embed/").split("&")[0]}
+              className="w-full h-full"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
           </div>
         )}
       </div>
