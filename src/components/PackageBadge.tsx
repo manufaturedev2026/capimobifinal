@@ -1,7 +1,7 @@
 import { Crown, Star, Zap, Building, Shield, Gem, Diamond } from "lucide-react";
 
 interface PackageBadgeProps {
-  tier: "start" | "basico" | "premium" | "vip" | "essencial_empresa" | "premium_empresa" | "prime_empresa";
+  tier: "start" | "basico" | "premium" | "vip" | "essencial_empresa" | "premium_empresa" | "prime_empresa" | "black";
   size?: "sm" | "md" | "lg";
 }
 
@@ -40,6 +40,12 @@ const styles: Record<string, { bg: string; icon: any; label: string; glow?: stri
     icon: Diamond,
     label: "Black",
     glow: "shadow-zinc-500/30",
+  },
+  black: {
+    bg: "bg-gradient-to-r from-zinc-900 to-black border border-yellow-500/50",
+    icon: Diamond,
+    label: "Black",
+    glow: "shadow-yellow-500/30",
   },
 };
 

@@ -44,6 +44,7 @@ export const LAYOUTS_BY_TIER: Record<string, string[]> = {
   essencial_empresa: ["marketplace", "netflix", "minimal"],
   premium_empresa: ["marketplace", "netflix", "minimal", "magazine", "gallery", "elegant"],
   prime_empresa: ["marketplace", "netflix", "minimal", "magazine", "gallery", "elegant"],
+  black: ["marketplace", "netflix", "minimal", "magazine", "gallery", "elegant"],
 };
 
 export function isLayoutAllowed(layoutId: string, tier: string | null | undefined): boolean {

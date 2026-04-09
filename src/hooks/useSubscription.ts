@@ -5,7 +5,7 @@ export interface Subscription {
   id: string;
   user_id: string;
   seller_id: string;
-  tier: "start" | "basico" | "premium" | "vip" | "essencial_empresa" | "premium_empresa" | "prime_empresa";
+  tier: "start" | "basico" | "premium" | "vip" | "essencial_empresa" | "premium_empresa" | "prime_empresa" | "black";
   max_items: number;
   started_at: string;
   expires_at: string;
@@ -151,6 +151,29 @@ export const PACKAGE_CONFIG = {
       "Botão Modo Cinema na loja",
     ],
   },
+  black: {
+    name: "Black",
+    price: 899.99,
+    setupFee: 0,
+    maxItems: 9999,
+    color: "from-zinc-900 to-black",
+    borderColor: "border-yellow-500",
+    badgeColor: "bg-gradient-to-r from-zinc-900 to-black text-yellow-400 border border-yellow-500/50",
+    benefits: [
+      "Anúncios ilimitados",
+      "Todos os layouts exclusivos",
+      "Selo Black ★ exclusivo",
+      "Corretores ilimitados",
+      "CRM completo + Analytics avançado",
+      "Prioridade máxima na listagem",
+      "Gerente de conta VIP dedicado",
+      "SEO Premium otimizado",
+      "Domínio personalizado",
+      "API de integração",
+      "Suporte 24/7 prioritário",
+      "Botão Modo Cinema na loja",
+    ],
+  },
 } as const;
 
 export function useSubscription(userId?: string) {
@@ -228,7 +251,7 @@ export function useSubscription(userId?: string) {
 }
 
 export function useSellerSubscription(sellerId?: string) {
-  const [tier, setTier] = useState<"start" | "basico" | "premium" | "vip" | "essencial_empresa" | "premium_empresa" | "prime_empresa">("basico");
+  const [tier, setTier] = useState<"start" | "basico" | "premium" | "vip" | "essencial_empresa" | "premium_empresa" | "prime_empresa" | "black">("basico");
 
   useEffect(() => {
     if (!sellerId) return;
