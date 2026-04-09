@@ -140,6 +140,32 @@ export default function PartnerBrokerTab({ profileId, userId }: { profileId: str
     setSelectedAgency(null);
   };
 
+  const leavePartnership = async (agencyId: string) => {
+    setSendingTo(agencyId);
+    // Remove team member entry
+    const { data: myProfile } = await supabase.from("profiles").select("full_name").eq("id", profileId).single();
+    if (myProfile) {
+      const { data: members } = await supabase
+        .from("team_members")
+        .select("id, full_name")
+        .eq("company_id", agencyId);
+      
+      if (members) {
+        const me = members.find(m => m.full_name === myProfile.full_name);
+        if (me) {
+          await supabase.from("team_members").delete().eq("id", me.id);
+        }
+      }
+    }
+    // Delete the request
+    await supabase.from("partnership_requests").delete().eq("requester_profile_id", profileId).eq("agency_profile_id", agencyId);
+    
+    toast({ title: "Parceria encerrada", description: "Você saiu da imobiliária." });
+    setPartnerLink(null);
+    fetchData();
+    setSendingTo(null);
+  };
+
   const getRequestStatus = (agencyId: string) => {
     return requests.find(r => r.agency_profile_id === agencyId);
   };
