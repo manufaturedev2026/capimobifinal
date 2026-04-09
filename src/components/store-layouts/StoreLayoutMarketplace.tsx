@@ -542,7 +542,7 @@ export default function StoreLayoutMarketplace({
                   onTouchStart={() => {}}
                   style={{ overscrollBehaviorX: "contain" }}
                 >
-                  {promoBanners.map((banner, bIdx) => (
+                  {promoBanners.slice(0, 2).map((banner, bIdx) => (
                     <motion.div
                       key={banner.slug}
                       className="relative h-40 rounded-2xl overflow-hidden cursor-pointer snap-center flex-shrink-0"
