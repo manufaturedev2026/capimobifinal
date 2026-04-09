@@ -102,6 +102,7 @@ export default function CompanyProfile() {
   const [leadCaptureOpen, setLeadCaptureOpen] = useState(false);
   const [storyUploadOpen, setStoryUploadOpen] = useState(false);
   const [pendingWhatsAppAction, setPendingWhatsAppAction] = useState<(() => void) | null>(null);
+  const [leadCaptureContext, setLeadCaptureContext] = useState<{ funnelStage?: string; extraNotes?: string; leadSource?: string } | null>(null);
 
   const searchParams = new URLSearchParams(location.search);
   const corretorSlug = searchParams.get("corretor");
