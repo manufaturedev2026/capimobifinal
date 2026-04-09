@@ -121,6 +121,7 @@ export default function StoreLayoutMarketplace({
   const [searchTerm, setSearchTerm] = useState("");
   const [heroIdx, setHeroIdx] = useState(0);
   const [promoIdx, setPromoIdx] = useState(0);
+  const [desktopPromoPage, setDesktopPromoPage] = useState(0);
   const [showCityPicker, setShowCityPicker] = useState(false);
   const promoScrollRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
@@ -542,7 +543,7 @@ export default function StoreLayoutMarketplace({
                   onTouchStart={() => {}}
                   style={{ overscrollBehaviorX: "contain" }}
                 >
-                  {promoBanners.slice(0, 2).map((banner, bIdx) => (
+                  {promoBanners.map((banner, bIdx) => (
                     <motion.div
                       key={banner.slug}
                       className="relative h-40 rounded-2xl overflow-hidden cursor-pointer snap-center flex-shrink-0"
@@ -553,7 +554,7 @@ export default function StoreLayoutMarketplace({
                       }}
                       onClick={() => { setActiveCategory(banner.slug); scrollToGrid(); }}
                     >
-                      <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${darkBase}, ${storeTheme.primary}${bIdx === 0 ? "" : "cc"})` }} />
+                      <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${darkBase}, ${storeTheme.primary}${bIdx % 2 === 0 ? "" : "cc"})` }} />
                       <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent" />
                       <FloatingParticles color={storeTheme.primary} />
                       <div className="relative z-10 h-full flex flex-col justify-center p-5">
@@ -577,10 +578,7 @@ export default function StoreLayoutMarketplace({
                     <button
                       key={i}
                       onClick={() => {
-                        const el = promoScrollRef.current;
-                        if (el) {
-                          scrollPromoCardIntoView(i);
-                        }
+                        scrollPromoCardIntoView(i);
                         setPromoIdx(i);
                       }}
                       className="h-1.5 rounded-full transition-all duration-300"
@@ -593,33 +591,67 @@ export default function StoreLayoutMarketplace({
                 </div>
               </div>
 
-              {/* Desktop: grid */}
-              <div className="hidden md:grid md:grid-cols-2 gap-4">
-                {promoBanners.slice(0, 2).map((banner, bIdx) => (
-                  <motion.div
-                    key={banner.slug}
-                    whileHover={{ y: -4, transition: { duration: 0.25 } }}
-                    className="relative h-52 rounded-2xl overflow-hidden group cursor-pointer"
-                    onClick={() => { setActiveCategory(banner.slug); scrollToGrid(); }}
-                    style={{ boxShadow: `0 8px 32px ${storeTheme.primary}18` }}
-                  >
-                    <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${darkBase}, ${storeTheme.primary}${bIdx === 0 ? "" : "cc"})` }} />
-                    <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent" />
-                    <FloatingParticles color={storeTheme.primary} />
-                    <div className="relative z-10 h-full flex flex-col justify-center p-6">
-                      <h3 className="font-display font-black text-3xl text-white leading-tight">
-                        {banner.title[0]}<br />{banner.title[1]}
-                      </h3>
-                      <p className="text-white/60 text-xs mt-2 max-w-[200px]">{banner.desc}</p>
-                      <span className="inline-flex items-center gap-1.5 text-white/90 text-xs font-bold mt-3 group-hover:gap-3 transition-all">
-                        Explorar <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-                      </span>
-                    </div>
-                    <div className="absolute right-0 top-0 bottom-0 w-1/3 opacity-10">
-                      <banner.icon size={140} className="absolute -right-6 top-1/2 -translate-y-1/2 text-white" />
-                    </div>
-                  </motion.div>
-                ))}
+              {/* Desktop: paginated 2 at a time */}
+              <div className="hidden md:block relative">
+                {(() => {
+                  const totalPages = Math.ceil(promoBanners.length / 2);
+                  const currentBanners = promoBanners.slice(desktopPromoPage * 2, desktopPromoPage * 2 + 2);
+                  return (
+                    <>
+                      <AnimatePresence mode="wait">
+                        <motion.div
+                          key={desktopPromoPage}
+                          initial={{ opacity: 0, x: 40 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: -40 }}
+                          transition={{ duration: 0.35 }}
+                          className="grid grid-cols-2 gap-4"
+                        >
+                          {currentBanners.map((banner, bIdx) => (
+                            <motion.div
+                              key={banner.slug}
+                              whileHover={{ y: -4, transition: { duration: 0.25 } }}
+                              className="relative h-52 rounded-2xl overflow-hidden group cursor-pointer"
+                              onClick={() => { setActiveCategory(banner.slug); scrollToGrid(); }}
+                              style={{ boxShadow: `0 8px 32px ${storeTheme.primary}18` }}
+                            >
+                              <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${darkBase}, ${storeTheme.primary}${bIdx % 2 === 0 ? "" : "cc"})` }} />
+                              <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent" />
+                              <FloatingParticles color={storeTheme.primary} />
+                              <div className="relative z-10 h-full flex flex-col justify-center p-6">
+                                <h3 className="font-display font-black text-3xl text-white leading-tight">
+                                  {banner.title[0]}<br />{banner.title[1]}
+                                </h3>
+                                <p className="text-white/60 text-xs mt-2 max-w-[200px]">{banner.desc}</p>
+                                <span className="inline-flex items-center gap-1.5 text-white/90 text-xs font-bold mt-3 group-hover:gap-3 transition-all">
+                                  Explorar <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                                </span>
+                              </div>
+                              <div className="absolute right-0 top-0 bottom-0 w-1/3 opacity-10">
+                                <banner.icon size={140} className="absolute -right-6 top-1/2 -translate-y-1/2 text-white" />
+                              </div>
+                            </motion.div>
+                          ))}
+                        </motion.div>
+                      </AnimatePresence>
+                      {totalPages > 1 && (
+                        <div className="flex justify-center gap-2 mt-4">
+                          {Array.from({ length: totalPages }).map((_, i) => (
+                            <button
+                              key={i}
+                              onClick={() => setDesktopPromoPage(i)}
+                              className="h-2 rounded-full transition-all duration-300"
+                              style={{
+                                width: i === desktopPromoPage ? 28 : 10,
+                                background: i === desktopPromoPage ? storeTheme.primary : `${storeTheme.textMuted}40`,
+                              }}
+                            />
+                          ))}
+                        </div>
+                      )}
+                    </>
+                  );
+                })()}
               </div>
             </motion.section>
           );
