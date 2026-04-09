@@ -253,7 +253,7 @@ export default function VenderPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.2 }}
             >
-              <form id="signup-form" onSubmit={handleSignup} className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 md:p-8 space-y-4">
+              <form id="signup-form" onSubmit={handleSignup} className="bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl p-6 md:p-8 space-y-4">
                 <div className="text-center mb-2">
                   <h2 className="font-display font-bold text-xl">Comece Gratuitamente</h2>
                   <p className="text-white/50 text-sm mt-1">Crie sua conta em menos de 1 minuto</p>
