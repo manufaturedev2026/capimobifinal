@@ -1062,11 +1062,6 @@ function ContractForm({ userId, sellerId, properties, rentalProperties, editing,
                     {rentalProperties.map(rp => <option key={rp.id} value={rp.id}>{rp.title}{rp.city ? ` — ${rp.city}` : ""}</option>)}
                   </optgroup>
                 )}
-                {properties.length > 0 && (
-                  <optgroup label="🏠 Imóveis da Loja">
-                    {properties.map(p => <option key={p.id} value={p.id}>{p.title}{p.city ? ` — ${p.city}` : ""}</option>)}
-                  </optgroup>
-                )}
               </select>
             </div>
             <div>
