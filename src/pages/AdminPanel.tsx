@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 
 import AdminCrmTab from "@/components/AdminCrmTab";
 import AdminPushTab from "@/components/AdminPushTab";
+import { LOGIN_HERO_PRESETS } from "@/data/loginHeroPresets";
 
 interface SellerWithSub {
   id: string;
@@ -1025,8 +1026,38 @@ export default function AdminPanel() {
               <Camera size={20} className="text-primary" /> Foto da Tela de Login
             </h3>
             <p className="text-sm text-muted-foreground mb-4">
-              A imagem exibida na página de login. O tema escolhido acima também é aplicado.
+              Escolha uma das opções prontas ou envie sua própria imagem.
             </p>
+
+            {/* Preset gallery */}
+            <div className="grid grid-cols-5 gap-2 mb-4">
+              {LOGIN_HERO_PRESETS.map((preset) => {
+                const isActive = loginHeroUrl === preset.src;
+                return (
+                  <button
+                    key={preset.id}
+                    onClick={async () => {
+                      setLoginHeroUrl(preset.src);
+                      await supabase.from("platform_settings" as any).upsert({ key: "login_hero_image", value: preset.src } as any, { onConflict: "key" });
+                      toast({ title: `Imagem "${preset.label}" aplicada!` });
+                    }}
+                    className={`relative rounded-xl overflow-hidden border-2 transition-all aspect-video group ${isActive ? "border-primary ring-2 ring-primary/40" : "border-border hover:border-primary/50"}`}
+                  >
+                    <img src={preset.src} alt={preset.label} className="w-full h-full object-cover" loading="lazy" />
+                    {isActive && (
+                      <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
+                        <Check size={20} className="text-white drop-shadow-lg" />
+                      </div>
+                    )}
+                    <span className="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-[10px] px-1 py-0.5 text-center truncate opacity-0 group-hover:opacity-100 transition-opacity">
+                      {preset.label}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Current + upload */}
             <div className="flex items-start gap-4">
               {loginHeroUrl && (
                 <div className="relative w-40 h-28 rounded-xl overflow-hidden border border-border shrink-0">
@@ -1067,9 +1098,9 @@ export default function AdminPanel() {
                 <button onClick={() => loginHeroRef.current?.click()} disabled={loginHeroUploading}
                   className="px-4 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-bold hover:opacity-90 disabled:opacity-50 flex items-center gap-2">
                   {loginHeroUploading ? <div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" /> : <Camera size={16} />}
-                  {loginHeroUrl ? "Trocar Imagem" : "Enviar Imagem"}
+                  Enviar Imagem Própria
                 </button>
-                <p className="text-xs text-muted-foreground">Recomendado: 1920×1080px</p>
+                <p className="text-xs text-muted-foreground">Ou envie uma imagem personalizada (1920×1080px)</p>
               </div>
             </div>
           </div>
