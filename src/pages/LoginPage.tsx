@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { getMarketplaceTheme } from "@/lib/marketplaceThemes";
 import { getMarketplaceThemeCssVars } from "@/lib/marketplaceThemeCssVars";
-import { LOGIN_HERO_PRESETS } from "@/data/loginHeroPresets";
+import { normalizeLoginHeroSetting, resolveLoginHeroImage } from "@/data/loginHeroPresets";
 import heroImgDefault from "@/assets/hero-anunciar.jpg";
 
 export default function LoginPage() {
@@ -40,15 +40,14 @@ export default function LoginPage() {
     supabase.from("platform_settings").select("key, value").in("key", ["homepage_theme", "login_hero_image"]).then(({ data }) => {
       (data || []).forEach((row: any) => {
         if (row.key === "homepage_theme") setThemeId(row.value);
-        if (row.key === "login_hero_image" && row.value) setLoginHeroUrl(row.value);
+        if (row.key === "login_hero_image" && row.value) setLoginHeroUrl(normalizeLoginHeroSetting(row.value));
       });
     });
   }, []);
 
   const theme = getMarketplaceTheme(themeId);
   const themeVars = getMarketplaceThemeCssVars(theme);
-  const resolvedPreset = loginHeroUrl ? LOGIN_HERO_PRESETS.find(p => p.id === loginHeroUrl)?.src : null;
-  const heroImg = resolvedPreset || loginHeroUrl || heroImgDefault;
+  const heroImg = resolveLoginHeroImage(loginHeroUrl) || heroImgDefault;
 
   const getStoreRoute = (p?: { id: string; slug?: string | null } | null) => {
     const identifier = p?.slug || p?.id;

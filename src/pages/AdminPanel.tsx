@@ -13,7 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 
 import AdminCrmTab from "@/components/AdminCrmTab";
 import AdminPushTab from "@/components/AdminPushTab";
-import { LOGIN_HERO_PRESETS } from "@/data/loginHeroPresets";
+import { LOGIN_HERO_PRESETS, normalizeLoginHeroSetting, resolveLoginHeroImage } from "@/data/loginHeroPresets";
 
 interface SellerWithSub {
   id: string;
@@ -101,7 +101,7 @@ export default function AdminPanel() {
         if (data?.value) setHomepageTheme(data.value);
       });
       supabase.from("platform_settings").select("value").eq("key", "login_hero_image").maybeSingle().then(({ data }) => {
-        if (data?.value) setLoginHeroUrl(data.value);
+        if (data?.value) setLoginHeroUrl(normalizeLoginHeroSetting(data.value));
       });
     }
   }, [isAdmin]);
@@ -1061,7 +1061,7 @@ export default function AdminPanel() {
             <div className="flex items-start gap-4">
               {loginHeroUrl && (
                 <div className="relative w-40 h-28 rounded-xl overflow-hidden border border-border shrink-0">
-                  <img src={LOGIN_HERO_PRESETS.find(p => p.id === loginHeroUrl)?.src || loginHeroUrl} alt="Login hero" className="w-full h-full object-cover" />
+                  <img src={resolveLoginHeroImage(loginHeroUrl) || ""} alt="Login hero" className="w-full h-full object-cover" />
                   <button
                     onClick={async () => {
                       setLoginHeroUrl("");
