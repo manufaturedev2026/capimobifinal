@@ -4,7 +4,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { toast } from "@/hooks/use-toast";
 import { useParams, Link, useLocation, Navigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Star, MapPin, MessageCircle, Share2, Key, Home, Building2, Landmark, Store, Warehouse, MoreHorizontal, Image, Eye, Instagram, Phone, ExternalLink, Clock, Shield, Zap, ChevronLeft, ChevronRight, Heart, BadgeCheck, Clapperboard, Play, X, Volume2, VolumeX, LayoutDashboard, Bed, Bath, Car, Maximize, Sword, Trophy, Sparkles, Calendar } from "lucide-react";
+import { ArrowLeft, ArrowRight, Star, MapPin, MessageCircle, Share2, Key, Home, Building2, Landmark, Store, Warehouse, MoreHorizontal, Image, Eye, Instagram, Phone, ExternalLink, Clock, Shield, Zap, ChevronLeft, ChevronRight, Heart, BadgeCheck, Clapperboard, Play, X, Volume2, VolumeX, LayoutDashboard, Bed, Bath, Car, Maximize, Sword, Trophy, Sparkles, Calendar } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import StoreEffects from "@/components/StoreEffects";
 import ThemeParticles from "@/components/ThemeParticles";
@@ -1843,16 +1843,32 @@ export default function CompanyProfile() {
           </AnimatePresence>
         );
       })()}
+      {/* ═══ CTA Captação — acima do card do corretor ═══ */}
+      <section className="px-4 mt-6 mb-4">
+        <div className="max-w-[1800px] mx-auto lg:max-w-2xl">
+          <div className="rounded-2xl p-6 md:p-10 text-center" style={{ background: `linear-gradient(135deg, ${storeTheme.primary}20, ${storeTheme.primary}08)`, border: `1px solid ${storeTheme.primary}30` }}>
+            <Home size={28} className="mx-auto mb-3" style={{ color: storeTheme.primary }} />
+            <h2 className="font-display font-bold text-lg md:text-2xl mb-2" style={{ color: storeTheme.text }}>Quer anunciar seu imóvel?</h2>
+            <p className="text-xs md:text-sm mb-5 max-w-md mx-auto" style={{ color: storeTheme.textMuted }}>
+              Cadastre seu imóvel gratuitamente com {dbProfile?.company_name || dbProfile?.full_name || "o corretor"} e alcance mais compradores.
+            </p>
+            <Link to={`/captar-imovel/${dbProfile?.slug || id}`} className="inline-flex items-center gap-2 px-6 md:px-8 py-3 rounded-xl font-bold text-xs md:text-sm text-white transition-all hover:scale-105" style={{ background: storeTheme.primary, boxShadow: `0 8px 24px ${storeTheme.primary}40` }}>
+              Anunciar meu imóvel <ArrowRight size={14} />
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* Mobile "Sobre" section - unified card for all layouts */}
       <section className={`${isMarketplace || isNetflix ? "" : "lg:hidden"} px-4 mt-6 mb-6`}>
         <div className="max-w-[1800px] mx-auto">
           {/* ── Bloco 1: Card do Corretor ── */}
           <div className="rounded-2xl lg:max-w-2xl lg:mx-auto" style={{ border: `1px solid ${storeTheme.border}`, background: storeTheme.card }}>
             {/* Header com cor primária */}
-            <div className="rounded-t-2xl px-5 pt-4 pb-4 lg:text-center" style={{ background: dbProfile?.cover_color || `linear-gradient(135deg, ${storeTheme.primary}, ${storeTheme.primary}dd)` }}>
+            <div className="rounded-t-2xl px-5 pt-5 pb-5 md:pt-6 md:pb-6 lg:text-center" style={{ background: dbProfile?.cover_color || `linear-gradient(135deg, ${storeTheme.primary}, ${storeTheme.primary}dd)` }}>
               <div className="flex items-center gap-2 lg:justify-center">
-                <BadgeCheck size={16} className="text-white/90" />
-                <span className="text-white/90 text-xs font-semibold uppercase tracking-wider">Profissional verificado</span>
+                <BadgeCheck size={20} className="text-white/90 md:w-6 md:h-6" />
+                <span className="text-white/90 text-sm md:text-base lg:text-lg font-semibold uppercase tracking-wider">Profissional verificado</span>
               </div>
             </div>
             {/* Foto + dados abaixo do header */}
