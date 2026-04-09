@@ -1021,14 +1021,30 @@ function ContractForm({ userId, sellerId, properties, rentalProperties, editing,
             <div>
               <label className={labelCls}>Selecionar Imóvel</label>
               <select value={form.item_id} onChange={e => {
-                const selectedProp = properties.find(p => p.id === e.target.value);
-                set("item_id", e.target.value);
-                if (selectedProp && !form.item_label) {
-                  set("item_label", `${selectedProp.title}${selectedProp.city ? ` — ${selectedProp.city}` : ""}`);
+                const val = e.target.value;
+                set("item_id", val);
+                // Auto-fill label and owner from rental property
+                const rp = rentalProperties.find(r => r.id === val);
+                if (rp) {
+                  set("item_label", `${rp.title}${rp.city ? ` — ${rp.city}` : ""}`);
+                  if (rp.owner_name && !form.owner_name) set("owner_name", rp.owner_name);
+                  if (rp.owner_phone && !form.owner_phone) set("owner_phone", rp.owner_phone);
+                } else {
+                  const sp = properties.find(p => p.id === val);
+                  if (sp && !form.item_label) set("item_label", `${sp.title}${sp.city ? ` — ${sp.city}` : ""}`);
                 }
               }} className={inputCls}>
                 <option value="">Nenhum (manual)</option>
-                {properties.map(p => <option key={p.id} value={p.id}>{p.title}{p.city ? ` — ${p.city}` : ""}</option>)}
+                {rentalProperties.length > 0 && (
+                  <optgroup label="📋 Imóveis de Aluguel">
+                    {rentalProperties.map(rp => <option key={rp.id} value={rp.id}>{rp.title}{rp.city ? ` — ${rp.city}` : ""}</option>)}
+                  </optgroup>
+                )}
+                {properties.length > 0 && (
+                  <optgroup label="🏠 Imóveis da Loja">
+                    {properties.map(p => <option key={p.id} value={p.id}>{p.title}{p.city ? ` — ${p.city}` : ""}</option>)}
+                  </optgroup>
+                )}
               </select>
             </div>
             <div>
