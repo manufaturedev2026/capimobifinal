@@ -254,6 +254,23 @@ export const MARKETPLACE_THEMES: MarketplaceTheme[] = [
     promoExploreColor: "#0284C7",
     promoExtra: "#A5F3FC",
   },
+  // ── Seleção Brasileira ──
+  {
+    id: "selecao",
+    name: "Seleção Brasileira",
+    icon: "🇧🇷",
+    primary: "#FBBF24",
+    darkBase: "hsl(220, 50%, 7%)",
+    darkMid: "hsl(220, 45%, 14%)",
+    cardBg: "hsl(220, 38%, 11%)",
+    border: "hsl(220, 22%, 18%)",
+    text: "#ffffff",
+    textMuted: "#a0b0c8",
+    dashboardGradient: "linear-gradient(135deg, #002776 0%, #004aad 25%, #FBBF24 50%, #ffffff 75%, #009c3b 100%)",
+    promoAccent: "#009c3b",
+    promoExploreColor: "#002776",
+    promoExtra: "#ffffff",
+  },
 ];
 
 export function getMarketplaceTheme(id: string | null | undefined): MarketplaceTheme {
