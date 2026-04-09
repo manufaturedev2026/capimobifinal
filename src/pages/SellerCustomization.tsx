@@ -296,19 +296,43 @@ export default function SellerCustomization({ embedded }: { embedded?: boolean }
             </>
           )}
         </div>
+    </>
+  );
 
-        <button
-          type="submit"
-          disabled={saving}
-          className="w-full py-4 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg"
-        >
-          {saving ? (
-            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-          ) : (
-            <>
-              <Save size={16} /> Salvar Personalização
-            </>
-          )}
+  if (embedded) {
+    return (
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="font-display font-bold text-xl text-foreground">Personalização</h2>
+            <p className="text-sm text-muted-foreground">Customize cores, temas, layout e vídeos da sua loja</p>
+          </div>
+          <button type="submit" disabled={saving}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:bg-primary/90 transition-all disabled:opacity-50">
+            <Save size={16} /> {saving ? "Salvando..." : "Salvar"}
+          </button>
+        </div>
+        {renderFormContent()}
+      </form>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      <div className="gradient-hero py-6">
+        <div className="container max-w-3xl mx-auto px-4 flex items-center gap-3">
+          <button onClick={() => navigate("/painel")} className="p-2 rounded-xl bg-white/20 text-white hover:bg-white/30">
+            <ArrowLeft size={18} />
+          </button>
+          <Palette size={20} className="text-white" />
+          <h1 className="font-display font-bold text-xl text-white">Personalização</h1>
+        </div>
+      </div>
+      <form onSubmit={handleSubmit} className="container max-w-3xl mx-auto px-4 py-6 space-y-6">
+        {renderFormContent()}
+        <button type="submit" disabled={saving}
+          className="w-full py-4 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg">
+          {saving ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <><Save size={16} /> Salvar Personalização</>}
         </button>
       </form>
     </div>
