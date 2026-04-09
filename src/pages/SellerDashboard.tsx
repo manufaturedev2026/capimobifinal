@@ -19,6 +19,8 @@ import CaptacaoOnlineTab from "@/components/CaptacaoOnlineTab";
 import StoriesTab from "@/components/StoriesTab";
 import NotificationsTab from "@/components/NotificationsTab";
 import ProfitCalculatorTab from "@/components/ProfitCalculatorTab";
+import { lazy, Suspense } from "react";
+const SellerCustomization = lazy(() => import("@/pages/SellerCustomization"));
 import { getTagStyle, getTagLabel } from "@/data/products";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
@@ -46,7 +48,7 @@ type SellerItem = {
   sold_at: string | null;
 };
 
-type DashboardTab = "overview" | "items" | "stats" | "domain" | "team" | "events" | "referral" | "crm" | "gallery" | "rentals" | "contracts" | "captacao" | "stories" | "notifications" | "profit";
+type DashboardTab = "overview" | "items" | "stats" | "domain" | "team" | "events" | "referral" | "crm" | "gallery" | "rentals" | "contracts" | "captacao" | "stories" | "notifications" | "profit" | "customization";
 
 export default function SellerDashboard() {
   const { user, profile, signOut, refreshProfile, loading: authLoading } = useAuth();
@@ -395,10 +397,10 @@ export default function SellerDashboard() {
                 className="sidebar-nav-item text-muted-foreground hover:text-foreground hover:bg-secondary">
                 <UserCircle size={18} /> Meu Perfil
               </Link>
-              <Link to="/painel/personalizacao"
-                className="sidebar-nav-item text-muted-foreground hover:text-foreground hover:bg-secondary">
+              <button onClick={() => setActiveTab("customization")}
+                className={`sidebar-nav-item ${activeTab === "customization" ? "active" : "text-muted-foreground hover:text-foreground hover:bg-secondary"}`}>
                 <Palette size={18} /> Personalização
-              </Link>
+              </button>
               <Link to="/pacotes"
                 className="sidebar-nav-item text-muted-foreground hover:text-foreground hover:bg-secondary">
                 <Package size={18} /> Pacotes
