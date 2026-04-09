@@ -932,6 +932,62 @@ export default function AdminPanel() {
             </div>
           </div>
         </div>
+
+          {/* Login Hero Image */}
+          <div className="bg-card border border-border rounded-2xl p-5">
+            <h3 className="font-display font-bold text-lg text-foreground mb-1 flex items-center gap-2">
+              <Camera size={20} className="text-primary" /> Foto da Tela de Login
+            </h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              A imagem exibida na página de login. O tema escolhido acima também é aplicado.
+            </p>
+            <div className="flex items-start gap-4">
+              {loginHeroUrl && (
+                <div className="relative w-40 h-28 rounded-xl overflow-hidden border border-border shrink-0">
+                  <img src={loginHeroUrl} alt="Login hero" className="w-full h-full object-cover" />
+                  <button
+                    onClick={async () => {
+                      setLoginHeroUrl("");
+                      await supabase.from("platform_settings" as any).upsert({ key: "login_hero_image", value: "" } as any, { onConflict: "key" });
+                      toast({ title: "Imagem removida" });
+                    }}
+                    className="absolute top-1 right-1 p-1 rounded-full bg-black/60 text-white hover:bg-destructive transition-colors"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              )}
+              <div className="flex-1 space-y-2">
+                <input type="file" ref={loginHeroRef} accept="image/*" className="hidden"
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    setLoginHeroUploading(true);
+                    try {
+                      const ext = file.name.split(".").pop() || "jpg";
+                      const path = `login-hero/hero-${Date.now()}.${ext}`;
+                      const { error: upErr } = await supabase.storage.from("seller-assets").upload(path, file, { upsert: true });
+                      if (upErr) throw upErr;
+                      const { data: urlData } = supabase.storage.from("seller-assets").getPublicUrl(path);
+                      setLoginHeroUrl(urlData.publicUrl);
+                      await supabase.from("platform_settings" as any).upsert({ key: "login_hero_image", value: urlData.publicUrl } as any, { onConflict: "key" });
+                      toast({ title: "Imagem atualizada!" });
+                    } catch (err: any) {
+                      toast({ title: "Erro", description: err.message, variant: "destructive" });
+                    }
+                    setLoginHeroUploading(false);
+                  }}
+                />
+                <button onClick={() => loginHeroRef.current?.click()} disabled={loginHeroUploading}
+                  className="px-4 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-bold hover:opacity-90 disabled:opacity-50 flex items-center gap-2">
+                  {loginHeroUploading ? <div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" /> : <Camera size={16} />}
+                  {loginHeroUrl ? "Trocar Imagem" : "Enviar Imagem"}
+                </button>
+                <p className="text-xs text-muted-foreground">Recomendado: 1920×1080px</p>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Ban Dialog */}
