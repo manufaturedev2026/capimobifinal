@@ -165,7 +165,7 @@ export default function StoreLayoutMarketplace({
 
   // Auto-rotate hero
   useEffect(() => {
-    if (heroImages.length <= 1 || isMobile) return;
+    if (heroImages.length <= 1) return;
     const t = setInterval(() => setHeroIdx(prev => (prev + 1) % heroImages.length), 5000);
     return () => clearInterval(t);
   }, [heroImages.length, isMobile]);
