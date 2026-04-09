@@ -1759,8 +1759,8 @@ export default function CompanyProfile() {
                     <ChevronLeft size={20} className="md:hidden rotate-180" /><ChevronRight size={28} className="hidden md:block" />
                   </button>
 
-                  {/* Content */}
-                  <div className="absolute bottom-0 left-0 right-0 p-5 md:p-14 z-10">
+                  {/* Content overlay – full description on photo */}
+                  <div className="absolute inset-0 z-10 flex flex-col justify-end p-5 md:p-14">
                     <AnimatePresence mode="wait">
                       <motion.div
                         key={lbProduct.id}
@@ -1771,7 +1771,7 @@ export default function CompanyProfile() {
                         className="max-w-3xl"
                       >
                         {/* Store info */}
-                        <div className="flex items-center gap-3 mb-4">
+                        <div className="flex items-center gap-3 mb-3">
                           {company.logo && (
                             <img src={company.logo} alt="" className="w-9 h-9 rounded-lg object-cover border border-white/20" />
                           )}
@@ -1782,18 +1782,39 @@ export default function CompanyProfile() {
                         </div>
 
                         {lbProduct.tag && (
-                          <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold shadow mb-3 ${getTagStyle(getTagLabel(lbProduct.tag))}`}>
+                          <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold shadow mb-2 ${getTagStyle(getTagLabel(lbProduct.tag))}`}>
                             {getTagLabel(lbProduct.tag)}
                           </span>
                         )}
-                        <h2 className="font-display font-bold text-3xl md:text-6xl text-white leading-tight drop-shadow-2xl">
+                        <h2 className="font-display font-bold text-2xl md:text-5xl text-white leading-tight drop-shadow-2xl">
                           {lbProduct.title}
                         </h2>
-                        {lbProduct.description && (
-                          <p className="text-white/50 text-sm md:text-lg mt-3 line-clamp-3 max-w-xl">{lbProduct.description}</p>
+
+                        {/* Specs row */}
+                        {(lbProduct.bedrooms || lbProduct.bathrooms || lbProduct.area || lbProduct.parking_spots) && (
+                          <div className="flex items-center gap-4 mt-3 text-white/70 text-xs md:text-sm flex-wrap">
+                            {lbProduct.bedrooms && <span>🛏 {lbProduct.bedrooms} quartos</span>}
+                            {lbProduct.suites && <span>🛁 {lbProduct.suites} suítes</span>}
+                            {lbProduct.bathrooms && <span>🚿 {lbProduct.bathrooms} banheiros</span>}
+                            {lbProduct.area && <span>📐 {lbProduct.area}m²</span>}
+                            {lbProduct.parking_spots && <span>🚗 {lbProduct.parking_spots} vagas</span>}
+                          </div>
                         )}
+
+                        {/* Full description */}
+                        {lbProduct.description && (
+                          <p className="text-white/60 text-xs md:text-base mt-3 line-clamp-5 md:line-clamp-6 max-w-2xl leading-relaxed">{lbProduct.description}</p>
+                        )}
+
+                        {/* Location */}
+                        {(lbProduct.neighborhood || lbProduct.city) && (
+                          <p className="text-white/40 text-[11px] md:text-xs mt-2 flex items-center gap-1">
+                            📍 {[lbProduct.neighborhood, lbProduct.city, lbProduct.state].filter(Boolean).join(", ")}
+                          </p>
+                        )}
+
                         {lbProduct.price > 0 && (
-                          <p className="font-display font-bold text-2xl md:text-4xl mt-4 drop-shadow-lg" style={{ color: storeTheme.primary }}>
+                          <p className="font-display font-bold text-xl md:text-4xl mt-3 drop-shadow-lg" style={{ color: storeTheme.primary }}>
                             {isDbProfile ? `R$ ${lbProduct.price.toLocaleString("pt-BR")}` : formatPrice(lbProduct.price)}
                             {isDbProfile && (((lbProduct as any).tags || []).includes("aluguel_flex") || (lbProduct as any).category === "aluguel") && (
                               <span className="text-lg font-normal text-muted-foreground"> /mês</span>
