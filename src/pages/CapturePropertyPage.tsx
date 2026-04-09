@@ -67,7 +67,7 @@ export default function CapturePropertyPage() {
     if (!slug) return;
     supabase
       .from("profiles")
-      .select("id, user_id, full_name, company_name, logo_url, phone, slug, seller_category, creci, instagram, bio, city, state, email, store_theme, capture_video_url")
+      .select("id, user_id, full_name, company_name, logo_url, phone, slug, seller_category, creci, instagram, bio, city, state, email, store_theme, capture_video_url, capture_video_title")
       .eq("slug", slug)
       .limit(1)
       .maybeSingle()
@@ -479,7 +479,7 @@ export default function CapturePropertyPage() {
             className="mt-16 max-w-3xl mx-auto"
           >
             <h2 className="text-2xl md:text-3xl font-bold font-display text-center mb-6" style={{ color: colors.text }}>
-              Conheça nosso trabalho
+              {broker.capture_video_title || "Conheça nosso trabalho"}
             </h2>
             <div className="aspect-video rounded-3xl overflow-hidden shadow-2xl" style={{ border: `1px solid ${colors.border}` }}>
               <iframe

@@ -51,6 +51,7 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [generatedAd, setGeneratedAd] = useState("");
   const [captureVideoUrl, setCaptureVideoUrl] = useState("");
+  const [captureVideoTitle, setCaptureVideoTitle] = useState("");
   const [savingVideo, setSavingVideo] = useState(false);
 
   const captureUrl = `${window.location.origin}/captar-imovel/${sellerSlug || sellerId}`;
