@@ -14,11 +14,12 @@ import { useIsMobile } from "@/hooks/use-mobile";
 /* ═══════════════════════════════════════════
    Netflix-style horizontal content row
    ═══════════════════════════════════════════ */
-function NetflixRow({ title, items, corretorSlug, getTagLabel, accent }: {
+function NetflixRow({ title, items, corretorSlug, getTagLabel, getTagStyle, accent }: {
   title: string;
   items: any[];
   corretorSlug: string | null;
   getTagLabel: (tag: string) => string;
+  getTagStyle: (tag: string) => string;
   accent: string;
 }) {
   const scrollRef = useRef<HTMLDivElement>(null);
