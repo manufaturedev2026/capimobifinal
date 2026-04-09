@@ -201,8 +201,18 @@ export default function PartnerAgencyTab({ profileId, userId }: { profileId: str
                   {req.profile?.city && (
                     <p className="text-xs text-muted-foreground">{req.profile.city}{req.profile.state ? ` - ${req.profile.state}` : ""}</p>
                   )}
-                  <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
-                    {req.profile?.phone && <span className="flex items-center gap-1"><Phone size={12} />{req.profile.phone}</span>}
+                  {req.profile?.address && <p className="text-xs text-muted-foreground">📍 {req.profile.address}</p>}
+                  <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground flex-wrap">
+                    {req.profile?.phone && (
+                      <a
+                        href={`https://wa.me/55${req.profile.phone.replace(/\D/g, "")}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1 text-green-500 hover:underline"
+                      >
+                        <Phone size={12} />{req.profile.phone}
+                      </a>
+                    )}
                     {req.profile?.email && <span className="flex items-center gap-1"><Mail size={12} />{req.profile.email}</span>}
                   </div>
                 </div>
