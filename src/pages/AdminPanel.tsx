@@ -154,7 +154,25 @@ export default function AdminPanel() {
     }
   };
 
-  const fetchAdRequests = async () => {
+  const confirmDeleteUser = async () => {
+    if (!deleteSeller) return;
+    setDeleting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("delete-user", {
+        body: { user_id: deleteSeller.user_id },
+      });
+      if (error || !data?.success) throw new Error(data?.error || error?.message || "Erro desconhecido");
+      toast({ title: "Usuário excluído!", description: `${deleteSeller.company_name || deleteSeller.full_name} foi removido. Ele poderá se cadastrar novamente.` });
+      setSellers(prev => prev.filter(s => s.id !== deleteSeller.id));
+    } catch (err: any) {
+      toast({ title: "Erro ao excluir", description: err.message, variant: "destructive" });
+    }
+    setDeleting(false);
+    setDeleteDialogOpen(false);
+    setDeleteSeller(null);
+  };
+
+
     setAdsLoading(true);
     const { data } = await supabase.from("ad_requests").select("*").order("created_at", { ascending: false });
     setAdRequests(data || []);
