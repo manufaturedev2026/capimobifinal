@@ -2007,34 +2007,37 @@ export default function CompanyProfile() {
           </div>
 
           {/* ── Bloco 2: Benefícios / Garantias ── */}
-          <div className="rounded-2xl p-5 lg:mt-0" style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}>
-            <h3 className="font-display font-bold text-sm mb-3 flex items-center gap-2" style={{ color: storeTheme.text }}>
-              <Shield size={15} style={{ color: storeTheme.primary }} /> Por que escolher
-            </h3>
-            <div className="grid grid-cols-2 gap-2.5">
-              <div className="flex flex-col items-center text-center gap-1.5 p-3 rounded-xl" style={{ background: `${storeTheme.primary}10` }}>
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: storeTheme.primary }}>
-                  <Zap size={14} className="text-white" />
-                </div>
-                <span className="text-[11px] font-semibold leading-tight" style={{ color: storeTheme.text }}>Resposta rápida via WhatsApp</span>
+          <div className="rounded-2xl lg:mt-0 h-full flex flex-col" style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}>
+            <div className="rounded-t-2xl px-5 pt-5 pb-5 md:pt-6 md:pb-6" style={{ background: `${storeTheme.primary}15` }}>
+              <div className="flex items-center gap-2">
+                <Shield size={20} className="md:w-6 md:h-6" style={{ color: storeTheme.primary }} />
+                <span className="text-sm md:text-base lg:text-lg font-semibold" style={{ color: storeTheme.text }}>Por que escolher</span>
               </div>
-              <div className="flex flex-col items-center text-center gap-1.5 p-3 rounded-xl" style={{ background: `${storeTheme.primary}10` }}>
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: storeTheme.primary }}>
-                  <BadgeCheck size={14} className="text-white" />
+            </div>
+            <div className="grid grid-cols-2 gap-3 p-5 flex-1">
+              <div className="flex flex-col items-center text-center gap-2 p-4 rounded-xl" style={{ background: `${storeTheme.primary}10` }}>
+                <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: storeTheme.primary }}>
+                  <Zap size={18} className="text-white" />
                 </div>
-                <span className="text-[11px] font-semibold leading-tight" style={{ color: storeTheme.text }}>{isPaid ? "Vendedor premium verificado" : "Vendedor ativo"}</span>
+                <span className="text-xs md:text-sm font-semibold leading-tight" style={{ color: storeTheme.text }}>Resposta rápida via WhatsApp</span>
               </div>
-              <div className="flex flex-col items-center text-center gap-1.5 p-3 rounded-xl" style={{ background: `${storeTheme.primary}10` }}>
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: storeTheme.primary }}>
-                  <Store size={14} className="text-white" />
+              <div className="flex flex-col items-center text-center gap-2 p-4 rounded-xl" style={{ background: `${storeTheme.primary}10` }}>
+                <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: storeTheme.primary }}>
+                  <BadgeCheck size={18} className="text-white" />
                 </div>
-                <span className="text-[11px] font-semibold leading-tight" style={{ color: storeTheme.text }}>{products.length} imóveis disponíveis</span>
+                <span className="text-xs md:text-sm font-semibold leading-tight" style={{ color: storeTheme.text }}>{isPaid ? "Vendedor premium verificado" : "Vendedor ativo"}</span>
               </div>
-              <div className="flex flex-col items-center text-center gap-1.5 p-3 rounded-xl" style={{ background: `${storeTheme.primary}10` }}>
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: storeTheme.primary }}>
-                  <MapPin size={14} className="text-white" />
+              <div className="flex flex-col items-center text-center gap-2 p-4 rounded-xl" style={{ background: `${storeTheme.primary}10` }}>
+                <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: storeTheme.primary }}>
+                  <Store size={18} className="text-white" />
                 </div>
-                <span className="text-[11px] font-semibold leading-tight" style={{ color: storeTheme.text }}>{dbProfile?.city || "Espírito Santo"}</span>
+                <span className="text-xs md:text-sm font-semibold leading-tight" style={{ color: storeTheme.text }}>{products.length} imóveis disponíveis</span>
+              </div>
+              <div className="flex flex-col items-center text-center gap-2 p-4 rounded-xl" style={{ background: `${storeTheme.primary}10` }}>
+                <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: storeTheme.primary }}>
+                  <MapPin size={18} className="text-white" />
+                </div>
+                <span className="text-xs md:text-sm font-semibold leading-tight" style={{ color: storeTheme.text }}>{dbProfile?.city || "Espírito Santo"}</span>
               </div>
             </div>
           </div>
