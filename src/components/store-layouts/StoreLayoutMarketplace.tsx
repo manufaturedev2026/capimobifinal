@@ -21,9 +21,9 @@ const QUICK_ACTIONS = [
   { slug: "flat", name: "Flats", desc: "Compactos", icon: Landmark },
 ];
 
-const getBenefits = (stateName?: string) => [
+const getBenefits = (cityName?: string) => [
   { icon: Phone, title: "Contato Direto", desc: "Fale direto com o corretor via WhatsApp" },
-  { icon: Globe, title: "Cobertura Regional", desc: `Imóveis em todas as cidades${stateName ? ` de ${stateName}` : ""}` },
+  { icon: Globe, title: "Cobertura Regional", desc: `Imóveis em todas as cidades${cityName ? ` de ${cityName}` : ""}` },
   { icon: ShieldCheck, title: "Vendedores Verificados", desc: "Corretores com CRECI ativo" },
   { icon: Megaphone, title: "Anuncie Grátis", desc: "Cadastre seu imóvel sem custo" },
 ];
@@ -802,7 +802,7 @@ export default function StoreLayoutMarketplace({
           transition={{ duration: 0.6, delay: 0.3 }}
           className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12"
         >
-          {getBenefits(BRAZIL_STATES.find(s => s.uf === dbProfile?.state)?.name).map((benefit, i) => {
+          {getBenefits(dbProfile?.city || undefined).map((benefit, i) => {
             const Icon = benefit.icon;
             return (
               <motion.div

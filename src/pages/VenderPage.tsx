@@ -6,7 +6,7 @@ import {
   Check, ArrowRight, Crown, Star, Zap, Rocket,
   User, Phone, Mail, Lock, Loader2,
   Globe, Brain, Megaphone, Wallet, FileText, Home,
-  Smartphone, Camera, Target, Flame, Diamond, ChevronRight,
+  Smartphone, Camera, Target, Flame, Diamond, ChevronRight, MapPin,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import MarketplaceNavbar from "@/components/MarketplaceNavbar";
@@ -15,6 +15,7 @@ import { getMarketplaceThemeCssVars } from "@/lib/marketplaceThemeCssVars";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import { BRAZIL_STATES } from "@/data/brazilStates";
 
 const FEATURES = [
   {
@@ -141,6 +142,8 @@ export default function VenderPage() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [city, setCity] = useState("");
+  const [state, setState] = useState("ES");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
@@ -167,7 +170,7 @@ export default function VenderPage() {
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: email.trim(),
         password,
-        options: { data: { full_name: fullName.trim(), phone: phone.trim() || undefined } },
+        options: { data: { full_name: fullName.trim(), phone: phone.trim() || undefined, city: city.trim() || undefined, state: state || undefined } },
       });
       if (authError) throw authError;
 
@@ -269,6 +272,20 @@ export default function VenderPage() {
                   <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/60" />
                   <input type="tel" placeholder="WhatsApp (opcional)" value={phone} onChange={(e) => setPhone(e.target.value)}
                     className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-white/8 border border-white/15 text-white placeholder:text-white/60 outline-none transition-colors text-sm" />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="relative">
+                    <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/60" />
+                    <select value={state} onChange={(e) => setState(e.target.value)}
+                      className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-white/8 border border-white/15 text-white outline-none transition-colors text-sm appearance-none">
+                      {BRAZIL_STATES.map(s => <option key={s.uf} value={s.uf} className="bg-gray-900">{s.uf}</option>)}
+                    </select>
+                  </div>
+                  <div className="relative">
+                    <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/60" />
+                    <input type="text" placeholder="Sua cidade *" value={city} onChange={(e) => setCity(e.target.value)}
+                      className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-white/8 border border-white/15 text-white placeholder:text-white/60 outline-none transition-colors text-sm" required />
+                  </div>
                 </div>
                 <div className="relative">
                   <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/60" />
