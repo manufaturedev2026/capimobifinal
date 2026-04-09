@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 
 import AdminCrmTab from "@/components/AdminCrmTab";
 import AdminPushTab from "@/components/AdminPushTab";
+import { LOGIN_HERO_PRESETS } from "@/data/loginHeroPresets";
 
 interface SellerWithSub {
   id: string;
