@@ -514,6 +514,7 @@ export default function CompanyProfile() {
         ["--store-primary" as any]: storeTheme.primary,
         ["--store-accent" as any]: storeTheme.accent,
         ["--store-border" as any]: storeTheme.border,
+        ...getStoreThemeCssVars(storeTheme),
       }}
     >
       {/* ═══════════ SEO META TAGS ═══════════ */}
