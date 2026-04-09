@@ -378,6 +378,7 @@ export default function AdminPanel() {
   }
 
   const pendingAdsCount = adRequests.filter(a => a.status === "pendente").length;
+  const adminTheme = MARKETPLACE_THEMES.find((theme) => theme.id === homepageTheme) || MARKETPLACE_THEMES[0];
 
   const sidebarItems = [
     { key: "sellers" as const, label: "Vendedores", icon: Users },
@@ -390,16 +391,22 @@ export default function AdminPanel() {
   ];
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div
+      className="min-h-screen flex flex-col"
+      style={{ background: `linear-gradient(180deg, ${adminTheme.darkBase} 0%, ${adminTheme.darkMid} 18%, hsl(var(--background)) 42%)` }}
+    >
       {/* Header */}
-      <div className="gradient-hero py-5 shrink-0">
+      <div className="py-5 shrink-0 transition-all duration-300" style={{ background: adminTheme.dashboardGradient }}>
         <div className="container max-w-7xl mx-auto px-4">
           <Link to="/painel" className="inline-flex items-center gap-2 text-white/70 text-sm mb-2 hover:text-white">
             <ArrowLeft size={16} /> Voltar
           </Link>
           <div className="flex items-center gap-3">
             <Shield size={28} className="text-white" />
-            <h1 className="font-display font-extrabold text-2xl text-white">Painel Administrativo</h1>
+            <div>
+              <h1 className="font-display font-extrabold text-2xl text-white">Painel Administrativo</h1>
+              <p className="text-xs text-white/70 mt-1">Tema ativo: {adminTheme.icon} {adminTheme.name}</p>
+            </div>
           </div>
         </div>
       </div>
@@ -916,8 +923,47 @@ export default function AdminPanel() {
               <Palette size={20} className="text-primary" /> Tema da Página Inicial
             </h3>
             <p className="text-sm text-muted-foreground mb-4">
-              Escolha o tema visual do Marketplace e do painel dos corretores.
+              Escolha o tema visual do Marketplace, login e painel dos corretores.
             </p>
+
+            <div
+              className="rounded-2xl overflow-hidden border mb-4 transition-all duration-300"
+              style={{ borderColor: adminTheme.border, background: adminTheme.cardBg }}
+            >
+              <div className="p-4" style={{ background: adminTheme.dashboardGradient }}>
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-white/70">Preview ao vivo</p>
+                    <h4 className="font-display font-black text-xl text-white mt-1">
+                      {adminTheme.icon} {adminTheme.name}
+                    </h4>
+                    <p className="text-xs text-white/80 mt-1">Agora a troca aparece aqui no admin assim que você clicar.</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <div className="w-7 h-7 rounded-full border border-white/25" style={{ background: adminTheme.primary }} />
+                    <div className="w-7 h-7 rounded-full border border-white/25" style={{ background: adminTheme.promoAccent || adminTheme.primary }} />
+                    <div className="w-7 h-7 rounded-full border border-white/25" style={{ background: adminTheme.promoExploreColor || adminTheme.textMuted }} />
+                  </div>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 p-4" style={{ background: adminTheme.darkBase }}>
+                <div className="rounded-xl p-3" style={{ background: adminTheme.cardBg, border: `1px solid ${adminTheme.border}` }}>
+                  <div className="w-9 h-9 rounded-xl mb-2" style={{ background: adminTheme.primary }} />
+                  <p className="text-xs font-bold" style={{ color: adminTheme.text }}>Cor principal</p>
+                  <p className="text-[11px] mt-1" style={{ color: adminTheme.textMuted }}>Botões e destaques</p>
+                </div>
+                <div className="rounded-xl p-3" style={{ background: adminTheme.cardBg, border: `1px solid ${adminTheme.border}` }}>
+                  <div className="w-9 h-9 rounded-xl mb-2" style={{ background: adminTheme.promoAccent || adminTheme.primary }} />
+                  <p className="text-xs font-bold" style={{ color: adminTheme.text }}>Cor secundária</p>
+                  <p className="text-[11px] mt-1" style={{ color: adminTheme.textMuted }}>Faixas e promoções</p>
+                </div>
+                <div className="rounded-xl p-3" style={{ background: adminTheme.cardBg, border: `1px solid ${adminTheme.border}` }}>
+                  <div className="w-9 h-9 rounded-xl mb-2" style={{ background: adminTheme.promoExploreColor || adminTheme.textMuted }} />
+                  <p className="text-xs font-bold" style={{ color: adminTheme.text }}>Terceira cor</p>
+                  <p className="text-[11px] mt-1" style={{ color: adminTheme.textMuted }}>Chamada de ação</p>
+                </div>
+              </div>
+            </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {MARKETPLACE_THEMES.map((t) => (
@@ -925,6 +971,7 @@ export default function AdminPanel() {
                   key={t.id}
                   onClick={async () => {
                     setHomepageTheme(t.id);
+                    localStorage.setItem("marketplace_theme", t.id);
                     await supabase
                       .from("platform_settings" as any)
                       .upsert({ key: "homepage_theme", value: t.id } as any, { onConflict: "key" });
@@ -936,7 +983,6 @@ export default function AdminPanel() {
                       : "border-border hover:border-primary/30"
                   }`}
                 >
-                  {/* Preview gradient */}
                   <div className="h-16 w-full relative" style={{ background: t.dashboardGradient }}>
                     <div className="absolute bottom-2 left-3 flex items-center gap-1.5">
                       <div className="w-3 h-3 rounded-full" style={{ background: t.primary }} />
