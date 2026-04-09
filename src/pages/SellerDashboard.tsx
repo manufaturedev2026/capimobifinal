@@ -1056,6 +1056,13 @@ export default function SellerDashboard() {
               <ProfitCalculatorTab />
             )}
 
+            {/* Customization Tab */}
+            {activeTab === "customization" && (
+              <Suspense fallback={<div className="flex items-center justify-center py-12"><div className="h-8 w-8 animate-spin rounded-full border-4 border-primary/20 border-t-primary" /></div>}>
+                <SellerCustomization embedded />
+              </Suspense>
+            )}
+
 
             {activeTab === "team" && showTeamTab && profile?.id && (
               <TeamMembersTab
