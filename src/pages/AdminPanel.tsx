@@ -940,13 +940,16 @@ export default function AdminPanel() {
                     <p className="text-xs text-white/80 mt-1">Agora a troca aparece aqui no admin assim que você clicar.</p>
                   </div>
                   <div className="flex gap-2">
-                    <div className="w-7 h-7 rounded-full border border-white/25" style={{ background: adminTheme.primary }} />
-                    <div className="w-7 h-7 rounded-full border border-white/25" style={{ background: adminTheme.promoAccent || adminTheme.primary }} />
-                    <div className="w-7 h-7 rounded-full border border-white/25" style={{ background: adminTheme.promoExploreColor || adminTheme.textMuted }} />
+                    <div className="w-7 h-7 rounded-full border border-white/25" style={{ background: adminTheme.primary }} title="Principal" />
+                    <div className="w-7 h-7 rounded-full border border-white/25" style={{ background: adminTheme.promoAccent || adminTheme.primary }} title="Secundária" />
+                    <div className="w-7 h-7 rounded-full border border-white/25" style={{ background: adminTheme.promoExploreColor || adminTheme.textMuted }} title="Terceira" />
+                    {adminTheme.promoExtra && (
+                      <div className="w-7 h-7 rounded-full border border-white/25" style={{ background: adminTheme.promoExtra }} title="Quarta" />
+                    )}
                   </div>
                 </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 p-4" style={{ background: adminTheme.darkBase }}>
+              <div className={`grid grid-cols-1 ${adminTheme.promoExtra ? 'md:grid-cols-4' : 'md:grid-cols-3'} gap-3 p-4`} style={{ background: adminTheme.darkBase }}>
                 <div className="rounded-xl p-3" style={{ background: adminTheme.cardBg, border: `1px solid ${adminTheme.border}` }}>
                   <div className="w-9 h-9 rounded-xl mb-2" style={{ background: adminTheme.primary }} />
                   <p className="text-xs font-bold" style={{ color: adminTheme.text }}>Cor principal</p>
@@ -962,6 +965,13 @@ export default function AdminPanel() {
                   <p className="text-xs font-bold" style={{ color: adminTheme.text }}>Terceira cor</p>
                   <p className="text-[11px] mt-1" style={{ color: adminTheme.textMuted }}>Chamada de ação</p>
                 </div>
+                {adminTheme.promoExtra && (
+                  <div className="rounded-xl p-3" style={{ background: adminTheme.cardBg, border: `1px solid ${adminTheme.border}` }}>
+                    <div className="w-9 h-9 rounded-xl mb-2" style={{ background: adminTheme.promoExtra }} />
+                    <p className="text-xs font-bold" style={{ color: adminTheme.text }}>Quarta cor</p>
+                    <p className="text-[11px] mt-1" style={{ color: adminTheme.textMuted }}>Detalhe extra</p>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -984,9 +994,11 @@ export default function AdminPanel() {
                   }`}
                 >
                   <div className="h-16 w-full relative" style={{ background: t.dashboardGradient }}>
-                    <div className="absolute bottom-2 left-3 flex items-center gap-1.5">
+                    <div className="absolute bottom-2 left-3 flex items-center gap-1">
                       <div className="w-3 h-3 rounded-full" style={{ background: t.primary }} />
-                      <div className="h-1.5 w-12 rounded-full bg-white/50" />
+                      <div className="w-3 h-3 rounded-full" style={{ background: t.promoAccent || t.primary }} />
+                      <div className="w-3 h-3 rounded-full" style={{ background: t.promoExploreColor || t.primary }} />
+                      {t.promoExtra && <div className="w-3 h-3 rounded-full" style={{ background: t.promoExtra }} />}
                     </div>
                   </div>
                   <div className="p-3" style={{ background: t.darkBase }}>
