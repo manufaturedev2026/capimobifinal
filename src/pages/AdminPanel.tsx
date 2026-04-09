@@ -65,6 +65,11 @@ export default function AdminPanel() {
   const [banDuration, setBanDuration] = useState<"7" | "30" | "90" | "permanent">("7");
   const [bans, setBans] = useState<Record<string, { id: string; reason: string | null; expires_at: string | null; is_permanent: boolean }>>({});
 
+  // Delete user dialog state
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteSeller, setDeleteSeller] = useState<SellerWithSub | null>(null);
+  const [deleting, setDeleting] = useState(false);
+
   // Manager edit dialog state
   const [managerDialogOpen, setManagerDialogOpen] = useState(false);
   const [managerEditSellerId, setManagerEditSellerId] = useState<string | null>(null);
