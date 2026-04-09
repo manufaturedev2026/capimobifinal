@@ -235,6 +235,30 @@ export default function CompanyProfile() {
           .eq("slug", corretorSlug)
           .eq("is_active", true)
           .single();
+        
+        if (member && !member.photo_url) {
+          // Try to get the broker's actual profile photo via partnership request
+          const { data: partnerReq } = await supabase
+            .from("partnership_requests")
+            .select("requester_profile_id")
+            .eq("agency_profile_id", pid)
+            .eq("status", "aprovado")
+            .limit(20);
+          
+          if (partnerReq && partnerReq.length > 0) {
+            const reqProfileIds = partnerReq.map(r => r.requester_profile_id);
+            const { data: brokerProfiles } = await supabase
+              .from("profiles")
+              .select("id, logo_url, full_name")
+              .in("id", reqProfileIds);
+            
+            const matchedBroker = brokerProfiles?.find(bp => bp.full_name === member.full_name);
+            if (matchedBroker?.logo_url) {
+              member.photo_url = matchedBroker.logo_url;
+            }
+          }
+        }
+
         setTeamMember(member || null);
       } else {
         setTeamMember(null);
