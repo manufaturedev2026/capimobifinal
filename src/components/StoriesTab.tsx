@@ -154,12 +154,13 @@ export default function StoriesTab({ userId, sellerId }: StoriesTabProps) {
           <h3 className="text-sm font-semibold text-muted-foreground mb-3 flex items-center gap-2">
             <Clock size={14} /> Expirados ({expiredStories.length})
           </h3>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
             {expiredStories.map((story) => (
               <StoryCard
                 key={story.id}
                 story={story}
                 onDelete={deleteStory}
+                onRepublish={republishStory}
                 timeRemaining="Expirado"
                 expired
               />
