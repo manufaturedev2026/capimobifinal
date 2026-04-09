@@ -543,7 +543,7 @@ export default function StoreLayoutMarketplace({
                   onTouchStart={() => {}}
                   style={{ overscrollBehaviorX: "contain" }}
                 >
-                  {promoBanners.slice(0, 2).map((banner, bIdx) => (
+                  {promoBanners.map((banner, bIdx) => (
                     <motion.div
                       key={banner.slug}
                       className="relative h-40 rounded-2xl overflow-hidden cursor-pointer snap-center flex-shrink-0"
@@ -554,7 +554,7 @@ export default function StoreLayoutMarketplace({
                       }}
                       onClick={() => { setActiveCategory(banner.slug); scrollToGrid(); }}
                     >
-                      <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${darkBase}, ${storeTheme.primary}${bIdx === 0 ? "" : "cc"})` }} />
+                      <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${darkBase}, ${storeTheme.primary}${bIdx % 2 === 0 ? "" : "cc"})` }} />
                       <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent" />
                       <FloatingParticles color={storeTheme.primary} />
                       <div className="relative z-10 h-full flex flex-col justify-center p-5">
@@ -578,10 +578,7 @@ export default function StoreLayoutMarketplace({
                     <button
                       key={i}
                       onClick={() => {
-                        const el = promoScrollRef.current;
-                        if (el) {
-                          scrollPromoCardIntoView(i);
-                        }
+                        scrollPromoCardIntoView(i);
                         setPromoIdx(i);
                       }}
                       className="h-1.5 rounded-full transition-all duration-300"
