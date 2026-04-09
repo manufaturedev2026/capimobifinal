@@ -132,6 +132,31 @@ export default function PartnerAgencyTab({ profileId, userId }: { profileId: str
     setProcessingId(null);
   };
 
+  const removePartner = async (request: RequestWithProfile) => {
+    if (!request.profile) return;
+    setProcessingId(request.id);
+
+    // Remove team member
+    const { data: members } = await supabase
+      .from("team_members")
+      .select("id, full_name")
+      .eq("company_id", profileId);
+
+    if (members) {
+      const match = members.find(m => m.full_name === request.profile?.full_name);
+      if (match) {
+        await supabase.from("team_members").delete().eq("id", match.id);
+      }
+    }
+
+    // Delete the request entirely
+    await supabase.from("partnership_requests").delete().eq("id", request.id);
+
+    toast({ title: "Corretor removido", description: `${request.profile.full_name} foi desvinculado.` });
+    fetchRequests();
+    setProcessingId(null);
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
