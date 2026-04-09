@@ -1791,13 +1791,13 @@ export default function CompanyProfile() {
                         </h2>
 
                         {/* Specs row */}
-                        {(lbProduct.bedrooms || lbProduct.bathrooms || lbProduct.area || lbProduct.parking_spots) && (
+                        {((lbProduct as any).bedrooms || (lbProduct as any).bathrooms || (lbProduct as any).area || (lbProduct as any).parking_spots || lbProduct.specs?.quartos) && (
                           <div className="flex items-center gap-4 mt-3 text-white/70 text-xs md:text-sm flex-wrap">
-                            {lbProduct.bedrooms && <span>🛏 {lbProduct.bedrooms} quartos</span>}
-                            {lbProduct.suites && <span>🛁 {lbProduct.suites} suítes</span>}
-                            {lbProduct.bathrooms && <span>🚿 {lbProduct.bathrooms} banheiros</span>}
-                            {lbProduct.area && <span>📐 {lbProduct.area}m²</span>}
-                            {lbProduct.parking_spots && <span>🚗 {lbProduct.parking_spots} vagas</span>}
+                            {((lbProduct as any).bedrooms || lbProduct.specs?.quartos) && <span>🛏 {(lbProduct as any).bedrooms || lbProduct.specs?.quartos} quartos</span>}
+                            {(lbProduct as any).suites && <span>🛁 {(lbProduct as any).suites} suítes</span>}
+                            {((lbProduct as any).bathrooms || lbProduct.specs?.banheiros) && <span>🚿 {(lbProduct as any).bathrooms || lbProduct.specs?.banheiros} banheiros</span>}
+                            {((lbProduct as any).area || lbProduct.specs?.area) && <span>📐 {(lbProduct as any).area || lbProduct.specs?.area}m²</span>}
+                            {((lbProduct as any).parking_spots || lbProduct.specs?.vagas) && <span>🚗 {(lbProduct as any).parking_spots || lbProduct.specs?.vagas} vagas</span>}
                           </div>
                         )}
 
@@ -1807,9 +1807,9 @@ export default function CompanyProfile() {
                         )}
 
                         {/* Location */}
-                        {(lbProduct.neighborhood || lbProduct.city) && (
+                        {((lbProduct as any).neighborhood || lbProduct.city) && (
                           <p className="text-white/40 text-[11px] md:text-xs mt-2 flex items-center gap-1">
-                            📍 {[lbProduct.neighborhood, lbProduct.city, lbProduct.state].filter(Boolean).join(", ")}
+                            📍 {[(lbProduct as any).neighborhood, lbProduct.city, (lbProduct as any).state].filter(Boolean).join(", ")}
                           </p>
                         )}
 
