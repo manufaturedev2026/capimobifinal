@@ -74,6 +74,64 @@ export function getMarketplaceThemeCssVars(theme: MarketplaceTheme): CSSProperti
   const highlight = colorToHslTriplet(theme.promoExtra || theme.promoExploreColor || theme.promoAccent || theme.primary, accent);
   const mutedForeground = colorToHslTriplet(theme.textMuted, foreground);
 
+  return buildCssVars({ background, foreground, card, secondary, border, primary, accent, highlight, mutedForeground });
+}
+
+/** Convert a StoreTheme (from StoreThemePicker) into CSS variable overrides */
+export function getStoreThemeCssVars(theme: { bg: string; card: string; text: string; textMuted: string; primary: string; accent: string; border: string }): CSSProperties {
+  const background = colorToHslTriplet(theme.bg, "220 40% 8%");
+  const foreground = colorToHslTriplet(theme.text, "0 0% 100%");
+  const card = colorToHslTriplet(theme.card, background);
+  const border = colorToHslTriplet(theme.border, card);
+  const primary = colorToHslTriplet(theme.primary, "197 100% 47%");
+  const accent = colorToHslTriplet(theme.accent || theme.primary, primary);
+  const mutedForeground = colorToHslTriplet(theme.textMuted, foreground);
+
+  return buildCssVars({ background, foreground, card, secondary: card, border, primary, accent, highlight: accent, mutedForeground });
+}
+
+function buildCssVars(v: { background: string; foreground: string; card: string; secondary: string; border: string; primary: string; accent: string; highlight: string; mutedForeground: string }): CSSProperties {
+  return {
+    "--background": v.background,
+    "--foreground": v.foreground,
+    "--card": v.card,
+    "--card-foreground": v.foreground,
+    "--popover": v.card,
+    "--popover-foreground": v.foreground,
+    "--primary": v.primary,
+    "--primary-foreground": "0 0% 100%",
+    "--secondary": v.secondary,
+    "--secondary-foreground": v.foreground,
+    "--muted": v.secondary,
+    "--muted-foreground": v.mutedForeground,
+    "--accent": v.accent,
+    "--accent-foreground": "0 0% 100%",
+    "--destructive": "0 84% 60%",
+    "--destructive-foreground": "0 0% 98%",
+    "--border": v.border,
+    "--input": v.border,
+    "--ring": v.primary,
+    "--sidebar-background": v.background,
+    "--sidebar-foreground": v.foreground,
+    "--sidebar-primary": v.primary,
+    "--sidebar-primary-foreground": "0 0% 100%",
+    "--sidebar-accent": v.secondary,
+    "--sidebar-accent-foreground": v.foreground,
+    "--sidebar-border": v.border,
+    "--sidebar-ring": v.primary,
+    "--highlight": v.highlight,
+  } as CSSProperties;
+}
+  const background = colorToHslTriplet(theme.darkBase, "220 40% 8%");
+  const foreground = colorToHslTriplet(theme.text, "0 0% 100%");
+  const card = colorToHslTriplet(theme.cardBg, background);
+  const secondary = colorToHslTriplet(theme.darkMid, card);
+  const border = colorToHslTriplet(theme.border, secondary);
+  const primary = colorToHslTriplet(theme.primary, "197 100% 47%");
+  const accent = colorToHslTriplet(theme.promoAccent || theme.promoExploreColor || theme.primary, primary);
+  const highlight = colorToHslTriplet(theme.promoExtra || theme.promoExploreColor || theme.promoAccent || theme.primary, accent);
+  const mutedForeground = colorToHslTriplet(theme.textMuted, foreground);
+
   return {
     "--background": background,
     "--foreground": foreground,
