@@ -259,9 +259,21 @@ export default function PartnerBrokerTab({ profileId, userId }: { profileId: str
 
                     <div className="mt-2">
                       {req ? (
-                        <div className="flex items-center gap-1.5 text-xs">
+                        <div className="flex items-center gap-2 text-xs">
                           {statusIcon(req.status)}
                           <span className="text-muted-foreground">{statusLabel(req.status)}</span>
+                          {req.status === "aprovado" && (
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              className="text-xs ml-auto h-7 px-2"
+                              onClick={() => leavePartnership(agency.id)}
+                              disabled={sendingTo === agency.id}
+                            >
+                              <LogOut size={12} className="mr-1" />
+                              Sair
+                            </Button>
+                          )}
                         </div>
                       ) : (
                         <Dialog open={dialogOpen && selectedAgency?.id === agency.id} onOpenChange={(o) => {
