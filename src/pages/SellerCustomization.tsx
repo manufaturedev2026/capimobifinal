@@ -23,7 +23,7 @@ const LAYOUT_PREVIEWS: Record<string, string> = {
   marketplace: layoutMarketplace,
 };
 
-export default function SellerCustomization() {
+export default function SellerCustomization({ embedded }: { embedded?: boolean }) {
   const { user, profile, refreshProfile, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -88,6 +88,24 @@ export default function SellerCustomization() {
     setSaving(false);
   };
 
+  if (embedded) {
+    return (
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="font-display font-bold text-xl text-foreground">Personalização</h2>
+            <p className="text-sm text-muted-foreground">Customize cores, temas, layout e vídeos da sua loja</p>
+          </div>
+          <button type="submit" disabled={saving}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:bg-primary/90 transition-all disabled:opacity-50">
+            <Save size={16} /> {saving ? "Salvando..." : "Salvar"}
+          </button>
+        </div>
+        {renderFormContent()}
+      </form>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <div className="gradient-hero py-6">
@@ -101,6 +119,7 @@ export default function SellerCustomization() {
       </div>
 
       <form onSubmit={handleSubmit} className="container max-w-3xl mx-auto px-4 py-6 space-y-6">
+        {renderFormContent()}
         {/* Cover Color */}
         <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
           <h2 className="font-display font-bold text-foreground">Cor da Capa da Loja</h2>
