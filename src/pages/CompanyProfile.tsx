@@ -1608,6 +1608,35 @@ export default function CompanyProfile() {
         const svDescription = (dbProfile as any)?.store_video_description;
         const svButtonText = (dbProfile as any)?.store_video_button_text;
         const svButtonUrl = (dbProfile as any)?.store_video_button_url;
+        const svPropertyLabel = (dbProfile as any)?.store_video_property_label || svTitle;
+
+        const handleScheduleVisit = () => {
+          // Use the lead capture flow but with "agendamento" context
+          if (dbProfile) {
+            setPendingWhatsAppAction(() => async (leadName?: string, leadPhone?: string) => {
+              // Save to CRM as agendamento
+              if (leadName && leadPhone) {
+                try {
+                  await supabase.from("seller_crm_contacts").insert({
+                    seller_id: dbProfile.id,
+                    user_id: dbProfile.user_id,
+                    full_name: leadName.trim().slice(0, 100),
+                    phone: leadPhone.trim().slice(0, 20),
+                    funnel_stage: "agendamento",
+                    lead_source: "video_loja",
+                    notes: `📹 Agendamento via vídeo da loja\n🏠 Imóvel: ${svPropertyLabel}\n📋 Vídeo: ${svTitle}`,
+                  } as any);
+                } catch {}
+              }
+              // Redirect to WhatsApp
+              doWhatsAppRedirect(`Agendamento - ${svPropertyLabel}`);
+            });
+            setLeadCaptureOpen(true);
+          } else {
+            doWhatsAppRedirect(`Agendamento - ${svPropertyLabel}`);
+          }
+        };
+
         return (
           <section className="px-4 md:px-8 lg:px-12 py-10">
             <div className="max-w-4xl mx-auto">
@@ -1645,11 +1674,11 @@ export default function CompanyProfile() {
                 )}
                 {company.whatsapp && (
                   <button
-                    onClick={() => handleWhatsApp("Vídeo: " + svTitle)}
+                    onClick={handleScheduleVisit}
                     className="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl font-bold text-sm text-white shadow-xl hover:shadow-2xl active:scale-95 transition-all"
-                    style={{ background: "linear-gradient(135deg, #25d366, #128C7E)" }}
+                    style={{ background: `linear-gradient(135deg, ${storeTheme.primary}, ${storeTheme.primary}cc)` }}
                   >
-                    <MessageCircle size={16} /> WhatsApp
+                    <Calendar size={16} /> Agendar uma Visita
                   </button>
                 )}
               </div>
