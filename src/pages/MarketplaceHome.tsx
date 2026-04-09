@@ -329,7 +329,7 @@ export default function MarketplaceHome() {
   ].filter((b) => b.slug === "todos" || (categoryCounts[b.slug] || 0) > 0);
 
   return (
-    <div style={{ ...themeVars, background: DARK_BASE, color: TEXT, overflowX: "hidden", maxWidth: "100vw" }} className="min-h-screen w-full">
+    <div style={{ ...themeVars, background: DARK_BASE, color: TEXT }} className="min-h-screen w-full overflow-x-hidden">
       <Helmet>
         <title>Capimobi – Marketplace de Imóveis</title>
         <meta name="description" content="Encontre imóveis de diversos corretores verificados. Casas, apartamentos, terrenos e muito mais." />
