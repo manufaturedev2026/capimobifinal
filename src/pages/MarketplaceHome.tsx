@@ -329,7 +329,7 @@ export default function MarketplaceHome() {
   return (
     <div style={{ background: DARK_BASE, color: TEXT, overflowX: "clip", maxWidth: "100%" }} className="min-h-screen">
       <Helmet>
-        <title>Brokers App – Marketplace de Imóveis</title>
+        <title>Capimobi – Marketplace de Imóveis</title>
         <meta name="description" content="Encontre imóveis de diversos corretores verificados. Casas, apartamentos, terrenos e muito mais." />
       </Helmet>
 

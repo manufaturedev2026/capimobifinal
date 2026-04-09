@@ -115,14 +115,14 @@ export default function LoginPage() {
     <div className="min-h-screen flex flex-col lg:flex-row bg-background">
       {/* Image Panel */}
       <div className="relative w-full lg:w-1/2 h-[40vh] lg:h-auto lg:min-h-screen overflow-hidden">
-        <img src={heroImg} alt="Brokers App" className="absolute inset-0 w-full h-full object-cover" />
+        <img src={heroImg} alt="Capimobi" className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-b lg:bg-gradient-to-r from-transparent via-transparent to-background" />
         <div className="absolute inset-0 bg-black/30" />
         <div className="absolute bottom-0 left-0 right-0 p-6 lg:p-12 lg:bottom-auto lg:top-1/2 lg:-translate-y-1/2">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
             <div className="flex items-center gap-2 mb-4">
               <Sparkles size={20} className="text-primary" />
-              <span className="text-primary font-semibold text-sm uppercase tracking-wider">Brokers App</span>
+              <span className="text-primary font-semibold text-sm uppercase tracking-wider">Capimobi</span>
             </div>
             <h1 className="font-display font-bold text-3xl lg:text-5xl text-white leading-tight mb-3">
               Área do<br /><span className="text-accent">Corretor</span>

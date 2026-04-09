@@ -48,7 +48,7 @@ export default function NeighborhoodPage() {
   return (
     <div className="min-h-screen bg-secondary/50">
       <Helmet>
-        <title>{`Imóveis em ${neighborhoodName}, ${cityName} | Brokers App`}</title>
+        <title>{`Imóveis em ${neighborhoodName}, ${cityName} | Capimobi`}</title>
         <meta name="description" content={`Encontre imóveis em ${neighborhoodName}, ${cityName}. ${stats ? `${stats.count} imóveis a partir de ${formatPrice(stats.minPrice)}.` : "Casas, apartamentos e terrenos disponíveis."}`} />
         <link rel="canonical" href={`https://redeimoveisgb.lovable.app/imoveis/${cidade}/bairro/${bairro}`} />
       </Helmet>
@@ -156,7 +156,7 @@ export default function NeighborhoodPage() {
               {stats && stats.count > 0 ? ` Atualmente há ${stats.count} imóveis disponíveis nesta região, com preços variando de ${formatPrice(stats.minPrice)} a ${formatPrice(stats.maxPrice)}.` : " Fique de olho nas novas oportunidades que surgem constantemente."}
             </p>
             <p>
-              O Brokers App é a plataforma que conecta compradores diretamente com corretores e imobiliárias de todo o Brasil. Encontre seu imóvel ideal em {neighborhoodName} com contato direto via WhatsApp.
+              O Capimobi é a plataforma que conecta compradores diretamente com corretores e imobiliárias de todo o Brasil. Encontre seu imóvel ideal em {neighborhoodName} com contato direto via WhatsApp.
             </p>
           </div>
         </div>

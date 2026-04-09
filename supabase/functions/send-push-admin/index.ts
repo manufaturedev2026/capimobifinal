@@ -162,7 +162,7 @@ Deno.serve(async (req) => {
 
     const vapidPublicKey = Deno.env.get("VAPID_PUBLIC_KEY")!;
     const vapidPrivateKey = Deno.env.get("VAPID_PRIVATE_KEY")!;
-    const vapidSubject = Deno.env.get("VAPID_SUBJECT") || "mailto:contato@brokersapp.com.br";
+    const vapidSubject = Deno.env.get("VAPID_SUBJECT") || "mailto:contato@capimobi.com.br";
 
     const payloadObj: Record<string, string> = { title, body };
     if (url) payloadObj.url = url;

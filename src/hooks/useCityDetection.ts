@@ -24,7 +24,7 @@ async function detectByGPS(): Promise<string | null> {
           // Use free reverse geocoding API
           const res = await fetch(
             `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&accept-language=pt-BR`,
-            { headers: { "User-Agent": "BrokersApp/1.0" } }
+            { headers: { "User-Agent": "Capimobi/1.0" } }
           );
           if (res.ok) {
             const data = await res.json();

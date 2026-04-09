@@ -459,7 +459,7 @@ export default function CompanyProfile() {
       const phone = teamMember.phone.replace(/\D/g, "");
       const msg = productId
         ? `Olá ${teamMember.full_name}! 🏠 Vi o imóvel *${title}* na sua loja e gostaria de mais informações.\n\n🔗 ${link}`
-        : `Olá ${teamMember.full_name}! 🏠 Vim da sua loja Brokers App e gostaria de mais informações sobre seus imóveis.\n\n🔗 ${link}`;
+        : `Olá ${teamMember.full_name}! 🏠 Vim da sua loja Capimobi e gostaria de mais informações sobre seus imóveis.\n\n🔗 ${link}`;
       openUrl(`https://wa.me/55${phone}?text=${encodeURIComponent(msg)}`);
       return;
     }
@@ -518,17 +518,17 @@ export default function CompanyProfile() {
       {/* ═══════════ SEO META TAGS ═══════════ */}
       {company && (
         <Helmet>
-          <title>{company.name} — Imóveis em {dbProfile?.city || "Brasil"} | Brokers App</title>
+          <title>{company.name} — Imóveis em {dbProfile?.city || "Brasil"} | Capimobi</title>
           <meta name="description" content={`${company.name} — ${dbProfile?.bio ? dbProfile.bio.slice(0, 140) : `Encontre os melhores imóveis com ${company.name} em ${dbProfile?.city || "Brasil"}`}.`} />
-          <link rel="canonical" href={`https://brokergb.lovable.app/empresa/${dbProfile?.slug || id}`} />
+          <link rel="canonical" href={`https://capimobi.lovable.app/empresa/${dbProfile?.slug || id}`} />
 
           {/* Open Graph */}
           <meta property="og:type" content="website" />
           <meta property="og:title" content={`${company.name} — Imóveis em ${dbProfile?.city || "Brasil"}`} />
           <meta property="og:description" content={dbProfile?.bio ? dbProfile.bio.slice(0, 200) : `Veja os ${products.length} anúncios de ${company.name}`} />
-          <meta property="og:url" content={`https://brokergb.lovable.app/empresa/${dbProfile?.slug || id}`} />
+          <meta property="og:url" content={`https://capimobi.lovable.app/empresa/${dbProfile?.slug || id}`} />
           {company.logo && <meta property="og:image" content={company.logo} />}
-          <meta property="og:site_name" content="Brokers App" />
+          <meta property="og:site_name" content="Capimobi" />
 
           {/* Twitter Card */}
           <meta name="twitter:card" content="summary_large_image" />
@@ -542,7 +542,7 @@ export default function CompanyProfile() {
               "@context": "https://schema.org",
               "@type": "RealEstateAgent",
               "name": company.name,
-              "url": `https://brokergb.lovable.app/empresa/${dbProfile?.slug || id}`,
+              "url": `https://capimobi.lovable.app/empresa/${dbProfile?.slug || id}`,
               "logo": company.logo || undefined,
               "image": company.logo || undefined,
               "description": dbProfile?.bio || `Imóveis em ${dbProfile?.city || "Brasil"}`,
@@ -655,7 +655,7 @@ export default function CompanyProfile() {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="center" className="w-48">
                     <DropdownMenuItem onClick={() => {
-                      const text = `Confira ${company.name} no Brokers App: ${window.location.href}`;
+                      const text = `Confira ${company.name} no Capimobi: ${window.location.href}`;
                       window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
                     }}>
                       <MessageCircle size={16} className="mr-2 text-[#25d366]" /> Enviar via WhatsApp
@@ -816,7 +816,7 @@ export default function CompanyProfile() {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="center" className="w-48">
                 <DropdownMenuItem onClick={() => {
-                  const text = `Confira ${company.name} no Brokers App: ${window.location.href}`;
+                  const text = `Confira ${company.name} no Capimobi: ${window.location.href}`;
                   window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
                 }}>
                   <MessageCircle size={16} className="mr-2 text-[#25d366]" /> Enviar via WhatsApp
@@ -1053,7 +1053,7 @@ export default function CompanyProfile() {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-48">
                     <DropdownMenuItem onClick={() => {
-                      const text = `Confira ${company.name} no Brokers App: ${window.location.href}`;
+                      const text = `Confira ${company.name} no Capimobi: ${window.location.href}`;
                       window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
                     }}>
                       <MessageCircle size={16} className="mr-2 text-[#25d366]" /> Enviar via WhatsApp
