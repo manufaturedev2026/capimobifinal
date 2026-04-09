@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { getStoreUrl, getStoreFullUrl } from "@/lib/storeUrl";
 import { getMarketplaceTheme } from "@/lib/marketplaceThemes";
-import { getMarketplaceThemeCssVars } from "@/lib/marketplaceThemeCssVars";
+import { getMarketplaceThemeCssVars, getStoreThemeCssVars } from "@/lib/marketplaceThemeCssVars";
+import { getStoreTheme } from "@/components/StoreThemePicker";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
