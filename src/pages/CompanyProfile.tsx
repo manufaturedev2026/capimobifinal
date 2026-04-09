@@ -2121,14 +2121,21 @@ export default function CompanyProfile() {
       {isDbProfile && dbProfile && (
         <WhatsAppLeadCapture
           open={leadCaptureOpen}
-          onOpenChange={setLeadCaptureOpen}
+          onOpenChange={(open) => {
+            setLeadCaptureOpen(open);
+            if (!open) setLeadCaptureContext(null);
+          }}
           sellerId={id!}
           sellerUserId={dbProfile.user_id}
+          funnelStage={leadCaptureContext?.funnelStage}
+          extraNotes={leadCaptureContext?.extraNotes}
+          leadSource={leadCaptureContext?.leadSource}
           onComplete={() => {
             if (pendingWhatsAppAction) {
               pendingWhatsAppAction();
               setPendingWhatsAppAction(null);
             }
+            setLeadCaptureContext(null);
           }}
         />
       )}
