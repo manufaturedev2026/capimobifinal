@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useMyStoryCount } from "@/hooks/useStories";
 
-import { Trash2, Plus, Clock, ExternalLink, Eye } from "lucide-react";
+import { Trash2, Plus, Clock, ExternalLink, Eye, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import StoryUploadDialog from "@/components/StoryUploadDialog";
@@ -67,6 +67,20 @@ export default function StoriesTab({ userId, sellerId }: StoriesTabProps) {
   };
 
   const isExpired = (expiresAt: string) => new Date(expiresAt) < new Date();
+
+  const republishStory = async (id: string) => {
+    const newExpires = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+    const { error } = await supabase
+      .from("seller_stories")
+      .update({ expires_at: newExpires, is_active: true })
+      .eq("id", id);
+    if (error) {
+      toast({ title: "Erro ao republicar", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Story republicado por mais 24h!" });
+      fetchStories();
+    }
+  };
 
   const timeRemaining = (expiresAt: string) => {
     const diff = new Date(expiresAt).getTime() - Date.now();
@@ -140,12 +154,13 @@ export default function StoriesTab({ userId, sellerId }: StoriesTabProps) {
           <h3 className="text-sm font-semibold text-muted-foreground mb-3 flex items-center gap-2">
             <Clock size={14} /> Expirados ({expiredStories.length})
           </h3>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
             {expiredStories.map((story) => (
               <StoryCard
                 key={story.id}
                 story={story}
                 onDelete={deleteStory}
+                onRepublish={republishStory}
                 timeRemaining="Expirado"
                 expired
               />
@@ -165,9 +180,10 @@ export default function StoriesTab({ userId, sellerId }: StoriesTabProps) {
   );
 }
 
-function StoryCard({ story, onDelete, timeRemaining, expired }: {
+function StoryCard({ story, onDelete, onRepublish, timeRemaining, expired }: {
   story: StoryRow;
   onDelete: (id: string, imageUrl: string) => void;
+  onRepublish?: (id: string) => void;
   timeRemaining: string;
   expired: boolean;
 }) {
@@ -214,6 +230,14 @@ function StoryCard({ story, onDelete, timeRemaining, expired }: {
 
         {/* Bottom info */}
         <div className="absolute bottom-0 left-0 right-0 p-2">
+          {expired && onRepublish && (
+            <button
+              onClick={() => onRepublish(story.id)}
+              className="w-full flex items-center justify-center gap-1.5 mb-1.5 px-2 py-1.5 bg-primary/90 hover:bg-primary text-primary-foreground text-[11px] font-bold rounded-lg transition-colors"
+            >
+              <RefreshCw size={12} /> Republicar
+            </button>
+          )}
           {story.title && <p className="text-white text-xs font-bold truncate">{story.title}</p>}
           {story.button_text && (
             <span className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 bg-white/20 backdrop-blur-sm text-white text-[10px] rounded-full">
