@@ -771,62 +771,6 @@ export default function StoreLayoutMarketplace({
           );
         })()}
 
-        {/* ═══ CATEGORY CIRCLES — Animated borders ═══ */}
-        {activeCats.length > 2 && (
-          <motion.section
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.25 }}
-            className="mb-8"
-          >
-            <div className="flex items-center gap-2 mb-4">
-              <Star size={14} style={{ color: storeTheme.primary }} />
-              <h2 className="font-display font-bold text-lg" style={{ color: storeTheme.text }}>Categorias</h2>
-            </div>
-            <div className="grid grid-cols-3 md:grid-cols-8 gap-3">
-              {activeCats.filter(c => c.slug !== "todos").map((cat, cIdx) => {
-                const isActive = activeCategory === cat.slug;
-                const Icon = QUICK_ACTIONS.find(a => a.slug === cat.slug)?.icon || Home;
-                return (
-                  <motion.button
-                    key={cat.slug}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.3 + cIdx * 0.05 }}
-                    whileHover={{ scale: 1.08 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => { setActiveCategory(isActive ? "todos" : cat.slug); scrollToGrid(); }}
-                    className="flex flex-col items-center gap-2 group"
-                  >
-                    <div
-                      className="w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center transition-all relative"
-                      style={{
-                        background: isActive ? `${storeTheme.primary}20` : storeTheme.card,
-                        border: `2.5px solid ${isActive ? storeTheme.primary : storeTheme.border}`,
-                        boxShadow: isActive ? `0 0 20px ${storeTheme.primary}35` : "none",
-                      }}
-                    >
-                      {isActive && (
-                        <motion.div
-                          className="absolute inset-0 rounded-full"
-                          style={{ border: `2px solid ${storeTheme.primary}` }}
-                          animate={{ scale: [1, 1.2, 1], opacity: [0.6, 0, 0.6] }}
-                          transition={{ duration: 2, repeat: Infinity }}
-                        />
-                      )}
-                      <Icon size={24} style={{ color: isActive ? storeTheme.primary : storeTheme.textMuted }} />
-                    </div>
-                    <span className="text-[11px] font-semibold text-center leading-tight" style={{ color: isActive ? storeTheme.primary : storeTheme.text }}>
-                      {cat.name}
-                    </span>
-                  </motion.button>
-                );
-              })}
-            </div>
-          </motion.section>
-        )}
-
-        <ShimmerLine color={storeTheme.primary} />
 
         {/* ═══ RESULTS HEADER ═══ */}
         <div id="marketplace-grid" className="mt-6 mb-4 flex items-center justify-between scroll-mt-20">
