@@ -273,9 +273,21 @@ export default function PartnerAgencyTab({ profileId, userId }: { profileId: str
                 </p>
               </div>
               {req.status === "aprovado" ? (
-                <span className="flex items-center gap-1 text-xs text-green-500 font-medium">
-                  <CheckCircle2 size={14} /> Aprovado
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="flex items-center gap-1 text-xs text-green-500 font-medium">
+                    <CheckCircle2 size={14} /> Aprovado
+                  </span>
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    className="h-7 px-2 text-xs"
+                    onClick={() => removePartner(req)}
+                    disabled={processingId === req.id}
+                  >
+                    <Trash2 size={12} className="mr-1" />
+                    Remover
+                  </Button>
+                </div>
               ) : (
                 <span className="flex items-center gap-1 text-xs text-red-500 font-medium">
                   <XCircle size={14} /> Recusado
