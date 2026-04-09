@@ -1107,7 +1107,7 @@ export default function CompanyProfile() {
 
       {/* ═══════════ STATS BAR ═══════════ */}
       <section className={`${isElegant || isMagazine ? "block" : "hidden lg:block"} relative z-20 ${isNetflix || false ? "!hidden" : ""}`} style={{ borderBottom: `1px solid ${storeTheme.border}`, background: storeTheme.card }}>
-        <div className="max-w-[1800px] mx-auto px-4 md:px-8">
+        <div className={`${isMarketplace ? "px-4 md:px-8" : "max-w-[1800px] mx-auto px-4 md:px-8"}`}>
           <div className="flex items-center gap-6 py-3 overflow-x-auto scrollbar-hide">
             <div className="flex items-center gap-2 text-sm flex-shrink-0">
               <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: `${storeTheme.primary}18` }}>
@@ -1152,7 +1152,7 @@ export default function CompanyProfile() {
 
 
       {/* ═══════════ MAIN LAYOUT ═══════════ */}
-      <div className={`${isNetflix ? "w-full" : "max-w-[1800px] mx-auto px-4 md:px-8"} ${isMinimal || isMarketplace || isNetflix ? "py-0" : "py-6"}`}>
+      <div className={`${isNetflix || isMarketplace ? "w-full px-4 md:px-8" : "max-w-[1800px] mx-auto px-4 md:px-8"} ${isMinimal || isMarketplace || isNetflix ? "py-0" : "py-6"}`}>
         <div className={`flex ${isNetflix ? "gap-0" : "gap-8"}`}>
           {/* ═══════════ DESKTOP SIDEBAR ═══════════ */}
           <aside className={`hidden lg:block w-[280px] flex-shrink-0 ${isMarketplace || isNetflix || isElegant || isMagazine || false || isGallery ? "!hidden" : ""}`}>
@@ -1866,7 +1866,7 @@ export default function CompanyProfile() {
       })()}
       {/* ═══ CTA Captação — acima do card do corretor ═══ */}
       <section className="px-4 mt-6 mb-4">
-        <div className="max-w-[1800px] mx-auto">
+        <div className={`${isMarketplace ? "" : "max-w-[1800px] mx-auto"}`}>
           <div className="rounded-2xl p-6 md:p-10 text-center" style={{ background: `linear-gradient(135deg, ${storeTheme.primary}20, ${storeTheme.primary}08)`, border: `1px solid ${storeTheme.primary}30` }}>
             <Home size={28} className="mx-auto mb-3" style={{ color: storeTheme.primary }} />
             <h2 className="font-display font-bold text-lg md:text-2xl mb-2" style={{ color: storeTheme.text }}>Quer anunciar seu imóvel?</h2>
