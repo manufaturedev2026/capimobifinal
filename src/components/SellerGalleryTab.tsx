@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Image, X, ChevronLeft, ChevronRight, Eye, Share2, Copy, CheckCircle2, Sparkles, Download, Palette } from "lucide-react";
+import { Image, X, ChevronLeft, ChevronRight, Eye, Share2, Copy, CheckCircle2, Sparkles, Download, Palette, FileText } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 
@@ -15,6 +15,21 @@ interface GalleryItem {
   bedrooms: number | null;
   bathrooms: number | null;
   area: number | null;
+  description: string | null;
+  suites: number | null;
+  parking_spots: number | null;
+  built_area: number | null;
+  finality: string | null;
+  address: string | null;
+  condo_fee: number | null;
+  iptu: number | null;
+  pool: boolean | null;
+  furnished: boolean | null;
+  balcony: boolean | null;
+  barbecue: boolean | null;
+  garden: boolean | null;
+  accepts_financing: boolean | null;
+  slug: string | null;
 }
 
 interface Props {
@@ -317,12 +332,13 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
   const [previewFormat, setPreviewFormat] = useState<ImageFormat | null>(null);
   const [previewDataUrl, setPreviewDataUrl] = useState<string | null>(null);
   const [generatingPreview, setGeneratingPreview] = useState(false);
+  const [copiedAdText, setCopiedAdText] = useState(false);
 
   useEffect(() => {
     (async () => {
       const { data } = await supabase
         .from("seller_items")
-        .select("id, title, photos, price, city, neighborhood, category, bedrooms, bathrooms, area")
+        .select("id, title, photos, price, city, neighborhood, category, bedrooms, bathrooms, area, description, suites, parking_spots, built_area, finality, address, condo_fee, iptu, pool, furnished, balcony, barbecue, garden, accepts_financing, slug")
         .eq("seller_id", sellerId)
         .eq("status", "ativo")
         .order("created_at", { ascending: false });
@@ -716,6 +732,70 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
           <p className="text-sm text-muted-foreground">Este imóvel não possui fotos.</p>
         </div>
       )}
+
+      {/* ── Copy Ad Text ── */}
+      {selectedItem && (() => {
+        const item = selectedItem;
+        const isRent = item.finality === "aluguel" || item.category === "aluguel";
+        const priceLabel = isRent ? "/mês" : "";
+        const lines: string[] = [];
+        lines.push(`🏠 *${item.title}*`);
+        lines.push("");
+        if (item.price && item.price > 0) lines.push(`💰 *R$ ${item.price.toLocaleString("pt-BR")}${priceLabel}*`);
+        const loc = [item.neighborhood, item.city].filter(Boolean).join(", ");
+        if (loc) lines.push(`📍 ${loc}`);
+        if (item.address) lines.push(`🗺️ ${item.address}`);
+        lines.push("");
+        const specs: string[] = [];
+        if (item.bedrooms) specs.push(`🛏 ${item.bedrooms} quarto${item.bedrooms > 1 ? "s" : ""}`);
+        if (item.suites) specs.push(`🛁 ${item.suites} suíte${item.suites > 1 ? "s" : ""}`);
+        if (item.bathrooms) specs.push(`🚿 ${item.bathrooms} banheiro${item.bathrooms > 1 ? "s" : ""}`);
+        if (item.parking_spots) specs.push(`🚗 ${item.parking_spots} vaga${item.parking_spots > 1 ? "s" : ""}`);
+        if (item.area) specs.push(`📐 ${item.area}m² total`);
+        if (item.built_area) specs.push(`🏗️ ${item.built_area}m² construída`);
+        if (specs.length > 0) { lines.push("📋 *Detalhes:*"); specs.forEach(s => lines.push(`  ${s}`)); lines.push(""); }
+        const feats: string[] = [];
+        if (item.pool) feats.push("Piscina");
+        if (item.furnished) feats.push("Mobiliado");
+        if (item.balcony) feats.push("Varanda");
+        if (item.barbecue) feats.push("Churrasqueira");
+        if (item.garden) feats.push("Jardim");
+        if (item.accepts_financing) feats.push("Aceita financiamento");
+        if (feats.length > 0) { lines.push(`✅ ${feats.join(" • ")}`); lines.push(""); }
+        const costs: string[] = [];
+        if (item.condo_fee && item.condo_fee > 0) costs.push(`Condomínio: R$ ${item.condo_fee.toLocaleString("pt-BR")}`);
+        if (item.iptu && item.iptu > 0) costs.push(`IPTU: R$ ${item.iptu.toLocaleString("pt-BR")}`);
+        if (costs.length > 0) { lines.push(`💲 ${costs.join(" | ")}`); lines.push(""); }
+        if (item.description) { lines.push(item.description.length > 300 ? item.description.slice(0, 297) + "..." : item.description); lines.push(""); }
+        const itemSlug = item.slug || item.id;
+        lines.push(`👉 Veja mais: ${window.location.origin}/imoveis/produto/${itemSlug}${sellerSlug ? `?corretor=${sellerSlug}` : ""}`);
+        lines.push("");
+        lines.push(`📞 ${sellerName}${sellerCreci ? ` | CRECI ${sellerCreci}` : ""}${sellerPhone ? ` | ${sellerPhone}` : ""}`);
+        const adText = lines.join("
+");
+        const doCopy = () => {
+          navigator.clipboard.writeText(adText);
+          setCopiedAdText(true);
+          toast({ title: "Texto copiado! 📋", description: "Cole no WhatsApp, Instagram ou qualquer plataforma." });
+          setTimeout(() => setCopiedAdText(false), 2500);
+        };
+        return (
+          <div className="rounded-2xl border border-border p-4 sm:p-5 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <FileText size={18} className="text-primary" />
+                <h3 className="font-bold text-sm text-foreground">Texto Pronto para Anúncio</h3>
+              </div>
+              <button onClick={doCopy} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${copiedAdText ? "bg-green-500 text-white" : "bg-primary text-primary-foreground hover:opacity-90"}`}>
+                {copiedAdText ? <CheckCircle2 size={14} /> : <Copy size={14} />}
+                {copiedAdText ? "Copiado!" : "Copiar Texto"}
+              </button>
+            </div>
+            <p className="text-xs text-muted-foreground">Texto gerado com os dados do imóvel. Copie e cole direto no WhatsApp, Instagram, Facebook ou qualquer plataforma.</p>
+            <pre className="whitespace-pre-wrap text-xs text-foreground/80 bg-secondary/50 rounded-xl p-4 border border-border max-h-60 overflow-y-auto font-sans leading-relaxed">{adText}</pre>
+          </div>
+        );
+      })()}
 
       {/* Share CTA */}
       <div className="rounded-2xl p-4 sm:p-6 text-center" style={{ background: "linear-gradient(135deg, hsl(var(--primary) / 0.08), hsl(var(--accent) / 0.06))" }}>
