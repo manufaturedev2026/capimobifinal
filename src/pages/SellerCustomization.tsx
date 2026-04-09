@@ -68,6 +68,19 @@ export default function SellerCustomization({ embedded }: { embedded?: boolean }
     }
   }, [profile]);
 
+  // Auto-save layout/theme instantly when changed
+  const autoSaveField = async (field: string, value: string) => {
+    if (!user) return;
+    const { error } = await supabase
+      .from("profiles")
+      .update({ [field]: value } as any)
+      .eq("user_id", user.id);
+    if (!error) {
+      await refreshProfile();
+      toast({ title: "Salvo automaticamente!" });
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
@@ -138,7 +151,7 @@ export default function SellerCustomization({ embedded }: { embedded?: boolean }
         <div className="bg-card border border-border rounded-2xl p-5">
           <StoreThemePicker
             selected={form.store_theme}
-            onChange={(themeId) => setForm((f) => ({ ...f, store_theme: themeId }))}
+            onChange={(themeId) => { setForm((f) => ({ ...f, store_theme: themeId })); autoSaveField("store_theme", themeId); }}
           />
         </div>
 
@@ -158,6 +171,7 @@ export default function SellerCustomization({ embedded }: { embedded?: boolean }
                   onClick={() => {
                     if (allowed) {
                       setForm((f) => ({ ...f, store_layout: layout.id }));
+                      autoSaveField("store_layout", layout.id);
                     } else {
                       toast({ title: `Layout exclusivo do plano ${minTier}`, description: "Faça upgrade para desbloquear este layout.", variant: "destructive" });
                     }
