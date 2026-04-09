@@ -23,7 +23,7 @@ const QUICK_ACTIONS = [
 
 const getBenefits = (cityName?: string) => [
   { icon: Phone, title: "Contato Direto", desc: "Fale direto com o corretor via WhatsApp" },
-  { icon: Globe, title: "Cobertura Regional", desc: `Imóveis em todas as cidades${cityName ? ` de ${cityName}` : ""}` },
+  { icon: Globe, title: "Cobertura Regional", desc: `Imóveis em toda${cityName ? ` ${cityName}` : " a região"}` },
   { icon: ShieldCheck, title: "Vendedores Verificados", desc: "Corretores com CRECI ativo" },
   { icon: Megaphone, title: "Anuncie Grátis", desc: "Cadastre seu imóvel sem custo" },
 ];
