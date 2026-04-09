@@ -1628,7 +1628,7 @@ export default function CompanyProfile() {
 
         return (
           <section className="px-4 md:px-8 lg:px-12 py-10">
-            <div className="max-w-4xl mx-auto">
+            <div className="max-w-4xl mx-auto text-center">
               <h3 className="font-display font-bold text-xl md:text-2xl mb-4 flex items-center gap-2" style={{ color: storeTheme.text }}>
                 <span className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: `${storeTheme.primary}20` }}>
                   <Play size={18} style={{ color: storeTheme.primary }} />
