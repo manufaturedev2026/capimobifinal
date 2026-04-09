@@ -166,6 +166,44 @@ export default function SellerProfile({ embedded }: { embedded?: boolean }) {
     setSaving(false);
   };
 
+  if (embedded) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="font-display font-bold text-xl text-foreground">Meu Perfil</h2>
+            <p className="text-sm text-muted-foreground">Edite suas informações pessoais e da empresa</p>
+          </div>
+          <button type="button" onClick={handleSubmit as any} disabled={saving}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:bg-primary/90 transition-all disabled:opacity-50">
+            <Save size={16} /> {saving ? "Salvando..." : "Salvar"}
+          </button>
+        </div>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Logo */}
+          <div className="bg-card border border-border rounded-2xl p-5 flex flex-col items-center">
+            <div className="w-24 h-24 rounded-2xl bg-muted border-2 border-border overflow-hidden mb-4">
+              {form.logo_url ? (
+                <img src={form.logo_url} alt="" className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center">
+                  <User size={32} className="text-muted-foreground" />
+                </div>
+              )}
+            </div>
+            <label className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/10 text-primary text-sm font-medium cursor-pointer hover:bg-primary/20 transition-colors">
+              {uploading ? (
+                <div className="w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+              ) : (
+                <Upload size={14} />
+              )}
+              Alterar Logo
+              <input type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" />
+            </label>
+          </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <div className="gradient-hero py-6">
