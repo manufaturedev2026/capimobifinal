@@ -1184,10 +1184,10 @@ export default function SellerDashboard() {
                     className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-foreground hover:bg-secondary transition-all">
                     <UserCircle size={16} /> Meu Perfil
                   </Link>
-                  <Link to="/painel/personalizacao" onClick={() => setMobileMenuOpen(false)}
+                  <button onClick={() => { setActiveTab("customization"); setMobileMenuOpen(false); }}
                     className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-foreground hover:bg-secondary transition-all">
                     <Palette size={16} /> Personalização
-                  </Link>
+                  </button>
                   <Link to="/pacotes" onClick={() => setMobileMenuOpen(false)}
                     className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-foreground hover:bg-secondary transition-all">
                     <Package size={16} /> Pacotes
