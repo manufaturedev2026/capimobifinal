@@ -322,7 +322,7 @@ export default function SellerDashboard() {
   return (
     <div className="min-h-screen bg-background overflow-x-hidden" style={dashThemeVars}>
       {/* Mobile Header — Premium Gradient */}
-      <div className="py-6 lg:py-4" style={{ background: dashTheme.dashboardGradient }}>
+      <div className="py-6 lg:py-4" style={{ background: dashGradient }}>
         <div className="container max-w-6xl mx-auto px-4 lg:hidden">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -503,7 +503,7 @@ export default function SellerDashboard() {
               <div className="space-y-6">
                 {/* Welcome Banner - Desktop */}
                 <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
-                  className="hidden lg:block rounded-2xl p-6 relative overflow-hidden" style={{ background: dashTheme.dashboardGradient }}>
+                  className="hidden lg:block rounded-2xl p-6 relative overflow-hidden" style={{ background: dashGradient }}>
                   <div className="absolute top-0 right-0 w-40 h-40 rounded-full bg-white/5 -translate-y-1/2 translate-x-1/4" />
                   <div className="absolute bottom-0 left-1/3 w-24 h-24 rounded-full bg-white/5 translate-y-1/2" />
                   <div className="relative">
