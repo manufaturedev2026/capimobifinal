@@ -93,6 +93,9 @@ export default function AdminPanel() {
       supabase.from("platform_settings").select("value").eq("key", "homepage_theme").maybeSingle().then(({ data }) => {
         if (data?.value) setHomepageTheme(data.value);
       });
+      supabase.from("platform_settings").select("value").eq("key", "login_hero_image").maybeSingle().then(({ data }) => {
+        if (data?.value) setLoginHeroUrl(data.value);
+      });
     }
   }, [isAdmin]);
 
