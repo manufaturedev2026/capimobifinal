@@ -15,6 +15,7 @@ import {
 } from "@/components/store-layouts";
 import type { StoreLayoutProps } from "@/components/store-layouts";
 import { getStoreTheme } from "@/components/StoreThemePicker";
+import { getStoreThemeCssVars } from "@/lib/marketplaceThemeCssVars";
 import { formatPrice, getTagStyle, getTagLabel } from "@/data/products";
 import { supabase } from "@/integrations/supabase/client";
 import { trackSellerEvent } from "@/hooks/useSellerAnalytics";
