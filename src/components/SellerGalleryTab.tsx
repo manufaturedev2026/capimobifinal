@@ -771,8 +771,7 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
         lines.push(`👉 Veja mais: ${window.location.origin}/imoveis/produto/${itemSlug}${sellerSlug ? `?corretor=${sellerSlug}` : ""}`);
         lines.push("");
         lines.push(`📞 ${sellerName}${sellerCreci ? ` | CRECI ${sellerCreci}` : ""}${sellerPhone ? ` | ${sellerPhone}` : ""}`);
-        const adText = lines.join("
-");
+        const adText = lines.join("\n");
         const doCopy = () => {
           navigator.clipboard.writeText(adText);
           setCopiedAdText(true);
