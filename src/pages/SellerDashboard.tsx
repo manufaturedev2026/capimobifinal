@@ -81,7 +81,16 @@ export default function SellerDashboard() {
     });
   }, []);
   const dashTheme = getMarketplaceTheme(dashThemeId);
-  const dashThemeVars = getMarketplaceThemeCssVars(dashTheme);
+
+  // Use broker's own store_theme for dashboard if set, otherwise fall back to global marketplace theme
+  const brokerStoreTheme = getStoreTheme((profile as any)?.store_theme);
+  const hasBrokerTheme = !!(profile as any)?.store_theme && (profile as any)?.store_theme !== "default";
+  const dashThemeVars = hasBrokerTheme
+    ? getStoreThemeCssVars(brokerStoreTheme)
+    : getMarketplaceThemeCssVars(dashTheme);
+  const dashGradient = hasBrokerTheme
+    ? brokerStoreTheme.preview.heroBg
+    : dashTheme.dashboardGradient;
   useEffect(() => {
     if (!authLoading && !user) navigate("/login");
   }, [user, authLoading, navigate]);
