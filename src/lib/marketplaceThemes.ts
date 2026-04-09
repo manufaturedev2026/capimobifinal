@@ -12,9 +12,12 @@ export interface MarketplaceTheme {
   dashboardGradient: string;
   promoAccent?: string;
   promoExploreColor?: string;
+  /** Optional 4th accent color */
+  promoExtra?: string;
 }
 
 export const MARKETPLACE_THEMES: MarketplaceTheme[] = [
+  // ── Classic (updated with 4 colors) ──
   {
     id: "azul",
     name: "Azul Escuro",
@@ -27,6 +30,8 @@ export const MARKETPLACE_THEMES: MarketplaceTheme[] = [
     text: "#f0f0f0",
     textMuted: "#8a8a9a",
     dashboardGradient: "linear-gradient(135deg, #001d42 0%, #002F6C 30%, #00609e 60%, #3B82F6 100%)",
+    promoAccent: "#60A5FA",
+    promoExploreColor: "#2563EB",
   },
   {
     id: "rosa",
@@ -40,6 +45,8 @@ export const MARKETPLACE_THEMES: MarketplaceTheme[] = [
     text: "#f5eded",
     textMuted: "#a07888",
     dashboardGradient: "linear-gradient(135deg, #3d0a1e 0%, #6b1a3a 30%, #a83060 60%, #E8587A 100%)",
+    promoAccent: "#F5A0B8",
+    promoExploreColor: "#DB2777",
   },
   {
     id: "aurora",
@@ -53,7 +60,12 @@ export const MARKETPLACE_THEMES: MarketplaceTheme[] = [
     text: "#f0eef5",
     textMuted: "#8a80a8",
     dashboardGradient: "linear-gradient(135deg, #1a0a3d 0%, #3b1a6b 25%, #6b2fa0 50%, #E8587A 80%, #F5A0B8 100%)",
+    promoAccent: "#E8587A",
+    promoExploreColor: "#7C3AED",
+    promoExtra: "#F5A0B8",
   },
+
+  // ── 3-color themes ──
   {
     id: "espirito-santo",
     name: "Espírito Santo",
@@ -143,6 +155,104 @@ export const MARKETPLACE_THEMES: MarketplaceTheme[] = [
     dashboardGradient: "linear-gradient(135deg, #0a0f1a 0%, #0c2d5e 30%, #0e7490 60%, #22D3EE 100%)",
     promoAccent: "#3B82F6",
     promoExploreColor: "#22D3EE",
+  },
+
+  // ── NEW 4-color themes ──
+  {
+    id: "carnaval",
+    name: "Carnaval",
+    icon: "🎭",
+    primary: "#FBBF24",
+    darkBase: "hsl(25, 45%, 6%)",
+    darkMid: "hsl(25, 40%, 13%)",
+    cardBg: "hsl(25, 32%, 10%)",
+    border: "hsl(25, 20%, 18%)",
+    text: "#ffffff",
+    textMuted: "#d0b090",
+    dashboardGradient: "linear-gradient(135deg, #7c2d12 0%, #FBBF24 20%, #10B981 40%, #3B82F6 60%, #A855F7 80%, #E8587A 100%)",
+    promoAccent: "#10B981",
+    promoExploreColor: "#3B82F6",
+    promoExtra: "#E8587A",
+  },
+  {
+    id: "galaxia",
+    name: "Galáxia",
+    icon: "🪐",
+    primary: "#8B5CF6",
+    darkBase: "hsl(260, 50%, 5%)",
+    darkMid: "hsl(260, 45%, 12%)",
+    cardBg: "hsl(260, 38%, 9%)",
+    border: "hsl(260, 22%, 16%)",
+    text: "#f0ecff",
+    textMuted: "#9a88c0",
+    dashboardGradient: "linear-gradient(135deg, #0f0526 0%, #4c1d95 20%, #EC4899 45%, #F97316 65%, #FBBF24 85%, #FDE68A 100%)",
+    promoAccent: "#EC4899",
+    promoExploreColor: "#F97316",
+    promoExtra: "#FBBF24",
+  },
+  {
+    id: "prisma",
+    name: "Prisma",
+    icon: "💠",
+    primary: "#06B6D4",
+    darkBase: "hsl(200, 50%, 5%)",
+    darkMid: "hsl(200, 45%, 12%)",
+    cardBg: "hsl(200, 38%, 9%)",
+    border: "hsl(200, 22%, 16%)",
+    text: "#f0f8ff",
+    textMuted: "#80b0c8",
+    dashboardGradient: "linear-gradient(135deg, #042f2e 0%, #06B6D4 20%, #A855F7 42%, #F43F5E 64%, #FB923C 86%, #FBBF24 100%)",
+    promoAccent: "#A855F7",
+    promoExploreColor: "#F43F5E",
+    promoExtra: "#FB923C",
+  },
+  {
+    id: "floresta",
+    name: "Floresta Mística",
+    icon: "🌲",
+    primary: "#22C55E",
+    darkBase: "hsl(150, 45%, 5%)",
+    darkMid: "hsl(150, 40%, 12%)",
+    cardBg: "hsl(150, 32%, 9%)",
+    border: "hsl(150, 20%, 16%)",
+    text: "#f0fff4",
+    textMuted: "#80c0a0",
+    dashboardGradient: "linear-gradient(135deg, #052e16 0%, #22C55E 22%, #A3E635 44%, #EAB308 66%, #D97706 88%, #92400e 100%)",
+    promoAccent: "#A3E635",
+    promoExploreColor: "#EAB308",
+    promoExtra: "#D97706",
+  },
+  {
+    id: "vulcao",
+    name: "Vulcão",
+    icon: "🌋",
+    primary: "#EF4444",
+    darkBase: "hsl(0, 40%, 5%)",
+    darkMid: "hsl(0, 35%, 12%)",
+    cardBg: "hsl(0, 28%, 9%)",
+    border: "hsl(0, 18%, 16%)",
+    text: "#fff0f0",
+    textMuted: "#c08080",
+    dashboardGradient: "linear-gradient(135deg, #1a0000 0%, #EF4444 20%, #F97316 42%, #FBBF24 64%, #FDE68A 86%, #fffbe6 100%)",
+    promoAccent: "#F97316",
+    promoExploreColor: "#FBBF24",
+    promoExtra: "#FDE68A",
+  },
+  {
+    id: "artico",
+    name: "Ártico",
+    icon: "❄️",
+    primary: "#38BDF8",
+    darkBase: "hsl(210, 55%, 5%)",
+    darkMid: "hsl(210, 50%, 11%)",
+    cardBg: "hsl(210, 42%, 8%)",
+    border: "hsl(210, 22%, 16%)",
+    text: "#f0f8ff",
+    textMuted: "#88a8d0",
+    dashboardGradient: "linear-gradient(135deg, #0c1929 0%, #1e3a5f 18%, #38BDF8 36%, #67E8F9 54%, #A5F3FC 72%, #E0F2FE 90%)",
+    promoAccent: "#67E8F9",
+    promoExploreColor: "#0284C7",
+    promoExtra: "#A5F3FC",
   },
 ];
 
