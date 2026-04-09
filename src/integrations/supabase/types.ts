@@ -292,6 +292,57 @@ export type Database = {
         }
         Relationships: []
       }
+      partnership_requests: {
+        Row: {
+          agency_profile_id: string
+          agency_user_id: string
+          created_at: string
+          id: string
+          message: string | null
+          requester_profile_id: string
+          requester_user_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          agency_profile_id: string
+          agency_user_id: string
+          created_at?: string
+          id?: string
+          message?: string | null
+          requester_profile_id: string
+          requester_user_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          agency_profile_id?: string
+          agency_user_id?: string
+          created_at?: string
+          id?: string
+          message?: string | null
+          requester_profile_id?: string
+          requester_user_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "partnership_requests_agency_profile_id_fkey"
+            columns: ["agency_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "partnership_requests_requester_profile_id_fkey"
+            columns: ["requester_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       platform_settings: {
         Row: {
           key: string
