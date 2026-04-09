@@ -931,8 +931,6 @@ export default function AdminPanel() {
               ))}
             </div>
           </div>
-        </div>
-
           {/* Login Hero Image */}
           <div className="bg-card border border-border rounded-2xl p-5">
             <h3 className="font-display font-bold text-lg text-foreground mb-1 flex items-center gap-2">
