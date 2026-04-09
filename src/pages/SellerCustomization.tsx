@@ -68,6 +68,19 @@ export default function SellerCustomization({ embedded }: { embedded?: boolean }
     }
   }, [profile]);
 
+  // Auto-save layout/theme instantly when changed
+  const autoSaveField = async (field: string, value: string) => {
+    if (!user) return;
+    const { error } = await supabase
+      .from("profiles")
+      .update({ [field]: value })
+      .eq("user_id", user.id);
+    if (!error) {
+      await refreshProfile();
+      toast({ title: "Salvo automaticamente!" });
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
