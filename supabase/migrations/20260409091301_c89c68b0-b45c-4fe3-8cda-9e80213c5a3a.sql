@@ -1,0 +1,1 @@
+ALTER TABLE public.profiles ADD COLUMN capture_video_title text DEFAULT NULL;
