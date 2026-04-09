@@ -151,7 +151,7 @@ export default function SellerCustomization({ embedded }: { embedded?: boolean }
         <div className="bg-card border border-border rounded-2xl p-5">
           <StoreThemePicker
             selected={form.store_theme}
-            onChange={(themeId) => setForm((f) => ({ ...f, store_theme: themeId }))}
+            onChange={(themeId) => { setForm((f) => ({ ...f, store_theme: themeId })); autoSaveField("store_theme", themeId); }}
           />
         </div>
 
