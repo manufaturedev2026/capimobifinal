@@ -2,6 +2,28 @@ import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
+
+/* ═══════════════════════════════════════
+   DATE HELPERS (BR format dd/mm/yyyy <-> ISO yyyy-mm-dd)
+   ═══════════════════════════════════════ */
+const isoToBr = (iso: string) => {
+  if (!iso) return "";
+  const [y, m, d] = iso.split("-");
+  return d && m && y ? `${d}/${m}/${y}` : iso;
+};
+const brToIso = (br: string) => {
+  const clean = br.replace(/\D/g, "");
+  if (clean.length < 8) return "";
+  const d = clean.slice(0, 2), m = clean.slice(2, 4), y = clean.slice(4, 8);
+  return `${y}-${m}-${d}`;
+};
+const maskDateBr = (raw: string) => {
+  const digits = raw.replace(/\D/g, "").slice(0, 8);
+  if (digits.length <= 2) return digits;
+  if (digits.length <= 4) return `${digits.slice(0, 2)}/${digits.slice(2)}`;
+  return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`;
+};
+
 import {
   Home, Plus, ArrowLeft, Edit, Trash2, Phone, Mail, Calendar,
   DollarSign, AlertTriangle, CheckCircle2, Clock, TrendingUp,
@@ -942,8 +964,8 @@ function ContractForm({ userId, sellerId, properties, rentalProperties, editing,
     due_day: editing?.due_day?.toString() || "10",
     late_fee_percent: editing?.late_fee_percent?.toString() || "2",
     daily_interest_percent: editing?.daily_interest_percent?.toString() || "0.033",
-    start_date: editing?.start_date || new Date().toISOString().split("T")[0],
-    end_date: editing?.end_date || "",
+    start_date: isoToBr(editing?.start_date || new Date().toISOString().split("T")[0]),
+    end_date: isoToBr(editing?.end_date || ""),
     status: editing?.status || "ativo",
     notes: editing?.notes || "",
     owner_name: editing?.owner_name || "",
@@ -971,8 +993,8 @@ function ContractForm({ userId, sellerId, properties, rentalProperties, editing,
       due_day: parseInt(form.due_day) || 10,
       late_fee_percent: parseFloat(form.late_fee_percent) || 2,
       daily_interest_percent: parseFloat(form.daily_interest_percent) || 0.033,
-      start_date: form.start_date,
-      end_date: form.end_date || null,
+      start_date: brToIso(form.start_date) || form.start_date,
+      end_date: brToIso(form.end_date) || form.end_date || null,
       status: form.status as "ativo" | "encerrado" | "cancelado" | "renovacao",
       notes: form.notes || null,
       owner_name: form.owner_name || null,
@@ -1071,8 +1093,8 @@ function ContractForm({ userId, sellerId, properties, rentalProperties, editing,
         <div>
           <h3 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2"><Calendar size={14} className="text-primary" /> Período</h3>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div><label className={labelCls}>Data de Início *</label><input type="date" value={form.start_date} onChange={e => set("start_date", e.target.value)} className={inputCls} /></div>
-            <div><label className={labelCls}>Data de Término</label><input type="date" value={form.end_date} onChange={e => set("end_date", e.target.value)} className={inputCls} /></div>
+            <div><label className={labelCls}>Data de Início *</label><input type="text" inputMode="numeric" placeholder="dd/mm/aaaa" value={form.start_date} onChange={e => set("start_date", maskDateBr(e.target.value))} className={inputCls} /></div>
+            <div><label className={labelCls}>Data de Término</label><input type="text" inputMode="numeric" placeholder="dd/mm/aaaa" value={form.end_date} onChange={e => set("end_date", maskDateBr(e.target.value))} className={inputCls} /></div>
             <div>
               <label className={labelCls}>Status</label>
               <select value={form.status} onChange={e => set("status", e.target.value)} className={inputCls}>
