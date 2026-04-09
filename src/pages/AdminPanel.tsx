@@ -1032,7 +1032,7 @@ export default function AdminPanel() {
             {/* Preset gallery */}
             <div className="grid grid-cols-5 gap-2 mb-4">
               {LOGIN_HERO_PRESETS.map((preset) => {
-                const isActive = loginHeroUrl === preset.src;
+                
                 return (
                   <button
                     key={preset.id}
