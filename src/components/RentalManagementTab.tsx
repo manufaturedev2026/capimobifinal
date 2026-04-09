@@ -7,6 +7,7 @@ import {
   DollarSign, AlertTriangle, CheckCircle2, Clock, TrendingUp,
   Send, MessageCircle, X, FileText, User, Building2, Search,
   ChevronRight, Eye, Filter, MoreVertical, Ban, RefreshCw, Receipt,
+  Image as ImageIcon, Upload, MapPin,
 } from "lucide-react";
 
 /* ═══════════════════════════════════════
