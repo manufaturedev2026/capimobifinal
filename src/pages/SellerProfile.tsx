@@ -166,41 +166,201 @@ export default function SellerProfile({ embedded }: { embedded?: boolean }) {
     setSaving(false);
   };
 
+  const formContent = (
+    <>
+      {/* Logo */}
+      <div className="bg-card border border-border rounded-2xl p-5 flex flex-col items-center">
+        <div className="w-24 h-24 rounded-2xl bg-muted border-2 border-border overflow-hidden mb-4">
+          {form.logo_url ? (
+            <img src={form.logo_url} alt="" className="w-full h-full object-cover" />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <User size={32} className="text-muted-foreground" />
+            </div>
+          )}
+        </div>
+        <label className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/10 text-primary text-sm font-medium cursor-pointer hover:bg-primary/20 transition-colors">
+          {uploading ? (
+            <div className="w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+          ) : (
+            <Upload size={14} />
+          )}
+          Alterar Logo
+          <input type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" />
+        </label>
+      </div>
+
+      <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
+        <h2 className="font-display font-bold text-foreground">Categoria</h2>
+        <p className="text-xs text-muted-foreground">Selecione o tipo que melhor descreve você ou sua empresa.</p>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {[
+            { value: "imobiliaria", label: "🏢 Imobiliária" },
+            { value: "corretor", label: "📋 Corretor(a)" },
+            { value: "construtora", label: "🏗️ Construtora" },
+          ].map((cat) => (
+            <button
+              key={cat.value}
+              type="button"
+              onClick={() => setForm((f) => ({ ...f, seller_category: cat.value }))}
+              className={`py-3 rounded-xl border-2 font-bold text-sm transition-all ${
+                form.seller_category === cat.value
+                  ? "border-primary bg-primary/10 text-primary"
+                  : "border-border text-muted-foreground hover:border-primary/50"
+              }`}
+            >
+              {cat.label}
+            </button>
+          ))}
+        </div>
+
+        {["corretor", "imobiliaria", "construtora"].includes(form.seller_category) && (
+          <div className="mt-4">
+            <label className="text-sm font-medium text-foreground mb-1 block">Número do CRECI</label>
+            <input
+              value={form.creci}
+              onChange={(e) => setForm((f) => ({ ...f, creci: e.target.value }))}
+              className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+              placeholder="Ex: CRECI 12345-ES"
+            />
+            <p className="text-xs text-muted-foreground mt-1">O CRECI será exibido no perfil da sua loja.</p>
+          </div>
+        )}
+
+        {["imobiliaria", "construtora"].includes(form.seller_category) && (
+          <div className="mt-4">
+            <label className="text-sm font-medium text-foreground mb-1 block">CNPJ</label>
+            <input
+              value={form.cnpj}
+              onChange={(e) => setForm((f) => ({ ...f, cnpj: e.target.value }))}
+              className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+              placeholder="Ex: 12.345.678/0001-99"
+            />
+            <p className="text-xs text-muted-foreground mt-1">O CNPJ só aparece na loja se preenchido.</p>
+          </div>
+        )}
+      </div>
+
+      <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
+        <h2 className="font-display font-bold text-foreground">Informações Pessoais</h2>
+        <input value={form.full_name} onChange={(e) => setForm((f) => ({ ...f, full_name: e.target.value }))} className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="Nome completo" />
+        <input value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="E-mail" />
+        <input value={form.phone} onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))} className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="Telefone" />
+        <input value={form.company_name} onChange={(e) => setForm((f) => ({ ...f, company_name: e.target.value }))} className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder={
+          form.seller_category === "corretor" ? "Nome do Corretor" :
+          form.seller_category === "proprietario" ? "Nome do Proprietário" :
+          "Nome da Empresa"
+        } />
+        <div className="relative">
+          <Instagram size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+          <input value={form.instagram} onChange={(e) => setForm((f) => ({ ...f, instagram: e.target.value }))} className="w-full pl-10 pr-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="Instagram (ex: @sualoja)" />
+        </div>
+      </div>
+
+      <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
+        <h2 className="font-display font-bold text-foreground">URL da Loja</h2>
+        <p className="text-xs text-muted-foreground">Escolha um nome curto para a URL da sua loja.</p>
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-muted-foreground whitespace-nowrap">{window.location.origin}/empresa/</span>
+          <div className="relative flex-1">
+            <LinkIcon size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <input
+              value={form.slug}
+              onChange={(e) => {
+                const val = e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, "");
+                setForm((f) => ({ ...f, slug: val }));
+                setSlugError("");
+              }}
+              className="w-full pl-10 pr-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+              placeholder="ex: gabriel01"
+              maxLength={30}
+            />
+          </div>
+        </div>
+        {slugError && <p className="text-xs text-destructive font-medium">{slugError}</p>}
+        {form.slug && !slugError && (
+          <p className="text-xs text-emerald-500 font-medium">
+            Sua loja ficará em: {window.location.origin}/empresa/{form.slug}
+          </p>
+        )}
+      </div>
+
+      <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
+        <h2 className="font-display font-bold text-foreground">Sobre a Empresa</h2>
+        <p className="text-xs text-muted-foreground">Descreva sua empresa, diferenciais, horário de funcionamento, etc.</p>
+        <textarea
+          value={form.bio}
+          onChange={(e) => setForm((f) => ({ ...f, bio: e.target.value }))}
+          rows={5}
+          maxLength={80}
+          className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none resize-none"
+          placeholder="Ex: Somos uma empresa especializada em imóveis com mais de 10 anos de experiência..."
+        />
+        <span className="text-xs text-muted-foreground">{form.bio.length}/80</span>
+      </div>
+
+      <div className="bg-card border border-border rounded-2xl p-5">
+        <h2 className="font-display font-bold text-foreground mb-3">Tipo de vendedor</h2>
+        <div className="flex items-center gap-3 py-3 px-4 rounded-xl border-2 border-primary bg-primary/10">
+          <span className="text-lg">🏠</span>
+          <span className="font-bold text-sm text-primary">Imóveis</span>
+        </div>
+      </div>
+
+      <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
+        <h2 className="font-display font-bold text-foreground">Localização</h2>
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="text-xs text-muted-foreground mb-1 block">Estado</label>
+            <select value={form.state} onChange={(e) => setForm((f) => ({ ...f, state: e.target.value, city: "" }))}
+              className="px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none">
+              <option value="">Selecione o estado</option>
+              {BRAZIL_STATES.map((s) => <option key={s.uf} value={s.uf}>{s.name}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground mb-1 block">Cidade</label>
+            <select value={form.city} onChange={(e) => setForm((f) => ({ ...f, city: e.target.value }))}
+              className="px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+              disabled={!form.state || citiesLoading}>
+              <option value="">{citiesLoading ? "Carregando..." : "Selecione a cidade"}</option>
+              {ibgeCities.map((city) => (
+                <option key={city} value={city}>{city}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+        <input value={form.address} onChange={(e) => setForm((f) => ({ ...f, address: e.target.value }))} className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="Endereço completo" />
+        <label className="flex items-center gap-3 cursor-pointer select-none">
+          <input type="checkbox" checked={form.show_location} onChange={(e) => setForm((f) => ({ ...f, show_location: e.target.checked }))} className="w-5 h-5 rounded border-input text-primary focus:ring-ring accent-primary cursor-pointer" />
+          <span className="text-sm text-foreground">
+            {form.seller_category === "proprietario" ? "Mostrar localização da propriedade no perfil" : form.seller_category === "corretor" || form.seller_category === "imobiliaria" ? "Mostrar localização do escritório no perfil" : "Mostrar localização no perfil da loja"}
+          </span>
+        </label>
+        <label className="flex items-center gap-3 cursor-pointer select-none">
+          <input type="checkbox" checked={form.show_floating_whatsapp} onChange={(e) => setForm((f) => ({ ...f, show_floating_whatsapp: e.target.checked }))} className="w-5 h-5 rounded border-input text-primary focus:ring-ring accent-primary cursor-pointer" />
+          <span className="text-sm text-foreground">Mostrar botão flutuante do WhatsApp na loja</span>
+        </label>
+      </div>
+    </>
+  );
+
   if (embedded) {
     return (
-      <div className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="font-display font-bold text-xl text-foreground">Meu Perfil</h2>
             <p className="text-sm text-muted-foreground">Edite suas informações pessoais e da empresa</p>
           </div>
-          <button type="button" onClick={handleSubmit as any} disabled={saving}
+          <button type="submit" disabled={saving}
             className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:bg-primary/90 transition-all disabled:opacity-50">
             <Save size={16} /> {saving ? "Salvando..." : "Salvar"}
           </button>
         </div>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Logo */}
-          <div className="bg-card border border-border rounded-2xl p-5 flex flex-col items-center">
-            <div className="w-24 h-24 rounded-2xl bg-muted border-2 border-border overflow-hidden mb-4">
-              {form.logo_url ? (
-                <img src={form.logo_url} alt="" className="w-full h-full object-cover" />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center">
-                  <User size={32} className="text-muted-foreground" />
-                </div>
-              )}
-            </div>
-            <label className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/10 text-primary text-sm font-medium cursor-pointer hover:bg-primary/20 transition-colors">
-              {uploading ? (
-                <div className="w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
-              ) : (
-                <Upload size={14} />
-              )}
-              Alterar Logo
-              <input type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" />
-            </label>
-          </div>
+        {formContent}
+        <ChangePasswordSection />
+      </form>
     );
   }
 
@@ -216,224 +376,20 @@ export default function SellerProfile({ embedded }: { embedded?: boolean }) {
       </div>
 
       <form onSubmit={handleSubmit} className="container max-w-3xl mx-auto px-4 py-6 space-y-6">
-        {/* Logo */}
-        <div className="bg-card border border-border rounded-2xl p-5 flex flex-col items-center">
-          <div className="w-24 h-24 rounded-2xl bg-muted border-2 border-border overflow-hidden mb-4">
-            {form.logo_url ? (
-              <img src={form.logo_url} alt="" className="w-full h-full object-cover" />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center">
-                <User size={32} className="text-muted-foreground" />
-              </div>
-            )}
-          </div>
-          <label className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/10 text-primary text-sm font-medium cursor-pointer hover:bg-primary/20 transition-colors">
-            {uploading ? (
-              <div className="w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
-            ) : (
-              <Upload size={14} />
-            )}
-            Alterar Logo
-            <input type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" />
-          </label>
-        </div>
-
-
-
-        <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
-          <h2 className="font-display font-bold text-foreground">Categoria</h2>
-          <p className="text-xs text-muted-foreground">Selecione o tipo que melhor descreve você ou sua empresa.</p>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {[
-              { value: "imobiliaria", label: "🏢 Imobiliária" },
-              { value: "corretor", label: "📋 Corretor(a)" },
-              { value: "construtora", label: "🏗️ Construtora" },
-            ].map((cat) => (
-              <button
-                key={cat.value}
-                type="button"
-                onClick={() => setForm((f) => ({ ...f, seller_category: cat.value }))}
-                className={`py-3 rounded-xl border-2 font-bold text-sm transition-all ${
-                  form.seller_category === cat.value
-                    ? "border-primary bg-primary/10 text-primary"
-                    : "border-border text-muted-foreground hover:border-primary/50"
-                }`}
-              >
-                {cat.label}
-              </button>
-            ))}
-          </div>
-
-          {/* CRECI field — for corretor, imobiliaria, construtora */}
-          {["corretor", "imobiliaria", "construtora"].includes(form.seller_category) && (
-            <div className="mt-4">
-              <label className="text-sm font-medium text-foreground mb-1 block">Número do CRECI</label>
-              <input
-                value={form.creci}
-                onChange={(e) => setForm((f) => ({ ...f, creci: e.target.value }))}
-                className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
-                placeholder="Ex: CRECI 12345-ES"
-              />
-              <p className="text-xs text-muted-foreground mt-1">O CRECI será exibido no perfil da sua loja.</p>
-            </div>
-          )}
-
-          {/* CNPJ field — for imobiliaria, construtora */}
-          {["imobiliaria", "construtora"].includes(form.seller_category) && (
-            <div className="mt-4">
-              <label className="text-sm font-medium text-foreground mb-1 block">CNPJ</label>
-              <input
-                value={form.cnpj}
-                onChange={(e) => setForm((f) => ({ ...f, cnpj: e.target.value }))}
-                className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
-                placeholder="Ex: 12.345.678/0001-99"
-              />
-              <p className="text-xs text-muted-foreground mt-1">O CNPJ só aparece na loja se preenchido.</p>
-            </div>
-          )}
-
-        </div>
-
-        {/* Info */}
-        <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
-          <h2 className="font-display font-bold text-foreground">Informações Pessoais</h2>
-          <input value={form.full_name} onChange={(e) => setForm((f) => ({ ...f, full_name: e.target.value }))} className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="Nome completo" />
-          <input value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="E-mail" />
-          <input value={form.phone} onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))} className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="Telefone" />
-          <input value={form.company_name} onChange={(e) => setForm((f) => ({ ...f, company_name: e.target.value }))} className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder={
-            form.seller_category === "corretor" ? "Nome do Corretor" :
-            form.seller_category === "proprietario" ? "Nome do Proprietário" :
-            "Nome da Empresa"
-          } />
-          <div className="relative">
-            <Instagram size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            <input value={form.instagram} onChange={(e) => setForm((f) => ({ ...f, instagram: e.target.value }))} className="w-full pl-10 pr-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="Instagram (ex: @sualoja)" />
-          </div>
-        </div>
-
-        {/* URL da Loja */}
-        <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
-          <h2 className="font-display font-bold text-foreground">URL da Loja</h2>
-          <p className="text-xs text-muted-foreground">Escolha um nome curto para a URL da sua loja. Use apenas letras minúsculas, números, hífens e underscores.</p>
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground whitespace-nowrap">{window.location.origin}/empresa/</span>
-            <div className="relative flex-1">
-              <LinkIcon size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-              <input
-                value={form.slug}
-                onChange={(e) => {
-                  const val = e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, "");
-                  setForm((f) => ({ ...f, slug: val }));
-                  setSlugError("");
-                }}
-                className="w-full pl-10 pr-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
-                placeholder="ex: gabriel01"
-                maxLength={30}
-              />
-            </div>
-          </div>
-          {slugError && <p className="text-xs text-destructive font-medium">{slugError}</p>}
-          {form.slug && !slugError && (
-            <p className="text-xs text-emerald-500 font-medium">
-              Sua loja ficará em: {window.location.origin}/empresa/{form.slug}
-            </p>
-          )}
-        </div>
-
-        {/* Sobre a empresa */}
-        <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
-          <h2 className="font-display font-bold text-foreground">Sobre a Empresa</h2>
-          <p className="text-xs text-muted-foreground">Descreva sua empresa, diferenciais, horário de funcionamento, etc. Esse texto aparece na sua loja pública.</p>
-          <textarea
-            value={form.bio}
-            onChange={(e) => setForm((f) => ({ ...f, bio: e.target.value }))}
-            rows={5}
-            maxLength={80}
-            className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none resize-none"
-            placeholder="Ex: Somos uma empresa especializada em imóveis com mais de 10 anos de experiência..."
-          />
-          <span className="text-xs text-muted-foreground">{form.bio.length}/80</span>
-        </div>
-
-
-
-        <div className="bg-card border border-border rounded-2xl p-5">
-          <h2 className="font-display font-bold text-foreground mb-3">Tipo de vendedor</h2>
-          <div className="flex items-center gap-3 py-3 px-4 rounded-xl border-2 border-primary bg-primary/10">
-            <span className="text-lg">🏠</span>
-            <span className="font-bold text-sm text-primary">Imóveis</span>
-          </div>
-        </div>
-
-        {/* Location */}
-        <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
-          <h2 className="font-display font-bold text-foreground">Localização</h2>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="text-xs text-muted-foreground mb-1 block">Estado</label>
-              <select value={form.state} onChange={(e) => setForm((f) => ({ ...f, state: e.target.value, city: "" }))}
-                className="px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none">
-                <option value="">Selecione o estado</option>
-                {BRAZIL_STATES.map((s) => <option key={s.uf} value={s.uf}>{s.name}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className="text-xs text-muted-foreground mb-1 block">Cidade</label>
-              <select value={form.city} onChange={(e) => setForm((f) => ({ ...f, city: e.target.value }))}
-                className="px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
-                disabled={!form.state || citiesLoading}>
-                <option value="">{citiesLoading ? "Carregando..." : "Selecione a cidade"}</option>
-                {ibgeCities.map((city) => (
-                  <option key={city} value={city}>{city}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-          <input value={form.address} onChange={(e) => setForm((f) => ({ ...f, address: e.target.value }))} className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="Endereço completo" />
-          <label className="flex items-center gap-3 cursor-pointer select-none">
-            <input
-              type="checkbox"
-              checked={form.show_location}
-              onChange={(e) => setForm((f) => ({ ...f, show_location: e.target.checked }))}
-              className="w-5 h-5 rounded border-input text-primary focus:ring-ring accent-primary cursor-pointer"
-            />
-            <span className="text-sm text-foreground">
-              {form.seller_category === "proprietario"
-                ? "Mostrar localização da propriedade no perfil"
-                : form.seller_category === "corretor" || form.seller_category === "imobiliaria"
-                ? "Mostrar localização do escritório no perfil"
-                : "Mostrar localização no perfil da loja"}
-            </span>
-          </label>
-          <label className="flex items-center gap-3 cursor-pointer select-none">
-            <input
-              type="checkbox"
-              checked={form.show_floating_whatsapp}
-              onChange={(e) => setForm((f) => ({ ...f, show_floating_whatsapp: e.target.checked }))}
-              className="w-5 h-5 rounded border-input text-primary focus:ring-ring accent-primary cursor-pointer"
-            />
-            <span className="text-sm text-foreground">
-              Mostrar botão flutuante do WhatsApp na loja
-            </span>
-          </label>
-        </div>
-          <button
+        {formContent}
+        <button
           disabled={saving}
           className="w-full py-4 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg"
         >
           {saving ? (
             <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
           ) : (
-            <>
-              <Save size={16} /> Salvar Perfil
-            </>
+            <><Save size={16} /> Salvar Perfil</>
           )}
         </button>
       </form>
 
-      {/* ══════ TROCAR SENHA ══════ */}
       <ChangePasswordSection />
-
     </div>
   );
 }
