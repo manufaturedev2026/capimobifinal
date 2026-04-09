@@ -305,6 +305,7 @@ export default function SellerDashboard() {
     { id: "profit" as DashboardTab, label: "Calculadora de Lucro", icon: Calculator },
     { id: "domain", label: "Meu Domínio", icon: Globe, locked: lockedTabs.includes("domain") },
     ...(showTeamTab ? [{ id: "team" as DashboardTab, label: "Corretores", icon: Users }] : []),
+    { id: "partner" as DashboardTab, label: "Parceiro", icon: Handshake },
   ];
 
   const handleTabClick = (tabId: DashboardTab) => {
