@@ -1207,3 +1207,135 @@ function PaymentFormButton({ contract, userId, onSave }: { contract: RentalContr
     </>
   );
 }
+
+/* ═══════════════════════════════════════
+   RENTAL PROPERTY FORM SUB-COMPONENT
+   ═══════════════════════════════════════ */
+function RentalPropertyForm({ userId, sellerId, editing, onSave, onCancel }: {
+  userId: string;
+  sellerId: string;
+  editing: RentalProperty | null;
+  onSave: () => void;
+  onCancel: () => void;
+}) {
+  const { toast } = useToast();
+  const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [form, setForm] = useState({
+    title: editing?.title || "",
+    address: editing?.address || "",
+    city: editing?.city || "",
+    photo_url: editing?.photo_url || "",
+    owner_name: editing?.owner_name || "",
+    owner_phone: editing?.owner_phone || "",
+    notes: editing?.notes || "",
+  });
+
+  const set = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }));
+
+  const handleUploadPhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    const ext = file.name.split(".").pop();
+    const path = `rental-properties/${sellerId}/${Date.now()}.${ext}`;
+    const { error } = await supabase.storage.from("seller-photos").upload(path, file, { upsert: true });
+    if (error) {
+      toast({ title: "Erro ao enviar foto", variant: "destructive" });
+      setUploading(false);
+      return;
+    }
+    const { data: pub } = supabase.storage.from("seller-photos").getPublicUrl(path);
+    set("photo_url", pub.publicUrl);
+    setUploading(false);
+  };
+
+  const handleSubmit = async () => {
+    if (!form.title.trim()) {
+      toast({ title: "Informe o nome do imóvel" });
+      return;
+    }
+    setSaving(true);
+    const payload = {
+      user_id: userId,
+      seller_id: sellerId,
+      title: form.title.trim(),
+      address: form.address || null,
+      city: form.city || null,
+      photo_url: form.photo_url || null,
+      owner_name: form.owner_name || null,
+      owner_phone: form.owner_phone || null,
+      notes: form.notes || null,
+    };
+
+    if (editing) {
+      await supabase.from("rental_properties" as any).update(payload).eq("id", editing.id);
+      toast({ title: "Imóvel atualizado!" });
+    } else {
+      await supabase.from("rental_properties" as any).insert(payload);
+      toast({ title: "Imóvel cadastrado!" });
+    }
+    setSaving(false);
+    onSave();
+  };
+
+  const inputCls = "w-full px-3 py-2.5 rounded-xl border border-border bg-card text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30";
+  const labelCls = "block text-[11px] font-bold text-muted-foreground uppercase tracking-wide mb-1.5";
+
+  return (
+    <div className="space-y-5">
+      <div className="flex items-center justify-between">
+        <button onClick={onCancel} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+          <ArrowLeft size={16} /> Voltar
+        </button>
+        <h2 className="text-sm font-bold text-foreground">{editing ? "Editar Imóvel" : "Novo Imóvel de Aluguel"}</h2>
+      </div>
+
+      <div className="rounded-2xl border border-border bg-card p-5 space-y-5">
+        {/* Photo */}
+        <div>
+          <label className={labelCls}>Foto do Imóvel</label>
+          {form.photo_url ? (
+            <div className="relative w-full h-40 rounded-xl overflow-hidden border border-border mb-2">
+              <img src={form.photo_url} alt="" className="w-full h-full object-cover" />
+              <button onClick={() => set("photo_url", "")} className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-black/80">
+                <X size={14} />
+              </button>
+            </div>
+          ) : (
+            <label className="flex flex-col items-center justify-center w-full h-32 rounded-xl border-2 border-dashed border-border bg-secondary/30 cursor-pointer hover:border-primary/50 transition-colors">
+              {uploading ? (
+                <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <>
+                  <Upload size={24} className="text-muted-foreground/50 mb-2" />
+                  <span className="text-xs text-muted-foreground">Clique para enviar foto</span>
+                </>
+              )}
+              <input type="file" accept="image/*" onChange={handleUploadPhoto} className="hidden" />
+            </label>
+          )}
+        </div>
+
+        {/* Info */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div><label className={labelCls}>Nome/Identificação *</label><input value={form.title} onChange={e => set("title", e.target.value)} placeholder="Ex: Apt 302, Ed. Solar" className={inputCls} /></div>
+          <div><label className={labelCls}>Endereço</label><input value={form.address} onChange={e => set("address", e.target.value)} placeholder="Rua, número, bairro" className={inputCls} /></div>
+          <div><label className={labelCls}>Cidade</label><input value={form.city} onChange={e => set("city", e.target.value)} placeholder="Cidade" className={inputCls} /></div>
+          <div className="hidden sm:block" />
+          <div><label className={labelCls}>Nome do Proprietário</label><input value={form.owner_name} onChange={e => set("owner_name", e.target.value)} placeholder="Nome do proprietário" className={inputCls} /></div>
+          <div><label className={labelCls}>Telefone do Proprietário</label><input value={form.owner_phone} onChange={e => set("owner_phone", e.target.value)} placeholder="(27) 99999-9999" className={inputCls} /></div>
+        </div>
+
+        <div>
+          <label className={labelCls}>Observações</label>
+          <textarea value={form.notes} onChange={e => set("notes", e.target.value)} rows={3} placeholder="Observações sobre o imóvel..." className={inputCls} />
+        </div>
+
+        <button onClick={handleSubmit} disabled={saving} className="w-full py-3 rounded-xl text-sm font-bold bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50 transition-opacity">
+          {saving ? "Salvando..." : editing ? "Atualizar Imóvel" : "Cadastrar Imóvel"}
+        </button>
+      </div>
+    </div>
+  );
+}
