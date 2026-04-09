@@ -774,6 +774,54 @@ export type Database = {
           },
         ]
       }
+      rental_properties: {
+        Row: {
+          address: string | null
+          city: string | null
+          created_at: string
+          id: string
+          is_active: boolean
+          notes: string | null
+          owner_name: string | null
+          owner_phone: string | null
+          photo_url: string | null
+          seller_id: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          address?: string | null
+          city?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          notes?: string | null
+          owner_name?: string | null
+          owner_phone?: string | null
+          photo_url?: string | null
+          seller_id: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          address?: string | null
+          city?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          notes?: string | null
+          owner_name?: string | null
+          owner_phone?: string | null
+          photo_url?: string | null
+          seller_id?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       rental_reminders: {
         Row: {
           channel: string

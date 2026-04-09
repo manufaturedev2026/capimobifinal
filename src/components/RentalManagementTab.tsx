@@ -7,6 +7,7 @@ import {
   DollarSign, AlertTriangle, CheckCircle2, Clock, TrendingUp,
   Send, MessageCircle, X, FileText, User, Building2, Search,
   ChevronRight, Eye, Filter, MoreVertical, Ban, RefreshCw, Receipt,
+  Image as ImageIcon, Upload, MapPin,
 } from "lucide-react";
 
 /* ═══════════════════════════════════════
@@ -59,6 +60,21 @@ interface PropertyOption {
   city: string | null;
 }
 
+interface RentalProperty {
+  id: string;
+  user_id: string;
+  seller_id: string;
+  title: string;
+  address: string | null;
+  city: string | null;
+  photo_url: string | null;
+  owner_name: string | null;
+  owner_phone: string | null;
+  notes: string | null;
+  is_active: boolean;
+  created_at: string;
+}
+
 interface Props {
   userId: string;
   sellerId: string;
@@ -87,7 +103,7 @@ const fmtDate = (d: string) => {
   return `${day}/${m}/${y}`;
 };
 
-type View = "dashboard" | "contracts" | "form" | "detail" | "payments";
+type View = "dashboard" | "contracts" | "form" | "detail" | "payments" | "rental-properties" | "rental-property-form";
 
 /* ═══════════════════════════════════════
    MAIN COMPONENT
@@ -98,9 +114,11 @@ export default function RentalManagementTab({ userId, sellerId }: Props) {
   const [contracts, setContracts] = useState<RentalContract[]>([]);
   const [payments, setPayments] = useState<RentalPayment[]>([]);
   const [properties, setProperties] = useState<PropertyOption[]>([]);
+  const [rentalProperties, setRentalProperties] = useState<RentalProperty[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedContract, setSelectedContract] = useState<RentalContract | null>(null);
   const [editingContract, setEditingContract] = useState<RentalContract | null>(null);
+  const [editingRentalProp, setEditingRentalProp] = useState<RentalProperty | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>("todos");
   const [search, setSearch] = useState("");
   const [expandedAlertId, setExpandedAlertId] = useState<string | null>(null);
@@ -112,14 +130,16 @@ export default function RentalManagementTab({ userId, sellerId }: Props) {
 
   const fetchAll = async () => {
     setLoading(true);
-    const [cRes, pRes, iRes] = await Promise.all([
+    const [cRes, pRes, iRes, rpRes] = await Promise.all([
       supabase.from("rental_contracts").select("*").eq("seller_id", sellerId).order("created_at", { ascending: false }),
       supabase.from("rental_payments").select("*").eq("user_id", userId).order("due_date", { ascending: false }),
       supabase.from("seller_items").select("id, title, city").eq("seller_id", sellerId).eq("status", "ativo"),
+      supabase.from("rental_properties" as any).select("*").eq("seller_id", sellerId).order("created_at", { ascending: false }),
     ]);
     setContracts((cRes.data as RentalContract[]) || []);
     setPayments((pRes.data as RentalPayment[]) || []);
     setProperties((iRes.data as PropertyOption[]) || []);
+    setRentalProperties((rpRes.data as unknown as RentalProperty[]) || []);
     setLoading(false);
   };
 
@@ -303,14 +323,13 @@ export default function RentalManagementTab({ userId, sellerId }: Props) {
         </div>
 
         {/* ── Quick Actions ── */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <button onClick={() => setView("contracts")} className="flex items-center gap-3 p-4 rounded-2xl border border-border bg-card hover:border-primary/50 transition-colors text-left">
             <FileText size={20} className="text-primary" />
             <div>
               <p className="text-sm font-bold text-foreground">Contratos</p>
               <p className="text-xs text-muted-foreground">{contracts.length} cadastrados</p>
             </div>
-            <ChevronRight size={16} className="text-muted-foreground ml-auto" />
           </button>
           <button onClick={() => setView("payments")} className="flex items-center gap-3 p-4 rounded-2xl border border-border bg-card hover:border-primary/50 transition-colors text-left">
             <DollarSign size={20} className="text-emerald-500" />
@@ -318,11 +337,17 @@ export default function RentalManagementTab({ userId, sellerId }: Props) {
               <p className="text-sm font-bold text-foreground">Pagamentos</p>
               <p className="text-xs text-muted-foreground">{payments.length} registros</p>
             </div>
-            <ChevronRight size={16} className="text-muted-foreground ml-auto" />
+          </button>
+          <button onClick={() => setView("rental-properties")} className="flex items-center gap-3 p-4 rounded-2xl border border-border bg-card hover:border-primary/50 transition-colors text-left">
+            <Home size={20} className="text-blue-500" />
+            <div>
+              <p className="text-sm font-bold text-foreground">Meus Imóveis</p>
+              <p className="text-xs text-muted-foreground">{rentalProperties.length} cadastrados</p>
+            </div>
           </button>
           <button
             onClick={() => { setEditingContract(null); setView("form"); }}
-            className="flex items-center gap-3 p-4 rounded-2xl border border-dashed border-primary/50 bg-primary/5 hover:bg-primary/10 transition-colors text-left sm:col-span-1 col-span-2"
+            className="flex items-center gap-3 p-4 rounded-2xl border border-dashed border-primary/50 bg-primary/5 hover:bg-primary/10 transition-colors text-left"
           >
             <Plus size={20} className="text-primary" />
             <div>
@@ -425,7 +450,118 @@ export default function RentalManagementTab({ userId, sellerId }: Props) {
             </div>
           );
         })()}
+
+        {/* ── Rental Properties Grid ── */}
+        {rentalProperties.length > 0 && (
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
+                <Home size={16} className="text-blue-500" /> Imóveis Cadastrados ({rentalProperties.length})
+              </h3>
+              <button onClick={() => { setEditingRentalProp(null); setView("rental-property-form"); }} className="text-xs font-bold text-primary hover:underline flex items-center gap-1">
+                <Plus size={12} /> Cadastrar
+              </button>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+              {rentalProperties.slice(0, 8).map(rp => (
+                <div key={rp.id} className="rounded-xl border border-border bg-card overflow-hidden group cursor-pointer hover:border-primary/50 transition-colors"
+                  onClick={() => { setEditingRentalProp(rp); setView("rental-property-form"); }}>
+                  {rp.photo_url ? (
+                    <img src={rp.photo_url} alt={rp.title} className="w-full h-24 object-cover" />
+                  ) : (
+                    <div className="w-full h-24 bg-secondary flex items-center justify-center">
+                      <Home size={24} className="text-muted-foreground/30" />
+                    </div>
+                  )}
+                  <div className="p-2.5">
+                    <p className="text-xs font-bold text-foreground truncate">{rp.title}</p>
+                    {rp.city && <p className="text-[10px] text-muted-foreground flex items-center gap-1"><MapPin size={8} />{rp.city}</p>}
+                    {rp.owner_name && <p className="text-[10px] text-muted-foreground truncate">{rp.owner_name}</p>}
+                  </div>
+                </div>
+              ))}
+            </div>
+            {rentalProperties.length > 8 && (
+              <button onClick={() => setView("rental-properties")} className="text-xs font-bold text-primary hover:underline mt-2">
+                Ver todos ({rentalProperties.length})
+              </button>
+            )}
+          </div>
+        )}
       </div>
+    );
+  }
+
+  /* ═══════════════════════════════════════
+     RENTAL PROPERTIES LIST VIEW
+     ═══════════════════════════════════════ */
+  if (view === "rental-properties") {
+    const deleteRentalProp = async (id: string) => {
+      await supabase.from("rental_properties" as any).delete().eq("id", id);
+      toast({ title: "Imóvel removido" });
+      fetchAll();
+    };
+    return (
+      <div className="space-y-5">
+        <div className="flex items-center justify-between">
+          <button onClick={() => setView("dashboard")} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+            <ArrowLeft size={16} /> Voltar
+          </button>
+          <button onClick={() => { setEditingRentalProp(null); setView("rental-property-form"); }} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-primary text-primary-foreground hover:opacity-90">
+            <Plus size={14} /> Novo Imóvel
+          </button>
+        </div>
+        {rentalProperties.length === 0 ? (
+          <div className="text-center py-16 rounded-2xl border border-dashed border-border">
+            <Home size={40} className="mx-auto mb-3 text-muted-foreground/40" />
+            <p className="text-sm font-bold text-foreground mb-1">Nenhum imóvel cadastrado</p>
+            <p className="text-xs text-muted-foreground">Cadastre imóveis para usar nos contratos de aluguel</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {rentalProperties.map(rp => (
+              <div key={rp.id} className="rounded-2xl border border-border bg-card overflow-hidden">
+                {rp.photo_url ? (
+                  <img src={rp.photo_url} alt={rp.title} className="w-full h-32 object-cover" />
+                ) : (
+                  <div className="w-full h-32 bg-secondary flex items-center justify-center">
+                    <Home size={32} className="text-muted-foreground/30" />
+                  </div>
+                )}
+                <div className="p-3 space-y-2">
+                  <p className="font-bold text-sm text-foreground">{rp.title}</p>
+                  {rp.address && <p className="text-xs text-muted-foreground flex items-center gap-1"><MapPin size={10} />{rp.address}</p>}
+                  {rp.city && <p className="text-xs text-muted-foreground">{rp.city}</p>}
+                  {rp.owner_name && <p className="text-xs text-muted-foreground flex items-center gap-1"><User size={10} />{rp.owner_name}</p>}
+                  <div className="flex gap-2 pt-1">
+                    <button onClick={() => { setEditingRentalProp(rp); setView("rental-property-form"); }} className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold bg-secondary text-foreground hover:bg-secondary/80">
+                      <Edit size={10} /> Editar
+                    </button>
+                    <button onClick={() => deleteRentalProp(rp.id)} className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold bg-red-500/10 text-red-500 hover:bg-red-500/20">
+                      <Trash2 size={10} /> Excluir
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  /* ═══════════════════════════════════════
+     RENTAL PROPERTY FORM VIEW
+     ═══════════════════════════════════════ */
+  if (view === "rental-property-form") {
+    return (
+      <RentalPropertyForm
+        userId={userId}
+        sellerId={sellerId}
+        editing={editingRentalProp}
+        onSave={() => { fetchAll(); setView("rental-properties"); }}
+        onCancel={() => setView("rental-properties")}
+      />
     );
   }
 
@@ -773,6 +909,7 @@ export default function RentalManagementTab({ userId, sellerId }: Props) {
       userId={userId}
       sellerId={sellerId}
       properties={properties}
+      rentalProperties={rentalProperties}
       editing={editingContract}
       onSave={() => { fetchAll(); setView("contracts"); }}
       onCancel={() => setView(editingContract ? "detail" : "dashboard")}
@@ -783,10 +920,11 @@ export default function RentalManagementTab({ userId, sellerId }: Props) {
 /* ═══════════════════════════════════════
    CONTRACT FORM SUB-COMPONENT
    ═══════════════════════════════════════ */
-function ContractForm({ userId, sellerId, properties, editing, onSave, onCancel }: {
+function ContractForm({ userId, sellerId, properties, rentalProperties, editing, onSave, onCancel }: {
   userId: string;
   sellerId: string;
   properties: PropertyOption[];
+  rentalProperties: RentalProperty[];
   editing: RentalContract | null;
   onSave: () => void;
   onCancel: () => void;
@@ -883,14 +1021,30 @@ function ContractForm({ userId, sellerId, properties, editing, onSave, onCancel 
             <div>
               <label className={labelCls}>Selecionar Imóvel</label>
               <select value={form.item_id} onChange={e => {
-                const selectedProp = properties.find(p => p.id === e.target.value);
-                set("item_id", e.target.value);
-                if (selectedProp && !form.item_label) {
-                  set("item_label", `${selectedProp.title}${selectedProp.city ? ` — ${selectedProp.city}` : ""}`);
+                const val = e.target.value;
+                set("item_id", val);
+                // Auto-fill label and owner from rental property
+                const rp = rentalProperties.find(r => r.id === val);
+                if (rp) {
+                  set("item_label", `${rp.title}${rp.city ? ` — ${rp.city}` : ""}`);
+                  if (rp.owner_name && !form.owner_name) set("owner_name", rp.owner_name);
+                  if (rp.owner_phone && !form.owner_phone) set("owner_phone", rp.owner_phone);
+                } else {
+                  const sp = properties.find(p => p.id === val);
+                  if (sp && !form.item_label) set("item_label", `${sp.title}${sp.city ? ` — ${sp.city}` : ""}`);
                 }
               }} className={inputCls}>
                 <option value="">Nenhum (manual)</option>
-                {properties.map(p => <option key={p.id} value={p.id}>{p.title}{p.city ? ` — ${p.city}` : ""}</option>)}
+                {rentalProperties.length > 0 && (
+                  <optgroup label="📋 Imóveis de Aluguel">
+                    {rentalProperties.map(rp => <option key={rp.id} value={rp.id}>{rp.title}{rp.city ? ` — ${rp.city}` : ""}</option>)}
+                  </optgroup>
+                )}
+                {properties.length > 0 && (
+                  <optgroup label="🏠 Imóveis da Loja">
+                    {properties.map(p => <option key={p.id} value={p.id}>{p.title}{p.city ? ` — ${p.city}` : ""}</option>)}
+                  </optgroup>
+                )}
               </select>
             </div>
             <div>
@@ -1051,5 +1205,137 @@ function PaymentFormButton({ contract, userId, onSave }: { contract: RentalContr
         )}
       </AnimatePresence>
     </>
+  );
+}
+
+/* ═══════════════════════════════════════
+   RENTAL PROPERTY FORM SUB-COMPONENT
+   ═══════════════════════════════════════ */
+function RentalPropertyForm({ userId, sellerId, editing, onSave, onCancel }: {
+  userId: string;
+  sellerId: string;
+  editing: RentalProperty | null;
+  onSave: () => void;
+  onCancel: () => void;
+}) {
+  const { toast } = useToast();
+  const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [form, setForm] = useState({
+    title: editing?.title || "",
+    address: editing?.address || "",
+    city: editing?.city || "",
+    photo_url: editing?.photo_url || "",
+    owner_name: editing?.owner_name || "",
+    owner_phone: editing?.owner_phone || "",
+    notes: editing?.notes || "",
+  });
+
+  const set = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }));
+
+  const handleUploadPhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    const ext = file.name.split(".").pop();
+    const path = `rental-properties/${sellerId}/${Date.now()}.${ext}`;
+    const { error } = await supabase.storage.from("seller-photos").upload(path, file, { upsert: true });
+    if (error) {
+      toast({ title: "Erro ao enviar foto", variant: "destructive" });
+      setUploading(false);
+      return;
+    }
+    const { data: pub } = supabase.storage.from("seller-photos").getPublicUrl(path);
+    set("photo_url", pub.publicUrl);
+    setUploading(false);
+  };
+
+  const handleSubmit = async () => {
+    if (!form.title.trim()) {
+      toast({ title: "Informe o nome do imóvel" });
+      return;
+    }
+    setSaving(true);
+    const payload = {
+      user_id: userId,
+      seller_id: sellerId,
+      title: form.title.trim(),
+      address: form.address || null,
+      city: form.city || null,
+      photo_url: form.photo_url || null,
+      owner_name: form.owner_name || null,
+      owner_phone: form.owner_phone || null,
+      notes: form.notes || null,
+    };
+
+    if (editing) {
+      await supabase.from("rental_properties" as any).update(payload).eq("id", editing.id);
+      toast({ title: "Imóvel atualizado!" });
+    } else {
+      await supabase.from("rental_properties" as any).insert(payload);
+      toast({ title: "Imóvel cadastrado!" });
+    }
+    setSaving(false);
+    onSave();
+  };
+
+  const inputCls = "w-full px-3 py-2.5 rounded-xl border border-border bg-card text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30";
+  const labelCls = "block text-[11px] font-bold text-muted-foreground uppercase tracking-wide mb-1.5";
+
+  return (
+    <div className="space-y-5">
+      <div className="flex items-center justify-between">
+        <button onClick={onCancel} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+          <ArrowLeft size={16} /> Voltar
+        </button>
+        <h2 className="text-sm font-bold text-foreground">{editing ? "Editar Imóvel" : "Novo Imóvel de Aluguel"}</h2>
+      </div>
+
+      <div className="rounded-2xl border border-border bg-card p-5 space-y-5">
+        {/* Photo */}
+        <div>
+          <label className={labelCls}>Foto do Imóvel</label>
+          {form.photo_url ? (
+            <div className="relative w-full h-40 rounded-xl overflow-hidden border border-border mb-2">
+              <img src={form.photo_url} alt="" className="w-full h-full object-cover" />
+              <button onClick={() => set("photo_url", "")} className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-black/80">
+                <X size={14} />
+              </button>
+            </div>
+          ) : (
+            <label className="flex flex-col items-center justify-center w-full h-32 rounded-xl border-2 border-dashed border-border bg-secondary/30 cursor-pointer hover:border-primary/50 transition-colors">
+              {uploading ? (
+                <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <>
+                  <Upload size={24} className="text-muted-foreground/50 mb-2" />
+                  <span className="text-xs text-muted-foreground">Clique para enviar foto</span>
+                </>
+              )}
+              <input type="file" accept="image/*" onChange={handleUploadPhoto} className="hidden" />
+            </label>
+          )}
+        </div>
+
+        {/* Info */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div><label className={labelCls}>Nome/Identificação *</label><input value={form.title} onChange={e => set("title", e.target.value)} placeholder="Ex: Apt 302, Ed. Solar" className={inputCls} /></div>
+          <div><label className={labelCls}>Endereço</label><input value={form.address} onChange={e => set("address", e.target.value)} placeholder="Rua, número, bairro" className={inputCls} /></div>
+          <div><label className={labelCls}>Cidade</label><input value={form.city} onChange={e => set("city", e.target.value)} placeholder="Cidade" className={inputCls} /></div>
+          <div className="hidden sm:block" />
+          <div><label className={labelCls}>Nome do Proprietário</label><input value={form.owner_name} onChange={e => set("owner_name", e.target.value)} placeholder="Nome do proprietário" className={inputCls} /></div>
+          <div><label className={labelCls}>Telefone do Proprietário</label><input value={form.owner_phone} onChange={e => set("owner_phone", e.target.value)} placeholder="(27) 99999-9999" className={inputCls} /></div>
+        </div>
+
+        <div>
+          <label className={labelCls}>Observações</label>
+          <textarea value={form.notes} onChange={e => set("notes", e.target.value)} rows={3} placeholder="Observações sobre o imóvel..." className={inputCls} />
+        </div>
+
+        <button onClick={handleSubmit} disabled={saving} className="w-full py-3 rounded-xl text-sm font-bold bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50 transition-opacity">
+          {saving ? "Salvando..." : editing ? "Atualizar Imóvel" : "Cadastrar Imóvel"}
+        </button>
+      </div>
+    </div>
   );
 }
