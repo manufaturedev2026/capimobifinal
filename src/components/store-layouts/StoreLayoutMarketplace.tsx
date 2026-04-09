@@ -597,12 +597,33 @@ export default function StoreLayoutMarketplace({
 
         {/* ═══ PROMO BANNERS — Auto-scroll on mobile + swipeable ═══ */}
         {(() => {
-          const promoBanners = [
-            { slug: "todos", title: ["Todos os", "Imóveis"], desc: "Veja todos os imóveis disponíveis na região", icon: Home },
-            { slug: "casa", title: ["Casa", "Própria"], desc: "As melhores casas para você e sua família", icon: Building2 },
-            { slug: "apartamento", title: ["Aptos", "Modernos"], desc: "Apartamentos com a melhor localização", icon: Building2 },
-            { slug: "aluguel", title: ["Para", "Alugar"], desc: "Opções de aluguel com ótimo custo-benefício", icon: Key },
-          ].filter(b => b.slug === "todos" || (categoryCounts[b.slug] || 0) > 0);
+          const categoryMeta: Record<string, { title: [string, string]; desc: string; icon: any }> = {
+            todos: { title: ["Todos os", "Imóveis"], desc: "Veja todos os imóveis disponíveis na região", icon: Home },
+            casa: { title: ["Casa", "Própria"], desc: "As melhores casas para você e sua família", icon: Home },
+            apartamento: { title: ["Aptos", "Modernos"], desc: "Apartamentos com a melhor localização", icon: Building2 },
+            aluguel: { title: ["Para", "Alugar"], desc: "Opções de aluguel com ótimo custo-benefício", icon: Key },
+            terreno: { title: ["Terrenos", "& Lotes"], desc: "Terrenos com ótima localização", icon: Trees },
+            comercial: { title: ["Salas", "Comerciais"], desc: "Espaços comerciais para seu negócio", icon: Store },
+            flat: { title: ["Flats", "Compactos"], desc: "Flats e studios prontos para morar", icon: Landmark },
+          };
+          // Sort categories by count (most popular first), always keep "todos" first
+          const ranked = Object.entries(categoryCounts)
+            .filter(([slug, count]) => count > 0 && slug !== "todos" && categoryMeta[slug])
+            .sort((a, b) => b[1] - a[1])
+            .map(([slug]) => slug);
+          const bannerSlugs = ["todos", ...ranked];
+          // Get a cover image per category from the most viewed item
+          const categoryImages: Record<string, string> = {};
+          for (const slug of bannerSlugs) {
+            const items = slug === "todos"
+              ? filteredProducts
+              : filteredProducts.filter((p: any) => p.category === slug || (slug === "aluguel" && p.isAluguel));
+            const best = [...items].sort((a: any, b: any) => (b.views_count || 0) - (a.views_count || 0))[0];
+            if (best?.image) categoryImages[slug] = best.image;
+          }
+          const promoBanners = bannerSlugs
+            .filter(slug => categoryMeta[slug])
+            .map(slug => ({ slug, ...categoryMeta[slug], coverImage: categoryImages[slug] }));
 
           return (
             <motion.section
@@ -630,9 +651,11 @@ export default function StoreLayoutMarketplace({
                       }}
                       onClick={() => { setActiveCategory(banner.slug); scrollToGrid(); }}
                     >
-                      <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${darkBase}, ${storeTheme.primary}${bIdx % 2 === 0 ? "" : "cc"})` }} />
-                      <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent" />
-                      <FloatingParticles color={storeTheme.primary} />
+                      {banner.coverImage ? (
+                        <img src={banner.coverImage} alt="" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+                      ) : null}
+                      <div className="absolute inset-0" style={{ background: banner.coverImage ? `linear-gradient(135deg, ${darkBase}cc, ${storeTheme.primary}88)` : `linear-gradient(135deg, ${darkBase}, ${storeTheme.primary}${bIdx % 2 === 0 ? "" : "cc"})` }} />
+                      <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent" />
                       <div className="relative z-10 h-full flex flex-col justify-center p-5">
                         <h3 className="font-display font-black text-xl text-white leading-tight">
                           {banner.title[0]}<br />{banner.title[1]}
@@ -692,9 +715,11 @@ export default function StoreLayoutMarketplace({
                               onClick={() => { setActiveCategory(banner.slug); scrollToGrid(); }}
                               style={{ boxShadow: `0 8px 32px ${storeTheme.primary}18` }}
                             >
-                              <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${darkBase}, ${storeTheme.primary}${bIdx % 2 === 0 ? "" : "cc"})` }} />
-                              <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent" />
-                              <FloatingParticles color={storeTheme.primary} />
+                              {banner.coverImage ? (
+                                <img src={banner.coverImage} alt="" className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy" />
+                              ) : null}
+                              <div className="absolute inset-0" style={{ background: banner.coverImage ? `linear-gradient(135deg, ${darkBase}cc, ${storeTheme.primary}88)` : `linear-gradient(135deg, ${darkBase}, ${storeTheme.primary}${bIdx % 2 === 0 ? "" : "cc"})` }} />
+                              <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent" />
                               <div className="relative z-10 h-full flex flex-col justify-center p-6">
                                 <h3 className="font-display font-black text-3xl text-white leading-tight">
                                   {banner.title[0]}<br />{banner.title[1]}
