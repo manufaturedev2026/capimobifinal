@@ -103,7 +103,7 @@ const fmtDate = (d: string) => {
   return `${day}/${m}/${y}`;
 };
 
-type View = "dashboard" | "contracts" | "form" | "detail" | "payments";
+type View = "dashboard" | "contracts" | "form" | "detail" | "payments" | "rental-properties" | "rental-property-form";
 
 /* ═══════════════════════════════════════
    MAIN COMPONENT
@@ -114,9 +114,11 @@ export default function RentalManagementTab({ userId, sellerId }: Props) {
   const [contracts, setContracts] = useState<RentalContract[]>([]);
   const [payments, setPayments] = useState<RentalPayment[]>([]);
   const [properties, setProperties] = useState<PropertyOption[]>([]);
+  const [rentalProperties, setRentalProperties] = useState<RentalProperty[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedContract, setSelectedContract] = useState<RentalContract | null>(null);
   const [editingContract, setEditingContract] = useState<RentalContract | null>(null);
+  const [editingRentalProp, setEditingRentalProp] = useState<RentalProperty | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>("todos");
   const [search, setSearch] = useState("");
   const [expandedAlertId, setExpandedAlertId] = useState<string | null>(null);
