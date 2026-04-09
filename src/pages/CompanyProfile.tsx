@@ -1845,7 +1845,7 @@ export default function CompanyProfile() {
       })()}
       {/* ═══ CTA Captação — acima do card do corretor ═══ */}
       <section className="px-4 mt-6 mb-4">
-        <div className="max-w-[1800px] mx-auto lg:max-w-2xl">
+        <div className="max-w-[1800px] mx-auto">
           <div className="rounded-2xl p-6 md:p-10 text-center" style={{ background: `linear-gradient(135deg, ${storeTheme.primary}20, ${storeTheme.primary}08)`, border: `1px solid ${storeTheme.primary}30` }}>
             <Home size={28} className="mx-auto mb-3" style={{ color: storeTheme.primary }} />
             <h2 className="font-display font-bold text-lg md:text-2xl mb-2" style={{ color: storeTheme.text }}>Quer anunciar seu imóvel?</h2>
