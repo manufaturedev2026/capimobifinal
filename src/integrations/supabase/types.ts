@@ -315,6 +315,7 @@ export type Database = {
           account_manager: string | null
           address: string | null
           bio: string | null
+          capture_video_url: string | null
           city: string | null
           cnpj: string | null
           company_name: string | null
@@ -360,6 +361,7 @@ export type Database = {
           account_manager?: string | null
           address?: string | null
           bio?: string | null
+          capture_video_url?: string | null
           city?: string | null
           cnpj?: string | null
           company_name?: string | null
@@ -407,6 +409,7 @@ export type Database = {
           account_manager?: string | null
           address?: string | null
           bio?: string | null
+          capture_video_url?: string | null
           city?: string | null
           cnpj?: string | null
           company_name?: string | null
