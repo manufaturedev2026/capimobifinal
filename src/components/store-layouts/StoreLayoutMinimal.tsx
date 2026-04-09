@@ -478,24 +478,24 @@ export default function StoreLayoutMinimal({
           />
 
           <p className="text-[10px] uppercase tracking-[0.3em] mb-2" style={{ color: storeTheme.primary }}>
-            Atendimento personalizado
+            Captação de imóveis
           </p>
           <h2 className="font-display text-xl md:text-2xl font-light mb-2" style={{ color: storeTheme.text }}>
-            Encontrou o que procura?
+            Quer anunciar seu imóvel?
           </h2>
           <p className="text-xs mb-6 max-w-md mx-auto" style={{ color: storeTheme.textMuted }}>
-            Fale diretamente com o corretor e agende sua visita
+            Cadastre seu imóvel gratuitamente com {dbProfile?.company_name || dbProfile?.full_name || "o corretor"} e alcance mais compradores.
           </p>
-          <button
-            onClick={() => handleWhatsApp("Quer anunciar seu imóvel")}
+          <Link
+            to={`/captar-imovel/${corretorSlug}`}
             className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold text-white transition-all hover:scale-105"
             style={{
               background: storeTheme.primary,
               boxShadow: `0 4px 20px ${storeTheme.primary}30`,
             }}
           >
-            Falar no WhatsApp <ArrowRight size={14} />
-          </button>
+            Anunciar meu imóvel <ArrowRight size={14} />
+          </Link>
         </div>
       </motion.section>
     </div>
