@@ -4,7 +4,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { toast } from "@/hooks/use-toast";
 import { useParams, Link, useLocation, Navigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Star, MapPin, MessageCircle, Share2, Key, Home, Building2, Landmark, Store, Warehouse, MoreHorizontal, Image, Eye, Instagram, Phone, ExternalLink, Clock, Shield, Zap, ChevronLeft, ChevronRight, Heart, BadgeCheck, Clapperboard, Play, X, Volume2, VolumeX, LayoutDashboard, Bed, Bath, Car, Maximize, Sword, Trophy, Sparkles } from "lucide-react";
+import { ArrowLeft, Star, MapPin, MessageCircle, Share2, Key, Home, Building2, Landmark, Store, Warehouse, MoreHorizontal, Image, Eye, Instagram, Phone, ExternalLink, Clock, Shield, Zap, ChevronLeft, ChevronRight, Heart, BadgeCheck, Clapperboard, Play, X, Volume2, VolumeX, LayoutDashboard, Bed, Bath, Car, Maximize, Sword, Trophy, Sparkles, Calendar } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import StoreEffects from "@/components/StoreEffects";
 import ThemeParticles from "@/components/ThemeParticles";
@@ -102,6 +102,7 @@ export default function CompanyProfile() {
   const [leadCaptureOpen, setLeadCaptureOpen] = useState(false);
   const [storyUploadOpen, setStoryUploadOpen] = useState(false);
   const [pendingWhatsAppAction, setPendingWhatsAppAction] = useState<(() => void) | null>(null);
+  const [leadCaptureContext, setLeadCaptureContext] = useState<{ funnelStage?: string; extraNotes?: string; leadSource?: string } | null>(null);
 
   const searchParams = new URLSearchParams(location.search);
   const corretorSlug = searchParams.get("corretor");
@@ -474,6 +475,7 @@ export default function CompanyProfile() {
 
   const handleWhatsApp = (title: string, productId?: string) => {
     if (isDbProfile && dbProfile) {
+      setLeadCaptureContext(null); // Reset context for normal WhatsApp
       setPendingWhatsAppAction(() => () => doWhatsAppRedirect(title, productId));
       setLeadCaptureOpen(true);
     } else {
@@ -1608,6 +1610,22 @@ export default function CompanyProfile() {
         const svDescription = (dbProfile as any)?.store_video_description;
         const svButtonText = (dbProfile as any)?.store_video_button_text;
         const svButtonUrl = (dbProfile as any)?.store_video_button_url;
+        const svPropertyLabel = (dbProfile as any)?.store_video_property_label || svTitle;
+
+        const handleScheduleVisit = () => {
+          if (dbProfile) {
+            setLeadCaptureContext({
+              funnelStage: "agendamento",
+              extraNotes: `📹 Agendamento via vídeo da loja\n🏠 Imóvel: ${svPropertyLabel}`,
+              leadSource: "video_loja",
+            });
+            setPendingWhatsAppAction(() => () => doWhatsAppRedirect(`Agendamento - ${svPropertyLabel}`));
+            setLeadCaptureOpen(true);
+          } else {
+            doWhatsAppRedirect(`Agendamento - ${svPropertyLabel}`);
+          }
+        };
+
         return (
           <section className="px-4 md:px-8 lg:px-12 py-10">
             <div className="max-w-4xl mx-auto">
@@ -1645,11 +1663,11 @@ export default function CompanyProfile() {
                 )}
                 {company.whatsapp && (
                   <button
-                    onClick={() => handleWhatsApp("Vídeo: " + svTitle)}
+                    onClick={handleScheduleVisit}
                     className="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl font-bold text-sm text-white shadow-xl hover:shadow-2xl active:scale-95 transition-all"
-                    style={{ background: "linear-gradient(135deg, #25d366, #128C7E)" }}
+                    style={{ background: `linear-gradient(135deg, ${storeTheme.primary}, ${storeTheme.primary}cc)` }}
                   >
-                    <MessageCircle size={16} /> WhatsApp
+                    <Calendar size={16} /> Agendar uma Visita
                   </button>
                 )}
               </div>
@@ -2103,14 +2121,21 @@ export default function CompanyProfile() {
       {isDbProfile && dbProfile && (
         <WhatsAppLeadCapture
           open={leadCaptureOpen}
-          onOpenChange={setLeadCaptureOpen}
+          onOpenChange={(open) => {
+            setLeadCaptureOpen(open);
+            if (!open) setLeadCaptureContext(null);
+          }}
           sellerId={id!}
           sellerUserId={dbProfile.user_id}
+          funnelStage={leadCaptureContext?.funnelStage}
+          extraNotes={leadCaptureContext?.extraNotes}
+          leadSource={leadCaptureContext?.leadSource}
           onComplete={() => {
             if (pendingWhatsAppAction) {
               pendingWhatsAppAction();
               setPendingWhatsAppAction(null);
             }
+            setLeadCaptureContext(null);
           }}
         />
       )}

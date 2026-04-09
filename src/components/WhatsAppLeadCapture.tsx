@@ -11,6 +11,9 @@ interface WhatsAppLeadCaptureProps {
   sellerId: string;
   sellerUserId: string;
   onComplete: () => void;
+  funnelStage?: string;
+  extraNotes?: string;
+  leadSource?: string;
 }
 
 export default function WhatsAppLeadCapture({
@@ -19,6 +22,9 @@ export default function WhatsAppLeadCapture({
   sellerId,
   sellerUserId,
   onComplete,
+  funnelStage = "novo",
+  extraNotes,
+  leadSource,
 }: WhatsAppLeadCaptureProps) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -30,13 +36,20 @@ export default function WhatsAppLeadCapture({
     setSaving(true);
     const sourceUrl = window.location.href;
     try {
+      const notes = [
+        `📍 ${city.trim() || "Não informada"}`,
+        extraNotes,
+        `🔗 ${sourceUrl}`,
+      ].filter(Boolean).join("\n");
+
       await supabase.from("seller_crm_contacts").insert({
         seller_id: sellerId,
         user_id: sellerUserId,
         full_name: name.trim().slice(0, 100),
         phone: phone.trim().slice(0, 20),
-        funnel_stage: "novo",
-        notes: `📍 ${city.trim() || "Não informada"}\n🔗 ${sourceUrl}`,
+        funnel_stage: funnelStage,
+        lead_source: leadSource || undefined,
+        notes,
       } as any);
     } catch {}
     setSaving(false);

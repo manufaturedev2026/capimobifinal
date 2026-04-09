@@ -42,6 +42,7 @@ export default function SellerCustomization({ embedded }: { embedded?: boolean }
     store_video_description: "",
     store_video_button_text: "",
     store_video_button_url: "",
+    store_video_property_label: "",
   });
 
   useEffect(() => {
@@ -62,6 +63,7 @@ export default function SellerCustomization({ embedded }: { embedded?: boolean }
         store_video_description: (profile as any).store_video_description || "",
         store_video_button_text: (profile as any).store_video_button_text || "",
         store_video_button_url: (profile as any).store_video_button_url || "",
+        store_video_property_label: (profile as any).store_video_property_label || "",
       });
     }
   }, [profile]);
@@ -289,10 +291,20 @@ export default function SellerCustomization({ embedded }: { embedded?: boolean }
                 className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
                 placeholder="Link do botão (ex: /imoveis/produto/xxx ou https://...)"
               />
+              <input
+                value={form.store_video_property_label}
+                onChange={(e) => setForm((f) => ({ ...f, store_video_property_label: e.target.value }))}
+                className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+                placeholder="Nome do imóvel do vídeo (ex: Residencial Vista Mar) — usado no CRM para rastrear leads"
+                maxLength={100}
+              />
               <div className="flex items-center gap-2 text-xs text-green-600">
                 <span className="w-2 h-2 rounded-full bg-green-500" />
                 Vídeo da loja ativado — aparecerá após os anúncios
               </div>
+              <p className="text-[11px] text-muted-foreground">
+                💡 O botão "Agendar uma Visita" aparecerá automaticamente no vídeo. Leads serão registrados no CRM como agendamento, vinculados ao imóvel informado acima.
+              </p>
             </>
           )}
         </div>
