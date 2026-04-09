@@ -612,14 +612,19 @@ export default function StoreLayoutMarketplace({
             .sort((a, b) => b[1] - a[1])
             .map(([slug]) => slug);
           const bannerSlugs = ["todos", ...ranked];
-          // Get a cover image per category from the most viewed item
+          // Get a UNIQUE cover image per category (no repeated images)
           const categoryImages: Record<string, string> = {};
+          const usedImages = new Set<string>();
           for (const slug of bannerSlugs) {
             const items = slug === "todos"
               ? filteredProducts
               : filteredProducts.filter((p: any) => p.category === slug || (slug === "aluguel" && p.isAluguel));
-            const best = [...items].sort((a: any, b: any) => (b.views_count || 0) - (a.views_count || 0))[0];
-            if (best?.image) categoryImages[slug] = best.image;
+            const sorted = [...items].sort((a: any, b: any) => (b.views_count || 0) - (a.views_count || 0));
+            const best = sorted.find((p: any) => p.image && !usedImages.has(p.image));
+            if (best?.image) {
+              categoryImages[slug] = best.image;
+              usedImages.add(best.image);
+            }
           }
           const promoBanners = bannerSlugs
             .filter(slug => categoryMeta[slug])
