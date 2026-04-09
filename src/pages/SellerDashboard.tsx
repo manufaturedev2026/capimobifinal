@@ -19,6 +19,8 @@ import CaptacaoOnlineTab from "@/components/CaptacaoOnlineTab";
 import StoriesTab from "@/components/StoriesTab";
 import NotificationsTab from "@/components/NotificationsTab";
 import ProfitCalculatorTab from "@/components/ProfitCalculatorTab";
+import { lazy, Suspense } from "react";
+const SellerCustomization = lazy(() => import("@/pages/SellerCustomization"));
 import { getTagStyle, getTagLabel } from "@/data/products";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
@@ -46,7 +48,7 @@ type SellerItem = {
   sold_at: string | null;
 };
 
-type DashboardTab = "overview" | "items" | "stats" | "domain" | "team" | "events" | "referral" | "crm" | "gallery" | "rentals" | "contracts" | "captacao" | "stories" | "notifications" | "profit";
+type DashboardTab = "overview" | "items" | "stats" | "domain" | "team" | "events" | "referral" | "crm" | "gallery" | "rentals" | "contracts" | "captacao" | "stories" | "notifications" | "profit" | "customization";
 
 export default function SellerDashboard() {
   const { user, profile, signOut, refreshProfile, loading: authLoading } = useAuth();
@@ -395,10 +397,10 @@ export default function SellerDashboard() {
                 className="sidebar-nav-item text-muted-foreground hover:text-foreground hover:bg-secondary">
                 <UserCircle size={18} /> Meu Perfil
               </Link>
-              <Link to="/painel/personalizacao"
-                className="sidebar-nav-item text-muted-foreground hover:text-foreground hover:bg-secondary">
+              <button onClick={() => setActiveTab("customization")}
+                className={`sidebar-nav-item ${activeTab === "customization" ? "active" : "text-muted-foreground hover:text-foreground hover:bg-secondary"}`}>
                 <Palette size={18} /> Personalização
-              </Link>
+              </button>
               <Link to="/pacotes"
                 className="sidebar-nav-item text-muted-foreground hover:text-foreground hover:bg-secondary">
                 <Package size={18} /> Pacotes
@@ -1054,6 +1056,13 @@ export default function SellerDashboard() {
               <ProfitCalculatorTab />
             )}
 
+            {/* Customization Tab */}
+            {activeTab === "customization" && (
+              <Suspense fallback={<div className="flex items-center justify-center py-12"><div className="h-8 w-8 animate-spin rounded-full border-4 border-primary/20 border-t-primary" /></div>}>
+                <SellerCustomization embedded />
+              </Suspense>
+            )}
+
 
             {activeTab === "team" && showTeamTab && profile?.id && (
               <TeamMembersTab
@@ -1175,10 +1184,10 @@ export default function SellerDashboard() {
                     className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-foreground hover:bg-secondary transition-all">
                     <UserCircle size={16} /> Meu Perfil
                   </Link>
-                  <Link to="/painel/personalizacao" onClick={() => setMobileMenuOpen(false)}
+                  <button onClick={() => { setActiveTab("customization"); setMobileMenuOpen(false); }}
                     className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-foreground hover:bg-secondary transition-all">
                     <Palette size={16} /> Personalização
-                  </Link>
+                  </button>
                   <Link to="/pacotes" onClick={() => setMobileMenuOpen(false)}
                     className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-foreground hover:bg-secondary transition-all">
                     <Package size={16} /> Pacotes
