@@ -53,10 +53,10 @@ function FooterContent({ theme }: { theme?: FooterSimpleProps["theme"] }) {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
         <div className="col-span-2 md:col-span-1">
           <Link to="/" className="flex items-center gap-2.5 mb-3">
-            <img src="/pwa-icon-512.png" alt="Brokers App" className="w-9 h-9 rounded-xl shadow-md object-contain" />
+            <img src="/pwa-icon-512.png" alt="Capimobi" className="w-9 h-9 rounded-xl shadow-md object-contain" />
             <span className="text-lg tracking-wide uppercase" style={{ fontFamily: "'Orbitron', sans-serif", fontWeight: 800 }}>
-              <span style={primaryStyle} className={primaryClass}>Brokers</span>
-              <span style={accentStyle} className={accentClass}>App</span>
+              <span style={primaryStyle} className={primaryClass}>Capi</span>
+              <span style={accentStyle} className={accentClass}>mobi</span>
             </span>
           </Link>
           <p className={`text-xs leading-relaxed max-w-xs ${mutedClass}`} style={mutedStyle}>
@@ -106,7 +106,7 @@ function FooterContent({ theme }: { theme?: FooterSimpleProps["theme"] }) {
 
       <div className={`border-t mt-8 pt-6 flex flex-col items-center gap-2 text-center ${borderClass}`} style={borderStyle}>
         <p className={`text-xs ${mutedClass}`} style={mutedStyle}>
-          © {new Date().getFullYear()} Brokers App · Brasil
+          © {new Date().getFullYear()} Capimobi · Brasil
         </p>
       </div>
     </>

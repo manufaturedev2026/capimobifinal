@@ -57,7 +57,7 @@ async function fetchTeamMembers(sellerId: string): Promise<TeamMember[]> {
 }
 
 function sendToWhatsApp(phone: string, name: string, title: string, link: string) {
-  const msg = `Olá ${name}! 🏠 Vi o imóvel *${title}* no Brokers App e gostaria de mais informações.\n\n🔗 ${link}`;
+  const msg = `Olá ${name}! 🏠 Vi o imóvel *${title}* no Capimobi e gostaria de mais informações.\n\n🔗 ${link}`;
   const url = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
   const isStandalone = window.matchMedia("(display-mode: standalone)").matches
     || (navigator as any).standalone === true;

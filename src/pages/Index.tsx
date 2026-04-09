@@ -132,7 +132,7 @@ export default function Index() {
   return (
     <div className="min-h-screen bg-background">
       <Helmet>
-        <title>Brokers App | Crie Seu Próprio App de Imóveis</title>
+        <title>Capimobi | Crie Seu Próprio App de Imóveis</title>
         <meta name="description" content="Monte seu próprio app de imóveis em minutos. Perfeito para corretores, imobiliárias e construtoras. Link profissional na bio do Instagram, PWA instalável e CRM integrado." />
         <link rel="canonical" href="https://redeimoveisgb.lovable.app/" />
       </Helmet>
@@ -250,10 +250,10 @@ export default function Index() {
                         <div className="absolute top-10 left-4 right-4 flex items-center justify-between gap-2">
                           <div className="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-black/35 border border-white/10 backdrop-blur-md max-w-[11rem]">
                             <div className="w-7 h-7 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center shrink-0">
-                              <span className="text-primary-foreground text-[9px] font-bold">BA</span>
+                              <span className="text-primary-foreground text-[9px] font-bold">CM</span>
                             </div>
                             <div className="min-w-0">
-                              <p className="text-white text-[10px] font-semibold truncate">BrokersApp</p>
+                              <p className="text-white text-[10px] font-semibold truncate">Capimobi</p>
                               <p className="text-white/60 text-[8px] truncate">Seu app instalado</p>
                             </div>
                           </div>
@@ -331,7 +331,7 @@ export default function Index() {
                     <Instagram size={18} className="text-accent" />
                     <div>
                       <p className="text-white text-xs font-bold">Bio Link</p>
-                      <p className="text-white/40 text-[10px]">brokersapp.com/loja</p>
+                      <p className="text-white/40 text-[10px]">capimobi.com/loja</p>
                     </div>
                   </div>
                 </motion.div>
@@ -545,7 +545,7 @@ export default function Index() {
               A bio mais <span className="text-accent">profissional</span> do Instagram
             </h2>
             <p className="text-muted-foreground mt-3 max-w-2xl mx-auto">
-              Pare de usar links genéricos. Com o Brokers App, seu link na bio abre diretamente
+              Pare de usar links genéricos. Com o Capimobi, seu link na bio abre diretamente
               o seu app de imóveis — com sua marca, seus imóveis e contato direto pelo WhatsApp.
             </p>
           </div>

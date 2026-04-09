@@ -200,7 +200,7 @@ export default function VenderPage() {
   return (
     <>
       <Helmet>
-        <title>Site Imobiliário Profissional com CRM | Brokers App</title>
+        <title>Site Imobiliário Profissional com CRM | Capimobi</title>
         <meta name="description" content="Crie seu site imobiliário profissional com CRM completo, gestão de leads, contratos, stories e muito mais. Comece gratuitamente." />
       </Helmet>
 
@@ -473,7 +473,7 @@ export default function VenderPage() {
         {/* Footer */}
         <footer className="bg-black/30 border-t border-white/5 py-8">
           <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-white/30">
-            <p>© {new Date().getFullYear()} Brokers App. Todos os direitos reservados.</p>
+            <p>© {new Date().getFullYear()} Capimobi. Todos os direitos reservados.</p>
             <div className="flex gap-4">
               <Link to="/privacidade" className="hover:text-white/60 transition-colors">Privacidade</Link>
               <Link to="/termos" className="hover:text-white/60 transition-colors">Termos</Link>

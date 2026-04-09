@@ -22,7 +22,7 @@ export default function MarketplaceNavbar({ theme, user, showImoveisScroll = tru
     >
       <div className="max-w-6xl mx-auto px-4 flex items-center justify-between h-14">
         <Link to="/" className="font-display font-bold text-lg" style={{ color: TEXT }}>
-          Brokers<span style={{ color: PRIMARY }}>App</span>
+          Capi<span style={{ color: PRIMARY }}>mobi</span>
         </Link>
 
         {/* Desktop links */}

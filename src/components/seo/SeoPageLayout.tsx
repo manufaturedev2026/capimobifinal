@@ -81,7 +81,7 @@ export default function SeoPageLayout({
   return (
     <div style={{ background: DARK_BASE, color: TEXT, overflowX: "clip", maxWidth: "100%" }} className="min-h-screen">
       <Helmet>
-        <title>{`${title} | Brokers App`}</title>
+        <title>{`${title} | Capimobi`}</title>
         <meta name="description" content={metaDescription} />
         <link rel="canonical" href={canonical} />
         <meta property="og:title" content={title} />
@@ -172,7 +172,7 @@ export default function SeoPageLayout({
           <h2 className="font-display font-bold text-xl mb-4" style={{ color: TEXT }}>{title}</h2>
           <div className="text-sm leading-relaxed space-y-3" style={{ color: TEXT_MUTED }}>
             <p>{metaDescription}</p>
-            <p>O Brokers App é a plataforma que conecta compradores diretamente com corretores e imobiliárias verificadas de todo o Brasil. Encontre seu imóvel ideal com contato direto via WhatsApp.</p>
+            <p>O Capimobi é a plataforma que conecta compradores diretamente com corretores e imobiliárias verificadas de todo o Brasil. Encontre seu imóvel ideal com contato direto via WhatsApp.</p>
           </div>
         </div>
       </section>

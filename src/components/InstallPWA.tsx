@@ -27,7 +27,7 @@ export default function InstallPWA() {
             <Download size={20} className="text-primary-foreground" />
           </div>
           <div className="min-w-0 flex-1">
-            <p className="font-display text-sm font-bold text-foreground">Instalar Brokers App</p>
+            <p className="font-display text-sm font-bold text-foreground">Instalar Capimobi</p>
             <p className="text-xs text-muted-foreground">Acesse rápido pelo celular!</p>
           </div>
           <button

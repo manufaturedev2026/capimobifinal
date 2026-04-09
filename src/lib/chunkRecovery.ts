@@ -1,6 +1,6 @@
 import { lazy, type ComponentType } from "react";
 
-const CHUNK_RETRY_KEY = "brokersapp-chunk-retry";
+const CHUNK_RETRY_KEY = "capimobi-chunk-retry";
 
 export function lazyPage<T extends ComponentType<any>>(
   importer: () => Promise<{ default: T }>
