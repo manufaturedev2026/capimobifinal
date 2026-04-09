@@ -112,7 +112,7 @@ function getDarkMid(primary: string): string {
 export default function StoreLayoutMarketplace({
   filteredProducts, subcategories, activeCategory, setActiveCategory,
   categoryCounts, storeTheme, corretorSlug, dbProfile, getTagStyle, getTagLabel, handleWhatsApp,
-  filterCity, setFilterCity, availableCities, storiesBar,
+  filterCity, setFilterCity, availableCities, storiesBar, formatPrice,
 }: StoreLayoutProps) {
   const { user } = useAuth();
   const isOwner = !!(user && dbProfile && user.id === dbProfile.user_id);
