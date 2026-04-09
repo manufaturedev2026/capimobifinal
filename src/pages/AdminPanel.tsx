@@ -173,6 +173,7 @@ export default function AdminPanel() {
   };
 
 
+  const fetchAdRequests = async () => {
     setAdsLoading(true);
     const { data } = await supabase.from("ad_requests").select("*").order("created_at", { ascending: false });
     setAdRequests(data || []);
