@@ -204,6 +204,12 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
         <p className="text-xs text-muted-foreground">
           Cole o link de um vídeo do YouTube para exibir na parte inferior da sua página de captação.
         </p>
+        <Input
+          value={captureVideoTitle}
+          onChange={e => setCaptureVideoTitle(e.target.value)}
+          placeholder="Título do vídeo (ex: Conheça nosso trabalho)"
+          className="text-sm"
+        />
         <div className="flex gap-2">
           <Input
             value={captureVideoUrl}
