@@ -250,7 +250,7 @@ export default function Index() {
                         <div className="absolute top-10 left-4 right-4 flex items-center justify-between gap-2">
                           <div className="inline-flex items-center gap-2 px-3 py-2 rounded-full bg-black/35 border border-white/10 backdrop-blur-md max-w-[11rem]">
                             <div className="w-7 h-7 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center shrink-0">
-                              <span className="text-primary-foreground text-[9px] font-bold">BA</span>
+                              <span className="text-primary-foreground text-[9px] font-bold">CM</span>
                             </div>
                             <div className="min-w-0">
                               <p className="text-white text-[10px] font-semibold truncate">Capimobi</p>
