@@ -230,6 +230,14 @@ function StoryCard({ story, onDelete, onRepublish, timeRemaining, expired }: {
 
         {/* Bottom info */}
         <div className="absolute bottom-0 left-0 right-0 p-2">
+          {expired && onRepublish && (
+            <button
+              onClick={() => onRepublish(story.id)}
+              className="w-full flex items-center justify-center gap-1.5 mb-1.5 px-2 py-1.5 bg-primary/90 hover:bg-primary text-primary-foreground text-[11px] font-bold rounded-lg transition-colors"
+            >
+              <RefreshCw size={12} /> Republicar
+            </button>
+          )}
           {story.title && <p className="text-white text-xs font-bold truncate">{story.title}</p>}
           {story.button_text && (
             <span className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 bg-white/20 backdrop-blur-sm text-white text-[10px] rounded-full">
