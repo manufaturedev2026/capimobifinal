@@ -832,43 +832,6 @@ export default function StoreLayoutMarketplace({
 
         <ShimmerLine color={storeTheme.primary} />
 
-        {/* ═══ CTA FINAL — Falar com o corretor ═══ */}
-        <motion.section
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.35 }}
-          className="mb-12 mt-4"
-        >
-          <div
-            className="relative rounded-2xl p-8 md:p-14 text-center overflow-hidden"
-            style={{ background: `linear-gradient(135deg, ${darkBase}, ${darkMid}, ${storeTheme.primary}90)` }}
-          >
-            <FloatingParticles color="#ffffff" />
-            <motion.div
-              className="absolute top-0 right-0 w-60 h-60 rounded-full blur-3xl pointer-events-none"
-              style={{ background: storeTheme.primary, opacity: 0.15 }}
-              animate={{ scale: [1, 1.5, 1], x: [0, 20, 0] }}
-              transition={{ duration: 8, repeat: Infinity }}
-            />
-            <div className="relative z-10">
-              <Home size={32} className="mx-auto mb-4 text-white/80" />
-              <h2 className="font-display font-black text-2xl md:text-3xl text-white mb-3">
-                Quer anunciar seu imóvel?
-              </h2>
-              <p className="text-white/50 text-sm max-w-md mx-auto mb-6">
-                Cadastre seu imóvel gratuitamente com {dbProfile?.company_name || dbProfile?.full_name || "o corretor"} e alcance mais compradores.
-              </p>
-              <Link
-                to={`/captar-imovel/${corretorSlug}`}
-                className="inline-flex items-center gap-2 px-8 py-3.5 rounded-2xl font-bold text-sm text-white transition-all hover:scale-105 shadow-xl"
-                style={{ background: storeTheme.primary, boxShadow: `0 8px 32px ${storeTheme.primary}50` }}
-              >
-                <ArrowRight className="w-5 h-5" />
-                Anunciar meu imóvel
-              </Link>
-            </div>
-          </div>
-        </motion.section>
 
       </div>
     </div>
