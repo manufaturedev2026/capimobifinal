@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import type { StoreLayoutProps } from "./types";
 import { isIOSStandaloneApp } from "@/lib/pwaInstall";
+import { BRAZIL_STATES } from "@/data/brazilStates";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 const QUICK_ACTIONS = [
@@ -20,9 +21,9 @@ const QUICK_ACTIONS = [
   { slug: "flat", name: "Flats", desc: "Compactos", icon: Landmark },
 ];
 
-const BENEFITS = [
+const getBenefits = (stateName?: string) => [
   { icon: Phone, title: "Contato Direto", desc: "Fale direto com o corretor via WhatsApp" },
-  { icon: Globe, title: "Cobertura Regional", desc: "Imóveis em todas as cidades do ES" },
+  { icon: Globe, title: "Cobertura Regional", desc: `Imóveis em todas as cidades${stateName ? ` de ${stateName}` : ""}` },
   { icon: ShieldCheck, title: "Vendedores Verificados", desc: "Corretores com CRECI ativo" },
   { icon: Megaphone, title: "Anuncie Grátis", desc: "Cadastre seu imóvel sem custo" },
 ];
@@ -801,7 +802,7 @@ export default function StoreLayoutMarketplace({
           transition={{ duration: 0.6, delay: 0.3 }}
           className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12"
         >
-          {BENEFITS.map((benefit, i) => {
+          {getBenefits(BRAZIL_STATES.find(s => s.uf === dbProfile?.state)?.name).map((benefit, i) => {
             const Icon = benefit.icon;
             return (
               <motion.div
