@@ -283,8 +283,7 @@ export default function PartnerBrokerTab({ profileId, userId }: { profileId: str
                           <DialogTrigger asChild>
                             <Button
                               size="sm"
-                              variant="outline"
-                              className="text-xs"
+                              className="text-xs bg-primary text-primary-foreground hover:bg-primary/90"
                               onClick={() => setSelectedAgency(agency)}
                             >
                               <Send size={14} className="mr-1" />
