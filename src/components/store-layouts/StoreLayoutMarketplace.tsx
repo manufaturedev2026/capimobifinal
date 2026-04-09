@@ -121,6 +121,7 @@ export default function StoreLayoutMarketplace({
   const [searchTerm, setSearchTerm] = useState("");
   const [heroIdx, setHeroIdx] = useState(0);
   const [promoIdx, setPromoIdx] = useState(0);
+  const [desktopPromoPage, setDesktopPromoPage] = useState(0);
   const [showCityPicker, setShowCityPicker] = useState(false);
   const promoScrollRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
