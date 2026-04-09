@@ -114,7 +114,7 @@ function NetflixCard({ product, index, corretorSlug, getTagLabel, accent }: {
               </div>
             )}
             {product.tag && (
-              <span className="absolute top-1 left-1 px-1.5 py-0.5 rounded text-[8px] font-bold bg-[#e50914] text-white">
+              <span className={`absolute top-1 left-1 px-1.5 py-0.5 rounded text-[8px] font-bold ${getTagStyle(product.tag)}`}>
                 {getTagLabel(product.tag)}
               </span>
             )}
@@ -585,7 +585,7 @@ export default function StoreLayoutNetflix({
                       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
 
                       {product.tag && (
-                        <span className="absolute top-2 left-2 px-2 py-0.5 rounded text-[9px] font-bold bg-white text-black">
+                        <span className={`absolute top-2 left-2 px-2 py-0.5 rounded text-[9px] font-bold ${getTagStyle(product.tag)}`}>
                           {getTagLabel(product.tag)}
                         </span>
                       )}
