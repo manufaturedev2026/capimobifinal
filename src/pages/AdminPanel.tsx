@@ -49,6 +49,9 @@ export default function AdminPanel() {
   const [tab, setTab] = useState<"sellers" | "billing" | "referrals" | "crm" | "seo" | "vendas" | "config" | "push">("sellers");
   const [homepageMode, setHomepageMode] = useState<string>("single");
   const [homepageTheme, setHomepageTheme] = useState<string>("azul");
+  const [loginHeroUrl, setLoginHeroUrl] = useState<string>("");
+  const [loginHeroUploading, setLoginHeroUploading] = useState(false);
+  const loginHeroRef = useRef<HTMLInputElement>(null);
   const [adRequests, setAdRequests] = useState<any[]>([]);
   const [adsLoading, setAdsLoading] = useState(false);
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
