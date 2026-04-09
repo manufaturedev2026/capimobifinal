@@ -64,18 +64,7 @@ export default function SellerProfile() {
         seller_category: (profile as any).seller_category || "",
         creci: (profile as any).creci || "",
         cnpj: (profile as any).cnpj || "",
-        cover_color: (profile as any).cover_color || "",
-        video_url: (profile as any).video_url || "",
-        video_title: (profile as any).video_title || "",
-        video_description: (profile as any).video_description || "",
         slug: (profile as any).slug || "",
-        store_theme: (profile as any).store_theme || "dark",
-        store_layout: (profile as any).store_layout || "marketplace",
-        store_video_url: (profile as any).store_video_url || "",
-        store_video_title: (profile as any).store_video_title || "",
-        store_video_description: (profile as any).store_video_description || "",
-        store_video_button_text: (profile as any).store_video_button_text || "",
-        store_video_button_url: (profile as any).store_video_button_url || "",
         show_floating_whatsapp: (profile as any).show_floating_whatsapp ?? false,
       });
     }
