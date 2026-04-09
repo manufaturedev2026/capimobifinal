@@ -994,9 +994,11 @@ export default function AdminPanel() {
                   }`}
                 >
                   <div className="h-16 w-full relative" style={{ background: t.dashboardGradient }}>
-                    <div className="absolute bottom-2 left-3 flex items-center gap-1.5">
+                    <div className="absolute bottom-2 left-3 flex items-center gap-1">
                       <div className="w-3 h-3 rounded-full" style={{ background: t.primary }} />
-                      <div className="h-1.5 w-12 rounded-full bg-white/50" />
+                      <div className="w-3 h-3 rounded-full" style={{ background: t.promoAccent || t.primary }} />
+                      <div className="w-3 h-3 rounded-full" style={{ background: t.promoExploreColor || t.primary }} />
+                      {t.promoExtra && <div className="w-3 h-3 rounded-full" style={{ background: t.promoExtra }} />}
                     </div>
                   </div>
                   <div className="p-3" style={{ background: t.darkBase }}>
