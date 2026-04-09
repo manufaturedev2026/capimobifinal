@@ -1032,19 +1032,19 @@ export default function AdminPanel() {
             {/* Preset gallery */}
             <div className="grid grid-cols-5 gap-2 mb-4">
               {LOGIN_HERO_PRESETS.map((preset) => {
-                const isActive = loginHeroUrl === preset.src;
+                
                 return (
                   <button
                     key={preset.id}
                     onClick={async () => {
-                      setLoginHeroUrl(preset.src);
-                      await supabase.from("platform_settings" as any).upsert({ key: "login_hero_image", value: preset.src } as any, { onConflict: "key" });
+                      setLoginHeroUrl(preset.id);
+                      await supabase.from("platform_settings" as any).upsert({ key: "login_hero_image", value: preset.id } as any, { onConflict: "key" });
                       toast({ title: `Imagem "${preset.label}" aplicada!` });
                     }}
-                    className={`relative rounded-xl overflow-hidden border-2 transition-all aspect-video group ${isActive ? "border-primary ring-2 ring-primary/40" : "border-border hover:border-primary/50"}`}
+                    className={`relative rounded-xl overflow-hidden border-2 transition-all aspect-video group ${loginHeroUrl === preset.id ? "border-primary ring-2 ring-primary/40" : "border-border hover:border-primary/50"}`}
                   >
                     <img src={preset.src} alt={preset.label} className="w-full h-full object-cover" loading="lazy" />
-                    {isActive && (
+                    {loginHeroUrl === preset.id && (
                       <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
                         <Check size={20} className="text-white drop-shadow-lg" />
                       </div>
@@ -1061,7 +1061,7 @@ export default function AdminPanel() {
             <div className="flex items-start gap-4">
               {loginHeroUrl && (
                 <div className="relative w-40 h-28 rounded-xl overflow-hidden border border-border shrink-0">
-                  <img src={loginHeroUrl} alt="Login hero" className="w-full h-full object-cover" />
+                  <img src={LOGIN_HERO_PRESETS.find(p => p.id === loginHeroUrl)?.src || loginHeroUrl} alt="Login hero" className="w-full h-full object-cover" />
                   <button
                     onClick={async () => {
                       setLoginHeroUrl("");

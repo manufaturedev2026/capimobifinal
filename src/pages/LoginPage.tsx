@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { getMarketplaceTheme } from "@/lib/marketplaceThemes";
 import { getMarketplaceThemeCssVars } from "@/lib/marketplaceThemeCssVars";
+import { LOGIN_HERO_PRESETS } from "@/data/loginHeroPresets";
 import heroImgDefault from "@/assets/hero-anunciar.jpg";
 
 export default function LoginPage() {
@@ -46,7 +47,8 @@ export default function LoginPage() {
 
   const theme = getMarketplaceTheme(themeId);
   const themeVars = getMarketplaceThemeCssVars(theme);
-  const heroImg = loginHeroUrl || heroImgDefault;
+  const resolvedPreset = loginHeroUrl ? LOGIN_HERO_PRESETS.find(p => p.id === loginHeroUrl)?.src : null;
+  const heroImg = resolvedPreset || loginHeroUrl || heroImgDefault;
 
   const getStoreRoute = (p?: { id: string; slug?: string | null } | null) => {
     const identifier = p?.slug || p?.id;
