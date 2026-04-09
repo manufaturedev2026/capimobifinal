@@ -594,13 +594,14 @@ export default function StoreLayoutMarketplace({
               {/* Desktop: paginated 2 at a time */}
               <div className="hidden md:block relative">
                 {(() => {
-                  const totalPages = Math.ceil(promoBanners.length / 2);
-                  const currentBanners = promoBanners.slice(desktopPromoPage * 2, desktopPromoPage * 2 + 2);
+                  const maxStart = Math.max(0, promoBanners.length - 2);
+                  const startIdx = Math.min(desktopPromoPage, maxStart);
+                  const currentBanners = promoBanners.slice(startIdx, startIdx + 2);
                   return (
                     <>
                       <AnimatePresence mode="wait">
                         <motion.div
-                          key={desktopPromoPage}
+                          key={startIdx}
                           initial={{ opacity: 0, x: 40 }}
                           animate={{ opacity: 1, x: 0 }}
                           exit={{ opacity: 0, x: -40 }}
@@ -634,16 +635,16 @@ export default function StoreLayoutMarketplace({
                           ))}
                         </motion.div>
                       </AnimatePresence>
-                      {totalPages > 1 && (
+                      {maxStart > 0 && (
                         <div className="flex justify-center gap-2 mt-4">
-                          {Array.from({ length: totalPages }).map((_, i) => (
+                          {Array.from({ length: maxStart + 1 }).map((_, i) => (
                             <button
                               key={i}
                               onClick={() => setDesktopPromoPage(i)}
                               className="h-2 rounded-full transition-all duration-300"
                               style={{
-                                width: i === desktopPromoPage ? 28 : 10,
-                                background: i === desktopPromoPage ? storeTheme.primary : `${storeTheme.textMuted}40`,
+                                width: i === startIdx ? 28 : 10,
+                                background: i === startIdx ? storeTheme.primary : `${storeTheme.textMuted}40`,
                               }}
                             />
                           ))}
