@@ -1084,6 +1084,44 @@ export default function AdminPanel() {
           </div>
         </div>
       )}
+
+      {/* Delete User Dialog */}
+      {deleteDialogOpen && deleteSeller && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="bg-card border border-border rounded-2xl p-6 w-full max-w-md mx-4 shadow-xl">
+            <div className="flex items-center gap-2 mb-2">
+              <Trash2 size={20} className="text-destructive" />
+              <h3 className="font-display font-bold text-lg text-foreground">Excluir Usuário</h3>
+            </div>
+            <p className="text-sm text-muted-foreground mb-2">
+              Tem certeza que deseja excluir permanentemente <strong className="text-foreground">{deleteSeller.company_name || deleteSeller.full_name}</strong>?
+            </p>
+            <p className="text-xs text-muted-foreground mb-1">• E-mail: {deleteSeller.email}</p>
+            <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-3 mt-3 mb-4">
+              <p className="text-xs text-destructive font-semibold">⚠️ Esta ação é irreversível!</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Todos os dados do usuário serão removidos (perfil, imóveis, assinatura, analytics, contratos). O usuário poderá se cadastrar novamente com o mesmo e-mail.
+              </p>
+            </div>
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => { setDeleteDialogOpen(false); setDeleteSeller(null); }}
+                className="px-4 py-2 rounded-xl text-sm font-medium text-muted-foreground hover:bg-secondary transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={confirmDeleteUser}
+                disabled={deleting}
+                className="px-4 py-2 rounded-xl bg-destructive text-destructive-foreground text-sm font-bold hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center gap-2"
+              >
+                {deleting ? <div className="w-4 h-4 border-2 border-destructive-foreground/30 border-t-destructive-foreground rounded-full animate-spin" /> : <Trash2 size={14} />}
+                Excluir Permanentemente
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
