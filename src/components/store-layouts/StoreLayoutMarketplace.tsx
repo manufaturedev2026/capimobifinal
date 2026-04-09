@@ -20,9 +20,9 @@ const QUICK_ACTIONS = [
   { slug: "flat", name: "Flats", desc: "Compactos", icon: Landmark },
 ];
 
-const BENEFITS = [
+const getBenefits = (stateName?: string) => [
   { icon: Phone, title: "Contato Direto", desc: "Fale direto com o corretor via WhatsApp" },
-  { icon: Globe, title: "Cobertura Regional", desc: "Imóveis em todas as cidades do ES" },
+  { icon: Globe, title: "Cobertura Regional", desc: `Imóveis em todas as cidades${stateName ? ` de ${stateName}` : ""}` },
   { icon: ShieldCheck, title: "Vendedores Verificados", desc: "Corretores com CRECI ativo" },
   { icon: Megaphone, title: "Anuncie Grátis", desc: "Cadastre seu imóvel sem custo" },
 ];
