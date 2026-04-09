@@ -1061,7 +1061,7 @@ export default function AdminPanel() {
             <div className="flex items-start gap-4">
               {loginHeroUrl && (
                 <div className="relative w-40 h-28 rounded-xl overflow-hidden border border-border shrink-0">
-                  <img src={loginHeroUrl} alt="Login hero" className="w-full h-full object-cover" />
+                  <img src={LOGIN_HERO_PRESETS.find(p => p.id === loginHeroUrl)?.src || loginHeroUrl} alt="Login hero" className="w-full h-full object-cover" />
                   <button
                     onClick={async () => {
                       setLoginHeroUrl("");

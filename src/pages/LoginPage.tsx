@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { getMarketplaceTheme } from "@/lib/marketplaceThemes";
 import { getMarketplaceThemeCssVars } from "@/lib/marketplaceThemeCssVars";
+import { LOGIN_HERO_PRESETS } from "@/data/loginHeroPresets";
 import heroImgDefault from "@/assets/hero-anunciar.jpg";
 
 export default function LoginPage() {
