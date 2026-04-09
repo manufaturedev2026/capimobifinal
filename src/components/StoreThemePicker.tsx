@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Check, Sun, Moon, Palette } from "lucide-react";
+import { MARKETPLACE_THEMES } from "@/lib/marketplaceThemes";
 
 export interface StoreTheme {
   id: string;
@@ -20,7 +21,7 @@ export interface StoreTheme {
   };
 }
 
-export const STORE_THEMES: StoreTheme[] = [
+const BASE_STORE_THEMES: StoreTheme[] = [
   {
     id: "default",
     name: "Padrão",
@@ -190,6 +191,34 @@ export const STORE_THEMES: StoreTheme[] = [
     border: "#2a1515",
     preview: { heroBg: "linear-gradient(135deg, #1a0000, #330000, #ff1a1a)", cardBg: "#1a1010", btnBg: "#ff1a1a", btnText: "#fff" },
   },
+];
+
+/** Convert marketplace themes to store themes (for ones not already in base) */
+function marketplaceToStoreTheme(mt: typeof MARKETPLACE_THEMES[number]): StoreTheme {
+  const isLight = mt.primary === "#FBBF24" || mt.primary === "#F97316" || mt.primary === "#22D3EE" || mt.primary === "#39ff14" || mt.primary === "#38BDF8" || mt.primary === "#A3E635";
+  return {
+    id: `mp_${mt.id}`,
+    name: mt.name,
+    icon: mt.icon,
+    bg: mt.darkBase,
+    card: mt.cardBg,
+    text: mt.text,
+    textMuted: mt.textMuted,
+    primary: mt.primary,
+    accent: mt.promoAccent || mt.primary,
+    border: mt.border,
+    preview: {
+      heroBg: mt.dashboardGradient,
+      cardBg: mt.cardBg,
+      btnBg: mt.primary,
+      btnText: isLight ? "#000" : "#fff",
+    },
+  };
+}
+
+export const STORE_THEMES: StoreTheme[] = [
+  ...BASE_STORE_THEMES,
+  ...MARKETPLACE_THEMES.map(marketplaceToStoreTheme),
 ];
 
 export function getStoreTheme(themeId: string | null | undefined): StoreTheme {
