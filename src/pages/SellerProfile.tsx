@@ -11,7 +11,7 @@ import { useCitiesByState } from "@/hooks/useCitiesByState";
 
 type SellerType = Database["public"]["Enums"]["seller_type"];
 
-export default function SellerProfile() {
+export default function SellerProfile({ embedded }: { embedded?: boolean }) {
   const { user, profile, refreshProfile, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
