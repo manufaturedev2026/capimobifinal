@@ -1861,9 +1861,9 @@ export default function CompanyProfile() {
 
       {/* Mobile "Sobre" section - unified card for all layouts */}
       <section className={`${isMarketplace || isNetflix ? "" : "lg:hidden"} px-4 mt-6 mb-6`}>
-        <div className="max-w-[1800px] mx-auto">
+        <div className="max-w-[1800px] mx-auto grid lg:grid-cols-2 gap-4 items-start">
           {/* ── Bloco 1: Card do Corretor ── */}
-          <div className="rounded-2xl lg:max-w-2xl lg:mx-auto" style={{ border: `1px solid ${storeTheme.border}`, background: storeTheme.card }}>
+          <div className="rounded-2xl" style={{ border: `1px solid ${storeTheme.border}`, background: storeTheme.card }}>
             {/* Header com cor primária */}
             <div className="rounded-t-2xl px-5 pt-5 pb-5 md:pt-6 md:pb-6 lg:text-center" style={{ background: dbProfile?.cover_color || `linear-gradient(135deg, ${storeTheme.primary}, ${storeTheme.primary}dd)` }}>
               <div className="flex items-center gap-2 lg:justify-center">
@@ -2007,7 +2007,7 @@ export default function CompanyProfile() {
           </div>
 
           {/* ── Bloco 2: Benefícios / Garantias ── */}
-          <div className="rounded-2xl p-5 mt-4 lg:max-w-2xl lg:mx-auto" style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}>
+          <div className="rounded-2xl p-5 lg:mt-0" style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}>
             <h3 className="font-display font-bold text-sm mb-3 flex items-center gap-2" style={{ color: storeTheme.text }}>
               <Shield size={15} style={{ color: storeTheme.primary }} /> Por que escolher
             </h3>
