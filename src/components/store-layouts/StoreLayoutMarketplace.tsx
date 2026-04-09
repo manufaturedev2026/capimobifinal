@@ -112,7 +112,7 @@ function getDarkMid(primary: string): string {
 export default function StoreLayoutMarketplace({
   filteredProducts, subcategories, activeCategory, setActiveCategory,
   categoryCounts, storeTheme, corretorSlug, dbProfile, getTagStyle, getTagLabel, handleWhatsApp,
-  filterCity, setFilterCity, availableCities, storiesBar,
+  filterCity, setFilterCity, availableCities, storiesBar, formatPrice,
 }: StoreLayoutProps) {
   const { user } = useAuth();
   const isOwner = !!(user && dbProfile && user.id === dbProfile.user_id);
@@ -516,6 +516,82 @@ export default function StoreLayoutMarketplace({
             })}
           </div>
         </motion.section>
+
+        <ShimmerLine color={storeTheme.primary} />
+
+        {/* ═══ MOST VIEWED — Horizontal scroll ═══ */}
+        {(() => {
+          const sorted = [...filteredProducts]
+            .sort((a: any, b: any) => (b.views_count || 0) - (a.views_count || 0))
+            .slice(0, 20);
+          if (sorted.length === 0) return null;
+          return (
+            <motion.section
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.18 }}
+              className="mt-6 mb-6"
+            >
+              <div className="flex items-center gap-2 mb-4">
+                <Star size={16} style={{ color: storeTheme.primary }} />
+                <h2 className="font-display font-bold text-lg" style={{ color: storeTheme.text }}>
+                  Mais Visitados
+                </h2>
+              </div>
+              <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2">
+                {sorted.map((product: any, i: number) => {
+                  const productLink = `/imoveis/produto/${product.slug || product.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`;
+                  return (
+                    <motion.div
+                      key={product.id}
+                      initial={{ opacity: 0, x: 30 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: i * 0.04 }}
+                      className="flex-shrink-0"
+                      style={{ width: "200px" }}
+                    >
+                      <Link
+                        to={productLink}
+                        className="block rounded-2xl overflow-hidden group transition-all"
+                        style={{
+                          background: storeTheme.card,
+                          border: `1px solid ${storeTheme.border}`,
+                          boxShadow: `0 2px 8px rgba(0,0,0,0.06)`,
+                        }}
+                      >
+                        <div className="relative aspect-[4/3] overflow-hidden">
+                          {product.image ? (
+                            <img src={product.image} alt={product.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" loading="lazy" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center" style={{ background: storeTheme.border }}>
+                              <Image size={24} style={{ color: storeTheme.textMuted }} />
+                            </div>
+                          )}
+                          {product.views_count > 0 && (
+                            <span className="absolute top-2 right-2 px-2 py-0.5 rounded-lg text-[9px] font-bold backdrop-blur-sm" style={{ background: `${storeTheme.primary}cc`, color: "#fff" }}>
+                              👁 {product.views_count}
+                            </span>
+                          )}
+                        </div>
+                        <div className="p-3">
+                          <h3 className="text-xs font-bold line-clamp-1" style={{ color: storeTheme.text }}>{product.title}</h3>
+                          {product.city && (
+                            <p className="text-[10px] mt-0.5 flex items-center gap-1" style={{ color: storeTheme.textMuted }}>
+                              <MapPin size={10} /> {product.city}
+                            </p>
+                          )}
+                          <p className="font-bold text-sm mt-1" style={{ color: storeTheme.primary }}>
+                            {formatPrice(product.price || 0)}
+                          </p>
+                        </div>
+                      </Link>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </motion.section>
+          );
+        })()}
 
         <ShimmerLine color={storeTheme.primary} />
 
