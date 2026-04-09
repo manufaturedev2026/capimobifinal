@@ -57,17 +57,19 @@ const HomeRedirect = () => {
   const [homepageMode, setHomepageMode] = useState<string | null>(null);
 
   useEffect(() => {
-    supabase
-      .from("platform_settings")
-      .select("value")
-      .eq("key", "homepage_mode")
-      .maybeSingle()
-      .then(({ data }) => {
+    const fetchMode = async () => {
+      try {
+        const { data } = await supabase
+          .from("platform_settings")
+          .select("value")
+          .eq("key", "homepage_mode")
+          .maybeSingle();
         setHomepageMode(data?.value || "single");
-      })
-      .catch(() => {
+      } catch {
         setHomepageMode("single");
-      });
+      }
+    };
+    fetchMode();
   }, []);
 
   useEffect(() => {
