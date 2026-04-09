@@ -27,3 +27,26 @@ export const LOGIN_HERO_PRESETS: LoginHeroPreset[] = [
   { id: "preset-09", label: "Comercial Moderno", src: preset09 },
   { id: "preset-10", label: "Praia Tropical", src: preset10 },
 ];
+
+export function getLoginHeroPreset(value?: string | null): LoginHeroPreset | undefined {
+  if (!value) return undefined;
+
+  const normalizedValue = value.trim();
+  const byId = LOGIN_HERO_PRESETS.find((preset) => preset.id === normalizedValue);
+  if (byId) return byId;
+
+  const presetIdMatch = normalizedValue.match(/preset-\d+/i)?.[0]?.toLowerCase();
+  if (!presetIdMatch) return undefined;
+
+  return LOGIN_HERO_PRESETS.find((preset) => preset.id === presetIdMatch);
+}
+
+export function normalizeLoginHeroSetting(value?: string | null): string {
+  const preset = getLoginHeroPreset(value);
+  return preset?.id || value?.trim() || "";
+}
+
+export function resolveLoginHeroImage(value?: string | null): string | null {
+  const preset = getLoginHeroPreset(value);
+  return preset?.src || value?.trim() || null;
+}
