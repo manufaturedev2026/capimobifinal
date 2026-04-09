@@ -139,7 +139,7 @@ export default function RentalManagementTab({ userId, sellerId }: Props) {
     setContracts((cRes.data as RentalContract[]) || []);
     setPayments((pRes.data as RentalPayment[]) || []);
     setProperties((iRes.data as PropertyOption[]) || []);
-    setRentalProperties((rpRes.data as RentalProperty[]) || []);
+    setRentalProperties((rpRes.data as unknown as RentalProperty[]) || []);
     setLoading(false);
   };
 
