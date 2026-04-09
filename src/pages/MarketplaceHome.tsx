@@ -380,7 +380,7 @@ export default function MarketplaceHome() {
         <FloatingParticles color={PRIMARY} />
 
         {/* Hero content */}
-        <div className="relative z-10 h-full flex flex-col justify-end p-5 md:p-12 max-w-6xl mx-auto">
+        <div className="relative z-10 h-full flex flex-col justify-end p-5 md:p-12">
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
@@ -563,7 +563,7 @@ export default function MarketplaceHome() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.3 }}
-        className="max-w-6xl mx-auto px-4 -mt-7 relative z-20"
+        className="px-4 md:px-8 -mt-7 relative z-20"
       >
         <div
           className="flex items-center gap-2 md:gap-3 rounded-2xl px-4 py-3 md:px-5 md:py-4 backdrop-blur-xl"
@@ -594,7 +594,7 @@ export default function MarketplaceHome() {
       </motion.div>
 
       {/* ═══ MAIN LAYOUT: SIDEBAR + CONTENT ═══ */}
-      <div className="max-w-7xl mx-auto px-4 flex gap-6">
+      <div className="px-4 md:px-8 flex gap-6">
 
         {/* ── Desktop City Sidebar ── */}
         <aside className="hidden lg:block w-[220px] flex-shrink-0 sticky top-4 self-start mt-8">
