@@ -139,13 +139,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(currentSession?.user ?? null);
 
       if (currentSession?.user) {
-        await ensureProfile(currentSession.user);
-        await checkBan(currentSession.user.id);
+        try {
+          await ensureProfile(currentSession.user);
+          await checkBan(currentSession.user.id);
+        } catch (e) {
+          console.warn("Falha ao carregar perfil/ban (rede):", e);
+        }
       } else {
         setProfile(null);
         setBanInfo(null);
       }
 
+      setLoading(false);
+    }).catch(() => {
       setLoading(false);
     });
 
