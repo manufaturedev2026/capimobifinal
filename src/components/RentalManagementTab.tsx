@@ -323,14 +323,13 @@ export default function RentalManagementTab({ userId, sellerId }: Props) {
         </div>
 
         {/* ── Quick Actions ── */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <button onClick={() => setView("contracts")} className="flex items-center gap-3 p-4 rounded-2xl border border-border bg-card hover:border-primary/50 transition-colors text-left">
             <FileText size={20} className="text-primary" />
             <div>
               <p className="text-sm font-bold text-foreground">Contratos</p>
               <p className="text-xs text-muted-foreground">{contracts.length} cadastrados</p>
             </div>
-            <ChevronRight size={16} className="text-muted-foreground ml-auto" />
           </button>
           <button onClick={() => setView("payments")} className="flex items-center gap-3 p-4 rounded-2xl border border-border bg-card hover:border-primary/50 transition-colors text-left">
             <DollarSign size={20} className="text-emerald-500" />
@@ -338,11 +337,17 @@ export default function RentalManagementTab({ userId, sellerId }: Props) {
               <p className="text-sm font-bold text-foreground">Pagamentos</p>
               <p className="text-xs text-muted-foreground">{payments.length} registros</p>
             </div>
-            <ChevronRight size={16} className="text-muted-foreground ml-auto" />
+          </button>
+          <button onClick={() => setView("rental-properties")} className="flex items-center gap-3 p-4 rounded-2xl border border-border bg-card hover:border-primary/50 transition-colors text-left">
+            <Home size={20} className="text-blue-500" />
+            <div>
+              <p className="text-sm font-bold text-foreground">Meus Imóveis</p>
+              <p className="text-xs text-muted-foreground">{rentalProperties.length} cadastrados</p>
+            </div>
           </button>
           <button
             onClick={() => { setEditingContract(null); setView("form"); }}
-            className="flex items-center gap-3 p-4 rounded-2xl border border-dashed border-primary/50 bg-primary/5 hover:bg-primary/10 transition-colors text-left sm:col-span-1 col-span-2"
+            className="flex items-center gap-3 p-4 rounded-2xl border border-dashed border-primary/50 bg-primary/5 hover:bg-primary/10 transition-colors text-left"
           >
             <Plus size={20} className="text-primary" />
             <div>
