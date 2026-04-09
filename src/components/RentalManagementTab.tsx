@@ -60,6 +60,21 @@ interface PropertyOption {
   city: string | null;
 }
 
+interface RentalProperty {
+  id: string;
+  user_id: string;
+  seller_id: string;
+  title: string;
+  address: string | null;
+  city: string | null;
+  photo_url: string | null;
+  owner_name: string | null;
+  owner_phone: string | null;
+  notes: string | null;
+  is_active: boolean;
+  created_at: string;
+}
+
 interface Props {
   userId: string;
   sellerId: string;
