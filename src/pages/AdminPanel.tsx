@@ -602,6 +602,10 @@ export default function AdminPanel() {
                           <Ban size={12} /> Banir
                         </button>
                       )}
+                      <button onClick={() => { setDeleteSeller(seller); setDeleteDialogOpen(true); }}
+                        className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-destructive/10 text-destructive text-xs font-semibold hover:bg-destructive/20">
+                        <Trash2 size={12} /> Excluir
+                      </button>
                     </div>
                   </div>
                 </div>
