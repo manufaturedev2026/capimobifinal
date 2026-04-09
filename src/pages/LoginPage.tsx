@@ -6,6 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { getMarketplaceTheme } from "@/lib/marketplaceThemes";
+import { getMarketplaceThemeCssVars } from "@/lib/marketplaceThemeCssVars";
 import heroImgDefault from "@/assets/hero-anunciar.jpg";
 
 export default function LoginPage() {
@@ -44,6 +45,7 @@ export default function LoginPage() {
   }, []);
 
   const theme = getMarketplaceTheme(themeId);
+  const themeVars = getMarketplaceThemeCssVars(theme);
   const heroImg = loginHeroUrl || heroImgDefault;
 
   const getStoreRoute = (p?: { id: string; slug?: string | null } | null) => {
@@ -128,7 +130,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row" style={{ background: theme.darkBase }}>
+    <div className="min-h-screen flex flex-col lg:flex-row" style={{ ...themeVars, background: theme.darkBase }}>
       {/* Image Panel */}
       <div className="relative w-full lg:w-1/2 h-[40vh] lg:h-auto lg:min-h-screen overflow-hidden">
         <img src={heroImg} alt="Capimobi" className="absolute inset-0 w-full h-full object-cover" />

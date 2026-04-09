@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import MarketplaceNavbar from "@/components/MarketplaceNavbar";
 import FooterSimple from "@/components/FooterSimple";
 import { getMarketplaceTheme, type MarketplaceTheme } from "@/lib/marketplaceThemes";
+import { getMarketplaceThemeCssVars } from "@/lib/marketplaceThemeCssVars";
 import FloatingParticles from "@/components/seo/FloatingParticles";
 import ShimmerLine from "@/components/seo/ShimmerLine";
 
@@ -62,6 +63,7 @@ export default function SeoPageLayout({
   children,
 }: SeoPageLayoutProps) {
   const { primary: PRIMARY, darkBase: DARK_BASE, darkMid: DARK_MID, cardBg: CARD_BG, border: BORDER, text: TEXT, textMuted: TEXT_MUTED } = theme;
+  const themeVars = getMarketplaceThemeCssVars(theme);
 
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
@@ -79,7 +81,7 @@ export default function SeoPageLayout({
   const currentHeroImage = allHeroImages[heroIdx] || null;
 
   return (
-    <div style={{ background: DARK_BASE, color: TEXT, overflowX: "clip", maxWidth: "100%" }} className="min-h-screen">
+    <div style={{ ...themeVars, background: DARK_BASE, color: TEXT, overflowX: "clip", maxWidth: "100%" }} className="min-h-screen">
       <Helmet>
         <title>{`${title} | Capimobi`}</title>
         <meta name="description" content={metaDescription} />
