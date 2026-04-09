@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import type { StoreLayoutProps } from "./types";
 import { isIOSStandaloneApp } from "@/lib/pwaInstall";
+import { BRAZIL_STATES } from "@/data/brazilStates";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 const QUICK_ACTIONS = [
@@ -801,7 +802,7 @@ export default function StoreLayoutMarketplace({
           transition={{ duration: 0.6, delay: 0.3 }}
           className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12"
         >
-          {BENEFITS.map((benefit, i) => {
+          {getBenefits(BRAZIL_STATES.find(s => s.uf === dbProfile?.state)?.name).map((benefit, i) => {
             const Icon = benefit.icon;
             return (
               <motion.div
