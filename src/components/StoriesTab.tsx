@@ -180,9 +180,10 @@ export default function StoriesTab({ userId, sellerId }: StoriesTabProps) {
   );
 }
 
-function StoryCard({ story, onDelete, timeRemaining, expired }: {
+function StoryCard({ story, onDelete, onRepublish, timeRemaining, expired }: {
   story: StoryRow;
   onDelete: (id: string, imageUrl: string) => void;
+  onRepublish?: (id: string) => void;
   timeRemaining: string;
   expired: boolean;
 }) {
