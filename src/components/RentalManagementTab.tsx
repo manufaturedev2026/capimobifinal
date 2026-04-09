@@ -493,6 +493,79 @@ export default function RentalManagementTab({ userId, sellerId }: Props) {
   }
 
   /* ═══════════════════════════════════════
+     RENTAL PROPERTIES LIST VIEW
+     ═══════════════════════════════════════ */
+  if (view === "rental-properties") {
+    const deleteRentalProp = async (id: string) => {
+      await supabase.from("rental_properties" as any).delete().eq("id", id);
+      toast({ title: "Imóvel removido" });
+      fetchAll();
+    };
+    return (
+      <div className="space-y-5">
+        <div className="flex items-center justify-between">
+          <button onClick={() => setView("dashboard")} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+            <ArrowLeft size={16} /> Voltar
+          </button>
+          <button onClick={() => { setEditingRentalProp(null); setView("rental-property-form"); }} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-primary text-primary-foreground hover:opacity-90">
+            <Plus size={14} /> Novo Imóvel
+          </button>
+        </div>
+        {rentalProperties.length === 0 ? (
+          <div className="text-center py-16 rounded-2xl border border-dashed border-border">
+            <Home size={40} className="mx-auto mb-3 text-muted-foreground/40" />
+            <p className="text-sm font-bold text-foreground mb-1">Nenhum imóvel cadastrado</p>
+            <p className="text-xs text-muted-foreground">Cadastre imóveis para usar nos contratos de aluguel</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {rentalProperties.map(rp => (
+              <div key={rp.id} className="rounded-2xl border border-border bg-card overflow-hidden">
+                {rp.photo_url ? (
+                  <img src={rp.photo_url} alt={rp.title} className="w-full h-32 object-cover" />
+                ) : (
+                  <div className="w-full h-32 bg-secondary flex items-center justify-center">
+                    <Home size={32} className="text-muted-foreground/30" />
+                  </div>
+                )}
+                <div className="p-3 space-y-2">
+                  <p className="font-bold text-sm text-foreground">{rp.title}</p>
+                  {rp.address && <p className="text-xs text-muted-foreground flex items-center gap-1"><MapPin size={10} />{rp.address}</p>}
+                  {rp.city && <p className="text-xs text-muted-foreground">{rp.city}</p>}
+                  {rp.owner_name && <p className="text-xs text-muted-foreground flex items-center gap-1"><User size={10} />{rp.owner_name}</p>}
+                  <div className="flex gap-2 pt-1">
+                    <button onClick={() => { setEditingRentalProp(rp); setView("rental-property-form"); }} className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold bg-secondary text-foreground hover:bg-secondary/80">
+                      <Edit size={10} /> Editar
+                    </button>
+                    <button onClick={() => deleteRentalProp(rp.id)} className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold bg-red-500/10 text-red-500 hover:bg-red-500/20">
+                      <Trash2 size={10} /> Excluir
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  /* ═══════════════════════════════════════
+     RENTAL PROPERTY FORM VIEW
+     ═══════════════════════════════════════ */
+  if (view === "rental-property-form") {
+    return (
+      <RentalPropertyForm
+        userId={userId}
+        sellerId={sellerId}
+        editing={editingRentalProp}
+        onSave={() => { fetchAll(); setView("rental-properties"); }}
+        onCancel={() => setView("rental-properties")}
+      />
+    );
+  }
+
+  /* ═══════════════════════════════════════
      CONTRACTS LIST VIEW
      ═══════════════════════════════════════ */
   if (view === "contracts") {
