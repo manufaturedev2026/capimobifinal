@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Shield, Users, Package, DollarSign, Search, Check, X, RefreshCw, ArrowLeft, Crown, Star, Zap, Globe, Plus, Trash2, ExternalLink, Copy, Megaphone, LayoutDashboard, Building2, Rocket, FileText, UserCog, Filter, Camera, Phone, Ban, ShieldOff, Clock, MessageCircle, MapPin, Palette, Bell } from "lucide-react";
 import { Link } from "react-router-dom";
 import { MARKETPLACE_THEMES } from "@/lib/marketplaceThemes";
+import { getMarketplaceThemeCssVars } from "@/lib/marketplaceThemeCssVars";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsAdmin, PACKAGE_CONFIG } from "@/hooks/useSubscription";
 import { supabase } from "@/integrations/supabase/client";
@@ -379,6 +380,7 @@ export default function AdminPanel() {
 
   const pendingAdsCount = adRequests.filter(a => a.status === "pendente").length;
   const adminTheme = MARKETPLACE_THEMES.find((theme) => theme.id === homepageTheme) || MARKETPLACE_THEMES[0];
+  const adminThemeVars = getMarketplaceThemeCssVars(adminTheme);
 
   const sidebarItems = [
     { key: "sellers" as const, label: "Vendedores", icon: Users },
@@ -393,7 +395,7 @@ export default function AdminPanel() {
   return (
     <div
       className="min-h-screen flex flex-col"
-      style={{ background: `linear-gradient(180deg, ${adminTheme.darkBase} 0%, ${adminTheme.darkMid} 18%, hsl(var(--background)) 42%)` }}
+      style={{ ...adminThemeVars, background: `linear-gradient(180deg, ${adminTheme.darkBase} 0%, ${adminTheme.darkMid} 18%, hsl(var(--background)) 42%)` }}
     >
       {/* Header */}
       <div className="py-5 shrink-0 transition-all duration-300" style={{ background: adminTheme.dashboardGradient }}>

@@ -26,6 +26,7 @@ import { productUrl } from "@/lib/productUrl";
 import FooterSimple from "@/components/FooterSimple";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { getMarketplaceTheme } from "@/lib/marketplaceThemes";
+import { getMarketplaceThemeCssVars } from "@/lib/marketplaceThemeCssVars";
 import { supabase } from "@/integrations/supabase/client";
 
 const QUICK_ACTIONS = [
@@ -108,6 +109,7 @@ export default function MarketplaceHome() {
     });
   }, []);
   const theme = getMarketplaceTheme(themeId);
+  const themeVars = getMarketplaceThemeCssVars(theme);
   const PRIMARY = theme.primary;
   const DARK_BASE = theme.darkBase;
   const DARK_MID = theme.darkMid;
@@ -327,7 +329,7 @@ export default function MarketplaceHome() {
   ].filter((b) => b.slug === "todos" || (categoryCounts[b.slug] || 0) > 0);
 
   return (
-    <div style={{ background: DARK_BASE, color: TEXT, overflowX: "clip", maxWidth: "100%" }} className="min-h-screen">
+    <div style={{ ...themeVars, background: DARK_BASE, color: TEXT, overflowX: "clip", maxWidth: "100%" }} className="min-h-screen">
       <Helmet>
         <title>Capimobi – Marketplace de Imóveis</title>
         <meta name="description" content="Encontre imóveis de diversos corretores verificados. Casas, apartamentos, terrenos e muito mais." />

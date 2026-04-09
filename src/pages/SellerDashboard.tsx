@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { getStoreUrl, getStoreFullUrl } from "@/lib/storeUrl";
 import { getMarketplaceTheme } from "@/lib/marketplaceThemes";
+import { getMarketplaceThemeCssVars } from "@/lib/marketplaceThemeCssVars";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -79,6 +80,7 @@ export default function SellerDashboard() {
     });
   }, []);
   const dashTheme = getMarketplaceTheme(dashThemeId);
+  const dashThemeVars = getMarketplaceThemeCssVars(dashTheme);
   useEffect(() => {
     if (!authLoading && !user) navigate("/login");
   }, [user, authLoading, navigate]);
@@ -308,7 +310,7 @@ export default function SellerDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-background overflow-x-hidden">
+    <div className="min-h-screen bg-background overflow-x-hidden" style={dashThemeVars}>
       {/* Mobile Header — Premium Gradient */}
       <div className="py-6 lg:py-4" style={{ background: dashTheme.dashboardGradient }}>
         <div className="container max-w-6xl mx-auto px-4 lg:hidden">
