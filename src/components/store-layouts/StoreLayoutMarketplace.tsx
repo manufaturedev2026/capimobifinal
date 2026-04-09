@@ -643,6 +643,13 @@ export default function StoreLayoutMarketplace({
                   ref={promoScrollRef}
                   className="flex gap-3 overflow-x-auto overflow-y-hidden scrollbar-hide snap-x snap-mandatory pb-2"
                   onTouchStart={() => {}}
+                  onScroll={(e) => {
+                    const el = e.currentTarget;
+                    const scrollLeft = el.scrollLeft;
+                    const cardWidth = el.clientWidth * 0.85 + 12; // 85% width + gap
+                    const idx = Math.round(scrollLeft / cardWidth);
+                    setPromoIdx(Math.max(0, Math.min(idx, promoBanners.length - 1)));
+                  }}
                   style={{ overscrollBehaviorX: "contain" }}
                 >
                   {promoBanners.map((banner, bIdx) => (
@@ -657,7 +664,7 @@ export default function StoreLayoutMarketplace({
                       onClick={() => { setActiveCategory(banner.slug); scrollToGrid(); }}
                     >
                       {banner.coverImage ? (
-                        <img src={banner.coverImage} alt="" className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+                        <img src={banner.coverImage} alt="" className="absolute inset-0 w-full h-full object-cover" />
                       ) : null}
                       <div className="absolute inset-0" style={{ background: banner.coverImage ? `linear-gradient(135deg, ${darkBase}cc, ${storeTheme.primary}88)` : `linear-gradient(135deg, ${darkBase}, ${storeTheme.primary}${bIdx % 2 === 0 ? "" : "cc"})` }} />
                       <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent" />
