@@ -594,8 +594,8 @@ export default function StoreLayoutMarketplace({
               </div>
 
               {/* Desktop: grid */}
-              <div className="hidden md:grid md:grid-cols-2 gap-4">
-                {promoBanners.slice(0, 2).map((banner, bIdx) => (
+              <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {promoBanners.map((banner, bIdx) => (
                   <motion.div
                     key={banner.slug}
                     whileHover={{ y: -4, transition: { duration: 0.25 } }}
