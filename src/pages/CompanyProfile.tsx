@@ -552,8 +552,9 @@ export default function CompanyProfile() {
             const sellerName = company.name;
             const totalItems = products.length;
             const seoTitle = `${sellerName} — Imóveis em ${cityName}${stateName ? `, ${stateName}` : ""} | Capimobi`;
-            const seoDesc = dbProfile?.bio
-              ? `${dbProfile.bio.slice(0, 130)} — ${totalItems} imóveis em ${cityName}.`
+            const activeBio = teamMember?.bio || dbProfile?.bio;
+            const seoDesc = activeBio
+              ? `${activeBio.slice(0, 130)} — ${totalItems} imóveis em ${cityName}.`
               : `Encontre ${totalItems}+ imóveis com ${sellerName} em ${cityName}. Casas, apartamentos, terrenos à venda. Contato direto via WhatsApp.`;
             const canonicalUrl = `https://capimobi.lovable.app/empresa/${dbProfile?.slug || id}`;
             const ogImage = company.logo || (products[0]?.image) || "";
@@ -807,10 +808,12 @@ export default function CompanyProfile() {
             {isPaid && <BadgeCheck size={18} className="text-primary" />}
           </div>
 
-          {dbProfile?.seller_category && (
+          {(teamMember || dbProfile?.seller_category) && (
             <span className="text-white/70 text-xs font-medium mb-2">
-              {({ imobiliaria: "🏢 Imobiliária", corretor: "📋 Corretor(a)", proprietario: "🏠 Proprietário", construtora: "🏗️ Construtora" } as Record<string, string>)[dbProfile.seller_category]}
-              {["corretor", "imobiliaria", "construtora"].includes(dbProfile.seller_category) && dbProfile.creci && ` • ${dbProfile.creci}`}
+              {teamMember
+                ? `📋 Corretor(a)${teamMember.creci ? ` • ${teamMember.creci}` : ""}`
+                : `${({ imobiliaria: "🏢 Imobiliária", corretor: "📋 Corretor(a)", proprietario: "🏠 Proprietário", construtora: "🏗️ Construtora" } as Record<string, string>)[dbProfile.seller_category] || ""}${["corretor", "imobiliaria", "construtora"].includes(dbProfile.seller_category) && dbProfile.creci ? ` • ${dbProfile.creci}` : ""}`
+              }
             </span>
           )}
 
@@ -820,8 +823,8 @@ export default function CompanyProfile() {
             </span>
           )}
 
-          {dbProfile?.bio && (
-            <p className="text-white/70 text-xs leading-relaxed line-clamp-3 max-w-sm mb-4">{dbProfile.bio}</p>
+          {(teamMember?.bio || dbProfile?.bio) && (
+            <p className="text-white/70 text-xs leading-relaxed line-clamp-3 max-w-sm mb-4">{teamMember?.bio || dbProfile.bio}</p>
           )}
 
           {/* Stats row */}
@@ -1256,7 +1259,7 @@ export default function CompanyProfile() {
               {/* About Section */}
               <div className="rounded-2xl p-4" style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}>
                 <h3 className="font-display font-bold text-sm mb-3 flex items-center gap-2" style={{ color: storeTheme.text }}>
-                  <BadgeCheck size={14} style={{ color: storeTheme.primary }} /> Sobre a empresa
+                  <BadgeCheck size={14} style={{ color: storeTheme.primary }} /> {teamMember ? "Sobre o corretor" : "Sobre a empresa"}
                 </h3>
                 {teamMember && dbProfile?.logo_url && (
                   <div className="flex items-center gap-3 mb-3 p-2 rounded-xl" style={{ background: `${storeTheme.primary}10` }}>
@@ -1273,19 +1276,21 @@ export default function CompanyProfile() {
                     <span>CNPJ: {dbProfile.cnpj}</span>
                   </div>
                 )}
-                {dbProfile?.bio && (
-                  <p className="text-sm mb-3 whitespace-pre-line" style={{ color: storeTheme.text }}>{dbProfile.bio}</p>
+                {(teamMember?.bio || dbProfile?.bio) && (
+                  <p className="text-sm mb-3 whitespace-pre-line" style={{ color: storeTheme.text }}>{teamMember?.bio || dbProfile.bio}</p>
                 )}
                 <div className="space-y-3 text-xs" style={{ color: storeTheme.textMuted }}>
                   <div className="flex items-center gap-2">
                     <Store size={13} className="flex-shrink-0" />
                     <span>
-                      {dbProfile?.seller_category
-                        ? ({ imobiliaria: "Imobiliária", corretor: "Corretor(a) de Imóveis", proprietario: "Proprietário", construtora: "Construtora" } as Record<string, string>)[dbProfile.seller_category] || "Especialista em imóveis"
-                        : "Especialista em imóveis"}
+                      {teamMember
+                        ? "Corretor(a) de Imóveis"
+                        : dbProfile?.seller_category
+                          ? ({ imobiliaria: "Imobiliária", corretor: "Corretor(a) de Imóveis", proprietario: "Proprietário", construtora: "Construtora" } as Record<string, string>)[dbProfile.seller_category] || "Especialista em imóveis"
+                          : "Especialista em imóveis"}
                     </span>
                   </div>
-                  {["corretor", "imobiliaria", "construtora"].includes(dbProfile?.seller_category) && dbProfile?.creci && (
+                  {(teamMember?.creci || (["corretor", "imobiliaria", "construtora"].includes(dbProfile?.seller_category) && dbProfile?.creci)) && !teamMember && (
                     <div className="flex items-center gap-2">
                       <Shield size={13} className="flex-shrink-0" style={{ color: storeTheme.primary }} />
                       <span className="font-semibold" style={{ color: storeTheme.primary }}>{dbProfile.creci}</span>
@@ -1936,9 +1941,11 @@ export default function CompanyProfile() {
                     {isPaid && <BadgeCheck size={14} style={{ color: storeTheme.primary }} />}
                   </div>
                   <p className="text-[11px] mt-0.5" style={{ color: storeTheme.textMuted }}>
-                    {dbProfile?.seller_category
-                      ? ({ imobiliaria: "Imobiliária", corretor: "Corretor(a) de Imóveis", proprietario: "Proprietário", construtora: "Construtora", loja_veiculos: "Loja de Veículos", autonomo: "Vendedor Autônomo", concessionaria: "Concessionária" } as Record<string, string>)[dbProfile.seller_category] || "Especialista em imóveis"
-                      : "Especialista em imóveis"}
+                    {teamMember
+                      ? "Corretor(a) de Imóveis"
+                      : dbProfile?.seller_category
+                        ? ({ imobiliaria: "Imobiliária", corretor: "Corretor(a) de Imóveis", proprietario: "Proprietário", construtora: "Construtora", loja_veiculos: "Loja de Veículos", autonomo: "Vendedor Autônomo", concessionaria: "Concessionária" } as Record<string, string>)[dbProfile.seller_category] || "Especialista em imóveis"
+                        : "Especialista em imóveis"}
                   </p>
                   <div className="flex gap-2 mt-3 flex-wrap lg:justify-center">
                     {company.whatsapp && (
@@ -1961,8 +1968,8 @@ export default function CompanyProfile() {
                     )}
                   </div>
                   {/* Bio */}
-                  {dbProfile?.bio && (
-                    <p className="text-[11px] leading-relaxed mt-2" style={{ color: storeTheme.textMuted }}>{dbProfile.bio}</p>
+                  {(teamMember?.bio || dbProfile?.bio) && (
+                    <p className="text-[11px] leading-relaxed mt-2" style={{ color: storeTheme.textMuted }}>{teamMember?.bio || dbProfile.bio}</p>
                   )}
                   {/* Stats */}
                   <div className="flex items-center gap-4 mt-3 text-xs lg:justify-center" style={{ color: storeTheme.text }}>
@@ -1989,10 +1996,10 @@ export default function CompanyProfile() {
               </div>
               {/* Credenciais */}
               <div className="mt-4 space-y-2">
-                {["corretor", "imobiliaria", "construtora"].includes(dbProfile?.seller_category) && dbProfile?.creci && (
+                {(teamMember?.creci || (["corretor", "imobiliaria", "construtora"].includes(dbProfile?.seller_category) && dbProfile?.creci)) && (
                   <div className="flex items-center gap-2.5 px-3 py-2 rounded-xl" style={{ background: `${storeTheme.primary}12` }}>
                     <Shield size={14} style={{ color: storeTheme.primary }} />
-                    <span className="text-xs font-bold" style={{ color: storeTheme.primary }}>CRECI {dbProfile.creci}</span>
+                    <span className="text-xs font-bold" style={{ color: storeTheme.primary }}>CRECI {teamMember?.creci || dbProfile.creci}</span>
                   </div>
                 )}
                 {dbProfile?.cnpj && (
