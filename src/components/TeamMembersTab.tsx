@@ -567,6 +567,32 @@ export default function TeamMembersTab({ profileId, userId, maxMembers }: Props)
                 </div>
               </div>
 
+              {/* Analytics Stats */}
+              <div className="border-t border-border px-4 sm:px-5 py-2.5 bg-secondary/10">
+                <div className="flex items-center gap-4 flex-wrap">
+                  <div className="flex items-center gap-1.5 text-sm">
+                    <Eye size={14} className="text-primary" />
+                    <span className="font-semibold text-foreground">{analyticsMap[m.id]?.views || 0}</span>
+                    <span className="text-muted-foreground text-xs">visitas</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-sm">
+                    <MousePointerClick size={14} className="text-green-500" />
+                    <span className="font-semibold text-foreground">{analyticsMap[m.id]?.whatsapp_clicks || 0}</span>
+                    <span className="text-muted-foreground text-xs">cliques WhatsApp</span>
+                  </div>
+                  {(analyticsMap[m.id]?.views || 0) > 0 && (
+                    <div className="flex items-center gap-1.5 text-sm">
+                      <BarChart3 size={14} className="text-primary" />
+                      <span className="font-semibold text-foreground">
+                        {(((analyticsMap[m.id]?.whatsapp_clicks || 0) / (analyticsMap[m.id]?.views || 1)) * 100).toFixed(1)}%
+                      </span>
+                      <span className="text-muted-foreground text-xs">conversão</span>
+                    </div>
+                  )}
+                  <span className="text-[10px] text-muted-foreground ml-auto">últimos 30 dias</span>
+                </div>
+              </div>
+
               {/* Actions footer */}
               <div className="border-t border-border px-4 sm:px-5 py-2.5 bg-secondary/20 flex items-center justify-between">
                 <span className="text-[11px] text-muted-foreground">
