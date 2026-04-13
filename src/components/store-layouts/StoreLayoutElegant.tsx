@@ -13,7 +13,7 @@ import type { StoreLayoutProps } from "./types";
  */
 export default function StoreLayoutElegant({
   filteredProducts, products, subcategories, activeCategory, setActiveCategory,
-  categoryCounts, categoryCardImages, storeTheme, corretorSlug, getTagStyle, getTagLabel,
+  categoryCounts, categoryCardImages, storeTheme, corretorSlug, sellerDisplayName, getTagStyle, getTagLabel,
   formatPrice, dbProfile, storiesBar,
 }: StoreLayoutProps) {
   const [searchQuery, setSearchQuery] = useState("");

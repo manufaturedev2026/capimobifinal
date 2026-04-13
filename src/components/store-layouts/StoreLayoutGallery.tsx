@@ -10,7 +10,7 @@ import type { StoreLayoutProps } from "./types";
  */
 export default function StoreLayoutGallery({
   filteredProducts, subcategories, activeCategory, setActiveCategory,
-  categoryCounts, categoryCardImages, storeTheme, corretorSlug, dbProfile, getTagStyle, getTagLabel, storiesBar,
+  categoryCounts, categoryCardImages, storeTheme, corretorSlug, sellerDisplayName, dbProfile, getTagStyle, getTagLabel, storiesBar,
 }: StoreLayoutProps) {
   const getAspect = (i: number) => {
     const pattern = [1, 1.3, 0.85, 1.15, 1, 0.9];
