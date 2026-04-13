@@ -552,8 +552,9 @@ export default function CompanyProfile() {
             const sellerName = company.name;
             const totalItems = products.length;
             const seoTitle = `${sellerName} — Imóveis em ${cityName}${stateName ? `, ${stateName}` : ""} | Capimobi`;
-            const seoDesc = dbProfile?.bio
-              ? `${dbProfile.bio.slice(0, 130)} — ${totalItems} imóveis em ${cityName}.`
+            const activeBio = teamMember?.bio || dbProfile?.bio;
+            const seoDesc = activeBio
+              ? `${activeBio.slice(0, 130)} — ${totalItems} imóveis em ${cityName}.`
               : `Encontre ${totalItems}+ imóveis com ${sellerName} em ${cityName}. Casas, apartamentos, terrenos à venda. Contato direto via WhatsApp.`;
             const canonicalUrl = `https://capimobi.lovable.app/empresa/${dbProfile?.slug || id}`;
             const ogImage = company.logo || (products[0]?.image) || "";
