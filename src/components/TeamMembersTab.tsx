@@ -42,6 +42,7 @@ export default function TeamMembersTab({ profileId, userId, maxMembers }: Props)
   const [members, setMembers] = useState<TeamMember[]>([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<string | null>(null);
+  const [editingOrigin, setEditingOrigin] = useState<"manual" | "partnership">("manual");
   const [showForm, setShowForm] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -112,6 +113,7 @@ export default function TeamMembersTab({ profileId, userId, maxMembers }: Props)
   const resetForm = () => {
     setForm({ full_name: "", phone: "", creci: "", email: "", bio: "", photo_url: "", instagram: "", slug: "" });
     setEditing(null);
+    setEditingOrigin("manual");
     setShowForm(false);
   };
 
@@ -158,19 +160,24 @@ export default function TeamMembersTab({ profileId, userId, maxMembers }: Props)
     }
 
     if (editing) {
+      const updateData: any = {
+        full_name: form.full_name.trim(),
+        phone: form.phone.trim() || null,
+        creci: form.creci.trim() || null,
+        email: form.email.trim() || null,
+        bio: form.bio.trim() || null,
+        instagram: form.instagram.trim() || null,
+        slug,
+        updated_at: new Date().toISOString(),
+      };
+      // Only update photo for manual members
+      if (editingOrigin === "manual") {
+        updateData.photo_url = form.photo_url || null;
+      }
+
       const { error } = await supabase
         .from("team_members")
-        .update({
-          full_name: form.full_name.trim(),
-          phone: form.phone.trim() || null,
-          creci: form.creci.trim() || null,
-          email: form.email.trim() || null,
-          bio: form.bio.trim() || null,
-          photo_url: form.photo_url || null,
-          instagram: form.instagram.trim() || null,
-          slug,
-          updated_at: new Date().toISOString(),
-        })
+        .update(updateData)
         .eq("id", editing);
 
       if (error) {
@@ -223,6 +230,7 @@ export default function TeamMembersTab({ profileId, userId, maxMembers }: Props)
       slug: m.slug || "",
     });
     setEditing(m.id);
+    setEditingOrigin(m.origin || "manual");
     setShowForm(true);
   };
 
@@ -315,21 +323,28 @@ export default function TeamMembersTab({ profileId, userId, maxMembers }: Props)
             </button>
           </div>
 
-          {/* Photo */}
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-xl bg-secondary flex items-center justify-center overflow-hidden border border-border">
-              {form.photo_url ? (
-                <img src={form.photo_url} alt="" className="w-full h-full object-cover" />
-              ) : (
-                <Users size={24} className="text-muted-foreground" />
-              )}
+          {/* Photo - only for manual members */}
+          {editingOrigin === "manual" && (
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 rounded-xl bg-secondary flex items-center justify-center overflow-hidden border border-border">
+                {form.photo_url ? (
+                  <img src={form.photo_url} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  <Users size={24} className="text-muted-foreground" />
+                )}
+              </div>
+              <label className="cursor-pointer flex items-center gap-2 px-4 py-2 rounded-xl bg-secondary text-secondary-foreground text-sm font-medium hover:bg-secondary/80 transition-colors">
+                <Upload size={14} />
+                {uploading ? "Enviando..." : "Foto"}
+                <input type="file" accept="image/*" className="hidden" onChange={handlePhotoUpload} disabled={uploading} />
+              </label>
             </div>
-            <label className="cursor-pointer flex items-center gap-2 px-4 py-2 rounded-xl bg-secondary text-secondary-foreground text-sm font-medium hover:bg-secondary/80 transition-colors">
-              <Upload size={14} />
-              {uploading ? "Enviando..." : "Foto"}
-              <input type="file" accept="image/*" className="hidden" onChange={handlePhotoUpload} disabled={uploading} />
-            </label>
-          </div>
+          )}
+          {editingOrigin === "partnership" && (
+            <p className="text-xs text-muted-foreground bg-blue-500/10 text-blue-500 px-3 py-2 rounded-xl">
+              🤝 A foto deste corretor é sincronizada automaticamente com o perfil dele. Apenas ele pode alterá-la.
+            </p>
+          )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
