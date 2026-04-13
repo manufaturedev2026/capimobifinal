@@ -786,8 +786,6 @@ export default function AdminPanel() {
           </div>
         )}
 
-        </main>
-      </div>
 
       {/* Reject Reason Dialog */}
       {rejectDialogOpen && (
