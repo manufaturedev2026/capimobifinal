@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { CheckCircle2, XCircle, Clock, User, Phone, Mail, MessageSquare, Trash2, Search, MapPin, Instagram, FileText, Shield, Building2 } from "lucide-react";
+import { CheckCircle2, XCircle, Clock, User, Phone, Mail, MessageSquare, Trash2, Search, MapPin, Instagram, FileText, Shield, Building2, ExternalLink, Eye, MousePointerClick, BarChart3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
