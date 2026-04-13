@@ -63,6 +63,7 @@ export default function TeamMembersTab({ profileId, userId, maxMembers }: Props)
       .from("team_members")
       .select("*")
       .eq("company_id", profileId)
+      .eq("origin", "manual")
       .order("created_at", { ascending: true });
     if (data) {
       // For partnership-based members, fetch latest photo from their linked profile
