@@ -55,7 +55,8 @@ function FooterContent({ theme }: { theme?: FooterSimpleProps["theme"] }) {
           <Link to="/" className="flex items-center gap-2.5 mb-3">
             <img src="/pwa-icon-512.png" alt="Capimobi" className="w-9 h-9 rounded-xl shadow-md object-contain" />
             <span className="text-lg tracking-wide uppercase" style={{ fontFamily: "'Orbitron', sans-serif", fontWeight: 800 }}>
-              <span style={primaryStyle} className={primaryClass}>Capi</span>
+              <span style={primaryStyle} className={primaryClass}>Cap</span>
+              <span style={{ color: '#ffffff' }}>i</span>
               <span style={accentStyle} className={accentClass}>mobi</span>
             </span>
           </Link>

@@ -119,7 +119,7 @@ export default function AuthPage() {
               <img src={logoImg} alt="Capimobi" className="w-14 h-14 rounded-2xl object-contain" />
               <div>
                 <h2 className="text-white font-display text-xl font-bold">
-                  <span className="text-primary">Capi</span><span className="text-accent">mobi</span>
+                  <span className="text-primary">Cap</span><span className="text-white">i</span><span className="text-accent">mobi</span>
                 </h2>
                 <p className="text-white/60 text-sm">Painel do Corretor</p>
               </div>
@@ -164,7 +164,7 @@ export default function AuthPage() {
            <div className="lg:hidden text-center mb-6">
               <img src={logoImg} alt="Capimobi" className="w-14 h-14 rounded-2xl object-contain mx-auto mb-3" />
               <h2 className="font-display font-bold text-lg">
-                <span className="text-primary">Capi</span><span className="text-accent">mobi</span>
+                <span className="text-primary">Cap</span><span className="text-foreground">i</span><span className="text-accent">mobi</span>
               </h2>
             </div>
 

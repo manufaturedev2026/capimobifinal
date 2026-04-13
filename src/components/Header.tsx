@@ -26,7 +26,7 @@ export default function Header() {
         <Link to="/" className="flex items-center gap-2.5">
           <img src="/pwa-icon-512.png" alt="Capimobi" className="w-9 h-9 rounded-xl shadow-md object-contain" />
           <span className="text-xl tracking-wide uppercase" style={{ fontFamily: "'Orbitron', sans-serif", fontWeight: 800 }}>
-            <span className="text-primary">Capi</span><span className="text-accent">mobi</span>
+            <span className="text-primary">Cap</span><span className="text-foreground">i</span><span className="text-accent">mobi</span>
           </span>
         </Link>
 
