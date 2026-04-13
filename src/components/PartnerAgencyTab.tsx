@@ -26,6 +26,14 @@ interface RequestWithProfile {
     seller_category: string | null;
     company_name: string | null;
   };
+  teamMember?: {
+    id: string;
+    slug: string;
+  };
+  analytics?: {
+    views: number;
+    whatsapp_clicks: number;
+  };
 }
 
 const categoryLabels: Record<string, string> = {
