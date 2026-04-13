@@ -15,18 +15,32 @@ Deno.serve(async (req) => {
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, serviceKey);
 
-    // Delete expired stories
-    const { data, error } = await supabase
+    // 1) Delete expired stories (past expires_at)
+    const { data: expiredStories, error: err1 } = await supabase
       .from("seller_stories")
       .delete()
       .lt("expires_at", new Date().toISOString())
       .select("id, image_url");
 
-    if (error) throw error;
+    if (err1) throw err1;
+
+    // 2) Delete inactive stories older than 30 days
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+    const { data: inactiveStories, error: err2 } = await supabase
+      .from("seller_stories")
+      .delete()
+      .eq("is_active", false)
+      .lt("created_at", thirtyDaysAgo)
+      .select("id, image_url");
+
+    if (err2) throw err2;
+
+    // Combine all deleted stories for storage cleanup
+    const allDeleted = [...(expiredStories || []), ...(inactiveStories || [])];
 
     // Clean up storage files
-    if (data && data.length > 0) {
-      const paths = data
+    if (allDeleted.length > 0) {
+      const paths = allDeleted
         .map((s: any) => {
           const url = s.image_url as string;
           const match = url.match(/seller-uploads\/(.+)$/);
@@ -40,7 +54,10 @@ Deno.serve(async (req) => {
     }
 
     return new Response(
-      JSON.stringify({ deleted: data?.length ?? 0 }),
+      JSON.stringify({
+        deleted_expired: expiredStories?.length ?? 0,
+        deleted_inactive_30d: inactiveStories?.length ?? 0,
+      }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (err: any) {
