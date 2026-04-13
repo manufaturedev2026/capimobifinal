@@ -160,19 +160,24 @@ export default function TeamMembersTab({ profileId, userId, maxMembers }: Props)
     }
 
     if (editing) {
+      const updateData: any = {
+        full_name: form.full_name.trim(),
+        phone: form.phone.trim() || null,
+        creci: form.creci.trim() || null,
+        email: form.email.trim() || null,
+        bio: form.bio.trim() || null,
+        instagram: form.instagram.trim() || null,
+        slug,
+        updated_at: new Date().toISOString(),
+      };
+      // Only update photo for manual members
+      if (editingOrigin === "manual") {
+        updateData.photo_url = form.photo_url || null;
+      }
+
       const { error } = await supabase
         .from("team_members")
-        .update({
-          full_name: form.full_name.trim(),
-          phone: form.phone.trim() || null,
-          creci: form.creci.trim() || null,
-          email: form.email.trim() || null,
-          bio: form.bio.trim() || null,
-          photo_url: form.photo_url || null,
-          instagram: form.instagram.trim() || null,
-          slug,
-          updated_at: new Date().toISOString(),
-        })
+        .update(updateData)
         .eq("id", editing);
 
       if (error) {
