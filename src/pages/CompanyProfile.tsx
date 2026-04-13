@@ -1361,6 +1361,7 @@ export default function CompanyProfile() {
                 categoryCardImages,
                 storeTheme,
                 corretorSlug,
+                sellerDisplayName: company?.name || dbProfile?.company_name || dbProfile?.full_name || "o corretor",
                 isDbProfile,
                 dbProfile,
                 handleWhatsApp,
