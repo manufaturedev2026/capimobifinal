@@ -399,6 +399,7 @@ function PartnerCard({
   onApprove,
   onReject,
   onRemove,
+  companySlug,
 }: {
   request: RequestWithProfile;
   variant: "pending" | "approved";
@@ -408,6 +409,7 @@ function PartnerCard({
   onApprove: (r: RequestWithProfile) => void;
   onReject: (id: string) => void;
   onRemove: (r: RequestWithProfile) => void;
+  companySlug?: string | null;
 }) {
   const p = request.profile;
   const isPending = variant === "pending";
