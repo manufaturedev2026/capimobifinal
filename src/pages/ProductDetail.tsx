@@ -985,6 +985,9 @@ export default function ProductDetail() {
           onComplete={() => {
             if (pendingWhatsAppAction) { pendingWhatsAppAction(); setPendingWhatsAppAction(null); }
           }}
+          teamMemberId={teamMember?.origin === "manual" ? teamMember?.id : null}
+          partnerBrokerSellerId={teamMember?.origin === "partnership" && teamMember?.linked_profile_id ? teamMember.linked_profile_id : null}
+          partnerBrokerUserId={teamMember?.origin === "partnership" && teamMember?.linked_profile_id ? undefined : undefined}
         />
       )}
     </div>
