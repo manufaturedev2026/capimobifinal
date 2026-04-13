@@ -83,12 +83,11 @@ export default function PartnerAgencyTab({ profileId, userId }: { profileId: str
         .select("id, full_name, phone, email, creci, logo_url, city, state, address, bio, instagram, cnpj, seller_category, company_name")
         .in("id", profileIds);
 
-      // Fetch team members linked to these profiles
+      // Fetch ALL team members for this company (to handle legacy records without linked_profile_id)
       const { data: teamMembers } = await supabase
         .from("team_members")
-        .select("id, slug, linked_profile_id")
-        .eq("company_id", profileId)
-        .in("linked_profile_id", profileIds);
+        .select("id, slug, linked_profile_id, full_name")
+        .eq("company_id", profileId);
 
       // Fetch analytics for team members (last 30 days)
       const teamMemberIds = teamMembers?.map(tm => tm.id) || [];
@@ -117,10 +116,13 @@ export default function PartnerAgencyTab({ profileId, userId }: { profileId: str
       }
 
       const enriched = data.map(r => {
-        const tm = teamMembers?.find(t => t.linked_profile_id === r.requester_profile_id);
+        const profile = profiles?.find(p => p.id === r.requester_profile_id);
+        // Match by linked_profile_id first, then fallback to name match
+        const tm = teamMembers?.find(t => t.linked_profile_id === r.requester_profile_id)
+          || teamMembers?.find(t => profile && t.full_name === profile.full_name);
         return {
           ...r,
-          profile: profiles?.find(p => p.id === r.requester_profile_id),
+          profile,
           teamMember: tm ? { id: tm.id, slug: tm.slug } : undefined,
           analytics: tm ? (analyticsMap[tm.id] || { views: 0, whatsapp_clicks: 0 }) : undefined,
         };
