@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Edit, Trash2, Users, Save, X, ExternalLink, Upload, Copy, Search, Phone, Mail, Shield, Instagram, MapPin } from "lucide-react";
+import { Plus, Edit, Trash2, Users, Save, X, ExternalLink, Upload, Copy, Search, Phone, Mail, Shield, Instagram, MapPin, Eye, MousePointerClick, BarChart3 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 
@@ -46,6 +46,7 @@ export default function TeamMembersTab({ profileId, userId, maxMembers }: Props)
   const [showForm, setShowForm] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [analyticsMap, setAnalyticsMap] = useState<Record<string, { views: number; whatsapp_clicks: number }>>({})
   const [form, setForm] = useState({
     full_name: "",
     phone: "",
@@ -91,6 +92,31 @@ export default function TeamMembersTab({ profileId, userId, maxMembers }: Props)
         return m;
       });
       setMembers(enriched as TeamMember[]);
+
+      // Fetch analytics for all team members (last 30 days)
+      const memberIds = data.map(m => m.id);
+      if (memberIds.length > 0) {
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        const { data: analyticsData } = await supabase
+          .from("seller_analytics")
+          .select("team_member_id, event_type")
+          .eq("seller_id", profileId)
+          .in("team_member_id", memberIds)
+          .gte("created_at", thirtyDaysAgo.toISOString());
+
+        const map: Record<string, { views: number; whatsapp_clicks: number }> = {};
+        if (analyticsData) {
+          analyticsData.forEach((row: any) => {
+            const tmId = row.team_member_id;
+            if (!tmId) return;
+            if (!map[tmId]) map[tmId] = { views: 0, whatsapp_clicks: 0 };
+            if (row.event_type === "view") map[tmId].views++;
+            else if (row.event_type === "whatsapp_click") map[tmId].whatsapp_clicks++;
+          });
+        }
+        setAnalyticsMap(map);
+      }
     }
     setLoading(false);
   };
@@ -538,6 +564,32 @@ export default function TeamMembersTab({ profileId, userId, maxMembers }: Props)
                       <p className="text-xs text-muted-foreground mt-2 line-clamp-2 italic">"{m.bio}"</p>
                     )}
                   </div>
+                </div>
+              </div>
+
+              {/* Analytics Stats */}
+              <div className="border-t border-border px-4 sm:px-5 py-2.5 bg-secondary/10">
+                <div className="flex items-center gap-4 flex-wrap">
+                  <div className="flex items-center gap-1.5 text-sm">
+                    <Eye size={14} className="text-primary" />
+                    <span className="font-semibold text-foreground">{analyticsMap[m.id]?.views || 0}</span>
+                    <span className="text-muted-foreground text-xs">visitas</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-sm">
+                    <MousePointerClick size={14} className="text-green-500" />
+                    <span className="font-semibold text-foreground">{analyticsMap[m.id]?.whatsapp_clicks || 0}</span>
+                    <span className="text-muted-foreground text-xs">cliques WhatsApp</span>
+                  </div>
+                  {(analyticsMap[m.id]?.views || 0) > 0 && (
+                    <div className="flex items-center gap-1.5 text-sm">
+                      <BarChart3 size={14} className="text-primary" />
+                      <span className="font-semibold text-foreground">
+                        {(((analyticsMap[m.id]?.whatsapp_clicks || 0) / (analyticsMap[m.id]?.views || 1)) * 100).toFixed(1)}%
+                      </span>
+                      <span className="text-muted-foreground text-xs">conversão</span>
+                    </div>
+                  )}
+                  <span className="text-[10px] text-muted-foreground ml-auto">últimos 30 dias</span>
                 </div>
               </div>
 
