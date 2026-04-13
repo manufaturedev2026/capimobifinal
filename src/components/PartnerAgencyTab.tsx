@@ -332,6 +332,7 @@ export default function PartnerAgencyTab({ profileId, userId }: { profileId: str
               onApprove={handleApprove}
               onReject={handleReject}
               onRemove={removePartner}
+              companySlug={companySlug}
             />
           ))}
         </div>
