@@ -18,6 +18,8 @@ type TeamMember = {
   slug: string;
   is_active: boolean;
   created_at: string;
+  origin: "manual" | "partnership";
+  linked_profile_id: string | null;
 };
 
 type Props = {
