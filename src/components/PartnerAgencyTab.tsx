@@ -121,7 +121,9 @@ export default function PartnerAgencyTab({ profileId, userId }: { profileId: str
       photo_url: request.profile.logo_url,
       slug,
       is_active: true,
-    });
+      origin: "partnership",
+      linked_profile_id: request.requester_profile_id,
+    } as any);
 
     if (teamError) {
       toast({ title: "Erro ao criar corretor", description: teamError.message, variant: "destructive" });

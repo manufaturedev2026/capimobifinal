@@ -18,6 +18,8 @@ type TeamMember = {
   slug: string;
   is_active: boolean;
   created_at: string;
+  origin: "manual" | "partnership";
+  linked_profile_id: string | null;
 };
 
 type Props = {
@@ -61,25 +63,32 @@ export default function TeamMembersTab({ profileId, userId, maxMembers }: Props)
       .eq("company_id", profileId)
       .order("created_at", { ascending: true });
     if (data) {
-      // Cross-reference with profiles to get latest photo for partnership-based members
-      const emails = data.filter(m => m.email).map(m => m.email!);
+      // For partnership-based members, fetch latest photo from their linked profile
+      const linkedIds = data
+        .filter(m => (m as any).origin === "partnership" && (m as any).linked_profile_id)
+        .map(m => (m as any).linked_profile_id as string);
+      
       let profilePhotos: Record<string, string> = {};
-      if (emails.length > 0) {
+      if (linkedIds.length > 0) {
         const { data: profiles } = await supabase
           .from("profiles")
-          .select("email, logo_url")
-          .in("email", emails);
+          .select("id, logo_url")
+          .in("id", linkedIds);
         if (profiles) {
           for (const p of profiles) {
-            if (p.logo_url) profilePhotos[p.email] = p.logo_url;
+            if (p.logo_url) profilePhotos[p.id] = p.logo_url;
           }
         }
       }
-      // Use profile photo if team member has no photo or to keep in sync
-      const enriched = data.map(m => ({
-        ...m,
-        photo_url: (m.email && profilePhotos[m.email]) ? profilePhotos[m.email] : m.photo_url,
-      }));
+      
+      const enriched = data.map(m => {
+        const member = m as any;
+        // Only sync photo for partnership members
+        if (member.origin === "partnership" && member.linked_profile_id && profilePhotos[member.linked_profile_id]) {
+          return { ...m, photo_url: profilePhotos[member.linked_profile_id] };
+        }
+        return m;
+      });
       setMembers(enriched as TeamMember[]);
     }
     setLoading(false);
@@ -446,8 +455,17 @@ export default function TeamMembersTab({ profileId, userId, maxMembers }: Props)
 
                   {/* Info */}
                   <div className="flex-1 min-w-0 text-center sm:text-left">
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
                       <h4 className="font-display font-bold text-foreground text-lg leading-tight">{m.full_name}</h4>
+                      {m.origin === "partnership" ? (
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-blue-500 bg-blue-500/10 px-2 py-0.5 rounded-full self-center sm:self-auto">
+                          🤝 Parceiro
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-muted-foreground bg-secondary px-2 py-0.5 rounded-full self-center sm:self-auto">
+                          ✏️ Manual
+                        </span>
+                      )}
                       {m.is_active ? (
                         <span className="inline-flex items-center gap-1 text-[10px] font-bold text-green-500 self-center sm:self-auto">
                           <span className="w-2 h-2 rounded-full bg-green-500" /> Ativo
@@ -458,6 +476,9 @@ export default function TeamMembersTab({ profileId, userId, maxMembers }: Props)
                         </span>
                       )}
                     </div>
+                    {m.origin === "partnership" && (
+                      <p className="text-[10px] text-blue-400 mt-0.5">Foto sincronizada com o perfil do corretor</p>
+                    )}
 
                     {/* Key details grid */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5 mt-3 text-sm">

@@ -1472,6 +1472,8 @@ export type Database = {
           id: string
           instagram: string | null
           is_active: boolean
+          linked_profile_id: string | null
+          origin: string
           phone: string | null
           photo_url: string | null
           slug: string
@@ -1487,6 +1489,8 @@ export type Database = {
           id?: string
           instagram?: string | null
           is_active?: boolean
+          linked_profile_id?: string | null
+          origin?: string
           phone?: string | null
           photo_url?: string | null
           slug: string
@@ -1502,6 +1506,8 @@ export type Database = {
           id?: string
           instagram?: string | null
           is_active?: boolean
+          linked_profile_id?: string | null
+          origin?: string
           phone?: string | null
           photo_url?: string | null
           slug?: string
@@ -1511,6 +1517,13 @@ export type Database = {
           {
             foreignKeyName: "team_members_company_id_fkey"
             columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_members_linked_profile_id_fkey"
+            columns: ["linked_profile_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
