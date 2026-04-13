@@ -878,6 +878,89 @@ export default function AdminPanel() {
         </DialogContent>
       </Dialog>
 
+      {/* Vendas Tab */}
+      {tab === "vendas" && (
+        <div className="space-y-4">
+          <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-display font-bold text-lg text-foreground flex items-center gap-2">
+                  <Rocket size={20} className="text-primary" /> Página de Vendas
+                </h3>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Configure o vídeo e visualize a página de vendas (/anunciar).
+                </p>
+              </div>
+              <button
+                onClick={() => window.open("/anunciar", "_blank")}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-bold hover:bg-primary/90 transition-colors"
+              >
+                <Eye size={16} /> Visualizar Página
+              </button>
+            </div>
+          </div>
+
+          <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
+            <div className="flex items-center gap-2">
+              <Video size={18} className="text-primary" />
+              <h3 className="font-display font-bold text-foreground">Vídeo da Página de Vendas</h3>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Cole o link de um vídeo do YouTube. Ele aparecerá na página de vendas (/anunciar) logo após a seção de funcionalidades.
+            </p>
+
+            <div className="space-y-3">
+              <input
+                value={salesVideoUrl}
+                onChange={(e) => setSalesVideoUrl(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+                placeholder="https://www.youtube.com/watch?v=..."
+              />
+              <input
+                value={salesVideoTitle}
+                onChange={(e) => setSalesVideoTitle(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+                placeholder="Título do vídeo (ex: Conheça a Plataforma)"
+                maxLength={100}
+              />
+
+              {salesVideoUrl && (() => {
+                const match = salesVideoUrl.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([a-zA-Z0-9_-]{11})/);
+                const vid = match ? match[1] : null;
+                return vid ? (
+                  <div className="aspect-video rounded-xl overflow-hidden border border-border">
+                    <iframe
+                      src={`https://www.youtube.com/embed/${vid}`}
+                      title="Preview"
+                      allow="encrypted-media"
+                      allowFullScreen
+                      className="w-full h-full"
+                    />
+                  </div>
+                ) : (
+                  <p className="text-xs text-destructive">Link inválido — use um link do YouTube</p>
+                );
+              })()}
+
+              <button
+                onClick={async () => {
+                  setSavingSalesVideo(true);
+                  await supabase.from("platform_settings" as any).upsert({ key: "sales_video_url", value: salesVideoUrl } as any, { onConflict: "key" });
+                  await supabase.from("platform_settings" as any).upsert({ key: "sales_video_title", value: salesVideoTitle } as any, { onConflict: "key" });
+                  toast({ title: "Vídeo da página de vendas salvo!" });
+                  setSavingSalesVideo(false);
+                }}
+                disabled={savingSalesVideo}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-bold hover:bg-primary/90 transition-colors disabled:opacity-50"
+              >
+                {savingSalesVideo ? <div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" /> : <Save size={16} />}
+                {savingSalesVideo ? "Salvando..." : "Salvar Vídeo"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Config Tab */}
       {tab === "config" && (
         <div className="space-y-4">
