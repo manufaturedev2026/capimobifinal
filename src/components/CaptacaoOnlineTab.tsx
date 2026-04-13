@@ -335,12 +335,12 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
 
                     <div className="flex items-center gap-2 pt-2">
                       <Select value={lead.status} onValueChange={v => updateStatus(lead.id, v)}>
-                        <SelectTrigger className="w-[160px] h-9 text-xs">
+                        <SelectTrigger className="w-[160px] h-9 text-xs bg-background text-foreground border-border">
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="bg-background text-foreground border-border">
                           {Object.entries(STATUS_CONFIG).map(([key, cfg]) => (
-                            <SelectItem key={key} value={key}>{cfg.label}</SelectItem>
+                            <SelectItem key={key} value={key} className="text-foreground">{cfg.label}</SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
