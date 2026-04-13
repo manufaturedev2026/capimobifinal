@@ -785,8 +785,7 @@ export default function AdminPanel() {
             </div>
           </div>
         )}
-        </main>
-      </div>
+
 
       {/* Reject Reason Dialog */}
       {rejectDialogOpen && (
@@ -1198,6 +1197,9 @@ export default function AdminPanel() {
           </div>
         </div>
       )}
+
+        </main>
+      </div>
 
       {/* Ban Dialog */}
       {banDialogOpen && banSeller && (
