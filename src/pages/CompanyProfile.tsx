@@ -2209,6 +2209,7 @@ export default function CompanyProfile() {
           funnelStage={leadCaptureContext?.funnelStage}
           extraNotes={leadCaptureContext?.extraNotes}
           leadSource={leadCaptureContext?.leadSource}
+          teamMemberId={teamMember?.id || null}
           onComplete={() => {
             if (pendingWhatsAppAction) {
               pendingWhatsAppAction();
