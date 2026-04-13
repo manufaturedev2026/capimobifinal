@@ -455,8 +455,17 @@ export default function TeamMembersTab({ profileId, userId, maxMembers }: Props)
 
                   {/* Info */}
                   <div className="flex-1 min-w-0 text-center sm:text-left">
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
                       <h4 className="font-display font-bold text-foreground text-lg leading-tight">{m.full_name}</h4>
+                      {m.origin === "partnership" ? (
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-blue-500 bg-blue-500/10 px-2 py-0.5 rounded-full self-center sm:self-auto">
+                          🤝 Parceiro
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-muted-foreground bg-secondary px-2 py-0.5 rounded-full self-center sm:self-auto">
+                          ✏️ Manual
+                        </span>
+                      )}
                       {m.is_active ? (
                         <span className="inline-flex items-center gap-1 text-[10px] font-bold text-green-500 self-center sm:self-auto">
                           <span className="w-2 h-2 rounded-full bg-green-500" /> Ativo
@@ -467,6 +476,9 @@ export default function TeamMembersTab({ profileId, userId, maxMembers }: Props)
                         </span>
                       )}
                     </div>
+                    {m.origin === "partnership" && (
+                      <p className="text-[10px] text-blue-400 mt-0.5">Foto sincronizada com o perfil do corretor</p>
+                    )}
 
                     {/* Key details grid */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5 mt-3 text-sm">
