@@ -46,6 +46,7 @@ export default function TeamMembersTab({ profileId, userId, maxMembers }: Props)
   const [showForm, setShowForm] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [analyticsMap, setAnalyticsMap] = useState<Record<string, { views: number; whatsapp_clicks: number }>>({})
   const [form, setForm] = useState({
     full_name: "",
     phone: "",
