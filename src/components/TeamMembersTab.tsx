@@ -60,7 +60,28 @@ export default function TeamMembersTab({ profileId, userId, maxMembers }: Props)
       .select("*")
       .eq("company_id", profileId)
       .order("created_at", { ascending: true });
-    if (data) setMembers(data as TeamMember[]);
+    if (data) {
+      // Cross-reference with profiles to get latest photo for partnership-based members
+      const emails = data.filter(m => m.email).map(m => m.email!);
+      let profilePhotos: Record<string, string> = {};
+      if (emails.length > 0) {
+        const { data: profiles } = await supabase
+          .from("profiles")
+          .select("email, logo_url")
+          .in("email", emails);
+        if (profiles) {
+          for (const p of profiles) {
+            if (p.logo_url) profilePhotos[p.email] = p.logo_url;
+          }
+        }
+      }
+      // Use profile photo if team member has no photo or to keep in sync
+      const enriched = data.map(m => ({
+        ...m,
+        photo_url: (m.email && profilePhotos[m.email]) ? profilePhotos[m.email] : m.photo_url,
+      }));
+      setMembers(enriched as TeamMember[]);
+    }
     setLoading(false);
   };
 
