@@ -51,6 +51,7 @@ export default function PartnerAgencyTab({ profileId, userId }: { profileId: str
   const [processingId, setProcessingId] = useState<string | null>(null);
   const [slugInputs, setSlugInputs] = useState<Record<string, string>>({});
   const [searchQuery, setSearchQuery] = useState("");
+  const [activeSubTab, setActiveSubTab] = useState<"vinculados" | "solicitacoes">("vinculados");
 
   const [companySlug, setCompanySlug] = useState<string | null>(null);
 
@@ -257,6 +258,9 @@ export default function PartnerAgencyTab({ profileId, userId }: { profileId: str
   const approved = filteredRequests.filter(r => r.status === "aprovado");
   const rejected = filteredRequests.filter(r => r.status === "recusado");
 
+  const pendingCount = requests.filter(r => r.status === "pendente").length;
+  const approvedCount = requests.filter(r => r.status === "aprovado").length;
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -264,20 +268,53 @@ export default function PartnerAgencyTab({ profileId, userId }: { profileId: str
         <div>
           <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
             <Building2 size={22} className="text-primary" />
-            Solicitações de Parceria
+            Corretores Parceiros
           </h2>
           <p className="text-sm text-muted-foreground mt-1">
-            Corretores que desejam se vincular à sua imobiliária.
+            Gerencie os corretores vinculados via convite à sua imobiliária.
           </p>
         </div>
         <div className="flex items-center gap-2 text-xs font-medium">
-          <span className="px-2.5 py-1 rounded-full bg-yellow-500/10 text-yellow-600 border border-yellow-500/20">
-            {requests.filter(r => r.status === "pendente").length} pendentes
-          </span>
           <span className="px-2.5 py-1 rounded-full bg-green-500/10 text-green-600 border border-green-500/20">
-            {requests.filter(r => r.status === "aprovado").length} aprovados
+            {approvedCount} vinculados
           </span>
+          {pendingCount > 0 && (
+            <span className="px-2.5 py-1 rounded-full bg-yellow-500/10 text-yellow-600 border border-yellow-500/20">
+              {pendingCount} pendentes
+            </span>
+          )}
         </div>
+      </div>
+
+      {/* Sub-tabs */}
+      <div className="flex gap-1 bg-secondary/50 p-1 rounded-xl">
+        <button
+          onClick={() => { setActiveSubTab("vinculados"); setSearchQuery(""); }}
+          className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
+            activeSubTab === "vinculados"
+              ? "bg-background text-foreground shadow-sm"
+              : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <CheckCircle2 size={16} />
+          Vinculados ({approvedCount})
+        </button>
+        <button
+          onClick={() => { setActiveSubTab("solicitacoes"); setSearchQuery(""); }}
+          className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
+            activeSubTab === "solicitacoes"
+              ? "bg-background text-foreground shadow-sm"
+              : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <Clock size={16} />
+          Solicitações
+          {pendingCount > 0 && (
+            <span className="w-5 h-5 rounded-full bg-yellow-500 text-white text-[10px] font-bold flex items-center justify-center">
+              {pendingCount}
+            </span>
+          )}
+        </button>
       </div>
 
       {/* Search Bar */}
@@ -293,93 +330,105 @@ export default function PartnerAgencyTab({ profileId, userId }: { profileId: str
         </div>
       )}
 
-      {/* Pending Requests */}
-      {pending.length > 0 && (
+      {/* ─── Sub-tab: Vinculados ─── */}
+      {activeSubTab === "vinculados" && (
         <div className="space-y-4">
-          <h3 className="font-semibold text-foreground flex items-center gap-2">
-            <Clock className="text-yellow-500" size={18} />
-            Pendentes ({pending.length})
-          </h3>
-          {pending.map((req) => (
-            <PartnerCard
-              key={req.id}
-              request={req}
-              variant="pending"
-              slugInputs={slugInputs}
-              setSlugInputs={setSlugInputs}
-              processingId={processingId}
-              onApprove={handleApprove}
-              onReject={handleReject}
-              onRemove={removePartner}
-            />
-          ))}
-        </div>
-      )}
-
-      {/* Approved */}
-      {approved.length > 0 && (
-        <div className="space-y-4">
-          <h3 className="font-semibold text-foreground flex items-center gap-2">
-            <CheckCircle2 className="text-green-500" size={18} />
-            Corretores Vinculados ({approved.length})
-          </h3>
-          {approved.map((req) => (
-            <PartnerCard
-              key={req.id}
-              request={req}
-              variant="approved"
-              slugInputs={slugInputs}
-              setSlugInputs={setSlugInputs}
-              processingId={processingId}
-              onApprove={handleApprove}
-              onReject={handleReject}
-              onRemove={removePartner}
-              companySlug={companySlug}
-            />
-          ))}
-        </div>
-      )}
-
-      {/* Rejected */}
-      {rejected.length > 0 && (
-        <div className="space-y-3">
-          <h3 className="font-semibold text-muted-foreground flex items-center gap-2">
-            <XCircle className="text-red-400" size={18} />
-            Recusados ({rejected.length})
-          </h3>
-          {rejected.map((req) => (
-            <div key={req.id} className="rounded-xl border border-border bg-card/50 p-4 flex items-center gap-3 opacity-60">
-              <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center overflow-hidden shrink-0">
-                {req.profile?.logo_url ? (
-                  <img src={req.profile.logo_url} alt="" className="w-full h-full object-cover" />
-                ) : (
-                  <User className="text-muted-foreground" size={18} />
-                )}
+          {approved.length > 0 ? (
+            approved.map((req) => (
+              <PartnerCard
+                key={req.id}
+                request={req}
+                variant="approved"
+                slugInputs={slugInputs}
+                setSlugInputs={setSlugInputs}
+                processingId={processingId}
+                onApprove={handleApprove}
+                onReject={handleReject}
+                onRemove={removePartner}
+                companySlug={companySlug}
+              />
+            ))
+          ) : (
+            <div className="text-center py-16 text-muted-foreground">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-secondary/50 flex items-center justify-center">
+                <CheckCircle2 size={32} className="opacity-40" />
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-medium text-foreground text-sm truncate">{req.profile?.full_name}</p>
-                <p className="text-xs text-muted-foreground">
-                  {new Date(req.created_at).toLocaleDateString("pt-BR")}
-                </p>
-              </div>
-              <span className="flex items-center gap-1 text-xs text-red-500 font-medium shrink-0">
-                <XCircle size={14} /> Recusado
-              </span>
+              <p className="text-sm font-medium">Nenhum corretor parceiro vinculado ainda.</p>
+              <p className="text-xs mt-1">Quando aprovar uma solicitação, o corretor aparecerá aqui.</p>
             </div>
-          ))}
+          )}
         </div>
       )}
 
-      {requests.length === 0 && (
-        <div className="text-center py-16 text-muted-foreground">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-secondary/50 flex items-center justify-center">
-            <User size={32} className="opacity-40" />
-          </div>
-          <p className="text-sm font-medium">Nenhuma solicitação de parceria recebida ainda.</p>
-          <p className="text-xs mt-1">Quando um corretor solicitar vínculo, aparecerá aqui.</p>
+      {/* ─── Sub-tab: Solicitações ─── */}
+      {activeSubTab === "solicitacoes" && (
+        <div className="space-y-6">
+          {/* Pending */}
+          {pending.length > 0 && (
+            <div className="space-y-4">
+              <h3 className="font-semibold text-foreground flex items-center gap-2">
+                <Clock className="text-yellow-500" size={18} />
+                Pendentes ({pending.length})
+              </h3>
+              {pending.map((req) => (
+                <PartnerCard
+                  key={req.id}
+                  request={req}
+                  variant="pending"
+                  slugInputs={slugInputs}
+                  setSlugInputs={setSlugInputs}
+                  processingId={processingId}
+                  onApprove={handleApprove}
+                  onReject={handleReject}
+                  onRemove={removePartner}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* Rejected */}
+          {rejected.length > 0 && (
+            <div className="space-y-3">
+              <h3 className="font-semibold text-muted-foreground flex items-center gap-2">
+                <XCircle className="text-red-400" size={18} />
+                Recusados ({rejected.length})
+              </h3>
+              {rejected.map((req) => (
+                <div key={req.id} className="rounded-xl border border-border bg-card/50 p-4 flex items-center gap-3 opacity-60">
+                  <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center overflow-hidden shrink-0">
+                    {req.profile?.logo_url ? (
+                      <img src={req.profile.logo_url} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      <User className="text-muted-foreground" size={18} />
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-foreground text-sm truncate">{req.profile?.full_name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {new Date(req.created_at).toLocaleDateString("pt-BR")}
+                    </p>
+                  </div>
+                  <span className="flex items-center gap-1 text-xs text-red-500 font-medium shrink-0">
+                    <XCircle size={14} /> Recusado
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {pending.length === 0 && rejected.length === 0 && (
+            <div className="text-center py-16 text-muted-foreground">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-secondary/50 flex items-center justify-center">
+                <Clock size={32} className="opacity-40" />
+              </div>
+              <p className="text-sm font-medium">Nenhuma solicitação de parceria.</p>
+              <p className="text-xs mt-1">Quando um corretor solicitar vínculo, aparecerá aqui.</p>
+            </div>
+          )}
         </div>
       )}
 
+      {/* Search no results */}
       {requests.length > 0 && filteredRequests.length === 0 && searchQuery && (
         <div className="text-center py-12 text-muted-foreground">
           <Search size={32} className="mx-auto mb-3 opacity-30" />
