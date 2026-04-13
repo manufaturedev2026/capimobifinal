@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Edit, Trash2, Users, Save, X, ExternalLink, Upload, Copy, Search, Phone, Mail, Shield, Instagram, MapPin } from "lucide-react";
+import { Plus, Edit, Trash2, Users, Save, X, ExternalLink, Upload, Copy, Search, Phone, Mail, Shield, Instagram, MapPin, Eye, MousePointerClick, BarChart3 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 
