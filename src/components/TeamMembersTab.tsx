@@ -42,6 +42,7 @@ export default function TeamMembersTab({ profileId, userId, maxMembers }: Props)
   const [members, setMembers] = useState<TeamMember[]>([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<string | null>(null);
+  const [editingOrigin, setEditingOrigin] = useState<"manual" | "partnership">("manual");
   const [showForm, setShowForm] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
