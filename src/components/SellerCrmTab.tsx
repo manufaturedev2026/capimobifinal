@@ -111,6 +111,7 @@ export default function SellerCrmTab({ userId, sellerId }: SellerCrmTabProps) {
   const [view, setView] = useState<CrmView>("kanban");
   const [activities, setActivities] = useState<ActivityLog[]>([]);
   const [sellerItems, setSellerItems] = useState<SellerItem[]>([]);
+  const [teamMembersMap, setTeamMembersMap] = useState<Record<string, string>>({});
 
   // Drag state
   const [draggedContact, setDraggedContact] = useState<string | null>(null);
@@ -154,10 +155,21 @@ export default function SellerCrmTab({ userId, sellerId }: SellerCrmTabProps) {
     setSellerItems((data as any[]) || []);
   }, [sellerId]);
 
+  const fetchTeamMembers = useCallback(async () => {
+    const { data } = await supabase
+      .from("team_members")
+      .select("id, full_name")
+      .eq("company_id", sellerId);
+    const map: Record<string, string> = {};
+    (data || []).forEach((m: any) => { map[m.id] = m.full_name; });
+    setTeamMembersMap(map);
+  }, [sellerId]);
+
   useEffect(() => {
     fetchContacts();
     fetchActivities();
     fetchItems();
+    fetchTeamMembers();
   }, [fetchContacts, fetchActivities, fetchItems]);
 
   const logActivity = async (contactId: string, actionType: string, description: string, oldValue?: string, newValue?: string) => {
