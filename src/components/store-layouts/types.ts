@@ -10,6 +10,7 @@ export interface StoreLayoutProps {
   categoryCardImages: Record<string, string>;
   storeTheme: StoreTheme;
   corretorSlug: string | null;
+  sellerDisplayName: string;
   isDbProfile: boolean;
   dbProfile: any;
   handleWhatsApp: (title: string, productId?: string) => void;
