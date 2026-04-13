@@ -150,11 +150,11 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
           <p className="text-sm text-muted-foreground">Capte imóveis automaticamente com seu link exclusivo</p>
         </div>
         <div className="flex gap-2">
-          <Button onClick={copyLink} variant="outline" className="gap-2 text-sm">
+          <Button onClick={copyLink} variant="secondary" className="gap-2 text-sm border border-border">
             <Copy size={14} /> Copiar link
           </Button>
           <a href={captureUrl} target="_blank" rel="noopener noreferrer">
-            <Button variant="outline" className="gap-2 text-sm">
+            <Button variant="secondary" className="gap-2 text-sm border border-border">
               <ExternalLink size={14} /> Abrir página
             </Button>
           </a>
@@ -181,7 +181,7 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
             <Sparkles size={16} className="text-primary" />
             <span className="text-sm font-bold text-foreground">Gerador de Texto para Anúncio</span>
           </div>
-          <Button onClick={generateAdText} size="sm" variant="outline" className="gap-1.5 text-xs">
+          <Button onClick={generateAdText} size="sm" variant="secondary" className="gap-1.5 text-xs border border-border">
             <Sparkles size={12} /> Gerar Texto
           </Button>
         </div>
