@@ -225,6 +225,7 @@ export default function TeamMembersTab({ profileId, userId, maxMembers }: Props)
       slug: m.slug || "",
     });
     setEditing(m.id);
+    setEditingOrigin(m.origin || "manual");
     setShowForm(true);
   };
 
