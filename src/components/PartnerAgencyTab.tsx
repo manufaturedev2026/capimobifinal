@@ -613,7 +613,7 @@ function PartnerCard({
                 <Button
                   size="sm"
                   variant="outline"
-                  className="h-7 px-3 text-xs"
+                  className="h-7 px-3 text-xs bg-primary/10 text-primary border-primary/30 hover:bg-primary/20"
                   asChild
                 >
                   <a
