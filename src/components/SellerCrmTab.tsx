@@ -526,7 +526,7 @@ export default function SellerCrmTab({ userId, sellerId }: SellerCrmTabProps) {
               return <p className="text-sm text-muted-foreground text-center py-8">Nenhuma atividade registrada ainda</p>;
             }
             return (
-              <div className="space-y-1 max-h-[500px] overflow-y-auto">
+              <div className="space-y-1">
                 {merged.map((act) => {
                   const actionIcons: Record<string, string> = {
                     criado: "🆕", etapa: "📍", contato: "📞", nota: "📝", nome: "✏️",
