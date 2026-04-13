@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Shield, Users, Package, DollarSign, Search, Check, X, RefreshCw, ArrowLeft, Crown, Star, Zap, Globe, Plus, Trash2, ExternalLink, Copy, Megaphone, LayoutDashboard, Building2, Rocket, FileText, UserCog, Filter, Camera, Phone, Ban, ShieldOff, Clock, MessageCircle, MapPin, Palette, Bell } from "lucide-react";
+import { Shield, Users, Package, DollarSign, Search, Check, X, RefreshCw, ArrowLeft, Crown, Star, Zap, Globe, Plus, Trash2, ExternalLink, Copy, Megaphone, LayoutDashboard, Building2, Rocket, FileText, UserCog, Filter, Camera, Phone, Ban, ShieldOff, Clock, MessageCircle, MapPin, Palette, Bell, Video, Save, Eye } from "lucide-react";
 import { Link } from "react-router-dom";
 import { MARKETPLACE_THEMES } from "@/lib/marketplaceThemes";
 import { getMarketplaceThemeCssVars } from "@/lib/marketplaceThemeCssVars";
@@ -52,6 +52,9 @@ export default function AdminPanel() {
   const [homepageMode, setHomepageMode] = useState<string>("single");
   const [homepageTheme, setHomepageTheme] = useState<string>("azul");
   const [loginHeroUrl, setLoginHeroUrl] = useState<string>("");
+  const [salesVideoUrl, setSalesVideoUrl] = useState<string>("");
+  const [salesVideoTitle, setSalesVideoTitle] = useState<string>("");
+  const [savingSalesVideo, setSavingSalesVideo] = useState(false);
   const [loginHeroUploading, setLoginHeroUploading] = useState(false);
   const loginHeroRef = useRef<HTMLInputElement>(null);
   const [adRequests, setAdRequests] = useState<any[]>([]);
@@ -102,6 +105,12 @@ export default function AdminPanel() {
       });
       supabase.from("platform_settings").select("value").eq("key", "login_hero_image").maybeSingle().then(({ data }) => {
         if (data?.value) setLoginHeroUrl(normalizeLoginHeroSetting(data.value));
+      });
+      supabase.from("platform_settings").select("value").eq("key", "sales_video_url").maybeSingle().then(({ data }) => {
+        if (data?.value) setSalesVideoUrl(data.value);
+      });
+      supabase.from("platform_settings").select("value").eq("key", "sales_video_title").maybeSingle().then(({ data }) => {
+        if (data?.value) setSalesVideoTitle(data.value);
       });
     }
   }, [isAdmin]);
@@ -439,7 +448,7 @@ export default function AdminPanel() {
             {sidebarItems.map((item) => (
               <button
                 key={item.key}
-                onClick={() => item.key === "vendas" ? window.open("/anunciar", "_blank") : setTab(item.key)}
+                onClick={() => setTab(item.key)}
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
                   tab === item.key
                     ? "bg-primary text-primary-foreground shadow-sm"
@@ -463,7 +472,7 @@ export default function AdminPanel() {
           {sidebarItems.map((item) => (
             <button
               key={item.key}
-              onClick={() => item.key === "vendas" ? window.open("/anunciar", "_blank") : setTab(item.key)}
+              onClick={() => setTab(item.key)}
               className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
                 tab === item.key ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
               }`}
