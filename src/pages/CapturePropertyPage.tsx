@@ -341,7 +341,7 @@ export default function CapturePropertyPage() {
                     <SelectValue placeholder="Tipo de imóvel" />
                   </div>
                 </SelectTrigger>
-                <SelectContent style={{ background: colors.cardBg, borderColor: colors.border, color: colors.text }}>
+                <SelectContent style={{ background: colors.card, borderColor: colors.border, color: colors.text }}>
                   {PROPERTY_TYPES.map(t => (
                     <SelectItem key={t.value} value={t.value} style={{ color: colors.text }}>{t.label}</SelectItem>
                   ))}
