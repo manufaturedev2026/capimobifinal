@@ -15,6 +15,9 @@ interface WhatsAppLeadCaptureProps {
   extraNotes?: string;
   leadSource?: string;
   teamMemberId?: string | null;
+  /** For partnership brokers: route lead to their own CRM */
+  partnerBrokerSellerId?: string | null;
+  partnerBrokerUserId?: string | null;
 }
 
 export default function WhatsAppLeadCapture({
@@ -27,6 +30,8 @@ export default function WhatsAppLeadCapture({
   extraNotes,
   leadSource,
   teamMemberId,
+  partnerBrokerSellerId,
+  partnerBrokerUserId,
 }: WhatsAppLeadCaptureProps) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -44,15 +49,20 @@ export default function WhatsAppLeadCapture({
         `🔗 ${sourceUrl}`,
       ].filter(Boolean).join("\n");
 
+      // Partnership brokers: lead goes to their own CRM
+      // Manual brokers: lead goes to agency CRM with team_member_id
+      const targetSellerId = partnerBrokerSellerId || sellerId;
+      const targetUserId = partnerBrokerUserId || sellerUserId;
+
       await supabase.from("seller_crm_contacts").insert({
-        seller_id: sellerId,
-        user_id: sellerUserId,
+        seller_id: targetSellerId,
+        user_id: targetUserId,
         full_name: name.trim().slice(0, 100),
         phone: phone.trim().slice(0, 20),
         funnel_stage: funnelStage,
         lead_source: leadSource || undefined,
         notes,
-        ...(teamMemberId ? { team_member_id: teamMemberId } : {}),
+        ...((!partnerBrokerSellerId && teamMemberId) ? { team_member_id: teamMemberId } : {}),
       } as any);
     } catch {}
     setSaving(false);
