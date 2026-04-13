@@ -200,7 +200,14 @@ export default function CapturePropertyPage() {
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden" style={{ background: colors.bg }}>
+    <div className="min-h-screen relative overflow-hidden capture-page" style={{ background: colors.bg }}>
+      <style>{`
+        .capture-page input::placeholder,
+        .capture-page textarea::placeholder {
+          color: ${colors.textMuted} !important;
+          opacity: 0.7;
+        }
+      `}</style>
       <Helmet>
         <title>Cadastre seu imóvel | {broker.company_name || broker.full_name}</title>
         <meta name="description" content={`Cadastre seu imóvel gratuitamente com ${broker.full_name}. Receba propostas de compra ou aluguel mais rápido.`} />
