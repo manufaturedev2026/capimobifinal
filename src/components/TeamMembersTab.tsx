@@ -318,21 +318,28 @@ export default function TeamMembersTab({ profileId, userId, maxMembers }: Props)
             </button>
           </div>
 
-          {/* Photo */}
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-xl bg-secondary flex items-center justify-center overflow-hidden border border-border">
-              {form.photo_url ? (
-                <img src={form.photo_url} alt="" className="w-full h-full object-cover" />
-              ) : (
-                <Users size={24} className="text-muted-foreground" />
-              )}
+          {/* Photo - only for manual members */}
+          {editingOrigin === "manual" && (
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 rounded-xl bg-secondary flex items-center justify-center overflow-hidden border border-border">
+                {form.photo_url ? (
+                  <img src={form.photo_url} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  <Users size={24} className="text-muted-foreground" />
+                )}
+              </div>
+              <label className="cursor-pointer flex items-center gap-2 px-4 py-2 rounded-xl bg-secondary text-secondary-foreground text-sm font-medium hover:bg-secondary/80 transition-colors">
+                <Upload size={14} />
+                {uploading ? "Enviando..." : "Foto"}
+                <input type="file" accept="image/*" className="hidden" onChange={handlePhotoUpload} disabled={uploading} />
+              </label>
             </div>
-            <label className="cursor-pointer flex items-center gap-2 px-4 py-2 rounded-xl bg-secondary text-secondary-foreground text-sm font-medium hover:bg-secondary/80 transition-colors">
-              <Upload size={14} />
-              {uploading ? "Enviando..." : "Foto"}
-              <input type="file" accept="image/*" className="hidden" onChange={handlePhotoUpload} disabled={uploading} />
-            </label>
-          </div>
+          )}
+          {editingOrigin === "partnership" && (
+            <p className="text-xs text-muted-foreground bg-blue-500/10 text-blue-500 px-3 py-2 rounded-xl">
+              🤝 A foto deste corretor é sincronizada automaticamente com o perfil dele. Apenas ele pode alterá-la.
+            </p>
+          )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
