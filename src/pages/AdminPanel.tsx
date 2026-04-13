@@ -423,7 +423,7 @@ export default function AdminPanel() {
         </div>
       </div>
 
-      <div className="flex-1 flex">
+      <div className="flex-1 flex flex-col md:flex-row min-h-0">
         {/* Sidebar - Desktop */}
         <aside className="hidden md:flex flex-col w-64 shrink-0 border-r border-border bg-card p-4 gap-1">
           {/* Stats mini */}
