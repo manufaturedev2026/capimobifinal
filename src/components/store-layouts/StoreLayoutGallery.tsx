@@ -10,7 +10,7 @@ import type { StoreLayoutProps } from "./types";
  */
 export default function StoreLayoutGallery({
   filteredProducts, subcategories, activeCategory, setActiveCategory,
-  categoryCounts, categoryCardImages, storeTheme, corretorSlug, dbProfile, getTagStyle, getTagLabel, storiesBar,
+  categoryCounts, categoryCardImages, storeTheme, corretorSlug, sellerDisplayName, dbProfile, getTagStyle, getTagLabel, storiesBar,
 }: StoreLayoutProps) {
   const getAspect = (i: number) => {
     const pattern = [1, 1.3, 0.85, 1.15, 1, 0.9];
@@ -170,7 +170,7 @@ export default function StoreLayoutGallery({
           <Home size={32} className="mx-auto mb-4" style={{ color: storeTheme.primary }} />
           <h2 className="font-display font-bold text-xl md:text-2xl mb-2" style={{ color: storeTheme.text }}>Quer anunciar seu imóvel?</h2>
           <p className="text-sm mb-6 max-w-md mx-auto" style={{ color: storeTheme.textMuted }}>
-            Cadastre seu imóvel gratuitamente com {dbProfile?.company_name || dbProfile?.full_name || "o corretor"} e alcance mais compradores.
+            Cadastre seu imóvel gratuitamente com {sellerDisplayName} e alcance mais compradores.
           </p>
           <Link to={`/captar-imovel/${corretorSlug}`} className="inline-flex items-center gap-2 px-8 py-3 rounded-xl font-bold text-sm text-white transition-all hover:scale-105" style={{ background: storeTheme.primary, boxShadow: `0 8px 24px ${storeTheme.primary}40` }}>
             Anunciar meu imóvel <ArrowRight size={14} />
