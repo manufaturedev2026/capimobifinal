@@ -2111,39 +2111,17 @@ export default function CompanyProfile() {
       )}
 
       {company.whatsapp && (dbProfile as any)?.show_floating_whatsapp && (
-        <div
-          className="lg:hidden fixed bottom-0 left-0 right-0 z-40 backdrop-blur-xl px-4 py-3 safe-area-pb"
-          style={isMarketplace ? {
-            background: storeTheme.primary,
-            borderTop: "none",
-          } : {
-            background: "hsl(var(--card) / 0.95)",
-            borderTop: "1px solid hsl(var(--border))",
-          }}
+        <motion.button
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => handleWhatsApp(heroProduct?.title || company.name)}
+          className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-[#25d366] text-white shadow-2xl flex items-center justify-center hover:bg-[#22c55e] transition-colors"
+          aria-label="Falar no WhatsApp"
         >
-          <div className="flex gap-2">
-            <button
-              onClick={() => handleWhatsApp(heroProduct?.title || company.name)}
-              className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl font-bold text-sm shadow-lg active:scale-95 transition-transform ${
-                isMarketplace ? "bg-white" : "bg-[#25d366] text-white"
-              }`}
-              style={isMarketplace ? { color: storeTheme.primary } : {}}
-            >
-              <MessageCircle size={18} /> {isMarketplace ? "Falar com Corretor" : "Falar no WhatsApp"}
-            </button>
-            <button
-              onClick={() => {
-                const phone = (teamMember?.phone || company.whatsapp || "").replace(/\D/g, "");
-                if (phone) window.open(`tel:+55${phone}`, "_self");
-              }}
-              className={`w-12 flex items-center justify-center rounded-2xl active:scale-95 transition-transform ${
-                isMarketplace ? "bg-white/20 text-white" : "border border-border text-foreground"
-              }`}
-            >
-              <Phone size={18} />
-            </button>
-          </div>
-        </div>
+          <MessageCircle size={26} fill="white" />
+        </motion.button>
       )}
 
       {/* ═══════════ VIDEO FULLSCREEN MODAL ═══════════ */}
