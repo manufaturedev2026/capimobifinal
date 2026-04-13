@@ -508,29 +508,44 @@ export default function SellerCrmTab({ userId, sellerId }: SellerCrmTabProps) {
           <h3 className="font-bold text-sm text-foreground mb-4 flex items-center gap-2">
             <History size={16} className="text-primary" /> Histórico de Atividades
           </h3>
-          {activities.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-8">Nenhuma atividade registrada ainda</p>
-          ) : (
-            <div className="space-y-1 max-h-[500px] overflow-y-auto">
-              {activities.map((act) => {
-                const contact = contacts.find(c => c.id === act.contact_id);
-                const actionIcons: Record<string, string> = {
-                  criado: "🆕", etapa: "📍", contato: "📞", nota: "📝", nome: "✏️",
-                };
-                return (
-                  <div key={act.id} className="flex items-start gap-3 py-2.5 border-b border-border last:border-0">
-                    <span className="text-base mt-0.5">{actionIcons[act.action_type] || "📌"}</span>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs text-foreground">{act.description}</p>
-                      <p className="text-[10px] text-muted-foreground mt-0.5">
-                        {format(new Date(act.created_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
-                      </p>
+          {(() => {
+            // Merge activity logs + contact creation events
+            const creationEvents = contacts.map((c) => ({
+              id: `creation-${c.id}`,
+              contact_id: c.id,
+              action_type: "criado",
+              description: `Lead "${c.full_name}" recebido${c.lead_source ? ` via ${LEAD_SOURCES.find(s => s.value === c.lead_source)?.label || c.lead_source}` : ""}${(c as any).team_member_id && teamMembersMap[(c as any).team_member_id] ? ` • Corretor: ${teamMembersMap[(c as any).team_member_id].name}` : ""}`,
+              old_value: null,
+              new_value: null,
+              created_at: c.created_at,
+            }));
+            const merged = [...activities, ...creationEvents]
+              .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+            if (merged.length === 0) {
+              return <p className="text-sm text-muted-foreground text-center py-8">Nenhuma atividade registrada ainda</p>;
+            }
+            return (
+              <div className="space-y-1 max-h-[500px] overflow-y-auto">
+                {merged.map((act) => {
+                  const actionIcons: Record<string, string> = {
+                    criado: "🆕", etapa: "📍", contato: "📞", nota: "📝", nome: "✏️",
+                  };
+                  return (
+                    <div key={act.id} className="flex items-start gap-3 py-2.5 border-b border-border last:border-0">
+                      <span className="text-base mt-0.5">{actionIcons[act.action_type] || "📌"}</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs text-foreground">{act.description}</p>
+                        <p className="text-[10px] text-muted-foreground mt-0.5">
+                          {format(new Date(act.created_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
+                  );
+                })}
+              </div>
+            );
+          })()}
         </div>
       )}
 
