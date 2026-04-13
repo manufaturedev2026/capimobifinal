@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { CheckCircle2, XCircle, Clock, User, Phone, Mail, MessageSquare, ExternalLink, Trash2 } from "lucide-react";
+import { CheckCircle2, XCircle, Clock, User, Phone, Mail, MessageSquare, Trash2, Search, MapPin, Instagram, FileText, Shield, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -20,8 +20,21 @@ interface RequestWithProfile {
     city: string | null;
     state: string | null;
     address: string | null;
+    bio: string | null;
+    instagram: string | null;
+    cnpj: string | null;
+    seller_category: string | null;
+    company_name: string | null;
   };
 }
+
+const categoryLabels: Record<string, string> = {
+  corretor: "Corretor",
+  imobiliaria: "Imobiliária",
+  proprietario: "Proprietário",
+  autonomo: "Autônomo",
+  construtora: "Construtora",
+};
 
 export default function PartnerAgencyTab({ profileId, userId }: { profileId: string; userId: string }) {
   const { toast } = useToast();
@@ -29,6 +42,7 @@ export default function PartnerAgencyTab({ profileId, userId }: { profileId: str
   const [loading, setLoading] = useState(true);
   const [processingId, setProcessingId] = useState<string | null>(null);
   const [slugInputs, setSlugInputs] = useState<Record<string, string>>({});
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     fetchRequests();
@@ -43,11 +57,10 @@ export default function PartnerAgencyTab({ profileId, userId }: { profileId: str
       .order("created_at", { ascending: false });
 
     if (data) {
-      // Fetch profiles for each request
       const profileIds = data.map(r => r.requester_profile_id);
       const { data: profiles } = await supabase
         .from("profiles")
-        .select("id, full_name, phone, email, creci, logo_url, city, state, address")
+        .select("id, full_name, phone, email, creci, logo_url, city, state, address, bio, instagram, cnpj, seller_category, company_name")
         .in("id", profileIds);
 
       const enriched = data.map(r => ({
@@ -60,6 +73,23 @@ export default function PartnerAgencyTab({ profileId, userId }: { profileId: str
     setLoading(false);
   };
 
+  const filteredRequests = useMemo(() => {
+    if (!searchQuery.trim()) return requests;
+    const q = searchQuery.toLowerCase().trim();
+    return requests.filter(r => {
+      const p = r.profile;
+      if (!p) return false;
+      return (
+        p.full_name?.toLowerCase().includes(q) ||
+        p.email?.toLowerCase().includes(q) ||
+        p.creci?.toLowerCase().includes(q) ||
+        p.cnpj?.toLowerCase().includes(q) ||
+        p.phone?.includes(q) ||
+        p.company_name?.toLowerCase().includes(q)
+      );
+    });
+  }, [requests, searchQuery]);
+
   const handleApprove = async (request: RequestWithProfile) => {
     if (!request.profile) return;
     setProcessingId(request.id);
@@ -70,7 +100,6 @@ export default function PartnerAgencyTab({ profileId, userId }: { profileId: str
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-+|-+$/g, "");
 
-    // Check slug uniqueness
     const { data: existing } = await supabase
       .from("team_members")
       .select("id")
@@ -83,7 +112,6 @@ export default function PartnerAgencyTab({ profileId, userId }: { profileId: str
       return;
     }
 
-    // Create team member
     const { error: teamError } = await supabase.from("team_members").insert({
       company_id: profileId,
       full_name: request.profile.full_name,
@@ -101,7 +129,6 @@ export default function PartnerAgencyTab({ profileId, userId }: { profileId: str
       return;
     }
 
-    // Update request status
     const { error: updateError } = await supabase
       .from("partnership_requests")
       .update({ status: "aprovado" })
@@ -137,7 +164,6 @@ export default function PartnerAgencyTab({ profileId, userId }: { profileId: str
     if (!request.profile) return;
     setProcessingId(request.id);
 
-    // Remove team member
     const { data: members } = await supabase
       .from("team_members")
       .select("id, full_name")
@@ -150,7 +176,6 @@ export default function PartnerAgencyTab({ profileId, userId }: { profileId: str
       }
     }
 
-    // Delete the request entirely
     await supabase.from("partnership_requests").delete().eq("id", request.id);
 
     toast({ title: "Corretor removido", description: `${request.profile.full_name} foi desvinculado.` });
@@ -166,111 +191,102 @@ export default function PartnerAgencyTab({ profileId, userId }: { profileId: str
     );
   }
 
-  const pending = requests.filter(r => r.status === "pendente");
-  const processed = requests.filter(r => r.status !== "pendente");
+  const pending = filteredRequests.filter(r => r.status === "pendente");
+  const approved = filteredRequests.filter(r => r.status === "aprovado");
+  const rejected = filteredRequests.filter(r => r.status === "recusado");
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-xl font-bold text-foreground">Solicitações de Parceria</h2>
-        <p className="text-sm text-muted-foreground mt-1">
-          Corretores que desejam se vincular à sua imobiliária.
-        </p>
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
+            <Building2 size={22} className="text-primary" />
+            Solicitações de Parceria
+          </h2>
+          <p className="text-sm text-muted-foreground mt-1">
+            Corretores que desejam se vincular à sua imobiliária.
+          </p>
+        </div>
+        <div className="flex items-center gap-2 text-xs font-medium">
+          <span className="px-2.5 py-1 rounded-full bg-yellow-500/10 text-yellow-600 border border-yellow-500/20">
+            {requests.filter(r => r.status === "pendente").length} pendentes
+          </span>
+          <span className="px-2.5 py-1 rounded-full bg-green-500/10 text-green-600 border border-green-500/20">
+            {requests.filter(r => r.status === "aprovado").length} aprovados
+          </span>
+        </div>
       </div>
+
+      {/* Search Bar */}
+      {requests.length > 0 && (
+        <div className="relative">
+          <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder="Buscar por nome, CRECI, CPF/CNPJ, e-mail ou telefone..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10 h-11 rounded-xl bg-secondary/50 border-border"
+          />
+        </div>
+      )}
 
       {/* Pending Requests */}
       {pending.length > 0 && (
-        <div className="space-y-3">
+        <div className="space-y-4">
           <h3 className="font-semibold text-foreground flex items-center gap-2">
             <Clock className="text-yellow-500" size={18} />
             Pendentes ({pending.length})
           </h3>
           {pending.map((req) => (
-            <div key={req.id} className="rounded-xl border border-yellow-500/30 bg-card p-4 space-y-3">
-              <div className="flex items-start gap-3">
-                <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center overflow-hidden shrink-0">
-                  {req.profile?.logo_url ? (
-                    <img src={req.profile.logo_url} alt="" className="w-full h-full object-cover" />
-                  ) : (
-                    <User className="text-muted-foreground" size={22} />
-                  )}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-foreground">{req.profile?.full_name}</p>
-                  {req.profile?.creci && <p className="text-xs text-muted-foreground">CRECI: {req.profile.creci}</p>}
-                  {req.profile?.city && (
-                    <p className="text-xs text-muted-foreground">{req.profile.city}{req.profile.state ? ` - ${req.profile.state}` : ""}</p>
-                  )}
-                  {req.profile?.address && <p className="text-xs text-muted-foreground">📍 {req.profile.address}</p>}
-                  <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground flex-wrap">
-                    {req.profile?.phone && (
-                      <a
-                        href={`https://wa.me/55${req.profile.phone.replace(/\D/g, "")}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-1 text-green-500 hover:underline"
-                      >
-                        <Phone size={12} />{req.profile.phone}
-                      </a>
-                    )}
-                    {req.profile?.email && <span className="flex items-center gap-1"><Mail size={12} />{req.profile.email}</span>}
-                  </div>
-                </div>
-              </div>
-
-              {req.message && (
-                <div className="bg-secondary/50 rounded-lg p-3 text-sm text-muted-foreground flex gap-2">
-                  <MessageSquare size={16} className="shrink-0 mt-0.5" />
-                  {req.message}
-                </div>
-              )}
-
-              <div className="space-y-2">
-                <label className="text-xs text-muted-foreground">Slug da URL do corretor:</label>
-                <Input
-                  placeholder={req.profile?.full_name
-                    ?.toLowerCase()
-                    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-                    .replace(/[^a-z0-9]+/g, "-")
-                    .replace(/^-+|-+$/g, "") || "slug-do-corretor"}
-                  value={slugInputs[req.id] || ""}
-                  onChange={(e) => setSlugInputs(prev => ({ ...prev, [req.id]: e.target.value }))}
-                  className="text-sm"
-                />
-              </div>
-
-              <div className="flex gap-2">
-                <Button
-                  size="sm"
-                  onClick={() => handleApprove(req)}
-                  disabled={processingId === req.id}
-                  className="flex-1"
-                >
-                  <CheckCircle2 size={16} className="mr-1" />
-                  {processingId === req.id ? "Processando..." : "Aprovar"}
-                </Button>
-                <Button
-                  size="sm"
-                  variant="destructive"
-                  onClick={() => handleReject(req.id)}
-                  disabled={processingId === req.id}
-                >
-                  <XCircle size={16} className="mr-1" />
-                  Recusar
-                </Button>
-              </div>
-            </div>
+            <PartnerCard
+              key={req.id}
+              request={req}
+              variant="pending"
+              slugInputs={slugInputs}
+              setSlugInputs={setSlugInputs}
+              processingId={processingId}
+              onApprove={handleApprove}
+              onReject={handleReject}
+              onRemove={removePartner}
+            />
           ))}
         </div>
       )}
 
-      {/* Processed Requests */}
-      {processed.length > 0 && (
+      {/* Approved */}
+      {approved.length > 0 && (
+        <div className="space-y-4">
+          <h3 className="font-semibold text-foreground flex items-center gap-2">
+            <CheckCircle2 className="text-green-500" size={18} />
+            Corretores Vinculados ({approved.length})
+          </h3>
+          {approved.map((req) => (
+            <PartnerCard
+              key={req.id}
+              request={req}
+              variant="approved"
+              slugInputs={slugInputs}
+              setSlugInputs={setSlugInputs}
+              processingId={processingId}
+              onApprove={handleApprove}
+              onReject={handleReject}
+              onRemove={removePartner}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Rejected */}
+      {rejected.length > 0 && (
         <div className="space-y-3">
-          <h3 className="font-semibold text-foreground">Histórico</h3>
-          {processed.map((req) => (
-            <div key={req.id} className="rounded-xl border border-border bg-card p-4 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center overflow-hidden shrink-0">
+          <h3 className="font-semibold text-muted-foreground flex items-center gap-2">
+            <XCircle className="text-red-400" size={18} />
+            Recusados ({rejected.length})
+          </h3>
+          {rejected.map((req) => (
+            <div key={req.id} className="rounded-xl border border-border bg-card/50 p-4 flex items-center gap-3 opacity-60">
+              <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center overflow-hidden shrink-0">
                 {req.profile?.logo_url ? (
                   <img src={req.profile.logo_url} alt="" className="w-full h-full object-cover" />
                 ) : (
@@ -278,41 +294,235 @@ export default function PartnerAgencyTab({ profileId, userId }: { profileId: str
                 )}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-semibold text-foreground text-sm">{req.profile?.full_name}</p>
+                <p className="font-medium text-foreground text-sm truncate">{req.profile?.full_name}</p>
                 <p className="text-xs text-muted-foreground">
                   {new Date(req.created_at).toLocaleDateString("pt-BR")}
                 </p>
               </div>
-              {req.status === "aprovado" ? (
-                <div className="flex items-center gap-2">
-                  <span className="flex items-center gap-1 text-xs text-green-500 font-medium">
-                    <CheckCircle2 size={14} /> Aprovado
-                  </span>
-                  <Button
-                    size="sm"
-                    variant="destructive"
-                    className="h-7 px-2 text-xs"
-                    onClick={() => removePartner(req)}
-                    disabled={processingId === req.id}
-                  >
-                    <Trash2 size={12} className="mr-1" />
-                    Remover
-                  </Button>
-                </div>
-              ) : (
-                <span className="flex items-center gap-1 text-xs text-red-500 font-medium">
-                  <XCircle size={14} /> Recusado
-                </span>
-              )}
+              <span className="flex items-center gap-1 text-xs text-red-500 font-medium shrink-0">
+                <XCircle size={14} /> Recusado
+              </span>
             </div>
           ))}
         </div>
       )}
 
       {requests.length === 0 && (
+        <div className="text-center py-16 text-muted-foreground">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-secondary/50 flex items-center justify-center">
+            <User size={32} className="opacity-40" />
+          </div>
+          <p className="text-sm font-medium">Nenhuma solicitação de parceria recebida ainda.</p>
+          <p className="text-xs mt-1">Quando um corretor solicitar vínculo, aparecerá aqui.</p>
+        </div>
+      )}
+
+      {requests.length > 0 && filteredRequests.length === 0 && searchQuery && (
         <div className="text-center py-12 text-muted-foreground">
-          <User size={40} className="mx-auto mb-3 opacity-40" />
-          <p className="text-sm">Nenhuma solicitação de parceria recebida ainda.</p>
+          <Search size={32} className="mx-auto mb-3 opacity-30" />
+          <p className="text-sm">Nenhum resultado para "<strong className="text-foreground">{searchQuery}</strong>"</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ─── Partner Card Component ─── */
+
+function PartnerCard({
+  request,
+  variant,
+  slugInputs,
+  setSlugInputs,
+  processingId,
+  onApprove,
+  onReject,
+  onRemove,
+}: {
+  request: RequestWithProfile;
+  variant: "pending" | "approved";
+  slugInputs: Record<string, string>;
+  setSlugInputs: React.Dispatch<React.SetStateAction<Record<string, string>>>;
+  processingId: string | null;
+  onApprove: (r: RequestWithProfile) => void;
+  onReject: (id: string) => void;
+  onRemove: (r: RequestWithProfile) => void;
+}) {
+  const p = request.profile;
+  const isPending = variant === "pending";
+
+  const borderColor = isPending
+    ? "border-yellow-500/30 shadow-yellow-500/5"
+    : "border-green-500/20 shadow-green-500/5";
+
+  return (
+    <div className={`rounded-2xl border bg-card shadow-sm ${borderColor} overflow-hidden`}>
+      {/* Top section with photo and main info */}
+      <div className="p-4 sm:p-5">
+        <div className="flex flex-col sm:flex-row gap-4">
+          {/* Photo - larger */}
+          <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-secondary flex items-center justify-center overflow-hidden shrink-0 border border-border mx-auto sm:mx-0">
+            {p?.logo_url ? (
+              <img src={p.logo_url} alt={p.full_name} className="w-full h-full object-cover" />
+            ) : (
+              <User className="text-muted-foreground" size={36} />
+            )}
+          </div>
+
+          {/* Info */}
+          <div className="flex-1 min-w-0 text-center sm:text-left">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
+              <h4 className="font-bold text-foreground text-lg leading-tight">{p?.full_name}</h4>
+              {p?.seller_category && (
+                <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-primary/10 text-primary self-center sm:self-auto">
+                  {categoryLabels[p.seller_category] || p.seller_category}
+                </span>
+              )}
+              {!isPending && (
+                <span className="inline-flex items-center gap-1 text-[10px] font-bold text-green-500 self-center sm:self-auto">
+                  <CheckCircle2 size={12} /> Vinculado
+                </span>
+              )}
+            </div>
+
+            {p?.company_name && (
+              <p className="text-sm text-muted-foreground mt-0.5">{p.company_name}</p>
+            )}
+
+            {/* Key details grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5 mt-3 text-sm">
+              {p?.creci && (
+                <div className="flex items-center gap-2 text-foreground justify-center sm:justify-start">
+                  <Shield size={14} className="text-primary shrink-0" />
+                  <span className="font-medium">CRECI:</span>
+                  <span className="text-muted-foreground">{p.creci}</span>
+                </div>
+              )}
+              {p?.cnpj && (
+                <div className="flex items-center gap-2 text-foreground justify-center sm:justify-start">
+                  <FileText size={14} className="text-primary shrink-0" />
+                  <span className="font-medium">CPF/CNPJ:</span>
+                  <span className="text-muted-foreground">{p.cnpj}</span>
+                </div>
+              )}
+              {p?.email && (
+                <div className="flex items-center gap-2 justify-center sm:justify-start">
+                  <Mail size={14} className="text-muted-foreground shrink-0" />
+                  <span className="text-muted-foreground truncate">{p.email}</span>
+                </div>
+              )}
+              {p?.phone && (
+                <a
+                  href={`https://wa.me/55${p.phone.replace(/\D/g, "")}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-green-500 hover:underline justify-center sm:justify-start"
+                >
+                  <Phone size={14} className="shrink-0" />
+                  <span>{p.phone}</span>
+                </a>
+              )}
+              {(p?.city || p?.state) && (
+                <div className="flex items-center gap-2 justify-center sm:justify-start">
+                  <MapPin size={14} className="text-muted-foreground shrink-0" />
+                  <span className="text-muted-foreground">
+                    {p.city}{p.state ? ` - ${p.state}` : ""}
+                  </span>
+                </div>
+              )}
+              {p?.instagram && (
+                <a
+                  href={`https://instagram.com/${p.instagram.replace("@", "")}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-pink-500 hover:underline justify-center sm:justify-start"
+                >
+                  <Instagram size={14} className="shrink-0" />
+                  <span>@{p.instagram.replace("@", "")}</span>
+                </a>
+              )}
+            </div>
+
+            {p?.address && (
+              <p className="text-xs text-muted-foreground mt-2 flex items-center gap-1 justify-center sm:justify-start">
+                <MapPin size={12} className="shrink-0" /> {p.address}
+              </p>
+            )}
+
+            {p?.bio && (
+              <p className="text-xs text-muted-foreground mt-2 line-clamp-2 italic">"{p.bio}"</p>
+            )}
+          </div>
+        </div>
+
+        {/* Request date */}
+        <p className="text-[11px] text-muted-foreground mt-3 text-center sm:text-left">
+          Solicitado em {new Date(request.created_at).toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" })}
+        </p>
+      </div>
+
+      {/* Message */}
+      {request.message && (
+        <div className="mx-4 sm:mx-5 mb-4 bg-secondary/50 rounded-xl p-3 text-sm text-muted-foreground flex gap-2">
+          <MessageSquare size={16} className="shrink-0 mt-0.5 text-primary/60" />
+          <span>{request.message}</span>
+        </div>
+      )}
+
+      {/* Actions */}
+      {isPending && (
+        <div className="border-t border-border px-4 sm:px-5 py-3 bg-secondary/20 space-y-3">
+          <div className="space-y-1.5">
+            <label className="text-xs text-muted-foreground font-medium">Slug da URL do corretor:</label>
+            <Input
+              placeholder={p?.full_name
+                ?.toLowerCase()
+                .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                .replace(/[^a-z0-9]+/g, "-")
+                .replace(/^-+|-+$/g, "") || "slug-do-corretor"}
+              value={slugInputs[request.id] || ""}
+              onChange={(e) => setSlugInputs(prev => ({ ...prev, [request.id]: e.target.value }))}
+              className="text-sm h-9 rounded-lg"
+            />
+          </div>
+
+          <div className="flex gap-2">
+            <Button
+              size="sm"
+              onClick={() => onApprove(request)}
+              disabled={processingId === request.id}
+              className="flex-1 h-9"
+            >
+              <CheckCircle2 size={16} className="mr-1.5" />
+              {processingId === request.id ? "Processando..." : "Aprovar Parceria"}
+            </Button>
+            <Button
+              size="sm"
+              variant="destructive"
+              onClick={() => onReject(request.id)}
+              disabled={processingId === request.id}
+              className="h-9"
+            >
+              <XCircle size={16} className="mr-1.5" />
+              Recusar
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {!isPending && (
+        <div className="border-t border-border px-4 sm:px-5 py-3 bg-secondary/20 flex items-center justify-between">
+          <span className="text-xs text-muted-foreground">Parceiro desde {new Date(request.created_at).toLocaleDateString("pt-BR")}</span>
+          <Button
+            size="sm"
+            variant="destructive"
+            className="h-7 px-3 text-xs"
+            onClick={() => onRemove(request)}
+            disabled={processingId === request.id}
+          >
+            <Trash2 size={12} className="mr-1" />
+            Encerrar Parceria
+          </Button>
         </div>
       )}
     </div>
