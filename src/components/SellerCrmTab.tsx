@@ -609,6 +609,11 @@ export default function SellerCrmTab({ userId, sellerId }: SellerCrmTabProps) {
                                   </div>
                                 )}
                                 <div className="flex items-center gap-2 flex-wrap mt-0.5">
+                                  {(contact as any).team_member_id && teamMembersMap[(contact as any).team_member_id] && (
+                                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-600 font-bold flex items-center gap-0.5">
+                                      <Users size={8} /> {teamMembersMap[(contact as any).team_member_id]}
+                                    </span>
+                                  )}
                                   {contact.lead_source && (
                                     <span className="text-[9px] px-1.5 py-0.5 rounded bg-primary/10 text-primary font-bold">
                                       {LEAD_SOURCES.find(s => s.value === contact.lead_source)?.label || contact.lead_source}
