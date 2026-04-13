@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Play } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
@@ -146,10 +147,18 @@ export default function VenderPage() {
   const [state, setState] = useState("ES");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [salesVideoUrl, setSalesVideoUrl] = useState("");
+  const [salesVideoTitle, setSalesVideoTitle] = useState("");
 
   useEffect(() => {
     supabase.from("platform_settings").select("value").eq("key", "homepage_theme").maybeSingle().then(({ data }) => {
       if (data?.value) setThemeId(data.value);
+    });
+    supabase.from("platform_settings").select("value").eq("key", "sales_video_url").maybeSingle().then(({ data }) => {
+      if (data?.value) setSalesVideoUrl(data.value);
+    });
+    supabase.from("platform_settings").select("value").eq("key", "sales_video_title").maybeSingle().then(({ data }) => {
+      if (data?.value) setSalesVideoTitle(data.value);
     });
   }, []);
   const theme = getMarketplaceTheme(themeId);
