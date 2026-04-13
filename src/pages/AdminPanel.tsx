@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Shield, Users, Package, DollarSign, Search, Check, X, RefreshCw, ArrowLeft, Crown, Star, Zap, Globe, Plus, Trash2, ExternalLink, Copy, Megaphone, LayoutDashboard, Building2, Rocket, FileText, UserCog, Filter, Camera, Phone, Ban, ShieldOff, Clock, MessageCircle, MapPin, Palette, Bell } from "lucide-react";
+import { Shield, Users, Package, DollarSign, Search, Check, X, RefreshCw, ArrowLeft, Crown, Star, Zap, Globe, Plus, Trash2, ExternalLink, Copy, Megaphone, LayoutDashboard, Building2, Rocket, FileText, UserCog, Filter, Camera, Phone, Ban, ShieldOff, Clock, MessageCircle, MapPin, Palette, Bell, Video, Save, Eye } from "lucide-react";
 import { Link } from "react-router-dom";
 import { MARKETPLACE_THEMES } from "@/lib/marketplaceThemes";
 import { getMarketplaceThemeCssVars } from "@/lib/marketplaceThemeCssVars";
@@ -52,6 +52,9 @@ export default function AdminPanel() {
   const [homepageMode, setHomepageMode] = useState<string>("single");
   const [homepageTheme, setHomepageTheme] = useState<string>("azul");
   const [loginHeroUrl, setLoginHeroUrl] = useState<string>("");
+  const [salesVideoUrl, setSalesVideoUrl] = useState<string>("");
+  const [salesVideoTitle, setSalesVideoTitle] = useState<string>("");
+  const [savingSalesVideo, setSavingSalesVideo] = useState(false);
   const [loginHeroUploading, setLoginHeroUploading] = useState(false);
   const loginHeroRef = useRef<HTMLInputElement>(null);
   const [adRequests, setAdRequests] = useState<any[]>([]);
@@ -102,6 +105,12 @@ export default function AdminPanel() {
       });
       supabase.from("platform_settings").select("value").eq("key", "login_hero_image").maybeSingle().then(({ data }) => {
         if (data?.value) setLoginHeroUrl(normalizeLoginHeroSetting(data.value));
+      });
+      supabase.from("platform_settings").select("value").eq("key", "sales_video_url").maybeSingle().then(({ data }) => {
+        if (data?.value) setSalesVideoUrl(data.value);
+      });
+      supabase.from("platform_settings").select("value").eq("key", "sales_video_title").maybeSingle().then(({ data }) => {
+        if (data?.value) setSalesVideoTitle(data.value);
       });
     }
   }, [isAdmin]);
@@ -439,7 +448,7 @@ export default function AdminPanel() {
             {sidebarItems.map((item) => (
               <button
                 key={item.key}
-                onClick={() => item.key === "vendas" ? window.open("/anunciar", "_blank") : setTab(item.key)}
+                onClick={() => setTab(item.key)}
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
                   tab === item.key
                     ? "bg-primary text-primary-foreground shadow-sm"
@@ -463,7 +472,7 @@ export default function AdminPanel() {
           {sidebarItems.map((item) => (
             <button
               key={item.key}
-              onClick={() => item.key === "vendas" ? window.open("/anunciar", "_blank") : setTab(item.key)}
+              onClick={() => setTab(item.key)}
               className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
                 tab === item.key ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
               }`}
@@ -868,6 +877,89 @@ export default function AdminPanel() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Vendas Tab */}
+      {tab === "vendas" && (
+        <div className="space-y-4">
+          <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-display font-bold text-lg text-foreground flex items-center gap-2">
+                  <Rocket size={20} className="text-primary" /> Página de Vendas
+                </h3>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Configure o vídeo e visualize a página de vendas (/anunciar).
+                </p>
+              </div>
+              <button
+                onClick={() => window.open("/anunciar", "_blank")}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-bold hover:bg-primary/90 transition-colors"
+              >
+                <Eye size={16} /> Visualizar Página
+              </button>
+            </div>
+          </div>
+
+          <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
+            <div className="flex items-center gap-2">
+              <Video size={18} className="text-primary" />
+              <h3 className="font-display font-bold text-foreground">Vídeo da Página de Vendas</h3>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Cole o link de um vídeo do YouTube. Ele aparecerá na página de vendas (/anunciar) logo após a seção de funcionalidades.
+            </p>
+
+            <div className="space-y-3">
+              <input
+                value={salesVideoUrl}
+                onChange={(e) => setSalesVideoUrl(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+                placeholder="https://www.youtube.com/watch?v=..."
+              />
+              <input
+                value={salesVideoTitle}
+                onChange={(e) => setSalesVideoTitle(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+                placeholder="Título do vídeo (ex: Conheça a Plataforma)"
+                maxLength={100}
+              />
+
+              {salesVideoUrl && (() => {
+                const match = salesVideoUrl.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([a-zA-Z0-9_-]{11})/);
+                const vid = match ? match[1] : null;
+                return vid ? (
+                  <div className="aspect-video rounded-xl overflow-hidden border border-border">
+                    <iframe
+                      src={`https://www.youtube.com/embed/${vid}`}
+                      title="Preview"
+                      allow="encrypted-media"
+                      allowFullScreen
+                      className="w-full h-full"
+                    />
+                  </div>
+                ) : (
+                  <p className="text-xs text-destructive">Link inválido — use um link do YouTube</p>
+                );
+              })()}
+
+              <button
+                onClick={async () => {
+                  setSavingSalesVideo(true);
+                  await supabase.from("platform_settings" as any).upsert({ key: "sales_video_url", value: salesVideoUrl } as any, { onConflict: "key" });
+                  await supabase.from("platform_settings" as any).upsert({ key: "sales_video_title", value: salesVideoTitle } as any, { onConflict: "key" });
+                  toast({ title: "Vídeo da página de vendas salvo!" });
+                  setSavingSalesVideo(false);
+                }}
+                disabled={savingSalesVideo}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-bold hover:bg-primary/90 transition-colors disabled:opacity-50"
+              >
+                {savingSalesVideo ? <div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" /> : <Save size={16} />}
+                {savingSalesVideo ? "Salvando..." : "Salvar Vídeo"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Config Tab */}
       {tab === "config" && (

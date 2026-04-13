@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Play } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
@@ -146,10 +147,18 @@ export default function VenderPage() {
   const [state, setState] = useState("ES");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [salesVideoUrl, setSalesVideoUrl] = useState("");
+  const [salesVideoTitle, setSalesVideoTitle] = useState("");
 
   useEffect(() => {
     supabase.from("platform_settings").select("value").eq("key", "homepage_theme").maybeSingle().then(({ data }) => {
       if (data?.value) setThemeId(data.value);
+    });
+    supabase.from("platform_settings").select("value").eq("key", "sales_video_url").maybeSingle().then(({ data }) => {
+      if (data?.value) setSalesVideoUrl(data.value);
+    });
+    supabase.from("platform_settings").select("value").eq("key", "sales_video_title").maybeSingle().then(({ data }) => {
+      if (data?.value) setSalesVideoTitle(data.value);
     });
   }, []);
   const theme = getMarketplaceTheme(themeId);
@@ -348,6 +357,47 @@ export default function VenderPage() {
             ))}
           </div>
         </section>
+
+        {/* ═══ VIDEO SECTION ═══ */}
+        {salesVideoUrl && (() => {
+          const match = salesVideoUrl.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([a-zA-Z0-9_-]{11})/);
+          const vid = match ? match[1] : null;
+          if (!vid) return null;
+          return (
+            <section className="py-16 md:py-24 border-y border-white/5">
+              <div className="max-w-4xl mx-auto px-4">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  className="text-center mb-8"
+                >
+                  <div className="inline-flex items-center gap-2 font-semibold text-sm mb-3" style={{ color: theme.primary }}>
+                    <Play className="w-4 h-4" /> Veja como funciona
+                  </div>
+                  {salesVideoTitle && (
+                    <h2 className="font-display text-2xl md:text-3xl font-black">{salesVideoTitle}</h2>
+                  )}
+                </motion.div>
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  className="aspect-video rounded-2xl overflow-hidden border border-white/10 shadow-2xl"
+                  style={{ boxShadow: `0 25px 60px ${theme.primary}20` }}
+                >
+                  <iframe
+                    src={`https://www.youtube.com/embed/${vid}`}
+                    title={salesVideoTitle || "Vídeo"}
+                    allow="autoplay; encrypted-media"
+                    allowFullScreen
+                    className="w-full h-full"
+                  />
+                </motion.div>
+              </div>
+            </section>
+          );
+        })()}
 
         {/* ═══ IDEAL FOR ═══ */}
         <section className="border-y border-white/5 py-16 md:py-20" style={{ background: `linear-gradient(135deg, ${theme.primary}18, ${theme.promoAccent || theme.primary}0a)` }}>
