@@ -111,7 +111,7 @@ export default function SellerCrmTab({ userId, sellerId }: SellerCrmTabProps) {
   const [view, setView] = useState<CrmView>("kanban");
   const [activities, setActivities] = useState<ActivityLog[]>([]);
   const [sellerItems, setSellerItems] = useState<SellerItem[]>([]);
-  const [teamMembersMap, setTeamMembersMap] = useState<Record<string, string>>({});
+  const [teamMembersMap, setTeamMembersMap] = useState<Record<string, { name: string; creci?: string }>>({});
 
   // Drag state
   const [draggedContact, setDraggedContact] = useState<string | null>(null);
