@@ -111,7 +111,7 @@ export default function SellerCrmTab({ userId, sellerId }: SellerCrmTabProps) {
   const [view, setView] = useState<CrmView>("kanban");
   const [activities, setActivities] = useState<ActivityLog[]>([]);
   const [sellerItems, setSellerItems] = useState<SellerItem[]>([]);
-  const [teamMembersMap, setTeamMembersMap] = useState<Record<string, string>>({});
+  const [teamMembersMap, setTeamMembersMap] = useState<Record<string, { name: string; creci?: string }>>({});
 
   // Drag state
   const [draggedContact, setDraggedContact] = useState<string | null>(null);
@@ -158,10 +158,10 @@ export default function SellerCrmTab({ userId, sellerId }: SellerCrmTabProps) {
   const fetchTeamMembers = useCallback(async () => {
     const { data } = await supabase
       .from("team_members")
-      .select("id, full_name")
+      .select("id, full_name, creci")
       .eq("company_id", sellerId);
-    const map: Record<string, string> = {};
-    (data || []).forEach((m: any) => { map[m.id] = m.full_name; });
+    const map: Record<string, { name: string; creci?: string }> = {};
+    (data || []).forEach((m: any) => { map[m.id] = { name: m.full_name, creci: m.creci || undefined }; });
     setTeamMembersMap(map);
   }, [sellerId]);
 
@@ -508,29 +508,44 @@ export default function SellerCrmTab({ userId, sellerId }: SellerCrmTabProps) {
           <h3 className="font-bold text-sm text-foreground mb-4 flex items-center gap-2">
             <History size={16} className="text-primary" /> Histórico de Atividades
           </h3>
-          {activities.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-8">Nenhuma atividade registrada ainda</p>
-          ) : (
-            <div className="space-y-1 max-h-[500px] overflow-y-auto">
-              {activities.map((act) => {
-                const contact = contacts.find(c => c.id === act.contact_id);
-                const actionIcons: Record<string, string> = {
-                  criado: "🆕", etapa: "📍", contato: "📞", nota: "📝", nome: "✏️",
-                };
-                return (
-                  <div key={act.id} className="flex items-start gap-3 py-2.5 border-b border-border last:border-0">
-                    <span className="text-base mt-0.5">{actionIcons[act.action_type] || "📌"}</span>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs text-foreground">{act.description}</p>
-                      <p className="text-[10px] text-muted-foreground mt-0.5">
-                        {format(new Date(act.created_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
-                      </p>
+          {(() => {
+            // Merge activity logs + contact creation events
+            const creationEvents = contacts.map((c) => ({
+              id: `creation-${c.id}`,
+              contact_id: c.id,
+              action_type: "criado",
+              description: `Lead "${c.full_name}" recebido${c.lead_source ? ` via ${LEAD_SOURCES.find(s => s.value === c.lead_source)?.label || c.lead_source}` : ""}${(c as any).team_member_id && teamMembersMap[(c as any).team_member_id] ? ` • Corretor: ${teamMembersMap[(c as any).team_member_id].name}` : ""}`,
+              old_value: null,
+              new_value: null,
+              created_at: c.created_at,
+            }));
+            const merged = [...activities, ...creationEvents]
+              .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+            if (merged.length === 0) {
+              return <p className="text-sm text-muted-foreground text-center py-8">Nenhuma atividade registrada ainda</p>;
+            }
+            return (
+              <div className="space-y-1 max-h-[500px] overflow-y-auto">
+                {merged.map((act) => {
+                  const actionIcons: Record<string, string> = {
+                    criado: "🆕", etapa: "📍", contato: "📞", nota: "📝", nome: "✏️",
+                  };
+                  return (
+                    <div key={act.id} className="flex items-start gap-3 py-2.5 border-b border-border last:border-0">
+                      <span className="text-base mt-0.5">{actionIcons[act.action_type] || "📌"}</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs text-foreground">{act.description}</p>
+                        <p className="text-[10px] text-muted-foreground mt-0.5">
+                          {format(new Date(act.created_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
+                  );
+                })}
+              </div>
+            );
+          })()}
         </div>
       )}
 
@@ -611,7 +626,10 @@ export default function SellerCrmTab({ userId, sellerId }: SellerCrmTabProps) {
                                 <div className="flex items-center gap-2 flex-wrap mt-0.5">
                                   {(contact as any).team_member_id && teamMembersMap[(contact as any).team_member_id] && (
                                     <span className="text-[9px] px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-600 font-bold flex items-center gap-0.5">
-                                      <Users size={8} /> {teamMembersMap[(contact as any).team_member_id]}
+                                      <Users size={8} /> {teamMembersMap[(contact as any).team_member_id].name}
+                                      {teamMembersMap[(contact as any).team_member_id].creci && (
+                                        <span className="ml-0.5 opacity-75">• CRECI {teamMembersMap[(contact as any).team_member_id].creci}</span>
+                                      )}
                                     </span>
                                   )}
                                   {contact.lead_source && (
