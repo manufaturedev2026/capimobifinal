@@ -978,6 +978,7 @@ export type Database = {
           notes: string | null
           phone: string | null
           seller_id: string
+          team_member_id: string | null
           updated_at: string
           user_id: string
         }
@@ -996,6 +997,7 @@ export type Database = {
           notes?: string | null
           phone?: string | null
           seller_id: string
+          team_member_id?: string | null
           updated_at?: string
           user_id: string
         }
@@ -1014,10 +1016,19 @@ export type Database = {
           notes?: string | null
           phone?: string | null
           seller_id?: string
+          team_member_id?: string | null
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "seller_crm_contacts_team_member_id_fkey"
+            columns: ["team_member_id"]
+            isOneToOne: false
+            referencedRelation: "team_members"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       seller_items: {
         Row: {

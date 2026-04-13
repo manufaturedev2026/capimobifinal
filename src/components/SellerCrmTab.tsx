@@ -111,6 +111,7 @@ export default function SellerCrmTab({ userId, sellerId }: SellerCrmTabProps) {
   const [view, setView] = useState<CrmView>("kanban");
   const [activities, setActivities] = useState<ActivityLog[]>([]);
   const [sellerItems, setSellerItems] = useState<SellerItem[]>([]);
+  const [teamMembersMap, setTeamMembersMap] = useState<Record<string, string>>({});
 
   // Drag state
   const [draggedContact, setDraggedContact] = useState<string | null>(null);
@@ -154,10 +155,21 @@ export default function SellerCrmTab({ userId, sellerId }: SellerCrmTabProps) {
     setSellerItems((data as any[]) || []);
   }, [sellerId]);
 
+  const fetchTeamMembers = useCallback(async () => {
+    const { data } = await supabase
+      .from("team_members")
+      .select("id, full_name")
+      .eq("company_id", sellerId);
+    const map: Record<string, string> = {};
+    (data || []).forEach((m: any) => { map[m.id] = m.full_name; });
+    setTeamMembersMap(map);
+  }, [sellerId]);
+
   useEffect(() => {
     fetchContacts();
     fetchActivities();
     fetchItems();
+    fetchTeamMembers();
   }, [fetchContacts, fetchActivities, fetchItems]);
 
   const logActivity = async (contactId: string, actionType: string, description: string, oldValue?: string, newValue?: string) => {
@@ -597,6 +609,11 @@ export default function SellerCrmTab({ userId, sellerId }: SellerCrmTabProps) {
                                   </div>
                                 )}
                                 <div className="flex items-center gap-2 flex-wrap mt-0.5">
+                                  {(contact as any).team_member_id && teamMembersMap[(contact as any).team_member_id] && (
+                                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-600 font-bold flex items-center gap-0.5">
+                                      <Users size={8} /> {teamMembersMap[(contact as any).team_member_id]}
+                                    </span>
+                                  )}
                                   {contact.lead_source && (
                                     <span className="text-[9px] px-1.5 py-0.5 rounded bg-primary/10 text-primary font-bold">
                                       {LEAD_SOURCES.find(s => s.value === contact.lead_source)?.label || contact.lead_source}

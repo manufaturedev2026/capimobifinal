@@ -14,6 +14,7 @@ interface WhatsAppLeadCaptureProps {
   funnelStage?: string;
   extraNotes?: string;
   leadSource?: string;
+  teamMemberId?: string | null;
 }
 
 export default function WhatsAppLeadCapture({
@@ -25,6 +26,7 @@ export default function WhatsAppLeadCapture({
   funnelStage = "novo",
   extraNotes,
   leadSource,
+  teamMemberId,
 }: WhatsAppLeadCaptureProps) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -50,6 +52,7 @@ export default function WhatsAppLeadCapture({
         funnel_stage: funnelStage,
         lead_source: leadSource || undefined,
         notes,
+        ...(teamMemberId ? { team_member_id: teamMemberId } : {}),
       } as any);
     } catch {}
     setSaving(false);
