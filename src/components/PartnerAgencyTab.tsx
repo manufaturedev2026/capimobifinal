@@ -574,18 +574,68 @@ function PartnerCard({
       )}
 
       {!isPending && (
-        <div className="border-t border-border px-4 sm:px-5 py-3 bg-secondary/20 flex items-center justify-between">
-          <span className="text-xs text-muted-foreground">Parceiro desde {new Date(request.created_at).toLocaleDateString("pt-BR")}</span>
-          <Button
-            size="sm"
-            variant="destructive"
-            className="h-7 px-3 text-xs"
-            onClick={() => onRemove(request)}
-            disabled={processingId === request.id}
-          >
-            <Trash2 size={12} className="mr-1" />
-            Encerrar Parceria
-          </Button>
+        <div className="border-t border-border px-4 sm:px-5 py-3 bg-secondary/20 space-y-3">
+          {/* Analytics Stats */}
+          {request.analytics && (
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-1.5 text-sm">
+                <Eye size={14} className="text-primary" />
+                <span className="font-semibold text-foreground">{request.analytics.views}</span>
+                <span className="text-muted-foreground text-xs">visitas</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-sm">
+                <MousePointerClick size={14} className="text-green-500" />
+                <span className="font-semibold text-foreground">{request.analytics.whatsapp_clicks}</span>
+                <span className="text-muted-foreground text-xs">cliques WhatsApp</span>
+              </div>
+              {request.analytics.views > 0 && (
+                <div className="flex items-center gap-1.5 text-sm">
+                  <BarChart3 size={14} className="text-primary" />
+                  <span className="font-semibold text-foreground">
+                    {((request.analytics.whatsapp_clicks / request.analytics.views) * 100).toFixed(1)}%
+                  </span>
+                  <span className="text-muted-foreground text-xs">conversão</span>
+                </div>
+              )}
+              <span className="text-[10px] text-muted-foreground ml-auto">últimos 30 dias</span>
+            </div>
+          )}
+
+          {/* Actions row */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-muted-foreground">Parceiro desde {new Date(request.created_at).toLocaleDateString("pt-BR")}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              {companySlug && request.teamMember?.slug && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-7 px-3 text-xs"
+                  asChild
+                >
+                  <a
+                    href={`/empresa/${companySlug}?corretor=${request.teamMember.slug}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <ExternalLink size={12} className="mr-1" />
+                    Ver Loja Espelho
+                  </a>
+                </Button>
+              )}
+              <Button
+                size="sm"
+                variant="destructive"
+                className="h-7 px-3 text-xs"
+                onClick={() => onRemove(request)}
+                disabled={processingId === request.id}
+              >
+                <Trash2 size={12} className="mr-1" />
+                Encerrar Parceria
+              </Button>
+            </div>
+          </div>
         </div>
       )}
     </div>
