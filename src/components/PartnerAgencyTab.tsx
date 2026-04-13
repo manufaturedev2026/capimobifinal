@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { CheckCircle2, XCircle, Clock, User, Phone, Mail, MessageSquare, Trash2, Search, MapPin, Instagram, FileText, Shield, Building2 } from "lucide-react";
+import { CheckCircle2, XCircle, Clock, User, Phone, Mail, MessageSquare, Trash2, Search, MapPin, Instagram, FileText, Shield, Building2, ExternalLink, Eye, MousePointerClick, BarChart3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -26,6 +26,14 @@ interface RequestWithProfile {
     seller_category: string | null;
     company_name: string | null;
   };
+  teamMember?: {
+    id: string;
+    slug: string;
+  };
+  analytics?: {
+    views: number;
+    whatsapp_clicks: number;
+  };
 }
 
 const categoryLabels: Record<string, string> = {
@@ -44,9 +52,21 @@ export default function PartnerAgencyTab({ profileId, userId }: { profileId: str
   const [slugInputs, setSlugInputs] = useState<Record<string, string>>({});
   const [searchQuery, setSearchQuery] = useState("");
 
+  const [companySlug, setCompanySlug] = useState<string | null>(null);
+
   useEffect(() => {
     fetchRequests();
+    fetchCompanySlug();
   }, []);
+
+  const fetchCompanySlug = async () => {
+    const { data } = await supabase
+      .from("profiles")
+      .select("slug")
+      .eq("id", profileId)
+      .maybeSingle();
+    if (data?.slug) setCompanySlug(data.slug);
+  };
 
   const fetchRequests = async () => {
     setLoading(true);
@@ -63,10 +83,48 @@ export default function PartnerAgencyTab({ profileId, userId }: { profileId: str
         .select("id, full_name, phone, email, creci, logo_url, city, state, address, bio, instagram, cnpj, seller_category, company_name")
         .in("id", profileIds);
 
-      const enriched = data.map(r => ({
-        ...r,
-        profile: profiles?.find(p => p.id === r.requester_profile_id),
-      }));
+      // Fetch team members linked to these profiles
+      const { data: teamMembers } = await supabase
+        .from("team_members")
+        .select("id, slug, linked_profile_id")
+        .eq("company_id", profileId)
+        .in("linked_profile_id", profileIds);
+
+      // Fetch analytics for team members (last 30 days)
+      const teamMemberIds = teamMembers?.map(tm => tm.id) || [];
+      let analyticsMap: Record<string, { views: number; whatsapp_clicks: number }> = {};
+
+      if (teamMemberIds.length > 0) {
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+        const { data: analyticsData } = await supabase
+          .from("seller_analytics")
+          .select("team_member_id, event_type")
+          .eq("seller_id", profileId)
+          .in("team_member_id", teamMemberIds)
+          .gte("created_at", thirtyDaysAgo.toISOString());
+
+        if (analyticsData) {
+          analyticsData.forEach((row: any) => {
+            const tmId = row.team_member_id;
+            if (!tmId) return;
+            if (!analyticsMap[tmId]) analyticsMap[tmId] = { views: 0, whatsapp_clicks: 0 };
+            if (row.event_type === "view") analyticsMap[tmId].views++;
+            else if (row.event_type === "whatsapp_click") analyticsMap[tmId].whatsapp_clicks++;
+          });
+        }
+      }
+
+      const enriched = data.map(r => {
+        const tm = teamMembers?.find(t => t.linked_profile_id === r.requester_profile_id);
+        return {
+          ...r,
+          profile: profiles?.find(p => p.id === r.requester_profile_id),
+          teamMember: tm ? { id: tm.id, slug: tm.slug } : undefined,
+          analytics: tm ? (analyticsMap[tm.id] || { views: 0, whatsapp_clicks: 0 }) : undefined,
+        };
+      });
 
       setRequests(enriched);
     }
@@ -274,6 +332,7 @@ export default function PartnerAgencyTab({ profileId, userId }: { profileId: str
               onApprove={handleApprove}
               onReject={handleReject}
               onRemove={removePartner}
+              companySlug={companySlug}
             />
           ))}
         </div>
@@ -340,6 +399,7 @@ function PartnerCard({
   onApprove,
   onReject,
   onRemove,
+  companySlug,
 }: {
   request: RequestWithProfile;
   variant: "pending" | "approved";
@@ -349,6 +409,7 @@ function PartnerCard({
   onApprove: (r: RequestWithProfile) => void;
   onReject: (id: string) => void;
   onRemove: (r: RequestWithProfile) => void;
+  companySlug?: string | null;
 }) {
   const p = request.profile;
   const isPending = variant === "pending";
@@ -513,18 +574,68 @@ function PartnerCard({
       )}
 
       {!isPending && (
-        <div className="border-t border-border px-4 sm:px-5 py-3 bg-secondary/20 flex items-center justify-between">
-          <span className="text-xs text-muted-foreground">Parceiro desde {new Date(request.created_at).toLocaleDateString("pt-BR")}</span>
-          <Button
-            size="sm"
-            variant="destructive"
-            className="h-7 px-3 text-xs"
-            onClick={() => onRemove(request)}
-            disabled={processingId === request.id}
-          >
-            <Trash2 size={12} className="mr-1" />
-            Encerrar Parceria
-          </Button>
+        <div className="border-t border-border px-4 sm:px-5 py-3 bg-secondary/20 space-y-3">
+          {/* Analytics Stats */}
+          {request.analytics && (
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-1.5 text-sm">
+                <Eye size={14} className="text-primary" />
+                <span className="font-semibold text-foreground">{request.analytics.views}</span>
+                <span className="text-muted-foreground text-xs">visitas</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-sm">
+                <MousePointerClick size={14} className="text-green-500" />
+                <span className="font-semibold text-foreground">{request.analytics.whatsapp_clicks}</span>
+                <span className="text-muted-foreground text-xs">cliques WhatsApp</span>
+              </div>
+              {request.analytics.views > 0 && (
+                <div className="flex items-center gap-1.5 text-sm">
+                  <BarChart3 size={14} className="text-primary" />
+                  <span className="font-semibold text-foreground">
+                    {((request.analytics.whatsapp_clicks / request.analytics.views) * 100).toFixed(1)}%
+                  </span>
+                  <span className="text-muted-foreground text-xs">conversão</span>
+                </div>
+              )}
+              <span className="text-[10px] text-muted-foreground ml-auto">últimos 30 dias</span>
+            </div>
+          )}
+
+          {/* Actions row */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-muted-foreground">Parceiro desde {new Date(request.created_at).toLocaleDateString("pt-BR")}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              {companySlug && request.teamMember?.slug && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-7 px-3 text-xs"
+                  asChild
+                >
+                  <a
+                    href={`/empresa/${companySlug}?corretor=${request.teamMember.slug}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <ExternalLink size={12} className="mr-1" />
+                    Ver Loja Espelho
+                  </a>
+                </Button>
+              )}
+              <Button
+                size="sm"
+                variant="destructive"
+                className="h-7 px-3 text-xs"
+                onClick={() => onRemove(request)}
+                disabled={processingId === request.id}
+              >
+                <Trash2 size={12} className="mr-1" />
+                Encerrar Parceria
+              </Button>
+            </div>
+          </div>
         </div>
       )}
     </div>
