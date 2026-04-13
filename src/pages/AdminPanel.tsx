@@ -1198,6 +1198,9 @@ export default function AdminPanel() {
         </div>
       )}
 
+        </main>
+      </div>
+
       {/* Ban Dialog */}
       {banDialogOpen && banSeller && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
