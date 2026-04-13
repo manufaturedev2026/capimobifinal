@@ -1121,7 +1121,7 @@ export default function AdminPanel() {
             </p>
 
             {/* Preset gallery */}
-            <div className="grid grid-cols-5 gap-2 mb-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 mb-4">
               {LOGIN_HERO_PRESETS.map((preset) => {
                 
                 return (
@@ -1149,7 +1149,7 @@ export default function AdminPanel() {
             </div>
 
             {/* Current + upload */}
-            <div className="flex items-start gap-4">
+            <div className="flex flex-col sm:flex-row items-start gap-4">
               {loginHeroUrl && (
                 <div className="relative w-40 h-28 rounded-xl overflow-hidden border border-border shrink-0">
                   <img src={resolveLoginHeroImage(loginHeroUrl) || ""} alt="Login hero" className="w-full h-full object-cover" />
