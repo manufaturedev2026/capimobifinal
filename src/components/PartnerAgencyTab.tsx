@@ -52,9 +52,21 @@ export default function PartnerAgencyTab({ profileId, userId }: { profileId: str
   const [slugInputs, setSlugInputs] = useState<Record<string, string>>({});
   const [searchQuery, setSearchQuery] = useState("");
 
+  const [companySlug, setCompanySlug] = useState<string | null>(null);
+
   useEffect(() => {
     fetchRequests();
+    fetchCompanySlug();
   }, []);
+
+  const fetchCompanySlug = async () => {
+    const { data } = await supabase
+      .from("profiles")
+      .select("slug")
+      .eq("id", profileId)
+      .maybeSingle();
+    if (data?.slug) setCompanySlug(data.slug);
+  };
 
   const fetchRequests = async () => {
     setLoading(true);
@@ -71,10 +83,48 @@ export default function PartnerAgencyTab({ profileId, userId }: { profileId: str
         .select("id, full_name, phone, email, creci, logo_url, city, state, address, bio, instagram, cnpj, seller_category, company_name")
         .in("id", profileIds);
 
-      const enriched = data.map(r => ({
-        ...r,
-        profile: profiles?.find(p => p.id === r.requester_profile_id),
-      }));
+      // Fetch team members linked to these profiles
+      const { data: teamMembers } = await supabase
+        .from("team_members")
+        .select("id, slug, linked_profile_id")
+        .eq("company_id", profileId)
+        .in("linked_profile_id", profileIds);
+
+      // Fetch analytics for team members (last 30 days)
+      const teamMemberIds = teamMembers?.map(tm => tm.id) || [];
+      let analyticsMap: Record<string, { views: number; whatsapp_clicks: number }> = {};
+
+      if (teamMemberIds.length > 0) {
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+        const { data: analyticsData } = await supabase
+          .from("seller_analytics")
+          .select("team_member_id, event_type")
+          .eq("seller_id", profileId)
+          .in("team_member_id", teamMemberIds)
+          .gte("created_at", thirtyDaysAgo.toISOString());
+
+        if (analyticsData) {
+          analyticsData.forEach((row: any) => {
+            const tmId = row.team_member_id;
+            if (!tmId) return;
+            if (!analyticsMap[tmId]) analyticsMap[tmId] = { views: 0, whatsapp_clicks: 0 };
+            if (row.event_type === "view") analyticsMap[tmId].views++;
+            else if (row.event_type === "whatsapp_click") analyticsMap[tmId].whatsapp_clicks++;
+          });
+        }
+      }
+
+      const enriched = data.map(r => {
+        const tm = teamMembers?.find(t => t.linked_profile_id === r.requester_profile_id);
+        return {
+          ...r,
+          profile: profiles?.find(p => p.id === r.requester_profile_id),
+          teamMember: tm ? { id: tm.id, slug: tm.slug } : undefined,
+          analytics: tm ? (analyticsMap[tm.id] || { views: 0, whatsapp_clicks: 0 }) : undefined,
+        };
+      });
 
       setRequests(enriched);
     }
