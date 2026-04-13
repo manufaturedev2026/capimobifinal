@@ -8,6 +8,7 @@ import {
   User, Phone, Mail, Lock, Loader2,
   Globe, Brain, Megaphone, Wallet, FileText, Home,
   Smartphone, Camera, Target, Flame, Diamond, ChevronRight, MapPin,
+  Shield, Users, TrendingUp, Award,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import MarketplaceNavbar from "@/components/MarketplaceNavbar";
@@ -102,34 +103,41 @@ const FEATURES = [
 ];
 
 const IDEAL_FOR = [
-  "Corretores autônomos",
-  "Imobiliárias",
-  "Equipes de vendas",
-  "Quem quer parar de depender de portais",
+  { label: "Corretores autônomos", emoji: "👤" },
+  { label: "Imobiliárias", emoji: "🏢" },
+  { label: "Equipes de vendas", emoji: "👥" },
+  { label: "Quem quer parar de depender de portais", emoji: "🚀" },
+];
+
+const STATS = [
+  { value: "500+", label: "Imóveis Cadastrados", icon: Home },
+  { value: "50+", label: "Corretores Ativos", icon: Users },
+  { value: "24/7", label: "Disponibilidade", icon: Shield },
+  { value: "100%", label: "Responsivo", icon: Smartphone },
 ];
 
 const PLANS = [
   {
     key: "basico", name: "Gratuito", subtitle: "Para quem quer validar", price: 0, priceLabel: "Gratuito",
-    setupFee: null, color: "border-slate-400", popular: false,
+    setupFee: null, popular: false,
     benefits: ["Até 5 anúncios ativos", "1 Layout profissional", "Painel completo", "Estatísticas básicas"],
     cta: "Criar conta grátis",
   },
   {
     key: "start", name: "Start", subtitle: "Para corretores iniciantes", price: 24.99, priceLabel: "R$24,99",
-    setupFee: 299, color: "border-emerald-400", popular: false,
+    setupFee: 299, popular: false,
     benefits: ["Até 25 anúncios", "CRM + Galeria", "Destaque na listagem", "Estatísticas avançadas"],
     cta: "Começar agora",
   },
   {
     key: "premium", name: "Premium", subtitle: "Para profissionais", price: 49.99, priceLabel: "R$49,99",
-    setupFee: 499, color: "border-amber-400", popular: true,
+    setupFee: 499, popular: true,
     benefits: ["Até 100 anúncios", "4 Layouts exclusivos", "Stories + Push", "Vídeo banner", "6 temas", "Destaque máximo"],
     cta: "Assinar Premium",
   },
   {
     key: "vip", name: "VIP", subtitle: "Para imobiliárias", price: 99.99, priceLabel: "R$99,99",
-    setupFee: 999, color: "border-purple-400", popular: false,
+    setupFee: 999, popular: false,
     benefits: ["Anúncios ilimitados", "Todos os recursos", "Equipe de corretores", "Domínio próprio", "Suporte prioritário"],
     cta: "Falar com consultor",
   },
@@ -211,6 +219,10 @@ export default function VenderPage() {
     document.getElementById("signup-form")?.scrollIntoView({ behavior: "smooth" });
   };
 
+  const salesVideoId = salesVideoUrl
+    ? salesVideoUrl.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([a-zA-Z0-9_-]{11})/)?.[1] || null
+    : null;
+
   return (
     <>
       <Helmet>
@@ -218,42 +230,66 @@ export default function VenderPage() {
         <meta name="description" content="Crie seu site imobiliário profissional com CRM completo, gestão de leads, contratos, stories e muito mais. Comece gratuitamente." />
       </Helmet>
 
-        <div className="min-h-screen text-white overflow-x-hidden" style={{ ...themeVars, background: theme.darkBase }}>
+      <div className="min-h-screen text-white overflow-x-hidden" style={{ ...themeVars, background: theme.darkBase }}>
 
         <MarketplaceNavbar theme={theme} user={user} showImoveisScroll={false} />
 
         {/* ═══ HERO ═══ */}
         <section className="relative overflow-hidden pt-14">
+          {/* Background effects */}
           <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${theme.primary}18, transparent, ${theme.promoAccent || theme.primary}15)` }} />
-          <div className="absolute top-20 left-1/4 w-96 h-96 rounded-full blur-[120px]" style={{ background: `${theme.primary}18` }} />
-          <div className="absolute bottom-0 right-1/4 w-80 h-80 rounded-full blur-[100px]" style={{ background: `${theme.promoAccent || theme.primary}12` }} />
+          <div className="absolute top-20 left-1/4 w-64 md:w-96 h-64 md:h-96 rounded-full blur-[120px]" style={{ background: `${theme.primary}18` }} />
+          <div className="absolute bottom-0 right-1/4 w-52 md:w-80 h-52 md:h-80 rounded-full blur-[100px]" style={{ background: `${theme.promoAccent || theme.primary}12` }} />
+          {/* Grid pattern overlay */}
+          <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
 
-          <div className="relative max-w-6xl mx-auto px-4 py-20 md:py-28 grid md:grid-cols-2 gap-12 items-center">
+          <div className="relative max-w-6xl mx-auto px-4 py-12 md:py-24 lg:py-28 grid md:grid-cols-2 gap-8 md:gap-12 items-center">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7 }}
-              className="space-y-6"
+              className="space-y-5 md:space-y-6"
             >
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold" style={{ background: `${theme.primary}25`, border: `1px solid ${theme.primary}50`, color: theme.primary }}>
-                <Rocket className="w-3.5 h-3.5" /> Plataforma para corretores e imobiliárias
+              <div className="inline-flex items-center gap-2 px-3 md:px-4 py-1.5 rounded-full text-[11px] md:text-xs font-semibold" style={{ background: `${theme.primary}25`, border: `1px solid ${theme.primary}50`, color: theme.primary }}>
+                <Rocket className="w-3 h-3 md:w-3.5 md:h-3.5" /> Plataforma para corretores e imobiliárias
               </div>
 
-              <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-black leading-[1.1]">
+              <h1 className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-[1.1]">
                 Crie Seu Site Imobiliário Profissional com{" "}
                 <span className="text-transparent bg-clip-text" style={{ backgroundImage: `linear-gradient(to right, ${theme.primary}, ${theme.promoAccent || theme.primary})` }}>
                   CRM Completo
                 </span>
               </h1>
 
-              <p className="text-base md:text-lg text-white/60 max-w-lg leading-relaxed">
+              <p className="text-sm md:text-base lg:text-lg text-white/60 max-w-lg leading-relaxed">
                 Pare de depender de plataformas e portais caros.
                 Tenha seu próprio site, seus próprios clientes e controle total das suas vendas.
               </p>
 
-              <Button onClick={scrollToForm} size="lg" className="text-white font-bold rounded-xl px-8 text-base shadow-lg" style={{ background: `linear-gradient(to right, ${theme.primary}, ${theme.promoAccent || theme.primary})`, boxShadow: `0 10px 25px ${theme.primary}40` }}>
-                Criar Meu Site Agora <ArrowRight className="ml-2 w-5 h-5" />
-              </Button>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Button onClick={scrollToForm} size="lg" className="text-white font-bold rounded-xl px-6 md:px-8 text-sm md:text-base shadow-lg" style={{ background: `linear-gradient(to right, ${theme.primary}, ${theme.promoAccent || theme.primary})`, boxShadow: `0 10px 25px ${theme.primary}40` }}>
+                  Criar Meu Site Agora <ArrowRight className="ml-2 w-4 h-4 md:w-5 md:h-5" />
+                </Button>
+                <Button onClick={() => document.getElementById("planos")?.scrollIntoView({ behavior: "smooth" })} variant="outline" className="rounded-xl border-white/20 text-white/70 hover:text-white hover:bg-white/5 text-sm">
+                  Ver Planos <ChevronRight className="ml-1 w-4 h-4" />
+                </Button>
+              </div>
+
+              {/* Trust badges */}
+              <div className="flex items-center gap-4 pt-2">
+                <div className="flex items-center gap-1.5 text-white/40 text-[11px] md:text-xs">
+                  <Shield className="w-3.5 h-3.5" style={{ color: theme.primary }} />
+                  <span>SSL Seguro</span>
+                </div>
+                <div className="flex items-center gap-1.5 text-white/40 text-[11px] md:text-xs">
+                  <Zap className="w-3.5 h-3.5" style={{ color: theme.primary }} />
+                  <span>Setup em 2 min</span>
+                </div>
+                <div className="flex items-center gap-1.5 text-white/40 text-[11px] md:text-xs">
+                  <Award className="w-3.5 h-3.5" style={{ color: theme.primary }} />
+                  <span>Sem contrato</span>
+                </div>
+              </div>
             </motion.div>
 
             {/* Signup Form */}
@@ -262,46 +298,46 @@ export default function VenderPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.2 }}
             >
-              <form id="signup-form" onSubmit={handleSignup} className="bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl p-6 md:p-8 space-y-4">
-                <div className="text-center mb-2">
-                  <h2 className="font-display font-bold text-xl">Comece Gratuitamente</h2>
-                  <p className="text-white/50 text-sm mt-1">Crie sua conta em menos de 1 minuto</p>
+              <form id="signup-form" onSubmit={handleSignup} className="bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl p-5 md:p-8 space-y-3 md:space-y-4 shadow-2xl" style={{ boxShadow: `0 25px 60px ${theme.primary}10` }}>
+                <div className="text-center mb-1 md:mb-2">
+                  <h2 className="font-display font-bold text-lg md:text-xl">Comece Gratuitamente</h2>
+                  <p className="text-white/50 text-xs md:text-sm mt-1">Crie sua conta em menos de 1 minuto</p>
                 </div>
                 <div className="relative">
-                  <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/60" />
+                  <User className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/60" />
                   <input type="text" placeholder="Seu nome completo *" value={fullName} onChange={(e) => setFullName(e.target.value)}
-                    className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-black/40 border border-white/15 text-white placeholder:text-white/60 outline-none transition-colors text-sm" style={{ '--tw-ring-color': theme.primary } as any} required />
+                    className="w-full pl-10 md:pl-11 pr-4 py-3 md:py-3.5 rounded-xl bg-black/40 border border-white/15 text-white placeholder:text-white/40 outline-none transition-colors text-sm focus:border-white/30" required />
                 </div>
                 <div className="relative">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/60" />
+                  <Mail className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/60" />
                   <input type="email" placeholder="Seu melhor e-mail *" value={email} onChange={(e) => setEmail(e.target.value)}
-                    className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-black/40 border border-white/15 text-white placeholder:text-white/60 outline-none transition-colors text-sm" required />
+                    className="w-full pl-10 md:pl-11 pr-4 py-3 md:py-3.5 rounded-xl bg-black/40 border border-white/15 text-white placeholder:text-white/40 outline-none transition-colors text-sm focus:border-white/30" required />
                 </div>
                 <div className="relative">
-                  <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/60" />
+                  <Phone className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/60" />
                   <input type="tel" placeholder="WhatsApp (opcional)" value={phone} onChange={(e) => setPhone(e.target.value)}
-                    className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-black/40 border border-white/15 text-white placeholder:text-white/60 outline-none transition-colors text-sm" />
+                    className="w-full pl-10 md:pl-11 pr-4 py-3 md:py-3.5 rounded-xl bg-black/40 border border-white/15 text-white placeholder:text-white/40 outline-none transition-colors text-sm focus:border-white/30" />
                 </div>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-2 md:gap-3">
                   <div className="relative">
-                    <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/60" />
+                    <MapPin className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/60" />
                     <select value={state} onChange={(e) => setState(e.target.value)}
-                      className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-black/40 border border-white/15 text-white outline-none transition-colors text-sm appearance-none">
+                      className="w-full pl-10 md:pl-11 pr-3 py-3 md:py-3.5 rounded-xl bg-black/40 border border-white/15 text-white outline-none transition-colors text-sm appearance-none focus:border-white/30">
                       {BRAZIL_STATES.map(s => <option key={s.uf} value={s.uf} className="bg-gray-900">{s.uf}</option>)}
                     </select>
                   </div>
                   <div className="relative">
-                    <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/60" />
+                    <MapPin className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/60" />
                     <input type="text" placeholder="Sua cidade *" value={city} onChange={(e) => setCity(e.target.value)}
-                      className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-black/40 border border-white/15 text-white placeholder:text-white/60 outline-none transition-colors text-sm" required />
+                      className="w-full pl-10 md:pl-11 pr-3 py-3 md:py-3.5 rounded-xl bg-black/40 border border-white/15 text-white placeholder:text-white/40 outline-none transition-colors text-sm focus:border-white/30" required />
                   </div>
                 </div>
                 <div className="relative">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/60" />
+                  <Lock className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/60" />
                   <input type="password" placeholder="Crie uma senha (mín. 6 caracteres) *" value={password} onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-black/40 border border-white/15 text-white placeholder:text-white/60 outline-none transition-colors text-sm" required minLength={6} />
+                    className="w-full pl-10 md:pl-11 pr-4 py-3 md:py-3.5 rounded-xl bg-black/40 border border-white/15 text-white placeholder:text-white/40 outline-none transition-colors text-sm focus:border-white/30" required minLength={6} />
                 </div>
-                <Button type="submit" disabled={submitting} className="w-full text-white font-bold rounded-xl py-3.5 text-sm shadow-lg" style={{ background: `linear-gradient(to right, ${theme.primary}, ${theme.promoAccent || theme.primary})`, boxShadow: `0 10px 25px ${theme.primary}40` }}>
+                <Button type="submit" disabled={submitting} className="w-full text-white font-bold rounded-xl py-3 md:py-3.5 text-sm shadow-lg" style={{ background: `linear-gradient(to right, ${theme.primary}, ${theme.promoAccent || theme.primary})`, boxShadow: `0 10px 25px ${theme.primary}40` }}>
                   {submitting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
                   {submitting ? "Criando conta..." : "CRIAR MEU SITE AGORA"}
                   {!submitting && <ArrowRight className="ml-1.5 w-4 h-4" />}
@@ -314,41 +350,63 @@ export default function VenderPage() {
           </div>
         </section>
 
+        {/* ═══ STATS BAR ═══ */}
+        <section className="border-y border-white/5 py-8 md:py-10" style={{ background: `${theme.primary}08` }}>
+          <div className="max-w-5xl mx-auto px-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+              {STATS.map((stat, i) => (
+                <motion.div
+                  key={stat.label}
+                  initial={{ opacity: 0, y: 15 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 }}
+                  className="text-center"
+                >
+                  <stat.icon className="w-5 h-5 mx-auto mb-2" style={{ color: theme.primary }} />
+                  <p className="font-display text-xl md:text-2xl font-black" style={{ color: theme.primary }}>{stat.value}</p>
+                  <p className="text-[11px] md:text-xs text-white/50 mt-0.5">{stat.label}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* ═══ INTRO ═══ */}
-        <section className="bg-white/[0.02] border-y border-white/5 py-16 md:py-20">
-          <div className="max-w-4xl mx-auto px-4 text-center space-y-4">
-            <div className="inline-flex items-center gap-2 font-semibold text-sm" style={{ color: theme.primary }}>
+        <section className="bg-white/[0.02] py-12 md:py-16 lg:py-20">
+          <div className="max-w-4xl mx-auto px-4 text-center space-y-3 md:space-y-4">
+            <div className="inline-flex items-center gap-2 font-semibold text-xs md:text-sm" style={{ color: theme.primary }}>
               <Rocket className="w-4 h-4" /> Tudo que você precisa em um só lugar
             </div>
-            <h2 className="font-display text-2xl md:text-3xl font-black">
+            <h2 className="font-display text-xl sm:text-2xl md:text-3xl font-black">
               Com nossa plataforma, você cria um site imobiliário completo
             </h2>
-            <p className="text-white/50 text-base max-w-2xl mx-auto">
+            <p className="text-white/50 text-sm md:text-base max-w-2xl mx-auto">
               Ferramentas avançadas para corretores e imobiliárias crescerem de verdade.
             </p>
           </div>
         </section>
 
         {/* ═══ FEATURES GRID ═══ */}
-        <section className="py-16 md:py-24">
-          <div className="max-w-6xl mx-auto px-4 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <section className="py-12 md:py-16 lg:py-24">
+          <div className="max-w-6xl mx-auto px-4 grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {FEATURES.map((f, i) => (
               <motion.div
                 key={f.title}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.06 }}
-                className="bg-white/[0.03] hover:bg-white/[0.06] border border-white/8 hover:border-white/15 rounded-2xl p-6 transition-all group"
+                transition={{ delay: i * 0.05 }}
+                className="bg-white/[0.03] hover:bg-white/[0.06] border border-white/8 hover:border-white/15 rounded-2xl p-5 md:p-6 transition-all group"
               >
-                <div className="flex items-center gap-3 mb-4">
-                  <span className="text-2xl">{f.emoji}</span>
-                  <h3 className="font-display font-bold text-base">{f.title}</h3>
+                <div className="flex items-center gap-3 mb-3 md:mb-4">
+                  <span className="text-xl md:text-2xl">{f.emoji}</span>
+                  <h3 className="font-display font-bold text-sm md:text-base">{f.title}</h3>
                 </div>
-                <ul className="space-y-2">
+                <ul className="space-y-1.5 md:space-y-2">
                   {f.items.map((item) => (
-                    <li key={item} className="flex items-start gap-2 text-sm text-white/60">
-                      <Check className="w-3.5 h-3.5 mt-0.5 shrink-0" style={{ color: theme.primary }} />
+                    <li key={item} className="flex items-start gap-2 text-xs md:text-sm text-white/60">
+                      <Check className="w-3 h-3 md:w-3.5 md:h-3.5 mt-0.5 shrink-0" style={{ color: theme.primary }} />
                       {item}
                     </li>
                   ))}
@@ -359,62 +417,59 @@ export default function VenderPage() {
         </section>
 
         {/* ═══ VIDEO SECTION ═══ */}
-        {salesVideoUrl && (() => {
-          const match = salesVideoUrl.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([a-zA-Z0-9_-]{11})/);
-          const vid = match ? match[1] : null;
-          if (!vid) return null;
-          return (
-            <section className="py-16 md:py-24 border-y border-white/5">
-              <div className="max-w-4xl mx-auto px-4">
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  className="text-center mb-8"
-                >
-                  <div className="inline-flex items-center gap-2 font-semibold text-sm mb-3" style={{ color: theme.primary }}>
-                    <Play className="w-4 h-4" /> Veja como funciona
-                  </div>
-                  {salesVideoTitle && (
-                    <h2 className="font-display text-2xl md:text-3xl font-black">{salesVideoTitle}</h2>
-                  )}
-                </motion.div>
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  className="aspect-video rounded-2xl overflow-hidden border border-white/10 shadow-2xl"
-                  style={{ boxShadow: `0 25px 60px ${theme.primary}20` }}
-                >
-                  <iframe
-                    src={`https://www.youtube.com/embed/${vid}`}
-                    title={salesVideoTitle || "Vídeo"}
-                    allow="autoplay; encrypted-media"
-                    allowFullScreen
-                    className="w-full h-full"
-                  />
-                </motion.div>
-              </div>
-            </section>
-          );
-        })()}
+        {salesVideoId && (
+          <section className="py-12 md:py-16 lg:py-24 border-y border-white/5">
+            <div className="max-w-4xl mx-auto px-4">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="text-center mb-6 md:mb-8"
+              >
+                <div className="inline-flex items-center gap-2 font-semibold text-xs md:text-sm mb-3" style={{ color: theme.primary }}>
+                  <Play className="w-4 h-4" /> Veja como funciona
+                </div>
+                {salesVideoTitle && (
+                  <h2 className="font-display text-xl sm:text-2xl md:text-3xl font-black">{salesVideoTitle}</h2>
+                )}
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                className="aspect-video rounded-2xl overflow-hidden border border-white/10 shadow-2xl"
+                style={{ boxShadow: `0 25px 60px ${theme.primary}20` }}
+              >
+                <iframe
+                  src={`https://www.youtube.com/embed/${salesVideoId}`}
+                  title={salesVideoTitle || "Vídeo"}
+                  allow="autoplay; encrypted-media"
+                  allowFullScreen
+                  className="w-full h-full"
+                />
+              </motion.div>
+            </div>
+          </section>
+        )}
 
         {/* ═══ IDEAL FOR ═══ */}
-        <section className="border-y border-white/5 py-16 md:py-20" style={{ background: `linear-gradient(135deg, ${theme.primary}18, ${theme.promoAccent || theme.primary}0a)` }}>
+        <section className="py-12 md:py-16 lg:py-20" style={{ background: `linear-gradient(135deg, ${theme.primary}12, ${theme.promoAccent || theme.primary}08)` }}>
           <div className="max-w-4xl mx-auto px-4 text-center">
-            <div className="inline-flex items-center gap-2 text-orange-400 font-semibold text-sm mb-4">
+            <div className="inline-flex items-center gap-2 text-orange-400 font-semibold text-xs md:text-sm mb-6">
               <Flame className="w-4 h-4" /> Ideal para
             </div>
-            <div className="flex flex-wrap justify-center gap-3 mt-6">
-              {IDEAL_FOR.map((item) => (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+              {IDEAL_FOR.map((item, i) => (
                 <motion.div
-                  key={item}
+                  key={item.label}
                   initial={{ opacity: 0, scale: 0.9 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
-                  className="px-5 py-3 rounded-xl bg-white/5 border border-white/10 text-white/80 text-sm font-medium"
+                  transition={{ delay: i * 0.08 }}
+                  className="flex flex-col items-center gap-2 px-4 py-5 md:py-6 rounded-2xl bg-white/5 border border-white/10 hover:border-white/20 transition-all"
                 >
-                  {item}
+                  <span className="text-2xl md:text-3xl">{item.emoji}</span>
+                  <span className="text-white/80 text-xs md:text-sm font-medium text-center leading-snug">{item.label}</span>
                 </motion.div>
               ))}
             </div>
@@ -423,13 +478,13 @@ export default function VenderPage() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="mt-12 max-w-xl mx-auto"
+              className="mt-10 md:mt-12 max-w-xl mx-auto"
             >
               <div className="flex items-center gap-3 mb-3 justify-center">
                 <Diamond className="w-5 h-5" style={{ color: theme.primary }} />
-                <h3 className="font-display font-bold text-lg">Vantagem Competitiva</h3>
+                <h3 className="font-display font-bold text-base md:text-lg">Vantagem Competitiva</h3>
               </div>
-              <p className="text-white/50 text-sm leading-relaxed">
+              <p className="text-white/50 text-xs md:text-sm leading-relaxed">
                 Enquanto outros corretores pagam caro para anunciar…
                 <br />
                 <span className="text-white/80 font-medium">
@@ -441,19 +496,19 @@ export default function VenderPage() {
         </section>
 
         {/* ═══ PRICING ═══ */}
-        <section id="planos" className="py-20 md:py-28">
+        <section id="planos" className="py-16 md:py-20 lg:py-28">
           <div className="max-w-6xl mx-auto px-4">
-            <div className="text-center max-w-2xl mx-auto mb-14">
-              <p className="font-semibold text-sm uppercase tracking-wide mb-3" style={{ color: theme.primary }}>Planos e preços</p>
-              <h2 className="font-display text-3xl md:text-4xl font-black">
+            <div className="text-center max-w-2xl mx-auto mb-10 md:mb-14">
+              <p className="font-semibold text-xs md:text-sm uppercase tracking-wide mb-3" style={{ color: theme.primary }}>Planos e preços</p>
+              <h2 className="font-display text-2xl sm:text-3xl md:text-4xl font-black">
                 Comece de graça ou escolha seu plano
               </h2>
-              <p className="text-white/40 mt-4 text-base">
+              <p className="text-white/40 mt-3 md:mt-4 text-sm md:text-base">
                 Todos os planos incluem 7 dias de teste gratuito
               </p>
             </div>
 
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
               {PLANS.map((plan, i) => (
                 <motion.div
                   key={plan.key}
@@ -461,7 +516,7 @@ export default function VenderPage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.1 }}
-                  className={`relative bg-white/[0.04] backdrop-blur rounded-2xl border ${plan.popular ? "border-amber-400/60 ring-1 ring-amber-400/30 shadow-xl shadow-amber-500/10" : "border-white/10"} p-6 flex flex-col`}
+                  className={`relative bg-white/[0.04] backdrop-blur rounded-2xl border ${plan.popular ? "border-amber-400/60 ring-1 ring-amber-400/30 shadow-xl shadow-amber-500/10" : "border-white/10"} p-5 md:p-6 flex flex-col`}
                 >
                   {plan.popular && (
                     <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-[10px] font-bold uppercase px-4 py-1 rounded-full tracking-wide">
@@ -469,19 +524,19 @@ export default function VenderPage() {
                     </span>
                   )}
 
-                  <h3 className="font-display font-bold text-xl">{plan.name}</h3>
-                  <p className="text-xs text-white/40 mt-1">{plan.subtitle}</p>
+                  <h3 className="font-display font-bold text-lg md:text-xl">{plan.name}</h3>
+                  <p className="text-[11px] md:text-xs text-white/40 mt-1">{plan.subtitle}</p>
 
-                  <div className="mt-5 mb-4">
+                  <div className="mt-4 md:mt-5 mb-3 md:mb-4">
                     {plan.price === 0 ? (
-                      <p className="text-3xl font-black">Gratuito</p>
+                      <p className="text-2xl md:text-3xl font-black">Gratuito</p>
                     ) : (
                       <>
-                        <p className="text-3xl font-black">
-                          {plan.priceLabel}<span className="text-sm font-normal text-white/40">/mês</span>
+                        <p className="text-2xl md:text-3xl font-black">
+                          {plan.priceLabel}<span className="text-xs md:text-sm font-normal text-white/40">/mês</span>
                         </p>
                         {plan.setupFee && (
-                          <p className="text-[11px] text-white/30 mt-1">
+                          <p className="text-[10px] md:text-[11px] text-white/30 mt-1">
                             + R${plan.setupFee.toLocaleString("pt-BR")} de implementação
                           </p>
                         )}
@@ -489,10 +544,10 @@ export default function VenderPage() {
                     )}
                   </div>
 
-                  <ul className="space-y-2.5 flex-1 mb-6">
+                  <ul className="space-y-2 md:space-y-2.5 flex-1 mb-5 md:mb-6">
                     {plan.benefits.map((b) => (
-                      <li key={b} className="flex items-start gap-2 text-sm text-white/60">
-                        <Check className="w-4 h-4 mt-0.5 shrink-0" style={{ color: theme.primary }} />
+                      <li key={b} className="flex items-start gap-2 text-xs md:text-sm text-white/60">
+                        <Check className="w-3.5 h-3.5 md:w-4 md:h-4 mt-0.5 shrink-0" style={{ color: theme.primary }} />
                         {b}
                       </li>
                     ))}
@@ -500,7 +555,7 @@ export default function VenderPage() {
 
                   <Button
                     onClick={scrollToForm}
-                    className={`w-full rounded-xl font-bold ${
+                    className={`w-full rounded-xl font-bold text-sm ${
                       plan.popular
                         ? "bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white"
                         : "bg-white/10 hover:bg-white/15 text-white"
@@ -515,22 +570,22 @@ export default function VenderPage() {
         </section>
 
         {/* ═══ CTA FINAL ═══ */}
-        <section className="border-t border-white/5 py-20 md:py-28" style={{ background: `linear-gradient(135deg, ${theme.primary}30, ${theme.promoAccent || theme.primary}18)` }}>
-          <div className="max-w-3xl mx-auto px-4 text-center space-y-6">
+        <section className="border-t border-white/5 py-16 md:py-20 lg:py-28" style={{ background: `linear-gradient(135deg, ${theme.primary}30, ${theme.promoAccent || theme.primary}18)` }}>
+          <div className="max-w-3xl mx-auto px-4 text-center space-y-5 md:space-y-6">
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-              <Zap className="w-12 h-12 mx-auto mb-4" style={{ color: theme.primary }} />
-              <h2 className="font-display text-3xl md:text-4xl font-black">
+              <Zap className="w-10 h-10 md:w-12 md:h-12 mx-auto mb-3 md:mb-4" style={{ color: theme.primary }} />
+              <h2 className="font-display text-2xl sm:text-3xl md:text-4xl font-black">
                 Comece Agora
               </h2>
-              <p className="text-white/50 text-lg mt-4 max-w-xl mx-auto">
+              <p className="text-white/50 text-sm md:text-lg mt-3 md:mt-4 max-w-xl mx-auto">
                 Crie seu site imobiliário completo em poucos minutos e comece a gerar leads todos os dias.
               </p>
-              <div className="flex flex-col sm:flex-row gap-3 justify-center mt-8">
-                <Button onClick={scrollToForm} size="lg" className="text-white font-bold rounded-xl px-10 text-base shadow-lg" style={{ background: `linear-gradient(to right, ${theme.primary}, ${theme.promoAccent || theme.primary})`, boxShadow: `0 10px 25px ${theme.primary}40` }}>
-                  CRIAR MEU SITE AGORA <ArrowRight className="ml-2 w-5 h-5" />
+              <div className="flex flex-col sm:flex-row gap-3 justify-center mt-6 md:mt-8">
+                <Button onClick={scrollToForm} size="lg" className="text-white font-bold rounded-xl px-8 md:px-10 text-sm md:text-base shadow-lg" style={{ background: `linear-gradient(to right, ${theme.primary}, ${theme.promoAccent || theme.primary})`, boxShadow: `0 10px 25px ${theme.primary}40` }}>
+                  CRIAR MEU SITE AGORA <ArrowRight className="ml-2 w-4 h-4 md:w-5 md:h-5" />
                 </Button>
                 <Link to="/login">
-                  <Button variant="outline" size="lg" className="rounded-xl border-primary/40 text-primary hover:bg-primary/10 px-8 text-base font-semibold">
+                  <Button variant="outline" size="lg" className="w-full sm:w-auto rounded-xl border-white/20 text-white/70 hover:text-white hover:bg-white/5 px-8 text-sm md:text-base font-semibold">
                     Já tenho conta
                   </Button>
                 </Link>
@@ -540,8 +595,8 @@ export default function VenderPage() {
         </section>
 
         {/* Footer */}
-        <footer className="bg-black/30 border-t border-white/5 py-8">
-          <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-white/30">
+        <footer className="bg-black/30 border-t border-white/5 py-6 md:py-8">
+          <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-3 md:gap-4 text-xs text-white/30">
             <p>© {new Date().getFullYear()} Capimobi. Todos os direitos reservados.</p>
             <div className="flex gap-4">
               <Link to="/privacidade" className="hover:text-white/60 transition-colors">Privacidade</Link>
