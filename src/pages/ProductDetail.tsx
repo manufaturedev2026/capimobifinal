@@ -995,7 +995,7 @@ export default function ProductDetail() {
           }}
           teamMemberId={teamMember?.origin === "manual" ? teamMember?.id : null}
           partnerBrokerSellerId={teamMember?.origin === "partnership" && teamMember?.linked_profile_id ? teamMember.linked_profile_id : null}
-          partnerBrokerUserId={teamMember?.origin === "partnership" && teamMember?.linked_profile_id ? undefined : undefined}
+          partnerBrokerUserId={teamMember?.origin === "partnership" && teamMember?._linked_user_id ? teamMember._linked_user_id : null}
         />
       )}
     </div>
