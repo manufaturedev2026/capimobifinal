@@ -236,26 +236,44 @@ export default function CompanyProfile() {
           .eq("is_active", true)
           .single();
         
-        if (member && !member.photo_url) {
-          // Try to get the broker's actual profile photo via partnership request
-          const { data: partnerReq } = await supabase
-            .from("partnership_requests")
-            .select("requester_profile_id")
-            .eq("agency_profile_id", pid)
-            .eq("status", "aprovado")
-            .limit(20);
+        if (member) {
+          // Always try to get the broker's latest profile photo
+          let brokerPhoto: string | null = null;
           
-          if (partnerReq && partnerReq.length > 0) {
-            const reqProfileIds = partnerReq.map(r => r.requester_profile_id);
-            const { data: brokerProfiles } = await supabase
+          // Method 1: Match by email (most reliable)
+          if (member.email) {
+            const { data: brokerProfile } = await supabase
               .from("profiles")
-              .select("id, logo_url, full_name")
-              .in("id", reqProfileIds);
+              .select("logo_url")
+              .eq("email", member.email)
+              .maybeSingle();
+            if (brokerProfile?.logo_url) brokerPhoto = brokerProfile.logo_url;
+          }
+          
+          // Method 2: Fallback to partnership request match by name
+          if (!brokerPhoto) {
+            const { data: partnerReq } = await supabase
+              .from("partnership_requests")
+              .select("requester_profile_id")
+              .eq("agency_profile_id", pid)
+              .eq("status", "aprovado")
+              .limit(20);
             
-            const matchedBroker = brokerProfiles?.find(bp => bp.full_name === member.full_name);
-            if (matchedBroker?.logo_url) {
-              member.photo_url = matchedBroker.logo_url;
+            if (partnerReq && partnerReq.length > 0) {
+              const reqProfileIds = partnerReq.map(r => r.requester_profile_id);
+              const { data: brokerProfiles } = await supabase
+                .from("profiles")
+                .select("id, logo_url, full_name")
+                .in("id", reqProfileIds);
+              
+              const matchedBroker = brokerProfiles?.find(bp => bp.full_name === member.full_name);
+              if (matchedBroker?.logo_url) brokerPhoto = matchedBroker.logo_url;
             }
+          }
+          
+          // Use broker's latest photo, falling back to stored photo_url
+          if (brokerPhoto) {
+            member.photo_url = brokerPhoto;
           }
         }
 
