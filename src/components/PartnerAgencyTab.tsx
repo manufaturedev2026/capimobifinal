@@ -51,6 +51,7 @@ export default function PartnerAgencyTab({ profileId, userId }: { profileId: str
   const [processingId, setProcessingId] = useState<string | null>(null);
   const [slugInputs, setSlugInputs] = useState<Record<string, string>>({});
   const [searchQuery, setSearchQuery] = useState("");
+  const [activeSubTab, setActiveSubTab] = useState<"vinculados" | "solicitacoes">("vinculados");
 
   const [companySlug, setCompanySlug] = useState<string | null>(null);
 
