@@ -484,7 +484,7 @@ export default function StoreLayoutMinimal({
             Quer anunciar seu imóvel?
           </h2>
           <p className="text-xs mb-6 max-w-md mx-auto" style={{ color: storeTheme.textMuted }}>
-            Cadastre seu imóvel gratuitamente com {dbProfile?.company_name || dbProfile?.full_name || "o corretor"} e alcance mais compradores.
+            Cadastre seu imóvel gratuitamente com {sellerDisplayName} e alcance mais compradores.
           </p>
           <Link
             to={`/captar-imovel/${corretorSlug}`}
