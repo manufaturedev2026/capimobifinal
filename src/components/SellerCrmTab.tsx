@@ -158,10 +158,10 @@ export default function SellerCrmTab({ userId, sellerId }: SellerCrmTabProps) {
   const fetchTeamMembers = useCallback(async () => {
     const { data } = await supabase
       .from("team_members")
-      .select("id, full_name")
+      .select("id, full_name, creci")
       .eq("company_id", sellerId);
-    const map: Record<string, string> = {};
-    (data || []).forEach((m: any) => { map[m.id] = m.full_name; });
+    const map: Record<string, { name: string; creci?: string }> = {};
+    (data || []).forEach((m: any) => { map[m.id] = { name: m.full_name, creci: m.creci || undefined }; });
     setTeamMembersMap(map);
   }, [sellerId]);
 
