@@ -242,11 +242,16 @@ export default function CompanyProfile() {
           if (memberAny.origin === "partnership" && memberAny.linked_profile_id) {
             const { data: brokerProfile } = await supabase
               .from("profiles")
-              .select("logo_url")
+              .select("logo_url, id, user_id")
               .eq("id", memberAny.linked_profile_id)
               .maybeSingle();
             if (brokerProfile?.logo_url) {
               member.photo_url = brokerProfile.logo_url;
+            }
+            // Store broker's own profile info for CRM routing
+            if (brokerProfile) {
+              (member as any)._partnerSellerId = brokerProfile.id;
+              (member as any)._partnerUserId = brokerProfile.user_id;
             }
           } else if (!member.photo_url && member.email) {
             // Fallback for legacy members without origin field
@@ -2210,6 +2215,8 @@ export default function CompanyProfile() {
           extraNotes={leadCaptureContext?.extraNotes}
           leadSource={leadCaptureContext?.leadSource}
           teamMemberId={teamMember?.id || null}
+          partnerBrokerSellerId={teamMember?._partnerSellerId || null}
+          partnerBrokerUserId={teamMember?._partnerUserId || null}
           onComplete={() => {
             if (pendingWhatsAppAction) {
               pendingWhatsAppAction();
