@@ -531,16 +531,61 @@ export default function SellerCrmTab({ userId, sellerId }: SellerCrmTabProps) {
                   const actionIcons: Record<string, string> = {
                     criado: "🆕", etapa: "📍", contato: "📞", nota: "📝", nome: "✏️",
                   };
+                  const relatedContact = contacts.find(c => c.id === act.contact_id);
+                  const isCreation = act.id.startsWith("creation-");
                   return (
-                    <div key={act.id} className="flex items-start gap-3 py-2.5 border-b border-border last:border-0">
-                      <span className="text-base mt-0.5">{actionIcons[act.action_type] || "📌"}</span>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs text-foreground">{act.description}</p>
-                        <p className="text-[10px] text-muted-foreground mt-0.5">
-                          {format(new Date(act.created_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
-                        </p>
-                      </div>
-                    </div>
+                    <details key={act.id} className="group border-b border-border last:border-0">
+                      <summary className="flex items-start gap-3 py-2.5 cursor-pointer list-none hover:bg-secondary/50 rounded-lg px-2 -mx-2 transition-colors">
+                        <span className="text-base mt-0.5">{actionIcons[act.action_type] || "📌"}</span>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs text-foreground">{act.description}</p>
+                          <p className="text-[10px] text-muted-foreground mt-0.5">
+                            {format(new Date(act.created_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+                          </p>
+                        </div>
+                        <ChevronRight size={14} className="text-muted-foreground mt-1 group-open:rotate-90 transition-transform" />
+                      </summary>
+                      {relatedContact && (
+                        <div className="ml-10 pb-3 space-y-1.5">
+                          <div className="bg-secondary/60 rounded-xl p-3 space-y-1.5 text-xs">
+                            <p className="font-semibold text-foreground">{relatedContact.full_name}</p>
+                            {relatedContact.phone && (
+                              <p className="flex items-center gap-1.5 text-muted-foreground">
+                                <Phone size={11} /> {relatedContact.phone}
+                              </p>
+                            )}
+                            {relatedContact.email && (
+                              <p className="flex items-center gap-1.5 text-muted-foreground">
+                                <MessageCircle size={11} /> {relatedContact.email}
+                              </p>
+                            )}
+                            <p className="flex items-center gap-1.5 text-muted-foreground">
+                              <Tag size={11} /> Etapa: {DEFAULT_STAGES.find(s => s.name === relatedContact.funnel_stage)?.label || relatedContact.funnel_stage}
+                            </p>
+                            {relatedContact.notes && (
+                              <p className="text-muted-foreground mt-1 whitespace-pre-line border-t border-border pt-1.5">{relatedContact.notes}</p>
+                            )}
+                            {(relatedContact as any).team_member_id && teamMembersMap[(relatedContact as any).team_member_id] && (
+                              <p className="flex items-center gap-1.5 text-blue-600 font-semibold">
+                                <Users size={11} /> {teamMembersMap[(relatedContact as any).team_member_id].name}
+                                {teamMembersMap[(relatedContact as any).team_member_id].creci && ` • CRECI ${teamMembersMap[(relatedContact as any).team_member_id].creci}`}
+                              </p>
+                            )}
+                            {act.old_value && act.new_value && (
+                              <p className="text-muted-foreground">
+                                <span className="line-through opacity-60">{act.old_value}</span> <ArrowRight size={10} className="inline" /> <span className="font-semibold text-foreground">{act.new_value}</span>
+                              </p>
+                            )}
+                            {relatedContact.phone && (
+                              <a href={`https://wa.me/55${relatedContact.phone.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1.5 mt-1 px-3 py-1.5 rounded-lg bg-[#25d366] text-white text-[11px] font-bold hover:bg-[#22c55e] transition-colors">
+                                <MessageCircle size={12} /> Abrir WhatsApp
+                              </a>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </details>
                   );
                 })}
               </div>
