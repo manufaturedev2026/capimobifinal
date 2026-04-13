@@ -152,7 +152,15 @@ export default function ProductDetail() {
       const { data: member } = await supabase
         .from("team_members").select("*")
         .eq("company_id", item.seller_id).eq("slug", corretorSlug).eq("is_active", true).maybeSingle();
-      if (member) setTeamMember(member);
+      if (member) {
+        // For partnership brokers, fetch their linked profile's user_id
+        if (member.origin === "partnership" && member.linked_profile_id) {
+          const { data: linkedProfile } = await supabase
+            .from("profiles").select("user_id").eq("id", member.linked_profile_id).maybeSingle();
+          if (linkedProfile) (member as any)._linked_user_id = linkedProfile.user_id;
+        }
+        setTeamMember(member);
+      }
     }
     const { data: subData } = await supabase
       .from("seller_subscriptions").select("tier")
