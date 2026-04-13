@@ -92,6 +92,31 @@ export default function TeamMembersTab({ profileId, userId, maxMembers }: Props)
         return m;
       });
       setMembers(enriched as TeamMember[]);
+
+      // Fetch analytics for all team members (last 30 days)
+      const memberIds = data.map(m => m.id);
+      if (memberIds.length > 0) {
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        const { data: analyticsData } = await supabase
+          .from("seller_analytics")
+          .select("team_member_id, event_type")
+          .eq("seller_id", profileId)
+          .in("team_member_id", memberIds)
+          .gte("created_at", thirtyDaysAgo.toISOString());
+
+        const map: Record<string, { views: number; whatsapp_clicks: number }> = {};
+        if (analyticsData) {
+          analyticsData.forEach((row: any) => {
+            const tmId = row.team_member_id;
+            if (!tmId) return;
+            if (!map[tmId]) map[tmId] = { views: 0, whatsapp_clicks: 0 };
+            if (row.event_type === "view") map[tmId].views++;
+            else if (row.event_type === "whatsapp_click") map[tmId].whatsapp_clicks++;
+          });
+        }
+        setAnalyticsMap(map);
+      }
     }
     setLoading(false);
   };
