@@ -47,9 +47,7 @@ export const DEFAULT_CONFIG: InviteChatConfig = {
       id: "start",
       type: "bot",
       messages: [
-        "Olá! 👋 Seja bem-vindo(a) à Capimobi!",
-        "Eu sou a Ana, sua consultora digital 😊",
-        "Antes de tudo, qual é o seu nome?",
+        "Oi! 👋 Qual é o seu nome?",
       ],
       next: "ask_name",
     },
@@ -63,7 +61,8 @@ export const DEFAULT_CONFIG: InviteChatConfig = {
       id: "greet",
       type: "bot",
       messages: [
-        "Que prazer, {{nome}}! 🎉",
+        "Prazer, {{nome}}! 😊",
+        "Eu sou a Ana, consultora digital da Capimobi!",
         "Me conta, você já trabalha com imóveis?",
       ],
       next: "choice_experience",
