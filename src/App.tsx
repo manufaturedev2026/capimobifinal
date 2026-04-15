@@ -138,6 +138,7 @@ const AppLayout = () => {
               <Route path="/" element={<HomeRedirect />} />
               <Route path="/empresa/:id" element={<CompanyProfile />} />
               <Route path="/imoveis/produto/:productId" element={<ProductDetail />} />
+              <Route path="/imovel/:productId" element={<ProductDetail />} />
               <Route path="/buscar" element={<SearchPage />} />
               {/* SEO landing pages */}
               <Route path="/imoveis" element={<SeoLandingPage />} />
