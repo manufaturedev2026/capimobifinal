@@ -98,7 +98,7 @@ export default function CompanyProfile() {
   const [videoModalOpen, setVideoModalOpen] = useState(false);
   const [videoMuted, setVideoMuted] = useState(true);
   const { openWhatsApp: openWhatsAppPicker } = useWhatsAppPicker();
-  const { sellerStories } = useStories();
+  const { sellerStories } = useStories(dbProfile?.id);
   const [storyViewerOpen, setStoryViewerOpen] = useState(false);
   const [leadCaptureOpen, setLeadCaptureOpen] = useState(false);
   const [storyUploadOpen, setStoryUploadOpen] = useState(false);
