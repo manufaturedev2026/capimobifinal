@@ -30,6 +30,7 @@ export default function AdminInviteTab() {
           if (parsed.ctaText) cfg.ctaText = parsed.ctaText;
           if (parsed.ctaUrl) cfg.ctaUrl = parsed.ctaUrl;
           if (parsed.ctaType) cfg.ctaType = parsed.ctaType;
+          if (parsed.chatMode) cfg.chatMode = parsed.chatMode;
           if (parsed.flow?.length) cfg.flow = parsed.flow;
           setConfig(cfg);
         } catch {}
