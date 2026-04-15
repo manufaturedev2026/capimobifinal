@@ -727,8 +727,21 @@ export default function AdminPanel() {
 
               {/* Per-seller sitemaps */}
               <h4 className="font-bold text-sm text-foreground mb-3">📋 Sitemaps por Corretor</h4>
+              <div className="relative mb-3">
+                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                <input
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Buscar corretor por nome, empresa ou cidade..."
+                  className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-secondary text-foreground text-sm border border-border focus:ring-2 focus:ring-ring focus:outline-none"
+                />
+              </div>
               <div className="space-y-2 max-h-[500px] overflow-y-auto">
-                {sellers.map((seller) => {
+                {sellers.filter((s) => {
+                  if (!search.trim()) return true;
+                  const q = search.toLowerCase();
+                  return (s.full_name?.toLowerCase().includes(q) || s.company_name?.toLowerCase().includes(q) || s.email?.toLowerCase().includes(q) || s.city?.toLowerCase().includes(q));
+                }).map((seller) => {
                   const sitemapUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/seller-sitemap?seller_id=${seller.id}`;
                   const fbFeedUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/seller-sitemap?seller_id=${seller.id}&format=facebook`;
                   const name = seller.company_name || seller.full_name;
