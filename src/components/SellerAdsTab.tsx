@@ -187,11 +187,14 @@ export default function SellerAdsTab({ profileId, userId }: SellerAdsTabProps) {
             <div className="relative">
               <DollarSign size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
               <input
-                type="number"
-                min={MIN_BUDGET}
-                step={10}
+                type="text"
+                inputMode="numeric"
                 value={dailyBudget}
-                onChange={(e) => setDailyBudget(Math.max(MIN_BUDGET, Number(e.target.value)))}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/\D/g, "");
+                  setDailyBudget(val === "" ? 0 : Number(val));
+                }}
+                onBlur={() => { if (dailyBudget < MIN_BUDGET) setDailyBudget(MIN_BUDGET); }}
                 className="w-full pl-10 pr-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
               />
             </div>
