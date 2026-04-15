@@ -29,6 +29,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { getMarketplaceTheme } from "@/lib/marketplaceThemes";
 import { getMarketplaceThemeCssVars } from "@/lib/marketplaceThemeCssVars";
 import { supabase } from "@/integrations/supabase/client";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 const QUICK_ACTIONS = [
   { slug: "casa", name: "Casas", desc: "Residenciais", icon: Home },
