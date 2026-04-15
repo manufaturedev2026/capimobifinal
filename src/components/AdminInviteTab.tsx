@@ -213,24 +213,38 @@ export default function AdminInviteTab() {
               value={config.ctaType}
               onChange={(e) => {
                 const v = e.target.value as InviteChatConfig["ctaType"];
-                setConfig((p) => ({ ...p, ctaType: v, ctaUrl: v === "internal" ? "/login" : v === "whatsapp" ? "https://wa.me/55" : "https://" }));
+                setConfig((p) => ({ ...p, ctaType: v, ctaUrl: v === "internal" ? "/login" : v === "whatsapp" ? "https://wa.me/55" : v === "crm" ? "" : "https://" }));
               }}
               className="w-full text-sm bg-card text-foreground border border-border rounded px-3 py-2 mt-1"
             >
               <option value="internal">📱 Cadastro interno</option>
+              <option value="crm">📋 Salvar no CRM</option>
               <option value="whatsapp">💬 WhatsApp direto</option>
               <option value="whatsapp_group">👥 Grupo WhatsApp</option>
               <option value="url">🔗 URL externa</option>
             </select>
           </div>
-          <div>
-            <label className="text-xs text-muted-foreground">Texto do botão</label>
-            <Input value={config.ctaText} onChange={(e) => setConfig((p) => ({ ...p, ctaText: e.target.value }))} className="mt-1" />
-          </div>
-          <div>
-            <label className="text-xs text-muted-foreground">{config.ctaType === "internal" ? "Rota" : "URL"}</label>
-            <Input value={config.ctaUrl} onChange={(e) => setConfig((p) => ({ ...p, ctaUrl: e.target.value }))} className="mt-1" />
-          </div>
+          {config.ctaType === "crm" ? (
+            <div className="sm:col-span-2">
+              <div className="bg-primary/5 border border-primary/20 rounded-lg p-3 text-xs text-foreground">
+                <p className="font-semibold mb-1">📋 Modo CRM ativado</p>
+                <p className="text-muted-foreground">
+                  Ao invés de redirecionar, o visitante preencherá nome e WhatsApp. Os dados serão salvos diretamente no seu CRM para você entrar em contato.
+                </p>
+              </div>
+            </div>
+          ) : (
+            <>
+              <div>
+                <label className="text-xs text-muted-foreground">Texto do botão</label>
+                <Input value={config.ctaText} onChange={(e) => setConfig((p) => ({ ...p, ctaText: e.target.value }))} className="mt-1" />
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground">{config.ctaType === "internal" ? "Rota" : "URL"}</label>
+                <Input value={config.ctaUrl} onChange={(e) => setConfig((p) => ({ ...p, ctaUrl: e.target.value }))} className="mt-1" />
+              </div>
+            </>
+          )}
         </div>
       </div>
 
