@@ -233,10 +233,12 @@ export default function AdminPanel() {
   const fetchSellers = async () => {
     setLoading(true);
     const { data: profiles } = await supabase.from("profiles").select("*");
-    const { data: subs } = await supabase.from("seller_subscriptions").select("*").eq("is_active", true);
+    const { data: subs } = await supabase.from("seller_subscriptions").select("*").eq("is_active", true).order("created_at", { ascending: false });
 
     const subsMap = new Map<string, any>();
-    (subs || []).forEach((s: any) => subsMap.set(s.user_id, s));
+    (subs || []).forEach((s: any) => {
+      if (!subsMap.has(s.user_id)) subsMap.set(s.user_id, s);
+    });
 
     const mapped: SellerWithSub[] = (profiles || []).map((p: any) => ({
       id: p.id,
@@ -367,13 +369,11 @@ export default function AdminPanel() {
     }
   };
 
-  const totalByTier = {
-    start: sellers.filter((s) => s.subscription?.tier === "start").length,
-    basico: sellers.filter((s) => s.subscription?.tier === "basico").length,
-    premium: sellers.filter((s) => s.subscription?.tier === "premium").length,
-    vip: sellers.filter((s) => s.subscription?.tier === "vip").length,
-    sem_pacote: sellers.filter((s) => !s.subscription).length,
-  };
+  const totalByTier: Record<string, number> = {};
+  (Object.keys(PACKAGE_CONFIG) as string[]).forEach((t) => {
+    totalByTier[t] = sellers.filter((s) => s.subscription?.tier === t).length;
+  });
+  totalByTier.sem_pacote = sellers.filter((s) => !s.subscription).length;
 
   const getSellerName = (sellerId: string) => {
     const s = sellers.find((s) => s.id === sellerId);
@@ -430,10 +430,10 @@ export default function AdminPanel() {
           <div className="grid grid-cols-2 gap-2 mb-4">
             {[
               { label: "Total", value: sellers.length, icon: Users, color: "text-primary" },
-              { label: "Start", value: totalByTier.start, icon: Rocket, color: "text-emerald-500" },
-              { label: "Básico", value: totalByTier.basico, icon: Zap, color: "text-muted-foreground" },
-              { label: "Premium", value: totalByTier.premium, icon: Star, color: "text-amber-500" },
-              { label: "VIP", value: totalByTier.vip, icon: Crown, color: "text-purple-500" },
+              { label: "Start", value: totalByTier["start"] || 0, icon: Rocket, color: "text-emerald-500" },
+              { label: "VIP", value: totalByTier["premium"] || 0, icon: Star, color: "text-amber-500" },
+              { label: "Premium", value: totalByTier["vip"] || 0, icon: Crown, color: "text-purple-500" },
+              { label: "Empresa", value: (totalByTier["essencial_empresa"] || 0) + (totalByTier["premium_empresa"] || 0) + (totalByTier["prime_empresa"] || 0) + (totalByTier["black"] || 0), icon: Building2, color: "text-rose-500" },
             ].map((s) => (
               <div key={s.label} className="bg-secondary rounded-xl p-2.5 text-center">
                 <s.icon size={14} className={`${s.color} mx-auto mb-0.5`} />
@@ -642,20 +642,19 @@ export default function AdminPanel() {
           <div className="bg-card border border-border rounded-2xl p-6">
             <h3 className="font-display font-bold text-lg text-foreground mb-4">Resumo de Faturamento</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {(["basico", "start", "premium", "vip"] as const).map((tier) => {
-                const config = PACKAGE_CONFIG[tier as keyof typeof PACKAGE_CONFIG] ?? { name: tier, price: 0, borderColor: "border-border" };
+              {(Object.keys(PACKAGE_CONFIG) as (keyof typeof PACKAGE_CONFIG)[]).map((tier) => {
+                const config = PACKAGE_CONFIG[tier];
                 const count = totalByTier[tier] || 0;
                 const revenue = count * (config.price ?? 0);
                 return (
                   <div key={tier} className={`rounded-xl border-2 ${config.borderColor} p-4`}>
                     <h4 className="font-display font-bold text-foreground">{config.name}</h4>
                     <p className="text-2xl font-bold text-foreground mt-1">{count} <span className="text-sm font-normal text-muted-foreground">assinantes</span></p>
-                    {tier !== "basico" && (
+                    {config.price > 0 ? (
                       <p className="text-sm text-muted-foreground mt-1">
                         Receita mensal: <strong className="text-green-500">R$ {revenue.toFixed(2).replace(".", ",")}</strong>
                       </p>
-                    )}
-                    {tier === "basico" && (
+                    ) : (
                       <p className="text-xs text-muted-foreground mt-1">Plano gratuito</p>
                     )}
                   </div>
@@ -667,7 +666,7 @@ export default function AdminPanel() {
                 <strong>Receita mensal total estimada: </strong>
                 <span className="text-green-500 font-bold text-lg">
                   R$ {(
-                    (["start", "basico", "premium", "vip"] as const).reduce((sum, t) => sum + (totalByTier[t] || 0) * PACKAGE_CONFIG[t].price, 0)
+                    Object.keys(PACKAGE_CONFIG).reduce((sum, t) => sum + (totalByTier[t] || 0) * PACKAGE_CONFIG[t as keyof typeof PACKAGE_CONFIG].price, 0)
                   ).toFixed(2).replace(".", ",")}
                 </span>
               </p>
