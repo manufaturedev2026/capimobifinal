@@ -74,8 +74,8 @@ export default function SellerAdsTab({ profileId, userId }: SellerAdsTabProps) {
     })();
   }, [userId]);
 
-  const serviceFee = Math.floor(dailyBudget / MIN_BUDGET) * SERVICE_FEE_PER_40;
   const subtotal = dailyBudget * durationDays;
+  const serviceFee = Math.floor(subtotal / MIN_BUDGET) * SERVICE_FEE_PER_40;
   const taxAmount = subtotal * 0;
   const total = subtotal + serviceFee;
 
