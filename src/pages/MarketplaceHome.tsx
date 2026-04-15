@@ -8,7 +8,7 @@ import {
   MapPin, Bed, Bath, Ruler, ArrowRight, X,
   Sparkles, Crown, Star, Users, Shield,
   Phone, ShieldCheck, Globe, Megaphone, UserPlus, LogIn,
-  LayoutDashboard, Image, Menu, ChevronDown,
+  LayoutDashboard, Image, Menu, ChevronDown, Clapperboard, ChevronLeft, ChevronRight,
 } from "lucide-react";
 import MarketplaceNavbar from "@/components/MarketplaceNavbar";
 import GlobalStoriesBar from "@/components/GlobalStoriesBar";
@@ -128,6 +128,7 @@ export default function MarketplaceHome() {
   const [promoIdx, setPromoIdx] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [openStates, setOpenStates] = useState<Set<string>>(new Set());
+  const [cinemaMode, setCinemaMode] = useState<number | null>(null);
   const ITEMS_PER_PAGE = 24;
   const heroRef = useRef<HTMLDivElement>(null);
   const promoScrollRef = useRef<HTMLDivElement>(null);
@@ -316,6 +317,30 @@ export default function MarketplaceHome() {
     }, 4000);
     return () => clearInterval(t);
   }, [realItems.length, isMobile]);
+
+  // Fullscreen for cinema mode
+  useEffect(() => {
+    if (cinemaMode !== null) {
+      const el = document.documentElement;
+      if (el.requestFullscreen) {
+        el.requestFullscreen().then(() => {
+          try { (screen.orientation as any).lock?.("landscape"); } catch {}
+        }).catch(() => {});
+      }
+    } else {
+      if (document.fullscreenElement) {
+        document.exitFullscreen().catch(() => {});
+      }
+      try { (screen.orientation as any).unlock?.(); } catch {}
+    }
+  }, [cinemaMode]);
+
+  // Cinema products (active items with images)
+  const cinemaProducts = useMemo(() => {
+    return filteredItems
+      .filter((p) => p.image && (p as any).status === "ativo")
+      .slice(0, 30);
+  }, [filteredItems]);
 
   const scrollToGrid = () =>
     setTimeout(() => {
@@ -557,6 +582,22 @@ export default function MarketplaceHome() {
             </motion.div>
           )}
         </div>
+
+        {/* Cinema mode button — discreet, bottom-right of hero */}
+        {cinemaProducts.length > 0 && (
+          <motion.button
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.2 }}
+            onClick={() => setCinemaMode(0)}
+            className="absolute bottom-4 right-4 z-20 flex items-center gap-1.5 px-3 py-2 rounded-lg text-[11px] font-medium text-white/60 hover:text-white transition-all"
+            style={{ background: "rgba(0,0,0,0.35)" }}
+            title="Modo Cinema"
+          >
+            <Clapperboard size={13} />
+            <span className="hidden md:inline">Cinema</span>
+          </motion.button>
+        )}
       </motion.section>
 
       {/* ═══ FLOATING SEARCH BAR ═══ */}
@@ -1116,6 +1157,128 @@ export default function MarketplaceHome() {
       </div>{/* end flex sidebar+content */}
 
       <FooterSimple theme={{ bg: DARK_BASE, text: TEXT, textMuted: TEXT_MUTED, border: BORDER, primary: PRIMARY }} />
+
+      {/* ═══ CINEMA MODE OVERLAY ═══ */}
+      <AnimatePresence>
+        {cinemaMode !== null && cinemaProducts.length > 0 && (() => {
+          const total = cinemaProducts.length;
+          const current = cinemaProducts[cinemaMode];
+          if (!current) return null;
+          const img = current.image;
+          const seller = sellersMap[(current as any).seller_id];
+
+          return (
+            <motion.div
+              key="cinema-overlay"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4 }}
+              className="fixed inset-0 z-[9999] bg-black flex flex-col"
+            >
+              {/* Image */}
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={`cinema-img-${cinemaMode}`}
+                  initial={{ opacity: 0, scale: 1.08 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.8 }}
+                  className="absolute inset-0"
+                >
+                  <img src={img} alt={current.title} className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/40" />
+                </motion.div>
+              </AnimatePresence>
+
+              {/* Close */}
+              <button
+                onClick={() => setCinemaMode(null)}
+                className="absolute top-4 right-4 z-50 w-10 h-10 rounded-full bg-black/40 flex items-center justify-center text-white text-lg hover:bg-black/60 transition-colors"
+              >
+                ✕
+              </button>
+
+              {/* Arrows */}
+              <button
+                onClick={() => setCinemaMode((prev) => (prev! - 1 + total) % total)}
+                className="absolute left-3 top-1/2 -translate-y-1/2 z-50 w-12 h-12 rounded-full bg-black/30 flex items-center justify-center text-white hover:bg-black/50 transition-colors"
+              >
+                <ChevronLeft size={24} />
+              </button>
+              <button
+                onClick={() => setCinemaMode((prev) => (prev! + 1) % total)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 z-50 w-12 h-12 rounded-full bg-black/30 flex items-center justify-center text-white hover:bg-black/50 transition-colors"
+              >
+                <ChevronRight size={24} />
+              </button>
+
+              {/* Info overlay */}
+              <div className="absolute bottom-0 left-0 right-0 z-40 p-6 md:p-10">
+                <motion.div
+                  key={`cinema-info-${cinemaMode}`}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.2 }}
+                >
+                  {seller && (
+                    <div className="flex items-center gap-2 mb-3">
+                      {seller.logo && <img src={seller.logo} className="w-7 h-7 rounded-full object-cover border border-white/20" alt="" />}
+                      <span className="text-white/60 text-sm font-medium">{seller.name}</span>
+                    </div>
+                  )}
+                  <h2 className="text-white font-display font-black text-2xl md:text-4xl leading-tight max-w-2xl">
+                    {current.title}
+                  </h2>
+                  <div className="flex items-center gap-4 mt-3">
+                    {current.price && (
+                      <span className="text-xl md:text-2xl font-bold" style={{ color: PRIMARY }}>
+                        R$ {current.price.toLocaleString("pt-BR")}
+                      </span>
+                    )}
+                    {current.city && (
+                      <span className="text-white/50 text-sm flex items-center gap-1">
+                        <MapPin size={13} /> {current.city}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-3 mt-2 text-white/40 text-xs">
+                    {(current as any).bedrooms && <span>{(current as any).bedrooms} quartos</span>}
+                    {(current as any).bathrooms && <span>• {(current as any).bathrooms} banheiros</span>}
+                    {(current as any).area && <span>• {(current as any).area}m²</span>}
+                  </div>
+                  <Link
+                    to={`/imoveis/produto/${(current as any).slug || current.id}`}
+                    onClick={() => setCinemaMode(null)}
+                    className="inline-flex items-center gap-2 mt-5 px-6 py-2.5 rounded-xl text-sm font-bold text-white transition-all hover:scale-105"
+                    style={{ background: PRIMARY, boxShadow: `0 4px 20px ${PRIMARY}40` }}
+                  >
+                    Ver detalhes <ArrowRight size={14} />
+                  </Link>
+                </motion.div>
+              </div>
+
+              {/* Counter */}
+              <div className="absolute top-5 left-5 z-50">
+                <p className="text-white/40 text-xs">{cinemaMode + 1} de {total}</p>
+              </div>
+
+              {/* Auto-advance progress bar */}
+              <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/10 z-50">
+                <motion.div
+                  key={`cinema-progress-${cinemaMode}`}
+                  className="h-full"
+                  style={{ background: PRIMARY }}
+                  initial={{ width: "0%" }}
+                  animate={{ width: "100%" }}
+                  transition={{ duration: 8, ease: "linear" }}
+                  onAnimationComplete={() => setCinemaMode((prev) => (prev! + 1) % total)}
+                />
+              </div>
+            </motion.div>
+          );
+        })()}
+      </AnimatePresence>
     </div>
   );
 }
