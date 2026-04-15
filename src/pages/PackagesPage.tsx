@@ -209,6 +209,11 @@ export default function PackagesPage() {
                     <span className="font-display font-bold text-3xl">R$ {config.price.toFixed(2).replace(".", ",")}</span>
                     <span className="text-white/70 text-sm">/mês</span>
                   </div>
+                  <div className="mt-3 px-3 py-2 bg-white/15 rounded-xl text-center">
+                    <span className="text-white font-bold text-sm">
+                      {tier === "essencial_empresa" ? "Até 5" : tier === "premium_empresa" ? "Até 10" : "∞"} Parceiros Vinculados
+                    </span>
+                  </div>
                 </div>
 
                 <div className="p-6">
