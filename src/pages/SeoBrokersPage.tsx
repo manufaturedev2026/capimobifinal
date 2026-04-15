@@ -161,13 +161,13 @@ function BrokerCard({ profile, tier, theme, index }: { profile: any; tier?: stri
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(index * 0.04, 0.6) }}>
       <Link to={`/empresa/${profile.slug}`} className="block rounded-2xl overflow-hidden transition-all duration-300 group hover:scale-[1.03] hover:-translate-y-1" style={{ background: CARD_BG, border: `1.5px solid ${isPaid ? PRIMARY + "40" : BORDER}`, boxShadow: isPaid ? (TIER_GLOW[tier!] || `0 0 16px ${PRIMARY}12`) : "none" }}>
-        <div className="relative h-28 flex items-center justify-center overflow-hidden" style={{ background: `linear-gradient(135deg, ${PRIMARY}18, ${PRIMARY}05)` }}>
+        <div className="relative h-36 flex items-center justify-center overflow-hidden" style={{ background: `linear-gradient(135deg, ${PRIMARY}18, ${PRIMARY}05)` }}>
           {isPaid && <FloatingParticles color={PRIMARY} />}
           {profile.logo_url ? (
-            <img src={profile.logo_url} alt={displayName} className="w-16 h-16 md:w-18 md:h-18 rounded-xl object-cover border-3 shadow-xl z-10 group-hover:scale-110 transition-transform duration-500" style={{ borderColor: CARD_BG }} />
+            <img src={profile.logo_url} alt={displayName} className="w-20 h-20 md:w-24 md:h-24 rounded-xl object-cover border-3 shadow-xl z-10 group-hover:scale-110 transition-transform duration-500" style={{ borderColor: CARD_BG }} />
           ) : (
-            <div className="w-16 h-16 md:w-18 md:h-18 rounded-xl flex items-center justify-center border-3 shadow-xl z-10" style={{ background: `${PRIMARY}15`, color: PRIMARY, borderColor: CARD_BG }}>
-              <Building2 size={24} />
+            <div className="w-20 h-20 md:w-24 md:h-24 rounded-xl flex items-center justify-center border-3 shadow-xl z-10" style={{ background: `${PRIMARY}15`, color: PRIMARY, borderColor: CARD_BG }}>
+              <Building2 size={32} />
             </div>
           )}
           {tier && tier !== "basico" && (
