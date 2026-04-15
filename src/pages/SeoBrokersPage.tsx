@@ -280,8 +280,8 @@ export default function SeoBrokersPage() {
   const featuredProfiles = useMemo(() => {
     return filteredProfiles.filter(p => {
       const t = tiers[p.id];
-      return t && ["prime_empresa", "premium_empresa", "essencial_empresa", "vip"].includes(t);
-    }).slice(0, 3);
+      return t && t !== "basico" && t !== "start";
+    }).slice(0, 6);
   }, [filteredProfiles, tiers]);
 
   const regularProfiles = useMemo(() => {
