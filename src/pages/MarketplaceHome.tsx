@@ -590,7 +590,7 @@ export default function MarketplaceHome() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.2, duration: 0.5 }}
             onClick={() => setCinemaMode(0)}
-            className="absolute bottom-6 right-6 z-20 flex items-center gap-2 px-5 py-3 rounded-2xl text-sm font-semibold text-white/80 hover:text-white backdrop-blur-md border border-white/15 hover:bg-white/20 transition-all hover:scale-105 shadow-xl"
+            className="absolute bottom-20 md:bottom-16 right-6 z-20 flex items-center gap-2 px-5 py-3 rounded-2xl text-sm font-semibold text-white/80 hover:text-white backdrop-blur-md border border-white/15 hover:bg-white/20 transition-all hover:scale-105 shadow-xl"
             style={{ background: "rgba(0,0,0,0.4)" }}
           >
             <Clapperboard size={18} className="text-primary" />
