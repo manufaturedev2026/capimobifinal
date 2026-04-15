@@ -245,6 +245,8 @@ export default function AdminInviteTab() {
               </div>
             </>
           )}
+        </div>
+      </div>
 
       {/* Flow editor */}
       <div className="bg-card border border-border rounded-xl p-4 space-y-3">
