@@ -82,6 +82,7 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
   const [botAttendantName, setBotAttendantName] = useState("Assistente Imobiliário");
   const [botAttendantAvatar, setBotAttendantAvatar] = useState("");
   const [botOpeningMessage, setBotOpeningMessage] = useState("Olá! 👋 Vou te ajudar a cadastrar seu imóvel para avaliação gratuita! É rápido e sem compromisso 🏡");
+  const [botChatMode, setBotChatMode] = useState<"flow" | "ai">("flow");
   const [savingBot, setSavingBot] = useState(false);
 
   const captureUrl = `${window.location.origin}/captar-imovel/${sellerSlug || sellerId}`;
@@ -115,6 +116,7 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
         if (cfg.attendantName) setBotAttendantName(cfg.attendantName);
         if (cfg.attendantAvatar) setBotAttendantAvatar(cfg.attendantAvatar);
         if (cfg.openingMessage) setBotOpeningMessage(cfg.openingMessage);
+        if (cfg.chatMode) setBotChatMode(cfg.chatMode);
       } catch {}
     }
   };
@@ -125,6 +127,7 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
       attendantName: botAttendantName,
       attendantAvatar: botAttendantAvatar,
       openingMessage: botOpeningMessage,
+      chatMode: botChatMode,
     });
     const { error } = await supabase
       .from("platform_settings")
@@ -286,6 +289,39 @@ ${captureUrl}
         <p className="text-xs text-muted-foreground">
           Personalize o chat interativo que coleta informações do imóvel automaticamente.
         </p>
+
+        {/* Chat Mode Toggle */}
+        <div>
+          <label className="text-xs text-muted-foreground font-semibold">Modo do Chat</label>
+          <div className="flex gap-2 mt-1.5">
+            <button
+              onClick={() => setBotChatMode("flow")}
+              className={`flex-1 px-3 py-2.5 rounded-xl text-xs font-semibold border transition-all ${
+                botChatMode === "flow"
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "bg-card text-muted-foreground border-border hover:border-primary/40"
+              }`}
+            >
+              🔀 Fluxo Fixo
+            </button>
+            <button
+              onClick={() => setBotChatMode("ai")}
+              className={`flex-1 px-3 py-2.5 rounded-xl text-xs font-semibold border transition-all ${
+                botChatMode === "ai"
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "bg-card text-muted-foreground border-border hover:border-primary/40"
+              }`}
+            >
+              🤖 IA Inteligente
+            </button>
+          </div>
+          <p className="text-[10px] text-muted-foreground mt-1">
+            {botChatMode === "ai"
+              ? "A IA conduz a conversa naturalmente e coleta dados do imóvel de forma inteligente"
+              : "O bot segue um roteiro fixo com perguntas pré-definidas"}
+          </p>
+        </div>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-muted-foreground">Nome do atendente</label>
@@ -306,15 +342,17 @@ ${captureUrl}
             />
           </div>
         </div>
-        <div>
-          <label className="text-xs text-muted-foreground">Mensagem de abertura</label>
-          <Textarea
-            value={botOpeningMessage}
-            onChange={(e) => setBotOpeningMessage(e.target.value)}
-            placeholder="Olá! 👋 Vou te ajudar a cadastrar seu imóvel..."
-            className="mt-1 min-h-[80px] text-sm"
-          />
-        </div>
+        {botChatMode === "flow" && (
+          <div>
+            <label className="text-xs text-muted-foreground">Mensagem de abertura</label>
+            <Textarea
+              value={botOpeningMessage}
+              onChange={(e) => setBotOpeningMessage(e.target.value)}
+              placeholder="Olá! 👋 Vou te ajudar a cadastrar seu imóvel..."
+              className="mt-1 min-h-[80px] text-sm"
+            />
+          </div>
+        )}
         <Button onClick={saveBotConfig} disabled={savingBot} size="sm" className="gap-1.5 text-xs">
           <Save size={12} /> {savingBot ? "Salvando..." : "Salvar Bot"}
         </Button>
