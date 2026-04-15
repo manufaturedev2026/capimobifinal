@@ -152,12 +152,14 @@ export default function VenderPage() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [city, setCity] = useState("");
-  const [state, setState] = useState("ES");
-  const [password, setPassword] = useState("");
-  const [submitting, setSubmitting] = useState(false);
-  const [salesVideoUrl, setSalesVideoUrl] = useState("");
-  const [salesVideoTitle, setSalesVideoTitle] = useState("");
+   const [city, setCity] = useState("");
+   const [state, setState] = useState("ES");
+   const [password, setPassword] = useState("");
+   const [confirmPassword, setConfirmPassword] = useState("");
+   const [submitting, setSubmitting] = useState(false);
+   const [salesVideoUrl, setSalesVideoUrl] = useState("");
+   const [salesVideoTitle, setSalesVideoTitle] = useState("");
+   const { cities: stateCities, loading: loadingCities } = useCitiesByState(state);
 
   useEffect(() => {
     supabase.from("platform_settings").select("value").eq("key", "homepage_theme").maybeSingle().then(({ data }) => {
@@ -175,14 +177,18 @@ export default function VenderPage() {
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!fullName.trim() || !email.trim() || !password.trim()) {
-      toast({ title: "Preencha todos os campos obrigatórios", variant: "destructive" });
-      return;
-    }
-    if (password.length < 6) {
-      toast({ title: "A senha deve ter pelo menos 6 caracteres", variant: "destructive" });
-      return;
-    }
+     if (!fullName.trim() || !email.trim() || !password.trim() || !city) {
+       toast({ title: "Preencha todos os campos obrigatórios", variant: "destructive" });
+       return;
+     }
+     if (password.length < 6) {
+       toast({ title: "A senha deve ter pelo menos 6 caracteres", variant: "destructive" });
+       return;
+     }
+     if (password !== confirmPassword) {
+       toast({ title: "As senhas não coincidem", variant: "destructive" });
+       return;
+     }
     setSubmitting(true);
     try {
       const { data: authData, error: authError } = await supabase.auth.signUp({
@@ -319,25 +325,36 @@ export default function VenderPage() {
                   <input type="tel" placeholder="WhatsApp (opcional)" value={phone} onChange={(e) => setPhone(e.target.value)}
                     className="w-full pl-10 md:pl-11 pr-4 py-3 md:py-3.5 rounded-xl bg-black/40 border border-white/15 text-white placeholder:text-white/40 outline-none transition-colors text-sm focus:border-white/30" />
                 </div>
-                <div className="grid grid-cols-2 gap-2 md:gap-3">
-                  <div className="relative">
-                    <MapPin className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/60" />
-                    <select value={state} onChange={(e) => setState(e.target.value)}
-                      className="w-full pl-10 md:pl-11 pr-3 py-3 md:py-3.5 rounded-xl bg-black/40 border border-white/15 text-white outline-none transition-colors text-sm appearance-none focus:border-white/30">
-                      {BRAZIL_STATES.map(s => <option key={s.uf} value={s.uf} className="bg-gray-900">{s.uf}</option>)}
-                    </select>
-                  </div>
-                  <div className="relative">
-                    <MapPin className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/60" />
-                    <input type="text" placeholder="Sua cidade *" value={city} onChange={(e) => setCity(e.target.value)}
-                      className="w-full pl-10 md:pl-11 pr-3 py-3 md:py-3.5 rounded-xl bg-black/40 border border-white/15 text-white placeholder:text-white/40 outline-none transition-colors text-sm focus:border-white/30" required />
-                  </div>
-                </div>
-                <div className="relative">
-                  <Lock className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/60" />
-                  <input type="password" placeholder="Crie uma senha (mín. 6 caracteres) *" value={password} onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-10 md:pl-11 pr-4 py-3 md:py-3.5 rounded-xl bg-black/40 border border-white/15 text-white placeholder:text-white/40 outline-none transition-colors text-sm focus:border-white/30" required minLength={6} />
-                </div>
+                 <div className="grid grid-cols-2 gap-2 md:gap-3">
+                   <div className="relative">
+                     <MapPin className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/60" />
+                     <select value={state} onChange={(e) => { setState(e.target.value); setCity(""); }}
+                       className="w-full pl-10 md:pl-11 pr-3 py-3 md:py-3.5 rounded-xl bg-black/40 border border-white/15 text-white outline-none transition-colors text-sm appearance-none focus:border-white/30">
+                       {BRAZIL_STATES.map(s => <option key={s.uf} value={s.uf} className="bg-gray-900">{s.uf}</option>)}
+                     </select>
+                   </div>
+                   <div className="relative">
+                     <MapPin className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/60" />
+                     <select value={city} onChange={(e) => setCity(e.target.value)} required
+                       className="w-full pl-10 md:pl-11 pr-3 py-3 md:py-3.5 rounded-xl bg-black/40 border border-white/15 text-white outline-none transition-colors text-sm appearance-none focus:border-white/30">
+                       <option value="" className="bg-gray-900">{loadingCities ? "Carregando..." : "Sua cidade *"}</option>
+                       {stateCities.map(c => <option key={c} value={c} className="bg-gray-900">{c}</option>)}
+                     </select>
+                   </div>
+                 </div>
+                 <div className="relative">
+                   <Lock className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/60" />
+                   <input type="password" placeholder="Crie uma senha (mín. 6 caracteres) *" value={password} onChange={(e) => setPassword(e.target.value)}
+                     className="w-full pl-10 md:pl-11 pr-4 py-3 md:py-3.5 rounded-xl bg-black/40 border border-white/15 text-white placeholder:text-white/40 outline-none transition-colors text-sm focus:border-white/30" required minLength={6} />
+                 </div>
+                 <div className="relative">
+                   <Lock className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/60" />
+                   <input type="password" placeholder="Confirme sua senha *" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}
+                     className={`w-full pl-10 md:pl-11 pr-4 py-3 md:py-3.5 rounded-xl bg-black/40 border text-white placeholder:text-white/40 outline-none transition-colors text-sm focus:border-white/30 ${confirmPassword && confirmPassword !== password ? "border-red-500/60" : "border-white/15"}`} required minLength={6} />
+                   {confirmPassword && confirmPassword !== password && (
+                     <p className="text-red-400 text-[11px] mt-1">As senhas não coincidem</p>
+                   )}
+                 </div>
                 <Button type="submit" disabled={submitting} className="w-full text-white font-bold rounded-xl py-3 md:py-3.5 text-sm shadow-lg" style={{ background: `linear-gradient(to right, ${theme.primary}, ${theme.promoAccent || theme.primary})`, boxShadow: `0 10px 25px ${theme.primary}40` }}>
                   {submitting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
                   {submitting ? "Criando conta..." : "CRIAR MEU SITE AGORA"}
