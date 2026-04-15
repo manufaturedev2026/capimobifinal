@@ -58,6 +58,9 @@ export default function InvitePage() {
   const [attendantAvatar, setAttendantAvatar] = useState(DEFAULT_ATTENDANT.avatar);
   const [showCta, setShowCta] = useState(false);
   const [waitingForTap, setWaitingForTap] = useState(false);
+  const [ctaText, setCtaText] = useState("🚀 Criar Minha Conta Grátis");
+  const [ctaUrl, setCtaUrl] = useState("/login");
+  const [ctaType, setCtaType] = useState<"internal" | "whatsapp" | "whatsapp_group" | "url">("internal");
   const chatRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
@@ -77,6 +80,9 @@ export default function InvitePage() {
           if (config.messages?.length) msgs = config.messages;
           if (config.attendantName) setAttendantName(config.attendantName);
           if (config.attendantAvatar) setAttendantAvatar(config.attendantAvatar);
+          if (config.ctaText) setCtaText(config.ctaText);
+          if (config.ctaUrl) setCtaUrl(config.ctaUrl);
+          if (config.ctaType) setCtaType(config.ctaType);
         } catch {}
       }
       setAllMessages(msgs);
@@ -284,11 +290,17 @@ export default function InvitePage() {
                 className="flex flex-col items-center gap-3 pt-4 pb-8"
               >
                 <Button
-                  onClick={() => navigate("/login")}
+                  onClick={() => {
+                    if (ctaType === "internal") {
+                      navigate(ctaUrl);
+                    } else {
+                      window.open(ctaUrl, "_blank", "noopener");
+                    }
+                  }}
                   className="bg-[#25d366] hover:bg-[#22c55e] text-white font-bold text-base px-8 py-6 rounded-full shadow-lg animate-pulse"
                   size="lg"
                 >
-                  🚀 Criar Minha Conta Grátis
+                  {ctaText}
                 </Button>
                 <p className="text-[#667781] text-xs text-center">
                   Cadastro rápido • 100% gratuito • Sem cartão de crédito
