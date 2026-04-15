@@ -5,7 +5,7 @@ import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion"
 import {
   MapPin, Image, Search, Bed, Bath, Ruler, Home, Building2,
   Store, Trees, Key, Landmark, Phone, ShieldCheck, Globe, Megaphone,
-  ArrowRight, X, Sparkles, Crown, Star, LayoutDashboard,
+  ArrowRight, X, Sparkles, Crown, Star, LayoutDashboard, Clapperboard,
 } from "lucide-react";
 import type { StoreLayoutProps } from "./types";
 import { isIOSStandaloneApp } from "@/lib/pwaInstall";
@@ -112,7 +112,7 @@ function getDarkMid(primary: string): string {
 export default function StoreLayoutMarketplace({
   filteredProducts, subcategories, activeCategory, setActiveCategory,
   categoryCounts, storeTheme, corretorSlug, dbProfile, getTagStyle, getTagLabel, handleWhatsApp,
-  filterCity, setFilterCity, availableCities, storiesBar, formatPrice,
+  filterCity, setFilterCity, availableCities, storiesBar, formatPrice, onCinemaMode,
 }: StoreLayoutProps) {
   const { user } = useAuth();
   const isOwner = !!(user && dbProfile && user.id === dbProfile.user_id);
@@ -257,8 +257,8 @@ export default function StoreLayoutMarketplace({
 
         <FloatingParticles color={storeTheme.primary} />
 
-        {/* Painel / Entrar button */}
-        <div className="absolute top-4 left-4 z-20">
+        {/* Painel / Entrar button + Cinema */}
+        <div className="absolute top-4 left-4 z-20 flex items-center gap-2">
           <Link
             to={isOwner ? "/painel" : "/login"}
             className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/15 backdrop-blur-md text-white text-xs font-medium hover:bg-white/25 transition-colors"
@@ -266,6 +266,20 @@ export default function StoreLayoutMarketplace({
             <LayoutDashboard size={14} /> {isOwner ? "Painel" : "Entrar"}
           </Link>
         </div>
+
+        {/* Cinema Mode button — bottom right, discreet */}
+        {onCinemaMode && filteredProducts.filter((p: any) => p.image).length > 0 && (
+          <motion.button
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.2 }}
+            onClick={onCinemaMode}
+            className="absolute bottom-4 right-4 z-20 flex items-center gap-1.5 px-3 py-2 rounded-lg text-[11px] font-medium text-white/60 hover:text-white transition-all"
+            style={{ background: "rgba(0,0,0,0.35)" }}
+          >
+            <Clapperboard size={13} /> <span className="hidden md:inline">Cinema</span>
+          </motion.button>
+        )}
 
         {/* Hero content */}
         <div className="relative z-10 h-full flex flex-col justify-end p-5 md:p-12">
