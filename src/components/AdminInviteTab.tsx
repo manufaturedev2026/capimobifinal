@@ -224,16 +224,27 @@ export default function AdminInviteTab() {
               <option value="url">🔗 URL externa</option>
             </select>
           </div>
-          <div>
-            <label className="text-xs text-muted-foreground">Texto do botão</label>
-            <Input value={config.ctaText} onChange={(e) => setConfig((p) => ({ ...p, ctaText: e.target.value }))} className="mt-1" />
-          </div>
-          <div>
-            <label className="text-xs text-muted-foreground">{config.ctaType === "internal" ? "Rota" : "URL"}</label>
-            <Input value={config.ctaUrl} onChange={(e) => setConfig((p) => ({ ...p, ctaUrl: e.target.value }))} className="mt-1" />
-          </div>
-        </div>
-      </div>
+          {config.ctaType === "crm" ? (
+            <div className="sm:col-span-2">
+              <div className="bg-primary/5 border border-primary/20 rounded-lg p-3 text-xs text-foreground">
+                <p className="font-semibold mb-1">📋 Modo CRM ativado</p>
+                <p className="text-muted-foreground">
+                  Ao invés de redirecionar, o visitante preencherá nome e WhatsApp. Os dados serão salvos diretamente no seu CRM para você entrar em contato.
+                </p>
+              </div>
+            </div>
+          ) : (
+            <>
+              <div>
+                <label className="text-xs text-muted-foreground">Texto do botão</label>
+                <Input value={config.ctaText} onChange={(e) => setConfig((p) => ({ ...p, ctaText: e.target.value }))} className="mt-1" />
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground">{config.ctaType === "internal" ? "Rota" : "URL"}</label>
+                <Input value={config.ctaUrl} onChange={(e) => setConfig((p) => ({ ...p, ctaUrl: e.target.value }))} className="mt-1" />
+              </div>
+            </>
+          )}
 
       {/* Flow editor */}
       <div className="bg-card border border-border rounded-xl p-4 space-y-3">
