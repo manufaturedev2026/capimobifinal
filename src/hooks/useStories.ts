@@ -30,18 +30,19 @@ export function useStories(filterSellerId?: string) {
   const [loading, setLoading] = useState(true);
 
   const fetchStories = useCallback(async () => {
-    let query = supabase
+    if (!filterSellerId) {
+      setSellerStories([]);
+      setLoading(false);
+      return;
+    }
+
+    const { data: stories } = await supabase
       .from("seller_stories")
       .select("*")
+      .eq("seller_id", filterSellerId)
       .gt("expires_at", new Date().toISOString())
       .eq("is_active", true)
       .order("created_at", { ascending: false });
-
-    if (filterSellerId) {
-      query = query.eq("seller_id", filterSellerId);
-    }
-
-    const { data: stories } = await query;
 
     if (!stories || stories.length === 0) {
       setSellerStories([]);
