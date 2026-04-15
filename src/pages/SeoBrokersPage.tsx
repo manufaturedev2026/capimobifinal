@@ -16,7 +16,7 @@ const SELLER_CATEGORY_LABELS: Record<string, string> = {
 };
 
 const TIER_WEIGHT: Record<string, number> = {
-  prime_empresa: 200, premium_empresa: 140, essencial_empresa: 100,
+  black: 250, prime_empresa: 200, premium_empresa: 140, essencial_empresa: 100,
   vip: 70, premium: 40, start: 20, basico: 10,
 };
 
