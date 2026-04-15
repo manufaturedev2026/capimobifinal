@@ -13,18 +13,78 @@ interface ChatMessage {
   delay: number;
 }
 
-const DEFAULT_MESSAGES: ChatMessage[] = [
-  { id: "1", text: "Olá! 👋 Seja bem-vindo(a) à Capimobi!", sender: "attendant", delay: 800 },
-  { id: "2", text: "Eu sou a Ana, sua consultora digital 😊", sender: "attendant", delay: 2200 },
-  { id: "3", text: "Você sabia que pode criar sua loja de imóveis 100% GRÁTIS? 🏠✨", sender: "attendant", delay: 3800 },
-  { id: "4", text: "Sério?! Como funciona?", sender: "user", delay: 5500 },
-  { id: "5", text: "Sim! Com a Capimobi você tem:\n\n✅ Loja online personalizada\n✅ CRM de leads integrado\n✅ Compartilhamento por WhatsApp\n✅ Página profissional com seu nome\n✅ Cadastro de imóveis ilimitado no plano gratuito", sender: "attendant", delay: 7000 },
-  { id: "6", text: "E o melhor: é tudo pelo celular! 📱", sender: "attendant", delay: 9500 },
-  { id: "7", text: "Quanto custa?", sender: "user", delay: 11000 },
-  { id: "8", text: "O cadastro é GRATUITO! 🎉\n\nVocê já começa com acesso ao painel completo, pode cadastrar seus imóveis e compartilhar sua loja.\n\nSe quiser turbinar, temos planos a partir de R$29/mês com funcionalidades premium!", sender: "attendant", delay: 12500 },
-  { id: "9", text: "Quero criar minha conta! 🚀", sender: "user", delay: 15000 },
-  { id: "10", text: "Perfeito! Clica no botão abaixo e cria sua conta em menos de 2 minutos! 👇", sender: "attendant", delay: 16500 },
-];
+const TEMPLATES: Record<string, { label: string; emoji: string; description: string; messages: ChatMessage[] }> = {
+  padrao: {
+    label: "Convite Padrão",
+    emoji: "💬",
+    description: "Conversa clássica apresentando a plataforma",
+    messages: [
+      { id: "1", text: "Olá! 👋 Seja bem-vindo(a) à Capimobi!", sender: "attendant", delay: 800 },
+      { id: "2", text: "Eu sou a Ana, sua consultora digital 😊", sender: "attendant", delay: 2200 },
+      { id: "3", text: "Você sabia que pode criar sua loja de imóveis 100% GRÁTIS? 🏠✨", sender: "attendant", delay: 3800 },
+      { id: "4", text: "Sério?! Como funciona?", sender: "user", delay: 5500 },
+      { id: "5", text: "Sim! Com a Capimobi você tem:\n\n✅ Loja online personalizada\n✅ CRM de leads integrado\n✅ Compartilhamento por WhatsApp\n✅ Página profissional com seu nome\n✅ Cadastro de imóveis ilimitado no plano gratuito", sender: "attendant", delay: 7000 },
+      { id: "6", text: "E o melhor: é tudo pelo celular! 📱", sender: "attendant", delay: 9500 },
+      { id: "7", text: "Quanto custa?", sender: "user", delay: 11000 },
+      { id: "8", text: "O cadastro é GRATUITO! 🎉\n\nVocê já começa com acesso ao painel completo, pode cadastrar seus imóveis e compartilhar sua loja.\n\nSe quiser turbinar, temos planos a partir de R$29/mês com funcionalidades premium!", sender: "attendant", delay: 12500 },
+      { id: "9", text: "Quero criar minha conta! 🚀", sender: "user", delay: 15000 },
+      { id: "10", text: "Perfeito! Clica no botão abaixo e cria sua conta em menos de 2 minutos! 👇", sender: "attendant", delay: 16500 },
+    ],
+  },
+  nome_interativo: {
+    label: "Interativo (Pede o Nome)",
+    emoji: "✍️",
+    description: "Pede o nome da pessoa para criar engajamento antes de apresentar a plataforma",
+    messages: [
+      { id: "1", text: "Oi! 👋 Que bom te ver por aqui!", sender: "attendant", delay: 800 },
+      { id: "2", text: "Antes de tudo, qual é o seu nome? 😊", sender: "attendant", delay: 2200 },
+      { id: "3", text: "Meu nome é Carla", sender: "user", delay: 4500 },
+      { id: "4", text: "Prazer, Carla! 🤩 Eu sou a Ana, da Capimobi.", sender: "attendant", delay: 6000 },
+      { id: "5", text: "Carla, deixa eu te fazer uma pergunta:\nVocê já tem uma loja online para seus imóveis? 🏠", sender: "attendant", delay: 7500 },
+      { id: "6", text: "Não, ainda não...", sender: "user", delay: 9500 },
+      { id: "7", text: "Carla, então você está perdendo clientes! 😱\n\nHoje, 90% dos compradores pesquisam imóveis pelo celular antes de ligar pro corretor.\n\nCom a Capimobi você cria sua loja profissional em 2 minutos e começa a receber leads!", sender: "attendant", delay: 11000 },
+      { id: "8", text: "E o melhor: é 100% GRÁTIS pra começar! 🎉", sender: "attendant", delay: 13500 },
+      { id: "9", text: "Sério? Quero ver!", sender: "user", delay: 15500 },
+      { id: "10", text: "Perfeito, Carla! 🚀\nClica no botão abaixo e cria sua conta agora. É rapidinho! 👇", sender: "attendant", delay: 17000 },
+    ],
+  },
+  recrutamento: {
+    label: "Recrutamento de Corretores",
+    emoji: "🎯",
+    description: "Focado em atrair corretores mostrando resultados e oportunidades de crescimento",
+    messages: [
+      { id: "1", text: "Oi! 👋 Você é corretor(a) de imóveis?", sender: "attendant", delay: 800 },
+      { id: "2", text: "Sim, sou corretor", sender: "user", delay: 2500 },
+      { id: "3", text: "Que ótimo! 🏆 Eu sou a Ana, da Capimobi.\n\nMe conta: como você divulga seus imóveis hoje?", sender: "attendant", delay: 4000 },
+      { id: "4", text: "Só pelo WhatsApp e Instagram mesmo", sender: "user", delay: 6500 },
+      { id: "5", text: "Entendo! A maioria dos corretores faz assim.\n\nMas e se eu te contar que você pode ter:\n\n🏠 Sua própria loja online profissional\n📊 CRM para gerenciar todos os seus leads\n📱 Compartilhar imóveis por link no WhatsApp\n🔔 Notificações push pros seus clientes\n📈 Relatórios de visualizações\n\nTudo isso de GRAÇA? 👀", sender: "attendant", delay: 8000 },
+      { id: "6", text: "De graça mesmo? Qual é o pega?", sender: "user", delay: 11000 },
+      { id: "7", text: "Nenhum! 😄\n\nA Capimobi é uma plataforma que ajuda corretores a venderem mais.\n\nO plano gratuito já inclui:\n✅ Loja com seu nome e CRECI\n✅ Cadastro de até 10 imóveis\n✅ CRM de leads\n✅ Página de captação de imóveis\n\nE se quiser mais, tem planos a partir de R$29/mês.", sender: "attendant", delay: 13000 },
+      { id: "8", text: "Quantos corretores já usam?", sender: "user", delay: 15500 },
+      { id: "9", text: "Já temos corretores em todo o Brasil! 🇧🇷\n\nE os que mais vendem são os que cadastraram primeiro. Não fica pra depois, hein! 😉", sender: "attendant", delay: 17000 },
+      { id: "10", text: "Quero experimentar!", sender: "user", delay: 19000 },
+      { id: "11", text: "Show! 🔥 Clica no botão abaixo e cria sua conta em menos de 2 minutos.\n\nVai ser o melhor investimento que você vai fazer hoje! 👇", sender: "attendant", delay: 20500 },
+    ],
+  },
+  urgencia: {
+    label: "Senso de Urgência",
+    emoji: "⚡",
+    description: "Cria urgência com vagas limitadas e benefícios exclusivos para novos corretores",
+    messages: [
+      { id: "1", text: "🚨 Atenção, Corretor(a)!", sender: "attendant", delay: 800 },
+      { id: "2", text: "Estamos selecionando corretores da sua região para uma oportunidade EXCLUSIVA. Qual é o seu nome?", sender: "attendant", delay: 2500 },
+      { id: "3", text: "Me chamo Rafael", sender: "user", delay: 4500 },
+      { id: "4", text: "Rafael, prazer! Eu sou a Ana, da Capimobi. 🤝\n\nVou ser direta com você:", sender: "attendant", delay: 6000 },
+      { id: "5", text: "Estamos com vagas limitadas para corretores que querem:\n\n💰 Vender mais imóveis por mês\n🏪 Ter uma loja online profissional\n📲 Receber leads qualificados\n📊 Gerenciar clientes com CRM próprio", sender: "attendant", delay: 7500 },
+      { id: "6", text: "Parece bom! Mas é pago?", sender: "user", delay: 10000 },
+      { id: "7", text: "Rafael, a conta é GRÁTIS! 🎉\n\nE quem se cadastrar essa semana ganha acesso antecipado a funcionalidades premium.\n\n⏰ As vagas são limitadas porque damos suporte personalizado para cada novo corretor.", sender: "attendant", delay: 11500 },
+      { id: "8", text: "Quero garantir minha vaga!", sender: "user", delay: 14000 },
+      { id: "9", text: "Boa, Rafael! 🚀\nClica no botão abaixo agora e garante sua vaga. Leva menos de 2 minutos! 👇", sender: "attendant", delay: 15500 },
+    ],
+  },
+};
+
+const DEFAULT_MESSAGES: ChatMessage[] = TEMPLATES.padrao.messages;
 
 export default function AdminInviteTab() {
   const { toast } = useToast();
@@ -142,6 +202,32 @@ export default function AdminInviteTab() {
               <ExternalLink size={14} /> Visualizar
             </Button>
           </a>
+        </div>
+      </div>
+
+      {/* Template Picker */}
+      <div className="bg-card border border-border rounded-xl p-4 space-y-3">
+        <h3 className="text-sm font-semibold flex items-center gap-2 text-foreground">
+          📋 Templates Prontos
+        </h3>
+        <p className="text-xs text-muted-foreground">Escolha um template como base e personalize as mensagens abaixo.</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          {Object.entries(TEMPLATES).map(([key, tpl]) => (
+            <button
+              key={key}
+              onClick={() => {
+                setMessages(tpl.messages);
+                toast({ title: `Template "${tpl.label}" carregado!`, description: "Personalize e salve." });
+              }}
+              className="flex items-start gap-3 p-3 rounded-xl border border-border bg-background hover:border-primary/40 hover:bg-primary/5 transition-all text-left"
+            >
+              <span className="text-xl">{tpl.emoji}</span>
+              <div>
+                <p className="text-sm font-semibold text-foreground">{tpl.label}</p>
+                <p className="text-xs text-muted-foreground mt-0.5">{tpl.description}</p>
+              </div>
+            </button>
+          ))}
         </div>
       </div>
 
