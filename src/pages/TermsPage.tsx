@@ -47,13 +47,13 @@ export default function TermsPage() {
           <p className="text-sm mb-8" style={{ color: theme.textMuted }}>Última atualização: {new Date().toLocaleDateString("pt-BR")}</p>
           <div
             className="prose prose-invert prose-sm max-w-none space-y-6 [&_h2]:font-display [&_h2]:font-bold [&_h2]:text-xl [&_h2]:mb-3 [&_p]:leading-relaxed [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:space-y-1 [&_li]:leading-relaxed"
-            style={{ color: theme.textMuted }}
+            style={{ color: theme.textMuted, ['--tw-prose-headings' as string]: theme.text }}
             dangerouslySetInnerHTML={{ __html: content }}
           />
         </div>
       </main>
 
-      <FooterSimple />
+      <FooterSimple theme={{ bg: theme.darkBase, text: theme.text, textMuted: theme.textMuted, border: theme.border, primary: theme.primary, accent: theme.promoAccent }} />
     </div>
   );
 }
