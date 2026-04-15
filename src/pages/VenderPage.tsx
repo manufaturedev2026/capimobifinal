@@ -119,28 +119,28 @@ const STATS = [
 
 const PLANS = [
   {
-    key: "basico", name: "Gratuito", subtitle: "Para quem quer validar", price: 0, priceLabel: "Gratuito",
+    key: "basico", name: "Gratuito", subtitle: "Para experimentar", price: 0, priceLabel: "Gratuito",
     setupFee: null, popular: false,
-    benefits: ["Até 5 anúncios ativos", "1 Layout profissional", "Painel completo", "Estatísticas básicas"],
+    benefits: ["Até 5 anúncios ativos", "1 Layout + 1 Tema", "Painel completo", "Estatísticas básicas", "QR Code dos anúncios"],
     cta: "Criar conta grátis",
   },
   {
     key: "start", name: "Start", subtitle: "Para corretores iniciantes", price: 24.99, priceLabel: "R$24,99",
     setupFee: 299, popular: false,
-    benefits: ["Até 25 anúncios", "CRM + Galeria", "Destaque na listagem", "Estatísticas avançadas"],
+    benefits: ["Até 25 anúncios", "CRM Kanban + Stories", "Push + Captação", "Simulador + PDF Proposta", "Destaque na listagem"],
     cta: "Começar agora",
   },
   {
-    key: "premium", name: "Premium", subtitle: "Para profissionais", price: 49.99, priceLabel: "R$49,99",
-    setupFee: 499, popular: true,
-    benefits: ["Até 100 anúncios", "4 Layouts exclusivos", "Stories + Push", "Vídeo banner", "6 temas", "Destaque máximo"],
-    cta: "Assinar Premium",
+    key: "premium", name: "VIP", subtitle: "⭐ Mais popular", price: 59.99, priceLabel: "R$59,99",
+    setupFee: 719, popular: true,
+    benefits: ["Até 60 anúncios", "4 Layouts + 6 Temas", "Vídeo hero + Cinema", "Gestão de Aluguéis + ADS", "Selo VIP + Suporte"],
+    cta: "Assinar VIP",
   },
   {
-    key: "vip", name: "VIP", subtitle: "Para imobiliárias", price: 99.99, priceLabel: "R$99,99",
-    setupFee: 999, popular: false,
-    benefits: ["Anúncios ilimitados", "Todos os recursos", "Equipe de corretores", "Domínio próprio", "Suporte prioritário"],
-    cta: "Falar com consultor",
+    key: "vip", name: "Premium", subtitle: "Para dominar o mercado", price: 114.99, priceLabel: "R$114,99",
+    setupFee: 1379, popular: false,
+    benefits: ["Até 115 anúncios", "Todos os 7 Layouts", "Instagram + SEO", "Destaque Épico + Showroom", "Suporte VIP dedicado"],
+    cta: "Assinar Premium",
   },
 ];
 
