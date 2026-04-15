@@ -346,7 +346,17 @@ function AdCard({
       )}
 
       {/* Quick Actions */}
-      <div className="flex gap-1.5 mt-2" onClick={(e) => e.stopPropagation()}>
+      <div className="flex gap-1.5 mt-2 flex-wrap" onClick={(e) => e.stopPropagation()}>
+        {itemLink && (
+          <a
+            href={itemLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1 px-2 py-1 rounded-lg bg-primary/20 text-primary text-[10px] font-semibold hover:bg-primary/30 transition-colors"
+          >
+            <ExternalLink size={10} /> Ver imóvel
+          </a>
+        )}
         {req.sellerPhone && (
           <a
             href={`https://wa.me/55${req.sellerPhone.replace(/\D/g, "")}?text=${encodeURIComponent(`Olá ${req.sellerName}! Sobre sua solicitação de ADS...`)}`}
