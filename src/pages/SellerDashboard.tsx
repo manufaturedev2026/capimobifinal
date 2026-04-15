@@ -22,6 +22,7 @@ import StoriesTab from "@/components/StoriesTab";
 import NotificationsTab from "@/components/NotificationsTab";
 import ProfitCalculatorTab from "@/components/ProfitCalculatorTab";
 import PartnerBrokerTab from "@/components/PartnerBrokerTab";
+import SellerAdsTab from "@/components/SellerAdsTab";
 import PartnerAgencyTab from "@/components/PartnerAgencyTab";
 import { lazy, Suspense } from "react";
 const SellerCustomization = lazy(() => import("@/pages/SellerCustomization"));
@@ -53,7 +54,7 @@ type SellerItem = {
   sold_at: string | null;
 };
 
-type DashboardTab = "overview" | "items" | "stats" | "domain" | "team" | "events" | "referral" | "crm" | "gallery" | "rentals" | "contracts" | "captacao" | "stories" | "notifications" | "profit" | "customization" | "profile" | "partner";
+type DashboardTab = "overview" | "items" | "stats" | "domain" | "team" | "events" | "referral" | "crm" | "gallery" | "rentals" | "contracts" | "captacao" | "stories" | "notifications" | "profit" | "customization" | "profile" | "partner" | "ads";
 
 export default function SellerDashboard() {
   const { user, profile, signOut, refreshProfile, loading: authLoading } = useAuth();
