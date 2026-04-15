@@ -401,12 +401,12 @@ export default function SellerDashboard() {
             ))}
 
             <div className="pt-3 mt-3 border-t border-border space-y-0.5">
-              <Link to="/painel/novo"
+              <Link to="/painel/novo" id="tour-new-listing"
                 className="sidebar-nav-item text-muted-foreground hover:text-foreground hover:bg-secondary">
                 <Plus size={18} /> Novo Anúncio
               </Link>
               {profile?.id && (
-                <Link to={getStoreUrl(profile)}
+                <Link to={getStoreUrl(profile)} id="tour-store"
                   className="sidebar-nav-item text-muted-foreground hover:text-foreground hover:bg-secondary">
                   <Eye size={18} /> Ver Minha Loja
                 </Link>
@@ -415,7 +415,7 @@ export default function SellerDashboard() {
                 className="sidebar-nav-item text-muted-foreground hover:text-foreground hover:bg-secondary w-full text-left">
                 <UserCircle size={18} /> Meu Perfil
               </button>
-              <button onClick={() => setActiveTab("customization")}
+              <button onClick={() => setActiveTab("customization")} id="tour-customization"
                 className={`sidebar-nav-item ${activeTab === "customization" ? "active" : "text-muted-foreground hover:text-foreground hover:bg-secondary"}`}>
                 <Palette size={18} /> Personalização
               </button>
