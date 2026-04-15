@@ -642,20 +642,19 @@ export default function AdminPanel() {
           <div className="bg-card border border-border rounded-2xl p-6">
             <h3 className="font-display font-bold text-lg text-foreground mb-4">Resumo de Faturamento</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {(["basico", "start", "premium", "vip"] as const).map((tier) => {
-                const config = PACKAGE_CONFIG[tier as keyof typeof PACKAGE_CONFIG] ?? { name: tier, price: 0, borderColor: "border-border" };
+              {(Object.keys(PACKAGE_CONFIG) as (keyof typeof PACKAGE_CONFIG)[]).map((tier) => {
+                const config = PACKAGE_CONFIG[tier];
                 const count = totalByTier[tier] || 0;
                 const revenue = count * (config.price ?? 0);
                 return (
                   <div key={tier} className={`rounded-xl border-2 ${config.borderColor} p-4`}>
                     <h4 className="font-display font-bold text-foreground">{config.name}</h4>
                     <p className="text-2xl font-bold text-foreground mt-1">{count} <span className="text-sm font-normal text-muted-foreground">assinantes</span></p>
-                    {tier !== "basico" && (
+                    {config.price > 0 ? (
                       <p className="text-sm text-muted-foreground mt-1">
                         Receita mensal: <strong className="text-green-500">R$ {revenue.toFixed(2).replace(".", ",")}</strong>
                       </p>
-                    )}
-                    {tier === "basico" && (
+                    ) : (
                       <p className="text-xs text-muted-foreground mt-1">Plano gratuito</p>
                     )}
                   </div>
@@ -667,7 +666,7 @@ export default function AdminPanel() {
                 <strong>Receita mensal total estimada: </strong>
                 <span className="text-green-500 font-bold text-lg">
                   R$ {(
-                    (["start", "basico", "premium", "vip"] as const).reduce((sum, t) => sum + (totalByTier[t] || 0) * PACKAGE_CONFIG[t].price, 0)
+                    Object.keys(PACKAGE_CONFIG).reduce((sum, t) => sum + (totalByTier[t] || 0) * PACKAGE_CONFIG[t as keyof typeof PACKAGE_CONFIG].price, 0)
                   ).toFixed(2).replace(".", ",")}
                 </span>
               </p>
