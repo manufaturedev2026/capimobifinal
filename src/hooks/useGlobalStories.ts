@@ -15,13 +15,15 @@ export interface GlobalStory {
   item_id?: string | null;
   sellerName: string;
   sellerLogo: string | null;
+  itemCity?: string | null;
 }
 
-export function useGlobalStories() {
+export function useGlobalStories(city?: string) {
   const [stories, setStories] = useState<GlobalStory[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchStories = useCallback(async () => {
+    setLoading(true);
     // Fetch auto stories from all sellers, active & not expired
     const { data: rawStories } = await supabase
       .from("seller_stories")
@@ -38,6 +40,19 @@ export function useGlobalStories() {
       return;
     }
 
+    // Fetch item cities for filtering
+    const itemIds = rawStories.map((s) => s.item_id).filter(Boolean) as string[];
+    let itemCityMap: Record<string, string> = {};
+    if (itemIds.length > 0) {
+      const { data: items } = await supabase
+        .from("seller_items")
+        .select("id, city")
+        .in("id", itemIds);
+      (items || []).forEach((i) => {
+        if (i.city) itemCityMap[i.id] = i.city.trim();
+      });
+    }
+
     const sellerIds = [...new Set(rawStories.map((s) => s.seller_id))];
     const { data: profiles } = await supabase
       .from("profiles")
@@ -47,7 +62,7 @@ export function useGlobalStories() {
     const profileMap: Record<string, any> = {};
     (profiles || []).forEach((p) => { profileMap[p.id] = p; });
 
-    const result: GlobalStory[] = rawStories.map((s) => {
+    let result: GlobalStory[] = rawStories.map((s) => {
       const profile = profileMap[s.seller_id];
       return {
         id: s.id,
@@ -63,12 +78,19 @@ export function useGlobalStories() {
         item_id: s.item_id,
         sellerName: profile?.company_name || profile?.full_name || "Corretor",
         sellerLogo: profile?.logo_url,
+        itemCity: s.item_id ? itemCityMap[s.item_id] || null : null,
       };
     });
 
+    // Filter by city if provided
+    if (city) {
+      const normalizedCity = city.trim().toLowerCase();
+      result = result.filter((s) => s.itemCity?.toLowerCase() === normalizedCity);
+    }
+
     setStories(result);
     setLoading(false);
-  }, []);
+  }, [city]);
 
   useEffect(() => {
     fetchStories();
