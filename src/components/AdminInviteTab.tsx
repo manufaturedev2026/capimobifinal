@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Save, ExternalLink, Copy, MessageCircle, User, ChevronDown, ChevronRight, Plus, Trash2 } from "lucide-react";
+import { Save, ExternalLink, Copy, MessageCircle, User, ChevronDown, ChevronRight, Plus, Trash2, Bot, GitBranch } from "lucide-react";
 import { DEFAULT_CONFIG, STEP_TYPE_LABELS, STEP_NAMES, type InviteChatConfig, type FlowStep, type BotStep, type ChoiceStep, type InputStep } from "@/data/inviteFlow";
 
 export default function AdminInviteTab() {
@@ -30,6 +30,7 @@ export default function AdminInviteTab() {
           if (parsed.ctaText) cfg.ctaText = parsed.ctaText;
           if (parsed.ctaUrl) cfg.ctaUrl = parsed.ctaUrl;
           if (parsed.ctaType) cfg.ctaType = parsed.ctaType;
+          if (parsed.chatMode) cfg.chatMode = parsed.chatMode;
           if (parsed.flow?.length) cfg.flow = parsed.flow;
           setConfig(cfg);
         } catch {}
@@ -137,6 +138,54 @@ export default function AdminInviteTab() {
             <Button variant="secondary" size="sm"><ExternalLink size={14} /> Visualizar</Button>
           </a>
         </div>
+      </div>
+
+      {/* Chat Mode Toggle */}
+      <div className="bg-card border border-border rounded-xl p-4 space-y-3">
+        <h3 className="text-sm font-semibold flex items-center gap-2 text-foreground">🧠 Modo do Chat</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <button
+            onClick={() => setConfig((p) => ({ ...p, chatMode: "flow" }))}
+            className={`flex items-start gap-3 p-4 rounded-xl border-2 transition-all text-left ${
+              config.chatMode === "flow"
+                ? "border-primary bg-primary/5"
+                : "border-border hover:border-primary/30"
+            }`}
+          >
+            <GitBranch size={20} className="text-primary mt-0.5 shrink-0" />
+            <div>
+              <p className="text-sm font-semibold text-foreground">Fluxo Interativo</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Mensagens pré-definidas com botões de escolha e caminhos ramificados. Editável abaixo.
+              </p>
+            </div>
+          </button>
+          <button
+            onClick={() => setConfig((p) => ({ ...p, chatMode: "ai" }))}
+            className={`flex items-start gap-3 p-4 rounded-xl border-2 transition-all text-left ${
+              config.chatMode === "ai"
+                ? "border-primary bg-primary/5"
+                : "border-border hover:border-primary/30"
+            }`}
+          >
+            <Bot size={20} className="text-primary mt-0.5 shrink-0" />
+            <div>
+              <p className="text-sm font-semibold text-foreground">IA Conversacional</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                A IA responde em tempo real. O visitante digita livremente e é guiado até o cadastro.
+              </p>
+            </div>
+          </button>
+        </div>
+        {config.chatMode === "ai" && (
+          <div className="bg-primary/5 border border-primary/20 rounded-lg p-3 text-xs text-foreground">
+            <p className="font-semibold mb-1">🤖 Modo IA ativado</p>
+            <p className="text-muted-foreground">
+              A IA conversa livremente com o visitante, pede o nome, apresenta os benefícios e guia até o CTA. 
+              O editor de fluxo abaixo fica desativado neste modo.
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Attendant */}

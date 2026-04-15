@@ -24,10 +24,18 @@ export default function InvitePage() {
   const [showCta, setShowCta] = useState(false);
   const [userName, setUserName] = useState("");
   const [nameInput, setNameInput] = useState("");
+
+  // AI mode state
+  const [aiMessages, setAiMessages] = useState<{ role: "user" | "assistant"; content: string }[]>([]);
+  const [aiInput, setAiInput] = useState("");
+  const [aiLoading, setAiLoading] = useState(false);
+
   const chatRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const playingRef = useRef(false);
+
+  const isAiMode = config.chatMode === "ai";
 
   useEffect(() => {
     (async () => {
@@ -46,6 +54,7 @@ export default function InvitePage() {
           if (parsed.ctaText) cfg.ctaText = parsed.ctaText;
           if (parsed.ctaUrl) cfg.ctaUrl = parsed.ctaUrl;
           if (parsed.ctaType) cfg.ctaType = parsed.ctaType;
+          if (parsed.chatMode) cfg.chatMode = parsed.chatMode;
           if (parsed.flow?.length) cfg.flow = parsed.flow;
         } catch {}
       }
@@ -55,6 +64,73 @@ export default function InvitePage() {
     })();
   }, []);
 
+  // ─── AI Mode Logic ───
+  const startAiChat = useCallback(async () => {
+    setTyping(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("invite-chat", {
+        body: { messages: [] },
+      });
+      if (error) throw error;
+      const reply = data?.reply || "Olá! 👋 Antes de tudo, qual é o seu nome? 😊";
+      const aiMsg = { role: "assistant" as const, content: reply };
+      setAiMessages([aiMsg]);
+      addBubble(reply, "attendant");
+    } catch (e) {
+      console.error("AI start error:", e);
+      addBubble("Olá! 👋 Antes de tudo, qual é o seu nome? 😊", "attendant");
+      setAiMessages([{ role: "assistant", content: "Olá! 👋 Antes de tudo, qual é o seu nome? 😊" }]);
+    }
+    setTyping(false);
+  }, []);
+
+  useEffect(() => {
+    if (isAiMode && bubbles.length === 0) {
+      startAiChat();
+    }
+  }, [isAiMode, startAiChat]);
+
+  const sendAiMessage = async () => {
+    const text = aiInput.trim();
+    if (!text || aiLoading) return;
+    setAiInput("");
+    addBubble(text, "user");
+
+    const updatedMessages = [...aiMessages, { role: "user" as const, content: text }];
+    setAiMessages(updatedMessages);
+    setAiLoading(true);
+    setTyping(true);
+
+    try {
+      const { data, error } = await supabase.functions.invoke("invite-chat", {
+        body: { messages: updatedMessages },
+      });
+      if (error) throw error;
+      const reply = data?.reply || "Desculpe, tente novamente!";
+      const aiMsg = { role: "assistant" as const, content: reply };
+      setAiMessages((prev) => [...prev, aiMsg]);
+      addBubble(reply, "attendant");
+
+      // Check if AI is suggesting signup
+      const lower = reply.toLowerCase();
+      if (
+        lower.includes("botão abaixo") ||
+        lower.includes("clica no botão") ||
+        lower.includes("criar sua conta") ||
+        lower.includes("crie sua conta") ||
+        lower.includes("cadastre-se")
+      ) {
+        setTimeout(() => setShowCta(true), 500);
+      }
+    } catch (e) {
+      console.error("AI error:", e);
+      addBubble("Ops! Algo deu errado. Tente novamente 😊", "attendant");
+    }
+    setAiLoading(false);
+    setTyping(false);
+  };
+
+  // ─── Flow Mode Logic ───
   const resolve = useCallback((t: string) => t.replace(/\{\{nome\}\}/gi, userName || "você"), [userName]);
   const getStep = useCallback((id: string) => flow.find((s) => s.id === id), [flow]);
   const addBubble = useCallback((text: string, sender: "attendant" | "user") => {
@@ -102,11 +178,11 @@ export default function InvitePage() {
   );
 
   useEffect(() => {
-    if (flow.length > 0 && currentStepId === flow[0].id && bubbles.length === 0) {
+    if (!isAiMode && flow.length > 0 && currentStepId === flow[0].id && bubbles.length === 0) {
       const first = flow[0];
       if (first.type === "bot") playBotStep(first as BotStep);
     }
-  }, [flow]);
+  }, [flow, isAiMode]);
 
   const handleChoice = (option: { label: string; next: string }) => {
     addBubble(option.label, "user");
@@ -155,8 +231,9 @@ export default function InvitePage() {
   const now = new Date();
   const timeStr = `${now.getHours().toString().padStart(2, "0")}:${now.getMinutes().toString().padStart(2, "0")}`;
   const currentStep = currentStepId ? getStep(currentStepId) : null;
-  const showInput = interactionReady && currentStep?.type === "input";
-  const showChoices = interactionReady && currentStep?.type === "choice";
+  const showFlowInput = !isAiMode && interactionReady && currentStep?.type === "input";
+  const showChoices = !isAiMode && interactionReady && currentStep?.type === "choice";
+  const showAiInput = isAiMode && !showCta;
 
   return (
     <>
@@ -212,6 +289,7 @@ export default function InvitePage() {
             </motion.div>
           )}
 
+          {/* Flow: Choice buttons */}
           <AnimatePresence>
             {showChoices && currentStep?.type === "choice" && (
               <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="flex flex-col items-center gap-2 pt-3 pb-2 px-2">
@@ -224,6 +302,7 @@ export default function InvitePage() {
             )}
           </AnimatePresence>
 
+          {/* CTA */}
           <AnimatePresence>
             {showCta && (
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="flex flex-col items-center gap-3 pt-4 pb-8">
@@ -236,11 +315,51 @@ export default function InvitePage() {
           </AnimatePresence>
         </div>
 
+        {/* Input bar */}
         <div className="sticky bottom-0 flex items-center gap-2 px-2 py-2" style={{ background: "#f0f2f5" }}>
-          {showInput ? (
+          {/* AI mode: always show active input */}
+          {showAiInput ? (
             <>
-              <input ref={inputRef} type="text" value={nameInput} onChange={(e) => setNameInput(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleNameSubmit()} placeholder={(currentStep as InputStep).placeholder} className="flex-1 bg-white rounded-full px-4 py-2.5 text-sm text-[#111b21] outline-none focus:ring-2 focus:ring-[#00a884]/40 placeholder:text-[#667781]" maxLength={50} />
-              <button onClick={handleNameSubmit} disabled={!nameInput.trim()} className="w-10 h-10 rounded-full flex items-center justify-center text-white transition-colors disabled:opacity-40" style={{ background: "#00a884" }}><Send size={18} /></button>
+              <input
+                ref={inputRef}
+                type="text"
+                value={aiInput}
+                onChange={(e) => setAiInput(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && sendAiMessage()}
+                placeholder="Digite sua mensagem..."
+                className="flex-1 bg-white rounded-full px-4 py-2.5 text-sm text-[#111b21] outline-none focus:ring-2 focus:ring-[#00a884]/40 placeholder:text-[#667781]"
+                maxLength={500}
+                disabled={aiLoading}
+              />
+              <button
+                onClick={sendAiMessage}
+                disabled={!aiInput.trim() || aiLoading}
+                className="w-10 h-10 rounded-full flex items-center justify-center text-white transition-colors disabled:opacity-40"
+                style={{ background: "#00a884" }}
+              >
+                <Send size={18} />
+              </button>
+            </>
+          ) : showFlowInput ? (
+            <>
+              <input
+                ref={inputRef}
+                type="text"
+                value={nameInput}
+                onChange={(e) => setNameInput(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleNameSubmit()}
+                placeholder={(currentStep as InputStep).placeholder}
+                className="flex-1 bg-white rounded-full px-4 py-2.5 text-sm text-[#111b21] outline-none focus:ring-2 focus:ring-[#00a884]/40 placeholder:text-[#667781]"
+                maxLength={50}
+              />
+              <button
+                onClick={handleNameSubmit}
+                disabled={!nameInput.trim()}
+                className="w-10 h-10 rounded-full flex items-center justify-center text-white transition-colors disabled:opacity-40"
+                style={{ background: "#00a884" }}
+              >
+                <Send size={18} />
+              </button>
             </>
           ) : (
             <>
