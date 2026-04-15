@@ -80,6 +80,40 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
     if ((data as any)?.capture_video_title) setCaptureVideoTitle((data as any).capture_video_title);
   };
 
+  const fetchBotConfig = async () => {
+    const { data } = await supabase
+      .from("platform_settings")
+      .select("value")
+      .eq("key", `capture_bot_config_${sellerId}`)
+      .maybeSingle();
+    if (data?.value) {
+      try {
+        const cfg = JSON.parse(data.value);
+        if (cfg.attendantName) setBotAttendantName(cfg.attendantName);
+        if (cfg.attendantAvatar) setBotAttendantAvatar(cfg.attendantAvatar);
+        if (cfg.openingMessage) setBotOpeningMessage(cfg.openingMessage);
+      } catch {}
+    }
+  };
+
+  const saveBotConfig = async () => {
+    setSavingBot(true);
+    const config = JSON.stringify({
+      attendantName: botAttendantName,
+      attendantAvatar: botAttendantAvatar,
+      openingMessage: botOpeningMessage,
+    });
+    const { error } = await supabase
+      .from("platform_settings")
+      .upsert({ key: `capture_bot_config_${sellerId}`, value: config, updated_at: new Date().toISOString() } as any, { onConflict: "key" });
+    setSavingBot(false);
+    if (error) {
+      toast({ title: "Erro ao salvar bot", variant: "destructive" });
+    } else {
+      toast({ title: "Bot de captação salvo!" });
+    }
+  };
+
   const saveCaptureVideo = async () => {
     setSavingVideo(true);
     await supabase
