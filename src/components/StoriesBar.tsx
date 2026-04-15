@@ -7,10 +7,11 @@ import { useAuth } from "@/hooks/useAuth";
 interface StoriesBarProps {
   onAddStory?: () => void;
   textColor?: string;
+  sellerId?: string;
 }
 
-export default function StoriesBar({ onAddStory, textColor }: StoriesBarProps) {
-  const { sellerStories, loading } = useStories();
+export default function StoriesBar({ onAddStory, textColor, sellerId }: StoriesBarProps) {
+  const { sellerStories, loading } = useStories(sellerId);
   const { user } = useAuth();
   const [viewerOpen, setViewerOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);

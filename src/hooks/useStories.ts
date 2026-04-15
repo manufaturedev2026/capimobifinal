@@ -25,17 +25,23 @@ export interface SellerWithStories {
   stories: Story[];
 }
 
-export function useStories() {
+export function useStories(filterSellerId?: string) {
   const [sellerStories, setSellerStories] = useState<SellerWithStories[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchStories = useCallback(async () => {
-    const { data: stories } = await supabase
+    let query = supabase
       .from("seller_stories")
       .select("*")
       .gt("expires_at", new Date().toISOString())
       .eq("is_active", true)
       .order("created_at", { ascending: false });
+
+    if (filterSellerId) {
+      query = query.eq("seller_id", filterSellerId);
+    }
+
+    const { data: stories } = await query;
 
     if (!stories || stories.length === 0) {
       setSellerStories([]);
@@ -98,7 +104,7 @@ export function useStories() {
 
     setSellerStories(result);
     setLoading(false);
-  }, []);
+  }, [filterSellerId]);
 
   useEffect(() => {
     fetchStories();
