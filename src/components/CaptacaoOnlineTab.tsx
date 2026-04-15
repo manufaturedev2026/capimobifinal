@@ -238,11 +238,11 @@ ${captureUrl}
             <p className="text-xs font-mono text-foreground truncate">{captureUrl}</p>
           </div>
           <div className="flex gap-1.5 flex-shrink-0">
-            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => copyLink(captureUrl, "Link da página")}>
+            <Button size="icon" variant="ghost" className="h-7 w-7 text-foreground hover:text-primary" onClick={() => copyLink(captureUrl, "Link da página")}>
               <Copy size={12} />
             </Button>
             <a href={captureUrl} target="_blank" rel="noopener noreferrer">
-              <Button size="icon" variant="ghost" className="h-7 w-7"><ExternalLink size={12} /></Button>
+              <Button size="icon" variant="ghost" className="h-7 w-7 text-foreground hover:text-primary"><ExternalLink size={12} /></Button>
             </a>
           </div>
         </div>
@@ -257,11 +257,11 @@ ${captureUrl}
             <p className="text-xs font-mono text-foreground truncate">{chatBotUrl}</p>
           </div>
           <div className="flex gap-1.5 flex-shrink-0">
-            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => copyLink(chatBotUrl, "Link do bot")}>
+            <Button size="icon" variant="ghost" className="h-7 w-7 text-foreground hover:text-[#25d366]" onClick={() => copyLink(chatBotUrl, "Link do bot")}>
               <Copy size={12} />
             </Button>
             <a href={chatBotUrl} target="_blank" rel="noopener noreferrer">
-              <Button size="icon" variant="ghost" className="h-7 w-7"><ExternalLink size={12} /></Button>
+              <Button size="icon" variant="ghost" className="h-7 w-7 text-foreground hover:text-[#25d366]"><ExternalLink size={12} /></Button>
             </a>
           </div>
         </div>
