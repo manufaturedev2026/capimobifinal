@@ -4,101 +4,18 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Trash2, Save, ExternalLink, Copy, MessageCircle, User, ArrowUp, ArrowDown } from "lucide-react";
-
-interface ChatMessage {
-  id: string;
-  text: string;
-  sender: "attendant" | "user";
-  delay: number;
-}
-
-const TEMPLATES: Record<string, { label: string; emoji: string; description: string; messages: ChatMessage[] }> = {
-  padrao: {
-    label: "Convite Padrão",
-    emoji: "💬",
-    description: "Conversa clássica apresentando a plataforma",
-    messages: [
-      { id: "1", text: "Olá! 👋 Seja bem-vindo(a) à Capimobi!", sender: "attendant", delay: 800 },
-      { id: "2", text: "Eu sou a Ana, sua consultora digital 😊", sender: "attendant", delay: 2200 },
-      { id: "3", text: "Você sabia que pode criar sua loja de imóveis 100% GRÁTIS? 🏠✨", sender: "attendant", delay: 3800 },
-      { id: "4", text: "Sério?! Como funciona?", sender: "user", delay: 5500 },
-      { id: "5", text: "Sim! Com a Capimobi você tem:\n\n✅ Loja online personalizada\n✅ CRM de leads integrado\n✅ Compartilhamento por WhatsApp\n✅ Página profissional com seu nome\n✅ Cadastro de imóveis ilimitado no plano gratuito", sender: "attendant", delay: 7000 },
-      { id: "6", text: "E o melhor: é tudo pelo celular! 📱", sender: "attendant", delay: 9500 },
-      { id: "7", text: "Quanto custa?", sender: "user", delay: 11000 },
-      { id: "8", text: "O cadastro é GRATUITO! 🎉\n\nVocê já começa com acesso ao painel completo, pode cadastrar seus imóveis e compartilhar sua loja.\n\nSe quiser turbinar, temos planos a partir de R$29/mês com funcionalidades premium!", sender: "attendant", delay: 12500 },
-      { id: "9", text: "Quero criar minha conta! 🚀", sender: "user", delay: 15000 },
-      { id: "10", text: "Perfeito! Clica no botão abaixo e cria sua conta em menos de 2 minutos! 👇", sender: "attendant", delay: 16500 },
-    ],
-  },
-  nome_interativo: {
-    label: "Interativo (Engajamento)",
-    emoji: "✍️",
-    description: "Cria proximidade com perguntas pessoais antes de apresentar a plataforma",
-    messages: [
-      { id: "1", text: "Oi! 👋 Que bom te ver por aqui!", sender: "attendant", delay: 800 },
-      { id: "2", text: "Me conta, você trabalha com imóveis? 😊", sender: "attendant", delay: 2200 },
-      { id: "3", text: "Sim! Sou corretor(a)", sender: "user", delay: 4500 },
-      { id: "4", text: "Que legal! 🤩 Eu sou a Ana, da Capimobi.", sender: "attendant", delay: 6000 },
-      { id: "5", text: "Deixa eu te fazer uma pergunta:\nVocê já tem uma loja online para seus imóveis? 🏠", sender: "attendant", delay: 7500 },
-      { id: "6", text: "Não, ainda não...", sender: "user", delay: 9500 },
-      { id: "7", text: "Então você está perdendo clientes! 😱\n\nHoje, 90% dos compradores pesquisam imóveis pelo celular antes de ligar pro corretor.\n\nCom a Capimobi você cria sua loja profissional em 2 minutos e começa a receber leads!", sender: "attendant", delay: 11000 },
-      { id: "8", text: "E o melhor: é 100% GRÁTIS pra começar! 🎉", sender: "attendant", delay: 13500 },
-      { id: "9", text: "Sério? Quero ver!", sender: "user", delay: 15500 },
-      { id: "10", text: "Perfeito! 🚀\nClica no botão abaixo e cria sua conta agora. É rapidinho! 👇", sender: "attendant", delay: 17000 },
-    ],
-  },
-  recrutamento: {
-    label: "Recrutamento de Corretores",
-    emoji: "🎯",
-    description: "Focado em atrair corretores mostrando resultados e oportunidades de crescimento",
-    messages: [
-      { id: "1", text: "Oi! 👋 Você é corretor(a) de imóveis?", sender: "attendant", delay: 800 },
-      { id: "2", text: "Sim, sou corretor", sender: "user", delay: 2500 },
-      { id: "3", text: "Que ótimo! 🏆 Eu sou a Ana, da Capimobi.\n\nMe conta: como você divulga seus imóveis hoje?", sender: "attendant", delay: 4000 },
-      { id: "4", text: "Só pelo WhatsApp e Instagram mesmo", sender: "user", delay: 6500 },
-      { id: "5", text: "Entendo! A maioria dos corretores faz assim.\n\nMas e se eu te contar que você pode ter:\n\n🏠 Sua própria loja online profissional\n📊 CRM para gerenciar todos os seus leads\n📱 Compartilhar imóveis por link no WhatsApp\n🔔 Notificações push pros seus clientes\n📈 Relatórios de visualizações\n\nTudo isso de GRAÇA? 👀", sender: "attendant", delay: 8000 },
-      { id: "6", text: "De graça mesmo? Qual é o pega?", sender: "user", delay: 11000 },
-      { id: "7", text: "Nenhum! 😄\n\nA Capimobi é uma plataforma que ajuda corretores a venderem mais.\n\nO plano gratuito já inclui:\n✅ Loja com seu nome e CRECI\n✅ Cadastro de até 10 imóveis\n✅ CRM de leads\n✅ Página de captação de imóveis\n\nE se quiser mais, tem planos a partir de R$29/mês.", sender: "attendant", delay: 13000 },
-      { id: "8", text: "Quantos corretores já usam?", sender: "user", delay: 15500 },
-      { id: "9", text: "Já temos corretores em todo o Brasil! 🇧🇷\n\nE os que mais vendem são os que cadastraram primeiro. Não fica pra depois, hein! 😉", sender: "attendant", delay: 17000 },
-      { id: "10", text: "Quero experimentar!", sender: "user", delay: 19000 },
-      { id: "11", text: "Show! 🔥 Clica no botão abaixo e cria sua conta em menos de 2 minutos.\n\nVai ser o melhor investimento que você vai fazer hoje! 👇", sender: "attendant", delay: 20500 },
-    ],
-  },
-  urgencia: {
-    label: "Senso de Urgência",
-    emoji: "⚡",
-    description: "Cria urgência com vagas limitadas e benefícios exclusivos para novos corretores",
-    messages: [
-      { id: "1", text: "🚨 Atenção, Corretor(a)!", sender: "attendant", delay: 800 },
-      { id: "2", text: "Estamos selecionando corretores da sua região para uma oportunidade EXCLUSIVA!", sender: "attendant", delay: 2500 },
-      { id: "3", text: "Que oportunidade?", sender: "user", delay: 4500 },
-      { id: "4", text: "Prazer! Eu sou a Ana, da Capimobi. 🤝\n\nVou ser direta com você:", sender: "attendant", delay: 6000 },
-      { id: "5", text: "Estamos com vagas limitadas para corretores que querem:\n\n💰 Vender mais imóveis por mês\n🏪 Ter uma loja online profissional\n📲 Receber leads qualificados\n📊 Gerenciar clientes com CRM próprio", sender: "attendant", delay: 7500 },
-      { id: "6", text: "Parece bom! Mas é pago?", sender: "user", delay: 10000 },
-      { id: "7", text: "A conta é GRÁTIS! 🎉\n\nE quem se cadastrar essa semana ganha acesso antecipado a funcionalidades premium.\n\n⏰ As vagas são limitadas porque damos suporte personalizado para cada novo corretor.", sender: "attendant", delay: 11500 },
-      { id: "8", text: "Quero garantir minha vaga!", sender: "user", delay: 14000 },
-      { id: "9", text: "Boa! 🚀\nClica no botão abaixo agora e garante sua vaga. Leva menos de 2 minutos! 👇", sender: "attendant", delay: 15500 },
-    ],
-  },
-};
-
-const DEFAULT_MESSAGES: ChatMessage[] = TEMPLATES.padrao.messages;
+import { Save, ExternalLink, Copy, MessageCircle, User, ChevronDown, ChevronRight, Plus, Trash2 } from "lucide-react";
+import { DEFAULT_CONFIG, STEP_TYPE_LABELS, STEP_NAMES, type InviteChatConfig, type FlowStep, type BotStep, type ChoiceStep, type InputStep } from "@/data/inviteFlow";
 
 export default function AdminInviteTab() {
   const { toast } = useToast();
-  const [messages, setMessages] = useState<ChatMessage[]>(DEFAULT_MESSAGES);
-  const [attendantName, setAttendantName] = useState("Ana • Capimobi");
-  const [attendantAvatar, setAttendantAvatar] = useState("");
-  const [ctaText, setCtaText] = useState("🚀 Criar Minha Conta Grátis");
-  const [ctaUrl, setCtaUrl] = useState("/login");
-  const [ctaType, setCtaType] = useState<"internal" | "whatsapp" | "whatsapp_group" | "url">("internal");
+  const [config, setConfig] = useState<InviteChatConfig>({ ...DEFAULT_CONFIG });
   const [saving, setSaving] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const [openSteps, setOpenSteps] = useState<Set<string>>(new Set(["start", "greet", "choice_experience"]));
 
   useEffect(() => {
-    const load = async () => {
+    (async () => {
       const { data } = await supabase
         .from("platform_settings")
         .select("value")
@@ -106,71 +23,91 @@ export default function AdminInviteTab() {
         .maybeSingle();
       if (data?.value) {
         try {
-          const config = JSON.parse(data.value);
-          if (config.messages?.length) setMessages(config.messages);
-          if (config.attendantName) setAttendantName(config.attendantName);
-          if (config.attendantAvatar) setAttendantAvatar(config.attendantAvatar);
-          if (config.ctaText) setCtaText(config.ctaText);
-          if (config.ctaUrl) setCtaUrl(config.ctaUrl);
-          if (config.ctaType) setCtaType(config.ctaType);
+          const parsed = JSON.parse(data.value);
+          const cfg = { ...DEFAULT_CONFIG };
+          if (parsed.attendantName) cfg.attendantName = parsed.attendantName;
+          if (parsed.attendantAvatar) cfg.attendantAvatar = parsed.attendantAvatar;
+          if (parsed.ctaText) cfg.ctaText = parsed.ctaText;
+          if (parsed.ctaUrl) cfg.ctaUrl = parsed.ctaUrl;
+          if (parsed.ctaType) cfg.ctaType = parsed.ctaType;
+          if (parsed.flow?.length) cfg.flow = parsed.flow;
+          setConfig(cfg);
         } catch {}
       }
       setLoaded(true);
-    };
-    load();
+    })();
   }, []);
 
   const handleSave = async () => {
     setSaving(true);
-    // Recalculate delays automatically
-    const recalculated = messages.map((m, i) => ({
-      ...m,
-      delay: (i + 1) * 1800,
-    }));
-    const config = JSON.stringify({
-      attendantName,
-      attendantAvatar,
-      ctaText,
-      ctaUrl,
-      ctaType,
-      messages: recalculated,
-    });
+    const value = JSON.stringify(config);
     const { error } = await supabase
       .from("platform_settings")
-      .upsert({ key: "invite_chat_config", value: config, updated_at: new Date().toISOString() } as any, { onConflict: "key" });
+      .upsert({ key: "invite_chat_config", value, updated_at: new Date().toISOString() } as any, { onConflict: "key" });
     setSaving(false);
-    if (error) {
-      toast({ title: "Erro ao salvar", variant: "destructive" });
-    } else {
-      setMessages(recalculated);
-      toast({ title: "Convite salvo com sucesso!" });
-    }
+    if (error) toast({ title: "Erro ao salvar", variant: "destructive" });
+    else toast({ title: "Convite salvo com sucesso!" });
   };
 
-  const addMessage = () => {
-    const newId = String(Date.now());
-    setMessages((prev) => [
+  const resetToDefault = () => {
+    setConfig({ ...DEFAULT_CONFIG });
+    toast({ title: "Fluxo restaurado ao padrão" });
+  };
+
+  const toggleStep = (id: string) => {
+    setOpenSteps((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const updateStep = (id: string, updater: (step: FlowStep) => FlowStep) => {
+    setConfig((prev) => ({
       ...prev,
-      { id: newId, text: "", sender: "attendant", delay: (prev.length + 1) * 1800 },
-    ]);
+      flow: prev.flow.map((s) => (s.id === id ? updater(s) : s)),
+    }));
   };
 
-  const removeMessage = (id: string) => {
-    setMessages((prev) => prev.filter((m) => m.id !== id));
+  const updateBotMessage = (stepId: string, msgIndex: number, text: string) => {
+    updateStep(stepId, (s) => {
+      if (s.type !== "bot") return s;
+      const msgs = [...(s as BotStep).messages];
+      msgs[msgIndex] = text;
+      return { ...s, messages: msgs } as FlowStep;
+    });
   };
 
-  const updateMessage = (id: string, field: keyof ChatMessage, value: string) => {
-    setMessages((prev) =>
-      prev.map((m) => (m.id === id ? { ...m, [field]: value } : m))
-    );
+  const addBotMessage = (stepId: string) => {
+    updateStep(stepId, (s) => {
+      if (s.type !== "bot") return s;
+      return { ...s, messages: [...(s as BotStep).messages, "Nova mensagem..."] } as FlowStep;
+    });
   };
 
-  const moveMessage = (index: number, dir: -1 | 1) => {
-    const newIndex = index + dir;
-    if (newIndex < 0 || newIndex >= messages.length) return;
-    const copy = [...messages];
-    [copy[index], copy[newIndex]] = [copy[newIndex], copy[index]];
-    setMessages(copy);
+  const removeBotMessage = (stepId: string, msgIndex: number) => {
+    updateStep(stepId, (s) => {
+      if (s.type !== "bot") return s;
+      const msgs = (s as BotStep).messages.filter((_, i) => i !== msgIndex);
+      return { ...s, messages: msgs } as FlowStep;
+    });
+  };
+
+  const updateChoiceLabel = (stepId: string, optIndex: number, label: string) => {
+    updateStep(stepId, (s) => {
+      if (s.type !== "choice") return s;
+      const opts = [...(s as ChoiceStep).options];
+      opts[optIndex] = { ...opts[optIndex], label };
+      return { ...s, options: opts } as FlowStep;
+    });
+  };
+
+  const updateInputPlaceholder = (stepId: string, placeholder: string) => {
+    updateStep(stepId, (s) => {
+      if (s.type !== "input") return s;
+      return { ...s, placeholder } as FlowStep;
+    });
   };
 
   const copyUrl = () => {
@@ -183,190 +120,170 @@ export default function AdminInviteTab() {
 
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h2 className="text-xl font-bold flex items-center gap-2 text-foreground">
             <MessageCircle size={22} className="text-[#25d366]" />
-            Página de Convite (WhatsApp)
+            Página de Convite Interativo
           </h2>
           <p className="text-sm text-muted-foreground mt-1">
-            Simula uma conversa de WhatsApp para atrair novos corretores via Facebook Ads
+            Chat interativo com ramificações para atrair corretores
           </p>
         </div>
         <div className="flex gap-2">
-          <Button variant="secondary" size="sm" onClick={copyUrl}>
-            <Copy size={14} /> Copiar URL
-          </Button>
+          <Button variant="secondary" size="sm" onClick={copyUrl}><Copy size={14} /> URL</Button>
           <a href="/convite" target="_blank" rel="noopener">
-            <Button variant="secondary" size="sm">
-              <ExternalLink size={14} /> Visualizar
-            </Button>
+            <Button variant="secondary" size="sm"><ExternalLink size={14} /> Visualizar</Button>
           </a>
         </div>
       </div>
 
-      {/* Template Picker */}
+      {/* Attendant */}
       <div className="bg-card border border-border rounded-xl p-4 space-y-3">
-        <h3 className="text-sm font-semibold flex items-center gap-2 text-foreground">
-          📋 Templates Prontos
-        </h3>
-        <p className="text-xs text-muted-foreground">Escolha um template como base e personalize as mensagens abaixo.</p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-          {Object.entries(TEMPLATES).map(([key, tpl]) => (
-            <button
-              key={key}
-              onClick={() => {
-                setMessages(tpl.messages);
-                toast({ title: `Template "${tpl.label}" carregado!`, description: "Personalize e salve." });
-              }}
-              className="flex items-start gap-3 p-3 rounded-xl border border-border bg-background hover:border-primary/40 hover:bg-primary/5 transition-all text-left"
-            >
-              <span className="text-xl">{tpl.emoji}</span>
-              <div>
-                <p className="text-sm font-semibold text-foreground">{tpl.label}</p>
-                <p className="text-xs text-muted-foreground mt-0.5">{tpl.description}</p>
-              </div>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Attendant config */}
-      <div className="bg-card border border-border rounded-xl p-4 space-y-3">
-        <h3 className="text-sm font-semibold flex items-center gap-2 text-foreground">
-          <User size={16} /> Atendente
-        </h3>
+        <h3 className="text-sm font-semibold flex items-center gap-2 text-foreground"><User size={16} /> Atendente</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label className="text-xs text-muted-foreground">Nome da atendente</label>
-            <Input
-              value={attendantName}
-              onChange={(e) => setAttendantName(e.target.value)}
-              placeholder="Ana • Capimobi"
-            />
+            <label className="text-xs text-muted-foreground">Nome</label>
+            <Input value={config.attendantName} onChange={(e) => setConfig((p) => ({ ...p, attendantName: e.target.value }))} />
           </div>
           <div>
-            <label className="text-xs text-muted-foreground">URL do avatar (opcional)</label>
-            <Input
-              value={attendantAvatar}
-              onChange={(e) => setAttendantAvatar(e.target.value)}
-              placeholder="https://..."
-            />
+            <label className="text-xs text-muted-foreground">Avatar URL (opcional)</label>
+            <Input value={config.attendantAvatar} onChange={(e) => setConfig((p) => ({ ...p, attendantAvatar: e.target.value }))} placeholder="https://..." />
           </div>
         </div>
       </div>
 
-      {/* CTA config */}
+      {/* CTA */}
       <div className="bg-card border border-border rounded-xl p-4 space-y-3">
-        <h3 className="text-sm font-semibold flex items-center gap-2 text-foreground">
-          <ExternalLink size={16} /> Botão Final (CTA)
-        </h3>
+        <h3 className="text-sm font-semibold flex items-center gap-2 text-foreground"><ExternalLink size={16} /> Botão Final (CTA)</h3>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
             <label className="text-xs text-muted-foreground">Tipo de link</label>
             <select
-              value={ctaType}
+              value={config.ctaType}
               onChange={(e) => {
-                const v = e.target.value as typeof ctaType;
-                setCtaType(v);
-                if (v === "internal") setCtaUrl("/login");
-                else if (v === "whatsapp") setCtaUrl("https://wa.me/5500000000000");
-                else if (v === "whatsapp_group") setCtaUrl("https://chat.whatsapp.com/...");
-                else setCtaUrl("https://");
+                const v = e.target.value as InviteChatConfig["ctaType"];
+                setConfig((p) => ({ ...p, ctaType: v, ctaUrl: v === "internal" ? "/login" : v === "whatsapp" ? "https://wa.me/55" : "https://" }));
               }}
               className="w-full text-sm bg-card text-foreground border border-border rounded px-3 py-2 mt-1"
             >
-              <option value="internal">📱 Cadastro interno (/login)</option>
+              <option value="internal">📱 Cadastro interno</option>
               <option value="whatsapp">💬 WhatsApp direto</option>
-              <option value="whatsapp_group">👥 Grupo de WhatsApp</option>
+              <option value="whatsapp_group">👥 Grupo WhatsApp</option>
               <option value="url">🔗 URL externa</option>
             </select>
           </div>
           <div>
             <label className="text-xs text-muted-foreground">Texto do botão</label>
-            <Input
-              value={ctaText}
-              onChange={(e) => setCtaText(e.target.value)}
-              placeholder="🚀 Criar Minha Conta Grátis"
-              className="mt-1"
-            />
+            <Input value={config.ctaText} onChange={(e) => setConfig((p) => ({ ...p, ctaText: e.target.value }))} className="mt-1" />
           </div>
           <div>
-            <label className="text-xs text-muted-foreground">
-              {ctaType === "internal" ? "Rota interna" : "URL completa"}
-            </label>
-            <Input
-              value={ctaUrl}
-              onChange={(e) => setCtaUrl(e.target.value)}
-              placeholder={ctaType === "whatsapp" ? "https://wa.me/5527..." : ctaType === "whatsapp_group" ? "https://chat.whatsapp.com/..." : "/login"}
-              className="mt-1"
-            />
+            <label className="text-xs text-muted-foreground">{config.ctaType === "internal" ? "Rota" : "URL"}</label>
+            <Input value={config.ctaUrl} onChange={(e) => setConfig((p) => ({ ...p, ctaUrl: e.target.value }))} className="mt-1" />
           </div>
         </div>
       </div>
 
-      {/* Messages editor */}
+      {/* Flow editor */}
       <div className="bg-card border border-border rounded-xl p-4 space-y-3">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-semibold text-foreground">Mensagens da conversa</h3>
-          <Button variant="secondary" size="sm" onClick={addMessage}>
-            <Plus size={14} /> Adicionar
-          </Button>
+          <h3 className="text-sm font-semibold text-foreground">🔀 Fluxo da Conversa</h3>
+          <Button variant="ghost" size="sm" onClick={resetToDefault} className="text-xs text-muted-foreground">Restaurar padrão</Button>
         </div>
+        <p className="text-xs text-muted-foreground">
+          Use <code className="bg-muted px-1 rounded">{"{{nome}}"}</code> para inserir o nome do visitante. Clique em cada etapa para editar.
+        </p>
 
-        <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
-          {messages.map((msg, i) => (
-            <div
-              key={msg.id}
-              className={`flex gap-2 p-3 rounded-lg border ${
-                msg.sender === "user"
-                  ? "border-primary/30 bg-primary/10"
-                  : "border-border bg-background"
-              }`}
-            >
-              <div className="flex flex-col gap-1 shrink-0">
+        <div className="space-y-2 max-h-[60vh] overflow-y-auto pr-1">
+          {config.flow.map((step) => {
+            const meta = STEP_TYPE_LABELS[step.type] || { emoji: "❓", label: step.type };
+            const name = STEP_NAMES[step.id] || step.id;
+            const isOpen = openSteps.has(step.id);
+
+            return (
+              <div key={step.id} className="border border-border rounded-lg overflow-hidden">
                 <button
-                  onClick={() => moveMessage(i, -1)}
-                  disabled={i === 0}
-                  className="text-muted-foreground hover:text-foreground disabled:opacity-30"
+                  onClick={() => toggleStep(step.id)}
+                  className="w-full flex items-center gap-2 px-3 py-2.5 text-left hover:bg-muted/50 transition-colors"
                 >
-                  <ArrowUp size={14} />
+                  {isOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                  <span className="text-base">{meta.emoji}</span>
+                  <span className="text-sm font-medium text-foreground flex-1">{name}</span>
+                  <span className="text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded-full">{meta.label}</span>
                 </button>
-                <button
-                  onClick={() => moveMessage(i, 1)}
-                  disabled={i === messages.length - 1}
-                  className="text-muted-foreground hover:text-foreground disabled:opacity-30"
-                >
-                  <ArrowDown size={14} />
-                </button>
+
+                {isOpen && (
+                  <div className="px-3 pb-3 space-y-2 border-t border-border pt-2">
+                    {/* Bot step */}
+                    {step.type === "bot" && (
+                      <>
+                        {(step as BotStep).messages.map((msg, i) => (
+                          <div key={i} className="flex gap-2">
+                            <Textarea
+                              value={msg}
+                              onChange={(e) => updateBotMessage(step.id, i, e.target.value)}
+                              className="min-h-[50px] text-sm flex-1"
+                            />
+                            {(step as BotStep).messages.length > 1 && (
+                              <button onClick={() => removeBotMessage(step.id, i)} className="text-destructive/60 hover:text-destructive shrink-0 mt-1">
+                                <Trash2 size={14} />
+                              </button>
+                            )}
+                          </div>
+                        ))}
+                        <Button variant="ghost" size="sm" onClick={() => addBotMessage(step.id)} className="text-xs">
+                          <Plus size={12} /> Adicionar balão
+                        </Button>
+                      </>
+                    )}
+
+                    {/* Input step */}
+                    {step.type === "input" && (
+                      <div>
+                        <label className="text-xs text-muted-foreground">Placeholder do input</label>
+                        <Input
+                          value={(step as InputStep).placeholder}
+                          onChange={(e) => updateInputPlaceholder(step.id, e.target.value)}
+                          className="mt-1"
+                        />
+                      </div>
+                    )}
+
+                    {/* Choice step */}
+                    {step.type === "choice" && (
+                      <div className="space-y-2">
+                        <label className="text-xs text-muted-foreground">Botões de escolha</label>
+                        {(step as ChoiceStep).options.map((opt, i) => (
+                          <div key={i} className="flex gap-2 items-center">
+                            <span className="text-xs text-muted-foreground w-6 text-right">{i + 1}.</span>
+                            <Input
+                              value={opt.label}
+                              onChange={(e) => updateChoiceLabel(step.id, i, e.target.value)}
+                              className="flex-1 text-sm"
+                            />
+                            <span className="text-[10px] text-muted-foreground">→ {STEP_NAMES[opt.next] || opt.next}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* CTA step */}
+                    {step.type === "cta" && (
+                      <p className="text-xs text-muted-foreground italic">O botão CTA é configurado acima.</p>
+                    )}
+
+                    {/* Next indicator */}
+                    {"next" in step && (step as any).next && (
+                      <p className="text-[10px] text-muted-foreground mt-1">
+                        Próximo passo: <span className="font-medium">{STEP_NAMES[(step as any).next] || (step as any).next}</span>
+                      </p>
+                    )}
+                  </div>
+                )}
               </div>
-              <div className="flex-1 space-y-2">
-                <div className="flex items-center gap-2">
-                  <select
-                    value={msg.sender}
-                    onChange={(e) => updateMessage(msg.id, "sender", e.target.value)}
-                    className="text-xs bg-card text-foreground border border-border rounded px-2 py-1"
-                  >
-                    <option value="attendant">🟢 Atendente</option>
-                    <option value="user">🔵 Usuário</option>
-                  </select>
-                  <span className="text-[10px] text-muted-foreground">#{i + 1}</span>
-                </div>
-                <Textarea
-                  value={msg.text}
-                  onChange={(e) => updateMessage(msg.id, "text", e.target.value)}
-                  placeholder="Texto da mensagem..."
-                  className="min-h-[60px] text-sm"
-                />
-              </div>
-              <button
-                onClick={() => removeMessage(msg.id)}
-                className="text-destructive/60 hover:text-destructive shrink-0 mt-1"
-              >
-                <Trash2 size={16} />
-              </button>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
