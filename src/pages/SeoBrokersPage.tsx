@@ -216,9 +216,14 @@ export default function SeoBrokersPage() {
   const theme = useSeoTheme();
   const { primary: PRIMARY, cardBg: CARD_BG, border: BORDER, text: TEXT, textMuted: TEXT_MUTED } = theme;
 
-  const stateName = estado ? (BRAZILIAN_STATES[estado.toLowerCase()] || estado.toUpperCase()) : "";
-  const stateCode = estado?.toUpperCase() || "";
-  const cityName = cidade?.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase()) || "";
+  // Detect if `:estado` param is actually a city name (not a known 2-letter state code)
+  const isStateCode = estado && estado.length <= 2 && !!BRAZILIAN_STATES[estado.toLowerCase()];
+  const resolvedStateCode = isStateCode ? estado.toUpperCase() : "";
+  const resolvedCitySlug = cidade || (!isStateCode && estado ? estado : "");
+  
+  const stateName = resolvedStateCode ? (BRAZILIAN_STATES[resolvedStateCode.toLowerCase()] || resolvedStateCode) : "";
+  const stateCode = resolvedStateCode;
+  const cityName = resolvedCitySlug ? resolvedCitySlug.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase()) : "";
 
   useEffect(() => {
     const fetchData = async () => {
