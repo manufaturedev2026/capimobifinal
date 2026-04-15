@@ -17,6 +17,7 @@ interface CaptacaoOnlineTabProps {
   sellerId: string;
   sellerSlug: string | null;
   sellerName: string;
+  currentTier?: string;
 }
 
 type Lead = {
@@ -67,7 +68,11 @@ function Section({ icon: Icon, title, badge, defaultOpen = false, children, acce
   );
 }
 
-export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, sellerName }: CaptacaoOnlineTabProps) {
+export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, sellerName, currentTier = "basico" }: CaptacaoOnlineTabProps) {
+  const TIER_ORDER = ["basico", "start", "premium", "vip", "essencial_empresa", "premium_empresa", "prime_empresa", "black"];
+  const tierLevel = TIER_ORDER.indexOf(currentTier);
+  const hasLandingPage = tierLevel >= 1; // Start+
+  const hasBot = tierLevel >= 2; // VIP+
   const { toast } = useToast();
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
