@@ -375,6 +375,19 @@ export default function Index() {
               </div>
             </motion.div>
           </div>
+
+        {/* Cinema Mode Button - bottom right of hero */}
+        {cinemaItems.length > 0 && (
+          <motion.button
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.2, duration: 0.5 }}
+            onClick={() => setCinemaMode(0)}
+            className="absolute bottom-6 right-6 z-20 flex items-center gap-2 px-5 py-3 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 text-white font-semibold text-sm hover:bg-white/20 transition-all hover:scale-105 shadow-xl"
+          >
+            <Clapperboard size={18} className="text-primary" /> Modo Cinema
+          </motion.button>
+        )}
         </div>
       </section>
 
