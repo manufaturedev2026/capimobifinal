@@ -1,0 +1,1 @@
+ALTER TABLE public.profiles ADD COLUMN open_for_partnerships boolean NOT NULL DEFAULT true;
