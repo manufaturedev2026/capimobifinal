@@ -493,14 +493,6 @@ export default function AdminPanel() {
         {/* Main content */}
         <main className="flex-1 overflow-y-auto p-4 md:p-6 max-w-5xl">
 
-        {/* Search */}
-        {(
-          <div className="relative mb-4">
-            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Buscar vendedor..."
-              className="w-full pl-10 pr-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" />
-          </div>
-        )}
 
         {tab === "sellers" && (
           <div className="space-y-3">
