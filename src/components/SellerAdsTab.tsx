@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { Megaphone, TrendingUp, DollarSign, MapPin, Home, Send, Loader2, Eye, MousePointerClick, Phone, AlertCircle, ChevronDown, Clock } from "lucide-react";
+import { Megaphone, TrendingUp, DollarSign, MapPin, Home, Send, Loader2, Eye, MousePointerClick, Phone, AlertCircle, ChevronDown, Clock, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, CartesianGrid } from "recharts";
