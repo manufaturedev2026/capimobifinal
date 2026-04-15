@@ -38,6 +38,7 @@ export default function SellerProfile({ embedded }: { embedded?: boolean }) {
     cnpj: "",
     slug: "",
     show_floating_whatsapp: false,
+    whatsapp_mode: "team" as string,
     open_for_partnerships: true,
   });
   const { cities: ibgeCities, loading: citiesLoading } = useCitiesByState(form.state);
@@ -67,6 +68,7 @@ export default function SellerProfile({ embedded }: { embedded?: boolean }) {
         cnpj: (profile as any).cnpj || "",
         slug: (profile as any).slug || "",
         show_floating_whatsapp: (profile as any).show_floating_whatsapp ?? false,
+        whatsapp_mode: (profile as any).whatsapp_mode || "team",
         open_for_partnerships: (profile as any).open_for_partnerships ?? true,
       });
     }
@@ -343,6 +345,19 @@ export default function SellerProfile({ embedded }: { embedded?: boolean }) {
           <input type="checkbox" checked={form.show_floating_whatsapp} onChange={(e) => setForm((f) => ({ ...f, show_floating_whatsapp: e.target.checked }))} className="w-5 h-5 rounded border-input text-primary focus:ring-ring accent-primary cursor-pointer" />
           <span className="text-sm text-foreground">Mostrar botão flutuante do WhatsApp na loja</span>
         </label>
+        {(form.seller_category === "imobiliaria" || form.seller_category === "construtora") && (
+          <div className="space-y-2">
+            <p className="text-sm font-medium text-foreground">Ao clicar no WhatsApp:</p>
+            <label className="flex items-center gap-3 cursor-pointer select-none">
+              <input type="radio" name="whatsapp_mode" checked={form.whatsapp_mode === "team"} onChange={() => setForm((f) => ({ ...f, whatsapp_mode: "team" }))} className="w-4 h-4 accent-primary cursor-pointer" />
+              <span className="text-sm text-foreground">Mostrar lista de corretores vinculados</span>
+            </label>
+            <label className="flex items-center gap-3 cursor-pointer select-none">
+              <input type="radio" name="whatsapp_mode" checked={form.whatsapp_mode === "direct"} onChange={() => setForm((f) => ({ ...f, whatsapp_mode: "direct" }))} className="w-4 h-4 accent-primary cursor-pointer" />
+              <span className="text-sm text-foreground">Ir direto para o WhatsApp da empresa</span>
+            </label>
+          </div>
+        )}
         {(form.seller_category === "imobiliaria" || form.seller_category === "construtora") && (
           <label className="flex items-center gap-3 cursor-pointer select-none">
             <input type="checkbox" checked={form.open_for_partnerships} onChange={(e) => setForm((f) => ({ ...f, open_for_partnerships: e.target.checked }))} className="w-5 h-5 rounded border-input text-primary focus:ring-ring accent-primary cursor-pointer" />
