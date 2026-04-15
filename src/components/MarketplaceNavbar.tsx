@@ -27,9 +27,7 @@ export default function MarketplaceNavbar({ theme, user, showImoveisScroll = tru
           {site_logo_url ? (
             <img src={site_logo_url} alt={site_name} className="h-8 max-w-[140px] object-contain" />
           ) : (
-            <>
-              <span style={{ color: PRIMARY }}>Cap</span><span style={{ color: '#ffffff' }}>i</span><span style={{ color: ACCENT || '#D4708F' }}>mobi</span>
-            </>
+            <span><span style={{ color: PRIMARY }}>Cap</span><span style={{ color: '#ffffff' }}>i</span><span style={{ color: ACCENT || '#D4708F' }}>mobi</span></span>
           )}
         </Link>
 
