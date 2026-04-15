@@ -318,6 +318,30 @@ export default function MarketplaceHome() {
     return () => clearInterval(t);
   }, [realItems.length, isMobile]);
 
+  // Fullscreen for cinema mode
+  useEffect(() => {
+    if (cinemaMode !== null) {
+      const el = document.documentElement;
+      if (el.requestFullscreen) {
+        el.requestFullscreen().then(() => {
+          try { (screen.orientation as any).lock?.("landscape"); } catch {}
+        }).catch(() => {});
+      }
+    } else {
+      if (document.fullscreenElement) {
+        document.exitFullscreen().catch(() => {});
+      }
+      try { (screen.orientation as any).unlock?.(); } catch {}
+    }
+  }, [cinemaMode]);
+
+  // Cinema products (active items with images)
+  const cinemaProducts = useMemo(() => {
+    return filteredItems
+      .filter((p) => p.image && (p as any).status === "ativo")
+      .slice(0, 30);
+  }, [filteredItems]);
+
   const scrollToGrid = () =>
     setTimeout(() => {
       document.getElementById("marketplace-grid")?.scrollIntoView({ behavior: "smooth", block: "start" });
