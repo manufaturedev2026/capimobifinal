@@ -11,6 +11,7 @@ import {
   LayoutDashboard, Image, Menu, ChevronDown,
 } from "lucide-react";
 import MarketplaceNavbar from "@/components/MarketplaceNavbar";
+import GlobalStoriesBar from "@/components/GlobalStoriesBar";
 import { useAuth } from "@/hooks/useAuth";
 import { useRealListings } from "@/hooks/useRealListings";
 import { useCityDetection } from "@/hooks/useCityDetection";
@@ -670,6 +671,9 @@ export default function MarketplaceHome() {
 
         {/* ── Main Content ── */}
         <div className="flex-1 min-w-0">
+
+        {/* ═══ GLOBAL AUTO STORIES ═══ */}
+        <GlobalStoriesBar primaryColor={PRIMARY} textColor={TEXT} />
 
         {/* ═══ QUICK ACTIONS ═══ */}
         <motion.section

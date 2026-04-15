@@ -1318,6 +1318,7 @@ export type Database = {
           id: string
           image_url: string
           is_active: boolean
+          is_auto: boolean
           item_id: string | null
           seller_id: string
           team_member_id: string | null
@@ -1333,6 +1334,7 @@ export type Database = {
           id?: string
           image_url: string
           is_active?: boolean
+          is_auto?: boolean
           item_id?: string | null
           seller_id: string
           team_member_id?: string | null
@@ -1348,6 +1350,7 @@ export type Database = {
           id?: string
           image_url?: string
           is_active?: boolean
+          is_auto?: boolean
           item_id?: string | null
           seller_id?: string
           team_member_id?: string | null
