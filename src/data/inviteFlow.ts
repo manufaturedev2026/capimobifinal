@@ -47,7 +47,7 @@ export const DEFAULT_CONFIG: InviteChatConfig = {
       id: "start",
       type: "bot",
       messages: [
-        "Oi! 👋 Qual é o seu nome?",
+        "Antes de tudo, qual é o seu nome? 😊",
       ],
       next: "ask_name",
     },
