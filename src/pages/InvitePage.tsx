@@ -60,6 +60,7 @@ export default function InvitePage() {
           if (parsed.ctaUrl) cfg.ctaUrl = parsed.ctaUrl;
           if (parsed.ctaType) cfg.ctaType = parsed.ctaType;
           if (parsed.chatMode) cfg.chatMode = parsed.chatMode;
+          if (parsed.crmRedirectUrl !== undefined) cfg.crmRedirectUrl = parsed.crmRedirectUrl;
           if (parsed.flow?.length) cfg.flow = parsed.flow;
         } catch {}
       }
@@ -351,6 +352,17 @@ export default function InvitePage() {
                         });
                         setCrmSaved(true);
                         addBubble("Obrigado! Em breve entraremos em contato 🤝", "attendant");
+                        // Redirect after CRM save
+                        if (config.crmRedirectUrl) {
+                          setTimeout(() => {
+                            const url = config.crmRedirectUrl;
+                            if (url.startsWith("/")) {
+                              navigate(url);
+                            } else {
+                              window.open(url, "_blank", "noopener");
+                            }
+                          }, 1500);
+                        }
                       } catch (e) {
                         console.error("CRM save error:", e);
                       }
