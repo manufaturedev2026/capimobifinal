@@ -430,6 +430,11 @@ export default function SellerDashboard() {
               <button key={nav.id} id={nav.tourId} onClick={() => handleTabClick(nav.id)}
                 className={`sidebar-nav-item ${nav.locked ? "text-muted-foreground/40 cursor-not-allowed" : activeTab === nav.id ? "active" : ""}`}>
                 <nav.icon size={18} /> {nav.label}
+                {nav.id === "crm" && newCrmCount > 0 && (
+                  <span className="ml-auto bg-destructive text-destructive-foreground text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
+                    {newCrmCount}
+                  </span>
+                )}
                 {nav.id === "captacao" && newCaptureCount > 0 && (
                   <span className="ml-auto bg-destructive text-destructive-foreground text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
                     {newCaptureCount}
