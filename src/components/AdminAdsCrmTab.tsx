@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Megaphone, Search, Check, X, Clock, MessageCircle, Phone, Eye, ChevronDown, Loader2, Filter, RefreshCw, ExternalLink, DollarSign } from "lucide-react";
+import { Megaphone, Search, Clock, MessageCircle, Loader2, RefreshCw, DollarSign, ExternalLink, ImageIcon } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -7,6 +7,7 @@ interface AdRequest {
   id: string;
   user_id: string;
   seller_id: string;
+  item_id: string | null;
   platform: string;
   daily_budget: number;
   duration_days: number;
@@ -20,6 +21,13 @@ interface AdRequest {
   sellerName?: string;
   sellerPhone?: string;
   sellerEmail?: string;
+  itemTitle?: string;
+  itemCity?: string;
+  itemNeighborhood?: string;
+  itemPrice?: number | null;
+  itemPhoto?: string | null;
+  itemSlug?: string | null;
+  itemCategory?: string;
 }
 
 const STAGES = [
@@ -38,6 +46,7 @@ export default function AdminAdsCrmTab() {
   const [search, setSearch] = useState("");
   const [stageFilter, setStageFilter] = useState("todos");
   const [draggedId, setDraggedId] = useState<string | null>(null);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const fetchRequests = async () => {
     setLoading(true);
@@ -52,22 +61,37 @@ export default function AdminAdsCrmTab() {
       return;
     }
 
-    const sellerIds = [...new Set(ads.map((a) => a.seller_id))];
-    const { data: profiles } = await supabase
-      .from("profiles")
-      .select("id, full_name, company_name, phone, email")
-      .in("id", sellerIds);
+    const sellerIds = [...new Set(ads.map((a: any) => a.seller_id))];
+    const itemIds = [...new Set(ads.map((a: any) => a.item_id).filter(Boolean))];
+
+    const [{ data: profiles }, { data: items }] = await Promise.all([
+      supabase.from("profiles").select("id, full_name, company_name, phone, email").in("id", sellerIds),
+      itemIds.length > 0
+        ? supabase.from("seller_items").select("id, title, city, neighborhood, price, photos, slug, category").in("id", itemIds)
+        : Promise.resolve({ data: [] }),
+    ]);
 
     const profileMap: Record<string, any> = {};
     (profiles || []).forEach((p) => { profileMap[p.id] = p; });
 
-    const enriched: AdRequest[] = ads.map((a) => {
+    const itemMap: Record<string, any> = {};
+    (items || []).forEach((i) => { itemMap[i.id] = i; });
+
+    const enriched: AdRequest[] = ads.map((a: any) => {
       const p = profileMap[a.seller_id];
+      const item = a.item_id ? itemMap[a.item_id] : null;
       return {
         ...a,
         sellerName: p?.company_name || p?.full_name || "Corretor",
         sellerPhone: p?.phone,
         sellerEmail: p?.email,
+        itemTitle: item?.title || null,
+        itemCity: item?.city || null,
+        itemNeighborhood: item?.neighborhood || null,
+        itemPrice: item?.price || null,
+        itemPhoto: item?.photos?.[0] || null,
+        itemSlug: item?.slug || null,
+        itemCategory: item?.category || null,
       };
     });
 
@@ -104,7 +128,8 @@ export default function AdminAdsCrmTab() {
       return (
         r.sellerName?.toLowerCase().includes(q) ||
         r.details?.toLowerCase().includes(q) ||
-        r.sellerEmail?.toLowerCase().includes(q)
+        r.sellerEmail?.toLowerCase().includes(q) ||
+        r.itemTitle?.toLowerCase().includes(q)
       );
     }
     return true;
@@ -182,7 +207,7 @@ export default function AdminAdsCrmTab() {
             return (
               <div
                 key={stage.key}
-                className="flex-1 min-w-[200px]"
+                className="flex-1 min-w-[220px]"
                 onDragOver={(e) => e.preventDefault()}
                 onDrop={(e) => handleDrop(e, stage.key)}
               >
@@ -196,57 +221,15 @@ export default function AdminAdsCrmTab() {
 
                 <div className="space-y-2 min-h-[100px] bg-secondary/30 rounded-xl p-2">
                   {stageRequests.map((req) => (
-                    <div
+                    <AdCard
                       key={req.id}
-                      draggable
-                      onDragStart={(e) => {
-                        e.dataTransfer.setData("text/plain", req.id);
-                        setDraggedId(req.id);
-                      }}
-                      onDragEnd={() => setDraggedId(null)}
-                      className={`bg-card border border-border rounded-xl p-3 cursor-grab active:cursor-grabbing transition-opacity ${
-                        draggedId === req.id ? "opacity-50" : ""
-                      }`}
-                    >
-                      <p className="text-sm font-semibold text-foreground truncate">{req.sellerName}</p>
-                      <p className="text-[10px] text-muted-foreground mt-0.5 line-clamp-2">{req.details}</p>
-                      <div className="flex items-center justify-between mt-2">
-                        <span className="text-xs font-bold text-primary">
-                          R${Number(req.total).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
-                        </span>
-                        <span className="text-[10px] text-muted-foreground">
-                          {new Date(req.created_at).toLocaleDateString("pt-BR")}
-                        </span>
-                      </div>
-                      <div className="flex gap-3 mt-2 text-[10px] text-muted-foreground">
-                        <span>R${req.daily_budget}/dia</span>
-                        <span>{req.duration_days}d</span>
-                        <span className="text-emerald-400">Taxa: R${Number(req.service_fee).toFixed(0)}</span>
-                      </div>
-
-                      {/* Quick Actions */}
-                      <div className="flex gap-1.5 mt-2">
-                        {req.sellerPhone && (
-                          <a
-                            href={`https://wa.me/55${req.sellerPhone.replace(/\D/g, "")}?text=${encodeURIComponent(`Olá ${req.sellerName}! Sobre sua solicitação de ADS...`)}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center gap-1 px-2 py-1 rounded-lg bg-emerald-500/20 text-emerald-400 text-[10px] font-semibold hover:bg-emerald-500/30 transition-colors"
-                          >
-                            <MessageCircle size={10} /> WhatsApp
-                          </a>
-                        )}
-                        <select
-                          value={req.status}
-                          onChange={(e) => updateStatus(req.id, e.target.value)}
-                          className="px-2 py-1 rounded-lg bg-secondary text-foreground text-[10px] border-0 focus:ring-1 focus:ring-ring appearance-none cursor-pointer"
-                        >
-                          {STAGES.map((s) => (
-                            <option key={s.key} value={s.key}>{s.label}</option>
-                          ))}
-                        </select>
-                      </div>
-                    </div>
+                      req={req}
+                      draggedId={draggedId}
+                      setDraggedId={setDraggedId}
+                      expanded={expandedId === req.id}
+                      onToggle={() => setExpandedId(expandedId === req.id ? null : req.id)}
+                      onStatusChange={updateStatus}
+                    />
                   ))}
                 </div>
               </div>
@@ -257,6 +240,138 @@ export default function AdminAdsCrmTab() {
     </div>
   );
 }
+
+/* ── Ad Card ─────────────────────────────────── */
+
+function AdCard({
+  req, draggedId, setDraggedId, expanded, onToggle, onStatusChange,
+}: {
+  req: AdRequest;
+  draggedId: string | null;
+  setDraggedId: (id: string | null) => void;
+  expanded: boolean;
+  onToggle: () => void;
+  onStatusChange: (id: string, status: string) => void;
+}) {
+  const itemLink = req.itemSlug ? `/imovel/${req.itemSlug}` : req.item_id ? `/imovel/${req.item_id}` : null;
+
+  return (
+    <div
+      draggable
+      onDragStart={(e) => { e.dataTransfer.setData("text/plain", req.id); setDraggedId(req.id); }}
+      onDragEnd={() => setDraggedId(null)}
+      onClick={onToggle}
+      className={`bg-card border border-border rounded-xl p-3 cursor-grab active:cursor-grabbing transition-opacity ${
+        draggedId === req.id ? "opacity-50" : ""
+      }`}
+    >
+      {/* Seller */}
+      <p className="text-sm font-semibold text-foreground truncate">{req.sellerName}</p>
+
+      {/* Item thumbnail + title */}
+      {req.itemTitle && (
+        <div className="flex items-center gap-2 mt-1.5 bg-secondary/60 rounded-lg p-1.5">
+          {req.itemPhoto ? (
+            <img src={req.itemPhoto} alt="" className="w-10 h-10 rounded-md object-cover shrink-0" />
+          ) : (
+            <div className="w-10 h-10 rounded-md bg-muted flex items-center justify-center shrink-0">
+              <ImageIcon size={14} className="text-muted-foreground" />
+            </div>
+          )}
+          <div className="min-w-0 flex-1">
+            <p className="text-[11px] font-semibold text-foreground truncate">{req.itemTitle}</p>
+            <p className="text-[10px] text-muted-foreground truncate">
+              {[req.itemNeighborhood, req.itemCity].filter(Boolean).join(", ") || "—"}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Price & date row */}
+      <div className="flex items-center justify-between mt-2">
+        <span className="text-xs font-bold text-primary">
+          R${Number(req.total).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+        </span>
+        <span className="text-[10px] text-muted-foreground">
+          {new Date(req.created_at).toLocaleDateString("pt-BR")}
+        </span>
+      </div>
+
+      {/* Budget summary */}
+      <div className="flex gap-3 mt-1.5 text-[10px] text-muted-foreground">
+        <span>R${req.daily_budget}/dia</span>
+        <span>{req.duration_days}d</span>
+        <span className="text-emerald-400">Taxa: R${Number(req.service_fee).toFixed(0)}</span>
+      </div>
+
+      {/* Expanded details */}
+      {expanded && (
+        <div className="mt-3 pt-3 border-t border-border space-y-2 text-[11px]" onClick={(e) => e.stopPropagation()}>
+          {req.itemPrice != null && (
+            <p className="text-muted-foreground">
+              <span className="font-semibold text-foreground">Preço do imóvel:</span>{" "}
+              R${Number(req.itemPrice).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+            </p>
+          )}
+          {req.itemCategory && (
+            <p className="text-muted-foreground">
+              <span className="font-semibold text-foreground">Categoria:</span> {req.itemCategory}
+            </p>
+          )}
+          {req.details && (
+            <div>
+              <span className="font-semibold text-foreground">Observações do cliente:</span>
+              <p className="text-muted-foreground mt-0.5 whitespace-pre-wrap">{req.details}</p>
+            </div>
+          )}
+          {req.sellerEmail && (
+            <p className="text-muted-foreground">
+              <span className="font-semibold text-foreground">Email:</span> {req.sellerEmail}
+            </p>
+          )}
+          <div className="flex items-center justify-between text-muted-foreground">
+            <span><span className="font-semibold text-foreground">Subtotal:</span> R${Number(req.subtotal).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
+          </div>
+          {itemLink && (
+            <a
+              href={itemLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 text-primary hover:underline text-[11px] font-semibold"
+            >
+              <ExternalLink size={12} /> Ver imóvel
+            </a>
+          )}
+        </div>
+      )}
+
+      {/* Quick Actions */}
+      <div className="flex gap-1.5 mt-2" onClick={(e) => e.stopPropagation()}>
+        {req.sellerPhone && (
+          <a
+            href={`https://wa.me/55${req.sellerPhone.replace(/\D/g, "")}?text=${encodeURIComponent(`Olá ${req.sellerName}! Sobre sua solicitação de ADS...`)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1 px-2 py-1 rounded-lg bg-emerald-500/20 text-emerald-400 text-[10px] font-semibold hover:bg-emerald-500/30 transition-colors"
+          >
+            <MessageCircle size={10} /> WhatsApp
+          </a>
+        )}
+        <select
+          value={req.status}
+          onChange={(e) => onStatusChange(req.id, e.target.value)}
+          className="px-2 py-1 rounded-lg bg-secondary text-foreground text-[10px] border-0 focus:ring-1 focus:ring-ring appearance-none cursor-pointer"
+        >
+          {STAGES.map((s) => (
+            <option key={s.key} value={s.key}>{s.label}</option>
+          ))}
+        </select>
+      </div>
+    </div>
+  );
+}
+
+/* ── Stat Card ───────────────────────────────── */
 
 function StatCard({ label, value, icon: Icon, color }: { label: string; value: string; icon: any; color: string }) {
   return (
