@@ -1211,6 +1211,11 @@ export default function AdminPanel() {
         <AdminSiteTab />
       )}
 
+      {/* ADS CRM Tab */}
+      {tab === "ads" && (
+        <AdminAdsCrmTab />
+      )}
+
         </main>
       </div>
 
