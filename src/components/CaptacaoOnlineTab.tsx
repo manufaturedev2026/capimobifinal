@@ -67,6 +67,7 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
   useEffect(() => {
     fetchLeads();
     fetchCaptureVideo();
+    fetchBotConfig();
   }, [sellerId]);
 
   const fetchCaptureVideo = async () => {
