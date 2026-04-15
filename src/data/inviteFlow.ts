@@ -33,6 +33,7 @@ export interface InviteChatConfig {
   ctaText: string;
   ctaUrl: string;
   ctaType: "internal" | "whatsapp" | "whatsapp_group" | "url" | "crm";
+  crmRedirectUrl: string;
   chatMode: "flow" | "ai";
   flow: FlowStep[];
 }
