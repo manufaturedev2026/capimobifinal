@@ -602,6 +602,63 @@ export default function VenderPage() {
                 </motion.div>
               ))}
             </div>
+
+            {/* Enterprise Plans */}
+            <div className="mt-12 md:mt-16">
+              <div className="text-center mb-8">
+                <p className="font-semibold text-xs md:text-sm uppercase tracking-wide mb-2" style={{ color: theme.primary }}>Para Empresas</p>
+                <h3 className="font-display text-xl sm:text-2xl md:text-3xl font-black">
+                  Planos para Imobiliárias e Construtoras
+                </h3>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-5">
+                {ENTERPRISE_PLANS.map((plan, i) => (
+                  <motion.div
+                    key={plan.key}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.1 }}
+                    className={`relative bg-white/[0.04] backdrop-blur rounded-2xl border ${plan.key === "prime_empresa" ? "border-yellow-500/60 ring-1 ring-yellow-500/30 shadow-xl shadow-yellow-500/10" : "border-white/10"} p-5 md:p-6 flex flex-col`}
+                  >
+                    {plan.key === "prime_empresa" && (
+                      <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-zinc-800 to-black text-yellow-400 text-[10px] font-bold uppercase px-4 py-1 rounded-full tracking-wide border border-yellow-500/50">
+                        ★ Top
+                      </span>
+                    )}
+
+                    <h3 className="font-display font-bold text-lg md:text-xl">{plan.name}</h3>
+                    <p className="text-[11px] md:text-xs text-white/40 mt-1">{plan.subtitle}</p>
+
+                    <div className="mt-4 md:mt-5 mb-3 md:mb-4">
+                      <p className="text-2xl md:text-3xl font-black">
+                        {plan.priceLabel}<span className="text-xs md:text-sm font-normal text-white/40">/mês</span>
+                      </p>
+                    </div>
+
+                    <ul className="space-y-2 md:space-y-2.5 flex-1 mb-5 md:mb-6">
+                      {plan.benefits.map((b) => (
+                        <li key={b} className="flex items-start gap-2 text-xs md:text-sm text-white/60">
+                          <Check className="w-3.5 h-3.5 md:w-4 md:h-4 mt-0.5 shrink-0" style={{ color: theme.primary }} />
+                          {b}
+                        </li>
+                      ))}
+                    </ul>
+
+                    <Button
+                      onClick={scrollToForm}
+                      className={`w-full rounded-xl font-bold text-sm ${
+                        plan.key === "prime_empresa"
+                          ? "bg-gradient-to-r from-zinc-800 to-black text-yellow-400 border border-yellow-500/30 hover:from-zinc-700 hover:to-zinc-900"
+                          : "bg-white/10 hover:bg-white/15 text-white"
+                      }`}
+                    >
+                      {plan.cta}
+                    </Button>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
           </div>
         </section>
 
