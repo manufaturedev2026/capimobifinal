@@ -78,6 +78,26 @@ export default function SellerDashboard() {
   const [dashThemeId, setDashThemeId] = useState("azul");
   const { guideMode, installed, requestInstall } = usePwaInstall();
   const pushSub = usePushSubscription(profile?.id);
+  const [newCaptureCount, setNewCaptureCount] = useState(0);
+
+  // Fetch new capture leads count
+  useEffect(() => {
+    if (!user?.id) return;
+    const fetchCount = async () => {
+      const { count } = await supabase
+        .from("property_capture_leads")
+        .select("*", { count: "exact", head: true })
+        .eq("seller_user_id", user.id)
+        .eq("status", "novo");
+      setNewCaptureCount(count ?? 0);
+    };
+    fetchCount();
+    const channel = supabase
+      .channel("capture-leads-badge")
+      .on("postgres_changes", { event: "*", schema: "public", table: "property_capture_leads" }, fetchCount)
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [user?.id]);
 
   useEffect(() => {
     supabase.from("platform_settings").select("value").eq("key", "homepage_theme").maybeSingle().then(({ data }) => {
