@@ -375,6 +375,19 @@ export default function Index() {
               </div>
             </motion.div>
           </div>
+
+        {/* Cinema Mode Button - bottom right of hero */}
+        {cinemaItems.length > 0 && (
+          <motion.button
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.2, duration: 0.5 }}
+            onClick={() => setCinemaMode(0)}
+            className="absolute bottom-6 right-6 z-20 flex items-center gap-2 px-5 py-3 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 text-white font-semibold text-sm hover:bg-white/20 transition-all hover:scale-105 shadow-xl"
+          >
+            <Clapperboard size={18} className="text-primary" /> Modo Cinema
+          </motion.button>
+        )}
         </div>
       </section>
 
@@ -782,18 +795,8 @@ export default function Index() {
         </div>
       </section>
 
-      {/* ═══════════ FLOATING CINEMA BUTTON ═══════════ */}
-      {cinemaItems.length > 0 && cinemaMode === null && (
-        <motion.button
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 1, duration: 0.4 }}
-          onClick={() => setCinemaMode(0)}
-          className="fixed bottom-24 right-5 z-40 flex items-center gap-2 px-5 py-3 rounded-2xl bg-primary text-primary-foreground font-bold text-sm shadow-xl shadow-primary/30 hover:scale-105 transition-transform"
-        >
-          <Clapperboard size={18} /> Modo Cinema
-        </motion.button>
-      )}
+
+
 
       <AnimatePresence>
         {cinemaMode !== null && cinemaItems.length > 0 && (() => {
