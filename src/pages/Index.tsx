@@ -1,15 +1,16 @@
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   Instagram, Smartphone, Globe, Sparkles, ArrowRight, Star, Zap, Shield,
-  Layout, Palette, BarChart3, Share2, ChevronRight, Check, Crown, Eye, MessageCircle,
-  Download, Layers, Users, Building2, Briefcase, AppWindow, Rocket, Heart,
+  Layout, Palette, BarChart3, Share2, ChevronRight, ChevronLeft, Check, Crown, Eye, MessageCircle,
+  Download, Layers, Users, Building2, Briefcase, AppWindow, Rocket, Heart, Clapperboard, MapPin,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 
 import storePreviewApartment from "@/assets/store-preview-apartment.jpg";
 import storePreviewHouse from "@/assets/store-preview-house.jpg";
@@ -114,6 +115,42 @@ export default function Index() {
   const { user } = useAuth();
   const [activeScreen, setActiveScreen] = useState(0);
   const [phoneScreen, setPhoneScreen] = useState(0);
+  const [cinemaMode, setCinemaMode] = useState<number | null>(null);
+  const [cinemaItems, setCinemaItems] = useState<any[]>([]);
+
+  const selectedCity = typeof window !== "undefined" ? localStorage.getItem("selectedCity") || "" : "";
+
+  // Fetch properties for cinema mode
+  useEffect(() => {
+    const fetchCinemaItems = async () => {
+      let query = supabase
+        .from("seller_items")
+        .select("id, title, slug, price, city, state, photos, bedrooms, bathrooms, area, seller_id, finality")
+        .eq("status", "ativo")
+        .not("photos", "is", null)
+        .limit(30);
+      if (selectedCity) query = query.ilike("city", `%${selectedCity}%`);
+      const { data } = await query;
+      const items = (data || []).filter((i: any) => i.photos?.length > 0);
+      // Shuffle
+      for (let i = items.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [items[i], items[j]] = [items[j], items[i]];
+      }
+      setCinemaItems(items);
+    };
+    fetchCinemaItems();
+  }, [selectedCity]);
+
+  // Fullscreen for cinema mode
+  useEffect(() => {
+    if (cinemaMode !== null) {
+      const el = document.documentElement;
+      if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
+    } else {
+      if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+    }
+  }, [cinemaMode]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -183,6 +220,16 @@ export default function Index() {
               </p>
 
               <div className="flex flex-wrap gap-3 mt-8">
+                {cinemaItems.length > 0 && (
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="gap-2 h-13 px-6 border-white/20 text-white/80 hover:text-white hover:bg-white/10 hover:border-white/30"
+                    onClick={() => setCinemaMode(0)}
+                  >
+                    <Clapperboard size={18} /> Modo Cinema {selectedCity ? `• ${selectedCity}` : ""}
+                  </Button>
+                )}
                 <Button asChild size="lg" className="gap-2 h-13 px-8 text-base font-bold rounded-xl shadow-lg shadow-primary/30">
                   <a href="https://wa.me/5527995055993?text=Ol%C3%A1%21%20Quero%20criar%20meu%20APP%20de%20im%C3%B3veis" target="_blank" rel="noopener noreferrer">
                     <Sparkles size={18} /> Quero Criar meu APP
@@ -744,6 +791,115 @@ export default function Index() {
           </motion.div>
         </div>
       </section>
+
+      {/* ═══════════ CINEMA MODE OVERLAY ═══════════ */}
+      <AnimatePresence>
+        {cinemaMode !== null && cinemaItems.length > 0 && (() => {
+          const total = cinemaItems.length;
+          const current = cinemaItems[cinemaMode];
+          if (!current) return null;
+          const img = current.photos?.[0];
+          const PRIMARY = "hsl(var(--primary))";
+
+          return (
+            <motion.div
+              key="cinema-overlay"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4 }}
+              className="fixed inset-0 z-[9999] bg-black flex flex-col"
+            >
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={`cinema-img-${cinemaMode}`}
+                  initial={{ opacity: 0, scale: 1.08 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.8 }}
+                  className="absolute inset-0"
+                >
+                  <img src={img} alt={current.title} className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/40" />
+                </motion.div>
+              </AnimatePresence>
+
+              <button
+                onClick={() => setCinemaMode(null)}
+                className="absolute top-4 right-4 z-50 w-10 h-10 rounded-full bg-black/40 flex items-center justify-center text-white text-lg hover:bg-black/60 transition-colors"
+              >
+                ✕
+              </button>
+
+              <button
+                onClick={() => setCinemaMode((prev) => (prev! - 1 + total) % total)}
+                className="absolute left-3 top-1/2 -translate-y-1/2 z-50 w-12 h-12 rounded-full bg-black/30 flex items-center justify-center text-white hover:bg-black/50 transition-colors"
+              >
+                <ChevronLeft size={24} />
+              </button>
+              <button
+                onClick={() => setCinemaMode((prev) => (prev! + 1) % total)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 z-50 w-12 h-12 rounded-full bg-black/30 flex items-center justify-center text-white hover:bg-black/50 transition-colors"
+              >
+                <ChevronRight size={24} />
+              </button>
+
+              <div className="absolute bottom-0 left-0 right-0 z-40 p-6 md:p-10">
+                <motion.div
+                  key={`cinema-info-${cinemaMode}`}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.2 }}
+                >
+                  <h2 className="text-white font-display font-black text-2xl md:text-4xl leading-tight max-w-2xl">
+                    {current.title}
+                  </h2>
+                  <div className="flex items-center gap-4 mt-3">
+                    {current.price && (
+                      <span className="text-xl md:text-2xl font-bold text-primary">
+                        R$ {Number(current.price).toLocaleString("pt-BR")}
+                        {current.finality === "aluguel" ? "/mês" : ""}
+                      </span>
+                    )}
+                    {current.city && (
+                      <span className="text-white/50 text-sm flex items-center gap-1">
+                        <MapPin size={13} /> {current.city}{current.state ? `, ${current.state}` : ""}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-3 mt-2 text-white/40 text-xs">
+                    {current.bedrooms && <span>{current.bedrooms} quartos</span>}
+                    {current.bathrooms && <span>• {current.bathrooms} banheiros</span>}
+                    {current.area && <span>• {current.area}m²</span>}
+                  </div>
+                  <Link
+                    to={`/imoveis/produto/${current.slug || current.id}`}
+                    onClick={() => setCinemaMode(null)}
+                    className="inline-flex items-center gap-2 mt-5 px-6 py-2.5 rounded-xl text-sm font-bold text-primary-foreground bg-primary transition-all hover:scale-105 shadow-lg"
+                  >
+                    Ver detalhes <ArrowRight size={14} />
+                  </Link>
+                </motion.div>
+              </div>
+
+              <div className="absolute top-5 left-5 z-50">
+                <p className="text-white/40 text-xs">{cinemaMode + 1} de {total}</p>
+              </div>
+
+              <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/10 z-50">
+                <motion.div
+                  key={`cinema-progress-${cinemaMode}`}
+                  className="h-full bg-primary"
+                  initial={{ width: "0%" }}
+                  animate={{ width: "100%" }}
+                  transition={{ duration: 8, ease: "linear" }}
+                  onAnimationComplete={() => setCinemaMode((prev) => (prev! + 1) % total)}
+                />
+              </div>
+            </motion.div>
+          );
+        })()}
+      </AnimatePresence>
     </div>
   );
 }
