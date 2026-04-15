@@ -233,10 +233,12 @@ export default function AdminPanel() {
   const fetchSellers = async () => {
     setLoading(true);
     const { data: profiles } = await supabase.from("profiles").select("*");
-    const { data: subs } = await supabase.from("seller_subscriptions").select("*").eq("is_active", true);
+    const { data: subs } = await supabase.from("seller_subscriptions").select("*").eq("is_active", true).order("created_at", { ascending: false });
 
     const subsMap = new Map<string, any>();
-    (subs || []).forEach((s: any) => subsMap.set(s.user_id, s));
+    (subs || []).forEach((s: any) => {
+      if (!subsMap.has(s.user_id)) subsMap.set(s.user_id, s);
+    });
 
     const mapped: SellerWithSub[] = (profiles || []).map((p: any) => ({
       id: p.id,
@@ -367,13 +369,11 @@ export default function AdminPanel() {
     }
   };
 
-  const totalByTier = {
-    start: sellers.filter((s) => s.subscription?.tier === "start").length,
-    basico: sellers.filter((s) => s.subscription?.tier === "basico").length,
-    premium: sellers.filter((s) => s.subscription?.tier === "premium").length,
-    vip: sellers.filter((s) => s.subscription?.tier === "vip").length,
-    sem_pacote: sellers.filter((s) => !s.subscription).length,
-  };
+  const totalByTier: Record<string, number> = {};
+  (Object.keys(PACKAGE_CONFIG) as string[]).forEach((t) => {
+    totalByTier[t] = sellers.filter((s) => s.subscription?.tier === t).length;
+  });
+  totalByTier.sem_pacote = sellers.filter((s) => !s.subscription).length;
 
   const getSellerName = (sellerId: string) => {
     const s = sellers.find((s) => s.id === sellerId);
