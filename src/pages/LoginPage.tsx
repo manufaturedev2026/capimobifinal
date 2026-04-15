@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { Eye, EyeOff, LogIn, UserPlus, Sparkles } from "lucide-react";
+import { Eye, EyeOff, LogIn, UserPlus, Sparkles, MapPin } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,6 +9,8 @@ import { getMarketplaceTheme } from "@/lib/marketplaceThemes";
 import { getMarketplaceThemeCssVars } from "@/lib/marketplaceThemeCssVars";
 import { normalizeLoginHeroSetting, resolveLoginHeroImage } from "@/data/loginHeroPresets";
 import heroImgDefault from "@/assets/hero-anunciar.jpg";
+import { BRAZIL_STATES } from "@/data/brazilStates";
+import { useCitiesByState } from "@/hooks/useCitiesByState";
 
 export default function LoginPage() {
   const [isLogin, setIsLogin] = useState(() => {
@@ -20,9 +22,12 @@ export default function LoginPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [signedUp, setSignedUp] = useState(false);
+   const [showPassword, setShowPassword] = useState(false);
+   const [loading, setLoading] = useState(false);
+   const [signedUp, setSignedUp] = useState(false);
+   const [selectedState, setSelectedState] = useState("ES");
+   const [selectedCity, setSelectedCity] = useState("");
+   const { cities: stateCities, loading: loadingCities } = useCitiesByState(selectedState);
 
   const { user, profile, signIn, signUp } = useAuth();
   const navigate = useNavigate();
@@ -80,7 +85,12 @@ export default function LoginPage() {
         setLoading(false);
         return;
       }
-      const { error } = await signUp(email, password, fullName, phone);
+      if (!fullName.trim() || !selectedCity) {
+        toast({ title: "Preencha todos os campos obrigatórios", variant: "destructive" });
+        setLoading(false);
+        return;
+      }
+      const { error } = await signUp(email, password, fullName, phone, selectedCity, selectedState);
       if (error) {
         toast({ title: "Erro ao cadastrar", description: error.message, variant: "destructive" });
       } else {
@@ -177,12 +187,38 @@ export default function LoginPage() {
                     style={{ background: theme.cardBg, border: `1px solid ${theme.border}`, color: theme.text }}
                     placeholder="Seu nome completo" />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1.5" style={{ color: `${theme.text}cc` }}>Telefone</label>
-                  <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl text-sm focus:outline-none transition-all"
-                    style={{ background: theme.cardBg, border: `1px solid ${theme.border}`, color: theme.text }}
-                    placeholder="(27) 99999-9999" />
+                 <div>
+                   <label className="block text-sm font-medium mb-1.5" style={{ color: `${theme.text}cc` }}>Telefone</label>
+                   <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)}
+                     className="w-full px-4 py-3 rounded-xl text-sm focus:outline-none transition-all"
+                     style={{ background: theme.cardBg, border: `1px solid ${theme.border}`, color: theme.text }}
+                     placeholder="(27) 99999-9999" />
+                 </div>
+                 <div className="grid grid-cols-2 gap-3">
+                   <div>
+                     <label className="block text-sm font-medium mb-1.5" style={{ color: `${theme.text}cc` }}>Estado</label>
+                     <div className="relative">
+                       <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: theme.textMuted }} />
+                       <select value={selectedState} onChange={(e) => { setSelectedState(e.target.value); setSelectedCity(""); }}
+                         className="w-full pl-9 pr-3 py-3 rounded-xl text-sm focus:outline-none transition-all appearance-none"
+                         style={{ background: theme.cardBg, border: `1px solid ${theme.border}`, color: theme.text }}>
+                         {BRAZIL_STATES.map(s => <option key={s.uf} value={s.uf}>{s.uf}</option>)}
+                       </select>
+                     </div>
+                   </div>
+                   <div>
+                     <label className="block text-sm font-medium mb-1.5" style={{ color: `${theme.text}cc` }}>Cidade *</label>
+                     <div className="relative">
+                       <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: theme.textMuted }} />
+                       <select value={selectedCity} onChange={(e) => setSelectedCity(e.target.value)} required
+                         className="w-full pl-9 pr-3 py-3 rounded-xl text-sm focus:outline-none transition-all appearance-none"
+                         style={{ background: theme.cardBg, border: `1px solid ${theme.border}`, color: theme.text }}>
+                         <option value="">{loadingCities ? "Carregando..." : "Selecione"}</option>
+                         {stateCities.map(c => <option key={c} value={c}>{c}</option>)}
+                       </select>
+                     </div>
+                   </div>
+                 </div>
                 </div>
               </>
             )}
