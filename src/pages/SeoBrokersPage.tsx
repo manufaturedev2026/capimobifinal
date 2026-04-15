@@ -312,12 +312,14 @@ export default function SeoBrokersPage() {
 
   const pageTitle = useMemo(() => {
     if (cityName && stateName) return `Corretores de Imóveis em ${cityName}, ${stateName}`;
+    if (cityName) return `Corretores de Imóveis em ${cityName}`;
     if (stateName) return `Corretores de Imóveis no ${stateName}`;
     return "Corretores de Imóveis - Profissionais Verificados";
   }, [cityName, stateName]);
 
   const metaDesc = useMemo(() => {
-    if (cityName) return `Encontre corretores de imóveis em ${cityName}, ${stateName}. ${filteredProfiles.length} profissionais com CRECI verificado.`;
+    if (cityName && stateName) return `Encontre corretores de imóveis em ${cityName}, ${stateName}. ${filteredProfiles.length} profissionais com CRECI verificado.`;
+    if (cityName) return `Encontre corretores de imóveis em ${cityName}. ${filteredProfiles.length} profissionais verificados disponíveis.`;
     if (stateName) return `Lista de corretores e imobiliárias no ${stateName}. Profissionais verificados com CRECI ativo.`;
     return "Encontre corretores de imóveis verificados em todo o Brasil. Busque por cidade, estado, CRECI ou CNPJ.";
   }, [cityName, stateName, filteredProfiles.length]);
