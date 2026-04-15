@@ -12,6 +12,7 @@ export interface RealSeller {
   show_location: boolean;
   tier: string;
   featured_item_id?: string | null;
+  slug?: string | null;
 }
 
 export interface RealItem {
