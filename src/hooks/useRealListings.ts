@@ -12,6 +12,7 @@ export interface RealSeller {
   show_location: boolean;
   tier: string;
   featured_item_id?: string | null;
+  slug?: string | null;
 }
 
 export interface RealItem {
@@ -154,29 +155,34 @@ export function useRealListings(segment?: "imoveis" | "automoveis") {
 
       const destaqueItemIds = new Set<string>();
       let mappedSellers: RealSeller[] = [];
-      if (sellerIds.length > 0) {
-        const { data: profiles } = await supabase
-          .from("profiles")
-          .select("*")
-          .in("id", sellerIds);
 
-        mappedSellers = (profiles || []).map((p: any) => ({
-          id: p.id,
-          name: p.company_name || p.full_name,
-          logo: p.logo_url || "",
-          address: [p.address, p.city, p.state].filter(Boolean).join(", "),
-          city: p.city || "",
-          phone: p.phone || "",
-          segment: "imoveis" as const,
-          show_location: p.show_location ?? true,
-          tier: tierMap.get(p.id) || "basico",
-          featured_item_id: p.featured_item_id || null,
-        }));
-        // Collect destaque_item_ids from all sellers
-        (profiles || []).forEach((p: any) => {
-          (p.destaque_item_ids || []).forEach((id: string) => destaqueItemIds.add(id));
-        });
-      }
+      // Fetch ALL profiles so the seller count reflects all registered users
+      const { data: allProfiles } = await supabase
+        .from("profiles")
+        .select("*");
+
+      const profileMap = new Map<string, any>();
+      (allProfiles || []).forEach((p: any) => profileMap.set(p.id, p));
+
+      mappedSellers = (allProfiles || []).map((p: any) => ({
+        id: p.id,
+        name: p.company_name || p.full_name,
+        logo: p.logo_url || "",
+        address: [p.address, p.city, p.state].filter(Boolean).join(", "),
+        city: p.city || "",
+        phone: p.phone || "",
+        segment: "imoveis" as const,
+        show_location: p.show_location ?? true,
+        tier: tierMap.get(p.id) || "basico",
+        featured_item_id: p.featured_item_id || null,
+        slug: p.slug || null,
+      }));
+
+      // Collect destaque_item_ids from all sellers
+      (allProfiles || []).forEach((p: any) => {
+        (p.destaque_item_ids || []).forEach((id: string) => destaqueItemIds.add(id));
+      });
+
       setSellers(mappedSellers);
 
       const mapped = filteredItems.map((item: any) => ({
