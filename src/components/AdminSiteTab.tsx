@@ -58,7 +58,7 @@ export default function AdminSiteTab() {
       if (data) {
         const map = { ...DEFAULTS };
         data.forEach((row) => {
-          if (row.key in map) (map as any)[row.key] = row.value;
+          if (row.key in map && row.value) (map as any)[row.key] = row.value;
         });
         setSettings(map);
       }
