@@ -8,7 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import {
   Link2, Copy, ExternalLink, User, Phone, MapPin, Home, DollarSign, Clock,
-  Filter, Loader2, Inbox, Sparkles, ChevronDown, ChevronUp, Image as ImageIcon, Trash2, Video
+  Filter, Loader2, Inbox, Sparkles, ChevronDown, ChevronUp, Image as ImageIcon, Trash2, Video,
+  MessageCircle, Save
 } from "lucide-react";
 
 interface CaptacaoOnlineTabProps {
@@ -54,11 +55,19 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
   const [captureVideoTitle, setCaptureVideoTitle] = useState("");
   const [savingVideo, setSavingVideo] = useState(false);
 
+  // Bot config
+  const [botAttendantName, setBotAttendantName] = useState("Assistente Imobiliário");
+  const [botAttendantAvatar, setBotAttendantAvatar] = useState("");
+  const [botOpeningMessage, setBotOpeningMessage] = useState("Olá! 👋 Vou te ajudar a cadastrar seu imóvel para avaliação gratuita! É rápido e sem compromisso 🏡");
+  const [savingBot, setSavingBot] = useState(false);
+
   const captureUrl = `${window.location.origin}/captar-imovel/${sellerSlug || sellerId}`;
+  const chatBotUrl = `${window.location.origin}/captar-imovel/${sellerSlug || sellerId}/chat`;
 
   useEffect(() => {
     fetchLeads();
     fetchCaptureVideo();
+    fetchBotConfig();
   }, [sellerId]);
 
   const fetchCaptureVideo = async () => {
@@ -69,6 +78,40 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
       .maybeSingle();
     if (data?.capture_video_url) setCaptureVideoUrl(data.capture_video_url);
     if ((data as any)?.capture_video_title) setCaptureVideoTitle((data as any).capture_video_title);
+  };
+
+  const fetchBotConfig = async () => {
+    const { data } = await supabase
+      .from("platform_settings")
+      .select("value")
+      .eq("key", `capture_bot_config_${sellerId}`)
+      .maybeSingle();
+    if (data?.value) {
+      try {
+        const cfg = JSON.parse(data.value);
+        if (cfg.attendantName) setBotAttendantName(cfg.attendantName);
+        if (cfg.attendantAvatar) setBotAttendantAvatar(cfg.attendantAvatar);
+        if (cfg.openingMessage) setBotOpeningMessage(cfg.openingMessage);
+      } catch {}
+    }
+  };
+
+  const saveBotConfig = async () => {
+    setSavingBot(true);
+    const config = JSON.stringify({
+      attendantName: botAttendantName,
+      attendantAvatar: botAttendantAvatar,
+      openingMessage: botOpeningMessage,
+    });
+    const { error } = await supabase
+      .from("platform_settings")
+      .upsert({ key: `capture_bot_config_${sellerId}`, value: config, updated_at: new Date().toISOString() } as any, { onConflict: "key" });
+    setSavingBot(false);
+    if (error) {
+      toast({ title: "Erro ao salvar bot", variant: "destructive" });
+    } else {
+      toast({ title: "Bot de captação salvo!" });
+    }
   };
 
   const saveCaptureVideo = async () => {
@@ -201,6 +244,78 @@ ${captureUrl}
             </Button>
           </div>
         )}
+      </div>
+
+      {/* Bot WhatsApp de Captação */}
+      <div className="rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/5 to-accent/5 p-4 space-y-4">
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <div className="flex items-center gap-2">
+            <MessageCircle size={16} className="text-[#25d366]" />
+            <span className="text-sm font-bold text-foreground">Bot WhatsApp de Captação</span>
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant="secondary"
+              size="sm"
+              className="gap-1.5 text-xs border border-border"
+              onClick={() => {
+                navigator.clipboard.writeText(chatBotUrl);
+                toast({ title: "Link do bot copiado!", description: chatBotUrl });
+              }}
+            >
+              <Copy size={12} /> Copiar Link
+            </Button>
+            <a href={chatBotUrl} target="_blank" rel="noopener noreferrer">
+              <Button variant="secondary" size="sm" className="gap-1.5 text-xs border border-border">
+                <ExternalLink size={12} /> Abrir Bot
+              </Button>
+            </a>
+          </div>
+        </div>
+
+        <p className="text-xs text-muted-foreground">
+          Um chat interativo estilo WhatsApp que coleta informações do imóvel automaticamente e salva no seu CRM de captação.
+        </p>
+
+        <div className="rounded-xl border border-border bg-card p-3">
+          <p className="text-xs text-muted-foreground mb-1">Link do bot</p>
+          <p className="text-sm font-mono text-foreground truncate">{chatBotUrl}</p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label className="text-xs text-muted-foreground">Nome do atendente</label>
+            <Input
+              value={botAttendantName}
+              onChange={(e) => setBotAttendantName(e.target.value)}
+              placeholder="Assistente Imobiliário"
+              className="mt-1"
+            />
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground">URL do avatar (opcional)</label>
+            <Input
+              value={botAttendantAvatar}
+              onChange={(e) => setBotAttendantAvatar(e.target.value)}
+              placeholder="https://..."
+              className="mt-1"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className="text-xs text-muted-foreground">Mensagem de abertura</label>
+          <Textarea
+            value={botOpeningMessage}
+            onChange={(e) => setBotOpeningMessage(e.target.value)}
+            placeholder="Olá! 👋 Vou te ajudar a cadastrar seu imóvel..."
+            className="mt-1 min-h-[80px] text-sm"
+          />
+        </div>
+
+        <Button onClick={saveBotConfig} disabled={savingBot} size="sm" className="gap-1.5 text-xs">
+          <Save size={12} /> {savingBot ? "Salvando..." : "Salvar Bot"}
+        </Button>
       </div>
 
       {/* Capture Video */}
