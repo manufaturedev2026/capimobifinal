@@ -115,7 +115,7 @@ export default function HeroBannerCarousel({
 
   return (
     <div
-      className="relative h-[50vh] md:h-[70vh] overflow-hidden"
+      className="relative h-[55vh] md:h-[85vh] overflow-hidden"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
