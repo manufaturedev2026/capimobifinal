@@ -8,7 +8,7 @@ import {
   MapPin, Bed, Bath, Ruler, ArrowRight, X,
   Sparkles, Crown, Star, Users, Shield,
   Phone, ShieldCheck, Globe, Megaphone, UserPlus, LogIn,
-  LayoutDashboard, Image, Menu, ChevronDown,
+  LayoutDashboard, Image, Menu, ChevronDown, Clapperboard, ChevronLeft, ChevronRight,
 } from "lucide-react";
 import MarketplaceNavbar from "@/components/MarketplaceNavbar";
 import GlobalStoriesBar from "@/components/GlobalStoriesBar";
