@@ -410,6 +410,7 @@ export type Database = {
           video_description: string | null
           video_title: string | null
           video_url: string | null
+          whatsapp_mode: string
         }
         Insert: {
           account_manager?: string | null
@@ -461,6 +462,7 @@ export type Database = {
           video_description?: string | null
           video_title?: string | null
           video_url?: string | null
+          whatsapp_mode?: string
         }
         Update: {
           account_manager?: string | null
@@ -512,6 +514,7 @@ export type Database = {
           video_description?: string | null
           video_title?: string | null
           video_url?: string | null
+          whatsapp_mode?: string
         }
         Relationships: [
           {
