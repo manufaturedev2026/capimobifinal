@@ -767,6 +767,10 @@ export default function CompanyProfile() {
         )}
         <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/50 to-black/90" />
         
+        {/* Cinema Mode button — top right */}
+        <button onClick={() => setGalleryLightbox(0)} className="absolute top-4 right-4 z-20 flex items-center gap-1.5 px-3 py-2 rounded-lg text-[11px] font-medium text-white/60 hover:text-white transition-all" style={{ background: "rgba(0,0,0,0.35)" }}>
+          <Clapperboard size={13} /> Cinema
+        </button>
         {/* Back + Badge */}
         <div className="relative z-10 flex items-center justify-between px-4 pt-4">
           <Link
