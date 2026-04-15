@@ -375,6 +375,15 @@ ${captureUrl}
           <Save size={12} /> {savingBot ? "Salvando..." : "Salvar Bot"}
         </Button>
       </Section>
+      ) : (
+        <div className="rounded-2xl border border-border bg-muted/30 p-5 flex items-center gap-3 opacity-70">
+          <Lock size={18} className="text-muted-foreground" />
+          <div>
+            <p className="text-sm font-semibold text-foreground">Bot de Captação</p>
+            <p className="text-xs text-muted-foreground">Disponível a partir do plano VIP</p>
+          </div>
+        </div>
+      )}
 
       {/* Vídeo */}
       <Section icon={Video} title="Vídeo da Página de Captação">
