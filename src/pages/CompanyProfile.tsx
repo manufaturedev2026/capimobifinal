@@ -767,6 +767,10 @@ export default function CompanyProfile() {
         )}
         <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/50 to-black/90" />
         
+        {/* Cinema Mode button — top right */}
+        <button onClick={() => setGalleryLightbox(0)} className="absolute top-4 right-4 z-20 flex items-center gap-1.5 px-3 py-2 rounded-lg text-[11px] font-medium text-white/60 hover:text-white transition-all" style={{ background: "rgba(0,0,0,0.35)" }}>
+          <Clapperboard size={13} /> Cinema
+        </button>
         {/* Back + Badge */}
         <div className="relative z-10 flex items-center justify-between px-4 pt-4">
           <Link
@@ -895,9 +899,6 @@ export default function CompanyProfile() {
                 <Play size={13} fill="currentColor" /> Vídeo
               </button>
             )}
-            <button onClick={() => setGalleryLightbox(0)} className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/10 backdrop-blur-md text-white text-xs font-medium">
-              <Clapperboard size={13} /> Cinema
-            </button>
             
           </div>
         </div>
@@ -1009,6 +1010,11 @@ export default function CompanyProfile() {
             <LayoutDashboard size={16} /> {user && dbProfile && user.id === dbProfile.user_id ? "Painel" : "Entrar"}
           </Link>
         </div>
+
+        {/* Cinema Mode button — top right */}
+        <button onClick={() => setGalleryLightbox(0)} className="absolute top-4 right-4 z-20 flex items-center gap-1.5 px-3 py-2 rounded-lg text-[11px] font-medium text-white/60 hover:text-white transition-all" style={{ background: "rgba(0,0,0,0.35)" }}>
+          <Clapperboard size={13} /> Cinema
+        </button>
 
         {/* Tier Badge */}
         {isPaid && (
@@ -1132,9 +1138,6 @@ export default function CompanyProfile() {
                     <Play size={14} fill="currentColor" /> Assistir
                   </button>
                 )}
-                <button onClick={() => setGalleryLightbox(0)} className="flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-white/10 backdrop-blur-md text-white text-sm font-medium hover:bg-white/20 transition-colors whitespace-nowrap flex-shrink-0" title="Modo Cinema">
-                  <Clapperboard size={13} /> Modo Cinema
-                </button>
               </div>
             </motion.div>
           </div>
