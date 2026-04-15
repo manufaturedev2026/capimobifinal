@@ -330,12 +330,12 @@ export default function SeoBrokersPage() {
     })),
   };
 
-  const canonicalPath = cityName && estado ? `/corretores/${estado}/${slugify(cityName)}` : estado ? `/corretores/${estado}` : "/corretores";
+  const canonicalPath = cityName && stateCode ? `/corretores/${stateCode.toLowerCase()}/${slugify(cityName)}` : cityName ? `/corretores/${slugify(cityName)}` : stateCode ? `/corretores/${stateCode.toLowerCase()}` : "/corretores";
 
   const breadcrumbs = [
     { label: "Início", to: "/" },
     { label: "Corretores", to: "/corretores" },
-    ...(stateName && cityName ? [{ label: stateName, to: `/corretores/${estado}` }] : []),
+    ...(stateName && cityName ? [{ label: stateName, to: `/corretores/${stateCode.toLowerCase()}` }] : []),
     ...(stateName && !cityName ? [{ label: stateName }] : []),
     ...(cityName ? [{ label: cityName }] : []),
   ];
