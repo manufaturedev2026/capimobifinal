@@ -103,7 +103,6 @@ export default function InvitePage() {
     const isAttendant = stepMsgs[0].sender === "attendant";
 
     if (isAttendant) {
-      // Show typing, then reveal each msg with delay
       setTyping(true);
       let totalDelay = 800;
       const timers: NodeJS.Timeout[] = [];
@@ -111,20 +110,18 @@ export default function InvitePage() {
       stepMsgs.forEach((msg, i) => {
         timers.push(
           setTimeout(() => {
-            setTyping(i < stepMsgs.length - 1); // keep typing if more msgs
+            setTyping(i < stepMsgs.length - 1);
             setVisibleMessages((prev) => [...prev, msg]);
           }, totalDelay)
         );
         totalDelay += 1200;
       });
 
-      // After all msgs shown, wait for tap
       timers.push(
         setTimeout(() => {
           setTyping(false);
           setAnimatingStep(false);
           setCurrentStep(stepIndex + 1);
-          // If next step exists, wait for user tap
           if (stepIndex + 1 < steps.length) {
             setWaitingForTap(true);
           } else {
@@ -135,14 +132,18 @@ export default function InvitePage() {
 
       return () => timers.forEach(clearTimeout);
     } else {
-      // User messages: show them instantly (user "typed" them)
+      // User messages: show instantly, then auto-play next attendant step
       setVisibleMessages((prev) => [...prev, ...stepMsgs]);
-      setAnimatingStep(false);
-      setCurrentStep(stepIndex + 1);
-      // Immediately wait for tap to show next attendant response
-      if (stepIndex + 1 < steps.length) {
-        setWaitingForTap(true);
+      const nextIndex = stepIndex + 1;
+      setCurrentStep(nextIndex);
+
+      if (nextIndex < steps.length) {
+        // Auto-play the next step (attendant) after a short pause
+        setTimeout(() => {
+          playStep(nextIndex);
+        }, 600);
       } else {
+        setAnimatingStep(false);
         setShowCta(true);
       }
     }
