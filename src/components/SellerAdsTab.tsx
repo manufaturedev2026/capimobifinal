@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { Megaphone, TrendingUp, DollarSign, MapPin, Home, Send, Loader2, Eye, MousePointerClick, Phone, AlertCircle, ChevronDown, Clock } from "lucide-react";
+import { Megaphone, TrendingUp, DollarSign, MapPin, Home, Send, Loader2, Eye, MousePointerClick, Phone, AlertCircle, ChevronDown, Clock, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, CartesianGrid } from "recharts";
@@ -47,6 +47,10 @@ export default function SellerAdsTab({ profileId, userId }: SellerAdsTabProps) {
   const [durationDays, setDurationDays] = useState(MIN_DURATION);
   const [platform, setPlatform] = useState("google");
   const [details, setDetails] = useState("");
+  const [targetGender, setTargetGender] = useState("todos");
+  const [targetCities, setTargetCities] = useState("");
+  const [targetAgeMin, setTargetAgeMin] = useState("25");
+  const [targetAgeMax, setTargetAgeMax] = useState("55");
   const [submitting, setSubmitting] = useState(false);
   const [requests, setRequests] = useState<any[]>([]);
   const [loadingRequests, setLoadingRequests] = useState(true);
@@ -107,7 +111,12 @@ export default function SellerAdsTab({ profileId, userId }: SellerAdsTabProps) {
         tax_amount: taxAmount,
         total,
         item_id: selectedItemId,
-        details: details.trim() || null,
+        details: [
+          `Público: ${targetGender === "todos" ? "Todos" : targetGender === "masculino" ? "Masculino" : "Feminino"}`,
+          `Idade: ${targetAgeMin}-${targetAgeMax} anos`,
+          `Cidades: ${targetCities.trim() || "Não informado"}`,
+          details.trim() ? `Obs: ${details.trim()}` : "",
+        ].filter(Boolean).join(" | "),
       } as any);
       if (error) throw error;
 
@@ -277,16 +286,90 @@ export default function SellerAdsTab({ profileId, userId }: SellerAdsTabProps) {
           </p>
         </div>
 
-        {/* Details */}
-        <div>
-          <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Observações (opcional)</label>
-          <textarea
-            value={details}
-            onChange={(e) => setDetails(e.target.value)}
-            rows={3}
-            placeholder="Ex: Focar na região da Praia da Costa, público 25-45 anos..."
-            className="w-full rounded-xl border border-input bg-background px-4 py-3 text-sm text-foreground focus:ring-2 focus:ring-ring focus:outline-none resize-y"
-          />
+        {/* Targeting Section */}
+        <div className="space-y-4">
+          <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5">
+            <MapPin size={14} className="text-primary" /> Direcionamento do Anúncio
+          </h4>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Gender */}
+            <div>
+              <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Público-alvo (sexo)</label>
+              <div className="flex gap-2">
+                {[
+                  { value: "todos", label: "Todos" },
+                  { value: "masculino", label: "Masculino" },
+                  { value: "feminino", label: "Feminino" },
+                ].map((opt) => (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => setTargetGender(opt.value)}
+                    className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                      targetGender === opt.value
+                        ? "bg-primary text-primary-foreground shadow-md"
+                        : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Age Range */}
+            <div>
+              <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Faixa etária</label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  value={targetAgeMin}
+                  onChange={(e) => setTargetAgeMin(e.target.value.replace(/\D/g, "").slice(0, 2))}
+                  placeholder="25"
+                  className="w-20 text-center py-2.5 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+                />
+                <span className="text-xs text-muted-foreground">até</span>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  value={targetAgeMax}
+                  onChange={(e) => setTargetAgeMax(e.target.value.replace(/\D/g, "").slice(0, 2))}
+                  placeholder="55"
+                  className="w-20 text-center py-2.5 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+                />
+                <span className="text-xs text-muted-foreground">anos</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Target Cities */}
+          <div>
+            <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">
+              Cidades de interesse (separe por vírgula)
+            </label>
+            <input
+              type="text"
+              value={targetCities}
+              onChange={(e) => setTargetCities(e.target.value)}
+              placeholder="Ex: Vila Velha, Vitória, Serra"
+              className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+            />
+            <p className="text-[10px] text-muted-foreground mt-1">Informe as cidades onde o anúncio deve alcançar pessoas interessadas</p>
+          </div>
+
+          {/* Observations */}
+          <div>
+            <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Observações (opcional)</label>
+            <textarea
+              value={details}
+              onChange={(e) => setDetails(e.target.value)}
+              rows={2}
+              placeholder="Ex: Focar em famílias com renda acima de 5 salários mínimos..."
+              className="w-full rounded-xl border border-input bg-background px-4 py-3 text-sm text-foreground focus:ring-2 focus:ring-ring focus:outline-none resize-y"
+            />
+          </div>
         </div>
 
         {/* Pricing Summary */}
