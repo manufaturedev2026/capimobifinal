@@ -31,6 +31,9 @@ export default function AdminInviteTab() {
   const [messages, setMessages] = useState<ChatMessage[]>(DEFAULT_MESSAGES);
   const [attendantName, setAttendantName] = useState("Ana • Capimobi");
   const [attendantAvatar, setAttendantAvatar] = useState("");
+  const [ctaText, setCtaText] = useState("🚀 Criar Minha Conta Grátis");
+  const [ctaUrl, setCtaUrl] = useState("/login");
+  const [ctaType, setCtaType] = useState<"internal" | "whatsapp" | "whatsapp_group" | "url">("internal");
   const [saving, setSaving] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
@@ -47,6 +50,9 @@ export default function AdminInviteTab() {
           if (config.messages?.length) setMessages(config.messages);
           if (config.attendantName) setAttendantName(config.attendantName);
           if (config.attendantAvatar) setAttendantAvatar(config.attendantAvatar);
+          if (config.ctaText) setCtaText(config.ctaText);
+          if (config.ctaUrl) setCtaUrl(config.ctaUrl);
+          if (config.ctaType) setCtaType(config.ctaType);
         } catch {}
       }
       setLoaded(true);
@@ -64,6 +70,9 @@ export default function AdminInviteTab() {
     const config = JSON.stringify({
       attendantName,
       attendantAvatar,
+      ctaText,
+      ctaUrl,
+      ctaType,
       messages: recalculated,
     });
     const { error } = await supabase
@@ -156,6 +165,55 @@ export default function AdminInviteTab() {
               value={attendantAvatar}
               onChange={(e) => setAttendantAvatar(e.target.value)}
               placeholder="https://..."
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* CTA config */}
+      <div className="bg-card border border-border rounded-xl p-4 space-y-3">
+        <h3 className="text-sm font-semibold flex items-center gap-2 text-foreground">
+          <ExternalLink size={16} /> Botão Final (CTA)
+        </h3>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label className="text-xs text-muted-foreground">Tipo de link</label>
+            <select
+              value={ctaType}
+              onChange={(e) => {
+                const v = e.target.value as typeof ctaType;
+                setCtaType(v);
+                if (v === "internal") setCtaUrl("/login");
+                else if (v === "whatsapp") setCtaUrl("https://wa.me/5500000000000");
+                else if (v === "whatsapp_group") setCtaUrl("https://chat.whatsapp.com/...");
+                else setCtaUrl("https://");
+              }}
+              className="w-full text-sm bg-card text-foreground border border-border rounded px-3 py-2 mt-1"
+            >
+              <option value="internal">📱 Cadastro interno (/login)</option>
+              <option value="whatsapp">💬 WhatsApp direto</option>
+              <option value="whatsapp_group">👥 Grupo de WhatsApp</option>
+              <option value="url">🔗 URL externa</option>
+            </select>
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground">Texto do botão</label>
+            <Input
+              value={ctaText}
+              onChange={(e) => setCtaText(e.target.value)}
+              placeholder="🚀 Criar Minha Conta Grátis"
+              className="mt-1"
+            />
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground">
+              {ctaType === "internal" ? "Rota interna" : "URL completa"}
+            </label>
+            <Input
+              value={ctaUrl}
+              onChange={(e) => setCtaUrl(e.target.value)}
+              placeholder={ctaType === "whatsapp" ? "https://wa.me/5527..." : ctaType === "whatsapp_group" ? "https://chat.whatsapp.com/..." : "/login"}
+              className="mt-1"
             />
           </div>
         </div>
