@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Globe, Image, FileText, Save, Upload, Loader2, Type, Shield } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { invalidateSiteSettings } from "@/hooks/useSiteSettings";
 
 const SITE_KEYS = [
   "site_name",
