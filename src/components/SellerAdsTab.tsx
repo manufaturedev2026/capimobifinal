@@ -1,0 +1,355 @@
+import { useState, useEffect, useMemo } from "react";
+import { Megaphone, TrendingUp, DollarSign, MapPin, Home, Send, Loader2, Eye, MousePointerClick, Phone, AlertCircle, ChevronDown, Clock } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, CartesianGrid } from "recharts";
+
+interface SellerAdsTabProps {
+  profileId: string;
+  userId: string;
+}
+
+const MIN_BUDGET = 40;
+const SERVICE_FEE_PER_40 = 20;
+
+// Simulated Google Ads metrics based on real estate industry averages
+function simulateMetrics(dailyBudget: number, days: number) {
+  const totalBudget = dailyBudget * days;
+  const avgCPC = 1.8 + Math.random() * 0.4; // R$1.80-2.20 CPC for real estate
+  const totalClicks = Math.round(totalBudget / avgCPC);
+  const avgCTR = 0.035 + Math.random() * 0.015; // 3.5-5% CTR
+  const impressions = Math.round(totalClicks / avgCTR);
+  const conversionRate = 0.025 + Math.random() * 0.015; // 2.5-4% conversion
+  const leads = Math.round(totalClicks * conversionRate);
+  const costPerLead = leads > 0 ? totalBudget / leads : 0;
+
+  const dailyData = Array.from({ length: Math.min(days, 30) }, (_, i) => {
+    const dayClicks = Math.round((totalClicks / days) * (0.7 + Math.random() * 0.6));
+    const dayImpressions = Math.round(dayClicks / (avgCTR * (0.8 + Math.random() * 0.4)));
+    const dayLeads = Math.round(dayClicks * conversionRate * (0.5 + Math.random()));
+    return {
+      day: `Dia ${i + 1}`,
+      cliques: dayClicks,
+      impressoes: dayImpressions,
+      leads: Math.max(0, dayLeads),
+    };
+  });
+
+  return { totalClicks, impressions, leads, costPerLead, avgCPC, avgCTR: avgCTR * 100, dailyData };
+}
+
+export default function SellerAdsTab({ profileId, userId }: SellerAdsTabProps) {
+  const { toast } = useToast();
+  const [items, setItems] = useState<{ id: string; title: string; city: string | null; photos: string[] | null }[]>([]);
+  const [selectedItemId, setSelectedItemId] = useState("");
+  const [dailyBudget, setDailyBudget] = useState(MIN_BUDGET);
+  const [durationDays, setDurationDays] = useState(15);
+  const [platform, setPlatform] = useState("google");
+  const [details, setDetails] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [requests, setRequests] = useState<any[]>([]);
+  const [loadingRequests, setLoadingRequests] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase
+        .from("seller_items")
+        .select("id, title, city, photos")
+        .eq("seller_id", profileId)
+        .eq("status", "ativo")
+        .order("title");
+      setItems(data || []);
+    })();
+  }, [profileId]);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase
+        .from("ad_requests")
+        .select("*")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false });
+      setRequests(data || []);
+      setLoadingRequests(false);
+    })();
+  }, [userId]);
+
+  const serviceFee = Math.floor(dailyBudget / MIN_BUDGET) * SERVICE_FEE_PER_40;
+  const subtotal = dailyBudget * durationDays;
+  const taxAmount = subtotal * 0;
+  const total = subtotal + serviceFee;
+
+  const metrics = useMemo(() => simulateMetrics(dailyBudget, durationDays), [dailyBudget, durationDays]);
+
+  const selectedItem = items.find((i) => i.id === selectedItemId);
+
+  const handleSubmit = async () => {
+    if (!selectedItemId) {
+      toast({ title: "Selecione um imóvel", variant: "destructive" });
+      return;
+    }
+    if (dailyBudget < MIN_BUDGET) {
+      toast({ title: `Investimento mínimo: R$${MIN_BUDGET}/dia`, variant: "destructive" });
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const { error } = await supabase.from("ad_requests").insert({
+        user_id: userId,
+        seller_id: profileId,
+        platform,
+        daily_budget: dailyBudget,
+        duration_days: durationDays,
+        subtotal,
+        service_fee: serviceFee,
+        tax_amount: taxAmount,
+        total,
+        details: `Imóvel: ${selectedItem?.title || selectedItemId} | Cidade: ${selectedItem?.city || "N/A"} | ${details}`.trim(),
+      } as any);
+      if (error) throw error;
+
+      toast({ title: "Solicitação enviada! 🚀", description: "Nossa equipe entrará em contato em breve." });
+      setSelectedItemId("");
+      setDetails("");
+
+      // Refresh requests
+      const { data: updated } = await supabase
+        .from("ad_requests")
+        .select("*")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false });
+      setRequests(updated || []);
+    } catch (err: any) {
+      toast({ title: "Erro ao enviar", description: err.message, variant: "destructive" });
+    }
+    setSubmitting(false);
+  };
+
+  const statusLabel: Record<string, { label: string; color: string }> = {
+    pendente: { label: "Pendente", color: "bg-amber-500/20 text-amber-400" },
+    em_analise: { label: "Em Análise", color: "bg-blue-500/20 text-blue-400" },
+    aprovado: { label: "Aprovado", color: "bg-emerald-500/20 text-emerald-400" },
+    ativo: { label: "Ativo", color: "bg-green-500/20 text-green-400" },
+    rejeitado: { label: "Rejeitado", color: "bg-red-500/20 text-red-400" },
+    concluido: { label: "Concluído", color: "bg-slate-500/20 text-slate-400" },
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-primary/20 to-primary/5 border border-primary/20 rounded-2xl p-5">
+        <div className="flex items-center gap-3 mb-2">
+          <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
+            <Megaphone className="text-primary" size={22} />
+          </div>
+          <div>
+            <h2 className="font-display font-bold text-lg text-foreground">Google ADS para Imóveis</h2>
+            <p className="text-xs text-muted-foreground">Coloque seus imóveis nas primeiras posições do Google</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Simulator */}
+      <div className="bg-card border border-border rounded-2xl p-5 space-y-5">
+        <h3 className="font-display font-bold text-foreground flex items-center gap-2">
+          <TrendingUp size={18} className="text-primary" /> Simulador de Investimento
+        </h3>
+
+        {/* Select Property */}
+        <div>
+          <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Imóvel para anunciar</label>
+          <div className="relative">
+            <Home size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <select
+              value={selectedItemId}
+              onChange={(e) => setSelectedItemId(e.target.value)}
+              className="w-full pl-10 pr-10 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none appearance-none"
+            >
+              <option value="">Selecione um imóvel...</option>
+              {items.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.title} {item.city ? `— ${item.city}` : ""}
+                </option>
+              ))}
+            </select>
+            <ChevronDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+          </div>
+        </div>
+
+        {/* Budget & Duration */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">
+              Investimento diário (mín. R${MIN_BUDGET})
+            </label>
+            <div className="relative">
+              <DollarSign size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <input
+                type="number"
+                min={MIN_BUDGET}
+                step={10}
+                value={dailyBudget}
+                onChange={(e) => setDailyBudget(Math.max(MIN_BUDGET, Number(e.target.value)))}
+                className="w-full pl-10 pr-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+              />
+            </div>
+          </div>
+          <div>
+            <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Duração (dias)</label>
+            <div className="flex gap-2">
+              {[7, 15, 30].map((d) => (
+                <button
+                  key={d}
+                  onClick={() => setDurationDays(d)}
+                  className={`flex-1 py-3 rounded-xl text-sm font-bold transition-all ${
+                    durationDays === d
+                      ? "bg-primary text-primary-foreground shadow-md"
+                      : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                  }`}
+                >
+                  {d} dias
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Metrics Preview */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {[
+            { label: "Impressões", value: metrics.impressions.toLocaleString("pt-BR"), icon: Eye, color: "text-blue-400" },
+            { label: "Cliques", value: metrics.totalClicks.toLocaleString("pt-BR"), icon: MousePointerClick, color: "text-emerald-400" },
+            { label: "Leads (est.)", value: metrics.leads.toString(), icon: Phone, color: "text-amber-400" },
+            { label: "Custo/Lead", value: `R$${metrics.costPerLead.toFixed(0)}`, icon: DollarSign, color: "text-purple-400" },
+          ].map((m) => (
+            <div key={m.label} className="bg-secondary rounded-xl p-3 text-center">
+              <m.icon size={16} className={`${m.color} mx-auto mb-1`} />
+              <p className="font-bold text-lg text-foreground leading-none">{m.value}</p>
+              <p className="text-[10px] text-muted-foreground mt-0.5">{m.label}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Chart */}
+        <div className="bg-secondary/50 rounded-xl p-4">
+          <p className="text-xs font-semibold text-muted-foreground mb-3">Estimativa de Performance Diária</p>
+          <ResponsiveContainer width="100%" height={180}>
+            <AreaChart data={metrics.dailyData}>
+              <defs>
+                <linearGradient id="adsClicks" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+              <XAxis dataKey="day" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} />
+              <YAxis tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} />
+              <Tooltip
+                contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 12, fontSize: 12 }}
+                labelStyle={{ color: "hsl(var(--foreground))" }}
+              />
+              <Area type="monotone" dataKey="cliques" stroke="hsl(var(--primary))" fill="url(#adsClicks)" strokeWidth={2} />
+              <Area type="monotone" dataKey="leads" stroke="#f59e0b" fill="transparent" strokeWidth={2} strokeDasharray="5 5" />
+            </AreaChart>
+          </ResponsiveContainer>
+          <div className="flex gap-4 mt-2 justify-center">
+            <span className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+              <span className="w-3 h-0.5 bg-primary rounded" /> Cliques
+            </span>
+            <span className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+              <span className="w-3 h-0.5 bg-amber-500 rounded" style={{ borderTop: "1px dashed" }} /> Leads
+            </span>
+          </div>
+        </div>
+
+        {/* Info note */}
+        <div className="flex items-start gap-2 bg-amber-500/10 border border-amber-500/20 rounded-xl p-3">
+          <AlertCircle size={16} className="text-amber-400 shrink-0 mt-0.5" />
+          <p className="text-xs text-muted-foreground">
+            Os valores são estimativas baseadas em médias do mercado imobiliário no Google Ads. 
+            Resultados reais podem variar conforme localização, concorrência e qualidade do anúncio.
+          </p>
+        </div>
+
+        {/* Details */}
+        <div>
+          <label className="text-xs font-semibold text-muted-foreground mb-1.5 block">Observações (opcional)</label>
+          <textarea
+            value={details}
+            onChange={(e) => setDetails(e.target.value)}
+            rows={3}
+            placeholder="Ex: Focar na região da Praia da Costa, público 25-45 anos..."
+            className="w-full rounded-xl border border-input bg-background px-4 py-3 text-sm text-foreground focus:ring-2 focus:ring-ring focus:outline-none resize-y"
+          />
+        </div>
+
+        {/* Pricing Summary */}
+        <div className="bg-secondary rounded-xl p-4 space-y-2">
+          <div className="flex justify-between text-sm">
+            <span className="text-muted-foreground">Investimento ({durationDays} dias × R${dailyBudget})</span>
+            <span className="text-foreground font-semibold">R${subtotal.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
+          </div>
+          <div className="flex justify-between text-sm">
+            <span className="text-muted-foreground">Taxa de serviço (R${SERVICE_FEE_PER_40} a cada R${MIN_BUDGET})</span>
+            <span className="text-foreground font-semibold">R${serviceFee.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
+          </div>
+          <div className="border-t border-border pt-2 flex justify-between">
+            <span className="font-bold text-foreground">Total</span>
+            <span className="font-black text-lg text-primary">R${total.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
+          </div>
+        </div>
+
+        {/* Submit */}
+        <button
+          onClick={handleSubmit}
+          disabled={submitting || !selectedItemId}
+          className="w-full py-3.5 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-primary/20"
+        >
+          {submitting ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
+          Solicitar Campanha ADS
+        </button>
+      </div>
+
+      {/* My Requests */}
+      <div className="bg-card border border-border rounded-2xl p-5">
+        <h3 className="font-display font-bold text-foreground mb-4 flex items-center gap-2">
+          <Clock size={18} className="text-primary" /> Minhas Solicitações
+        </h3>
+
+        {loadingRequests ? (
+          <div className="flex justify-center py-8">
+            <Loader2 className="animate-spin text-primary" size={24} />
+          </div>
+        ) : requests.length === 0 ? (
+          <p className="text-sm text-muted-foreground text-center py-8">Nenhuma solicitação de ADS ainda.</p>
+        ) : (
+          <div className="space-y-3">
+            {requests.map((req) => {
+              const st = statusLabel[req.status] || statusLabel.pendente;
+              return (
+                <div key={req.id} className="bg-secondary rounded-xl p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${st.color}`}>
+                      {st.label}
+                    </span>
+                    <span className="text-[10px] text-muted-foreground">
+                      {new Date(req.created_at).toLocaleDateString("pt-BR")}
+                    </span>
+                  </div>
+                  <p className="text-sm text-foreground font-semibold">{req.platform === "google" ? "Google Ads" : req.platform}</p>
+                  <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{req.details}</p>
+                  <div className="flex gap-4 mt-2 text-xs text-muted-foreground">
+                    <span>R${req.daily_budget}/dia</span>
+                    <span>{req.duration_days} dias</span>
+                    <span className="font-semibold text-foreground">Total: R${Number(req.total).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
