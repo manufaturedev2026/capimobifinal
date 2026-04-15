@@ -116,7 +116,7 @@ export default function AdminInviteTab() {
     <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h2 className="text-xl font-bold flex items-center gap-2">
+          <h2 className="text-xl font-bold flex items-center gap-2 text-foreground">
             <MessageCircle size={22} className="text-[#25d366]" />
             Página de Convite (WhatsApp)
           </h2>
@@ -125,11 +125,11 @@ export default function AdminInviteTab() {
           </p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={copyUrl}>
+          <Button variant="secondary" size="sm" onClick={copyUrl}>
             <Copy size={14} /> Copiar URL
           </Button>
           <a href="/convite" target="_blank" rel="noopener">
-            <Button variant="outline" size="sm">
+            <Button variant="secondary" size="sm">
               <ExternalLink size={14} /> Visualizar
             </Button>
           </a>
@@ -138,7 +138,7 @@ export default function AdminInviteTab() {
 
       {/* Attendant config */}
       <div className="bg-card border border-border rounded-xl p-4 space-y-3">
-        <h3 className="text-sm font-semibold flex items-center gap-2">
+        <h3 className="text-sm font-semibold flex items-center gap-2 text-foreground">
           <User size={16} /> Atendente
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -164,8 +164,8 @@ export default function AdminInviteTab() {
       {/* Messages editor */}
       <div className="bg-card border border-border rounded-xl p-4 space-y-3">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-semibold">Mensagens da conversa</h3>
-          <Button variant="outline" size="sm" onClick={addMessage}>
+          <h3 className="text-sm font-semibold text-foreground">Mensagens da conversa</h3>
+          <Button variant="secondary" size="sm" onClick={addMessage}>
             <Plus size={14} /> Adicionar
           </Button>
         </div>
