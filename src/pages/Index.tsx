@@ -782,7 +782,19 @@ export default function Index() {
         </div>
       </section>
 
-      {/* ═══════════ CINEMA MODE OVERLAY ═══════════ */}
+      {/* ═══════════ FLOATING CINEMA BUTTON ═══════════ */}
+      {cinemaItems.length > 0 && cinemaMode === null && (
+        <motion.button
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 1, duration: 0.4 }}
+          onClick={() => setCinemaMode(0)}
+          className="fixed bottom-24 right-5 z-40 flex items-center gap-2 px-5 py-3 rounded-2xl bg-primary text-primary-foreground font-bold text-sm shadow-xl shadow-primary/30 hover:scale-105 transition-transform"
+        >
+          <Clapperboard size={18} /> Modo Cinema
+        </motion.button>
+      )}
+
       <AnimatePresence>
         {cinemaMode !== null && cinemaItems.length > 0 && (() => {
           const total = cinemaItems.length;
