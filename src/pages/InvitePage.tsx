@@ -1,311 +1,420 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { CheckCheck, ArrowLeft, Phone, Video, MoreVertical, ChevronDown, Send } from "lucide-react";
+import { CheckCheck, ArrowLeft, Phone, Video, MoreVertical, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { SITE_URL } from "@/lib/siteUrl";
 
-interface ChatMessage {
+/* ─── Types ─── */
+interface VisibleBubble {
   id: string;
   text: string;
   sender: "attendant" | "user";
-  delay: number;
-  /** If true, this message triggers a name input prompt */
-  askName?: boolean;
-  /** If true, this is a placeholder for the user's typed name */
-  isNameResponse?: boolean;
-  /** If true, this message uses {{nome}} placeholder */
-  usesName?: boolean;
 }
 
-const NAME_ASK_ID = "__ask_name__";
-const NAME_RESPONSE_ID = "__name_response__";
-
-const DEFAULT_MESSAGES: ChatMessage[] = [
-  { id: "1", text: "Olá! 👋 Seja bem-vindo(a) à Capimobi!", sender: "attendant", delay: 800 },
-  { id: "2", text: "Eu sou a Ana, sua consultora digital 😊", sender: "attendant", delay: 2200 },
-  { id: "3", text: "Antes de tudo, qual é o seu nome? 😊", sender: "attendant", delay: 3800, askName: true },
-  { id: NAME_RESPONSE_ID, text: "", sender: "user", delay: 0, isNameResponse: true },
-  { id: "5", text: "Que prazer, {{nome}}! 🎉", sender: "attendant", delay: 800, usesName: true },
-  { id: "6", text: "Você sabia que pode criar sua loja de imóveis 100% GRÁTIS? 🏠✨", sender: "attendant", delay: 2200 },
-  { id: "7", text: "Sério?! Como funciona?", sender: "user", delay: 4000 },
-  { id: "8", text: "Sim! Com a Capimobi você tem:\n\n✅ Loja online personalizada\n✅ CRM de leads integrado\n✅ Compartilhamento por WhatsApp\n✅ Página profissional com seu nome\n✅ Cadastro de imóveis ilimitado no plano gratuito", sender: "attendant", delay: 5500 },
-  { id: "9", text: "E o melhor: é tudo pelo celular! 📱", sender: "attendant", delay: 7500 },
-  { id: "10", text: "Quanto custa?", sender: "user", delay: 9000 },
-  { id: "11", text: "O cadastro é GRATUITO! 🎉\n\nVocê já começa com acesso ao painel completo, pode cadastrar seus imóveis e compartilhar sua loja.\n\nSe quiser turbinar, temos planos a partir de R$29/mês com funcionalidades premium!", sender: "attendant", delay: 10500 },
-  { id: "12", text: "Quero criar minha conta! 🚀", sender: "user", delay: 13000 },
-  { id: "13", text: "Perfeito, {{nome}}! Clica no botão abaixo e cria sua conta em menos de 2 minutos! 👇", sender: "attendant", delay: 14500, usesName: true },
-];
-
-/** Group messages into steps: each group = consecutive messages from the same sender */
-function buildSteps(msgs: ChatMessage[]): ChatMessage[][] {
-  const steps: ChatMessage[][] = [];
-  let current: ChatMessage[] = [];
-  for (const msg of msgs) {
-    if (current.length > 0 && current[0].sender !== msg.sender) {
-      steps.push(current);
-      current = [];
-    }
-    current.push(msg);
-  }
-  if (current.length) steps.push(current);
-  return steps;
+interface StepBase {
+  id: string;
 }
 
-const DEFAULT_ATTENDANT = {
-  name: "Ana • Capimobi",
-  avatar: "",
-};
+/** Bot sends one or more messages, then auto-advances */
+interface BotStep extends StepBase {
+  type: "bot";
+  messages: string[];
+  next: string;
+}
 
+/** Ask for free-text input (name) */
+interface InputStep extends StepBase {
+  type: "input";
+  placeholder: string;
+  next: string;
+}
+
+/** Show choice buttons */
+interface ChoiceStep extends StepBase {
+  type: "choice";
+  options: { label: string; next: string }[];
+}
+
+/** Show CTA */
+interface CtaStep extends StepBase {
+  type: "cta";
+}
+
+type Step = BotStep | InputStep | ChoiceStep | CtaStep;
+
+/* ─── Default Flow ─── */
+function buildDefaultFlow(): Step[] {
+  return [
+    {
+      id: "start",
+      type: "bot",
+      messages: [
+        "Olá! 👋 Seja bem-vindo(a) à Capimobi!",
+        "Eu sou a Ana, sua consultora digital 😊",
+        "Antes de tudo, qual é o seu nome?",
+      ],
+      next: "ask_name",
+    },
+    {
+      id: "ask_name",
+      type: "input",
+      placeholder: "Digite seu nome...",
+      next: "greet",
+    },
+    {
+      id: "greet",
+      type: "bot",
+      messages: [
+        "Que prazer, {{nome}}! 🎉",
+        "Me conta, você já trabalha com imóveis?",
+      ],
+      next: "choice_experience",
+    },
+    {
+      id: "choice_experience",
+      type: "choice",
+      options: [
+        { label: "Sim, sou corretor(a) 🏠", next: "path_corretor" },
+        { label: "Ainda não, quero começar 🚀", next: "path_iniciante" },
+        { label: "Sou imobiliária/construtora 🏢", next: "path_empresa" },
+      ],
+    },
+
+    // ── Corretor path ──
+    {
+      id: "path_corretor",
+      type: "bot",
+      messages: [
+        "Excelente, {{nome}}! 💪",
+        "A Capimobi foi feita pra corretores como você!",
+        "O que mais te interessa?",
+      ],
+      next: "choice_corretor_interest",
+    },
+    {
+      id: "choice_corretor_interest",
+      type: "choice",
+      options: [
+        { label: "Ter minha loja online 🛍️", next: "benefit_loja" },
+        { label: "Captar mais leads 📈", next: "benefit_leads" },
+        { label: "Ver tudo que oferecemos ✨", next: "benefit_all" },
+      ],
+    },
+
+    // ── Iniciante path ──
+    {
+      id: "path_iniciante",
+      type: "bot",
+      messages: [
+        "Que ótimo, {{nome}}! O mercado imobiliário é incrível! 🌟",
+        "Com a Capimobi, você começa do zero e já sai com sua loja profissional pronta!",
+        "O que te atraiu pra essa área?",
+      ],
+      next: "choice_iniciante_reason",
+    },
+    {
+      id: "choice_iniciante_reason",
+      type: "choice",
+      options: [
+        { label: "Renda extra 💰", next: "benefit_all" },
+        { label: "Carreira nova 🎯", next: "benefit_all" },
+        { label: "Já tenho imóveis pra vender 🏡", next: "benefit_loja" },
+      ],
+    },
+
+    // ── Empresa path ──
+    {
+      id: "path_empresa",
+      type: "bot",
+      messages: [
+        "Perfeito, {{nome}}! 🏢",
+        "Temos planos especiais para imobiliárias e construtoras com CRM completo, gestão de equipe e lojas individuais por corretor!",
+        "Quer saber mais?",
+      ],
+      next: "choice_empresa",
+    },
+    {
+      id: "choice_empresa",
+      type: "choice",
+      options: [
+        { label: "Sim, quero detalhes! 📋", next: "benefit_all" },
+        { label: "Quanto custa? 💳", next: "pricing" },
+      ],
+    },
+
+    // ── Benefit branches ──
+    {
+      id: "benefit_loja",
+      type: "bot",
+      messages: [
+        "Com a Capimobi você tem sua loja online em minutos! 🛍️",
+        "✅ Página profissional com seu nome\n✅ Layouts exclusivos (Netflix, Magazine, Elegant...)\n✅ Compartilhamento por WhatsApp\n✅ QR Code personalizado",
+        "Quer saber mais sobre outros benefícios?",
+      ],
+      next: "choice_more",
+    },
+    {
+      id: "benefit_leads",
+      type: "bot",
+      messages: [
+        "Captação de leads é nosso forte! 📈",
+        "✅ CRM integrado com funil de vendas\n✅ Bot de captação por WhatsApp\n✅ Landing page para atrair proprietários\n✅ Notificações push para engajar visitantes",
+        "Quer saber mais?",
+      ],
+      next: "choice_more",
+    },
+    {
+      id: "benefit_all",
+      type: "bot",
+      messages: [
+        "Olha tudo que você ganha com a Capimobi, {{nome}}! ✨",
+        "🛍️ Loja online personalizada\n📈 CRM de leads integrado\n📱 Tudo pelo celular\n🔔 Notificações push\n📄 Propostas em PDF\n🤖 Bot de captação WhatsApp\n🎬 Stories profissionais\n📊 Analytics de visitas",
+        "E o melhor de tudo...",
+      ],
+      next: "pricing",
+    },
+
+    {
+      id: "choice_more",
+      type: "choice",
+      options: [
+        { label: "Ver todos os benefícios ✨", next: "benefit_all" },
+        { label: "Quanto custa? 💰", next: "pricing" },
+        { label: "Quero me cadastrar! 🚀", next: "final_cta" },
+      ],
+    },
+
+    // ── Pricing ──
+    {
+      id: "pricing",
+      type: "bot",
+      messages: [
+        "O cadastro é 100% GRATUITO! 🎉",
+        "Você já começa com:\n\n🆓 Loja completa\n🆓 Cadastro de imóveis ilimitado\n🆓 CRM básico\n🆓 Compartilhamento WhatsApp",
+        "Se quiser turbinar, temos planos a partir de R$29/mês! 💎",
+        "Pronto(a) pra começar, {{nome}}? 😄",
+      ],
+      next: "choice_final",
+    },
+    {
+      id: "choice_final",
+      type: "choice",
+      options: [
+        { label: "Quero criar minha conta! 🚀", next: "final_cta" },
+        { label: "Tenho mais dúvidas 🤔", next: "doubts" },
+      ],
+    },
+
+    // ── Doubts ──
+    {
+      id: "doubts",
+      type: "bot",
+      messages: [
+        "Claro, {{nome}}! Estamos aqui pra te ajudar 😊",
+        "Você pode criar sua conta gratuitamente e explorar tudo sem compromisso. Se tiver dúvidas depois, nossa equipe te ajuda pelo WhatsApp!",
+        "Bora começar? 👇",
+      ],
+      next: "final_cta",
+    },
+
+    // ── Final CTA ──
+    {
+      id: "final_cta",
+      type: "bot",
+      messages: [
+        "Perfeito, {{nome}}! 🎯",
+        "Clica no botão abaixo e cria sua conta em menos de 2 minutos! 👇",
+      ],
+      next: "cta",
+    },
+    {
+      id: "cta",
+      type: "cta",
+    },
+  ];
+}
+
+/* ─── Attendant defaults ─── */
+const DEFAULT_ATTENDANT = { name: "Ana • Capimobi", avatar: "" };
+
+/* ─── Component ─── */
 export default function InvitePage() {
-  const [allMessages, setAllMessages] = useState<ChatMessage[]>([]);
-  const [steps, setSteps] = useState<ChatMessage[][]>([]);
-  const [currentStep, setCurrentStep] = useState(0);
-  const [visibleMessages, setVisibleMessages] = useState<ChatMessage[]>([]);
+  const [flow, setFlow] = useState<Step[]>([]);
+  const [bubbles, setBubbles] = useState<VisibleBubble[]>([]);
   const [typing, setTyping] = useState(false);
-  const [animatingStep, setAnimatingStep] = useState(false);
+  const [currentStepId, setCurrentStepId] = useState<string | null>(null);
+  const [interactionReady, setInteractionReady] = useState(false);
+  const [showCta, setShowCta] = useState(false);
+  const [userName, setUserName] = useState("");
+  const [nameInput, setNameInput] = useState("");
   const [attendantName, setAttendantName] = useState(DEFAULT_ATTENDANT.name);
   const [attendantAvatar, setAttendantAvatar] = useState(DEFAULT_ATTENDANT.avatar);
-  const [showCta, setShowCta] = useState(false);
-  const [waitingForTap, setWaitingForTap] = useState(false);
   const [ctaText, setCtaText] = useState("🚀 Criar Minha Conta Grátis");
   const [ctaUrl, setCtaUrl] = useState("/login");
   const [ctaType, setCtaType] = useState<"internal" | "whatsapp" | "whatsapp_group" | "url">("internal");
-
-  // Name input state
-  const [waitingForName, setWaitingForName] = useState(false);
-  const [userName, setUserName] = useState("");
-  const [nameInputValue, setNameInputValue] = useState("");
-
   const chatRef = useRef<HTMLDivElement>(null);
-  const nameInputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
+  const playingRef = useRef(false);
 
-  // Load custom messages
+  // Load config
   useEffect(() => {
-    const load = async () => {
+    (async () => {
       const { data } = await supabase
         .from("platform_settings")
         .select("value")
         .eq("key", "invite_chat_config")
         .maybeSingle();
 
-      let msgs = DEFAULT_MESSAGES;
       if (data?.value) {
         try {
-          const config = JSON.parse(data.value);
-          if (config.messages?.length) msgs = config.messages;
-          if (config.attendantName) setAttendantName(config.attendantName);
-          if (config.attendantAvatar) setAttendantAvatar(config.attendantAvatar);
-          if (config.ctaText) setCtaText(config.ctaText);
-          if (config.ctaUrl) setCtaUrl(config.ctaUrl);
-          if (config.ctaType) setCtaType(config.ctaType);
+          const c = JSON.parse(data.value);
+          if (c.attendantName) setAttendantName(c.attendantName);
+          if (c.attendantAvatar) setAttendantAvatar(c.attendantAvatar);
+          if (c.ctaText) setCtaText(c.ctaText);
+          if (c.ctaUrl) setCtaUrl(c.ctaUrl);
+          if (c.ctaType) setCtaType(c.ctaType);
         } catch {}
       }
-      setAllMessages(msgs);
-      setSteps(buildSteps(msgs));
-    };
-    load();
+      const f = buildDefaultFlow();
+      setFlow(f);
+      setCurrentStepId(f[0].id);
+    })();
   }, []);
 
-  /** Replace {{nome}} placeholders in text */
-  const resolveName = useCallback((text: string) => {
-    return text.replace(/\{\{nome\}\}/gi, userName || "você");
-  }, [userName]);
+  const resolve = useCallback((t: string) => t.replace(/\{\{nome\}\}/gi, userName || "você"), [userName]);
 
-  // Play a step: show typing then reveal messages one by one
-  const playStep = useCallback((stepIndex: number) => {
-    if (stepIndex >= steps.length) {
-      setShowCta(true);
-      return;
-    }
-    setAnimatingStep(true);
-    setWaitingForTap(false);
-    setWaitingForName(false);
-    const stepMsgs = steps[stepIndex];
-    const isAttendant = stepMsgs[0].sender === "attendant";
+  const getStep = useCallback((id: string) => flow.find((s) => s.id === id), [flow]);
 
-    if (isAttendant) {
+  const addBubble = useCallback((text: string, sender: "attendant" | "user") => {
+    setBubbles((prev) => [...prev, { id: `${Date.now()}_${Math.random()}`, text, sender }]);
+  }, []);
+
+  // Play a bot step: type + reveal messages sequentially
+  const playBotStep = useCallback(
+    (step: BotStep, nameOverride?: string) => {
+      if (playingRef.current) return;
+      playingRef.current = true;
+      setInteractionReady(false);
       setTyping(true);
-      let totalDelay = 800;
-      const timers: NodeJS.Timeout[] = [];
 
-      stepMsgs.forEach((msg, i) => {
-        timers.push(
-          setTimeout(() => {
-            setTyping(i < stepMsgs.length - 1);
-            const resolvedMsg = {
-              ...msg,
-              text: msg.usesName ? resolveName(msg.text) : msg.text,
-            };
-            setVisibleMessages((prev) => [...prev, resolvedMsg]);
+      const msgs = step.messages;
+      let i = 0;
+      const total = msgs.length;
 
-            // If last message in step asks for name, show input
-            if (i === stepMsgs.length - 1 && msg.askName) {
-              setTimeout(() => {
-                setTyping(false);
-                setAnimatingStep(false);
-                setWaitingForName(true);
-              }, 200);
-            }
-          }, totalDelay)
-        );
-        totalDelay += 1200;
-      });
-
-      // Only auto-advance if last msg doesn't ask for name
-      const lastMsg = stepMsgs[stepMsgs.length - 1];
-      if (!lastMsg.askName) {
-        timers.push(
-          setTimeout(() => {
-            setTyping(false);
-            setAnimatingStep(false);
-            setCurrentStep(stepIndex + 1);
-            if (stepIndex + 1 < steps.length) {
-              setWaitingForTap(true);
-            } else {
-              setShowCta(true);
-            }
-          }, totalDelay)
-        );
-      }
-
-      return () => timers.forEach(clearTimeout);
-    } else {
-      // Check if step contains a name response placeholder
-      const hasNamePlaceholder = stepMsgs.some(m => m.isNameResponse);
-      if (hasNamePlaceholder) {
-        // Skip this step — the name was already handled by handleNameSubmit
-        const nextIndex = stepIndex + 1;
-        setCurrentStep(nextIndex);
-        if (nextIndex < steps.length) {
-          setTimeout(() => playStep(nextIndex), 600);
-        } else {
-          setAnimatingStep(false);
-          setShowCta(true);
-        }
-        return;
-      }
-
-      // User messages: show instantly, then auto-play next attendant step
-      setVisibleMessages((prev) => [...prev, ...stepMsgs]);
-      const nextIndex = stepIndex + 1;
-      setCurrentStep(nextIndex);
-
-      if (nextIndex < steps.length) {
-        setTimeout(() => {
-          playStep(nextIndex);
-        }, 600);
-      } else {
-        setAnimatingStep(false);
-        setShowCta(true);
-      }
-    }
-  }, [steps, resolveName]);
-
-  // Start first step automatically
-  useEffect(() => {
-    if (steps.length > 0 && currentStep === 0 && visibleMessages.length === 0) {
-      playStep(0);
-    }
-  }, [steps, playStep]);
-
-  const handleContinue = () => {
-    if (waitingForTap && !animatingStep) {
-      playStep(currentStep);
-    }
-  };
-
-  const handleNameSubmit = () => {
-    const name = nameInputValue.trim();
-    if (!name) return;
-
-    setUserName(name);
-    setWaitingForName(false);
-    setNameInputValue("");
-
-    // Add user's name as a chat bubble
-    const nameMsg: ChatMessage = {
-      id: `name_${Date.now()}`,
-      text: name,
-      sender: "user",
-      delay: 0,
-    };
-    setVisibleMessages((prev) => [...prev, nameMsg]);
-
-    // Find the current step index that had askName, advance past the name response step
-    const nextStepIndex = currentStep + 1; // skip the name_response step
-    setCurrentStep(nextStepIndex + 1);
-
-    // Play the next attendant step after a short pause
-    setTimeout(() => {
-      // We need to resolve name in the next step, but userName state may not be updated yet
-      // So we use a callback approach
-      setAnimatingStep(true);
-      const targetStep = nextStepIndex + 1 < steps.length ? nextStepIndex + 1 : nextStepIndex;
-
-      if (targetStep < steps.length) {
-        const stepMsgs = steps[targetStep];
-        const isAttendant = stepMsgs[0].sender === "attendant";
-
-        if (isAttendant) {
-          setTyping(true);
-          let totalDelay = 800;
-          const timers: NodeJS.Timeout[] = [];
-
-          stepMsgs.forEach((msg, i) => {
-            timers.push(
-              setTimeout(() => {
-                setTyping(i < stepMsgs.length - 1);
-                const resolvedMsg = {
-                  ...msg,
-                  text: msg.usesName ? msg.text.replace(/\{\{nome\}\}/gi, name) : msg.text,
-                };
-                setVisibleMessages((prev) => [...prev, resolvedMsg]);
-              }, totalDelay)
-            );
-            totalDelay += 1200;
-          });
-
-          timers.push(
+      const showNext = () => {
+        if (i < total) {
+          const raw = msgs[i];
+          const text = nameOverride
+            ? raw.replace(/\{\{nome\}\}/gi, nameOverride)
+            : resolve(raw);
+          addBubble(text, "attendant");
+          i++;
+          if (i < total) {
+            setTimeout(showNext, 1000 + Math.min(raw.length * 15, 1500));
+          } else {
             setTimeout(() => {
               setTyping(false);
-              setAnimatingStep(false);
-              const next = targetStep + 1;
-              setCurrentStep(next);
-              if (next < steps.length) {
-                setWaitingForTap(true);
-              } else {
-                setShowCta(true);
+              playingRef.current = false;
+              // Advance to next step
+              const nextStep = getStep(step.next);
+              if (nextStep) {
+                setCurrentStepId(nextStep.id);
+                if (nextStep.type === "bot") {
+                  setTimeout(() => playBotStep(nextStep as BotStep, nameOverride), 600);
+                } else if (nextStep.type === "cta") {
+                  setShowCta(true);
+                } else {
+                  setInteractionReady(true);
+                }
               }
-            }, totalDelay)
-          );
+            }, 500);
+          }
         }
-      } else {
-        setAnimatingStep(false);
+      };
+
+      setTimeout(showNext, 800);
+    },
+    [resolve, getStep, addBubble]
+  );
+
+  // Start flow
+  useEffect(() => {
+    if (flow.length > 0 && currentStepId === flow[0].id && bubbles.length === 0) {
+      const first = flow[0];
+      if (first.type === "bot") playBotStep(first as BotStep);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [flow]);
+
+  // Handle choice click
+  const handleChoice = (option: { label: string; next: string }) => {
+    addBubble(option.label, "user");
+    setInteractionReady(false);
+    const nextStep = getStep(option.next);
+    if (!nextStep) return;
+    setCurrentStepId(nextStep.id);
+
+    setTimeout(() => {
+      if (nextStep.type === "bot") {
+        playBotStep(nextStep as BotStep);
+      } else if (nextStep.type === "cta") {
         setShowCta(true);
+      } else {
+        setInteractionReady(true);
       }
-    }, 600);
+    }, 400);
   };
 
-  // Focus name input when it appears
-  useEffect(() => {
-    if (waitingForName && nameInputRef.current) {
-      nameInputRef.current.focus();
+  // Handle name submit
+  const handleNameSubmit = () => {
+    const name = nameInput.trim();
+    if (!name) return;
+    setUserName(name);
+    setNameInput("");
+    addBubble(name, "user");
+    setInteractionReady(false);
+
+    const step = currentStepId ? getStep(currentStepId) : null;
+    if (step?.type === "input") {
+      const nextStep = getStep((step as InputStep).next);
+      if (nextStep) {
+        setCurrentStepId(nextStep.id);
+        setTimeout(() => {
+          if (nextStep.type === "bot") {
+            playBotStep(nextStep as BotStep, name);
+          } else {
+            setInteractionReady(true);
+          }
+        }, 500);
+      }
     }
-  }, [waitingForName]);
+  };
+
+  // Focus input
+  useEffect(() => {
+    if (interactionReady && currentStepId) {
+      const step = getStep(currentStepId);
+      if (step?.type === "input") {
+        setTimeout(() => inputRef.current?.focus(), 100);
+      }
+    }
+  }, [interactionReady, currentStepId, getStep]);
 
   // Auto-scroll
   useEffect(() => {
-    if (chatRef.current) {
-      chatRef.current.scrollTop = chatRef.current.scrollHeight;
-    }
-  }, [visibleMessages, typing, waitingForTap, waitingForName]);
+    if (chatRef.current) chatRef.current.scrollTop = chatRef.current.scrollHeight;
+  }, [bubbles, typing, interactionReady, showCta]);
 
   const now = new Date();
   const timeStr = `${now.getHours().toString().padStart(2, "0")}:${now.getMinutes().toString().padStart(2, "0")}`;
+
+  const currentStep = currentStepId ? getStep(currentStepId) : null;
+  const showInput = interactionReady && currentStep?.type === "input";
+  const showChoices = interactionReady && currentStep?.type === "choice";
 
   return (
     <>
@@ -316,7 +425,7 @@ export default function InvitePage() {
       </Helmet>
 
       <div className="min-h-screen flex flex-col" style={{ background: "#e5ddd5" }}>
-        {/* WhatsApp-style header */}
+        {/* Header */}
         <div className="sticky top-0 z-50 flex items-center gap-3 px-3 py-2" style={{ background: "#075e54" }}>
           <button onClick={() => navigate(-1)} className="text-white/80 hover:text-white">
             <ArrowLeft size={22} />
@@ -339,52 +448,40 @@ export default function InvitePage() {
           </div>
         </div>
 
-        {/* Chat area */}
-        <div
-          ref={chatRef}
-          className="flex-1 overflow-y-auto px-3 py-4 space-y-1"
-          style={{ background: "#e5ddd5" }}
-        >
-          {/* Date chip */}
+        {/* Chat */}
+        <div ref={chatRef} className="flex-1 overflow-y-auto px-3 py-4 space-y-1" style={{ background: "#e5ddd5" }}>
           <div className="flex justify-center mb-3">
-            <span className="bg-white/80 text-[#667781] text-[11px] px-3 py-1 rounded-lg shadow-sm font-medium">
-              Hoje
-            </span>
+            <span className="bg-white/80 text-[#667781] text-[11px] px-3 py-1 rounded-lg shadow-sm font-medium">Hoje</span>
           </div>
 
           <AnimatePresence>
-            {visibleMessages.map((msg) => (
+            {bubbles.map((b) => (
               <motion.div
-                key={msg.id}
+                key={b.id}
                 initial={{ opacity: 0, y: 12, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 transition={{ duration: 0.3, ease: "easeOut" }}
-                className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"} mb-1`}
+                className={`flex ${b.sender === "user" ? "justify-end" : "justify-start"} mb-1`}
               >
                 <div
                   className={`relative max-w-[85%] px-3 py-1.5 rounded-lg shadow-sm text-[14.5px] leading-[19px] ${
-                    msg.sender === "user"
+                    b.sender === "user"
                       ? "bg-[#d9fdd3] text-[#111b21] rounded-tr-none"
                       : "bg-white text-[#111b21] rounded-tl-none"
                   }`}
                 >
-                  <span className="whitespace-pre-wrap">{msg.text}</span>
+                  <span className="whitespace-pre-wrap">{b.text}</span>
                   <span className="float-right mt-1 ml-2 flex items-center gap-0.5 text-[11px] text-[#667781]">
                     {timeStr}
-                    {msg.sender === "user" && <CheckCheck size={14} className="text-[#53bdeb] ml-0.5" />}
+                    {b.sender === "user" && <CheckCheck size={14} className="text-[#53bdeb] ml-0.5" />}
                   </span>
                 </div>
               </motion.div>
             ))}
           </AnimatePresence>
 
-          {/* Typing indicator */}
           {typing && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="flex justify-start mb-1"
-            >
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-start mb-1">
               <div className="bg-white px-4 py-2 rounded-lg rounded-tl-none shadow-sm">
                 <div className="flex gap-1">
                   <span className="w-2 h-2 bg-[#9e9e9e] rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
@@ -395,28 +492,33 @@ export default function InvitePage() {
             </motion.div>
           )}
 
-          {/* "Continue" prompt */}
+          {/* Choice buttons */}
           <AnimatePresence>
-            {waitingForTap && !showCta && (
+            {showChoices && currentStep?.type === "choice" && (
               <motion.div
-                initial={{ opacity: 0, y: 10 }}
+                initial={{ opacity: 0, y: 14 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="flex justify-center pt-4 pb-2"
+                exit={{ opacity: 0 }}
+                className="flex flex-col items-center gap-2 pt-3 pb-2 px-2"
               >
-                <button
-                  onClick={handleContinue}
-                  className="flex items-center gap-2 px-5 py-2.5 rounded-full shadow-md text-sm font-semibold transition-all active:scale-95"
-                  style={{ background: "#00a884", color: "white" }}
-                >
-                  <ChevronDown size={16} className="animate-bounce" />
-                  Continuar conversa
-                </button>
+                {(currentStep as ChoiceStep).options.map((opt, i) => (
+                  <motion.button
+                    key={i}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.12 }}
+                    onClick={() => handleChoice(opt)}
+                    className="w-full max-w-sm px-4 py-3 rounded-xl text-sm font-semibold shadow-md transition-all active:scale-95 border border-[#00a884]/30 hover:border-[#00a884]"
+                    style={{ background: "white", color: "#075e54" }}
+                  >
+                    {opt.label}
+                  </motion.button>
+                ))}
               </motion.div>
             )}
           </AnimatePresence>
 
-          {/* CTA Button */}
+          {/* CTA */}
           <AnimatePresence>
             {showCta && (
               <motion.div
@@ -427,11 +529,8 @@ export default function InvitePage() {
               >
                 <Button
                   onClick={() => {
-                    if (ctaType === "internal") {
-                      navigate(ctaUrl);
-                    } else {
-                      window.open(ctaUrl, "_blank", "noopener");
-                    }
+                    if (ctaType === "internal") navigate(ctaUrl);
+                    else window.open(ctaUrl, "_blank", "noopener");
                   }}
                   className="bg-[#25d366] hover:bg-[#22c55e] text-white font-bold text-base px-8 py-6 rounded-full shadow-lg animate-pulse"
                   size="lg"
@@ -446,23 +545,23 @@ export default function InvitePage() {
           </AnimatePresence>
         </div>
 
-        {/* Input bar — functional when waiting for name, visual otherwise */}
+        {/* Input bar */}
         <div className="sticky bottom-0 flex items-center gap-2 px-2 py-2" style={{ background: "#f0f2f5" }}>
-          {waitingForName ? (
+          {showInput ? (
             <>
               <input
-                ref={nameInputRef}
+                ref={inputRef}
                 type="text"
-                value={nameInputValue}
-                onChange={(e) => setNameInputValue(e.target.value)}
+                value={nameInput}
+                onChange={(e) => setNameInput(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleNameSubmit()}
-                placeholder="Digite seu nome..."
+                placeholder={(currentStep as InputStep).placeholder}
                 className="flex-1 bg-white rounded-full px-4 py-2.5 text-sm text-[#111b21] outline-none focus:ring-2 focus:ring-[#00a884]/40 placeholder:text-[#667781]"
                 maxLength={50}
               />
               <button
                 onClick={handleNameSubmit}
-                disabled={!nameInputValue.trim()}
+                disabled={!nameInput.trim()}
                 className="w-10 h-10 rounded-full flex items-center justify-center text-white transition-colors disabled:opacity-40"
                 style={{ background: "#00a884" }}
               >
@@ -471,9 +570,7 @@ export default function InvitePage() {
             </>
           ) : (
             <>
-              <div className="flex-1 bg-white rounded-full px-4 py-2.5 text-sm text-[#667781]">
-                Mensagem
-              </div>
+              <div className="flex-1 bg-white rounded-full px-4 py-2.5 text-sm text-[#667781]">Mensagem</div>
               <div className="w-10 h-10 rounded-full bg-[#00a884] flex items-center justify-center text-white">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M1.101 21.757L23.8 12.028 1.101 2.3l.011 7.912 13.239 1.816-13.239 1.817-.011 7.912z" />
