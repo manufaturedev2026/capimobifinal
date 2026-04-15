@@ -1199,6 +1199,11 @@ export default function AdminPanel() {
         </div>
       )}
 
+      {/* Site Tab */}
+      {tab === "site" && (
+        <AdminSiteTab />
+      )}
+
         </main>
       </div>
 
