@@ -79,11 +79,12 @@ export default function SellerDashboard() {
   const { guideMode, installed, requestInstall } = usePwaInstall();
   const pushSub = usePushSubscription(profile?.id);
   const [newCaptureCount, setNewCaptureCount] = useState(0);
+  const [newCrmCount, setNewCrmCount] = useState(0);
 
-  // Fetch new capture leads count
+  // Fetch new capture leads count + new CRM contacts count
   useEffect(() => {
     if (!user?.id) return;
-    const fetchCount = async () => {
+    const fetchCaptureCount = async () => {
       const { count } = await supabase
         .from("property_capture_leads")
         .select("*", { count: "exact", head: true })
@@ -91,12 +92,25 @@ export default function SellerDashboard() {
         .eq("status", "novo");
       setNewCaptureCount(count ?? 0);
     };
-    fetchCount();
-    const channel = supabase
+    const fetchCrmCount = async () => {
+      const { count } = await supabase
+        .from("seller_crm_contacts")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", user.id)
+        .eq("funnel_stage", "novo");
+      setNewCrmCount(count ?? 0);
+    };
+    fetchCaptureCount();
+    fetchCrmCount();
+    const ch1 = supabase
       .channel("capture-leads-badge")
-      .on("postgres_changes", { event: "*", schema: "public", table: "property_capture_leads" }, fetchCount)
+      .on("postgres_changes", { event: "*", schema: "public", table: "property_capture_leads" }, fetchCaptureCount)
       .subscribe();
-    return () => { supabase.removeChannel(channel); };
+    const ch2 = supabase
+      .channel("crm-contacts-badge")
+      .on("postgres_changes", { event: "*", schema: "public", table: "seller_crm_contacts" }, fetchCrmCount)
+      .subscribe();
+    return () => { supabase.removeChannel(ch1); supabase.removeChannel(ch2); };
   }, [user?.id]);
 
   useEffect(() => {
