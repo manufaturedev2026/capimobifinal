@@ -75,7 +75,10 @@ export default function SellerAdsTab({ profileId, userId }: SellerAdsTabProps) {
   }, [userId]);
 
   const subtotal = dailyBudget * durationDays;
-  const serviceFee = Math.floor(subtotal / MIN_BUDGET) * SERVICE_FEE_PER_40;
+  const baseFee = Math.floor(subtotal / MIN_BUDGET) * SERVICE_FEE_PER_40;
+  const discountTiers = Math.floor(subtotal / 50);
+  const discountPercent = Math.min(discountTiers * 10, 90); // cap at 90%
+  const serviceFee = Math.round(baseFee * (1 - discountPercent / 100));
   const taxAmount = subtotal * 0;
   const total = subtotal + serviceFee;
 
@@ -291,7 +294,7 @@ export default function SellerAdsTab({ profileId, userId }: SellerAdsTabProps) {
             <span className="text-foreground font-semibold">R${subtotal.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
           </div>
           <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Taxa de serviço (R${SERVICE_FEE_PER_40} a cada R${MIN_BUDGET})</span>
+            <span className="text-muted-foreground">Taxa de serviço{discountPercent > 0 ? ` (-${discountPercent}%)` : ""}</span>
             <span className="text-foreground font-semibold">R${serviceFee.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
           </div>
           <div className="border-t border-border pt-2 flex justify-between">
