@@ -78,6 +78,26 @@ export default function SellerDashboard() {
   const [dashThemeId, setDashThemeId] = useState("azul");
   const { guideMode, installed, requestInstall } = usePwaInstall();
   const pushSub = usePushSubscription(profile?.id);
+  const [newCaptureCount, setNewCaptureCount] = useState(0);
+
+  // Fetch new capture leads count
+  useEffect(() => {
+    if (!user?.id) return;
+    const fetchCount = async () => {
+      const { count } = await supabase
+        .from("property_capture_leads")
+        .select("*", { count: "exact", head: true })
+        .eq("seller_user_id", user.id)
+        .eq("status", "novo");
+      setNewCaptureCount(count ?? 0);
+    };
+    fetchCount();
+    const channel = supabase
+      .channel("capture-leads-badge")
+      .on("postgres_changes", { event: "*", schema: "public", table: "property_capture_leads" }, fetchCount)
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [user?.id]);
 
   useEffect(() => {
     supabase.from("platform_settings").select("value").eq("key", "homepage_theme").maybeSingle().then(({ data }) => {
@@ -396,6 +416,11 @@ export default function SellerDashboard() {
               <button key={nav.id} id={nav.tourId} onClick={() => handleTabClick(nav.id)}
                 className={`sidebar-nav-item ${nav.locked ? "text-muted-foreground/40 cursor-not-allowed" : activeTab === nav.id ? "active" : ""}`}>
                 <nav.icon size={18} /> {nav.label}
+                {nav.id === "captacao" && newCaptureCount > 0 && (
+                  <span className="ml-auto bg-destructive text-destructive-foreground text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
+                    {newCaptureCount}
+                  </span>
+                )}
                 {nav.locked && <Lock size={14} className="ml-auto text-muted-foreground/40" />}
               </button>
             ))}
