@@ -38,18 +38,6 @@ function fetchSettings(): Promise<SiteSettings> {
     fetchPromise = null;
     return s;
   })();
-    .from("platform_settings")
-    .select("key, value")
-    .in("key", Object.keys(DEFAULTS))
-    .then(({ data }) => {
-      const s = { ...DEFAULTS };
-      data?.forEach((row) => {
-        if (row.key in s) (s as any)[row.key] = row.value || (DEFAULTS as any)[row.key];
-      });
-      cachedSettings = s;
-      fetchPromise = null;
-      return s;
-    });
   return fetchPromise;
 }
 
