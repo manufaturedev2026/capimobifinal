@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import { Search, Clock, BookOpen, ArrowRight } from "lucide-react";
+import { SITE_URL } from "@/lib/siteUrl";
 
 interface BlogArticle {
   slug: string;
@@ -96,6 +97,10 @@ export default function BlogPage() {
           name="description"
           content="Blog sobre mercado imobiliário no Brasil. Dicas de compra, investimento, decoração e tendências."
         />
+        <link rel="canonical" href={`${SITE_URL}/blog`} />
+        <meta property="og:title" content="Blog | Capimobi" />
+        <meta property="og:description" content="Blog sobre mercado imobiliário no Brasil. Dicas de compra, investimento, decoração e tendências." />
+        <meta property="og:url" content={`${SITE_URL}/blog`} />
       </Helmet>
 
       {/* Hero - Netflix style */}

@@ -4,6 +4,7 @@ import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import { MapPin, Home, Building2, ArrowRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { SITE_URL } from "@/lib/siteUrl";
 import { formatPrice } from "@/data/products";
 import PropertyCardSkeleton from "@/components/PropertyCardSkeleton";
 import FavoriteButton from "@/components/FavoriteButton";
@@ -50,7 +51,7 @@ export default function NeighborhoodPage() {
       <Helmet>
         <title>{`Imóveis em ${neighborhoodName}, ${cityName} | Capimobi`}</title>
         <meta name="description" content={`Encontre imóveis em ${neighborhoodName}, ${cityName}. ${stats ? `${stats.count} imóveis a partir de ${formatPrice(stats.minPrice)}.` : "Casas, apartamentos e terrenos disponíveis."}`} />
-        <link rel="canonical" href={`https://redeimoveisgb.lovable.app/imoveis/${cidade}/bairro/${bairro}`} />
+        <link rel="canonical" href={`${SITE_URL}/imoveis/${cidade}/bairro/${bairro}`} />
       </Helmet>
 
       {/* Hero */}

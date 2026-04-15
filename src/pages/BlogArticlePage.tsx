@@ -2,6 +2,7 @@ import { useParams, Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { ArrowLeft, Clock, Share2 } from "lucide-react";
 import { toast } from "sonner";
+import { SITE_URL } from "@/lib/siteUrl";
 
 const blogContent: Record<string, { title: string; category: string; readTime: string; date: string; cover: string; body: string }> = {
   "como-comprar-primeiro-imovel": {
@@ -67,6 +68,11 @@ export default function BlogArticlePage() {
       <Helmet>
         <title>{article.title} | Blog Capimobi</title>
         <meta name="description" content={article.body.substring(0, 155)} />
+        <link rel="canonical" href={`${SITE_URL}/blog/${slug}`} />
+        <meta property="og:title" content={`${article.title} | Blog Capimobi`} />
+        <meta property="og:description" content={article.body.substring(0, 155)} />
+        <meta property="og:url" content={`${SITE_URL}/blog/${slug}`} />
+        <meta property="og:image" content={article.cover} />
       </Helmet>
 
       <div className="relative h-[300px] md:h-[400px] overflow-hidden">
