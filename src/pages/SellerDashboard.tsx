@@ -1081,6 +1081,7 @@ export default function SellerDashboard() {
                 sellerId={profile.id}
                 sellerSlug={profile.slug || null}
                 sellerName={profile.company_name || profile.full_name || "Corretor"}
+                currentTier={currentTier}
               />
             )}
 

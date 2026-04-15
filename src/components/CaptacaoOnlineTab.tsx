@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   Link2, Copy, ExternalLink, User, Phone, MapPin, Home, DollarSign, Clock,
   Filter, Loader2, Inbox, Sparkles, ChevronDown, ChevronUp, Image as ImageIcon, Trash2, Video,
-  MessageCircle, Save, Settings, Megaphone, LayoutList
+  MessageCircle, Save, Settings, Megaphone, LayoutList, Lock
 } from "lucide-react";
 
 interface CaptacaoOnlineTabProps {
@@ -17,6 +17,7 @@ interface CaptacaoOnlineTabProps {
   sellerId: string;
   sellerSlug: string | null;
   sellerName: string;
+  currentTier?: string;
 }
 
 type Lead = {
@@ -67,7 +68,11 @@ function Section({ icon: Icon, title, badge, defaultOpen = false, children, acce
   );
 }
 
-export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, sellerName }: CaptacaoOnlineTabProps) {
+export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, sellerName, currentTier = "basico" }: CaptacaoOnlineTabProps) {
+  const TIER_ORDER = ["basico", "start", "premium", "vip", "essencial_empresa", "premium_empresa", "prime_empresa", "black"];
+  const tierLevel = TIER_ORDER.indexOf(currentTier);
+  const hasLandingPage = tierLevel >= 1; // Start+
+  const hasBot = tierLevel >= 2; // VIP+
   const { toast } = useToast();
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
@@ -229,7 +234,13 @@ ${captureUrl}
       {/* ─── Quick Links Row ─── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {/* Landing Page Link */}
-        <div className="rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/5 to-accent/5 p-3.5 flex items-center gap-3">
+        <div className={`rounded-2xl border p-3.5 flex items-center gap-3 relative overflow-hidden ${hasLandingPage ? "border-primary/20 bg-gradient-to-r from-primary/5 to-accent/5" : "border-border bg-muted/30 opacity-60"}`}>
+          {!hasLandingPage && (
+            <div className="absolute inset-0 bg-background/60 backdrop-blur-sm z-10 flex items-center justify-center gap-2">
+              <Lock size={14} className="text-muted-foreground" />
+              <span className="text-xs font-semibold text-muted-foreground">Plano Start+</span>
+            </div>
+          )}
           <div className="w-9 h-9 rounded-xl bg-primary/15 flex items-center justify-center flex-shrink-0">
             <Link2 size={16} className="text-primary" />
           </div>
@@ -238,17 +249,23 @@ ${captureUrl}
             <p className="text-xs font-mono text-foreground truncate">{captureUrl}</p>
           </div>
           <div className="flex gap-1.5 flex-shrink-0">
-            <Button size="icon" variant="ghost" className="h-7 w-7 text-foreground hover:text-primary" onClick={() => copyLink(captureUrl, "Link da página")}>
+            <Button size="icon" variant="ghost" className="h-7 w-7 text-foreground hover:text-primary" onClick={() => copyLink(captureUrl, "Link da página")} disabled={!hasLandingPage}>
               <Copy size={12} />
             </Button>
-            <a href={captureUrl} target="_blank" rel="noopener noreferrer">
-              <Button size="icon" variant="ghost" className="h-7 w-7 text-foreground hover:text-primary"><ExternalLink size={12} /></Button>
+            <a href={hasLandingPage ? captureUrl : undefined} target="_blank" rel="noopener noreferrer">
+              <Button size="icon" variant="ghost" className="h-7 w-7 text-foreground hover:text-primary" disabled={!hasLandingPage}><ExternalLink size={12} /></Button>
             </a>
           </div>
         </div>
 
         {/* Bot Link */}
-        <div className="rounded-2xl border border-[#25d366]/20 bg-gradient-to-r from-[#25d366]/5 to-accent/5 p-3.5 flex items-center gap-3">
+        <div className={`rounded-2xl border p-3.5 flex items-center gap-3 relative overflow-hidden ${hasBot ? "border-[#25d366]/20 bg-gradient-to-r from-[#25d366]/5 to-accent/5" : "border-border bg-muted/30 opacity-60"}`}>
+          {!hasBot && (
+            <div className="absolute inset-0 bg-background/60 backdrop-blur-sm z-10 flex items-center justify-center gap-2">
+              <Lock size={14} className="text-muted-foreground" />
+              <span className="text-xs font-semibold text-muted-foreground">Plano VIP+</span>
+            </div>
+          )}
           <div className="w-9 h-9 rounded-xl bg-[#25d366]/15 flex items-center justify-center flex-shrink-0">
             <MessageCircle size={16} className="text-[#25d366]" />
           </div>
@@ -257,11 +274,11 @@ ${captureUrl}
             <p className="text-xs font-mono text-foreground truncate">{chatBotUrl}</p>
           </div>
           <div className="flex gap-1.5 flex-shrink-0">
-            <Button size="icon" variant="ghost" className="h-7 w-7 text-foreground hover:text-[#25d366]" onClick={() => copyLink(chatBotUrl, "Link do bot")}>
+            <Button size="icon" variant="ghost" className="h-7 w-7 text-foreground hover:text-[#25d366]" onClick={() => copyLink(chatBotUrl, "Link do bot")} disabled={!hasBot}>
               <Copy size={12} />
             </Button>
-            <a href={chatBotUrl} target="_blank" rel="noopener noreferrer">
-              <Button size="icon" variant="ghost" className="h-7 w-7 text-foreground hover:text-[#25d366]"><ExternalLink size={12} /></Button>
+            <a href={hasBot ? chatBotUrl : undefined} target="_blank" rel="noopener noreferrer">
+              <Button size="icon" variant="ghost" className="h-7 w-7 text-foreground hover:text-[#25d366]" disabled={!hasBot}><ExternalLink size={12} /></Button>
             </a>
           </div>
         </div>
@@ -285,6 +302,7 @@ ${captureUrl}
       </Section>
 
       {/* Configurar Bot */}
+      {hasBot ? (
       <Section icon={MessageCircle} title="Configurar Bot de Captação" accent>
         <p className="text-xs text-muted-foreground">
           Personalize o chat interativo que coleta informações do imóvel automaticamente.
@@ -357,6 +375,15 @@ ${captureUrl}
           <Save size={12} /> {savingBot ? "Salvando..." : "Salvar Bot"}
         </Button>
       </Section>
+      ) : (
+        <div className="rounded-2xl border border-border bg-muted/30 p-5 flex items-center gap-3 opacity-70">
+          <Lock size={18} className="text-muted-foreground" />
+          <div>
+            <p className="text-sm font-semibold text-foreground">Bot de Captação</p>
+            <p className="text-xs text-muted-foreground">Disponível a partir do plano VIP</p>
+          </div>
+        </div>
+      )}
 
       {/* Vídeo */}
       <Section icon={Video} title="Vídeo da Página de Captação">
