@@ -672,6 +672,9 @@ export default function MarketplaceHome() {
         {/* ── Main Content ── */}
         <div className="flex-1 min-w-0">
 
+        {/* ═══ GLOBAL AUTO STORIES ═══ */}
+        <GlobalStoriesBar primaryColor={PRIMARY} textColor={TEXT} />
+
         {/* ═══ QUICK ACTIONS ═══ */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
