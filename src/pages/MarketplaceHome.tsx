@@ -128,6 +128,7 @@ export default function MarketplaceHome() {
   const [promoIdx, setPromoIdx] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [openStates, setOpenStates] = useState<Set<string>>(new Set());
+  const [cinemaMode, setCinemaMode] = useState<number | null>(null);
   const ITEMS_PER_PAGE = 24;
   const heroRef = useRef<HTMLDivElement>(null);
   const promoScrollRef = useRef<HTMLDivElement>(null);
