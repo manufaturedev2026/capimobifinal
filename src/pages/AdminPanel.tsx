@@ -15,6 +15,7 @@ import AdminCrmTab from "@/components/AdminCrmTab";
 import AdminPushTab from "@/components/AdminPushTab";
 import AdminSiteTab from "@/components/AdminSiteTab";
 import AdminAdsCrmTab from "@/components/AdminAdsCrmTab";
+import AdminInviteTab from "@/components/AdminInviteTab";
 import { LOGIN_HERO_PRESETS, normalizeLoginHeroSetting, resolveLoginHeroImage } from "@/data/loginHeroPresets";
 
 interface SellerWithSub {
@@ -50,7 +51,7 @@ export default function AdminPanel() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [tierFilter, setTierFilter] = useState<string>("todos");
-  const [tab, setTab] = useState<"sellers" | "billing" | "referrals" | "crm" | "seo" | "vendas" | "config" | "push" | "site" | "ads">("sellers");
+  const [tab, setTab] = useState<"sellers" | "billing" | "referrals" | "crm" | "seo" | "vendas" | "config" | "push" | "site" | "ads" | "invite">("sellers");
   const [homepageMode, setHomepageMode] = useState<string>("single");
   const [homepageTheme, setHomepageTheme] = useState<string>("azul");
   const [loginHeroUrl, setLoginHeroUrl] = useState<string>("");
@@ -404,6 +405,7 @@ export default function AdminPanel() {
     { key: "vendas" as const, label: "Página de Vendas", icon: Rocket },
     { key: "config" as const, label: "Configurações", icon: LayoutDashboard },
     { key: "site" as const, label: "Dados do Site", icon: Globe },
+    { key: "invite" as const, label: "Convite", icon: MessageCircle },
   ];
 
   return (
@@ -668,7 +670,7 @@ export default function AdminPanel() {
               </p>
             </div>
           </div>
-        )}
+      )}
 
 
 
@@ -794,6 +796,10 @@ export default function AdminPanel() {
           </div>
         )}
 
+      {/* Invite Tab */}
+      {tab === "invite" && (
+        <AdminInviteTab />
+      )}
 
       {/* Reject Reason Dialog */}
       {rejectDialogOpen && (
