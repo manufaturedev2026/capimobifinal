@@ -994,19 +994,11 @@ export default function MarketplaceHome() {
             prime_empresa: 1, premium_empresa: 2, essencial_empresa: 3,
             vip: 4, premium: 5, start: 6, basico: 7,
           };
-          const shuffle = <T,>(arr: T[]): T[] => {
-            const a = [...arr];
-            for (let i = a.length - 1; i > 0; i--) {
-              const j = Math.floor(Math.random() * (i + 1));
-              [a[i], a[j]] = [a[j], a[i]];
-            }
-            return a;
-          };
-          const cityFiltered = filterCity
+          const pool = filterCity
             ? realSellers.filter((s) => (s.city || "").toLowerCase() === filterCity.toLowerCase())
             : realSellers;
-          const pool = cityFiltered.length > 0 ? cityFiltered : realSellers;
-          const sorted = shuffle(pool).sort((a, b) => {
+          if (pool.length === 0) return null;
+          const sorted = [...pool].sort((a, b) => {
             const pa = TIER_PRIORITY[a.tier || "basico"] ?? 99;
             const pb = TIER_PRIORITY[b.tier || "basico"] ?? 99;
             return pa - pb;
