@@ -302,6 +302,7 @@ ${captureUrl}
       </Section>
 
       {/* Configurar Bot */}
+      {hasBot ? (
       <Section icon={MessageCircle} title="Configurar Bot de Captação" accent>
         <p className="text-xs text-muted-foreground">
           Personalize o chat interativo que coleta informações do imóvel automaticamente.
