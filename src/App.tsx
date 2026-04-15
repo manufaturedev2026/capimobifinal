@@ -36,6 +36,7 @@ const PrivacyPage = lazyPage(() => import("@/pages/PrivacyPage"));
 const TermsPage = lazyPage(() => import("@/pages/TermsPage"));
 const NotFound = lazyPage(() => import("@/pages/NotFound"));
 const CapturePropertyPage = lazyPage(() => import("@/pages/CapturePropertyPage"));
+const CapturePropertyChatPage = lazyPage(() => import("@/pages/CapturePropertyChatPage"));
 const VenderPage = lazyPage(() => import("@/pages/VenderPage"));
 const SearchPage = lazyPage(() => import("@/pages/SearchPage"));
 const SeoLandingPage = lazyPage(() => import("@/pages/SeoLandingPage"));
@@ -165,6 +166,7 @@ const AppLayout = () => {
               <Route path="/criar-anuncio" element={<RequireAuth><CreateListing /></RequireAuth>} />
               <Route path="/vender" element={<Navigate to="/anunciar" replace />} />
               <Route path="/captar-imovel/:slug" element={<CapturePropertyPage />} />
+              <Route path="/captar-imovel/:slug/chat" element={<CapturePropertyChatPage />} />
               <Route path="/privacidade" element={<PrivacyPage />} />
               <Route path="/termos" element={<TermsPage />} />
               <Route path="*" element={<HomeRedirect />} />
