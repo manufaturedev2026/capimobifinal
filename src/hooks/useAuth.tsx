@@ -19,7 +19,7 @@ interface AuthContextType {
   profile: Profile | null;
   loading: boolean;
   banInfo: BanInfo | null;
-  signUp: (email: string, password: string, fullName: string, phone?: string) => Promise<{ error: any }>;
+  signUp: (email: string, password: string, fullName: string, phone?: string, city?: string, state?: string) => Promise<{ error: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
@@ -91,6 +91,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           : authUser.email?.split("@")[0] ?? "Novo usuário",
       email: authUser.email ?? "",
       phone: typeof metadata.phone === "string" && metadata.phone.trim() ? metadata.phone.trim() : null,
+      city: typeof metadata.city === "string" && metadata.city.trim() ? metadata.city.trim() : null,
+      state: typeof metadata.state === "string" && metadata.state.trim() ? metadata.state.trim() : null,
       store_layout: "marketplace",
       store_theme: "luxury",
     };
@@ -158,12 +160,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signUp = async (email: string, password: string, fullName: string, phone?: string) => {
+  const signUp = async (email: string, password: string, fullName: string, phone?: string, city?: string, state?: string) => {
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        data: { full_name: fullName, phone },
+        data: { full_name: fullName, phone, city, state },
         emailRedirectTo: window.location.origin,
       },
     });
