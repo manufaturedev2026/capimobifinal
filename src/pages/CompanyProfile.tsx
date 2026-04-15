@@ -1378,7 +1378,7 @@ export default function CompanyProfile() {
                 availableCities,
                 onCinemaMode: () => setGalleryLightbox(0),
                 onShareLink: () => { navigator.clipboard.writeText(window.location.href); },
-                storiesBar: sellerStories.some(s => s.sellerId === dbProfile?.id) || (user && dbProfile && user.id === dbProfile.user_id)
+                storiesBar: sellerStories.length > 0 || (user && dbProfile && user.id === dbProfile.user_id)
                   ? <StoriesBar sellerId={dbProfile?.id} textColor={storeTheme.text} onAddStory={user && dbProfile && user.id === dbProfile.user_id ? () => setStoryUploadOpen(true) : undefined} />
                   : undefined,
               };
