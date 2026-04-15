@@ -73,6 +73,7 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
   const tierLevel = TIER_ORDER.indexOf(currentTier);
   const hasLandingPage = tierLevel >= 1; // Start+
   const hasBot = tierLevel >= 2; // VIP+
+  const hasBotAI = tierLevel >= 3; // Premium+
   const { toast } = useToast();
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
@@ -323,14 +324,17 @@ ${captureUrl}
               🔀 Fluxo Fixo
             </button>
             <button
-              onClick={() => setBotChatMode("ai")}
-              className={`flex-1 px-3 py-2.5 rounded-xl text-xs font-semibold border transition-all ${
-                botChatMode === "ai"
-                  ? "bg-primary text-primary-foreground border-primary"
-                  : "bg-card text-muted-foreground border-border hover:border-primary/40"
+              onClick={() => hasBotAI ? setBotChatMode("ai") : toast({ title: "🔒 IA disponível no plano Premium+", variant: "destructive" })}
+              className={`flex-1 px-3 py-2.5 rounded-xl text-xs font-semibold border transition-all relative ${
+                !hasBotAI
+                  ? "bg-muted/50 text-muted-foreground border-border cursor-not-allowed opacity-60"
+                  : botChatMode === "ai"
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : "bg-card text-muted-foreground border-border hover:border-primary/40"
               }`}
             >
               🤖 IA Inteligente
+              {!hasBotAI && <Lock size={10} className="inline ml-1" />}
             </button>
           </div>
           <p className="text-[10px] text-muted-foreground mt-1">
