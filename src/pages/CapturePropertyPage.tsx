@@ -432,7 +432,7 @@ export default function CapturePropertyPage() {
                   )}
                 </div>
               </div>
-              {broker.bio && <p className="text-xs leading-relaxed mb-4" style={{ color: colors.textMuted }}>{broker.bio}</p>}
+              {broker.bio && <p className="text-xs leading-relaxed mb-4" style={{ color: colors.text, opacity: 0.8 }}>{broker.bio}</p>}
               <div className="space-y-2.5">
                 {broker.creci && (
                   <div className="flex items-center gap-2.5 text-xs" style={{ color: colors.textMuted }}>
