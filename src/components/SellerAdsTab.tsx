@@ -9,7 +9,8 @@ interface SellerAdsTabProps {
   userId: string;
 }
 
-const MIN_BUDGET = 40;
+const MIN_BUDGET = 10;
+const MIN_DURATION = 7;
 const SERVICE_FEE_PER_40 = 20;
 
 // Simulated Google Ads metrics based on real estate industry averages
@@ -43,7 +44,7 @@ export default function SellerAdsTab({ profileId, userId }: SellerAdsTabProps) {
   const [items, setItems] = useState<{ id: string; title: string; city: string | null; photos: string[] | null }[]>([]);
   const [selectedItemId, setSelectedItemId] = useState("");
   const [dailyBudget, setDailyBudget] = useState(MIN_BUDGET);
-  const [durationDays, setDurationDays] = useState(15);
+  const [durationDays, setDurationDays] = useState(MIN_DURATION);
   const [platform, setPlatform] = useState("google");
   const [details, setDetails] = useState("");
   const [submitting, setSubmitting] = useState(false);
