@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 
 import AdminCrmTab from "@/components/AdminCrmTab";
 import AdminPushTab from "@/components/AdminPushTab";
+import AdminSiteTab from "@/components/AdminSiteTab";
 import { LOGIN_HERO_PRESETS, normalizeLoginHeroSetting, resolveLoginHeroImage } from "@/data/loginHeroPresets";
 
 interface SellerWithSub {
@@ -48,7 +49,7 @@ export default function AdminPanel() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [tierFilter, setTierFilter] = useState<string>("todos");
-  const [tab, setTab] = useState<"sellers" | "billing" | "referrals" | "crm" | "seo" | "vendas" | "config" | "push">("sellers");
+  const [tab, setTab] = useState<"sellers" | "billing" | "referrals" | "crm" | "seo" | "vendas" | "config" | "push" | "site">("sellers");
   const [homepageMode, setHomepageMode] = useState<string>("single");
   const [homepageTheme, setHomepageTheme] = useState<string>("azul");
   const [loginHeroUrl, setLoginHeroUrl] = useState<string>("");
@@ -400,6 +401,7 @@ export default function AdminPanel() {
     { key: "seo" as const, label: "SEO / Sitemaps", icon: Globe },
     { key: "vendas" as const, label: "Página de Vendas", icon: Rocket },
     { key: "config" as const, label: "Configurações", icon: LayoutDashboard },
+    { key: "site" as const, label: "Dados do Site", icon: Globe },
   ];
 
   return (
@@ -1195,6 +1197,11 @@ export default function AdminPanel() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Site Tab */}
+      {tab === "site" && (
+        <AdminSiteTab />
       )}
 
         </main>
