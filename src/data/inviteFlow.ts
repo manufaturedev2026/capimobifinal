@@ -43,6 +43,7 @@ export const DEFAULT_CONFIG: InviteChatConfig = {
   ctaText: "🚀 Criar Minha Conta Grátis",
   ctaUrl: "/login",
   ctaType: "internal",
+  chatMode: "flow",
   flow: [
     {
       id: "start",
