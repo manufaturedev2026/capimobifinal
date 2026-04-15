@@ -77,7 +77,7 @@ export default function SellerAdsTab({ profileId, userId }: SellerAdsTabProps) {
   const subtotal = dailyBudget * durationDays;
   const baseFee = Math.floor(subtotal / MIN_BUDGET) * SERVICE_FEE_PER_40;
   const discountTiers = Math.floor(subtotal / 50);
-  const discountPercent = Math.min(discountTiers * 5, 90);
+  const discountPercent = Math.min(discountTiers * 5, 15);
   const serviceFee = Math.round(baseFee * (1 - discountPercent / 100));
   const taxAmount = subtotal * 0;
   const total = subtotal + serviceFee;
