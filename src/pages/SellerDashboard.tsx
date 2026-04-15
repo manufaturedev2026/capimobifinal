@@ -37,6 +37,7 @@ import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, 
 import gabrielImg from "@/assets/gabriel-gerente.jpg";
 import PwaInstallGuide from "@/components/PwaInstallGuide";
 import { usePwaInstall } from "@/hooks/usePwaInstall";
+import OnboardingTour from "@/components/OnboardingTour";
 import { usePushSubscription } from "@/hooks/usePushSubscription";
 
 type SellerItem = {
@@ -290,13 +291,13 @@ export default function SellerDashboard() {
   const maxTeamMembers = ["prime_empresa", "black"].includes(currentTier) ? 9999 : currentTier === "premium_empresa" ? 10 : currentTier === "essencial_empresa" ? 5 : isImobiliaria ? 3 : 0;
   const lockedTabs: DashboardTab[] = isFreePlan ? ["domain"] : [];
 
-  const sidebarNav: { id: DashboardTab; label: string; icon: any; locked?: boolean }[] = [
-    { id: "overview", label: "Visão Geral", icon: Home },
+  const sidebarNav: { id: DashboardTab; label: string; icon: any; locked?: boolean; tourId?: string }[] = [
+    { id: "overview", label: "Visão Geral", icon: Home, tourId: "tour-overview" },
     { id: "items", label: "Meus Anúncios", icon: Package },
-    { id: "stats", label: "Estatísticas", icon: BarChart3 },
+    { id: "stats", label: "Estatísticas", icon: BarChart3, tourId: "tour-stats" },
     { id: "events", label: "Efeitos", icon: Sparkles },
     
-    { id: "crm" as DashboardTab, label: "Meu CRM", icon: MessageCircle },
+    { id: "crm" as DashboardTab, label: "Meu CRM", icon: MessageCircle, tourId: "tour-crm" },
     { id: "gallery" as DashboardTab, label: "Galeria de Anúncios", icon: Image },
     { id: "rentals" as DashboardTab, label: "Aluguéis", icon: Building2 },
     { id: "contracts" as DashboardTab, label: "Contratos", icon: FileText },
@@ -306,7 +307,7 @@ export default function SellerDashboard() {
     { id: "profit" as DashboardTab, label: "Calculadora de Lucro", icon: Calculator },
     { id: "domain", label: "Meu Domínio", icon: Globe, locked: lockedTabs.includes("domain") },
     ...(showTeamTab ? [{ id: "team" as DashboardTab, label: "Corretores", icon: Users }] : []),
-    { id: "ads" as DashboardTab, label: "Fazer ADS", icon: Megaphone },
+    { id: "ads" as DashboardTab, label: "Fazer ADS", icon: Megaphone, tourId: "tour-ads" },
     { id: "partner" as DashboardTab, label: "Parceiro", icon: Handshake },
   ];
 
@@ -392,7 +393,7 @@ export default function SellerDashboard() {
           {/* Nav */}
           <nav className="flex-1 p-3 space-y-1">
             {sidebarNav.map((nav) => (
-              <button key={nav.id} onClick={() => handleTabClick(nav.id)}
+              <button key={nav.id} id={nav.tourId} onClick={() => handleTabClick(nav.id)}
                 className={`sidebar-nav-item ${nav.locked ? "text-muted-foreground/40 cursor-not-allowed" : activeTab === nav.id ? "active" : ""}`}>
                 <nav.icon size={18} /> {nav.label}
                 {nav.locked && <Lock size={14} className="ml-auto text-muted-foreground/40" />}
@@ -400,12 +401,12 @@ export default function SellerDashboard() {
             ))}
 
             <div className="pt-3 mt-3 border-t border-border space-y-0.5">
-              <Link to="/painel/novo"
+              <Link to="/painel/novo" id="tour-new-listing"
                 className="sidebar-nav-item text-muted-foreground hover:text-foreground hover:bg-secondary">
                 <Plus size={18} /> Novo Anúncio
               </Link>
               {profile?.id && (
-                <Link to={getStoreUrl(profile)}
+                <Link to={getStoreUrl(profile)} id="tour-store"
                   className="sidebar-nav-item text-muted-foreground hover:text-foreground hover:bg-secondary">
                   <Eye size={18} /> Ver Minha Loja
                 </Link>
@@ -414,7 +415,7 @@ export default function SellerDashboard() {
                 className="sidebar-nav-item text-muted-foreground hover:text-foreground hover:bg-secondary w-full text-left">
                 <UserCircle size={18} /> Meu Perfil
               </button>
-              <button onClick={() => setActiveTab("customization")}
+              <button onClick={() => setActiveTab("customization")} id="tour-customization"
                 className={`sidebar-nav-item ${activeTab === "customization" ? "active" : "text-muted-foreground hover:text-foreground hover:bg-secondary"}`}>
                 <Palette size={18} /> Personalização
               </button>
@@ -1319,6 +1320,7 @@ export default function SellerDashboard() {
       {/* Spacer for bottom nav on mobile */}
       <div className="lg:hidden h-16" />
       <PwaInstallGuide open={showInstallGuide} onClose={() => setShowInstallGuide(false)} mode={guideMode} />
+      <OnboardingTour />
     </div>
   );
 }
