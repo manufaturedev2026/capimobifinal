@@ -401,6 +401,7 @@ export default function AdminPanel() {
     { key: "seo" as const, label: "SEO / Sitemaps", icon: Globe },
     { key: "vendas" as const, label: "Página de Vendas", icon: Rocket },
     { key: "config" as const, label: "Configurações", icon: LayoutDashboard },
+    { key: "site" as const, label: "Dados do Site", icon: Globe },
   ];
 
   return (
