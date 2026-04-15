@@ -94,6 +94,7 @@ function ShimmerLine({ color = "#3B82F6" }: { color?: string }) {
 
 export default function MarketplaceHome() {
   const { user, profile } = useAuth();
+  const { site_name } = useSiteSettings();
   const navigate = useNavigate();
   const { detectedCity } = useCityDetection();
   const { sellers: realSellers, items: realItems, loading } = useRealListings("imoveis");
@@ -358,7 +359,7 @@ export default function MarketplaceHome() {
   return (
     <div style={{ ...themeVars, background: DARK_BASE, color: TEXT }} className="min-h-screen w-full overflow-x-hidden">
       <Helmet>
-        <title>Capimobi – Marketplace de Imóveis</title>
+        <title>{site_name} – Marketplace de Imóveis</title>
         <meta name="description" content="Encontre imóveis de diversos corretores verificados. Casas, apartamentos, terrenos e muito mais." />
       </Helmet>
 
