@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import {
   Search, Phone, MessageCircle, User, Clock, ChevronDown, ChevronRight,
   Plus, Trash2, Edit3, Save, X, Users, Filter, SlidersHorizontal, Send,
-  CheckCircle2, AlertCircle, ArrowRight, RefreshCw, Grip
+  CheckCircle2, AlertCircle, ArrowRight, RefreshCw, GripVertical
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -50,6 +50,10 @@ export default function AdminCrmTab() {
   const [notesValue, setNotesValue] = useState("");
   const [syncing, setSyncing] = useState(false);
 
+  // Drag and drop
+  const [draggedContactId, setDraggedContactId] = useState<string | null>(null);
+  const [dragOverStage, setDragOverStage] = useState<string | null>(null);
+
   // Template editing
   const [editingTemplate, setEditingTemplate] = useState<string | null>(null);
   const [templateForm, setTemplateForm] = useState({ name: "", stage: "", message: "" });
@@ -75,7 +79,6 @@ export default function AdminCrmTab() {
     setLoading(false);
   };
 
-  // Sync new profiles into CRM
   const syncNewProfiles = async () => {
     setSyncing(true);
     const existingUserIds = contacts.map((c) => c.user_id);
@@ -136,6 +139,95 @@ export default function AdminCrmTab() {
     return `https://wa.me/${phoneWithCountry}?text=${encodeURIComponent(msg)}`;
   };
 
+  // Drag and drop handlers
+  const handleDragStart = (e: React.DragEvent, contactId: string) => {
+    setDraggedContactId(contactId);
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", contactId);
+    // Add a slight delay to allow the ghost to render
+    const el = e.currentTarget as HTMLElement;
+    el.style.opacity = "0.5";
+  };
+
+  const handleDragEnd = (e: React.DragEvent) => {
+    const el = e.currentTarget as HTMLElement;
+    el.style.opacity = "1";
+    setDraggedContactId(null);
+    setDragOverStage(null);
+  };
+
+  const handleDragOver = (e: React.DragEvent, stageName: string) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    setDragOverStage(stageName);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    // Only clear if we're leaving the column entirely
+    const relatedTarget = e.relatedTarget as HTMLElement;
+    const currentTarget = e.currentTarget as HTMLElement;
+    if (!currentTarget.contains(relatedTarget)) {
+      setDragOverStage(null);
+    }
+  };
+
+  const handleDrop = async (e: React.DragEvent, stageName: string) => {
+    e.preventDefault();
+    const contactId = e.dataTransfer.getData("text/plain");
+    if (contactId) {
+      const contact = contacts.find((c) => c.id === contactId);
+      if (contact && contact.funnel_stage !== stageName) {
+        await updateStage(contactId, stageName);
+        toast({ title: `Contato movido para "${stageName}"` });
+      }
+    }
+    setDraggedContactId(null);
+    setDragOverStage(null);
+  };
+
+  // Touch drag support
+  const touchDragRef = useRef<{ contactId: string; startY: number; clone: HTMLElement | null } | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent, contactId: string) => {
+    const touch = e.touches[0];
+    setDraggedContactId(contactId);
+    touchDragRef.current = { contactId, startY: touch.clientY, clone: null };
+  };
+
+  const handleTouchMove = useCallback((e: TouchEvent) => {
+    if (!touchDragRef.current) return;
+    e.preventDefault();
+  }, []);
+
+  const handleTouchEnd = useCallback(async (e: TouchEvent) => {
+    if (!touchDragRef.current) return;
+    const touch = e.changedTouches[0];
+    const element = document.elementFromPoint(touch.clientX, touch.clientY);
+    const column = element?.closest("[data-stage]");
+    if (column) {
+      const stageName = column.getAttribute("data-stage");
+      if (stageName && touchDragRef.current.contactId) {
+        const contact = contacts.find((c) => c.id === touchDragRef.current!.contactId);
+        if (contact && contact.funnel_stage !== stageName) {
+          await updateStage(touchDragRef.current.contactId, stageName);
+          toast({ title: `Contato movido para "${stageName}"` });
+        }
+      }
+    }
+    touchDragRef.current = null;
+    setDraggedContactId(null);
+    setDragOverStage(null);
+  }, [contacts, updateStage, toast]);
+
+  useEffect(() => {
+    document.addEventListener("touchmove", handleTouchMove, { passive: false });
+    document.addEventListener("touchend", handleTouchEnd);
+    return () => {
+      document.removeEventListener("touchmove", handleTouchMove);
+      document.removeEventListener("touchend", handleTouchEnd);
+    };
+  }, [handleTouchMove, handleTouchEnd]);
+
   // Template CRUD
   const saveTemplate = async (id: string) => {
     await supabase.from("crm_templates").update({ name: templateForm.name, stage: templateForm.stage, message: templateForm.message } as any).eq("id", id);
@@ -159,14 +251,14 @@ export default function AdminCrmTab() {
   };
 
   // Stage CRUD
-  const saveStage = async (id: string) => {
+  const saveStageDb = async (id: string) => {
     await supabase.from("crm_funnel_stages").update({ name: stageForm.name, color: stageForm.color } as any).eq("id", id);
     setEditingStage(null);
     await fetchAll();
     toast({ title: "Etapa atualizada!" });
   };
 
-  const addStage = async () => {
+  const addStageDb = async () => {
     await supabase.from("crm_funnel_stages").insert({ ...stageForm, sort_order: stages.length } as any);
     setAddingStage(false);
     setStageForm({ name: "", color: "#3b82f6" });
@@ -174,7 +266,7 @@ export default function AdminCrmTab() {
     toast({ title: "Etapa criada!" });
   };
 
-  const deleteStage = async (id: string) => {
+  const deleteStageDb = async (id: string) => {
     await supabase.from("crm_funnel_stages").delete().eq("id", id) as any;
     await fetchAll();
     toast({ title: "Etapa removida" });
@@ -245,12 +337,29 @@ export default function AdminCrmTab() {
             </select>
           </div>
 
-          {/* Kanban-style columns */}
+          {/* Drag hint */}
+          <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+            <GripVertical size={12} /> Arraste os contatos entre as colunas para mover no funil
+          </p>
+
+          {/* Kanban columns with drag-and-drop */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {stages.map((stage) => {
+              const stageLower = stage.name.toLowerCase();
               const stageContacts = contactsByStage(stage.name);
+              const isDragOver = dragOverStage === stageLower;
+
               return (
-                <div key={stage.id} className="bg-card border border-border rounded-2xl overflow-hidden">
+                <div
+                  key={stage.id}
+                  data-stage={stageLower}
+                  className={`bg-card border rounded-2xl overflow-hidden transition-all duration-200 ${
+                    isDragOver ? "border-primary ring-2 ring-primary/30 scale-[1.01]" : "border-border"
+                  }`}
+                  onDragOver={(e) => handleDragOver(e, stageLower)}
+                  onDragLeave={handleDragLeave}
+                  onDrop={(e) => handleDrop(e, stageLower)}
+                >
                   <div className="px-4 py-3 border-b border-border flex items-center justify-between" style={{ borderTopColor: stage.color, borderTopWidth: 3 }}>
                     <div className="flex items-center gap-2">
                       <div className="w-3 h-3 rounded-full" style={{ backgroundColor: stage.color }} />
@@ -258,19 +367,35 @@ export default function AdminCrmTab() {
                     </div>
                     <span className="text-xs text-muted-foreground font-bold bg-secondary px-2 py-0.5 rounded-full">{stageContacts.length}</span>
                   </div>
-                  <div className="p-2 space-y-2 max-h-[500px] overflow-y-auto">
-                    {stageContacts.length === 0 && (
+
+                  <div className={`p-2 space-y-2 max-h-[500px] overflow-y-auto min-h-[60px] transition-colors ${isDragOver ? "bg-primary/5" : ""}`}>
+                    {stageContacts.length === 0 && !isDragOver && (
                       <p className="text-xs text-muted-foreground text-center py-4">Nenhum contato</p>
                     )}
+                    {isDragOver && stageContacts.length === 0 && (
+                      <div className="border-2 border-dashed border-primary/40 rounded-xl py-6 text-center">
+                        <p className="text-xs text-primary font-semibold">Solte aqui</p>
+                      </div>
+                    )}
+
                     {stageContacts.map((contact) => {
                       const stageTemplates = templates.filter((t) => t.stage === contact.funnel_stage);
                       const isExpanded = expandedContact === contact.id;
+                      const isDragged = draggedContactId === contact.id;
 
                       return (
-                        <motion.div key={contact.id} layout
-                          className="bg-background border border-border rounded-xl p-3 cursor-pointer hover:shadow-md transition-shadow"
-                          onClick={() => setExpandedContact(isExpanded ? null : contact.id)}>
-                          <div className="flex items-start justify-between">
+                        <div
+                          key={contact.id}
+                          draggable
+                          onDragStart={(e) => handleDragStart(e, contact.id)}
+                          onDragEnd={handleDragEnd}
+                          onTouchStart={(e) => handleTouchStart(e, contact.id)}
+                          className={`bg-background border border-border rounded-xl p-3 cursor-grab active:cursor-grabbing hover:shadow-md transition-all select-none ${
+                            isDragged ? "opacity-50 scale-95" : ""
+                          }`}
+                        >
+                          <div className="flex items-start gap-2" onClick={() => setExpandedContact(isExpanded ? null : contact.id)}>
+                            <GripVertical size={14} className="text-muted-foreground/50 shrink-0 mt-0.5" />
                             <div className="flex-1 min-w-0">
                               <p className="font-semibold text-sm text-foreground truncate">{contact.full_name}</p>
                               <p className="text-[10px] text-muted-foreground truncate">{contact.email}</p>
@@ -280,7 +405,7 @@ export default function AdminCrmTab() {
                           </div>
 
                           {contact.last_contacted_at && (
-                            <p className="text-[10px] text-muted-foreground mt-1 flex items-center gap-1">
+                            <p className="text-[10px] text-muted-foreground mt-1 flex items-center gap-1 ml-6">
                               <Clock size={10} /> Último contato: {new Date(contact.last_contacted_at).toLocaleDateString("pt-BR")}
                             </p>
                           )}
@@ -289,8 +414,8 @@ export default function AdminCrmTab() {
                             {isExpanded && (
                               <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }}
                                 className="overflow-hidden" onClick={(e) => e.stopPropagation()}>
-                                <div className="mt-3 pt-3 border-t border-border space-y-3">
-                                  {/* Move stage */}
+                                <div className="mt-3 pt-3 border-t border-border space-y-3 ml-6">
+                                  {/* Move stage buttons */}
                                   <div>
                                     <p className="text-[10px] font-bold text-muted-foreground mb-1">Mover para:</p>
                                     <div className="flex flex-wrap gap-1">
@@ -359,7 +484,7 @@ export default function AdminCrmTab() {
                               </motion.div>
                             )}
                           </AnimatePresence>
-                        </motion.div>
+                        </div>
                       );
                     })}
                   </div>
@@ -399,44 +524,55 @@ export default function AdminCrmTab() {
             </div>
           )}
 
-          <div className="space-y-3">
-            {templates.map((t) => (
-              <div key={t.id} className="bg-card border border-border rounded-2xl p-4">
-                {editingTemplate === t.id ? (
-                  <div className="space-y-3">
-                    <input value={templateForm.name} onChange={(e) => setTemplateForm({ ...templateForm, name: e.target.value })}
-                      className="w-full px-4 py-2.5 rounded-xl bg-secondary text-foreground text-sm border border-border" />
-                    <select value={templateForm.stage} onChange={(e) => setTemplateForm({ ...templateForm, stage: e.target.value })}
-                      className="w-full px-4 py-2.5 rounded-xl bg-secondary text-foreground text-sm border border-border">
-                      {stages.map((s) => <option key={s.id} value={s.name.toLowerCase()}>{s.name}</option>)}
-                    </select>
-                    <textarea value={templateForm.message} onChange={(e) => setTemplateForm({ ...templateForm, message: e.target.value })}
-                      className="w-full px-4 py-2.5 rounded-xl bg-secondary text-foreground text-sm border border-border resize-none" rows={4} />
-                    <div className="flex gap-2">
-                      <button onClick={() => setEditingTemplate(null)} className="px-3 py-1.5 rounded-lg text-xs text-muted-foreground hover:bg-secondary">Cancelar</button>
-                      <button onClick={() => saveTemplate(t.id)} className="px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-bold">Salvar</button>
+          {/* Group templates by stage */}
+          {stages.map((stage) => {
+            const stageTemplates = templates.filter((t) => t.stage === stage.name.toLowerCase());
+            if (stageTemplates.length === 0) return null;
+            return (
+              <div key={stage.id}>
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: stage.color }} />
+                  <h3 className="font-bold text-sm text-foreground">{stage.name}</h3>
+                  <span className="text-xs text-muted-foreground">({stageTemplates.length})</span>
+                </div>
+                <div className="space-y-2 ml-5">
+                  {stageTemplates.map((t) => (
+                    <div key={t.id} className="bg-card border border-border rounded-2xl p-4">
+                      {editingTemplate === t.id ? (
+                        <div className="space-y-3">
+                          <input value={templateForm.name} onChange={(e) => setTemplateForm({ ...templateForm, name: e.target.value })}
+                            className="w-full px-4 py-2.5 rounded-xl bg-secondary text-foreground text-sm border border-border" />
+                          <select value={templateForm.stage} onChange={(e) => setTemplateForm({ ...templateForm, stage: e.target.value })}
+                            className="w-full px-4 py-2.5 rounded-xl bg-secondary text-foreground text-sm border border-border">
+                            {stages.map((s) => <option key={s.id} value={s.name.toLowerCase()}>{s.name}</option>)}
+                          </select>
+                          <textarea value={templateForm.message} onChange={(e) => setTemplateForm({ ...templateForm, message: e.target.value })}
+                            className="w-full px-4 py-2.5 rounded-xl bg-secondary text-foreground text-sm border border-border resize-none" rows={4} />
+                          <div className="flex gap-2">
+                            <button onClick={() => setEditingTemplate(null)} className="px-3 py-1.5 rounded-lg text-xs text-muted-foreground hover:bg-secondary">Cancelar</button>
+                            <button onClick={() => saveTemplate(t.id)} className="px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-bold">Salvar</button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex-1">
+                            <span className="font-bold text-sm text-foreground">{t.name}</span>
+                            <p className="text-xs text-muted-foreground whitespace-pre-wrap mt-1">{t.message}</p>
+                          </div>
+                          <div className="flex gap-1 shrink-0">
+                            <button onClick={() => { setEditingTemplate(t.id); setTemplateForm({ name: t.name, stage: t.stage, message: t.message }); }}
+                              className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground"><Edit3 size={14} /></button>
+                            <button onClick={() => deleteTemplate(t.id)}
+                              className="p-1.5 rounded-lg hover:bg-destructive/10 text-destructive"><Trash2 size={14} /></button>
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  </div>
-                ) : (
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="font-bold text-sm text-foreground">{t.name}</span>
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold text-white" style={{ backgroundColor: getStageColor(t.stage) }}>{t.stage}</span>
-                      </div>
-                      <p className="text-xs text-muted-foreground whitespace-pre-wrap">{t.message}</p>
-                    </div>
-                    <div className="flex gap-1 shrink-0">
-                      <button onClick={() => { setEditingTemplate(t.id); setTemplateForm({ name: t.name, stage: t.stage, message: t.message }); }}
-                        className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground"><Edit3 size={14} /></button>
-                      <button onClick={() => deleteTemplate(t.id)}
-                        className="p-1.5 rounded-lg hover:bg-destructive/10 text-destructive"><Trash2 size={14} /></button>
-                    </div>
-                  </div>
-                )}
+                  ))}
+                </div>
               </div>
-            ))}
-          </div>
+            );
+          })}
         </div>
       )}
 
@@ -461,7 +597,7 @@ export default function AdminCrmTab() {
               </div>
               <div className="flex gap-2">
                 <button onClick={() => setAddingStage(false)} className="px-4 py-2 rounded-xl text-sm text-muted-foreground hover:bg-secondary">Cancelar</button>
-                <button onClick={addStage} disabled={!stageForm.name}
+                <button onClick={addStageDb} disabled={!stageForm.name}
                   className="px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-bold hover:bg-primary/90 disabled:opacity-50">Criar Etapa</button>
               </div>
             </div>
@@ -476,7 +612,7 @@ export default function AdminCrmTab() {
                       className="flex-1 px-3 py-2 rounded-xl bg-secondary text-foreground text-sm border border-border" />
                     <input type="color" value={stageForm.color} onChange={(e) => setStageForm({ ...stageForm, color: e.target.value })}
                       className="w-10 h-8 rounded-lg border border-border cursor-pointer" />
-                    <button onClick={() => saveStage(s.id)} className="px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-bold"><Save size={12} /></button>
+                    <button onClick={() => saveStageDb(s.id)} className="px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-bold"><Save size={12} /></button>
                     <button onClick={() => setEditingStage(null)} className="px-3 py-1.5 rounded-lg text-xs text-muted-foreground hover:bg-secondary"><X size={12} /></button>
                   </div>
                 ) : (
@@ -489,7 +625,7 @@ export default function AdminCrmTab() {
                     <div className="flex gap-1">
                       <button onClick={() => { setEditingStage(s.id); setStageForm({ name: s.name, color: s.color }); }}
                         className="p-1.5 rounded-lg hover:bg-secondary text-muted-foreground"><Edit3 size={14} /></button>
-                      <button onClick={() => deleteStage(s.id)}
+                      <button onClick={() => deleteStageDb(s.id)}
                         className="p-1.5 rounded-lg hover:bg-destructive/10 text-destructive"><Trash2 size={14} /></button>
                     </div>
                   </>
