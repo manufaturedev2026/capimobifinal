@@ -14,7 +14,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import AdminCrmTab from "@/components/AdminCrmTab";
 import AdminPushTab from "@/components/AdminPushTab";
 import AdminSiteTab from "@/components/AdminSiteTab";
-import AdminPushTab from "@/components/AdminPushTab";
 import { LOGIN_HERO_PRESETS, normalizeLoginHeroSetting, resolveLoginHeroImage } from "@/data/loginHeroPresets";
 
 interface SellerWithSub {
