@@ -8,6 +8,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import PackageBadge from "@/components/PackageBadge";
 import SeoPageLayout, { useSeoTheme, FloatingParticles, ShimmerLine } from "@/components/seo/SeoPageLayout";
+import { SITE_URL } from "@/lib/siteUrl";
 
 const SELLER_CATEGORY_LABELS: Record<string, string> = {
   imobiliaria: "Imobiliária", corretor: "Corretor(a)", construtora: "Construtora",
@@ -329,7 +330,7 @@ export default function SeoBrokersPage() {
     "@context": "https://schema.org", "@type": "ItemList", name: pageTitle, description: metaDesc, numberOfItems: filteredProfiles.length,
     itemListElement: filteredProfiles.slice(0, 20).map((p, i) => ({
       "@type": "ListItem", position: i + 1,
-      item: { "@type": "RealEstateAgent", name: p.company_name || p.full_name, url: `https://blackbroker.lovable.app/empresa/${p.slug}`, ...(p.logo_url && { image: p.logo_url }), ...(p.phone && { telephone: p.phone }), address: { "@type": "PostalAddress", ...(p.city && { addressLocality: p.city }), ...(p.state && { addressRegion: p.state }), addressCountry: "BR" } },
+      item: { "@type": "RealEstateAgent", name: p.company_name || p.full_name, url: `${SITE_URL}/empresa/${p.slug}`, ...(p.logo_url && { image: p.logo_url }), ...(p.phone && { telephone: p.phone }), address: { "@type": "PostalAddress", ...(p.city && { addressLocality: p.city }), ...(p.state && { addressRegion: p.state }), addressCountry: "BR" } },
     })),
   };
 
@@ -348,7 +349,7 @@ export default function SeoBrokersPage() {
       theme={theme}
       title={pageTitle}
       metaDescription={metaDesc}
-      canonical={`https://blackbroker.lovable.app${canonicalPath}`}
+      canonical={`${SITE_URL}${canonicalPath}`}
       jsonLd={jsonLd}
       breadcrumbs={breadcrumbs}
       heroImages={heroImages}

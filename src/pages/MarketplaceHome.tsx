@@ -30,6 +30,7 @@ import { getMarketplaceTheme } from "@/lib/marketplaceThemes";
 import { getMarketplaceThemeCssVars } from "@/lib/marketplaceThemeCssVars";
 import { supabase } from "@/integrations/supabase/client";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { SITE_URL } from "@/lib/siteUrl";
 
 const QUICK_ACTIONS = [
   { slug: "casa", name: "Casas", desc: "Residenciais", icon: Home },
@@ -361,6 +362,10 @@ export default function MarketplaceHome() {
       <Helmet>
         <title>{site_name} – Marketplace de Imóveis</title>
         <meta name="description" content="Encontre imóveis de diversos corretores verificados. Casas, apartamentos, terrenos e muito mais." />
+        <link rel="canonical" href={SITE_URL} />
+        <meta property="og:title" content={`${site_name} – Marketplace de Imóveis`} />
+        <meta property="og:description" content="Encontre imóveis de diversos corretores verificados. Casas, apartamentos, terrenos e muito mais." />
+        <meta property="og:url" content={SITE_URL} />
       </Helmet>
 
       <MarketplaceNavbar theme={theme} user={user} showImoveisScroll={true} />

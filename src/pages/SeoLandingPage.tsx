@@ -10,6 +10,7 @@ import { formatPrice, getTagStyle, getTagLabel } from "@/data/products";
 import PackageBadge from "@/components/PackageBadge";
 import PropertyCardSkeleton from "@/components/PropertyCardSkeleton";
 import SeoPageLayout, { useSeoTheme, ShimmerLine } from "@/components/seo/SeoPageLayout";
+import { SITE_URL } from "@/lib/siteUrl";
 
 const CATEGORY_MAP: Record<string, { dbValue: string; label: string; plural: string; icon: any; description: string }> = {
   casas: { dbValue: "casa", label: "Casa", plural: "Casas", icon: Home, description: "casas à venda e para alugar" },
@@ -128,12 +129,12 @@ export default function SeoLandingPage() {
     name: pageTitle, description: metaDescription, numberOfItems: items.length,
     itemListElement: sortedItems.slice(0, 10).map((item, i) => ({
       "@type": "ListItem", position: i + 1,
-      item: { "@type": "RealEstateListing", name: item.title, url: `https://blackbroker.lovable.app/imoveis/produto/${item.slug || item.id}`, ...(item.price && { price: item.price, priceCurrency: "BRL" }), ...(item.photos?.[0] && { image: item.photos[0] }) },
+      item: { "@type": "RealEstateListing", name: item.title, url: `${SITE_URL}/imoveis/produto/${item.slug || item.id}`, ...(item.price && { price: item.price, priceCurrency: "BRL" }), ...(item.photos?.[0] && { image: item.photos[0] }) },
     })),
   };
 
   const canonical = (() => {
-    const base = "https://blackbroker.lovable.app/imoveis";
+    const base = `${SITE_URL}/imoveis`;
     const parts: string[] = [];
     if (cidade) parts.push(cidade);
     if (categoria) parts.push(categoria);

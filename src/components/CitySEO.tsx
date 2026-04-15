@@ -1,4 +1,5 @@
 import { Helmet } from "react-helmet-async";
+import { SITE_URL } from "@/lib/siteUrl";
 
 interface CitySEOProps {
   city: string;
@@ -13,7 +14,7 @@ function capitalize(str: string) {
 
 export default function CitySEO({ city, segment = "imoveis", itemCount, items = [] }: CitySEOProps) {
   const cityName = capitalize(city);
-  const baseUrl = "https://redeimoveisgb.lovable.app";
+  const baseUrl = SITE_URL;
 
   const title = `Imóveis em ${cityName} - Casas e Apartamentos à Venda | Capimobi`;
   const description = `Encontre ${itemCount}+ imóveis em ${cityName}. Casas, apartamentos, terrenos e comerciais à venda e para alugar. Os melhores preços de ${cityName}.`;
