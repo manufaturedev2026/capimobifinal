@@ -6,10 +6,11 @@ import { Sparkles } from "lucide-react";
 interface GlobalStoriesBarProps {
   primaryColor?: string;
   textColor?: string;
+  city?: string;
 }
 
-export default function GlobalStoriesBar({ primaryColor = "#3B82F6", textColor = "#fff" }: GlobalStoriesBarProps) {
-  const { stories, loading } = useGlobalStories();
+export default function GlobalStoriesBar({ primaryColor = "#3B82F6", textColor = "#fff", city }: GlobalStoriesBarProps) {
+  const { stories, loading } = useGlobalStories(city);
   const navigate = useNavigate();
   const [viewStory, setViewStory] = useState<GlobalStory | null>(null);
 
