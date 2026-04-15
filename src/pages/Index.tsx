@@ -791,6 +791,115 @@ export default function Index() {
           </motion.div>
         </div>
       </section>
+
+      {/* ═══════════ CINEMA MODE OVERLAY ═══════════ */}
+      <AnimatePresence>
+        {cinemaMode !== null && cinemaItems.length > 0 && (() => {
+          const total = cinemaItems.length;
+          const current = cinemaItems[cinemaMode];
+          if (!current) return null;
+          const img = current.photos?.[0];
+          const PRIMARY = "hsl(var(--primary))";
+
+          return (
+            <motion.div
+              key="cinema-overlay"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4 }}
+              className="fixed inset-0 z-[9999] bg-black flex flex-col"
+            >
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={`cinema-img-${cinemaMode}`}
+                  initial={{ opacity: 0, scale: 1.08 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.8 }}
+                  className="absolute inset-0"
+                >
+                  <img src={img} alt={current.title} className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/40" />
+                </motion.div>
+              </AnimatePresence>
+
+              <button
+                onClick={() => setCinemaMode(null)}
+                className="absolute top-4 right-4 z-50 w-10 h-10 rounded-full bg-black/40 flex items-center justify-center text-white text-lg hover:bg-black/60 transition-colors"
+              >
+                ✕
+              </button>
+
+              <button
+                onClick={() => setCinemaMode((prev) => (prev! - 1 + total) % total)}
+                className="absolute left-3 top-1/2 -translate-y-1/2 z-50 w-12 h-12 rounded-full bg-black/30 flex items-center justify-center text-white hover:bg-black/50 transition-colors"
+              >
+                <ChevronLeft size={24} />
+              </button>
+              <button
+                onClick={() => setCinemaMode((prev) => (prev! + 1) % total)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 z-50 w-12 h-12 rounded-full bg-black/30 flex items-center justify-center text-white hover:bg-black/50 transition-colors"
+              >
+                <ChevronRight size={24} />
+              </button>
+
+              <div className="absolute bottom-0 left-0 right-0 z-40 p-6 md:p-10">
+                <motion.div
+                  key={`cinema-info-${cinemaMode}`}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.2 }}
+                >
+                  <h2 className="text-white font-display font-black text-2xl md:text-4xl leading-tight max-w-2xl">
+                    {current.title}
+                  </h2>
+                  <div className="flex items-center gap-4 mt-3">
+                    {current.price && (
+                      <span className="text-xl md:text-2xl font-bold text-primary">
+                        R$ {Number(current.price).toLocaleString("pt-BR")}
+                        {current.finality === "aluguel" ? "/mês" : ""}
+                      </span>
+                    )}
+                    {current.city && (
+                      <span className="text-white/50 text-sm flex items-center gap-1">
+                        <MapPin size={13} /> {current.city}{current.state ? `, ${current.state}` : ""}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-3 mt-2 text-white/40 text-xs">
+                    {current.bedrooms && <span>{current.bedrooms} quartos</span>}
+                    {current.bathrooms && <span>• {current.bathrooms} banheiros</span>}
+                    {current.area && <span>• {current.area}m²</span>}
+                  </div>
+                  <Link
+                    to={`/imoveis/produto/${current.slug || current.id}`}
+                    onClick={() => setCinemaMode(null)}
+                    className="inline-flex items-center gap-2 mt-5 px-6 py-2.5 rounded-xl text-sm font-bold text-primary-foreground bg-primary transition-all hover:scale-105 shadow-lg"
+                  >
+                    Ver detalhes <ArrowRight size={14} />
+                  </Link>
+                </motion.div>
+              </div>
+
+              <div className="absolute top-5 left-5 z-50">
+                <p className="text-white/40 text-xs">{cinemaMode + 1} de {total}</p>
+              </div>
+
+              <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/10 z-50">
+                <motion.div
+                  key={`cinema-progress-${cinemaMode}`}
+                  className="h-full bg-primary"
+                  initial={{ width: "0%" }}
+                  animate={{ width: "100%" }}
+                  transition={{ duration: 8, ease: "linear" }}
+                  onAnimationComplete={() => setCinemaMode((prev) => (prev! + 1) % total)}
+                />
+              </div>
+            </motion.div>
+          );
+        })()}
+      </AnimatePresence>
     </div>
   );
 }
