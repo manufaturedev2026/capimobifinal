@@ -25,7 +25,19 @@ let fetchPromise: Promise<SiteSettings> | null = null;
 function fetchSettings(): Promise<SiteSettings> {
   if (cachedSettings) return Promise.resolve(cachedSettings);
   if (fetchPromise) return fetchPromise;
-  fetchPromise = supabase
+  fetchPromise = (async () => {
+    const { data } = await supabase
+      .from("platform_settings")
+      .select("key, value")
+      .in("key", Object.keys(DEFAULTS));
+    const s = { ...DEFAULTS };
+    data?.forEach((row) => {
+      if (row.key in s) (s as any)[row.key] = row.value || (DEFAULTS as any)[row.key];
+    });
+    cachedSettings = s;
+    fetchPromise = null;
+    return s;
+  })();
     .from("platform_settings")
     .select("key, value")
     .in("key", Object.keys(DEFAULTS))
