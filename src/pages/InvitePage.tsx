@@ -233,6 +233,13 @@ export default function InvitePage() {
     if (chatRef.current) chatRef.current.scrollTop = chatRef.current.scrollHeight;
   }, [bubbles, typing, interactionReady, showCta]);
 
+  // Pre-fill CRM name from chat
+  useEffect(() => {
+    if (showCta && config.ctaType === "crm" && userName && !crmName) {
+      setCrmName(userName);
+    }
+  }, [showCta, config.ctaType, userName]);
+
   const now = new Date();
   const timeStr = `${now.getHours().toString().padStart(2, "0")}:${now.getMinutes().toString().padStart(2, "0")}`;
   const currentStep = currentStepId ? getStep(currentStepId) : null;
