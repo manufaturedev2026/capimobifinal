@@ -220,6 +220,16 @@ export default function Index() {
               </p>
 
               <div className="flex flex-wrap gap-3 mt-8">
+                {cinemaItems.length > 0 && (
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="gap-2 h-13 px-6 border-white/20 text-white/80 hover:text-white hover:bg-white/10 hover:border-white/30"
+                    onClick={() => setCinemaMode(0)}
+                  >
+                    <Clapperboard size={18} /> Modo Cinema {selectedCity ? `• ${selectedCity}` : ""}
+                  </Button>
+                )}
                 <Button asChild size="lg" className="gap-2 h-13 px-8 text-base font-bold rounded-xl shadow-lg shadow-primary/30">
                   <a href="https://wa.me/5527995055993?text=Ol%C3%A1%21%20Quero%20criar%20meu%20APP%20de%20im%C3%B3veis" target="_blank" rel="noopener noreferrer">
                     <Sparkles size={18} /> Quero Criar meu APP
