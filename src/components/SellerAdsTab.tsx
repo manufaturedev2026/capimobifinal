@@ -106,7 +106,8 @@ export default function SellerAdsTab({ profileId, userId }: SellerAdsTabProps) {
         service_fee: serviceFee,
         tax_amount: taxAmount,
         total,
-        details: `Imóvel: ${selectedItem?.title || selectedItemId} | Cidade: ${selectedItem?.city || "N/A"} | ${details}`.trim(),
+        item_id: selectedItemId,
+        details: details.trim() || null,
       } as any);
       if (error) throw error;
 

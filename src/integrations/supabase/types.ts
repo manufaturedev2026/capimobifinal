@@ -21,6 +21,7 @@ export type Database = {
           details: string | null
           duration_days: number
           id: string
+          item_id: string | null
           platform: string
           seller_id: string
           service_fee: number
@@ -37,6 +38,7 @@ export type Database = {
           details?: string | null
           duration_days: number
           id?: string
+          item_id?: string | null
           platform: string
           seller_id: string
           service_fee?: number
@@ -53,6 +55,7 @@ export type Database = {
           details?: string | null
           duration_days?: number
           id?: string
+          item_id?: string | null
           platform?: string
           seller_id?: string
           service_fee?: number
@@ -63,7 +66,15 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "ad_requests_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "seller_items"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       commissions: {
         Row: {

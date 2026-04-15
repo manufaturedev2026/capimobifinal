@@ -1,0 +1,1 @@
+ALTER TABLE public.ad_requests ADD COLUMN item_id uuid REFERENCES public.seller_items(id) ON DELETE SET NULL;
