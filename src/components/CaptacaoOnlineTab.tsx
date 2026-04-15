@@ -234,7 +234,13 @@ ${captureUrl}
       {/* ─── Quick Links Row ─── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {/* Landing Page Link */}
-        <div className="rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/5 to-accent/5 p-3.5 flex items-center gap-3">
+        <div className={`rounded-2xl border p-3.5 flex items-center gap-3 relative overflow-hidden ${hasLandingPage ? "border-primary/20 bg-gradient-to-r from-primary/5 to-accent/5" : "border-border bg-muted/30 opacity-60"}`}>
+          {!hasLandingPage && (
+            <div className="absolute inset-0 bg-background/60 backdrop-blur-sm z-10 flex items-center justify-center gap-2">
+              <Lock size={14} className="text-muted-foreground" />
+              <span className="text-xs font-semibold text-muted-foreground">Plano Start+</span>
+            </div>
+          )}
           <div className="w-9 h-9 rounded-xl bg-primary/15 flex items-center justify-center flex-shrink-0">
             <Link2 size={16} className="text-primary" />
           </div>
@@ -243,17 +249,23 @@ ${captureUrl}
             <p className="text-xs font-mono text-foreground truncate">{captureUrl}</p>
           </div>
           <div className="flex gap-1.5 flex-shrink-0">
-            <Button size="icon" variant="ghost" className="h-7 w-7 text-foreground hover:text-primary" onClick={() => copyLink(captureUrl, "Link da página")}>
+            <Button size="icon" variant="ghost" className="h-7 w-7 text-foreground hover:text-primary" onClick={() => copyLink(captureUrl, "Link da página")} disabled={!hasLandingPage}>
               <Copy size={12} />
             </Button>
-            <a href={captureUrl} target="_blank" rel="noopener noreferrer">
-              <Button size="icon" variant="ghost" className="h-7 w-7 text-foreground hover:text-primary"><ExternalLink size={12} /></Button>
+            <a href={hasLandingPage ? captureUrl : undefined} target="_blank" rel="noopener noreferrer">
+              <Button size="icon" variant="ghost" className="h-7 w-7 text-foreground hover:text-primary" disabled={!hasLandingPage}><ExternalLink size={12} /></Button>
             </a>
           </div>
         </div>
 
         {/* Bot Link */}
-        <div className="rounded-2xl border border-[#25d366]/20 bg-gradient-to-r from-[#25d366]/5 to-accent/5 p-3.5 flex items-center gap-3">
+        <div className={`rounded-2xl border p-3.5 flex items-center gap-3 relative overflow-hidden ${hasBot ? "border-[#25d366]/20 bg-gradient-to-r from-[#25d366]/5 to-accent/5" : "border-border bg-muted/30 opacity-60"}`}>
+          {!hasBot && (
+            <div className="absolute inset-0 bg-background/60 backdrop-blur-sm z-10 flex items-center justify-center gap-2">
+              <Lock size={14} className="text-muted-foreground" />
+              <span className="text-xs font-semibold text-muted-foreground">Plano VIP+</span>
+            </div>
+          )}
           <div className="w-9 h-9 rounded-xl bg-[#25d366]/15 flex items-center justify-center flex-shrink-0">
             <MessageCircle size={16} className="text-[#25d366]" />
           </div>
@@ -262,11 +274,11 @@ ${captureUrl}
             <p className="text-xs font-mono text-foreground truncate">{chatBotUrl}</p>
           </div>
           <div className="flex gap-1.5 flex-shrink-0">
-            <Button size="icon" variant="ghost" className="h-7 w-7 text-foreground hover:text-[#25d366]" onClick={() => copyLink(chatBotUrl, "Link do bot")}>
+            <Button size="icon" variant="ghost" className="h-7 w-7 text-foreground hover:text-[#25d366]" onClick={() => copyLink(chatBotUrl, "Link do bot")} disabled={!hasBot}>
               <Copy size={12} />
             </Button>
-            <a href={chatBotUrl} target="_blank" rel="noopener noreferrer">
-              <Button size="icon" variant="ghost" className="h-7 w-7 text-foreground hover:text-[#25d366]"><ExternalLink size={12} /></Button>
+            <a href={hasBot ? chatBotUrl : undefined} target="_blank" rel="noopener noreferrer">
+              <Button size="icon" variant="ghost" className="h-7 w-7 text-foreground hover:text-[#25d366]" disabled={!hasBot}><ExternalLink size={12} /></Button>
             </a>
           </div>
         </div>
