@@ -281,7 +281,7 @@ export default function AdminInviteTab() {
                             )}
                           </div>
                         ))}
-                        <Button variant="ghost" size="sm" onClick={() => addBotMessage(step.id)} className="text-xs">
+                        <Button variant="outline" size="sm" onClick={() => addBotMessage(step.id)} className="text-xs text-primary border-primary/30 hover:bg-primary/10">
                           <Plus size={12} /> Adicionar balão
                         </Button>
                       </>
