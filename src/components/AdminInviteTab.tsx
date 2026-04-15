@@ -176,7 +176,7 @@ export default function AdminInviteTab() {
               key={msg.id}
               className={`flex gap-2 p-3 rounded-lg border ${
                 msg.sender === "user"
-                  ? "border-[#d9fdd3] bg-[#d9fdd3]/20"
+                  ? "border-primary/30 bg-primary/10"
                   : "border-border bg-background"
               }`}
             >
