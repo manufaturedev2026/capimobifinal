@@ -55,7 +55,14 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
   const [captureVideoTitle, setCaptureVideoTitle] = useState("");
   const [savingVideo, setSavingVideo] = useState(false);
 
+  // Bot config
+  const [botAttendantName, setBotAttendantName] = useState("Assistente Imobiliário");
+  const [botAttendantAvatar, setBotAttendantAvatar] = useState("");
+  const [botOpeningMessage, setBotOpeningMessage] = useState("Olá! 👋 Vou te ajudar a cadastrar seu imóvel para avaliação gratuita! É rápido e sem compromisso 🏡");
+  const [savingBot, setSavingBot] = useState(false);
+
   const captureUrl = `${window.location.origin}/captar-imovel/${sellerSlug || sellerId}`;
+  const chatBotUrl = `${window.location.origin}/captar-imovel/${sellerSlug || sellerId}/chat`;
 
   useEffect(() => {
     fetchLeads();
