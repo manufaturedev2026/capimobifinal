@@ -82,6 +82,7 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
   const [botAttendantName, setBotAttendantName] = useState("Assistente Imobiliário");
   const [botAttendantAvatar, setBotAttendantAvatar] = useState("");
   const [botOpeningMessage, setBotOpeningMessage] = useState("Olá! 👋 Vou te ajudar a cadastrar seu imóvel para avaliação gratuita! É rápido e sem compromisso 🏡");
+  const [botChatMode, setBotChatMode] = useState<"flow" | "ai">("flow");
   const [savingBot, setSavingBot] = useState(false);
 
   const captureUrl = `${window.location.origin}/captar-imovel/${sellerSlug || sellerId}`;
@@ -115,6 +116,7 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
         if (cfg.attendantName) setBotAttendantName(cfg.attendantName);
         if (cfg.attendantAvatar) setBotAttendantAvatar(cfg.attendantAvatar);
         if (cfg.openingMessage) setBotOpeningMessage(cfg.openingMessage);
+        if (cfg.chatMode) setBotChatMode(cfg.chatMode);
       } catch {}
     }
   };
@@ -125,6 +127,7 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
       attendantName: botAttendantName,
       attendantAvatar: botAttendantAvatar,
       openingMessage: botOpeningMessage,
+      chatMode: botChatMode,
     });
     const { error } = await supabase
       .from("platform_settings")
