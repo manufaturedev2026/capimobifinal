@@ -291,13 +291,13 @@ export default function SellerDashboard() {
   const maxTeamMembers = ["prime_empresa", "black"].includes(currentTier) ? 9999 : currentTier === "premium_empresa" ? 10 : currentTier === "essencial_empresa" ? 5 : isImobiliaria ? 3 : 0;
   const lockedTabs: DashboardTab[] = isFreePlan ? ["domain"] : [];
 
-  const sidebarNav: { id: DashboardTab; label: string; icon: any; locked?: boolean }[] = [
-    { id: "overview", label: "Visão Geral", icon: Home },
+  const sidebarNav: { id: DashboardTab; label: string; icon: any; locked?: boolean; tourId?: string }[] = [
+    { id: "overview", label: "Visão Geral", icon: Home, tourId: "tour-overview" },
     { id: "items", label: "Meus Anúncios", icon: Package },
-    { id: "stats", label: "Estatísticas", icon: BarChart3 },
+    { id: "stats", label: "Estatísticas", icon: BarChart3, tourId: "tour-stats" },
     { id: "events", label: "Efeitos", icon: Sparkles },
     
-    { id: "crm" as DashboardTab, label: "Meu CRM", icon: MessageCircle },
+    { id: "crm" as DashboardTab, label: "Meu CRM", icon: MessageCircle, tourId: "tour-crm" },
     { id: "gallery" as DashboardTab, label: "Galeria de Anúncios", icon: Image },
     { id: "rentals" as DashboardTab, label: "Aluguéis", icon: Building2 },
     { id: "contracts" as DashboardTab, label: "Contratos", icon: FileText },
@@ -307,7 +307,7 @@ export default function SellerDashboard() {
     { id: "profit" as DashboardTab, label: "Calculadora de Lucro", icon: Calculator },
     { id: "domain", label: "Meu Domínio", icon: Globe, locked: lockedTabs.includes("domain") },
     ...(showTeamTab ? [{ id: "team" as DashboardTab, label: "Corretores", icon: Users }] : []),
-    { id: "ads" as DashboardTab, label: "Fazer ADS", icon: Megaphone },
+    { id: "ads" as DashboardTab, label: "Fazer ADS", icon: Megaphone, tourId: "tour-ads" },
     { id: "partner" as DashboardTab, label: "Parceiro", icon: Handshake },
   ];
 
