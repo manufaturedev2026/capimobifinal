@@ -86,7 +86,19 @@ export default function StoryViewer({ sellers, initialSellerIndex, onClose }: St
   };
 
   const hasOverlay = currentStory.title || currentStory.description || currentStory.button_text;
-  const ctaUrl = currentStory.button_url || (currentStory.item_id ? `/imoveis/produto/${currentStory.item_id}` : null);
+
+  // Resolve CTA URL: button_url from DB uses /imovel/slug but route is /imoveis/produto/:id
+  const resolveCtaUrl = () => {
+    if (currentStory.button_url) {
+      // Convert /imovel/slug → /imoveis/produto/slug
+      const match = currentStory.button_url.match(/^\/imovel\/(.+)/);
+      if (match) return `/imoveis/produto/${match[1]}`;
+      return currentStory.button_url;
+    }
+    if (currentStory.item_id) return `/imoveis/produto/${currentStory.item_id}`;
+    return null;
+  };
+  const ctaUrl = resolveCtaUrl();
 
   return (
     <div className="fixed inset-0 z-[9999] bg-black/95 flex items-center justify-center">
