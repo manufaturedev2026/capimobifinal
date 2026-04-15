@@ -9,7 +9,6 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   Link2, Copy, ExternalLink, User, Phone, MapPin, Home, DollarSign, Clock,
   Filter, Loader2, Inbox, Sparkles, ChevronDown, ChevronUp, Image as ImageIcon, Trash2, Video,
-  MessageCircle, Save, Settings, Megaphone, LayoutList
   MessageCircle, Save, Settings, Megaphone, LayoutList, Lock
 } from "lucide-react";
 
