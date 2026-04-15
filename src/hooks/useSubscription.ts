@@ -26,6 +26,7 @@ export const PACKAGE_CONFIG = {
     badgeColor: "bg-gradient-to-r from-emerald-500 to-teal-500 text-white",
     benefits: [
       "Até 25 anúncios ativos",
+      "Vitrine Lvl 1 — mais visibilidade",
       "1 Layout (Showcase) + 3 Temas",
       "CRM Kanban completo",
       "Stories (estilo Instagram)",
@@ -47,6 +48,7 @@ export const PACKAGE_CONFIG = {
     badgeColor: "bg-slate-500 text-white",
     benefits: [
       "Até 5 anúncios ativos",
+      "Imóveis na Vitrine",
       "1 Layout (Showcase) + 1 Tema",
       "Painel do vendedor completo",
       "Estatísticas básicas",
@@ -64,6 +66,7 @@ export const PACKAGE_CONFIG = {
     badgeColor: "bg-gradient-to-r from-amber-500 to-orange-500 text-white",
     benefits: [
       "Até 60 anúncios ativos",
+      "Vitrine Lvl 2 — destaque superior",
       "4 Layouts + 6 Temas",
       "Tudo do Start +",
       "Notificações Push",
@@ -87,6 +90,7 @@ export const PACKAGE_CONFIG = {
     badgeColor: "bg-gradient-to-r from-purple-600 to-indigo-600 text-white",
     benefits: [
       "Até 115 anúncios ativos",
+      "Vitrine Lvl 3 — máximo individual",
       "Todos os 7 Layouts + Temas",
       "Tudo do VIP +",
       "Instagram na loja",
@@ -107,6 +111,7 @@ export const PACKAGE_CONFIG = {
     badgeColor: "bg-gradient-to-r from-rose-600 to-red-600 text-white",
     benefits: [
       "Anúncios ilimitados",
+      "Vitrine Lvl 4 — prioridade empresa",
       "Todos os layouts + temas",
       "Tudo do Premium +",
       "Até 5 corretores vinculados",
@@ -127,6 +132,7 @@ export const PACKAGE_CONFIG = {
     badgeColor: "bg-gradient-to-r from-sky-600 to-blue-700 text-white",
     benefits: [
       "Anúncios ilimitados",
+      "Vitrine Lvl 5 — destaque premium",
       "Tudo do Exclusive +",
       "Até 10 corretores vinculados",
       "Domínio personalizado",
@@ -144,6 +150,7 @@ export const PACKAGE_CONFIG = {
     badgeColor: "bg-gradient-to-r from-zinc-800 to-zinc-950 text-white",
     benefits: [
       "Anúncios ilimitados",
+      "Vitrine Lvl 6 — máximo absoluto",
       "Tudo do Prime +",
       "Corretores ilimitados",
       "Gerente de conta VIP dedicado",
@@ -161,6 +168,7 @@ export const PACKAGE_CONFIG = {
     badgeColor: "bg-gradient-to-r from-zinc-900 to-black text-yellow-400 border border-yellow-500/50",
     benefits: [
       "Anúncios ilimitados",
+      "Vitrine Lvl 6 — máximo absoluto",
       "Tudo do Prime +",
       "Corretores ilimitados",
       "Gerente de conta VIP dedicado",
