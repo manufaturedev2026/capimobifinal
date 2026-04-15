@@ -895,9 +895,6 @@ export default function CompanyProfile() {
                 <Play size={13} fill="currentColor" /> Vídeo
               </button>
             )}
-            <button onClick={() => setGalleryLightbox(0)} className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/10 backdrop-blur-md text-white text-xs font-medium">
-              <Clapperboard size={13} /> Cinema
-            </button>
             
           </div>
         </div>
@@ -1132,9 +1129,6 @@ export default function CompanyProfile() {
                     <Play size={14} fill="currentColor" /> Assistir
                   </button>
                 )}
-                <button onClick={() => setGalleryLightbox(0)} className="flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-white/10 backdrop-blur-md text-white text-sm font-medium hover:bg-white/20 transition-colors whitespace-nowrap flex-shrink-0" title="Modo Cinema">
-                  <Clapperboard size={13} /> Modo Cinema
-                </button>
               </div>
             </motion.div>
           </div>
