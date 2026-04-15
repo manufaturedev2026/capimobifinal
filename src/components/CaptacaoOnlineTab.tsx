@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   Link2, Copy, ExternalLink, User, Phone, MapPin, Home, DollarSign, Clock,
   Filter, Loader2, Inbox, Sparkles, ChevronDown, ChevronUp, Image as ImageIcon, Trash2, Video,
-  MessageCircle, Save
+  MessageCircle, Save, Settings, Megaphone, LayoutList
 } from "lucide-react";
 
 interface CaptacaoOnlineTabProps {
@@ -43,6 +43,29 @@ const PROPERTY_TYPE_LABELS: Record<string, string> = {
   casa: "Casa", apartamento: "Apartamento", terreno: "Terreno",
   comercial: "Comercial", galpao: "Galpão", flat: "Flat", outros: "Outros",
 };
+
+/* ── Collapsible Section ─────────────────────────────────── */
+function Section({ icon: Icon, title, badge, defaultOpen = false, children, accent = false }: {
+  icon: any; title: string; badge?: string; defaultOpen?: boolean; children: React.ReactNode; accent?: boolean;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className={`rounded-2xl border overflow-hidden transition-colors ${accent ? "border-primary/25 bg-gradient-to-br from-primary/5 via-transparent to-accent/5" : "border-border bg-card"}`}>
+      <button
+        onClick={() => setOpen(o => !o)}
+        className="w-full flex items-center gap-3 px-4 py-3.5 text-left hover:bg-secondary/30 transition-colors"
+      >
+        <div className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 ${accent ? "bg-primary/15" : "bg-secondary"}`}>
+          <Icon size={16} className={accent ? "text-primary" : "text-muted-foreground"} />
+        </div>
+        <span className="text-sm font-bold text-foreground flex-1">{title}</span>
+        {badge && <Badge variant="secondary" className="text-[10px] mr-1">{badge}</Badge>}
+        {open ? <ChevronUp size={16} className="text-muted-foreground" /> : <ChevronDown size={16} className="text-muted-foreground" />}
+      </button>
+      {open && <div className="px-4 pb-4 space-y-3">{children}</div>}
+    </div>
+  );
+}
 
 export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, sellerName }: CaptacaoOnlineTabProps) {
   const { toast } = useToast();
@@ -146,9 +169,9 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
     toast({ title: "Lead removido" });
   };
 
-  const copyLink = () => {
-    navigator.clipboard.writeText(captureUrl);
-    toast({ title: "Link copiado!", description: captureUrl });
+  const copyLink = (url: string, label: string) => {
+    navigator.clipboard.writeText(url);
+    toast({ title: `${label} copiado!`, description: url });
   };
 
   const generateAdText = () => {
@@ -193,49 +216,61 @@ ${captureUrl}
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="font-display font-bold text-xl text-foreground">Captação Online</h2>
-          <p className="text-sm text-muted-foreground">Capte imóveis automaticamente com seu link exclusivo</p>
-        </div>
-        <div className="flex gap-2">
-          <Button onClick={copyLink} variant="secondary" className="gap-2 text-sm border border-border">
-            <Copy size={14} /> Copiar link
-          </Button>
-          <a href={captureUrl} target="_blank" rel="noopener noreferrer">
-            <Button variant="secondary" className="gap-2 text-sm border border-border">
-              <ExternalLink size={14} /> Abrir página
-            </Button>
-          </a>
-        </div>
+      <div>
+        <h2 className="font-display font-bold text-xl text-foreground">Captação Online</h2>
+        <p className="text-sm text-muted-foreground">Capte imóveis automaticamente com seu link exclusivo ou bot interativo</p>
       </div>
 
-      {/* Link Preview Card */}
-      <div className="rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/5 to-accent/5 p-4">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center">
-            <Link2 size={20} className="text-primary" />
+      {/* ─── Quick Links Row ─── */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {/* Landing Page Link */}
+        <div className="rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/5 to-accent/5 p-3.5 flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-primary/15 flex items-center justify-center flex-shrink-0">
+            <Link2 size={16} className="text-primary" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-xs text-muted-foreground">Seu link de captação</p>
-            <p className="text-sm font-mono text-foreground truncate">{captureUrl}</p>
+            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Landing Page</p>
+            <p className="text-xs font-mono text-foreground truncate">{captureUrl}</p>
+          </div>
+          <div className="flex gap-1.5 flex-shrink-0">
+            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => copyLink(captureUrl, "Link da página")}>
+              <Copy size={12} />
+            </Button>
+            <a href={captureUrl} target="_blank" rel="noopener noreferrer">
+              <Button size="icon" variant="ghost" className="h-7 w-7"><ExternalLink size={12} /></Button>
+            </a>
+          </div>
+        </div>
+
+        {/* Bot Link */}
+        <div className="rounded-2xl border border-[#25d366]/20 bg-gradient-to-r from-[#25d366]/5 to-accent/5 p-3.5 flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-[#25d366]/15 flex items-center justify-center flex-shrink-0">
+            <MessageCircle size={16} className="text-[#25d366]" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Bot WhatsApp</p>
+            <p className="text-xs font-mono text-foreground truncate">{chatBotUrl}</p>
+          </div>
+          <div className="flex gap-1.5 flex-shrink-0">
+            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => copyLink(chatBotUrl, "Link do bot")}>
+              <Copy size={12} />
+            </Button>
+            <a href={chatBotUrl} target="_blank" rel="noopener noreferrer">
+              <Button size="icon" variant="ghost" className="h-7 w-7"><ExternalLink size={12} /></Button>
+            </a>
           </div>
         </div>
       </div>
 
-      {/* Ad Generator */}
-      <div className="rounded-2xl border border-border p-4 space-y-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Sparkles size={16} className="text-primary" />
-            <span className="text-sm font-bold text-foreground">Gerador de Texto para Anúncio</span>
-          </div>
-          <Button onClick={generateAdText} size="sm" variant="secondary" className="gap-1.5 text-xs border border-border">
-            <Sparkles size={12} /> Gerar Texto
-          </Button>
-        </div>
+      {/* ─── Collapsible Sections ─── */}
+
+      {/* Gerador de Texto */}
+      <Section icon={Megaphone} title="Gerador de Texto para Anúncio">
+        <Button onClick={generateAdText} size="sm" variant="secondary" className="gap-1.5 text-xs border border-border">
+          <Sparkles size={12} /> Gerar Texto
+        </Button>
         {generatedAd && (
           <div className="space-y-2">
             <Textarea value={generatedAd} onChange={e => setGeneratedAd(e.target.value)} className="min-h-[160px] text-sm" />
@@ -244,44 +279,13 @@ ${captureUrl}
             </Button>
           </div>
         )}
-      </div>
+      </Section>
 
-      {/* Bot WhatsApp de Captação */}
-      <div className="rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/5 to-accent/5 p-4 space-y-4">
-        <div className="flex items-center justify-between flex-wrap gap-2">
-          <div className="flex items-center gap-2">
-            <MessageCircle size={16} className="text-[#25d366]" />
-            <span className="text-sm font-bold text-foreground">Bot WhatsApp de Captação</span>
-          </div>
-          <div className="flex gap-2">
-            <Button
-              variant="secondary"
-              size="sm"
-              className="gap-1.5 text-xs border border-border"
-              onClick={() => {
-                navigator.clipboard.writeText(chatBotUrl);
-                toast({ title: "Link do bot copiado!", description: chatBotUrl });
-              }}
-            >
-              <Copy size={12} /> Copiar Link
-            </Button>
-            <a href={chatBotUrl} target="_blank" rel="noopener noreferrer">
-              <Button variant="secondary" size="sm" className="gap-1.5 text-xs border border-border">
-                <ExternalLink size={12} /> Abrir Bot
-              </Button>
-            </a>
-          </div>
-        </div>
-
+      {/* Configurar Bot */}
+      <Section icon={MessageCircle} title="Configurar Bot de Captação" accent>
         <p className="text-xs text-muted-foreground">
-          Um chat interativo estilo WhatsApp que coleta informações do imóvel automaticamente e salva no seu CRM de captação.
+          Personalize o chat interativo que coleta informações do imóvel automaticamente.
         </p>
-
-        <div className="rounded-xl border border-border bg-card p-3">
-          <p className="text-xs text-muted-foreground mb-1">Link do bot</p>
-          <p className="text-sm font-mono text-foreground truncate">{chatBotUrl}</p>
-        </div>
-
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-muted-foreground">Nome do atendente</label>
@@ -302,7 +306,6 @@ ${captureUrl}
             />
           </div>
         </div>
-
         <div>
           <label className="text-xs text-muted-foreground">Mensagem de abertura</label>
           <Textarea
@@ -312,18 +315,13 @@ ${captureUrl}
             className="mt-1 min-h-[80px] text-sm"
           />
         </div>
-
         <Button onClick={saveBotConfig} disabled={savingBot} size="sm" className="gap-1.5 text-xs">
           <Save size={12} /> {savingBot ? "Salvando..." : "Salvar Bot"}
         </Button>
-      </div>
+      </Section>
 
-      {/* Capture Video */}
-      <div className="rounded-2xl border border-border p-4 space-y-3">
-        <div className="flex items-center gap-2">
-          <Video size={16} className="text-primary" />
-          <span className="text-sm font-bold text-foreground">Vídeo da Página de Captação</span>
-        </div>
+      {/* Vídeo */}
+      <Section icon={Video} title="Vídeo da Página de Captação">
         <p className="text-xs text-muted-foreground">
           Cole o link de um vídeo do YouTube para exibir na parte inferior da sua página de captação.
         </p>
@@ -355,140 +353,143 @@ ${captureUrl}
             />
           </div>
         )}
-      </div>
+      </Section>
 
-      {/* Status Filter Chips */}
-      <div className="flex flex-wrap gap-2">
-        {(Object.entries(counts) as [string, number][]).map(([key, count]) => (
-          <button
-            key={key}
-            onClick={() => setStatusFilter(key)}
-            className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
-              statusFilter === key
-                ? "bg-primary text-white"
-                : "bg-secondary text-muted-foreground hover:bg-secondary/80"
-            }`}
-          >
-            {key === "todos" ? "Todos" : STATUS_CONFIG[key]?.label || key} ({count})
-          </button>
-        ))}
-      </div>
-
-      {/* Leads List */}
-      {loading ? (
-        <div className="flex items-center justify-center py-12">
-          <Loader2 size={24} className="animate-spin text-primary" />
+      {/* ─── Leads de Captação ─── */}
+      <Section icon={LayoutList} title="Leads de Captação" badge={`${leads.length}`} defaultOpen accent>
+        {/* Status Filter Chips */}
+        <div className="flex flex-wrap gap-2">
+          {(Object.entries(counts) as [string, number][]).map(([key, count]) => (
+            <button
+              key={key}
+              onClick={() => setStatusFilter(key)}
+              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                statusFilter === key
+                  ? "bg-primary text-white"
+                  : "bg-secondary text-muted-foreground hover:bg-secondary/80"
+              }`}
+            >
+              {key === "todos" ? "Todos" : STATUS_CONFIG[key]?.label || key} ({count})
+            </button>
+          ))}
         </div>
-      ) : filtered.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 text-center">
-          <Inbox size={48} className="text-muted-foreground/30 mb-4" />
-          <h3 className="text-lg font-bold text-foreground mb-1">Nenhum lead ainda</h3>
-          <p className="text-sm text-muted-foreground max-w-sm">
-            Compartilhe seu link de captação nas redes sociais e comece a receber leads automaticamente.
-          </p>
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {filtered.map(lead => {
-            const isExpanded = expandedId === lead.id;
-            const cfg = STATUS_CONFIG[lead.status] || { label: lead.status, color: "bg-gray-500" };
-            return (
-              <div key={lead.id} className="rounded-2xl border border-border bg-card overflow-hidden">
-                <button
-                  onClick={() => setExpandedId(isExpanded ? null : lead.id)}
-                  className="w-full flex items-center gap-3 p-4 text-left hover:bg-secondary/30 transition-colors"
-                >
-                  <div className={`w-2.5 h-2.5 rounded-full ${cfg.color} flex-shrink-0`} />
-                  <div className="flex-1 min-w-0">
-                    <p className="font-bold text-sm text-foreground truncate">{lead.full_name}</p>
-                    <p className="text-xs text-muted-foreground flex items-center gap-1.5">
-                      <Home size={10} /> {PROPERTY_TYPE_LABELS[lead.property_type] || lead.property_type}
-                      {lead.desired_price && (
-                        <> • R$ {lead.desired_price.toLocaleString("pt-BR")}</>
-                      )}
-                    </p>
-                  </div>
-                  <Badge variant="secondary" className="text-[10px]">{cfg.label}</Badge>
-                  <span className="text-xs text-muted-foreground hidden sm:block">
-                    {new Date(lead.created_at).toLocaleDateString("pt-BR")}
-                  </span>
-                  {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                </button>
 
-                {isExpanded && (
-                  <div className="px-4 pb-4 space-y-3 border-t border-border pt-3">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-                      <div className="flex items-center gap-2">
-                        <Phone size={14} className="text-muted-foreground" />
-                        <a href={`https://wa.me/${lead.phone.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer"
-                          className="text-green-600 font-medium hover:underline">{lead.phone}</a>
-                      </div>
-                      {lead.address && (
-                        <div className="flex items-center gap-2">
-                          <MapPin size={14} className="text-muted-foreground" />
-                          <span className="text-foreground">{lead.address}</span>
-                        </div>
-                      )}
-                      {lead.desired_price && (
-                        <div className="flex items-center gap-2">
-                          <DollarSign size={14} className="text-muted-foreground" />
-                          <span className="text-foreground">R$ {lead.desired_price.toLocaleString("pt-BR")}</span>
-                        </div>
-                      )}
-                      <div className="flex items-center gap-2">
-                        <Clock size={14} className="text-muted-foreground" />
-                        <span className="text-foreground">{new Date(lead.created_at).toLocaleString("pt-BR")}</span>
-                      </div>
+        {/* Leads List */}
+        {loading ? (
+          <div className="flex items-center justify-center py-12">
+            <Loader2 size={24} className="animate-spin text-primary" />
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <Inbox size={40} className="text-muted-foreground/30 mb-3" />
+            <h3 className="text-base font-bold text-foreground mb-1">Nenhum lead ainda</h3>
+            <p className="text-sm text-muted-foreground max-w-sm">
+              Compartilhe seu link de captação nas redes sociais e comece a receber leads automaticamente.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {filtered.map(lead => {
+              const isExpanded = expandedId === lead.id;
+              const cfg = STATUS_CONFIG[lead.status] || { label: lead.status, color: "bg-gray-500" };
+              return (
+                <div key={lead.id} className="rounded-xl border border-border bg-background overflow-hidden">
+                  <button
+                    onClick={() => setExpandedId(isExpanded ? null : lead.id)}
+                    className="w-full flex items-center gap-3 p-3 text-left hover:bg-secondary/30 transition-colors"
+                  >
+                    <div className={`w-2 h-2 rounded-full ${cfg.color} flex-shrink-0`} />
+                    <div className="flex-1 min-w-0">
+                      <p className="font-bold text-sm text-foreground truncate">{lead.full_name}</p>
+                      <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                        <Home size={10} /> {PROPERTY_TYPE_LABELS[lead.property_type] || lead.property_type}
+                        {lead.desired_price && (
+                          <> • R$ {lead.desired_price.toLocaleString("pt-BR")}</>
+                        )}
+                      </p>
                     </div>
+                    <Badge variant="secondary" className="text-[10px]">{cfg.label}</Badge>
+                    <span className="text-xs text-muted-foreground hidden sm:block">
+                      {new Date(lead.created_at).toLocaleDateString("pt-BR")}
+                    </span>
+                    {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                  </button>
 
-                    {lead.description && (
-                      <p className="text-sm text-muted-foreground bg-secondary/50 rounded-xl p-3">{lead.description}</p>
-                    )}
-
-                    {lead.photos && lead.photos.length > 0 && (
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <ImageIcon size={14} className="text-muted-foreground" />
-                        {lead.photos.map((url, i) => (
-                          <a key={i} href={url} target="_blank" rel="noopener noreferrer">
-                            <img src={url} alt="" className="w-16 h-16 rounded-lg object-cover border border-border" />
-                          </a>
-                        ))}
+                  {isExpanded && (
+                    <div className="px-3 pb-3 space-y-3 border-t border-border pt-3">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                        <div className="flex items-center gap-2">
+                          <Phone size={14} className="text-muted-foreground" />
+                          <a href={`https://wa.me/${lead.phone.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer"
+                            className="text-green-600 font-medium hover:underline">{lead.phone}</a>
+                        </div>
+                        {lead.address && (
+                          <div className="flex items-center gap-2">
+                            <MapPin size={14} className="text-muted-foreground" />
+                            <span className="text-foreground">{lead.address}</span>
+                          </div>
+                        )}
+                        {lead.desired_price && (
+                          <div className="flex items-center gap-2">
+                            <DollarSign size={14} className="text-muted-foreground" />
+                            <span className="text-foreground">R$ {lead.desired_price.toLocaleString("pt-BR")}</span>
+                          </div>
+                        )}
+                        <div className="flex items-center gap-2">
+                          <Clock size={14} className="text-muted-foreground" />
+                          <span className="text-foreground">{new Date(lead.created_at).toLocaleString("pt-BR")}</span>
+                        </div>
                       </div>
-                    )}
 
-                    <div className="flex items-center gap-2 pt-2">
-                      <Select value={lead.status} onValueChange={v => updateStatus(lead.id, v)}>
-                        <SelectTrigger className="w-[160px] h-9 text-xs bg-background text-foreground border-border">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent className="bg-background text-foreground border-border">
-                          {Object.entries(STATUS_CONFIG).map(([key, cfg]) => (
-                            <SelectItem key={key} value={key} className="text-foreground">{cfg.label}</SelectItem>
+                      {lead.description && (
+                        <p className="text-sm text-muted-foreground bg-secondary/50 rounded-xl p-3">{lead.description}</p>
+                      )}
+
+                      {lead.photos && lead.photos.length > 0 && (
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <ImageIcon size={14} className="text-muted-foreground" />
+                          {lead.photos.map((url, i) => (
+                            <a key={i} href={url} target="_blank" rel="noopener noreferrer">
+                              <img src={url} alt="" className="w-16 h-16 rounded-lg object-cover border border-border" />
+                            </a>
                           ))}
-                        </SelectContent>
-                      </Select>
+                        </div>
+                      )}
 
-                      <a
-                        href={`https://wa.me/${lead.phone.replace(/\D/g, "")}?text=Olá ${encodeURIComponent(lead.full_name)}! Recebi o cadastro do seu imóvel e gostaria de conversar sobre ele.`}
-                        target="_blank" rel="noopener noreferrer"
-                      >
-                        <Button size="sm" className="gap-1.5 text-xs bg-green-500 hover:bg-green-600 text-white">
-                          <Phone size={12} /> WhatsApp
+                      <div className="flex items-center gap-2 pt-2">
+                        <Select value={lead.status} onValueChange={v => updateStatus(lead.id, v)}>
+                          <SelectTrigger className="w-[160px] h-9 text-xs bg-background text-foreground border-border">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent className="bg-background text-foreground border-border">
+                            {Object.entries(STATUS_CONFIG).map(([key, cfg]) => (
+                              <SelectItem key={key} value={key} className="text-foreground">{cfg.label}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+
+                        <a
+                          href={`https://wa.me/${lead.phone.replace(/\D/g, "")}?text=Olá ${encodeURIComponent(lead.full_name)}! Recebi o cadastro do seu imóvel e gostaria de conversar sobre ele.`}
+                          target="_blank" rel="noopener noreferrer"
+                        >
+                          <Button size="sm" className="gap-1.5 text-xs bg-green-500 hover:bg-green-600 text-white">
+                            <Phone size={12} /> WhatsApp
+                          </Button>
+                        </a>
+
+                        <Button size="sm" variant="ghost" className="text-destructive hover:bg-destructive/10 ml-auto"
+                          onClick={() => deleteLead(lead.id)}>
+                          <Trash2 size={14} />
                         </Button>
-                      </a>
-
-                      <Button size="sm" variant="ghost" className="text-destructive hover:bg-destructive/10 ml-auto"
-                        onClick={() => deleteLead(lead.id)}>
-                        <Trash2 size={14} />
-                      </Button>
+                      </div>
                     </div>
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      )}
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </Section>
     </div>
   );
 }
