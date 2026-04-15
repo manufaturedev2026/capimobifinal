@@ -314,7 +314,7 @@ export default function CapturePropertyPage() {
                   onChange={e => setForm(f => ({ ...f, full_name: e.target.value }))}
                   placeholder="Nome completo *"
                   className="pl-9"
-                  style={{ background: `${colors.bg}88`, borderColor: colors.border, color: colors.text }}
+                  style={{ background: `${colors.card}`, borderColor: colors.border, color: colors.text }}
                   maxLength={100}
                   required
                 />
@@ -327,7 +327,7 @@ export default function CapturePropertyPage() {
                   onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
                   placeholder="WhatsApp *"
                   className="pl-9"
-                  style={{ background: `${colors.bg}88`, borderColor: colors.border, color: colors.text }}
+                  style={{ background: `${colors.card}`, borderColor: colors.border, color: colors.text }}
                   type="tel"
                   maxLength={20}
                   required
@@ -335,7 +335,7 @@ export default function CapturePropertyPage() {
               </div>
 
               <Select value={form.property_type} onValueChange={v => setForm(f => ({ ...f, property_type: v }))}>
-                <SelectTrigger style={{ background: `${colors.bg}88`, borderColor: colors.border, color: colors.text }}>
+                <SelectTrigger style={{ background: `${colors.card}`, borderColor: colors.border, color: colors.text }}>
                   <div className="flex items-center gap-2">
                     <Home size={16} style={{ color: colors.textMuted }} />
                     <SelectValue placeholder="Tipo de imóvel" />
@@ -355,7 +355,7 @@ export default function CapturePropertyPage() {
                   onChange={e => setForm(f => ({ ...f, address: e.target.value }))}
                   placeholder="Endereço do imóvel"
                   className="pl-9"
-                  style={{ background: `${colors.bg}88`, borderColor: colors.border, color: colors.text }}
+                  style={{ background: `${colors.card}`, borderColor: colors.border, color: colors.text }}
                   maxLength={200}
                 />
               </div>
@@ -367,7 +367,7 @@ export default function CapturePropertyPage() {
                   onChange={e => setForm(f => ({ ...f, desired_price: e.target.value }))}
                   placeholder="Valor desejado (R$)"
                   className="pl-9"
-                  style={{ background: `${colors.bg}88`, borderColor: colors.border, color: colors.text }}
+                  style={{ background: `${colors.card}`, borderColor: colors.border, color: colors.text }}
                   type="text"
                 />
               </div>
@@ -379,7 +379,7 @@ export default function CapturePropertyPage() {
                   onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
                   placeholder="Descrição do imóvel (opcional)"
                   className="pl-9 min-h-[100px]"
-                  style={{ background: `${colors.bg}88`, borderColor: colors.border, color: colors.text }}
+                  style={{ background: `${colors.card}`, borderColor: colors.border, color: colors.text }}
                   maxLength={1000}
                 />
               </div>
