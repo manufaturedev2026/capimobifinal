@@ -1055,6 +1055,18 @@ export default function MarketplaceHome() {
                   );
                 })}
               </div>
+              {pool.length > 10 && (
+                <div className="flex justify-center mt-5">
+                  <Link
+                    to={filterCity ? `/corretores/${filterCity.toLowerCase().replace(/\s+/g, "-")}` : "/corretores"}
+                    className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold transition-all hover:scale-[1.03]"
+                    style={{ background: `${PRIMARY}15`, color: PRIMARY, border: `1px solid ${PRIMARY}30` }}
+                  >
+                    Ver todos os corretores ({pool.length})
+                    <ArrowRight size={14} />
+                  </Link>
+                </div>
+              )}
             </motion.section>
           </>
           );
