@@ -583,14 +583,14 @@ export default function MarketplaceHome() {
           )}
         </div>
 
-        {/* Cinema mode button — discreet, bottom-right of hero */}
+        {/* Cinema mode button — top-right of hero */}
         {cinemaProducts.length > 0 && (
           <motion.button
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1.2 }}
             onClick={() => setCinemaMode(0)}
-            className="absolute bottom-4 right-4 z-20 flex items-center gap-1.5 px-3 py-2 rounded-lg text-[11px] font-medium text-white/60 hover:text-white transition-all"
+            className="absolute top-4 right-4 z-20 flex items-center gap-1.5 px-3 py-2 rounded-lg text-[11px] font-medium text-white/60 hover:text-white transition-all"
             style={{ background: "rgba(0,0,0,0.35)" }}
             title="Modo Cinema"
           >
