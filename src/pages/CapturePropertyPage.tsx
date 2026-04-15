@@ -119,16 +119,6 @@ export default function CapturePropertyPage() {
         status: "novo",
       });
 
-      await supabase.from("seller_crm_contacts").insert({
-        seller_id: broker.id,
-        user_id: broker.user_id,
-        full_name: form.full_name.trim().slice(0, 100),
-        phone: form.phone.trim().slice(0, 20),
-        funnel_stage: "novo",
-        lead_source: "captacao_online",
-        notes: `📍 ${form.address || "Sem endereço"}\n🏠 ${PROPERTY_TYPES.find(t => t.value === form.property_type)?.label || form.property_type}\n💰 ${price ? `R$ ${price.toLocaleString("pt-BR")}` : "Não informado"}\n📝 ${form.description || "Sem descrição"}`,
-      } as any);
-
       setSubmitted(true);
     } catch {
       toast({ title: "Erro ao enviar", description: "Tente novamente.", variant: "destructive" });
