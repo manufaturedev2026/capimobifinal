@@ -393,7 +393,7 @@ export default function SellerDashboard() {
           {/* Nav */}
           <nav className="flex-1 p-3 space-y-1">
             {sidebarNav.map((nav) => (
-              <button key={nav.id} onClick={() => handleTabClick(nav.id)}
+              <button key={nav.id} id={nav.tourId} onClick={() => handleTabClick(nav.id)}
                 className={`sidebar-nav-item ${nav.locked ? "text-muted-foreground/40 cursor-not-allowed" : activeTab === nav.id ? "active" : ""}`}>
                 <nav.icon size={18} /> {nav.label}
                 {nav.locked && <Lock size={14} className="ml-auto text-muted-foreground/40" />}
