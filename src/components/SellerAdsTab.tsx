@@ -47,6 +47,10 @@ export default function SellerAdsTab({ profileId, userId }: SellerAdsTabProps) {
   const [durationDays, setDurationDays] = useState(MIN_DURATION);
   const [platform, setPlatform] = useState("google");
   const [details, setDetails] = useState("");
+  const [targetGender, setTargetGender] = useState("todos");
+  const [targetCities, setTargetCities] = useState("");
+  const [targetAgeMin, setTargetAgeMin] = useState("25");
+  const [targetAgeMax, setTargetAgeMax] = useState("55");
   const [submitting, setSubmitting] = useState(false);
   const [requests, setRequests] = useState<any[]>([]);
   const [loadingRequests, setLoadingRequests] = useState(true);
