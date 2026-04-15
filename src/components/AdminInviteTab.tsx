@@ -176,7 +176,7 @@ export default function AdminInviteTab() {
               key={msg.id}
               className={`flex gap-2 p-3 rounded-lg border ${
                 msg.sender === "user"
-                  ? "border-[#d9fdd3] bg-[#d9fdd3]/20"
+                  ? "border-primary/30 bg-primary/10"
                   : "border-border bg-background"
               }`}
             >
@@ -201,7 +201,7 @@ export default function AdminInviteTab() {
                   <select
                     value={msg.sender}
                     onChange={(e) => updateMessage(msg.id, "sender", e.target.value)}
-                    className="text-xs bg-secondary border border-border rounded px-2 py-1"
+                    className="text-xs bg-card text-foreground border border-border rounded px-2 py-1"
                   >
                     <option value="attendant">🟢 Atendente</option>
                     <option value="user">🔵 Usuário</option>
