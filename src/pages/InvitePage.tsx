@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, CheckCheck, ArrowLeft, Phone, Video, MoreVertical } from "lucide-react";
+import { CheckCheck, ArrowLeft, Phone, Video, MoreVertical, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
@@ -11,7 +11,7 @@ interface ChatMessage {
   id: string;
   text: string;
   sender: "attendant" | "user";
-  delay: number; // ms before showing
+  delay: number;
 }
 
 const DEFAULT_MESSAGES: ChatMessage[] = [
@@ -27,23 +27,41 @@ const DEFAULT_MESSAGES: ChatMessage[] = [
   { id: "10", text: "Perfeito! Clica no botão abaixo e cria sua conta em menos de 2 minutos! 👇", sender: "attendant", delay: 16500 },
 ];
 
+/** Group messages into steps: each group = consecutive messages from the same sender */
+function buildSteps(msgs: ChatMessage[]): ChatMessage[][] {
+  const steps: ChatMessage[][] = [];
+  let current: ChatMessage[] = [];
+  for (const msg of msgs) {
+    if (current.length > 0 && current[0].sender !== msg.sender) {
+      steps.push(current);
+      current = [];
+    }
+    current.push(msg);
+  }
+  if (current.length) steps.push(current);
+  return steps;
+}
+
 const DEFAULT_ATTENDANT = {
   name: "Ana • Capimobi",
   avatar: "",
-  status: "online",
 };
 
 export default function InvitePage() {
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [allMessages, setAllMessages] = useState<ChatMessage[]>([]);
+  const [steps, setSteps] = useState<ChatMessage[][]>([]);
+  const [currentStep, setCurrentStep] = useState(0);
   const [visibleMessages, setVisibleMessages] = useState<ChatMessage[]>([]);
   const [typing, setTyping] = useState(false);
+  const [animatingStep, setAnimatingStep] = useState(false);
   const [attendantName, setAttendantName] = useState(DEFAULT_ATTENDANT.name);
   const [attendantAvatar, setAttendantAvatar] = useState(DEFAULT_ATTENDANT.avatar);
   const [showCta, setShowCta] = useState(false);
+  const [waitingForTap, setWaitingForTap] = useState(false);
   const chatRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
-  // Load custom messages from platform_settings
+  // Load custom messages
   useEffect(() => {
     const load = async () => {
       const { data } = await supabase
@@ -52,58 +70,97 @@ export default function InvitePage() {
         .eq("key", "invite_chat_config")
         .maybeSingle();
 
+      let msgs = DEFAULT_MESSAGES;
       if (data?.value) {
         try {
           const config = JSON.parse(data.value);
-          if (config.messages?.length) setMessages(config.messages);
-          else setMessages(DEFAULT_MESSAGES);
+          if (config.messages?.length) msgs = config.messages;
           if (config.attendantName) setAttendantName(config.attendantName);
           if (config.attendantAvatar) setAttendantAvatar(config.attendantAvatar);
-        } catch {
-          setMessages(DEFAULT_MESSAGES);
-        }
-      } else {
-        setMessages(DEFAULT_MESSAGES);
+        } catch {}
       }
+      setAllMessages(msgs);
+      setSteps(buildSteps(msgs));
     };
     load();
   }, []);
 
-  // Animate messages appearing
-  useEffect(() => {
-    if (!messages.length) return;
-    const timers: NodeJS.Timeout[] = [];
+  // Play a step: show typing then reveal messages one by one
+  const playStep = useCallback((stepIndex: number) => {
+    if (stepIndex >= steps.length) {
+      setShowCta(true);
+      return;
+    }
+    setAnimatingStep(true);
+    setWaitingForTap(false);
+    const stepMsgs = steps[stepIndex];
+    const isAttendant = stepMsgs[0].sender === "attendant";
 
-    messages.forEach((msg, i) => {
-      // Show typing before attendant messages
-      if (msg.sender === "attendant" && i > 0) {
-        const typingDelay = msg.delay - 1200;
-        if (typingDelay > 0) {
-          timers.push(setTimeout(() => setTyping(true), typingDelay));
-        }
-      }
+    if (isAttendant) {
+      // Show typing, then reveal each msg with delay
+      setTyping(true);
+      let totalDelay = 800;
+      const timers: NodeJS.Timeout[] = [];
 
+      stepMsgs.forEach((msg, i) => {
+        timers.push(
+          setTimeout(() => {
+            setTyping(i < stepMsgs.length - 1); // keep typing if more msgs
+            setVisibleMessages((prev) => [...prev, msg]);
+          }, totalDelay)
+        );
+        totalDelay += 1200;
+      });
+
+      // After all msgs shown, wait for tap
       timers.push(
         setTimeout(() => {
           setTyping(false);
-          setVisibleMessages((prev) => [...prev, msg]);
-        }, msg.delay)
+          setAnimatingStep(false);
+          setCurrentStep(stepIndex + 1);
+          // If next step exists, wait for user tap
+          if (stepIndex + 1 < steps.length) {
+            setWaitingForTap(true);
+          } else {
+            setShowCta(true);
+          }
+        }, totalDelay)
       );
-    });
 
-    // Show CTA after last message
-    const lastDelay = messages[messages.length - 1]?.delay || 0;
-    timers.push(setTimeout(() => setShowCta(true), lastDelay + 1500));
+      return () => timers.forEach(clearTimeout);
+    } else {
+      // User messages: show them instantly (user "typed" them)
+      setVisibleMessages((prev) => [...prev, ...stepMsgs]);
+      setAnimatingStep(false);
+      setCurrentStep(stepIndex + 1);
+      // Immediately wait for tap to show next attendant response
+      if (stepIndex + 1 < steps.length) {
+        setWaitingForTap(true);
+      } else {
+        setShowCta(true);
+      }
+    }
+  }, [steps]);
 
-    return () => timers.forEach(clearTimeout);
-  }, [messages]);
+  // Start first step automatically
+  useEffect(() => {
+    if (steps.length > 0 && currentStep === 0 && visibleMessages.length === 0) {
+      playStep(0);
+    }
+  }, [steps, playStep]);
+
+  const handleContinue = () => {
+    if (waitingForTap && !animatingStep) {
+      playStep(currentStep);
+    }
+  };
 
   // Auto-scroll
   useEffect(() => {
     if (chatRef.current) {
       chatRef.current.scrollTop = chatRef.current.scrollHeight;
     }
-  }, [visibleMessages, typing]);
+  }, [visibleMessages, typing, waitingForTap]);
 
   const now = new Date();
   const timeStr = `${now.getHours().toString().padStart(2, "0")}:${now.getMinutes().toString().padStart(2, "0")}`;
@@ -140,14 +197,11 @@ export default function InvitePage() {
           </div>
         </div>
 
-        {/* Chat wallpaper pattern */}
+        {/* Chat area */}
         <div
           ref={chatRef}
           className="flex-1 overflow-y-auto px-3 py-4 space-y-1"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c5bfb2' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-            background: "#e5ddd5",
-          }}
+          style={{ background: "#e5ddd5" }}
         >
           {/* Date chip */}
           <div className="flex justify-center mb-3">
@@ -198,6 +252,27 @@ export default function InvitePage() {
               </div>
             </motion.div>
           )}
+
+          {/* "Continue" prompt */}
+          <AnimatePresence>
+            {waitingForTap && !showCta && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="flex justify-center pt-4 pb-2"
+              >
+                <button
+                  onClick={handleContinue}
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-full shadow-md text-sm font-semibold transition-all active:scale-95"
+                  style={{ background: "#00a884", color: "white" }}
+                >
+                  <ChevronDown size={16} className="animate-bounce" />
+                  Continuar conversa
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* CTA Button */}
           <AnimatePresence>
