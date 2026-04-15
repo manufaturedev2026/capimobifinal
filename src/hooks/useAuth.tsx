@@ -91,6 +91,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           : authUser.email?.split("@")[0] ?? "Novo usuário",
       email: authUser.email ?? "",
       phone: typeof metadata.phone === "string" && metadata.phone.trim() ? metadata.phone.trim() : null,
+      city: typeof metadata.city === "string" && metadata.city.trim() ? metadata.city.trim() : null,
+      state: typeof metadata.state === "string" && metadata.state.trim() ? metadata.state.trim() : null,
       store_layout: "marketplace",
       store_theme: "luxury",
     };
