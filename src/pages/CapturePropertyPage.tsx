@@ -261,7 +261,7 @@ export default function CapturePropertyPage() {
                 <div key={i} className="flex items-center gap-2.5 px-4 py-2.5 rounded-2xl"
                   style={{ background: `${colors.card}99`, border: `1px solid ${colors.border}` }}>
                   <b.icon size={18} className="shrink-0" style={{ color: colors.primary }} />
-                  <span className="text-xs font-medium" style={{ color: colors.textMuted }}>{b.text}</span>
+                  <span className="text-xs font-medium" style={{ color: colors.text }}>{b.text}</span>
                 </div>
               ))}
             </div>
@@ -432,7 +432,7 @@ export default function CapturePropertyPage() {
                   )}
                 </div>
               </div>
-              {broker.bio && <p className="text-xs leading-relaxed mb-4" style={{ color: colors.textMuted }}>{broker.bio}</p>}
+              {broker.bio && <p className="text-xs leading-relaxed mb-4" style={{ color: colors.text, opacity: 0.8 }}>{broker.bio}</p>}
               <div className="space-y-2.5">
                 {broker.creci && (
                   <div className="flex items-center gap-2.5 text-xs" style={{ color: colors.textMuted }}>
