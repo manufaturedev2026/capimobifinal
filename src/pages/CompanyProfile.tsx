@@ -1011,6 +1011,11 @@ export default function CompanyProfile() {
           </Link>
         </div>
 
+        {/* Cinema Mode button — top right */}
+        <button onClick={() => setGalleryLightbox(0)} className="absolute top-4 right-4 z-20 flex items-center gap-1.5 px-3 py-2 rounded-lg text-[11px] font-medium text-white/60 hover:text-white transition-all" style={{ background: "rgba(0,0,0,0.35)" }}>
+          <Clapperboard size={13} /> Cinema
+        </button>
+
         {/* Tier Badge */}
         {isPaid && (
           <div className="absolute top-4 right-4 z-20">
