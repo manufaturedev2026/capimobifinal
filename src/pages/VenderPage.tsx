@@ -127,13 +127,13 @@ const PLANS = [
   {
     key: "start", name: "Start", subtitle: "Para corretores iniciantes", price: 24.99, priceLabel: "R$24,99",
     setupFee: 299, popular: false,
-    benefits: ["Até 25 anúncios", "CRM Kanban + Stories", "Push + Captação", "Simulador + PDF Proposta", "Destaque na listagem"],
+    benefits: ["Até 25 anúncios", "CRM Kanban + Stories", "Captação + Contratos", "Simulador + PDF Proposta", "Destaque na listagem"],
     cta: "Começar agora",
   },
   {
     key: "premium", name: "VIP", subtitle: "⭐ Mais popular", price: 59.99, priceLabel: "R$59,99",
     setupFee: 719, popular: true,
-    benefits: ["Até 60 anúncios", "4 Layouts + 6 Temas", "Vídeo hero + Cinema", "Gestão de Aluguéis + ADS", "Selo VIP + Suporte"],
+    benefits: ["Até 60 anúncios", "4 Layouts + 6 Temas", "Push + Vídeo + Cinema", "Gestão de Aluguéis + ADS", "Selo VIP + Suporte"],
     cta: "Assinar VIP",
   },
   {
