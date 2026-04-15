@@ -672,10 +672,6 @@ export default function AdminPanel() {
           </div>
       )}
 
-      {/* Invite Tab */}
-      {tab === "invite" && (
-        <AdminInviteTab />
-      )}
 
 
 
