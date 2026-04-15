@@ -1320,6 +1320,7 @@ export default function SellerDashboard() {
       {/* Spacer for bottom nav on mobile */}
       <div className="lg:hidden h-16" />
       <PwaInstallGuide open={showInstallGuide} onClose={() => setShowInstallGuide(false)} mode={guideMode} />
+      <OnboardingTour />
     </div>
   );
 }
