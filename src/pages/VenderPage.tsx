@@ -119,28 +119,46 @@ const STATS = [
 
 const PLANS = [
   {
-    key: "basico", name: "Gratuito", subtitle: "Para experimentar", price: 0, priceLabel: "Gratuito",
+    key: "basico", name: "Básico", subtitle: "Para experimentar", price: 0, priceLabel: "Gratuito",
     setupFee: null, popular: false,
-    benefits: ["Até 5 anúncios ativos", "1 Layout + 1 Tema", "Painel completo", "Estatísticas básicas", "QR Code dos anúncios"],
+    benefits: ["Até 5 anúncios ativos", "1 Layout (Showcase) + 1 Tema", "Painel do vendedor completo", "Estatísticas básicas", "Gerador de contratos (1 modelo)", "QR Code dos anúncios"],
     cta: "Criar conta grátis",
   },
   {
     key: "start", name: "Start", subtitle: "Para corretores iniciantes", price: 24.99, priceLabel: "R$24,99",
     setupFee: 299, popular: false,
-    benefits: ["Até 25 anúncios", "CRM Kanban + Stories", "Captação + Contratos", "Simulador + PDF Proposta", "Destaque na listagem"],
+    benefits: ["Até 25 anúncios ativos", "1 Layout (Showcase) + 3 Temas", "CRM Kanban completo", "Stories (estilo Instagram)", "Página de Captação de imóveis", "Todos os modelos de contrato", "Simulador de Financiamento", "PDF de Proposta profissional", "Selo Start + Hero Banner", "Destaque na listagem"],
     cta: "Começar agora",
   },
   {
     key: "premium", name: "VIP", subtitle: "⭐ Mais popular", price: 59.99, priceLabel: "R$59,99",
     setupFee: 719, popular: true,
-    benefits: ["Até 60 anúncios", "4 Layouts + 6 Temas", "Push + Vídeo + Cinema", "Gestão de Aluguéis + ADS", "Selo VIP + Suporte"],
+    benefits: ["Até 60 anúncios ativos", "4 Layouts + 6 Temas", "Tudo do Start +", "Notificações Push", "Vídeo banner hero (autoplay)", "Modo Cinema imersivo", "Efeitos visuais na loja", "Gestão de Aluguéis completa", "Sistema de ADS integrado", "Estatísticas avançadas", "Selo VIP nos anúncios", "Suporte prioritário"],
     cta: "Assinar VIP",
   },
   {
     key: "vip", name: "Premium", subtitle: "Para dominar o mercado", price: 114.99, priceLabel: "R$114,99",
     setupFee: 1379, popular: false,
-    benefits: ["Até 115 anúncios", "Todos os 7 Layouts", "Instagram + SEO", "Destaque Épico + Showroom", "Suporte VIP dedicado"],
+    benefits: ["Até 115 anúncios ativos", "Todos os 7 Layouts + Temas", "Tudo do VIP +", "Instagram na loja", "SEO otimizado (cidade/bairro)", "Destaque Épico (até 5 imóveis)", "Galeria Showroom + Copywriting", "Selo Premium exclusivo", "Suporte VIP dedicado"],
     cta: "Assinar Premium",
+  },
+];
+
+const ENTERPRISE_PLANS = [
+  {
+    key: "essencial_empresa", name: "Exclusive", subtitle: "Para imobiliárias", price: 199.99, priceLabel: "R$199,99",
+    benefits: ["Anúncios ilimitados", "Todos os layouts + temas", "Tudo do Premium +", "Até 5 corretores vinculados", "Lojas espelho por corretor", "WhatsApp Team Picker", "Analytics por corretor", "Selo Exclusive", "Suporte dedicado"],
+    cta: "Assinar Exclusive",
+  },
+  {
+    key: "premium_empresa", name: "Prime", subtitle: "Para grandes imobiliárias", price: 349.99, priceLabel: "R$349,99",
+    benefits: ["Anúncios ilimitados", "Tudo do Exclusive +", "Até 10 corretores vinculados", "Domínio personalizado", "Selo Prime", "Suporte premium dedicado"],
+    cta: "Assinar Prime",
+  },
+  {
+    key: "prime_empresa", name: "Black", subtitle: "★ Para construtoras e redes", price: 599.99, priceLabel: "R$599,99",
+    benefits: ["Anúncios ilimitados", "Tudo do Prime +", "Corretores ilimitados", "Gerente de conta VIP dedicado", "Selo Black ★ exclusivo", "Suporte 24/7 prioritário"],
+    cta: "Assinar Black",
   },
 ];
 
@@ -583,6 +601,63 @@ export default function VenderPage() {
                   </Button>
                 </motion.div>
               ))}
+            </div>
+
+            {/* Enterprise Plans */}
+            <div className="mt-12 md:mt-16">
+              <div className="text-center mb-8">
+                <p className="font-semibold text-xs md:text-sm uppercase tracking-wide mb-2" style={{ color: theme.primary }}>Para Empresas</p>
+                <h3 className="font-display text-xl sm:text-2xl md:text-3xl font-black">
+                  Planos para Imobiliárias e Construtoras
+                </h3>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-5">
+                {ENTERPRISE_PLANS.map((plan, i) => (
+                  <motion.div
+                    key={plan.key}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.1 }}
+                    className={`relative bg-white/[0.04] backdrop-blur rounded-2xl border ${plan.key === "prime_empresa" ? "border-yellow-500/60 ring-1 ring-yellow-500/30 shadow-xl shadow-yellow-500/10" : "border-white/10"} p-5 md:p-6 flex flex-col`}
+                  >
+                    {plan.key === "prime_empresa" && (
+                      <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-zinc-800 to-black text-yellow-400 text-[10px] font-bold uppercase px-4 py-1 rounded-full tracking-wide border border-yellow-500/50">
+                        ★ Top
+                      </span>
+                    )}
+
+                    <h3 className="font-display font-bold text-lg md:text-xl">{plan.name}</h3>
+                    <p className="text-[11px] md:text-xs text-white/40 mt-1">{plan.subtitle}</p>
+
+                    <div className="mt-4 md:mt-5 mb-3 md:mb-4">
+                      <p className="text-2xl md:text-3xl font-black">
+                        {plan.priceLabel}<span className="text-xs md:text-sm font-normal text-white/40">/mês</span>
+                      </p>
+                    </div>
+
+                    <ul className="space-y-2 md:space-y-2.5 flex-1 mb-5 md:mb-6">
+                      {plan.benefits.map((b) => (
+                        <li key={b} className="flex items-start gap-2 text-xs md:text-sm text-white/60">
+                          <Check className="w-3.5 h-3.5 md:w-4 md:h-4 mt-0.5 shrink-0" style={{ color: theme.primary }} />
+                          {b}
+                        </li>
+                      ))}
+                    </ul>
+
+                    <Button
+                      onClick={scrollToForm}
+                      className={`w-full rounded-xl font-bold text-sm ${
+                        plan.key === "prime_empresa"
+                          ? "bg-gradient-to-r from-zinc-800 to-black text-yellow-400 border border-yellow-500/30 hover:from-zinc-700 hover:to-zinc-900"
+                          : "bg-white/10 hover:bg-white/15 text-white"
+                      }`}
+                    >
+                      {plan.cta}
+                    </Button>
+                  </motion.div>
+                ))}
+              </div>
             </div>
           </div>
         </section>
