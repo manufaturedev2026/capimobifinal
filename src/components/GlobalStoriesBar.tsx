@@ -92,11 +92,15 @@ export default function GlobalStoriesBar({ primaryColor = "#3B82F6", textColor =
               {viewStory.description && (
                 <p className="text-white/80 text-sm mt-1">{viewStory.description}</p>
               )}
-              {viewStory.button_url && (
+              {(viewStory.button_url || viewStory.item_id) && (
                 <button
                   onClick={() => {
                     setViewStory(null);
-                    navigate(viewStory.button_url!);
+                    let url = viewStory.button_url || "";
+                    const match = url.match(/^\/imovel\/(.+)/);
+                    if (match) url = `/imoveis/produto/${match[1]}`;
+                    else if (!url && viewStory.item_id) url = `/imoveis/produto/${viewStory.item_id}`;
+                    navigate(url);
                   }}
                   className="mt-4 px-6 py-2.5 rounded-full text-sm font-bold text-black bg-white hover:bg-white/90 transition-colors"
                 >
