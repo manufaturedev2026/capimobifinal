@@ -52,6 +52,7 @@ export default function PartnerBrokerTab({ profileId, userId }: { profileId: str
       .from("profiles")
       .select("id, full_name, company_name, logo_url, city, state, slug, cnpj")
       .in("seller_category", ["imobiliaria", "construtora"])
+      .eq("open_for_partnerships", true)
       .neq("id", profileId);
 
     // Fetch my requests
