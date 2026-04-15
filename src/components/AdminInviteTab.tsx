@@ -213,11 +213,12 @@ export default function AdminInviteTab() {
               value={config.ctaType}
               onChange={(e) => {
                 const v = e.target.value as InviteChatConfig["ctaType"];
-                setConfig((p) => ({ ...p, ctaType: v, ctaUrl: v === "internal" ? "/login" : v === "whatsapp" ? "https://wa.me/55" : "https://" }));
+                setConfig((p) => ({ ...p, ctaType: v, ctaUrl: v === "internal" ? "/login" : v === "whatsapp" ? "https://wa.me/55" : v === "crm" ? "" : "https://" }));
               }}
               className="w-full text-sm bg-card text-foreground border border-border rounded px-3 py-2 mt-1"
             >
               <option value="internal">📱 Cadastro interno</option>
+              <option value="crm">📋 Salvar no CRM</option>
               <option value="whatsapp">💬 WhatsApp direto</option>
               <option value="whatsapp_group">👥 Grupo WhatsApp</option>
               <option value="url">🔗 URL externa</option>

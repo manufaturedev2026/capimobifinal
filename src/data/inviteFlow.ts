@@ -32,7 +32,7 @@ export interface InviteChatConfig {
   attendantAvatar: string;
   ctaText: string;
   ctaUrl: string;
-  ctaType: "internal" | "whatsapp" | "whatsapp_group" | "url";
+  ctaType: "internal" | "whatsapp" | "whatsapp_group" | "url" | "crm";
   chatMode: "flow" | "ai";
   flow: FlowStep[];
 }
