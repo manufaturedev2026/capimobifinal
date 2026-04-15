@@ -58,6 +58,7 @@ export default function AdminSiteTab() {
           .from("platform_settings" as any)
           .upsert({ key, value: settings[key] || "" } as any, { onConflict: "key" });
       }
+      invalidateSiteSettings();
       toast({ title: "Configurações salvas!" });
     } catch {
       toast({ title: "Erro ao salvar", variant: "destructive" });
