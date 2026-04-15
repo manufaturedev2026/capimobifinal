@@ -246,6 +246,78 @@ ${captureUrl}
         )}
       </div>
 
+      {/* Bot WhatsApp de Captação */}
+      <div className="rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/5 to-accent/5 p-4 space-y-4">
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <div className="flex items-center gap-2">
+            <MessageCircle size={16} className="text-[#25d366]" />
+            <span className="text-sm font-bold text-foreground">Bot WhatsApp de Captação</span>
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant="secondary"
+              size="sm"
+              className="gap-1.5 text-xs border border-border"
+              onClick={() => {
+                navigator.clipboard.writeText(chatBotUrl);
+                toast({ title: "Link do bot copiado!", description: chatBotUrl });
+              }}
+            >
+              <Copy size={12} /> Copiar Link
+            </Button>
+            <a href={chatBotUrl} target="_blank" rel="noopener noreferrer">
+              <Button variant="secondary" size="sm" className="gap-1.5 text-xs border border-border">
+                <ExternalLink size={12} /> Abrir Bot
+              </Button>
+            </a>
+          </div>
+        </div>
+
+        <p className="text-xs text-muted-foreground">
+          Um chat interativo estilo WhatsApp que coleta informações do imóvel automaticamente e salva no seu CRM de captação.
+        </p>
+
+        <div className="rounded-xl border border-border bg-card p-3">
+          <p className="text-xs text-muted-foreground mb-1">Link do bot</p>
+          <p className="text-sm font-mono text-foreground truncate">{chatBotUrl}</p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label className="text-xs text-muted-foreground">Nome do atendente</label>
+            <Input
+              value={botAttendantName}
+              onChange={(e) => setBotAttendantName(e.target.value)}
+              placeholder="Assistente Imobiliário"
+              className="mt-1"
+            />
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground">URL do avatar (opcional)</label>
+            <Input
+              value={botAttendantAvatar}
+              onChange={(e) => setBotAttendantAvatar(e.target.value)}
+              placeholder="https://..."
+              className="mt-1"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className="text-xs text-muted-foreground">Mensagem de abertura</label>
+          <Textarea
+            value={botOpeningMessage}
+            onChange={(e) => setBotOpeningMessage(e.target.value)}
+            placeholder="Olá! 👋 Vou te ajudar a cadastrar seu imóvel..."
+            className="mt-1 min-h-[80px] text-sm"
+          />
+        </div>
+
+        <Button onClick={saveBotConfig} disabled={savingBot} size="sm" className="gap-1.5 text-xs">
+          <Save size={12} /> {savingBot ? "Salvando..." : "Salvar Bot"}
+        </Button>
+      </div>
+
       {/* Capture Video */}
       <div className="rounded-2xl border border-border p-4 space-y-3">
         <div className="flex items-center gap-2">
