@@ -40,6 +40,7 @@ const VenderPage = lazyPage(() => import("@/pages/VenderPage"));
 const SearchPage = lazyPage(() => import("@/pages/SearchPage"));
 const SeoLandingPage = lazyPage(() => import("@/pages/SeoLandingPage"));
 const SeoBrokersPage = lazyPage(() => import("@/pages/SeoBrokersPage"));
+const InvitePage = lazyPage(() => import("@/pages/InvitePage"));
 
 const queryClient = new QueryClient();
 
@@ -150,6 +151,7 @@ const AppLayout = () => {
               <Route path="/corretores" element={<SeoBrokersPage />} />
               <Route path="/corretores/:estado" element={<SeoBrokersPage />} />
               <Route path="/corretores/:estado/:cidade" element={<SeoBrokersPage />} />
+              <Route path="/convite" element={<InvitePage />} />
               <Route path="/anunciar" element={<VenderPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/entrar" element={<Navigate to="/login" replace />} />
