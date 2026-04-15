@@ -14,6 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import AdminCrmTab from "@/components/AdminCrmTab";
 import AdminPushTab from "@/components/AdminPushTab";
 import AdminSiteTab from "@/components/AdminSiteTab";
+import AdminAdsCrmTab from "@/components/AdminAdsCrmTab";
 import { LOGIN_HERO_PRESETS, normalizeLoginHeroSetting, resolveLoginHeroImage } from "@/data/loginHeroPresets";
 
 interface SellerWithSub {
@@ -49,7 +50,7 @@ export default function AdminPanel() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [tierFilter, setTierFilter] = useState<string>("todos");
-  const [tab, setTab] = useState<"sellers" | "billing" | "referrals" | "crm" | "seo" | "vendas" | "config" | "push" | "site">("sellers");
+  const [tab, setTab] = useState<"sellers" | "billing" | "referrals" | "crm" | "seo" | "vendas" | "config" | "push" | "site" | "ads">("sellers");
   const [homepageMode, setHomepageMode] = useState<string>("single");
   const [homepageTheme, setHomepageTheme] = useState<string>("azul");
   const [loginHeroUrl, setLoginHeroUrl] = useState<string>("");
@@ -397,6 +398,7 @@ export default function AdminPanel() {
     { key: "sellers" as const, label: "Vendedores", icon: Users },
     { key: "billing" as const, label: "Faturamento", icon: DollarSign },
     { key: "crm" as const, label: "CRM WhatsApp", icon: MessageCircle },
+    { key: "ads" as const, label: "CRM de ADS", icon: Megaphone },
     { key: "push" as const, label: "Push Broadcast", icon: Bell },
     { key: "seo" as const, label: "SEO / Sitemaps", icon: Globe },
     { key: "vendas" as const, label: "Página de Vendas", icon: Rocket },
@@ -1207,6 +1209,11 @@ export default function AdminPanel() {
       {/* Site Tab */}
       {tab === "site" && (
         <AdminSiteTab />
+      )}
+
+      {/* ADS CRM Tab */}
+      {tab === "ads" && (
+        <AdminAdsCrmTab />
       )}
 
         </main>

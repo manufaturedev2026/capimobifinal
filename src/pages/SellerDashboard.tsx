@@ -6,7 +6,7 @@ import { getStoreTheme } from "@/components/StoreThemePicker";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Package, Eye, Plus, Settings, Edit, Trash2, Copy, ToggleLeft, ToggleRight, Search, Image, LogOut, BarChart3, Star, Crown, Zap, AlertTriangle, Shield, MessageCircle, Home, UserCircle, Headphones, Globe, ExternalLink, CheckCircle2, ClipboardCopy, Lock, Clapperboard, Menu, X, Building2, Users, BadgeCheck, GripVertical, ChevronRight, Sparkles, FileText, Magnet, Camera, Bell, Download, Calculator, Palette, Handshake } from "lucide-react";
+import { Package, Eye, Plus, Settings, Edit, Trash2, Copy, ToggleLeft, ToggleRight, Search, Image, LogOut, BarChart3, Star, Crown, Zap, AlertTriangle, Shield, MessageCircle, Home, UserCircle, Headphones, Globe, ExternalLink, CheckCircle2, ClipboardCopy, Lock, Clapperboard, Menu, X, Building2, Users, BadgeCheck, GripVertical, ChevronRight, Sparkles, FileText, Magnet, Camera, Bell, Download, Calculator, Palette, Handshake, Megaphone } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import SoldCountdown from "@/components/SoldCountdown";
 import TeamMembersTab from "@/components/TeamMembersTab";
@@ -22,6 +22,7 @@ import StoriesTab from "@/components/StoriesTab";
 import NotificationsTab from "@/components/NotificationsTab";
 import ProfitCalculatorTab from "@/components/ProfitCalculatorTab";
 import PartnerBrokerTab from "@/components/PartnerBrokerTab";
+import SellerAdsTab from "@/components/SellerAdsTab";
 import PartnerAgencyTab from "@/components/PartnerAgencyTab";
 import { lazy, Suspense } from "react";
 const SellerCustomization = lazy(() => import("@/pages/SellerCustomization"));
@@ -53,7 +54,7 @@ type SellerItem = {
   sold_at: string | null;
 };
 
-type DashboardTab = "overview" | "items" | "stats" | "domain" | "team" | "events" | "referral" | "crm" | "gallery" | "rentals" | "contracts" | "captacao" | "stories" | "notifications" | "profit" | "customization" | "profile" | "partner";
+type DashboardTab = "overview" | "items" | "stats" | "domain" | "team" | "events" | "referral" | "crm" | "gallery" | "rentals" | "contracts" | "captacao" | "stories" | "notifications" | "profit" | "customization" | "profile" | "partner" | "ads";
 
 export default function SellerDashboard() {
   const { user, profile, signOut, refreshProfile, loading: authLoading } = useAuth();
@@ -305,6 +306,7 @@ export default function SellerDashboard() {
     { id: "profit" as DashboardTab, label: "Calculadora de Lucro", icon: Calculator },
     { id: "domain", label: "Meu Domínio", icon: Globe, locked: lockedTabs.includes("domain") },
     ...(showTeamTab ? [{ id: "team" as DashboardTab, label: "Corretores", icon: Users }] : []),
+    { id: "ads" as DashboardTab, label: "Fazer ADS", icon: Megaphone },
     { id: "partner" as DashboardTab, label: "Parceiro", icon: Handshake },
   ];
 
@@ -1091,6 +1093,10 @@ export default function SellerDashboard() {
                 userId={user!.id}
                 maxMembers={maxTeamMembers}
               />
+            )}
+
+            {activeTab === "ads" && profile?.id && (
+              <SellerAdsTab profileId={profile.id} userId={user!.id} />
             )}
 
             {activeTab === "partner" && profile?.id && (
