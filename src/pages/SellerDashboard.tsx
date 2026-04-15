@@ -1095,6 +1095,10 @@ export default function SellerDashboard() {
               />
             )}
 
+            {activeTab === "ads" && profile?.id && (
+              <SellerAdsTab profileId={profile.id} userId={user!.id} />
+            )}
+
             {activeTab === "partner" && profile?.id && (
               isImobiliaria ? (
                 <PartnerAgencyTab profileId={profile.id} userId={user!.id} />
