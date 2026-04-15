@@ -33,6 +33,7 @@ export interface InviteChatConfig {
   ctaText: string;
   ctaUrl: string;
   ctaType: "internal" | "whatsapp" | "whatsapp_group" | "url" | "crm";
+  crmRedirectUrl: string;
   chatMode: "flow" | "ai";
   flow: FlowStep[];
 }
@@ -43,6 +44,7 @@ export const DEFAULT_CONFIG: InviteChatConfig = {
   ctaText: "🚀 Criar Minha Conta Grátis",
   ctaUrl: "/login",
   ctaType: "internal",
+  crmRedirectUrl: "",
   chatMode: "flow",
   flow: [
     {
