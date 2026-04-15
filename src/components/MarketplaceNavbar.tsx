@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Menu, LayoutDashboard, LogIn, Megaphone, Search } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { MarketplaceTheme } from "@/lib/marketplaceThemes";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 interface Props {
   theme: MarketplaceTheme;
@@ -14,6 +15,7 @@ interface Props {
 export default function MarketplaceNavbar({ theme, user, showImoveisScroll = true }: Props) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { primary: PRIMARY, darkBase: DARK_BASE, cardBg: CARD_BG, border: BORDER, text: TEXT, textMuted: TEXT_MUTED, promoAccent: ACCENT } = theme;
+  const { site_name, site_logo_url } = useSiteSettings();
 
   return (
     <nav
@@ -21,8 +23,14 @@ export default function MarketplaceNavbar({ theme, user, showImoveisScroll = tru
       style={{ background: `${DARK_BASE}ee` }}
     >
       <div className="max-w-6xl mx-auto px-4 flex items-center justify-between h-14">
-        <Link to="/" className="font-display font-bold text-lg" style={{ color: TEXT }}>
-          <span style={{ color: PRIMARY }}>Cap</span><span style={{ color: '#ffffff' }}>i</span><span style={{ color: ACCENT || '#D4708F' }}>mobi</span>
+        <Link to="/" className="font-display font-bold text-lg flex items-center gap-2" style={{ color: TEXT }}>
+          {site_logo_url ? (
+            <img src={site_logo_url} alt={site_name} className="h-8 max-w-[140px] object-contain" />
+          ) : (
+            <>
+              <span style={{ color: PRIMARY }}>Cap</span><span style={{ color: '#ffffff' }}>i</span><span style={{ color: ACCENT || '#D4708F' }}>mobi</span>
+            </>
+          )}
         </Link>
 
         {/* Desktop links */}

@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Home, Key, Plus, Package, Search, LogIn, LayoutDashboard, ShieldCheck, FileText } from "lucide-react";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 interface FooterSimpleProps {
   theme?: {
@@ -36,6 +37,7 @@ export default function FooterSimple({ theme }: FooterSimpleProps) {
 }
 
 function FooterContent({ theme }: { theme?: FooterSimpleProps["theme"] }) {
+  const { site_name, site_logo_url, site_footer_text } = useSiteSettings();
   const textClass = theme ? "" : "text-foreground";
   const mutedClass = theme ? "" : "text-muted-foreground";
   const borderClass = theme ? "" : "border-border";
@@ -53,15 +55,21 @@ function FooterContent({ theme }: { theme?: FooterSimpleProps["theme"] }) {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
         <div className="col-span-2 md:col-span-1">
           <Link to="/" className="flex items-center gap-2.5 mb-3">
-            <img src="/pwa-icon-512.png" alt="Capimobi" className="w-9 h-9 rounded-xl shadow-md object-contain" />
-            <span className="text-lg tracking-wide uppercase" style={{ fontFamily: "'Orbitron', sans-serif", fontWeight: 800 }}>
-              <span style={primaryStyle} className={primaryClass}>Cap</span>
-              <span style={{ color: '#ffffff' }}>i</span>
-              <span style={accentStyle} className={accentClass}>mobi</span>
-            </span>
+            {site_logo_url ? (
+              <img src={site_logo_url} alt={site_name} className="h-9 max-w-[140px] object-contain" />
+            ) : (
+              <>
+                <img src="/pwa-icon-512.png" alt={site_name} className="w-9 h-9 rounded-xl shadow-md object-contain" />
+                <span className="text-lg tracking-wide uppercase" style={{ fontFamily: "'Orbitron', sans-serif", fontWeight: 800 }}>
+                  <span style={primaryStyle} className={primaryClass}>Cap</span>
+                  <span style={{ color: '#ffffff' }}>i</span>
+                  <span style={accentStyle} className={accentClass}>mobi</span>
+                </span>
+              </>
+            )}
           </Link>
           <p className={`text-xs leading-relaxed max-w-xs ${mutedClass}`} style={mutedStyle}>
-            Crie seu próprio app de imóveis. Perfeito para corretores, imobiliárias e construtoras.
+            {site_footer_text || "Crie seu próprio app de imóveis. Perfeito para corretores, imobiliárias e construtoras."}
           </p>
         </div>
 
@@ -107,7 +115,7 @@ function FooterContent({ theme }: { theme?: FooterSimpleProps["theme"] }) {
 
       <div className={`border-t mt-8 pt-6 flex flex-col items-center gap-2 text-center ${borderClass}`} style={borderStyle}>
         <p className={`text-xs ${mutedClass}`} style={mutedStyle}>
-          © {new Date().getFullYear()} Capimobi · Brasil
+          © {new Date().getFullYear()} {site_name} · Brasil
         </p>
       </div>
     </>
