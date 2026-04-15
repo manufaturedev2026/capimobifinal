@@ -1,15 +1,16 @@
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   Instagram, Smartphone, Globe, Sparkles, ArrowRight, Star, Zap, Shield,
-  Layout, Palette, BarChart3, Share2, ChevronRight, Check, Crown, Eye, MessageCircle,
-  Download, Layers, Users, Building2, Briefcase, AppWindow, Rocket, Heart,
+  Layout, Palette, BarChart3, Share2, ChevronRight, ChevronLeft, Check, Crown, Eye, MessageCircle,
+  Download, Layers, Users, Building2, Briefcase, AppWindow, Rocket, Heart, Clapperboard, MapPin,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 
 import storePreviewApartment from "@/assets/store-preview-apartment.jpg";
 import storePreviewHouse from "@/assets/store-preview-house.jpg";
