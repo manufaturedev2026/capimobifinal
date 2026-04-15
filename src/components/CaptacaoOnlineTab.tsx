@@ -109,20 +109,28 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
   };
 
   const generateAdText = () => {
-    const text = `🏠 **${sellerName}** — Corretor de Imóveis
+    const text = `🏡 Quer vender ou alugar seu imóvel MAIS RÁPIDO e pelo melhor valor?
 
-📢 Está pensando em vender ou alugar seu imóvel?
+Eu posso te ajudar 👇
 
-✅ Cadastre GRÁTIS e receba propostas reais!
-✅ Avaliação gratuita do seu imóvel
-✅ Divulgação profissional em múltiplas plataformas
-✅ Atendimento personalizado
+🚀 Cadastre seu imóvel 100% GRÁTIS e receba propostas reais de compradores interessados!
 
-👉 Cadastre agora: ${captureUrl}
+✨ O que você ganha:
+✔ Avaliação profissional do seu imóvel
+✔ Divulgação em vários sites e redes sociais
+✔ Atendimento rápido e personalizado
+✔ Estratégia para vender ou alugar mais rápido
 
-📞 Fale comigo pelo WhatsApp para mais informações!
+💰 Sem burocracia. Sem complicação. Mais resultado!
 
-#imoveis #venda #aluguel #corretor #oportunidade`;
+👉 Cadastre agora:
+${captureUrl}
+
+📲 Clique no link ou fale comigo no WhatsApp!
+
+⚠️ Vagas limitadas para novos imóveis essa semana
+
+#imoveis #venderimovel #aluguel #corretordeimoveis #oportunidade #mercadoimobiliario`;
     setGeneratedAd(text);
   };
 
