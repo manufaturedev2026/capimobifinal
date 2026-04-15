@@ -205,6 +205,32 @@ export default function AdminInviteTab() {
         </div>
       </div>
 
+      {/* Template Picker */}
+      <div className="bg-card border border-border rounded-xl p-4 space-y-3">
+        <h3 className="text-sm font-semibold flex items-center gap-2 text-foreground">
+          📋 Templates Prontos
+        </h3>
+        <p className="text-xs text-muted-foreground">Escolha um template como base e personalize as mensagens abaixo.</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          {Object.entries(TEMPLATES).map(([key, tpl]) => (
+            <button
+              key={key}
+              onClick={() => {
+                setMessages(tpl.messages);
+                toast({ title: `Template "${tpl.label}" carregado!`, description: "Personalize e salve." });
+              }}
+              className="flex items-start gap-3 p-3 rounded-xl border border-border bg-background hover:border-primary/40 hover:bg-primary/5 transition-all text-left"
+            >
+              <span className="text-xl">{tpl.emoji}</span>
+              <div>
+                <p className="text-sm font-semibold text-foreground">{tpl.label}</p>
+                <p className="text-xs text-muted-foreground mt-0.5">{tpl.description}</p>
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Attendant config */}
       <div className="bg-card border border-border rounded-xl p-4 space-y-3">
         <h3 className="text-sm font-semibold flex items-center gap-2 text-foreground">
