@@ -15,13 +15,29 @@ const SITE_KEYS = [
 
 type SiteSettings = Record<(typeof SITE_KEYS)[number], string>;
 
+const DEFAULT_FOOTER = "Crie seu próprio app de imóveis. Perfeito para corretores, imobiliárias e construtoras.";
+
+const DEFAULT_TERMS = `<section><h2>1. Aceitação dos Termos</h2><p>Ao acessar ou utilizar a plataforma, você concorda com estes Termos de Uso. Caso não concorde, não utilize a plataforma.</p></section>
+<section><h2>2. Descrição do Serviço</h2><p>A plataforma conecta vendedores e compradores de imóveis em todo o Brasil. Atuamos como intermediários, fornecendo a plataforma para publicação e busca de anúncios.</p></section>
+<section><h2>3. Cadastro e Conta</h2><ul><li>Para anunciar, é necessário criar uma conta com informações verdadeiras</li><li>Você é responsável por manter a segurança de sua conta e senha</li><li>Cada pessoa/empresa pode ter apenas uma conta ativa</li><li>Menores de 18 anos não podem utilizar a plataforma</li></ul></section>
+<section><h2>4. Regras de Publicação</h2><ul><li>Os anúncios devem conter informações verídicas e atualizadas</li><li>É proibido anunciar itens ilegais, roubados ou com restrições judiciais</li><li>Fotos devem ser reais e do produto/imóvel anunciado</li><li>Reservamo-nos o direito de remover anúncios que violem estas regras</li></ul></section>
+<section><h2>5. Planos e Pagamentos</h2><ul><li>A plataforma oferece planos gratuitos e pagos para anunciantes</li><li>Pagamentos são processados conforme acordado com o gerente de conta</li><li>Não há reembolso após a ativação do plano</li></ul></section>
+<section><h2>6. Responsabilidades</h2><p>A plataforma não se responsabiliza por negociações entre compradores e vendedores, veracidade das informações fornecidas, ou problemas decorrentes de transações financeiras entre as partes.</p></section>
+<section><h2>7. Legislação Aplicável</h2><p>Estes termos são regidos pelas leis da República Federativa do Brasil, em especial o Código de Defesa do Consumidor, o Marco Civil da Internet e a LGPD.</p></section>`;
+
+const DEFAULT_PRIVACY = `<section><h2>1. Introdução</h2><p>Esta política descreve como coletamos, usamos e protegemos suas informações pessoais quando você utiliza nosso marketplace de imóveis.</p></section>
+<section><h2>2. Dados que Coletamos</h2><ul><li>Nome completo e e-mail ao criar uma conta</li><li>Telefone (opcional) para contato via WhatsApp</li><li>Informações de anúncios publicados</li><li>Dados de navegação (cookies, endereço IP)</li><li>Localização aproximada para exibição de anúncios regionais</li></ul></section>
+<section><h2>3. Como Usamos seus Dados</h2><ul><li>Fornecer e manter nossos serviços</li><li>Permitir publicação e busca de anúncios</li><li>Enviar notificações sobre sua conta</li><li>Melhorar a experiência do usuário</li></ul></section>
+<section><h2>4. Compartilhamento de Dados</h2><p>Não vendemos seus dados pessoais. Podemos compartilhar informações com provedores de infraestrutura, serviços de análise (de forma anonimizada), e autoridades legais quando exigido por lei.</p></section>
+<section><h2>5. Seus Direitos (LGPD)</h2><ul><li>Acessar seus dados pessoais</li><li>Corrigir dados incompletos ou desatualizados</li><li>Solicitar a exclusão dos seus dados</li><li>Revogar consentimento a qualquer momento</li><li>Solicitar a portabilidade dos dados</li></ul></section>`;
+
 const DEFAULTS: SiteSettings = {
   site_name: "Capimobi",
   site_logo_url: "",
   site_favicon_url: "",
-  site_footer_text: "",
-  site_terms_html: "",
-  site_privacy_html: "",
+  site_footer_text: DEFAULT_FOOTER,
+  site_terms_html: DEFAULT_TERMS,
+  site_privacy_html: DEFAULT_PRIVACY,
 };
 
 export default function AdminSiteTab() {
