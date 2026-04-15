@@ -37,6 +37,7 @@ import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, 
 import gabrielImg from "@/assets/gabriel-gerente.jpg";
 import PwaInstallGuide from "@/components/PwaInstallGuide";
 import { usePwaInstall } from "@/hooks/usePwaInstall";
+import OnboardingTour from "@/components/OnboardingTour";
 import { usePushSubscription } from "@/hooks/usePushSubscription";
 
 type SellerItem = {
