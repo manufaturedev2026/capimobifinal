@@ -111,7 +111,12 @@ export default function SellerAdsTab({ profileId, userId }: SellerAdsTabProps) {
         tax_amount: taxAmount,
         total,
         item_id: selectedItemId,
-        details: details.trim() || null,
+        details: [
+          `Público: ${targetGender === "todos" ? "Todos" : targetGender === "masculino" ? "Masculino" : "Feminino"}`,
+          `Idade: ${targetAgeMin}-${targetAgeMax} anos`,
+          `Cidades: ${targetCities.trim() || "Não informado"}`,
+          details.trim() ? `Obs: ${details.trim()}` : "",
+        ].filter(Boolean).join(" | "),
       } as any);
       if (error) throw error;
 
