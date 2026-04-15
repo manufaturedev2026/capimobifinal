@@ -73,6 +73,7 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
   const tierLevel = TIER_ORDER.indexOf(currentTier);
   const hasLandingPage = tierLevel >= 1; // Start+
   const hasBot = tierLevel >= 2; // VIP+
+  const hasBotAI = tierLevel >= 3; // Premium+
   const { toast } = useToast();
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
