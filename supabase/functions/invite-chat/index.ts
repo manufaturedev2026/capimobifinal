@@ -29,7 +29,7 @@ FUNCIONALIDADES DA CAPIMOBI (use apenas estas):
 - Analytics de visitas
 - QR Code personalizado
 - Compartilhamento por WhatsApp
-- Cadastro gratuito. Se quiser turbinar, temos planos a partir de R$0/mês! 💎
+- Se quiser turbinar, temos planos pagos porem você pode começar gratuitamente a partir de R$0/mês! 💎
 
 FLUXO IDEAL:
 1. Peça o nome
