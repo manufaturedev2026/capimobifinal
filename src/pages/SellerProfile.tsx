@@ -38,6 +38,7 @@ export default function SellerProfile({ embedded }: { embedded?: boolean }) {
     cnpj: "",
     slug: "",
     show_floating_whatsapp: false,
+    open_for_partnerships: true,
   });
   const { cities: ibgeCities, loading: citiesLoading } = useCitiesByState(form.state);
   const [slugError, setSlugError] = useState("");
@@ -66,6 +67,7 @@ export default function SellerProfile({ embedded }: { embedded?: boolean }) {
         cnpj: (profile as any).cnpj || "",
         slug: (profile as any).slug || "",
         show_floating_whatsapp: (profile as any).show_floating_whatsapp ?? false,
+        open_for_partnerships: (profile as any).open_for_partnerships ?? true,
       });
     }
   }, [profile]);
@@ -341,6 +343,12 @@ export default function SellerProfile({ embedded }: { embedded?: boolean }) {
           <input type="checkbox" checked={form.show_floating_whatsapp} onChange={(e) => setForm((f) => ({ ...f, show_floating_whatsapp: e.target.checked }))} className="w-5 h-5 rounded border-input text-primary focus:ring-ring accent-primary cursor-pointer" />
           <span className="text-sm text-foreground">Mostrar botão flutuante do WhatsApp na loja</span>
         </label>
+        {(form.seller_category === "imobiliaria" || form.seller_category === "construtora") && (
+          <label className="flex items-center gap-3 cursor-pointer select-none">
+            <input type="checkbox" checked={form.open_for_partnerships} onChange={(e) => setForm((f) => ({ ...f, open_for_partnerships: e.target.checked }))} className="w-5 h-5 rounded border-input text-primary focus:ring-ring accent-primary cursor-pointer" />
+            <span className="text-sm text-foreground">Aparecer como disponível para parcerias com corretores</span>
+          </label>
+        )}
       </div>
     </>
   );
