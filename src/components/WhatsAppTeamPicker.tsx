@@ -39,7 +39,23 @@ export function useWhatsAppPicker() {
 
 // Cache team members per seller to avoid repeated fetches
 const teamCache = new Map<string, { members: TeamMember[]; ts: number }>();
+const whatsappModeCache = new Map<string, { mode: string; ts: number }>();
 const CACHE_TTL = 60_000; // 1 minute
+
+async function fetchWhatsAppMode(sellerId: string): Promise<string> {
+  const cached = whatsappModeCache.get(sellerId);
+  if (cached && Date.now() - cached.ts < CACHE_TTL) return cached.mode;
+
+  const { data } = await supabase
+    .from("profiles")
+    .select("whatsapp_mode")
+    .eq("id", sellerId)
+    .single();
+
+  const mode = (data as any)?.whatsapp_mode || "team";
+  whatsappModeCache.set(sellerId, { mode, ts: Date.now() });
+  return mode;
+}
 
 async function fetchTeamMembers(sellerId: string): Promise<TeamMember[]> {
   const cached = teamCache.get(sellerId);
@@ -84,6 +100,15 @@ export function WhatsAppTeamPickerProvider({ children }: { children: React.React
     title: string;
     link?: string;
   }) => {
+    const link = params.link || window.location.href;
+    const mode = await fetchWhatsAppMode(params.sellerId);
+
+    // If agency chose "direct", skip team picker
+    if (mode === "direct") {
+      sendToWhatsApp(params.sellerPhone, params.sellerName, params.title, link);
+      return;
+    }
+
     const teamMembers = await fetchTeamMembers(params.sellerId);
 
     if (teamMembers.length > 0) {
@@ -93,11 +118,11 @@ export function WhatsAppTeamPickerProvider({ children }: { children: React.React
         sellerName: params.sellerName,
         sellerPhone: params.sellerPhone,
         title: params.title,
-        link: params.link || window.location.href,
+        link,
       });
       setShowPicker(true);
     } else {
-      sendToWhatsApp(params.sellerPhone, params.sellerName, params.title, params.link || window.location.href);
+      sendToWhatsApp(params.sellerPhone, params.sellerName, params.title, link);
     }
   }, []);
 
