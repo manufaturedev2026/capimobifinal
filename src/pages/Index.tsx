@@ -115,6 +115,42 @@ export default function Index() {
   const { user } = useAuth();
   const [activeScreen, setActiveScreen] = useState(0);
   const [phoneScreen, setPhoneScreen] = useState(0);
+  const [cinemaMode, setCinemaMode] = useState<number | null>(null);
+  const [cinemaItems, setCinemaItems] = useState<any[]>([]);
+
+  const selectedCity = typeof window !== "undefined" ? localStorage.getItem("selectedCity") || "" : "";
+
+  // Fetch properties for cinema mode
+  useEffect(() => {
+    const fetchCinemaItems = async () => {
+      let query = supabase
+        .from("seller_items")
+        .select("id, title, slug, price, city, state, photos, bedrooms, bathrooms, area, seller_id, finality")
+        .eq("status", "ativo")
+        .not("photos", "is", null)
+        .limit(30);
+      if (selectedCity) query = query.ilike("city", `%${selectedCity}%`);
+      const { data } = await query;
+      const items = (data || []).filter((i: any) => i.photos?.length > 0);
+      // Shuffle
+      for (let i = items.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [items[i], items[j]] = [items[j], items[i]];
+      }
+      setCinemaItems(items);
+    };
+    fetchCinemaItems();
+  }, [selectedCity]);
+
+  // Fullscreen for cinema mode
+  useEffect(() => {
+    if (cinemaMode !== null) {
+      const el = document.documentElement;
+      if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
+    } else {
+      if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+    }
+  }, [cinemaMode]);
 
   useEffect(() => {
     const interval = setInterval(() => {
