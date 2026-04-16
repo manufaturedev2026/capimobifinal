@@ -61,6 +61,7 @@ export default function InvitePage() {
           if (parsed.ctaType) cfg.ctaType = parsed.ctaType;
           if (parsed.chatMode) cfg.chatMode = parsed.chatMode;
           if (parsed.crmRedirectUrl !== undefined) cfg.crmRedirectUrl = parsed.crmRedirectUrl;
+          if (parsed.crmButtonText) cfg.crmButtonText = parsed.crmButtonText;
           if (parsed.flow?.length) cfg.flow = parsed.flow;
         } catch {}
       }
@@ -372,21 +373,19 @@ export default function InvitePage() {
                 </div>
                 <p className="text-[#075e54] font-semibold text-center">Dados enviados com sucesso!</p>
                 <p className="text-[#667781] text-xs text-center">Em breve entraremos em contato pelo WhatsApp 📱</p>
-                {config.crmRedirectUrl && (
-                  <Button
-                    onClick={() => {
-                      const url = config.crmRedirectUrl;
-                      if (url.startsWith("/")) {
-                        navigate(url);
-                      } else {
-                        window.open(url, "_blank", "noopener");
-                      }
-                    }}
-                    className="mt-2 bg-[#075e54] hover:bg-[#064e46] text-white font-bold rounded-full px-6 py-5"
-                  >
-                    {config.crmRedirectUrl.includes("wa.me") ? "💬 Chamar no WhatsApp" : "🔗 Continuar"}
-                  </Button>
-                )}
+                <Button
+                  onClick={() => {
+                    const url = config.crmRedirectUrl || "/login";
+                    if (url.startsWith("/")) {
+                      navigate(url);
+                    } else {
+                      window.open(url, "_blank", "noopener");
+                    }
+                  }}
+                  className="mt-2 bg-[#25d366] hover:bg-[#22c55e] text-white font-bold rounded-full px-6 py-5 animate-pulse"
+                >
+                  {config.crmButtonText || "🚀 Criar Minha Conta Agora"}
+                </Button>
               </motion.div>
             )}
             {showCta && config.ctaType !== "crm" && (
