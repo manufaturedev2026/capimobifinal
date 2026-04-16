@@ -47,7 +47,7 @@ const PROPERTY_TYPE_LABELS: Record<string, string> = {
   comercial: "Comercial", galpao: "Galpão", flat: "Flat", outros: "Outros",
 };
 
-type MainTab = "links" | "bot" | "leads";
+type MainTab = "links" | "bot" | "leads" | "gerador";
 type FlowType = "captacao" | "grupo_whatsapp" | "agendamento" | "avaliacao";
 type AdTemplate = { id: string; label: string; emoji: string; category: string; generate: (url: string, name: string) => string };
 
@@ -386,7 +386,8 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
 
   const TAB_CONFIG: { key: MainTab; label: string; icon: any; count?: number }[] = [
     { key: "leads", label: "Leads", icon: Inbox, count: counts.novo },
-    { key: "links", label: "Links & Marketing", icon: Link2 },
+    { key: "links", label: "Landing Page", icon: Link2 },
+    { key: "gerador", label: "Gerador de Texto", icon: Megaphone },
     { key: "bot", label: "Bot WhatsApp", icon: Bot },
   ];
 
