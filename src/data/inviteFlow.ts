@@ -27,7 +27,7 @@ export interface CtaStep extends StepBase {
 
 export type FlowStep = BotStep | InputStep | ChoiceStep | CtaStep;
 
-export type CtaType = "internal" | "whatsapp" | "whatsapp_group" | "url" | "crm";
+export type CtaType = "internal" | "whatsapp" | "whatsapp_group" | "url" | "crm" | "captacao_imobiliaria";
 
 export interface InviteChatConfig {
   attendantName: string;
@@ -176,12 +176,57 @@ const FLOW_URL: FlowStep[] = [
   { id: "cta", type: "cta" },
 ];
 
+const FLOW_CAPTACAO_IMOBILIARIA: FlowStep[] = [
+  ...SHARED_INTRO,
+  { id: "greet", type: "bot", messages: ["Prazer, {{nome}}! 😊", "Sou a Ana, consultora digital da Capimobi!", "Somos a plataforma nº1 para imobiliárias e construtoras criarem suas lojas online profissionais 🏢", "Posso te mostrar como funciona?"], next: "choice_profile" },
+  { id: "choice_profile", type: "choice", options: [
+    { label: "Sou Imobiliária 🏢", next: "path_imobiliaria" },
+    { label: "Sou Construtora 🏗️", next: "path_construtora" },
+    { label: "Sou Corretor(a) autônomo 🏠", next: "path_corretor" },
+  ]},
+  { id: "path_imobiliaria", type: "bot", messages: ["Perfeito, {{nome}}! A Capimobi foi feita especialmente para imobiliárias como a sua! 🚀", "Olha o que você ganha de cara:"], next: "benefits_empresa" },
+  { id: "path_construtora", type: "bot", messages: ["Excelente, {{nome}}! Trabalhamos com as melhores construtoras do mercado! 🏗️", "Veja como podemos impulsionar seus lançamentos:"], next: "benefits_empresa" },
+  { id: "path_corretor", type: "bot", messages: ["Ótimo, {{nome}}! Corretores autônomos são nossa especialidade! 💪", "Veja o que preparamos pra você:"], next: "benefits_corretor" },
+  { id: "benefits_empresa", type: "bot", messages: [
+    "🛍️ Loja online profissional com seu domínio\n👥 Lojas espelho individuais por corretor — 1 clique!\n📈 CRM de leads com funil Kanban completo\n🤖 Bot de captação inteligente via WhatsApp\n📊 Analytics de desempenho por corretor\n🎬 Stories profissionais automáticos",
+    "E o melhor: cada corretor da sua equipe ganha sua própria loja espelhada, com seus dados e contato direto! 🔥",
+    "Tudo isso conectado ao seu painel de gestão! 💎"
+  ], next: "choice_plano" },
+  { id: "benefits_corretor", type: "bot", messages: [
+    "🛍️ Loja online personalizada em minutos\n📈 CRM integrado com funil de vendas\n📱 Tudo pelo celular\n🔔 Notificações push para engajar visitantes\n📄 Propostas em PDF profissional\n🤖 Bot de captação WhatsApp",
+    "Você começa de graça e já sai vendendo! 🚀"
+  ], next: "choice_plano" },
+  { id: "choice_plano", type: "choice", options: [
+    { label: "Quanto custa? 💰", next: "pricing" },
+    { label: "Quero começar agora! 🚀", next: "collect_data" },
+    { label: "Como funciona a parceria? 🤝", next: "parceria" },
+  ]},
+  { id: "parceria", type: "bot", messages: [
+    "A parceria Capimobi funciona assim, {{nome}}: 🤝",
+    "✅ Cada corretor tem sua loja espelho com 1 clique\n✅ Os leads chegam direto no WhatsApp do corretor\n✅ Você vê tudo pelo painel: visitas, cliques, captação\n✅ Imóveis compartilhados entre a equipe\n✅ O plano gratuito já inclui tudo para começar!",
+    "Quer experimentar? É só deixar seus dados! 👇"
+  ], next: "collect_data" },
+  { id: "pricing", type: "bot", messages: [
+    "Os preços são imbatíveis, {{nome}}! 💎",
+    "🆓 Start (GRÁTIS): Loja completa + até 5 imóveis + CRM\n💼 Básico (R$29/mês): 15 imóveis + stories + todos layouts\n⭐ VIP (R$59/mês): Ilimitado + vídeo hero + bot captação\n👑 Premium (R$99/mês): Tudo + captação com IA",
+    "Para imobiliárias temos planos especiais com desconto! 🏢",
+    "Quer que um consultor te apresente o melhor plano?"
+  ], next: "choice_final" },
+  { id: "choice_final", type: "choice", options: [
+    { label: "Sim, quero falar com consultor! 📞", next: "collect_data" },
+    { label: "Quero criar minha conta grátis! 🚀", next: "collect_data" },
+  ]},
+  { id: "collect_data", type: "bot", messages: ["Ótimo, {{nome}}! 🎉", "Deixe seus dados abaixo e um consultor vai entrar em contato pelo WhatsApp para te ajudar pessoalmente! 👇"], next: "cta" },
+  { id: "cta", type: "cta" },
+];
+
 export const DEFAULT_FLOWS: Record<CtaType, FlowStep[]> = {
   internal: FLOW_INTERNAL,
   crm: FLOW_CRM,
   whatsapp: FLOW_WHATSAPP,
   whatsapp_group: FLOW_WHATSAPP_GROUP,
   url: FLOW_URL,
+  captacao_imobiliaria: FLOW_CAPTACAO_IMOBILIARIA,
 };
 
 export const DEFAULT_CONFIG: InviteChatConfig = {
@@ -243,4 +288,12 @@ export const STEP_NAMES: Record<string, string> = {
   present_offer: "Apresentar oferta",
   choice_access: "Acessar conteúdo",
   more_details: "Mais detalhes",
+  choice_profile: "Perfil do visitante",
+  path_imobiliaria: "Caminho: Imobiliária",
+  path_construtora: "Caminho: Construtora",
+  benefits_empresa: "Benefícios empresa",
+  benefits_corretor: "Benefícios corretor",
+  choice_plano: "Interesse em plano",
+  parceria: "Parceria e lojas espelho",
+  collect_data: "Coletar dados",
 };
