@@ -116,6 +116,9 @@ export default function LoginPage() {
               .maybeSingle();
 
             if (newProfile) {
+              // Save seller category
+              await supabase.from("profiles").update({ seller_category: sellerCategory }).eq("id", newProfile.id);
+
               if (trialDays === "7") {
                 await supabase.from("seller_subscriptions").insert({
                   user_id: newUser.id,
