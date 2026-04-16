@@ -180,12 +180,21 @@ export default function AdminInviteTab() {
           </button>
         </div>
         {config.chatMode === "ai" && (
-          <div className="bg-primary/5 border border-primary/20 rounded-lg p-3 text-xs text-foreground">
-            <p className="font-semibold mb-1">🤖 Modo IA ativado</p>
+          <div className="bg-primary/5 border border-primary/20 rounded-lg p-3 text-xs text-foreground space-y-2">
+            <p className="font-semibold">🤖 Modo IA ativado</p>
             <p className="text-muted-foreground">
-              A IA conversa livremente com o visitante, pede o nome, apresenta os benefícios e guia até o CTA. 
-              O editor de fluxo abaixo fica desativado neste modo.
+              A IA conversa livremente com o visitante e adapta sua estratégia de acordo com o tipo de CTA configurado abaixo.
+              O editor de fluxo fica desativado neste modo.
             </p>
+            {/* Strategy preview per CTA type */}
+            <div className="mt-2 p-2.5 rounded-lg bg-background/80 border border-border">
+              <p className="font-semibold text-[11px] uppercase tracking-wider text-muted-foreground mb-1.5">
+                Estratégia IA ativa: {AI_STRATEGY_INFO[config.ctaType]?.title || "Padrão"}
+              </p>
+              <p className="text-muted-foreground leading-relaxed">
+                {AI_STRATEGY_INFO[config.ctaType]?.description || "Estratégia padrão de cadastro."}
+              </p>
+            </div>
           </div>
         )}
       </div>
