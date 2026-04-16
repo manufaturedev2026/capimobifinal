@@ -313,13 +313,13 @@ export default function PartnerBrokerTab({ profileId, userId }: { profileId: str
                           <Phone size={14} className="mr-1.5" /> WhatsApp
                         </Button>
                       )}
-                      <Button size="sm" variant="secondary" className="h-9 text-xs" asChild>
+                      <Button size="sm" variant="outline" className="h-9 text-xs border-border text-foreground hover:bg-secondary" asChild>
                         <a href={storeUrl} target="_blank" rel="noopener noreferrer">
                           <Globe size={14} className="mr-1.5" /> Ver Loja
                         </a>
                       </Button>
                       {agency.instagram && (
-                      <Button size="sm" variant="secondary" className="h-9 text-xs" asChild>
+                      <Button size="sm" variant="outline" className="h-9 text-xs border-border text-foreground hover:bg-secondary" asChild>
                           <a href={`https://instagram.com/${agency.instagram.replace("@", "")}`} target="_blank" rel="noopener noreferrer">
                             @ Instagram
                           </a>
@@ -341,7 +341,7 @@ export default function PartnerBrokerTab({ profileId, userId }: { profileId: str
                           <Button
                             size="sm"
                             variant="outline"
-                            className="h-7 px-2 text-xs shrink-0"
+                            className="h-7 px-2 text-xs shrink-0 border-border text-foreground hover:bg-secondary"
                             onClick={() => {
                               navigator.clipboard.writeText(`${window.location.origin}${req.mirrorLink}`);
                               toast({ title: "Link copiado! 📋" });
@@ -349,7 +349,7 @@ export default function PartnerBrokerTab({ profileId, userId }: { profileId: str
                           >
                             <Copy size={12} className="mr-1" /> Copiar
                           </Button>
-                          <Button size="sm" variant="outline" className="h-7 px-2 shrink-0" asChild>
+                          <Button size="sm" variant="outline" className="h-7 px-2 shrink-0 border-border text-foreground hover:bg-secondary" asChild>
                             <a href={req.mirrorLink} target="_blank" rel="noopener noreferrer">
                               <ExternalLink size={12} />
                             </a>
