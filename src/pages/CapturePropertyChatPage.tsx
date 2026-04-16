@@ -29,6 +29,15 @@ const DEFAULT_CONFIG: BotConfig = {
   attendantAvatar: "",
   openingMessage: "Olá! 👋 Vou te ajudar a cadastrar seu imóvel para avaliação gratuita! É rápido e sem compromisso 🏡",
   chatMode: "flow",
+  flowMsgName: "Vamos começar? Me diz o seu nome completo 😊",
+  flowMsgNameReply: "Prazer, {nome}! 🤝",
+  flowMsgPhone: "Qual seu telefone ou WhatsApp? 📱",
+  flowMsgType: "Perfeito! Agora me diz: qual o tipo do imóvel? 🏠",
+  flowMsgAddress: "Ótimo! Qual o endereço ou localização do imóvel? 📍",
+  flowMsgPrice: "Tem um valor em mente para o imóvel? 💰\n\n(Se não tiver, pode digitar 0 ou pular)",
+  flowMsgNotes: "Alguma observação sobre o imóvel? 📝\n\n(Opcional - pode enviar vazio para pular)",
+  flowMsgSuccess: "✅ Pronto! Suas informações foram enviadas com sucesso!",
+  flowMsgSuccessEnd: "Em breve um corretor vai entrar em contato com você pelo WhatsApp. Obrigado! 🎉",
 };
 
 type Step = "opening" | "name" | "phone" | "type" | "address" | "price" | "notes" | "done";
