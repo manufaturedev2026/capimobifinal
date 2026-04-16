@@ -46,8 +46,10 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
   const [subTab, setSubTab] = useState<SubTab>("meus");
   const [availableItems, setAvailableItems] = useState<(PartnershipItem & { seller: SellerProfile | null })[]>([]);
   const [myRequests, setMyRequests] = useState<(PartnershipRequest & { item: PartnershipItem | null; owner: SellerProfile | null })[]>([]);
+  const [myItems, setMyItems] = useState<PartnershipItem[]>([]);
   const [receivedRequests, setReceivedRequests] = useState<(PartnershipRequest & { item: PartnershipItem | null; requester: SellerProfile | null })[]>([]);
   const [loading, setLoading] = useState(true);
+  const [savingId, setSavingId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
@@ -56,8 +58,18 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
 
   const loadData = async () => {
     setLoading(true);
-    await Promise.all([loadAvailable(), loadMyRequests(), loadReceivedRequests()]);
+    await Promise.all([loadMyItems(), loadAvailable(), loadMyRequests(), loadReceivedRequests()]);
     setLoading(false);
+  };
+
+  const loadMyItems = async () => {
+    const { data } = await supabase
+      .from("seller_items")
+      .select("id, title, price, photos, city, finality, commission_percent, partner_percent, partnership_enabled, seller_id, user_id, category")
+      .eq("user_id", userId)
+      .eq("status", "ativo")
+      .order("created_at", { ascending: false });
+    setMyItems(data || []);
   };
 
   const loadAvailable = async () => {
