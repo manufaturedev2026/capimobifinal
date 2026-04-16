@@ -317,15 +317,18 @@ export default function AdminInviteTab() {
       {/* Flow editor */}
       <div className="bg-card border border-border rounded-xl p-4 space-y-3">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-semibold text-foreground">🔀 Fluxo da Conversa</h3>
+          <h3 className="text-sm font-semibold text-foreground">🔀 Fluxo da Conversa — {
+            { internal: "📱 Cadastro", crm: "📋 CRM", whatsapp: "💬 WhatsApp", whatsapp_group: "👥 Grupo", url: "🔗 URL" }[config.ctaType]
+          }</h3>
           <Button variant="ghost" size="sm" onClick={resetToDefault} className="text-xs text-muted-foreground">Restaurar padrão</Button>
         </div>
         <p className="text-xs text-muted-foreground">
-          Use <code className="bg-muted px-1 rounded">{"{{nome}}"}</code> para inserir o nome do visitante. Clique em cada etapa para editar.
+          Cada tipo de CTA tem seu próprio fluxo de conversa. Altere o Botão Final (CTA) acima para editar outro fluxo.
+          Use <code className="bg-muted px-1 rounded">{"{{nome}}"}</code> para inserir o nome do visitante.
         </p>
 
         <div className="space-y-2 max-h-[60vh] overflow-y-auto pr-1">
-          {config.flow.map((step) => {
+          {activeFlow.map((step) => {
             const meta = STEP_TYPE_LABELS[step.type] || { emoji: "❓", label: step.type };
             const name = STEP_NAMES[step.id] || step.id;
             const isOpen = openSteps.has(step.id);
