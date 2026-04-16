@@ -25,6 +25,7 @@ export default function AuthPage() {
   const [loading, setLoading] = useState(false);
   const [selectedState, setSelectedState] = useState("ES");
   const [selectedCity, setSelectedCity] = useState("");
+  const [sellerCategory, setSellerCategory] = useState<"corretor" | "imobiliaria" | "construtora">("corretor");
   const { cities: stateCities, loading: loadingCities } = useCitiesByState(selectedState);
   const { user, profile, signIn, signUp } = useAuth();
   const navigate = useNavigate();
