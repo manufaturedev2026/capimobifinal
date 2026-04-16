@@ -297,7 +297,7 @@ export default function InvitePage() {
         <link rel="canonical" href={`${SITE_URL}/convite`} />
       </Helmet>
 
-      <div className="min-h-screen flex flex-col" style={{ background: "#e5ddd5" }}>
+      <div className="flex flex-col overflow-hidden" style={{ background: "#e5ddd5", height: "100dvh", maxHeight: "100dvh" }}>
         <div className="sticky top-0 z-50 flex items-center gap-3 px-3 py-2" style={{ background: "#075e54" }}>
           <button onClick={() => navigate(-1)} className="text-white/80 hover:text-white"><ArrowLeft size={22} /></button>
           <div className="w-10 h-10 rounded-full bg-[#128c7e] flex items-center justify-center text-white font-bold text-lg overflow-hidden shrink-0">
