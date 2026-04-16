@@ -13,6 +13,15 @@ interface BotConfig {
   attendantAvatar: string;
   openingMessage: string;
   chatMode: "flow" | "ai";
+  flowMsgName: string;
+  flowMsgNameReply: string;
+  flowMsgPhone: string;
+  flowMsgType: string;
+  flowMsgAddress: string;
+  flowMsgPrice: string;
+  flowMsgNotes: string;
+  flowMsgSuccess: string;
+  flowMsgSuccessEnd: string;
 }
 
 const DEFAULT_CONFIG: BotConfig = {
