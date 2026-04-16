@@ -82,6 +82,7 @@ export default function SellerDashboard() {
   const pushSub = usePushSubscription(profile?.id);
   const [newCaptureCount, setNewCaptureCount] = useState(0);
   const [newCrmCount, setNewCrmCount] = useState(0);
+  const [newPartnershipCount, setNewPartnershipCount] = useState(0);
 
   // Fetch new capture leads count + new CRM contacts count
   useEffect(() => {
