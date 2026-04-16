@@ -212,6 +212,31 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
               </Select>
             </div>
 
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium">Estado (UF)</Label>
+                <Select value={filterState} onValueChange={setFilterState}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-60">
+                    <SelectItem value="all">Todos os estados</SelectItem>
+                    {BRAZIL_STATES.map((s) => (
+                      <SelectItem key={s.uf} value={s.uf}>{s.uf} — {s.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium">Cidade (opcional)</Label>
+                <Input
+                  value={filterCity}
+                  onChange={(e) => setFilterCity(e.target.value)}
+                  placeholder="Ex: Colatina"
+                />
+              </div>
+            </div>
+
             <div className="space-y-1.5">
               <Label className="text-xs font-medium">Título *</Label>
               <Input
