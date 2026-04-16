@@ -35,7 +35,7 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
   const [url, setUrl] = useState("");
   const [image, setImage] = useState("");
   const [uploadingImage, setUploadingImage] = useState(false);
-  const [audience, setAudience] = useState<"all" | "corretor" | "imobiliaria" | "construtora" | "professionals">("all");
+  const [audience, setAudience] = useState<"all" | "corretor" | "imobiliaria" | "construtora" | "professionals" | "clients">("all");
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -198,6 +198,7 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Todos os inscritos</SelectItem>
+                  <SelectItem value="clients">Apenas Clientes (não profissionais)</SelectItem>
                   <SelectItem value="professionals">Apenas profissionais (Corretores + Imobiliárias + Construtoras)</SelectItem>
                   <SelectItem value="corretor">Apenas Corretores</SelectItem>
                   <SelectItem value="imobiliaria">Apenas Imobiliárias</SelectItem>
