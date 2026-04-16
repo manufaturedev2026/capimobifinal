@@ -107,6 +107,7 @@ export default function AiHelpChat({ themeVars }: AiHelpChatProps) {
             exit={{ scale: 0 }}
             onClick={() => setOpen(true)}
             className="fixed bottom-20 right-4 z-50 lg:bottom-6 lg:right-6 w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-xl flex items-center justify-center hover:scale-105 transition-transform"
+            style={themeVars}
             title="Ajuda IA"
           >
             <Bot size={26} />
@@ -123,7 +124,7 @@ export default function AiHelpChat({ themeVars }: AiHelpChatProps) {
             exit={{ opacity: 0, y: 40, scale: 0.95 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
             className="fixed bottom-20 right-2 left-2 z-50 lg:bottom-6 lg:right-6 lg:left-auto lg:w-[400px] flex flex-col bg-background border border-border rounded-2xl shadow-2xl overflow-hidden"
-            style={{ maxHeight: "min(70vh, 560px)" }}
+            style={{ maxHeight: "min(70vh, 560px)", ...themeVars }}
           >
             {/* Header */}
             <div className="flex items-center gap-3 px-4 py-3 bg-primary text-primary-foreground shrink-0">
