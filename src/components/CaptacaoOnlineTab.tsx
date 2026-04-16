@@ -159,6 +159,15 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
       attendantAvatar: botAttendantAvatar,
       openingMessage: botOpeningMessage,
       chatMode: botChatMode,
+      flowMsgName,
+      flowMsgNameReply,
+      flowMsgPhone,
+      flowMsgType,
+      flowMsgAddress,
+      flowMsgPrice,
+      flowMsgNotes,
+      flowMsgSuccess,
+      flowMsgSuccessEnd,
     });
     const { error } = await supabase
       .from("platform_settings")
