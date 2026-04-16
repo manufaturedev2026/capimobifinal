@@ -43,6 +43,18 @@ export default function AuthPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!isLogin) {
+      if (password !== confirmPassword) {
+        toast({ title: "Senhas não conferem", description: "Confirme a mesma senha nos dois campos.", variant: "destructive" });
+        return;
+      }
+      if (!selectedCity) {
+        toast({ title: "Selecione sua cidade", description: "Escolha a cidade para continuar.", variant: "destructive" });
+        return;
+      }
+    }
+
     setLoading(true);
 
     if (isLogin) {
@@ -52,7 +64,7 @@ export default function AuthPage() {
       }
       // useEffect handles redirect after profile loads
     } else {
-      const { error } = await signUp(email, password, fullName, phone);
+      const { error } = await signUp(email, password, fullName, phone, selectedCity, selectedState);
       if (error) {
         toast({ title: "Erro ao cadastrar", description: error.message, variant: "destructive" });
       } else {
