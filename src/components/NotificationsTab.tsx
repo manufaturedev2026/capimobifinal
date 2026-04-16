@@ -127,6 +127,15 @@ export default function NotificationsTab({ userId, sellerId }: NotificationsTabP
 
       if (error) throw error;
 
+      if (data?.error === "daily_limit_reached") {
+        toast({
+          title: "Limite diário atingido",
+          description: data.message || `Seu plano permite ${data.limit} envio(s) por dia.`,
+          variant: "destructive",
+        });
+        return;
+      }
+
       toast({
         title: "Notificação enviada! 🚀",
         description: `${data.sent} enviadas, ${data.failed} falharam de ${data.total} inscritos`,
