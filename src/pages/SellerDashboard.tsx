@@ -22,6 +22,7 @@ import StoriesTab from "@/components/StoriesTab";
 import NotificationsTab from "@/components/NotificationsTab";
 import ProfitCalculatorTab from "@/components/ProfitCalculatorTab";
 import PartnerBrokerTab from "@/components/PartnerBrokerTab";
+import PropertyPartnershipsTab from "@/components/PropertyPartnershipsTab";
 import SellerAdsTab from "@/components/SellerAdsTab";
 import PartnerAgencyTab from "@/components/PartnerAgencyTab";
 import { lazy, Suspense } from "react";
@@ -56,7 +57,7 @@ type SellerItem = {
   sold_at: string | null;
 };
 
-type DashboardTab = "overview" | "items" | "stats" | "domain" | "team" | "events" | "referral" | "crm" | "gallery" | "rentals" | "contracts" | "captacao" | "stories" | "notifications" | "profit" | "customization" | "profile" | "partner" | "ads";
+type DashboardTab = "overview" | "items" | "stats" | "domain" | "team" | "events" | "referral" | "crm" | "gallery" | "rentals" | "contracts" | "captacao" | "stories" | "notifications" | "profit" | "customization" | "profile" | "partner" | "ads" | "parcerias";
 
 export default function SellerDashboard() {
   const { user, profile, signOut, refreshProfile, loading: authLoading } = useAuth();
@@ -344,6 +345,7 @@ export default function SellerDashboard() {
     ...(showTeamTab ? [{ id: "team" as DashboardTab, label: "Loja Espelhada", icon: Users }] : []),
     { id: "ads" as DashboardTab, label: "Fazer ADS", icon: Megaphone, tourId: "tour-ads" },
     { id: "partner" as DashboardTab, label: "Imobiliárias", icon: Handshake },
+    { id: "parcerias" as DashboardTab, label: "Parcerias", icon: Handshake },
   ];
 
   const handleTabClick = (tabId: DashboardTab) => {
@@ -1152,6 +1154,10 @@ export default function SellerDashboard() {
               ) : (
                 <PartnerBrokerTab profileId={profile.id} userId={user!.id} />
               )
+            )}
+
+            {activeTab === "parcerias" && profile?.id && (
+              <PropertyPartnershipsTab profileId={profile.id} userId={user!.id} />
             )}
           </div>
         </main>
