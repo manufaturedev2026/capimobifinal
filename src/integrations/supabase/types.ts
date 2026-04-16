@@ -303,6 +303,33 @@ export type Database = {
         }
         Relationships: []
       }
+      invite_funnel_events: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          referrer: string | null
+          session_id: string
+          user_agent: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          id?: string
+          referrer?: string | null
+          session_id: string
+          user_agent?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          referrer?: string | null
+          session_id?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       partnership_requests: {
         Row: {
           agency_profile_id: string
