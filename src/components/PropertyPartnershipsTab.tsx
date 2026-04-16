@@ -956,7 +956,7 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
                         </span>
                         {removed && (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold text-red-500 bg-red-500/10">
-                            <XCircle size={10} /> Removido
+                            <XCircle size={10} /> {!req.item ? "Removido" : req.item?.status === "vendido" ? "Vendido" : "Desativado"}
                           </span>
                         )}
                       </div>
