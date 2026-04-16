@@ -261,12 +261,16 @@ export default function AdminDashboardTab() {
               <XAxis dataKey="date" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} />
               <YAxis tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
               <Tooltip
+                cursor={{ stroke: "hsl(var(--muted-foreground))", strokeOpacity: 0.3 }}
                 contentStyle={{
                   background: "hsl(var(--card))",
                   border: "1px solid hsl(var(--border))",
                   borderRadius: 12,
                   fontSize: 12,
+                  color: "hsl(var(--foreground))",
                 }}
+                labelStyle={{ color: "hsl(var(--foreground))", fontWeight: 600 }}
+                itemStyle={{ color: "hsl(var(--foreground))" }}
               />
               <Legend wrapperStyle={{ fontSize: 11 }} />
               <Area type="monotone" dataKey="visitas" name="Visitas" stroke="#00AEEF" fill="#00AEEF" fillOpacity={0.15} strokeWidth={2} />
