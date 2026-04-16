@@ -724,14 +724,15 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
               </Button>
             </div>
 
-            {/* Generated Text */}
-            {generatedAd && (
-              <div className="space-y-2">
-                <Textarea value={generatedAd} onChange={e => setGeneratedAd(e.target.value)} className="min-h-[200px] text-sm rounded-xl" />
-                <Button onClick={copyAd} size="sm" className="gap-1.5 text-xs rounded-xl w-full">
-                  <Copy size={12} /> Copiar Texto
-                </Button>
-              </div>
+            {/* Daily Usage Indicator */}
+            {aiUsage && (
+              <p className="text-[11px] text-muted-foreground text-center">
+                Uso de IA hoje: <span className="font-semibold text-foreground">{aiUsage.used}/{aiUsage.limit}</span>
+                {aiUsage.used >= aiUsage.limit && (
+                  <span className="ml-1 text-destructive font-semibold">— Limite atingido. Faça upgrade no plano.</span>
+                )}
+              </p>
+            )}
             )}
           </div>
         </div>
