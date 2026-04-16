@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { SITE_URL } from "@/lib/siteUrl";
-import { DEFAULT_CONFIG, type FlowStep, type BotStep, type InputStep, type ChoiceStep, type InviteChatConfig } from "@/data/inviteFlow";
+import { DEFAULT_CONFIG, DEFAULT_FLOWS, type FlowStep, type BotStep, type InputStep, type ChoiceStep, type InviteChatConfig } from "@/data/inviteFlow";
 
 interface VisibleBubble {
   id: string;
@@ -72,12 +72,19 @@ export default function InvitePage() {
           if (parsed.chatMode) cfg.chatMode = parsed.chatMode;
           if (parsed.crmRedirectUrl !== undefined) cfg.crmRedirectUrl = parsed.crmRedirectUrl;
           if (parsed.crmButtonText) cfg.crmButtonText = parsed.crmButtonText;
-          if (parsed.flow?.length) cfg.flow = parsed.flow;
+          // Migrate: support per-CTA flows
+          if (parsed.flows) {
+            cfg.flows = { ...DEFAULT_FLOWS, ...parsed.flows };
+          } else if (parsed.flow?.length) {
+            cfg.flows = { ...DEFAULT_FLOWS, [cfg.ctaType]: parsed.flow };
+          }
+          cfg.flow = cfg.flows[cfg.ctaType] || DEFAULT_FLOWS[cfg.ctaType];
         } catch {}
       }
       setConfig(cfg);
-      setFlow(cfg.flow);
-      setCurrentStepId(cfg.flow[0]?.id ?? null);
+      const activeFlow = cfg.flows[cfg.ctaType] || DEFAULT_FLOWS[cfg.ctaType];
+      setFlow(activeFlow);
+      setCurrentStepId(activeFlow[0]?.id ?? null);
     })();
   }, []);
 
