@@ -392,6 +392,7 @@ export default function InvitePage() {
                           notes: "Lead capturado via chat de convite",
                         });
                         setCrmSaved(true);
+                        trackEvent("crm_submitted");
                         addBubble("Obrigado! Em breve entraremos em contato 🤝", "attendant");
                       } catch (e) {
                         console.error("CRM save error:", e);
