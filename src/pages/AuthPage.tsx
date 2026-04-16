@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { Eye, EyeOff, LogIn, UserPlus, Building2, Shield, KeyRound, Sparkles } from "lucide-react";
+import { Eye, EyeOff, LogIn, UserPlus, Building2, Shield, KeyRound, Sparkles, MapPin } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import heroImg from "@/assets/hero-auth.jpg";
 import logoImg from "@/assets/logo-es-corretores.png";
+import { BRAZIL_STATES } from "@/data/brazilStates";
+import { useCitiesByState } from "@/hooks/useCitiesByState";
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(() => {
