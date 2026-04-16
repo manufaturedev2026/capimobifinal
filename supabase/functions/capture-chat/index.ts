@@ -188,7 +188,22 @@ REGRAS:
 
       const aiData = await aiResp.json();
       const text = aiData.choices?.[0]?.message?.content || "Erro ao gerar texto.";
-      return new Response(JSON.stringify({ text }), {
+
+      // Registrar uso (best-effort, não bloqueia resposta)
+      if (sellerId) {
+        await admin.from("ai_text_generations_log").insert({
+          user_id: user.id,
+          seller_id: sellerId,
+          action: "generate_ad_copy",
+        });
+      }
+
+      return new Response(JSON.stringify({
+        text,
+        used: (usedToday ?? 0) + 1,
+        limit: dailyLimit,
+        remaining: Math.max(0, dailyLimit - ((usedToday ?? 0) + 1)),
+      }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
