@@ -287,6 +287,14 @@ export default function CapturePropertyChatPage() {
         ].filter(Boolean).join("\n"),
         status: "novo",
       });
+      supabase.functions.invoke("notify-new-lead", {
+        body: {
+          target_user_id: sellerProfile.user_id,
+          title: "Novo lead de captação 🏠",
+          body: `${(extracted.full_name || "Visitante").slice(0, 60)} quer vender um imóvel.`,
+          url: "/painel?tab=captacao",
+        },
+      }).catch(() => {});
     } catch (e) {
       console.error("Auto-save lead error:", e);
     }
