@@ -329,7 +329,7 @@ export default function AdminInviteTab() {
       <div className="bg-card border border-border rounded-xl p-4 space-y-3">
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-semibold text-foreground">🔀 Fluxo da Conversa — {
-            { internal: "📱 Cadastro", crm: "📋 CRM", whatsapp: "💬 WhatsApp", whatsapp_group: "👥 Grupo", url: "🔗 URL" }[config.ctaType]
+            { internal: "📱 Cadastro", crm: "📋 CRM", whatsapp: "💬 WhatsApp", whatsapp_group: "👥 Grupo", url: "🔗 URL", captacao_imobiliaria: "🏢 Imobiliárias" }[config.ctaType]
           }</h3>
           <Button variant="ghost" size="sm" onClick={resetToDefault} className="text-xs text-muted-foreground">Restaurar padrão</Button>
         </div>
