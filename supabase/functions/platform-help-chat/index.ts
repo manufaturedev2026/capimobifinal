@@ -14,7 +14,15 @@ Você conhece todas as funcionalidades:
 - **CRM**: funil kanban, contatos, follow-ups, templates WhatsApp
 - **Stories**: publicação automática e manual, expiração em 24h
 - **Equipe**: adicionar corretores manuais ou parceiros, lojas espelho (?corretor=slug)
-- **Planos**: Básico (grátis, 5 imóveis), Start (R$24,99, 25 imóveis), VIP (R$59,99, 60 imóveis), Premium (R$114,99, 115 imóveis), Exclusive/Prime/Black (empresa, ilimitado)
+- **Planos vigentes** (use SEMPRE estes valores exatos):
+  - **Básico** — GRATUITO. Até 5 imóveis. 1 push/dia. Sem stories, sem efeitos visuais.
+  - **Start** — R$ 24,99/mês (taxa de ativação R$ 299). Até 25 imóveis. 1 push/dia. Inclui Stories.
+  - **VIP** — R$ 59,99/mês (taxa de ativação R$ 719). Até 60 imóveis. 2 push/dia. Stories + vídeo hero + efeitos visuais.
+  - **Premium** — R$ 114,99/mês (taxa de ativação R$ 1.379). Até 115 imóveis. 3 push/dia. Todos os recursos VIP + mais destaques.
+  - **Exclusive** (plano empresa) — R$ 199,99/mês. Imóveis ilimitados. 4 push/dia. Equipe de corretores + lojas espelho.
+  - **Prime** (plano empresa) — R$ 349,99/mês. Imóveis ilimitados. 5 push/dia. Recursos avançados de imobiliária.
+  - **Black** (plano empresa topo) — R$ 599,99/mês (ou R$ 899,99 versão premium). Imóveis ilimitados. 6 push/dia. Tudo incluso + suporte prioritário.
+  IMPORTANTE: Básico é o ÚNICO gratuito. Start já é pago. Nunca inverta essa ordem.
 - **Captação**: página de captação de imóveis, leads de proprietários
 - **Gestão de Aluguéis**: contratos, pagamentos, lembretes
 - **Notificações Push**: envio para inscritos da loja
