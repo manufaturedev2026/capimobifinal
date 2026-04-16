@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Building2, Send, Clock, CheckCircle2, XCircle, ExternalLink, LogOut, Search, Copy, Eye } from "lucide-react";
+import { Building2, Send, Clock, CheckCircle2, XCircle, ExternalLink, LogOut, Search, Copy, Eye, Phone, MapPin, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -16,6 +16,9 @@ interface Agency {
   state: string | null;
   slug: string | null;
   cnpj: string | null;
+  phone: string | null;
+  instagram: string | null;
+  bio: string | null;
 }
 
 interface PartnerRequest {
@@ -50,7 +53,7 @@ export default function PartnerBrokerTab({ profileId, userId }: { profileId: str
     // Fetch agencies (imobiliárias e construtoras)
     const { data: agencyData } = await supabase
       .from("profiles")
-      .select("id, full_name, company_name, logo_url, city, state, slug, cnpj")
+      .select("id, full_name, company_name, logo_url, city, state, slug, cnpj, phone, instagram, bio")
       .in("seller_category", ["imobiliaria", "construtora"])
       .eq("open_for_partnerships", true)
       .neq("id", profileId);
@@ -264,79 +267,109 @@ export default function PartnerBrokerTab({ profileId, userId }: { profileId: str
             approvedRequests.map((req) => {
               const agency = req.agency;
               if (!agency) return null;
+              const storeUrl = agency.slug ? `/empresa/${agency.slug}` : `/empresa/${agency.id}`;
               return (
                 <div key={req.id} className="rounded-2xl border border-green-500/20 bg-card shadow-sm overflow-hidden">
-                  <div className="p-4 sm:p-5">
+                  <div className="p-4 sm:p-5 space-y-4">
+                    {/* Header */}
                     <div className="flex items-start gap-4">
-                      {/* Logo */}
-                      <div className="w-14 h-14 rounded-xl bg-secondary flex items-center justify-center overflow-hidden shrink-0">
+                      <div className="w-16 h-16 rounded-xl bg-secondary flex items-center justify-center overflow-hidden shrink-0">
                         {agency.logo_url ? (
                           <img src={agency.logo_url} alt="" className="w-full h-full object-cover" />
                         ) : (
-                          <Building2 className="text-muted-foreground" size={24} />
+                          <Building2 className="text-muted-foreground" size={28} />
                         )}
                       </div>
-
-                      {/* Info */}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
-                          <p className="font-bold text-foreground truncate">{agency.company_name || agency.full_name}</p>
-                          <CheckCircle2 className="text-green-500 shrink-0" size={16} />
+                          <p className="font-bold text-foreground truncate text-lg">{agency.company_name || agency.full_name}</p>
+                          <CheckCircle2 className="text-green-500 shrink-0" size={18} />
                         </div>
                         {agency.city && (
-                          <p className="text-xs text-muted-foreground mt-0.5">
-                            📍 {agency.city}{agency.state ? ` - ${agency.state}` : ""}
+                          <p className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1">
+                            <MapPin size={12} /> {agency.city}{agency.state ? ` - ${agency.state}` : ""}
                           </p>
                         )}
                         {agency.cnpj && (
                           <p className="text-xs text-muted-foreground">CNPJ: {agency.cnpj}</p>
                         )}
-
-                        {/* Mirror Store Link */}
-                        {req.mirrorLink && (
-                          <div className="mt-3 rounded-xl border border-primary/20 bg-primary/5 p-3">
-                            <p className="text-xs font-semibold text-foreground mb-1.5 flex items-center gap-1.5">
-                              <Eye size={14} className="text-primary" />
-                              Sua Loja Espelho
-                            </p>
-                            <div className="flex items-center gap-2">
-                              <code className="flex-1 text-[11px] bg-background/70 px-2.5 py-1.5 rounded-lg border border-border truncate text-foreground">
-                                {window.location.origin}{req.mirrorLink}
-                              </code>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className="h-7 px-2 text-xs shrink-0"
-                                onClick={() => {
-                                  navigator.clipboard.writeText(`${window.location.origin}${req.mirrorLink}`);
-                                  toast({ title: "Link copiado! 📋" });
-                                }}
-                              >
-                                <Copy size={12} className="mr-1" /> Copiar
-                              </Button>
-                              <Button size="sm" variant="outline" className="h-7 px-2 shrink-0" asChild>
-                                <a href={req.mirrorLink} target="_blank" rel="noopener noreferrer">
-                                  <ExternalLink size={12} />
-                                </a>
-                              </Button>
-                            </div>
-                          </div>
+                        {agency.bio && (
+                          <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{agency.bio}</p>
                         )}
+                      </div>
+                    </div>
 
-                        {/* Leave button */}
-                        <div className="mt-3 flex justify-end">
+                    {/* Actions row */}
+                    <div className="flex flex-wrap gap-2">
+                      {agency.phone && (
+                        <Button
+                          size="sm"
+                          className="h-9 text-xs bg-green-500 hover:bg-green-600 text-white"
+                          onClick={() => {
+                            const clean = agency.phone!.replace(/\D/g, "");
+                            window.open(`https://wa.me/55${clean}?text=${encodeURIComponent(`Olá ${agency.company_name || agency.full_name}, sou corretor parceiro e gostaria de conversar.`)}`, "_blank");
+                          }}
+                        >
+                          <Phone size={14} className="mr-1.5" /> WhatsApp
+                        </Button>
+                      )}
+                      <Button size="sm" variant="outline" className="h-9 text-xs" asChild>
+                        <a href={storeUrl} target="_blank" rel="noopener noreferrer">
+                          <Globe size={14} className="mr-1.5" /> Ver Loja
+                        </a>
+                      </Button>
+                      {agency.instagram && (
+                        <Button size="sm" variant="outline" className="h-9 text-xs" asChild>
+                          <a href={`https://instagram.com/${agency.instagram.replace("@", "")}`} target="_blank" rel="noopener noreferrer">
+                            @ Instagram
+                          </a>
+                        </Button>
+                      )}
+                    </div>
+
+                    {/* Mirror Store Link */}
+                    {req.mirrorLink && (
+                      <div className="rounded-xl border border-primary/20 bg-primary/5 p-3">
+                        <p className="text-xs font-semibold text-foreground mb-1.5 flex items-center gap-1.5">
+                          <Eye size={14} className="text-primary" />
+                          Sua Loja Espelho
+                        </p>
+                        <div className="flex items-center gap-2">
+                          <code className="flex-1 text-[11px] bg-background/70 px-2.5 py-1.5 rounded-lg border border-border truncate text-foreground">
+                            {window.location.origin}{req.mirrorLink}
+                          </code>
                           <Button
                             size="sm"
-                            variant="destructive"
-                            className="text-xs h-8 px-3"
-                            onClick={() => leavePartnership(agency.id)}
-                            disabled={sendingTo === agency.id}
+                            variant="outline"
+                            className="h-7 px-2 text-xs shrink-0"
+                            onClick={() => {
+                              navigator.clipboard.writeText(`${window.location.origin}${req.mirrorLink}`);
+                              toast({ title: "Link copiado! 📋" });
+                            }}
                           >
-                            <LogOut size={12} className="mr-1" />
-                            Sair da Parceria
+                            <Copy size={12} className="mr-1" /> Copiar
+                          </Button>
+                          <Button size="sm" variant="outline" className="h-7 px-2 shrink-0" asChild>
+                            <a href={req.mirrorLink} target="_blank" rel="noopener noreferrer">
+                              <ExternalLink size={12} />
+                            </a>
                           </Button>
                         </div>
                       </div>
+                    )}
+
+                    {/* Leave button */}
+                    <div className="flex justify-end">
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        className="text-xs h-8 px-3"
+                        onClick={() => leavePartnership(agency.id)}
+                        disabled={sendingTo === agency.id}
+                      >
+                        <LogOut size={12} className="mr-1" />
+                        Sair da Parceria
+                      </Button>
                     </div>
                   </div>
                 </div>
