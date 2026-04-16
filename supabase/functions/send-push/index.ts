@@ -182,6 +182,53 @@ Deno.serve(async (req) => {
 
     const adminClient = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 
+    // ---- Daily push limit by plan tier ----
+    const { data: isAdminData } = await adminClient.rpc("has_role", { _user_id: user.id, _role: "admin" });
+    if (!isAdminData) {
+      const { data: subData } = await adminClient
+        .from("seller_subscriptions")
+        .select("tier")
+        .eq("seller_id", profile.id)
+        .eq("is_active", true)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      const tier = (subData?.tier as string) || "basico";
+      const TIER_DAILY_LIMITS: Record<string, number> = {
+        basico: 1,
+        start: 1,
+        premium: 2,           // VIP
+        vip: 3,               // Premium
+        essencial_empresa: 4, // Exclusive
+        premium_empresa: 5,   // Prime
+        prime_empresa: 6,     // Black
+        black: 6,             // Black
+      };
+      const dailyLimit = TIER_DAILY_LIMITS[tier] ?? 1;
+
+      const since = new Date();
+      since.setHours(0, 0, 0, 0);
+      const { count: sentToday } = await adminClient
+        .from("push_notifications_log")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", user.id)
+        .gte("created_at", since.toISOString());
+
+      if ((sentToday ?? 0) >= dailyLimit) {
+        return new Response(
+          JSON.stringify({
+            error: "daily_limit_reached",
+            message: `Limite diário do seu plano atingido (${dailyLimit} envio(s) por dia). Faça upgrade para enviar mais notificações.`,
+            limit: dailyLimit,
+            sent_today: sentToday,
+            tier,
+          }),
+          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        );
+      }
+    }
+
     const { data: subscriptions } = await adminClient
       .from("push_subscriptions")
       .select("*")
