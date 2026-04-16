@@ -57,7 +57,7 @@ type SellerItem = {
   sold_at: string | null;
 };
 
-type DashboardTab = "overview" | "items" | "stats" | "domain" | "team" | "events" | "referral" | "crm" | "gallery" | "rentals" | "contracts" | "captacao" | "stories" | "notifications" | "profit" | "customization" | "profile" | "partner" | "ads" | "parcerias";
+type DashboardTab = "overview" | "items" | "stats" | "domain" | "team" | "events" | "referral" | "crm" | "gallery" | "rentals" | "contracts" | "captacao" | "stories" | "notifications" | "profit" | "customization" | "profile" | "imobiliarias" | "ads" | "parcerias";
 
 export default function SellerDashboard() {
   const { user, profile, signOut, refreshProfile, loading: authLoading } = useAuth();
@@ -344,7 +344,7 @@ export default function SellerDashboard() {
     { id: "domain", label: "Meu Domínio", icon: Globe, locked: lockedTabs.includes("domain") },
     ...(showTeamTab ? [{ id: "team" as DashboardTab, label: "Loja Espelhada", icon: Users }] : []),
     { id: "ads" as DashboardTab, label: "Fazer ADS", icon: Megaphone, tourId: "tour-ads" },
-    { id: "partner" as DashboardTab, label: "Imobiliárias", icon: Building2 },
+    { id: "imobiliarias" as DashboardTab, label: "Imobiliárias", icon: Building2 },
     { id: "parcerias" as DashboardTab, label: "Parcerias", icon: Handshake },
   ];
 
