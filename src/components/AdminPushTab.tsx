@@ -103,6 +103,8 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
           url: url.trim() || undefined,
           image: image || undefined,
           audience,
+          state: filterState !== "all" ? filterState : undefined,
+          city: filterCity.trim() || undefined,
         },
       });
 
