@@ -611,6 +611,7 @@ export default function CapturePropertyChatPage() {
       description: "Lead via fluxo Grupo de WhatsApp",
       status: "novo",
     });
+    notifyNewCaptureLead(sellerProfile.user_id, name, `${name} pediu para entrar no grupo de WhatsApp.`);
     await addBotMsg(config.grupoMsgSuccess);
     await addBotMsg(config.grupoMsgSuccessEnd);
     setStep("done");
