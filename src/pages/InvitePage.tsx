@@ -39,6 +39,16 @@ export default function InvitePage() {
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const playingRef = useRef(false);
+  const sessionIdRef = useRef(`${Date.now()}_${Math.random().toString(36).slice(2, 9)}`);
+
+  const trackEvent = useCallback((event_type: string) => {
+    supabase.from("invite_funnel_events").insert({
+      event_type,
+      session_id: sessionIdRef.current,
+      user_agent: navigator.userAgent,
+      referrer: document.referrer || null,
+    } as any).then(() => {});
+  }, []);
 
   const isAiMode = config.chatMode === "ai";
 
