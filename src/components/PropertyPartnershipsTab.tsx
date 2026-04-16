@@ -94,7 +94,7 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
 
     const [{ data: items }, { data: profiles }] = await Promise.all([
       supabase.from("seller_items").select("id, title, price, photos, city, finality, commission_percent, partner_percent, partnership_enabled, seller_id, user_id, category").in("id", itemIds),
-      supabase.from("profiles").select("id, full_name, phone, logo_url, company_name, creci").in("user_id", ownerIds),
+      supabase.from("profiles").select("id, user_id, full_name, phone, logo_url, company_name, creci").in("user_id", ownerIds),
     ]);
 
     const itemMap = new Map((items || []).map(i => [i.id, i]));
