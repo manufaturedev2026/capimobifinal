@@ -196,7 +196,7 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
     })));
   };
 
-
+  const sendPartnershipPush = async (targetUserId: string, title: string, body: string) => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
