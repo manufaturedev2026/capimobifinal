@@ -895,9 +895,9 @@ export default function CapturePropertyChatPage() {
             )}
           </AnimatePresence>
 
-          {/* AI mode: CRM form */}
+          {/* AI mode: CRM form (fallback) or WhatsApp button (when AI extracted data) */}
           <AnimatePresence>
-            {isAiMode && showCrmForm && !crmSaved && (
+            {isAiMode && showCrmForm && !aiLeadSaved && !crmSaved && (
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="flex flex-col items-center gap-3 pt-4 pb-8 px-4">
                 <div className="bg-white rounded-2xl shadow-lg p-5 w-full max-w-sm space-y-3">
                   <p className="text-sm font-semibold text-[#075e54] text-center">📋 Confirme seus dados para contato!</p>
