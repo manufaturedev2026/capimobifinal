@@ -45,7 +45,7 @@ export default defineConfig(({ mode }) => ({
         display: "standalone",
         orientation: "portrait",
         scope: "/",
-        start_url: "/empresa/66187c35-1659-4926-b64d-01879aa7a8ee",
+        start_url: "/",
         categories: ["business", "lifestyle"],
         icons: [
           {
