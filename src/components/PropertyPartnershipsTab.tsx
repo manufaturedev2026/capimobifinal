@@ -188,12 +188,17 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
     const itemMap = new Map((items || []).map(i => [i.id, i]));
     const profileMap = new Map((profiles || []).map(p => [p.user_id, p]));
 
-    setActivePartnerships(all.map(r => ({
-      ...r,
-      item: itemMap.get(r.item_id) || null,
-      partner: profileMap.get(r._role === "owner" ? r.requester_user_id : r.owner_user_id) || null,
-      role: r._role,
-    })));
+    setActivePartnerships(all
+      .filter(r => {
+        const item = itemMap.get(r.item_id);
+        return item && item.partnership_enabled;
+      })
+      .map(r => ({
+        ...r,
+        item: itemMap.get(r.item_id) || null,
+        partner: profileMap.get(r._role === "owner" ? r.requester_user_id : r.owner_user_id) || null,
+        role: r._role,
+      })));
   };
 
   const sendPartnershipPush = async (targetUserId: string, title: string, body: string) => {
