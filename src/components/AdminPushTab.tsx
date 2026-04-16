@@ -84,6 +84,34 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
       .limit(20);
 
     setLogs((logData as unknown as NotificationLog[]) || []);
+
+    // Load distinct states/cities from active listings (paginate to bypass 1000 row cap)
+    const regions: Record<string, Set<string>> = {};
+    let from = 0;
+    const pageSize = 1000;
+    while (true) {
+      const { data: items } = await supabase
+        .from("seller_items")
+        .select("state, city")
+        .eq("status", "ativo")
+        .range(from, from + pageSize - 1);
+      if (!items || items.length === 0) break;
+      for (const it of items as any[]) {
+        const uf = (it.state || "").trim().toUpperCase();
+        const ct = (it.city || "").trim();
+        if (!uf) continue;
+        if (!regions[uf]) regions[uf] = new Set();
+        if (ct) regions[uf].add(ct);
+      }
+      if (items.length < pageSize) break;
+      from += pageSize;
+    }
+    const regionMap: Record<string, string[]> = {};
+    for (const uf of Object.keys(regions)) {
+      regionMap[uf] = Array.from(regions[uf]).sort((a, b) => a.localeCompare(b, "pt-BR"));
+    }
+    setRegionData(regionMap);
+
     setLoading(false);
   };
 
