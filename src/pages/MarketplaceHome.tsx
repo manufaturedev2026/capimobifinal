@@ -553,7 +553,16 @@ export default function MarketplaceHome() {
             transition={{ duration: 0.6, delay: 0.45 }}
             className="text-white/60 text-xs md:text-base mt-2 md:mt-3 max-w-md hidden md:block"
           >
-            {realItems.length}+ imóveis de {realSellers.length} corretores verificados em um só lugar.
+            {(() => {
+              const itemsInCity = filterCity
+                ? realItems.filter((i) => (i.city || "").toLowerCase() === filterCity.toLowerCase() && (i as any).status !== "vendido" && (i as any).status !== "inativo")
+                : realItems.filter((i) => (i as any).status !== "vendido" && (i as any).status !== "inativo");
+              const sellerIdsInCity = new Set(itemsInCity.map((i) => (i as any).seller_id || (i as any).sellerId));
+              const sellersInCity = filterCity
+                ? realSellers.filter((s) => sellerIdsInCity.has(s.id) || (s.city || "").toLowerCase() === filterCity.toLowerCase())
+                : realSellers;
+              return `${itemsInCity.length}+ imóveis de ${sellersInCity.length} corretores verificados${filterCity ? ` em ${filterCity}` : " em um só lugar"}.`;
+            })()}
           </motion.p>
 
           <motion.div
