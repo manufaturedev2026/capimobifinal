@@ -905,7 +905,17 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
                       )}
                     </div>
                     {req.owner && (
-                      <p className="text-[10px] text-muted-foreground">Corretor: {req.owner.full_name}</p>
+                      <div className="flex items-center gap-2">
+                        <p className="text-[10px] text-muted-foreground">Corretor: {req.owner.full_name}</p>
+                        {req.status === "aprovado" && req.owner.phone && (
+                          <button
+                            onClick={() => openWhatsApp(req.owner!.phone, req.item?.title || "Imóvel", req.item?.finality || null)}
+                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-green-500 text-white hover:bg-green-600 transition-colors"
+                          >
+                            <Phone size={10} /> WhatsApp
+                          </button>
+                        )}
+                      </div>
                     )}
                   </div>
                 </motion.div>
