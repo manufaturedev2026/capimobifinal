@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Shield, Users, Package, DollarSign, Search, Check, X, RefreshCw, ArrowLeft, Crown, Star, Zap, Globe, Plus, Trash2, ExternalLink, Copy, Megaphone, LayoutDashboard, Building2, Rocket, FileText, UserCog, Filter, Camera, Phone, Ban, ShieldOff, Clock, MessageCircle, MapPin, Palette, Bell, Video, Save, Eye } from "lucide-react";
+import { Shield, Users, Package, DollarSign, Search, Check, X, RefreshCw, ArrowLeft, Crown, Star, Zap, Globe, Plus, Trash2, ExternalLink, Copy, Megaphone, LayoutDashboard, Building2, Rocket, FileText, UserCog, Filter, Camera, Phone, Ban, ShieldOff, Clock, MessageCircle, MapPin, Palette, Bell, Video, Save, Eye, BarChart3 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { MARKETPLACE_THEMES } from "@/lib/marketplaceThemes";
 import { getMarketplaceThemeCssVars } from "@/lib/marketplaceThemeCssVars";
@@ -16,6 +16,7 @@ import AdminPushTab from "@/components/AdminPushTab";
 import AdminSiteTab from "@/components/AdminSiteTab";
 import AdminAdsCrmTab from "@/components/AdminAdsCrmTab";
 import AdminInviteTab from "@/components/AdminInviteTab";
+import AdminDashboardTab from "@/components/AdminDashboardTab";
 import { LOGIN_HERO_PRESETS, normalizeLoginHeroSetting, resolveLoginHeroImage } from "@/data/loginHeroPresets";
 
 interface SellerWithSub {
@@ -51,7 +52,7 @@ export default function AdminPanel() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [tierFilter, setTierFilter] = useState<string>("todos");
-  const [tab, setTab] = useState<"sellers" | "billing" | "referrals" | "crm" | "seo" | "vendas" | "config" | "push" | "site" | "ads" | "invite">("sellers");
+  const [tab, setTab] = useState<"dashboard" | "sellers" | "billing" | "referrals" | "crm" | "seo" | "vendas" | "config" | "push" | "site" | "ads" | "invite">("dashboard");
   const [homepageMode, setHomepageMode] = useState<string>("single");
   const [homepageTheme, setHomepageTheme] = useState<string>("azul");
   const [loginHeroUrl, setLoginHeroUrl] = useState<string>("");
@@ -396,6 +397,7 @@ export default function AdminPanel() {
   const adminThemeVars = getMarketplaceThemeCssVars(adminTheme);
 
   const sidebarItems = [
+    { key: "dashboard" as const, label: "Dashboard", icon: BarChart3 },
     { key: "sellers" as const, label: "Vendedores", icon: Users },
     { key: "billing" as const, label: "Faturamento", icon: DollarSign },
     { key: "crm" as const, label: "CRM WhatsApp", icon: MessageCircle },
@@ -795,6 +797,11 @@ export default function AdminPanel() {
             </div>
           </div>
         )}
+
+      {/* Dashboard Tab */}
+      {tab === "dashboard" && (
+        <AdminDashboardTab />
+      )}
 
       {/* Invite Tab */}
       {tab === "invite" && (

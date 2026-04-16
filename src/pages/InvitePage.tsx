@@ -39,6 +39,16 @@ export default function InvitePage() {
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const playingRef = useRef(false);
+  const sessionIdRef = useRef(`${Date.now()}_${Math.random().toString(36).slice(2, 9)}`);
+
+  const trackEvent = useCallback((event_type: string) => {
+    supabase.from("invite_funnel_events").insert({
+      event_type,
+      session_id: sessionIdRef.current,
+      user_agent: navigator.userAgent,
+      referrer: document.referrer || null,
+    } as any).then(() => {});
+  }, []);
 
   const isAiMode = config.chatMode === "ai";
 
@@ -91,17 +101,24 @@ export default function InvitePage() {
     setTyping(false);
   }, []);
 
+  // Track page view
+  useEffect(() => {
+    trackEvent("page_view");
+  }, [trackEvent]);
+
   useEffect(() => {
     if (isAiMode && bubbles.length === 0) {
       startAiChat();
+      trackEvent("chat_started");
     }
-  }, [isAiMode, startAiChat]);
+  }, [isAiMode, startAiChat, trackEvent]);
 
   const sendAiMessage = async () => {
     const text = aiInput.trim();
     if (!text || aiLoading) return;
     setAiInput("");
     addBubble(text, "user");
+    trackEvent("message_sent");
 
     const updatedMessages = [...aiMessages, { role: "user" as const, content: text }];
     setAiMessages(updatedMessages);
@@ -143,6 +160,7 @@ export default function InvitePage() {
           lower.includes("crie sua conta") ||
           lower.includes("cadastre-se")
         ) {
+          trackEvent("cta_shown");
           setTimeout(() => setShowCta(true), 500);
         }
       } catch (e) {
@@ -374,6 +392,7 @@ export default function InvitePage() {
                           notes: "Lead capturado via chat de convite",
                         });
                         setCrmSaved(true);
+                        trackEvent("crm_submitted");
                         addBubble("Obrigado! Em breve entraremos em contato 🤝", "attendant");
                       } catch (e) {
                         console.error("CRM save error:", e);
@@ -397,6 +416,7 @@ export default function InvitePage() {
                 <p className="text-[#667781] text-xs text-center">Em breve entraremos em contato pelo WhatsApp 📱</p>
                 <Button
                   onClick={() => {
+                    trackEvent("signup_clicked");
                     const url = config.crmRedirectUrl || "/login";
                     if (url.startsWith("/")) {
                       navigate(url);
@@ -412,7 +432,7 @@ export default function InvitePage() {
             )}
             {showCta && config.ctaType !== "crm" && (
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="flex flex-col items-center gap-3 pt-4 pb-8">
-                <Button onClick={() => { if (config.ctaType === "internal") navigate(config.ctaUrl); else window.open(config.ctaUrl, "_blank", "noopener"); }} className="bg-[#25d366] hover:bg-[#22c55e] text-white font-bold text-base px-8 py-6 rounded-full shadow-lg animate-pulse" size="lg">
+                <Button onClick={() => { trackEvent("signup_clicked"); if (config.ctaType === "internal") navigate(config.ctaUrl); else window.open(config.ctaUrl, "_blank", "noopener"); }} className="bg-[#25d366] hover:bg-[#22c55e] text-white font-bold text-base px-8 py-6 rounded-full shadow-lg animate-pulse" size="lg">
                   {config.ctaText}
                 </Button>
                 <p className="text-[#667781] text-xs text-center">Cadastro rápido • 100% gratuito • Sem cartão de crédito</p>
