@@ -86,7 +86,7 @@ export default function InvitePage() {
     setTyping(true);
     try {
       const { data, error } = await supabase.functions.invoke("invite-chat", {
-        body: { messages: [] },
+        body: { messages: [], ctaType: config.ctaType },
       });
       if (error) throw error;
       const reply = data?.reply || "Olá! 👋 Antes de tudo, qual é o seu nome? 😊";
@@ -132,7 +132,7 @@ export default function InvitePage() {
     while (retries <= maxRetries && !success) {
       try {
         const { data, error } = await supabase.functions.invoke("invite-chat", {
-          body: { messages: updatedMessages },
+          body: { messages: updatedMessages, ctaType: config.ctaType },
         });
 
         if (error) {

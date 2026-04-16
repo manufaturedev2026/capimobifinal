@@ -7,6 +7,29 @@ import { useToast } from "@/hooks/use-toast";
 import { Save, ExternalLink, Copy, MessageCircle, User, ChevronDown, ChevronRight, Plus, Trash2, Bot, GitBranch } from "lucide-react";
 import { DEFAULT_CONFIG, STEP_TYPE_LABELS, STEP_NAMES, type InviteChatConfig, type FlowStep, type BotStep, type ChoiceStep, type InputStep } from "@/data/inviteFlow";
 
+const AI_STRATEGY_INFO: Record<string, { title: string; description: string }> = {
+  internal: {
+    title: "📱 Cadastro Interno",
+    description: "A IA descobre o perfil do visitante, apresenta funcionalidades detalhadas e guia naturalmente até criar uma conta gratuita na plataforma.",
+  },
+  crm: {
+    title: "📋 Captura CRM",
+    description: "A IA cria urgência e exclusividade, convencendo o visitante a deixar nome e WhatsApp para ser contatado por um consultor especializado.",
+  },
+  whatsapp: {
+    title: "💬 WhatsApp Direto",
+    description: "A IA é mais rápida e direta, criando conexão pessoal e urgência para o visitante iniciar uma conversa instantânea no WhatsApp com a equipe.",
+  },
+  whatsapp_group: {
+    title: "👥 Grupo WhatsApp",
+    description: "A IA apresenta o grupo como uma comunidade exclusiva de corretores, destacando networking, dicas e parcerias. Cria FOMO com vagas limitadas.",
+  },
+  url: {
+    title: "🔗 URL Externa",
+    description: "A IA apresenta benefícios e conduz o visitante até clicar no link de destino configurado.",
+  },
+};
+
 export default function AdminInviteTab() {
   const { toast } = useToast();
   const [config, setConfig] = useState<InviteChatConfig>({ ...DEFAULT_CONFIG });
@@ -180,12 +203,21 @@ export default function AdminInviteTab() {
           </button>
         </div>
         {config.chatMode === "ai" && (
-          <div className="bg-primary/5 border border-primary/20 rounded-lg p-3 text-xs text-foreground">
-            <p className="font-semibold mb-1">🤖 Modo IA ativado</p>
+          <div className="bg-primary/5 border border-primary/20 rounded-lg p-3 text-xs text-foreground space-y-2">
+            <p className="font-semibold">🤖 Modo IA ativado</p>
             <p className="text-muted-foreground">
-              A IA conversa livremente com o visitante, pede o nome, apresenta os benefícios e guia até o CTA. 
-              O editor de fluxo abaixo fica desativado neste modo.
+              A IA conversa livremente com o visitante e adapta sua estratégia de acordo com o tipo de CTA configurado abaixo.
+              O editor de fluxo fica desativado neste modo.
             </p>
+            {/* Strategy preview per CTA type */}
+            <div className="mt-2 p-2.5 rounded-lg bg-background/80 border border-border">
+              <p className="font-semibold text-[11px] uppercase tracking-wider text-muted-foreground mb-1.5">
+                Estratégia IA ativa: {AI_STRATEGY_INFO[config.ctaType]?.title || "Padrão"}
+              </p>
+              <p className="text-muted-foreground leading-relaxed">
+                {AI_STRATEGY_INFO[config.ctaType]?.description || "Estratégia padrão de cadastro."}
+              </p>
+            </div>
           </div>
         )}
       </div>
