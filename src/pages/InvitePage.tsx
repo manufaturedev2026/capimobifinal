@@ -101,11 +101,17 @@ export default function InvitePage() {
     setTyping(false);
   }, []);
 
+  // Track page view
+  useEffect(() => {
+    trackEvent("page_view");
+  }, [trackEvent]);
+
   useEffect(() => {
     if (isAiMode && bubbles.length === 0) {
       startAiChat();
+      trackEvent("chat_started");
     }
-  }, [isAiMode, startAiChat]);
+  }, [isAiMode, startAiChat, trackEvent]);
 
   const sendAiMessage = async () => {
     const text = aiInput.trim();
