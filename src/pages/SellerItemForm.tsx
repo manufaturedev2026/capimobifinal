@@ -99,6 +99,9 @@ const INITIAL_FORM = {
   foot_traffic: "",
   ideal_for: "",
   show_financing: false,
+  partnership_enabled: false,
+  commission_percent: "",
+  partner_percent: "",
 };
 
 export default function SellerItemForm() {
@@ -194,6 +197,9 @@ export default function SellerItemForm() {
               has_ac: !!d.has_ac,
               foot_traffic: d.foot_traffic || "",
               ideal_for: d.ideal_for || "",
+              partnership_enabled: !!d.partnership_enabled,
+              commission_percent: d.commission_percent?.toString() || "",
+              partner_percent: d.partner_percent?.toString() || "",
             });
           }
         });
@@ -340,6 +346,9 @@ export default function SellerItemForm() {
       foot_traffic: strOrNull(form.foot_traffic),
       ideal_for: strOrNull(form.ideal_for),
       show_financing: form.show_financing || false,
+      partnership_enabled: form.partnership_enabled || false,
+      commission_percent: numOrNull(form.commission_percent),
+      partner_percent: numOrNull(form.partner_percent),
     };
 
     let error;
@@ -627,7 +636,86 @@ export default function SellerItemForm() {
           </div>
         )}
 
-        {/* Submit */}
+        {/* Partnership */}
+        <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
+          <label className="flex items-center gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={form.partnership_enabled}
+              onChange={(e) => setForm((f) => ({ ...f, partnership_enabled: e.target.checked }))}
+              className="w-5 h-5 rounded border-border text-primary focus:ring-primary"
+            />
+            <div>
+              <p className="font-display font-bold text-foreground text-sm">🤝 Disponível para Parceria</p>
+              <p className="text-xs text-muted-foreground">Permitir que outros corretores solicitem parceria neste imóvel</p>
+            </div>
+          </label>
+
+          {form.partnership_enabled && (
+            <div className="space-y-3 pt-2 border-t border-border">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-bold text-foreground mb-1 block">Comissão Total (%)</label>
+                  <input
+                    type="number"
+                    step="0.5"
+                    min="0"
+                    max="100"
+                    value={form.commission_percent}
+                    onChange={(e) => setForm((f) => ({ ...f, commission_percent: e.target.value }))}
+                    className="w-full px-3 py-2.5 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+                    placeholder="Ex: 6"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-foreground mb-1 block">% do Parceiro</label>
+                  <input
+                    type="number"
+                    step="5"
+                    min="0"
+                    max="100"
+                    value={form.partner_percent}
+                    onChange={(e) => setForm((f) => ({ ...f, partner_percent: e.target.value }))}
+                    className="w-full px-3 py-2.5 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+                    placeholder="Ex: 50"
+                  />
+                </div>
+              </div>
+
+              {/* Auto calculation preview */}
+              {form.price && form.commission_percent && form.partner_percent && (() => {
+                const price = parseFloat(form.price);
+                const comm = parseFloat(form.commission_percent);
+                const partnerPct = parseFloat(form.partner_percent);
+                if (!price || !comm || !partnerPct) return null;
+                const total = price * (comm / 100);
+                const partnerGain = total * (partnerPct / 100);
+                const ownerGain = total - partnerGain;
+                const fmt = (v: number) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+                return (
+                  <div className="bg-secondary/50 rounded-xl p-3 space-y-2">
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Simulação de Comissão</p>
+                    <div className="grid grid-cols-3 gap-2 text-center">
+                      <div className="bg-primary/10 rounded-lg p-2">
+                        <p className="text-[10px] text-muted-foreground">Total</p>
+                        <p className="font-bold text-xs text-primary">{fmt(total)}</p>
+                      </div>
+                      <div className="bg-green-500/10 rounded-lg p-2">
+                        <p className="text-[10px] text-muted-foreground">Parceiro</p>
+                        <p className="font-bold text-xs text-green-600">{fmt(partnerGain)}</p>
+                      </div>
+                      <div className="bg-accent/10 rounded-lg p-2">
+                        <p className="text-[10px] text-muted-foreground">Você</p>
+                        <p className="font-bold text-xs text-accent">{fmt(ownerGain)}</p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
+          )}
+        </div>
+
         <button type="submit" disabled={saving || (isAtLimit && !isEdit) || (isExpired && !!subscription)}
           className="w-full py-4 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg">
           {saving ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : (
