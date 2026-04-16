@@ -313,13 +313,13 @@ export default function PartnerBrokerTab({ profileId, userId }: { profileId: str
                           <Phone size={14} className="mr-1.5" /> WhatsApp
                         </Button>
                       )}
-                      <Button size="sm" variant="outline" className="h-9 text-xs" asChild>
+                      <Button size="sm" variant="secondary" className="h-9 text-xs" asChild>
                         <a href={storeUrl} target="_blank" rel="noopener noreferrer">
                           <Globe size={14} className="mr-1.5" /> Ver Loja
                         </a>
                       </Button>
                       {agency.instagram && (
-                        <Button size="sm" variant="outline" className="h-9 text-xs" asChild>
+                      <Button size="sm" variant="secondary" className="h-9 text-xs" asChild>
                           <a href={`https://instagram.com/${agency.instagram.replace("@", "")}`} target="_blank" rel="noopener noreferrer">
                             @ Instagram
                           </a>
