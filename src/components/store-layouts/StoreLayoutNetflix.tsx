@@ -68,7 +68,7 @@ function NetflixRow({ title, items, corretorSlug, getTagLabel, getTagStyle, acce
         )}
 
         <div ref={scrollRef} onScroll={checkArrows}
-          className="flex gap-1 lg:gap-1.5 overflow-x-auto overflow-y-visible scrollbar-hide scroll-smooth px-4 lg:px-12 py-8 -my-8">
+          className="flex gap-1 lg:gap-1.5 overflow-x-auto overflow-y-visible scrollbar-hide scroll-smooth px-4 pr-8 lg:px-12 lg:pr-12 py-8 -my-8">
           {items.map((product: any, i: number) => (
             <NetflixCard key={product.id} product={product} index={i} corretorSlug={corretorSlug} getTagLabel={getTagLabel} getTagStyle={getTagStyle} accent={accent} />
           ))}
@@ -450,7 +450,7 @@ export default function StoreLayoutNetflix({
             )}
           </div>
         </div>
-        <div className="flex gap-2 lg:gap-3 overflow-x-auto scrollbar-hide scroll-smooth px-4 lg:px-12 pb-6">
+        <div className="flex gap-2 lg:gap-3 overflow-x-auto scrollbar-hide scroll-smooth px-4 pr-8 lg:px-12 lg:pr-12 pb-6">
           {/* "Todos" card */}
           {(() => {
             const allImages = filteredProducts.filter((p: any) => p.image).slice(0, 4);
