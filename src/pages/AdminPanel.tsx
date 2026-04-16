@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Shield, Users, Package, DollarSign, Search, Check, X, RefreshCw, ArrowLeft, Crown, Star, Zap, Globe, Plus, Trash2, ExternalLink, Copy, Megaphone, LayoutDashboard, Building2, Rocket, FileText, UserCog, Filter, Camera, Phone, Ban, ShieldOff, Clock, MessageCircle, MapPin, Palette, Bell, Video, Save, Eye } from "lucide-react";
+import { Shield, Users, Package, DollarSign, Search, Check, X, RefreshCw, ArrowLeft, Crown, Star, Zap, Globe, Plus, Trash2, ExternalLink, Copy, Megaphone, LayoutDashboard, Building2, Rocket, FileText, UserCog, Filter, Camera, Phone, Ban, ShieldOff, Clock, MessageCircle, MapPin, Palette, Bell, Video, Save, Eye, BarChart3 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { MARKETPLACE_THEMES } from "@/lib/marketplaceThemes";
 import { getMarketplaceThemeCssVars } from "@/lib/marketplaceThemeCssVars";
@@ -16,6 +16,7 @@ import AdminPushTab from "@/components/AdminPushTab";
 import AdminSiteTab from "@/components/AdminSiteTab";
 import AdminAdsCrmTab from "@/components/AdminAdsCrmTab";
 import AdminInviteTab from "@/components/AdminInviteTab";
+import AdminDashboardTab from "@/components/AdminDashboardTab";
 import { LOGIN_HERO_PRESETS, normalizeLoginHeroSetting, resolveLoginHeroImage } from "@/data/loginHeroPresets";
 
 interface SellerWithSub {
