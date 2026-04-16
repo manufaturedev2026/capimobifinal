@@ -296,7 +296,7 @@ export default function StoreLayoutMinimal({
         transition={{ delay: 0.7 }}
         className="max-w-5xl mx-auto mb-8"
       >
-        <div className="flex gap-1 overflow-x-auto scrollbar-hide pb-1 pr-4 md:pr-0">
+        <div className="flex gap-1 overflow-x-auto scrollbar-hide pb-1">
           {activeCats.map((cat) => {
             const isActive = activeCategory === cat.slug;
             const count = categoryCounts[cat.slug] || 0;

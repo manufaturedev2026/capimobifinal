@@ -479,7 +479,7 @@ export default function StoreLayoutMarketplace({
               O que você procura?
             </h2>
           </div>
-          <div className="flex gap-2.5 md:gap-3 overflow-x-auto scrollbar-hide pb-2 pr-4 md:pr-0 md:grid md:grid-cols-6 md:overflow-visible">
+          <div className="flex gap-2.5 md:gap-3 overflow-x-auto scrollbar-hide pb-2 -mx-4 px-4 md:mx-0 md:px-0 md:grid md:grid-cols-6 md:overflow-visible">
             {QUICK_ACTIONS.map((action, idx) => {
               const Icon = action.icon;
               const isActive = activeCategory === action.slug;
@@ -552,7 +552,7 @@ export default function StoreLayoutMarketplace({
                   Mais Visitados
                 </h2>
               </div>
-              <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2 pr-4 md:pr-0">
+              <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2 -mx-4 px-4 md:mx-0 md:px-0">
                 {sorted.map((product: any, i: number) => {
                   const productLink = `/imoveis/produto/${product.slug || product.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`;
                   return (
@@ -655,7 +655,7 @@ export default function StoreLayoutMarketplace({
               <div className="md:hidden relative">
                 <div
                   ref={promoScrollRef}
-                  className="flex gap-3 overflow-x-auto overflow-y-hidden scrollbar-hide snap-x snap-mandatory pb-2 pr-4"
+                  className="flex gap-3 overflow-x-auto overflow-y-hidden scrollbar-hide snap-x snap-mandatory pb-2 -mx-4 px-4 md:mx-0 md:px-0"
                   onTouchStart={() => {}}
                   onScroll={(e) => {
                     const el = e.currentTarget;
