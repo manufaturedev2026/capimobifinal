@@ -47,7 +47,7 @@ type SellerProfile = {
   creci: string | null;
 };
 
-type SubTab = "meus" | "disponivel" | "minhas" | "recebidas";
+type SubTab = "meus" | "disponivel" | "vigentes" | "minhas" | "recebidas";
 
 const ITEM_FIELDS = "id, title, price, photos, city, state, neighborhood, finality, commission_percent, partner_percent, partnership_enabled, seller_id, user_id, category, description, bedrooms, bathrooms, parking_spots, area";
 
@@ -58,6 +58,7 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
   const [myRequests, setMyRequests] = useState<(PartnershipRequest & { item: PartnershipItem | null; owner: SellerProfile | null })[]>([]);
   const [myItems, setMyItems] = useState<PartnershipItem[]>([]);
   const [receivedRequests, setReceivedRequests] = useState<(PartnershipRequest & { item: PartnershipItem | null; requester: SellerProfile | null })[]>([]);
+  const [activePartnerships, setActivePartnerships] = useState<(PartnershipRequest & { item: PartnershipItem | null; partner: SellerProfile | null; role: "owner" | "requester" })[]>([]);
   const [loading, setLoading] = useState(true);
   const [savingId, setSavingId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -76,7 +77,7 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
 
   const loadData = async () => {
     setLoading(true);
-    await Promise.all([loadMyItems(), loadAvailable(), loadMyRequests(), loadReceivedRequests()]);
+    await Promise.all([loadMyItems(), loadAvailable(), loadMyRequests(), loadReceivedRequests(), loadActivePartnerships()]);
     setLoading(false);
   };
 
@@ -317,6 +318,7 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
         {([
           { id: "meus" as SubTab, label: "Meus Imóveis", count: myItems.length },
           { id: "disponivel" as SubTab, label: "Disponíveis", count: filteredItems.length },
+          { id: "vigentes" as SubTab, label: "Vigentes", count: activePartnerships.length },
           { id: "minhas" as SubTab, label: "Solicitações", count: myRequests.length },
           { id: "recebidas" as SubTab, label: "Recebidas", count: receivedRequests.length },
         ]).map(tab => (
