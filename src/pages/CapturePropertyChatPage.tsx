@@ -524,6 +524,15 @@ export default function CapturePropertyChatPage() {
         <div className="sticky bottom-0 flex items-center gap-2 px-2 py-2" style={{ background: "#f0f2f5" }}>
           {showAiInput ? (
             <>
+              {aiMessages.filter(m => m.role === "user").length >= 4 && !showCrmForm && (
+                <button
+                  onClick={() => setShowCrmForm(true)}
+                  className="px-3 py-2.5 rounded-full text-xs font-semibold text-white shrink-0"
+                  style={{ background: "#25d366" }}
+                >
+                  📋 Enviar dados
+                </button>
+              )}
               <input
                 ref={inputRef}
                 type="text"
