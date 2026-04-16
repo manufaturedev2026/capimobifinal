@@ -343,7 +343,7 @@ export default function SellerDashboard() {
     { id: "domain", label: "Meu Domínio", icon: Globe, locked: lockedTabs.includes("domain") },
     ...(showTeamTab ? [{ id: "team" as DashboardTab, label: "Corretores", icon: Users }] : []),
     { id: "ads" as DashboardTab, label: "Fazer ADS", icon: Megaphone, tourId: "tour-ads" },
-    { id: "partner" as DashboardTab, label: "Parceiro", icon: Handshake },
+    { id: "partner" as DashboardTab, label: "Imobiliárias", icon: Handshake },
   ];
 
   const handleTabClick = (tabId: DashboardTab) => {
