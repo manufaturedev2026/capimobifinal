@@ -226,6 +226,18 @@ export default function CapturePropertyChatPage() {
   }, []);
 
   // ─── AI Mode Logic ───
+  // Extracted lead data from AI tool calling
+  const [aiExtractedData, setAiExtractedData] = useState<{
+    full_name?: string;
+    phone?: string;
+    property_type?: string;
+    address?: string;
+    desired_price?: string;
+    notes?: string;
+    finality?: string;
+  } | null>(null);
+  const [aiLeadSaved, setAiLeadSaved] = useState(false);
+
   const startAiChat = useCallback(async () => {
     setTyping(true);
     try {
@@ -252,6 +264,34 @@ export default function CapturePropertyChatPage() {
     }
   }, [isAiMode, loading, sellerProfile, startAiChat]);
 
+  // Auto-save extracted lead to CRM
+  const saveExtractedLeadRef = useRef(false);
+  const saveExtractedLead = useCallback(async (extracted: { full_name?: string; phone?: string; property_type?: string; address?: string; desired_price?: string; notes?: string; finality?: string }) => {
+    if (!sellerProfile || saveExtractedLeadRef.current) return;
+    saveExtractedLeadRef.current = true;
+    setAiLeadSaved(true);
+    try {
+      const priceNum = extracted.desired_price ? parseFloat(extracted.desired_price.replace(/\D/g, "")) || null : null;
+      await supabase.from("property_capture_leads" as any).insert({
+        seller_id: sellerProfile.id,
+        seller_user_id: sellerProfile.user_id,
+        full_name: (extracted.full_name || "").slice(0, 100),
+        phone: (extracted.phone || "").slice(0, 20),
+        property_type: extracted.property_type || "outros",
+        address: extracted.address || null,
+        desired_price: priceNum,
+        description: [
+          extracted.finality ? `Finalidade: ${extracted.finality}` : null,
+          extracted.notes || null,
+          "Lead capturado via chat IA de captação",
+        ].filter(Boolean).join("\n"),
+        status: "novo",
+      });
+    } catch (e) {
+      console.error("Auto-save lead error:", e);
+    }
+  }, [sellerProfile]);
+
   const sendAiMessage = async () => {
     const text = aiInput.trim();
     if (!text || aiLoading) return;
@@ -273,19 +313,40 @@ export default function CapturePropertyChatPage() {
       setAiMessages((prev) => [...prev, { role: "assistant", content: reply }]);
       addBotMsgInstant(reply);
 
-      const lower = reply.toLowerCase();
-      const triggerPhrases = [
-        "botão abaixo", "clica no botão", "enviar seus dados",
-        "preencha o formulário", "formulário abaixo", "dados foram coletados",
-        "confirmar seus dados", "confirme seus dados", "enviar as informações",
-        "pronto para enviar", "envie seus dados", "cadastrar seus dados",
-        "clique abaixo", "finalize o cadastro", "concluir o cadastro",
-        "dados de contato", "salvar seus dados", "registrar seus dados",
-      ];
-      const shouldShowForm = triggerPhrases.some(p => lower.includes(p));
-      const userMsgCount = updatedMessages.filter(m => m.role === "user").length;
-      if (shouldShowForm || userMsgCount >= 6) {
-        setTimeout(() => setShowCrmForm(true), 500);
+      // Check for extracted data from AI tool calling
+      if (data?.extractedData) {
+        const extracted = data.extractedData;
+        setAiExtractedData(prev => ({ ...prev, ...extracted }));
+        // Auto-save to CRM
+        await saveExtractedLead(extracted);
+        // Update local state for WhatsApp redirect
+        if (extracted.full_name) setFullName(extracted.full_name);
+        if (extracted.phone) setPhone(extracted.phone);
+        if (extracted.property_type) setPropertyType(extracted.property_type);
+        if (extracted.address) setAddress(extracted.address);
+        if (extracted.desired_price) setDesiredPrice(extracted.desired_price);
+        if (extracted.notes) setNotes(extracted.notes);
+        // Show WhatsApp button directly (no form needed)
+        setTimeout(() => {
+          setCrmSaved(true);
+          setShowCrmForm(true);
+        }, 800);
+      } else {
+        // Fallback: detect trigger phrases
+        const lower = reply.toLowerCase();
+        const triggerPhrases = [
+          "botão abaixo", "clica no botão", "enviar seus dados",
+          "preencha o formulário", "formulário abaixo", "dados foram coletados",
+          "confirmar seus dados", "confirme seus dados", "enviar as informações",
+          "pronto para enviar", "envie seus dados", "cadastrar seus dados",
+          "clique abaixo", "finalize o cadastro", "concluir o cadastro",
+          "dados de contato", "salvar seus dados", "registrar seus dados",
+        ];
+        const shouldShowForm = triggerPhrases.some(p => lower.includes(p));
+        const userMsgCount = updatedMessages.filter(m => m.role === "user").length;
+        if (shouldShowForm || userMsgCount >= 6) {
+          setTimeout(() => setShowCrmForm(true), 500);
+        }
       }
     } catch (e) {
       console.error("AI error:", e);
@@ -599,48 +660,73 @@ export default function CapturePropertyChatPage() {
     if (!sellerProfile?.phone) return;
     const cleanPhone = sellerProfile.phone.replace(/\D/g, "");
 
+    // AI mode: use extracted data or local state
+    const leadName = fullName || crmName || aiExtractedData?.full_name || "";
+    const leadPhone = phone || aiExtractedData?.phone || "";
+    const leadType = propertyType || crmPropertyType || aiExtractedData?.property_type || "";
+    const leadAddress = address || crmAddress || aiExtractedData?.address || "";
+    const leadPrice = desiredPrice || aiExtractedData?.desired_price || "";
+    const leadNotes = notes || aiExtractedData?.notes || "";
+    const leadFinality = aiExtractedData?.finality || "";
+
     let msg = "";
-    switch (flowType) {
-      case "captacao":
-        msg = encodeURIComponent(
-          `Olá! Acabei de cadastrar meu imóvel pelo chat:\n\n` +
-          `📋 Nome: ${fullName || crmName}\n` +
-          `🏠 Tipo: ${propertyType || crmPropertyType || "Não informado"}\n` +
-          `📍 Endereço: ${address || crmAddress || "Não informado"}\n` +
-          `💰 Valor: ${desiredPrice && desiredPrice !== "0" ? `R$ ${desiredPrice}` : "A definir"}\n\n` +
-          `Aguardo retorno!`
-        );
-        break;
-      case "grupo_whatsapp":
-        if (config.grupoWhatsappLink) {
-          window.open(config.grupoWhatsappLink, "_blank", "noopener");
-          return;
-        }
-        msg = encodeURIComponent(
-          `Olá! Me cadastrei pelo chat e gostaria de entrar no grupo de imóveis!\n\n` +
-          `📋 Nome: ${fullName}\n📱 WhatsApp: ${phone}`
-        );
-        break;
-      case "agendamento":
-        msg = encodeURIComponent(
-          `Olá! Acabei de agendar uma visita pelo chat:\n\n` +
-          `📋 Nome: ${fullName}\n` +
-          `🏠 Interesse: ${interest || "Não informado"}\n` +
-          `📅 Data: ${visitDate || "Não informado"}\n` +
-          `⏰ Horário: ${visitTime || "Não informado"}\n\n` +
-          `Aguardo confirmação!`
-        );
-        break;
-      case "avaliacao":
-        msg = encodeURIComponent(
-          `Olá! Solicitei uma avaliação gratuita pelo chat:\n\n` +
-          `📋 Nome: ${fullName}\n` +
-          `🏠 Tipo: ${propertyType || "Não informado"}\n` +
-          `📍 Endereço: ${address || "Não informado"}\n` +
-          `📝 Detalhes: ${details || "Não informado"}\n\n` +
-          `Aguardo retorno!`
-        );
-        break;
+    if (isAiMode) {
+      // AI mode: comprehensive pre-filled message
+      const parts = [
+        `Olá! Acabei de cadastrar meu imóvel pelo chat com IA:\n`,
+        `📋 Nome: ${leadName}`,
+        leadPhone ? `📱 WhatsApp: ${leadPhone}` : null,
+        leadType ? `🏠 Tipo: ${leadType}` : null,
+        leadAddress ? `📍 Endereço: ${leadAddress}` : null,
+        leadFinality ? `📌 Finalidade: ${leadFinality}` : null,
+        leadPrice && leadPrice !== "0" ? `💰 Valor: R$ ${leadPrice}` : null,
+        leadNotes ? `📝 Obs: ${leadNotes}` : null,
+        `\nAguardo retorno!`,
+      ].filter(Boolean).join("\n");
+      msg = encodeURIComponent(parts);
+    } else {
+      switch (flowType) {
+        case "captacao":
+          msg = encodeURIComponent(
+            `Olá! Acabei de cadastrar meu imóvel pelo chat:\n\n` +
+            `📋 Nome: ${leadName}\n` +
+            `🏠 Tipo: ${leadType || "Não informado"}\n` +
+            `📍 Endereço: ${leadAddress || "Não informado"}\n` +
+            `💰 Valor: ${leadPrice && leadPrice !== "0" ? `R$ ${leadPrice}` : "A definir"}\n\n` +
+            `Aguardo retorno!`
+          );
+          break;
+        case "grupo_whatsapp":
+          if (config.grupoWhatsappLink) {
+            window.open(config.grupoWhatsappLink, "_blank", "noopener");
+            return;
+          }
+          msg = encodeURIComponent(
+            `Olá! Me cadastrei pelo chat e gostaria de entrar no grupo de imóveis!\n\n` +
+            `📋 Nome: ${fullName}\n📱 WhatsApp: ${phone}`
+          );
+          break;
+        case "agendamento":
+          msg = encodeURIComponent(
+            `Olá! Acabei de agendar uma visita pelo chat:\n\n` +
+            `📋 Nome: ${fullName}\n` +
+            `🏠 Interesse: ${interest || "Não informado"}\n` +
+            `📅 Data: ${visitDate || "Não informado"}\n` +
+            `⏰ Horário: ${visitTime || "Não informado"}\n\n` +
+            `Aguardo confirmação!`
+          );
+          break;
+        case "avaliacao":
+          msg = encodeURIComponent(
+            `Olá! Solicitei uma avaliação gratuita pelo chat:\n\n` +
+            `📋 Nome: ${fullName}\n` +
+            `🏠 Tipo: ${propertyType || "Não informado"}\n` +
+            `📍 Endereço: ${address || "Não informado"}\n` +
+            `📝 Detalhes: ${details || "Não informado"}\n\n` +
+            `Aguardo retorno!`
+          );
+          break;
+      }
     }
     window.open(`https://wa.me/${cleanPhone}?text=${msg}`, "_blank", "noopener");
   };
@@ -665,9 +751,9 @@ export default function CapturePropertyChatPage() {
   }
 
   const displayName = sellerProfile.company_name || sellerProfile.full_name || config.attendantName;
-  const showAiInput = isAiMode && !showCrmForm;
+  const showAiInput = isAiMode && !showCrmForm && !aiLeadSaved;
   const showFlowInput = !isAiMode && inputVisible && step !== "done" && step !== "type" && step !== "time";
-  const isDone = isAiMode ? crmSaved : step === "done";
+  const isDone = isAiMode ? (aiLeadSaved || crmSaved) : step === "done";
 
   const getCtaLabel = () => {
     switch (flowType) {
@@ -809,9 +895,9 @@ export default function CapturePropertyChatPage() {
             )}
           </AnimatePresence>
 
-          {/* AI mode: CRM form */}
+          {/* AI mode: CRM form (fallback) or WhatsApp button (when AI extracted data) */}
           <AnimatePresence>
-            {isAiMode && showCrmForm && !crmSaved && (
+            {isAiMode && showCrmForm && !aiLeadSaved && !crmSaved && (
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="flex flex-col items-center gap-3 pt-4 pb-8 px-4">
                 <div className="bg-white rounded-2xl shadow-lg p-5 w-full max-w-sm space-y-3">
                   <p className="text-sm font-semibold text-[#075e54] text-center">📋 Confirme seus dados para contato!</p>
