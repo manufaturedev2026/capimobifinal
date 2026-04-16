@@ -92,6 +92,17 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
   const [botChatMode, setBotChatMode] = useState<"flow" | "ai">("flow");
   const [savingBot, setSavingBot] = useState(false);
 
+  // Flow step messages
+  const [flowMsgName, setFlowMsgName] = useState("Vamos começar? Me diz o seu nome completo 😊");
+  const [flowMsgNameReply, setFlowMsgNameReply] = useState("Prazer, {nome}! 🤝");
+  const [flowMsgPhone, setFlowMsgPhone] = useState("Qual seu telefone ou WhatsApp? 📱");
+  const [flowMsgType, setFlowMsgType] = useState("Perfeito! Agora me diz: qual o tipo do imóvel? 🏠");
+  const [flowMsgAddress, setFlowMsgAddress] = useState("Ótimo! Qual o endereço ou localização do imóvel? 📍");
+  const [flowMsgPrice, setFlowMsgPrice] = useState("Tem um valor em mente para o imóvel? 💰\n\n(Se não tiver, pode digitar 0 ou pular)");
+  const [flowMsgNotes, setFlowMsgNotes] = useState("Alguma observação sobre o imóvel? 📝\n\n(Opcional - pode enviar vazio para pular)");
+  const [flowMsgSuccess, setFlowMsgSuccess] = useState("✅ Pronto! Suas informações foram enviadas com sucesso!");
+  const [flowMsgSuccessEnd, setFlowMsgSuccessEnd] = useState("Em breve um corretor vai entrar em contato com você pelo WhatsApp. Obrigado! 🎉");
+
   const captureUrl = `${window.location.origin}/captar-imovel/${sellerSlug || sellerId}`;
   const chatBotUrl = `${window.location.origin}/captar-imovel/${sellerSlug || sellerId}/chat`;
 
@@ -128,6 +139,15 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
         if (cfg.attendantAvatar) setBotAttendantAvatar(cfg.attendantAvatar);
         if (cfg.openingMessage) setBotOpeningMessage(cfg.openingMessage);
         if (cfg.chatMode) setBotChatMode(cfg.chatMode);
+        if (cfg.flowMsgName) setFlowMsgName(cfg.flowMsgName);
+        if (cfg.flowMsgNameReply) setFlowMsgNameReply(cfg.flowMsgNameReply);
+        if (cfg.flowMsgPhone) setFlowMsgPhone(cfg.flowMsgPhone);
+        if (cfg.flowMsgType) setFlowMsgType(cfg.flowMsgType);
+        if (cfg.flowMsgAddress) setFlowMsgAddress(cfg.flowMsgAddress);
+        if (cfg.flowMsgPrice) setFlowMsgPrice(cfg.flowMsgPrice);
+        if (cfg.flowMsgNotes) setFlowMsgNotes(cfg.flowMsgNotes);
+        if (cfg.flowMsgSuccess) setFlowMsgSuccess(cfg.flowMsgSuccess);
+        if (cfg.flowMsgSuccessEnd) setFlowMsgSuccessEnd(cfg.flowMsgSuccessEnd);
       } catch {}
     }
   };
