@@ -416,7 +416,7 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
 
             <Button onClick={handleSend} disabled={sending || !title.trim() || !body.trim()} className="w-full gap-2">
               {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Megaphone className="w-4 h-4" />}
-              Enviar para {totalSubscribers} dispositivo{totalSubscribers !== 1 ? "s" : ""}
+              Enviar para ~{estimate ?? totalSubscribers} dispositivo{(estimate ?? totalSubscribers) !== 1 ? "s" : ""}
             </Button>
           </div>
         )}
