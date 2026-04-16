@@ -308,8 +308,8 @@ export default function CapturePropertyChatPage() {
       description: obs || null,
       status: "novo",
     });
-    await addBotMsg("✅ Pronto! Suas informações foram enviadas com sucesso!");
-    await addBotMsg("Em breve um corretor vai entrar em contato com você pelo WhatsApp. Obrigado! 🎉");
+    await addBotMsg(config.flowMsgSuccess);
+    await addBotMsg(config.flowMsgSuccessEnd);
     setStep("done");
   };
 
