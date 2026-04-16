@@ -129,13 +129,33 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
 
     setTotalSubscribers(subCount || 0);
 
-    // Count unique seller_ids with subscriptions
+    // Count unique seller_ids with subscriptions, joined with profile category
     const { data: sellerData } = await supabase
       .from("push_subscriptions" as any)
       .select("seller_id");
 
-    const uniqueSellers = new Set((sellerData || []).map((s: any) => s.seller_id));
-    setTotalSellers(uniqueSellers.size);
+    const uniqueSellerIds = Array.from(new Set((sellerData || []).map((s: any) => s.seller_id))).filter(Boolean);
+    setTotalSellers(uniqueSellerIds.length);
+
+    if (uniqueSellerIds.length > 0) {
+      const { data: profs } = await supabase
+        .from("profiles")
+        .select("id, seller_category")
+        .in("id", uniqueSellerIds);
+      const counts = { corretor: 0, imobiliaria: 0, construtora: 0 };
+      for (const p of (profs || []) as any[]) {
+        if (p.seller_category === "corretor") counts.corretor++;
+        else if (p.seller_category === "imobiliaria") counts.imobiliaria++;
+        else if (p.seller_category === "construtora") counts.construtora++;
+      }
+      setTotalCorretores(counts.corretor);
+      setTotalImobiliarias(counts.imobiliaria);
+      setTotalConstrutoras(counts.construtora);
+    } else {
+      setTotalCorretores(0);
+      setTotalImobiliarias(0);
+      setTotalConstrutoras(0);
+    }
 
     const { data: logData } = await supabase
       .from("push_notifications_log" as any)
