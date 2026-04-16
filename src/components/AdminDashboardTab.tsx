@@ -349,7 +349,17 @@ export default function AdminDashboardTab() {
                     <Cell key={i} fill={CHART_COLORS[(i + 2) % CHART_COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip />
+                <Tooltip
+                  contentStyle={{
+                    background: "hsl(var(--card))",
+                    border: "1px solid hsl(var(--border))",
+                    borderRadius: 12,
+                    fontSize: 12,
+                    color: "hsl(var(--foreground))",
+                  }}
+                  labelStyle={{ color: "hsl(var(--foreground))", fontWeight: 600 }}
+                  itemStyle={{ color: "hsl(var(--foreground))" }}
+                />
               </PieChart>
             </ResponsiveContainer>
           ) : (
