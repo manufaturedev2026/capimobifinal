@@ -76,6 +76,30 @@ export type Database = {
           },
         ]
       }
+      ai_text_generations_log: {
+        Row: {
+          action: string
+          created_at: string
+          id: string
+          seller_id: string
+          user_id: string
+        }
+        Insert: {
+          action?: string
+          created_at?: string
+          id?: string
+          seller_id: string
+          user_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          id?: string
+          seller_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       commissions: {
         Row: {
           amount: number
