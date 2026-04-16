@@ -593,6 +593,7 @@ export default function CapturePropertyChatPage() {
       description: obs || null,
       status: "novo",
     });
+    notifyNewCaptureLead(sellerProfile.user_id, name, `${name} quer vender um imóvel.`);
     await addBotMsg(config.flowMsgSuccess);
     await addBotMsg(config.flowMsgSuccessEnd);
     setStep("done");
