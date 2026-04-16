@@ -353,11 +353,11 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
 
       <div className="flex gap-1 bg-secondary/50 rounded-xl p-1 overflow-x-auto scrollbar-hide">
         {([
-          { id: "meus" as SubTab, label: "Meus Imóveis", count: myItems.length },
-          { id: "disponivel" as SubTab, label: "Disponíveis", count: filteredItems.length },
-          { id: "vigentes" as SubTab, label: "Vigentes", count: activePartnerships.length },
-          { id: "minhas" as SubTab, label: "Solicitações", count: myRequests.length },
-          { id: "recebidas" as SubTab, label: "Recebidas", count: receivedRequests.length },
+          { id: "meus" as SubTab, label: "Meus Imóveis", count: 0 },
+          { id: "disponivel" as SubTab, label: "Disponíveis", count: 0 },
+          { id: "vigentes" as SubTab, label: "Vigentes", count: 0 },
+          { id: "minhas" as SubTab, label: "Solicitações", count: myRequests.filter(r => r.status === "pendente").length },
+          { id: "recebidas" as SubTab, label: "Recebidas", count: receivedRequests.filter(r => r.status === "pendente").length },
         ]).map(tab => (
           <button
             key={tab.id}
@@ -366,7 +366,7 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
               subTab === tab.id ? "bg-primary text-primary-foreground shadow-md" : "text-muted-foreground hover:text-foreground"
             }`}
           >
-            {tab.label} {tab.count > 0 && <span className="ml-1 opacity-70">({tab.count})</span>}
+            {tab.label} {tab.count > 0 && <span className="ml-1 bg-red-500 text-white rounded-full px-1.5 py-0.5 text-[10px]">{tab.count}</span>}
           </button>
         ))}
       </div>
