@@ -213,6 +213,15 @@ export default function AuthPage() {
                     className="w-full px-4 py-3 rounded-xl border border-border bg-secondary text-foreground text-sm placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/50 focus:border-primary/50 focus:outline-none transition-all"
                     placeholder="(27) 99999-9999" />
                 </div>
+                <div>
+                  <label className="block text-sm font-medium text-foreground/80 mb-1.5">Você é *</label>
+                  <select value={sellerCategory} onChange={(e) => setSellerCategory(e.target.value as any)} required
+                    className="w-full px-4 py-3 rounded-xl border border-border bg-secondary text-foreground text-sm focus:ring-2 focus:ring-primary/50 focus:border-primary/50 focus:outline-none transition-all appearance-none">
+                    <option value="corretor">Corretor(a)</option>
+                    <option value="imobiliaria">Imobiliária</option>
+                    <option value="construtora">Construtora</option>
+                  </select>
+                </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="block text-sm font-medium text-foreground/80 mb-1.5">Estado</label>
