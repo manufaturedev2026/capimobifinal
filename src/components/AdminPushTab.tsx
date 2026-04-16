@@ -42,6 +42,62 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
   const [regionData, setRegionData] = useState<Record<string, string[]>>({});
   const availableStates = Object.keys(regionData).sort();
   const stateCities = filterState !== "all" ? (regionData[filterState] || []) : [];
+  const [estimate, setEstimate] = useState<number | null>(null);
+  const [estimating, setEstimating] = useState(false);
+
+  // Estimate number of recipients when filters change
+  useEffect(() => {
+    let cancelled = false;
+    const run = async () => {
+      setEstimating(true);
+      try {
+        const hasCategoryFilter = audience !== "all";
+        const hasRegionFilter = filterState !== "all" || filterCity !== "all";
+
+        if (!hasCategoryFilter && !hasRegionFilter) {
+          // All subscriptions, deduplicated by endpoint
+          const { data } = await supabase.from("push_subscriptions" as any).select("endpoint");
+          if (cancelled) return;
+          const unique = new Set((data || []).map((s: any) => s.endpoint));
+          setEstimate(unique.size);
+          return;
+        }
+
+        // Build profiles query matching server logic
+        let profilesQuery = supabase.from("profiles").select("id");
+        if (audience === "professionals") {
+          profilesQuery = profilesQuery.in("seller_category", ["corretor", "imobiliaria", "construtora"]);
+        } else if (audience === "clients") {
+          profilesQuery = profilesQuery.or(
+            "seller_category.is.null,seller_category.in.(proprietario,autonomo,loja_veiculos,concessionaria)"
+          );
+        } else if (audience !== "all") {
+          profilesQuery = profilesQuery.eq("seller_category", audience as any);
+        }
+        if (filterState !== "all") profilesQuery = profilesQuery.eq("state", filterState);
+        if (filterCity !== "all") profilesQuery = profilesQuery.ilike("city", filterCity);
+
+        const { data: profs } = await profilesQuery;
+        if (cancelled) return;
+        const ids = (profs || []).map((p: any) => p.id);
+        if (ids.length === 0) {
+          setEstimate(0);
+          return;
+        }
+        const { data: subs } = await supabase
+          .from("push_subscriptions" as any)
+          .select("endpoint")
+          .in("seller_id", ids);
+        if (cancelled) return;
+        const unique = new Set((subs || []).map((s: any) => s.endpoint));
+        setEstimate(unique.size);
+      } finally {
+        if (!cancelled) setEstimating(false);
+      }
+    };
+    run();
+    return () => { cancelled = true; };
+  }, [audience, filterState, filterCity, totalSubscribers]);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -286,6 +342,25 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
               </div>
             </div>
 
+            {/* Estimate badge */}
+            <div className="flex items-center gap-2 p-3 rounded-lg border border-primary/20 bg-primary/5">
+              <Target className="w-4 h-4 text-primary shrink-0" />
+              <div className="flex-1 text-xs">
+                {estimating ? (
+                  <span className="text-muted-foreground flex items-center gap-1.5">
+                    <Loader2 className="w-3 h-3 animate-spin" /> Calculando estimativa...
+                  </span>
+                ) : (
+                  <>
+                    <span className="font-bold text-foreground">
+                      ~{estimate ?? 0} dispositivo{estimate !== 1 ? "s" : ""}
+                    </span>
+                    <span className="text-muted-foreground"> receberão esta notificação</span>
+                  </>
+                )}
+              </div>
+            </div>
+
             <div className="space-y-1.5">
               <Label className="text-xs font-medium">Título *</Label>
               <Input
@@ -341,7 +416,7 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
 
             <Button onClick={handleSend} disabled={sending || !title.trim() || !body.trim()} className="w-full gap-2">
               {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Megaphone className="w-4 h-4" />}
-              Enviar para {totalSubscribers} dispositivo{totalSubscribers !== 1 ? "s" : ""}
+              Enviar para ~{estimate ?? totalSubscribers} dispositivo{(estimate ?? totalSubscribers) !== 1 ? "s" : ""}
             </Button>
           </div>
         )}
