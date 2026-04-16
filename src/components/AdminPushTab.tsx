@@ -189,6 +189,24 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
         ) : (
           <div className="space-y-3">
             <div className="space-y-1.5">
+              <Label className="text-xs font-medium flex items-center gap-1.5">
+                <Target className="w-3.5 h-3.5" /> Público-alvo
+              </Label>
+              <Select value={audience} onValueChange={(v) => setAudience(v as any)}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos os inscritos</SelectItem>
+                  <SelectItem value="professionals">Apenas profissionais (Corretores + Imobiliárias + Construtoras)</SelectItem>
+                  <SelectItem value="corretor">Apenas Corretores</SelectItem>
+                  <SelectItem value="imobiliaria">Apenas Imobiliárias</SelectItem>
+                  <SelectItem value="construtora">Apenas Construtoras</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-1.5">
               <Label className="text-xs font-medium">Título *</Label>
               <Input
                 value={title}
