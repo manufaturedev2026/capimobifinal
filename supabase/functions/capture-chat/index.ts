@@ -72,7 +72,61 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { messages, sellerName, mode } = await req.json();
+    const body = await req.json();
+    const { action } = body;
+
+    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+
+    // ── Generate Ad Copy with AI ──
+    if (action === "generate_ad_copy") {
+      const { sellerName, captureUrl, templateHint } = body;
+      const adPrompt = `Você é um copywriter especialista em marketing imobiliário brasileiro.
+
+Gere um texto de anúncio criativo e persuasivo para redes sociais (Instagram, Facebook, WhatsApp).
+
+DADOS:
+- Nome do corretor/imobiliária: ${sellerName || "Corretor"}
+- Link de captação: ${captureUrl || ""}
+- Estilo solicitado: ${templateHint || "Captação Geral"}
+
+REGRAS:
+- Escreva em português brasileiro
+- Use emojis estrategicamente (não exagere)
+- Inclua o link de captação
+- Inclua hashtags relevantes no final
+- Tom profissional mas acessível
+- Máximo 300 palavras
+- Inclua um CTA (call-to-action) forte
+- Mencione benefícios como: avaliação gratuita, divulgação profissional, sem burocracia
+- Adapte o tom ao estilo solicitado`;
+
+      const aiResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "google/gemini-3-flash-preview",
+          messages: [{ role: "user", content: adPrompt }],
+          max_tokens: 800,
+        }),
+      });
+
+      if (!aiResp.ok) {
+        const status = aiResp.status;
+        return new Response(JSON.stringify({ error: status === 429 ? "Limite atingido" : "Erro na IA" }), {
+          status, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const aiData = await aiResp.json();
+      const text = aiData.choices?.[0]?.message?.content || "Erro ao gerar texto.";
+      return new Response(JSON.stringify({ text }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // ── Chat Mode ──
+    const { messages, sellerName, mode } = body;
 
     if (!messages || !Array.isArray(messages)) {
       return new Response(JSON.stringify({ error: "Messages array required" }), {
@@ -80,9 +134,6 @@ serve(async (req) => {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
     const contextPrompt = sellerName
       ? `${SYSTEM_PROMPT}\n\nVocê está representando o corretor/imobiliária "${sellerName}". Mencione o nome quando apropriado.`
