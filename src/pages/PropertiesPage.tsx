@@ -410,7 +410,7 @@ export default function PropertiesPage() {
       {/* Featured Products Carousel */}
       <section className="pt-8 pb-2">
         <h3 className="font-display font-semibold text-base text-foreground mb-4 px-4 md:px-8 lg:px-12">Destaques</h3>
-        <div className="flex gap-3 overflow-x-auto md:overflow-visible scrollbar-hide pb-2 snap-x snap-mandatory md:snap-none px-4 pr-8 md:px-8 md:pr-8 lg:px-12 lg:pr-12 md:grid md:grid-cols-7">
+        <div className="flex gap-3 overflow-x-auto md:overflow-visible scrollbar-hide pb-2 snap-x snap-mandatory md:snap-none -mx-4 px-4 md:mx-0 md:px-8 lg:px-12 md:grid md:grid-cols-7">
           {featuredProducts.map((product, i) => {
             const company = allSellers[product.companyId];
             return (
