@@ -52,6 +52,15 @@ export default function NotificationsTab({ userId, sellerId }: NotificationsTabP
   const [uploadingImage, setUploadingImage] = useState(false);
   const [items, setItems] = useState<{ id: string; title: string; slug: string | null; photos: string[] | null }[]>([]);
 
+  const { currentTier } = useSubscription(userId);
+  const dailyLimit = PUSH_DAILY_LIMITS[currentTier] ?? 1;
+  const sentToday = logs.filter((l) => {
+    const d = new Date(l.created_at);
+    const now = new Date();
+    return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth() && d.getDate() === now.getDate();
+  }).length;
+  const limitReached = sentToday >= dailyLimit;
+
   const fetchData = async () => {
     // Get subscriber count
     const { count } = await supabase
