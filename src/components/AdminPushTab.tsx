@@ -99,6 +99,7 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
           body: body.trim(),
           url: url.trim() || undefined,
           image: image || undefined,
+          audience,
         },
       });
 
