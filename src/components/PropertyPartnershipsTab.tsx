@@ -25,6 +25,7 @@ type PartnershipItem = {
   bathrooms: number | null;
   parking_spots: number | null;
   area: number | null;
+  status: string;
 };
 
 type PartnershipRequest = {
@@ -49,7 +50,7 @@ type SellerProfile = {
 
 type SubTab = "meus" | "disponivel" | "vigentes" | "minhas" | "recebidas";
 
-const ITEM_FIELDS = "id, title, price, photos, city, state, neighborhood, finality, commission_percent, partner_percent, partnership_enabled, seller_id, user_id, category, description, bedrooms, bathrooms, parking_spots, area";
+const ITEM_FIELDS = "id, title, price, photos, city, state, neighborhood, finality, commission_percent, partner_percent, partnership_enabled, seller_id, user_id, category, description, bedrooms, bathrooms, parking_spots, area, status";
 
 export default function PropertyPartnershipsTab({ profileId, userId }: { profileId: string; userId: string }) {
   const { toast } = useToast();
