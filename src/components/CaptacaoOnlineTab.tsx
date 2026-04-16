@@ -85,14 +85,17 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
   const [captureVideoTitle, setCaptureVideoTitle] = useState("");
   const [savingVideo, setSavingVideo] = useState(false);
 
+  type FlowType = "captacao" | "grupo_whatsapp" | "agendamento" | "avaliacao";
+
   // Bot config
   const [botAttendantName, setBotAttendantName] = useState("Assistente Imobiliário");
   const [botAttendantAvatar, setBotAttendantAvatar] = useState("");
   const [botOpeningMessage, setBotOpeningMessage] = useState("Olá! 👋 Vou te ajudar a cadastrar seu imóvel para avaliação gratuita! É rápido e sem compromisso 🏡");
   const [botChatMode, setBotChatMode] = useState<"flow" | "ai">("flow");
+  const [botFlowType, setBotFlowType] = useState<FlowType>("captacao");
   const [savingBot, setSavingBot] = useState(false);
 
-  // Flow step messages
+  // Captação messages
   const [flowMsgName, setFlowMsgName] = useState("Vamos começar? Me diz o seu nome completo 😊");
   const [flowMsgNameReply, setFlowMsgNameReply] = useState("Prazer, {nome}! 🤝");
   const [flowMsgPhone, setFlowMsgPhone] = useState("Qual seu telefone ou WhatsApp? 📱");
@@ -102,6 +105,34 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
   const [flowMsgNotes, setFlowMsgNotes] = useState("Alguma observação sobre o imóvel? 📝\n\n(Opcional - pode enviar vazio para pular)");
   const [flowMsgSuccess, setFlowMsgSuccess] = useState("✅ Pronto! Suas informações foram enviadas com sucesso!");
   const [flowMsgSuccessEnd, setFlowMsgSuccessEnd] = useState("Em breve um corretor vai entrar em contato com você pelo WhatsApp. Obrigado! 🎉");
+
+  // Grupo WhatsApp messages
+  const [grupoMsgName, setGrupoMsgName] = useState("Que bom ter você aqui! 🎉 Me diz seu nome para eu te conhecer melhor:");
+  const [grupoMsgNameReply, setGrupoMsgNameReply] = useState("Prazer, {nome}! 🤝");
+  const [grupoMsgPhone, setGrupoMsgPhone] = useState("Qual seu WhatsApp? Assim eu te adiciono no nosso grupo exclusivo 📱");
+  const [grupoMsgSuccess, setGrupoMsgSuccess] = useState("✅ Perfeito! Você está pronto para entrar no grupo!");
+  const [grupoMsgSuccessEnd, setGrupoMsgSuccessEnd] = useState("No nosso grupo você recebe as melhores oportunidades em primeira mão! 🏡🔥");
+  const [grupoWhatsappLink, setGrupoWhatsappLink] = useState("");
+
+  // Agendamento messages
+  const [agendMsgName, setAgendMsgName] = useState("Olá! 👋 Vou te ajudar a agendar uma visita. Me diz seu nome completo:");
+  const [agendMsgNameReply, setAgendMsgNameReply] = useState("Prazer, {nome}! 🤝 Vamos agendar sua visita!");
+  const [agendMsgPhone, setAgendMsgPhone] = useState("Qual seu telefone ou WhatsApp para confirmarmos? 📱");
+  const [agendMsgInterest, setAgendMsgInterest] = useState("Qual imóvel ou região você tem interesse em visitar? 🏠📍");
+  const [agendMsgDate, setAgendMsgDate] = useState("Qual a melhor data para a visita? 📅\n\n(Ex: segunda-feira, 20/01, esta semana...)");
+  const [agendMsgTime, setAgendMsgTime] = useState("E qual o melhor horário? ⏰\n\n(Ex: manhã, 14h, final da tarde...)");
+  const [agendMsgSuccess, setAgendMsgSuccess] = useState("✅ Visita agendada com sucesso!");
+  const [agendMsgSuccessEnd, setAgendMsgSuccessEnd] = useState("Um corretor vai confirmar o agendamento pelo WhatsApp. Até breve! 📋🎉");
+
+  // Avaliação messages
+  const [avalMsgName, setAvalMsgName] = useState("Olá! 👋 Vou te ajudar a solicitar uma avaliação GRATUITA do seu imóvel! Me diz seu nome:");
+  const [avalMsgNameReply, setAvalMsgNameReply] = useState("Prazer, {nome}! 🤝 Vamos avaliar seu imóvel!");
+  const [avalMsgPhone, setAvalMsgPhone] = useState("Qual seu telefone ou WhatsApp? 📱");
+  const [avalMsgType, setAvalMsgType] = useState("Qual o tipo do seu imóvel? 🏠");
+  const [avalMsgAddress, setAvalMsgAddress] = useState("Qual o endereço completo do imóvel? 📍\n\n(Rua, número, bairro e cidade)");
+  const [avalMsgDetails, setAvalMsgDetails] = useState("Conte mais sobre o imóvel! 📝\n\n(Ex: quantidade de quartos, tamanho, estado de conservação, reformas...)");
+  const [avalMsgSuccess, setAvalMsgSuccess] = useState("✅ Solicitação de avaliação enviada com sucesso!");
+  const [avalMsgSuccessEnd, setAvalMsgSuccessEnd] = useState("Um especialista vai entrar em contato em até 24h para agendar a visita de avaliação. Obrigado! 🏡💎");
 
   const captureUrl = `${window.location.origin}/captar-imovel/${sellerSlug || sellerId}`;
   const chatBotUrl = `${window.location.origin}/captar-imovel/${sellerSlug || sellerId}/chat`;
@@ -139,6 +170,8 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
         if (cfg.attendantAvatar) setBotAttendantAvatar(cfg.attendantAvatar);
         if (cfg.openingMessage) setBotOpeningMessage(cfg.openingMessage);
         if (cfg.chatMode) setBotChatMode(cfg.chatMode);
+        if (cfg.flowType) setBotFlowType(cfg.flowType);
+        // Captação
         if (cfg.flowMsgName) setFlowMsgName(cfg.flowMsgName);
         if (cfg.flowMsgNameReply) setFlowMsgNameReply(cfg.flowMsgNameReply);
         if (cfg.flowMsgPhone) setFlowMsgPhone(cfg.flowMsgPhone);
@@ -148,30 +181,59 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
         if (cfg.flowMsgNotes) setFlowMsgNotes(cfg.flowMsgNotes);
         if (cfg.flowMsgSuccess) setFlowMsgSuccess(cfg.flowMsgSuccess);
         if (cfg.flowMsgSuccessEnd) setFlowMsgSuccessEnd(cfg.flowMsgSuccessEnd);
+        // Grupo
+        if (cfg.grupoMsgName) setGrupoMsgName(cfg.grupoMsgName);
+        if (cfg.grupoMsgNameReply) setGrupoMsgNameReply(cfg.grupoMsgNameReply);
+        if (cfg.grupoMsgPhone) setGrupoMsgPhone(cfg.grupoMsgPhone);
+        if (cfg.grupoMsgSuccess) setGrupoMsgSuccess(cfg.grupoMsgSuccess);
+        if (cfg.grupoMsgSuccessEnd) setGrupoMsgSuccessEnd(cfg.grupoMsgSuccessEnd);
+        if (cfg.grupoWhatsappLink) setGrupoWhatsappLink(cfg.grupoWhatsappLink);
+        // Agendamento
+        if (cfg.agendMsgName) setAgendMsgName(cfg.agendMsgName);
+        if (cfg.agendMsgNameReply) setAgendMsgNameReply(cfg.agendMsgNameReply);
+        if (cfg.agendMsgPhone) setAgendMsgPhone(cfg.agendMsgPhone);
+        if (cfg.agendMsgInterest) setAgendMsgInterest(cfg.agendMsgInterest);
+        if (cfg.agendMsgDate) setAgendMsgDate(cfg.agendMsgDate);
+        if (cfg.agendMsgTime) setAgendMsgTime(cfg.agendMsgTime);
+        if (cfg.agendMsgSuccess) setAgendMsgSuccess(cfg.agendMsgSuccess);
+        if (cfg.agendMsgSuccessEnd) setAgendMsgSuccessEnd(cfg.agendMsgSuccessEnd);
+        // Avaliação
+        if (cfg.avalMsgName) setAvalMsgName(cfg.avalMsgName);
+        if (cfg.avalMsgNameReply) setAvalMsgNameReply(cfg.avalMsgNameReply);
+        if (cfg.avalMsgPhone) setAvalMsgPhone(cfg.avalMsgPhone);
+        if (cfg.avalMsgType) setAvalMsgType(cfg.avalMsgType);
+        if (cfg.avalMsgAddress) setAvalMsgAddress(cfg.avalMsgAddress);
+        if (cfg.avalMsgDetails) setAvalMsgDetails(cfg.avalMsgDetails);
+        if (cfg.avalMsgSuccess) setAvalMsgSuccess(cfg.avalMsgSuccess);
+        if (cfg.avalMsgSuccessEnd) setAvalMsgSuccessEnd(cfg.avalMsgSuccessEnd);
       } catch {}
     }
   };
 
   const saveBotConfig = async () => {
     setSavingBot(true);
-    const config = JSON.stringify({
+    const configStr = JSON.stringify({
       attendantName: botAttendantName,
       attendantAvatar: botAttendantAvatar,
       openingMessage: botOpeningMessage,
       chatMode: botChatMode,
-      flowMsgName,
-      flowMsgNameReply,
-      flowMsgPhone,
-      flowMsgType,
-      flowMsgAddress,
-      flowMsgPrice,
-      flowMsgNotes,
-      flowMsgSuccess,
-      flowMsgSuccessEnd,
+      flowType: botFlowType,
+      // Captação
+      flowMsgName, flowMsgNameReply, flowMsgPhone, flowMsgType,
+      flowMsgAddress, flowMsgPrice, flowMsgNotes, flowMsgSuccess, flowMsgSuccessEnd,
+      // Grupo
+      grupoMsgName, grupoMsgNameReply, grupoMsgPhone,
+      grupoMsgSuccess, grupoMsgSuccessEnd, grupoWhatsappLink,
+      // Agendamento
+      agendMsgName, agendMsgNameReply, agendMsgPhone, agendMsgInterest,
+      agendMsgDate, agendMsgTime, agendMsgSuccess, agendMsgSuccessEnd,
+      // Avaliação
+      avalMsgName, avalMsgNameReply, avalMsgPhone, avalMsgType,
+      avalMsgAddress, avalMsgDetails, avalMsgSuccess, avalMsgSuccessEnd,
     });
     const { error } = await supabase
       .from("platform_settings")
-      .upsert({ key: `capture_bot_config_${sellerId}`, value: config, updated_at: new Date().toISOString() } as any, { onConflict: "key" });
+      .upsert({ key: `capture_bot_config_${sellerId}`, value: configStr, updated_at: new Date().toISOString() } as any, { onConflict: "key" });
     setSavingBot(false);
     if (error) {
       toast({ title: "Erro ao salvar bot", variant: "destructive" });
@@ -477,47 +539,189 @@ ${captureUrl}
             </div>
             {botChatMode === "flow" && (
               <div className="space-y-3">
-                <p className="text-xs font-semibold text-muted-foreground">📝 Mensagens do Fluxo</p>
+                {/* Flow Type Selector */}
+                <div>
+                  <label className="text-xs text-muted-foreground font-semibold">Tipo de Fluxo</label>
+                  <div className="grid grid-cols-2 gap-2 mt-1.5">
+                    {([
+                      { value: "captacao", label: "🏠 Captação", desc: "Coleta dados do imóvel" },
+                      { value: "grupo_whatsapp", label: "👥 Grupo WhatsApp", desc: "Convida para grupo" },
+                      { value: "agendamento", label: "📅 Agendamento", desc: "Agenda visita" },
+                      { value: "avaliacao", label: "💎 Avaliação", desc: "Avaliação gratuita" },
+                    ] as const).map((ft) => (
+                      <button
+                        key={ft.value}
+                        onClick={() => setBotFlowType(ft.value)}
+                        className={`px-3 py-2 rounded-xl text-xs font-semibold border transition-all text-left ${
+                          botFlowType === ft.value
+                            ? "bg-primary text-primary-foreground border-primary"
+                            : "bg-card text-muted-foreground border-border hover:border-primary/40"
+                        }`}
+                      >
+                        {ft.label}
+                        <span className={`block text-[10px] mt-0.5 ${botFlowType === ft.value ? "text-primary-foreground/70" : "opacity-60"}`}>{ft.desc}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
                 <div>
                   <label className="text-xs text-muted-foreground">Mensagem de abertura</label>
                   <Textarea value={botOpeningMessage} onChange={(e) => setBotOpeningMessage(e.target.value)} placeholder="Olá! 👋 Vou te ajudar..." className="mt-1 min-h-[60px] text-sm" />
                 </div>
-                <div>
-                  <label className="text-xs text-muted-foreground">Pedindo o nome</label>
-                  <Input value={flowMsgName} onChange={(e) => setFlowMsgName(e.target.value)} className="mt-1 text-sm" />
-                </div>
-                <div>
-                  <label className="text-xs text-muted-foreground">Resposta ao nome <span className="text-[10px] opacity-60">({"{nome}"} será substituído)</span></label>
-                  <Input value={flowMsgNameReply} onChange={(e) => setFlowMsgNameReply(e.target.value)} className="mt-1 text-sm" />
-                </div>
-                <div>
-                  <label className="text-xs text-muted-foreground">Pedindo telefone</label>
-                  <Input value={flowMsgPhone} onChange={(e) => setFlowMsgPhone(e.target.value)} className="mt-1 text-sm" />
-                </div>
-                <div>
-                  <label className="text-xs text-muted-foreground">Pedindo tipo do imóvel</label>
-                  <Input value={flowMsgType} onChange={(e) => setFlowMsgType(e.target.value)} className="mt-1 text-sm" />
-                </div>
-                <div>
-                  <label className="text-xs text-muted-foreground">Pedindo endereço</label>
-                  <Input value={flowMsgAddress} onChange={(e) => setFlowMsgAddress(e.target.value)} className="mt-1 text-sm" />
-                </div>
-                <div>
-                  <label className="text-xs text-muted-foreground">Pedindo valor</label>
-                  <Textarea value={flowMsgPrice} onChange={(e) => setFlowMsgPrice(e.target.value)} className="mt-1 min-h-[50px] text-sm" />
-                </div>
-                <div>
-                  <label className="text-xs text-muted-foreground">Pedindo observações</label>
-                  <Textarea value={flowMsgNotes} onChange={(e) => setFlowMsgNotes(e.target.value)} className="mt-1 min-h-[50px] text-sm" />
-                </div>
-                <div>
-                  <label className="text-xs text-muted-foreground">Mensagem de sucesso</label>
-                  <Input value={flowMsgSuccess} onChange={(e) => setFlowMsgSuccess(e.target.value)} className="mt-1 text-sm" />
-                </div>
-                <div>
-                  <label className="text-xs text-muted-foreground">Mensagem final</label>
-                  <Input value={flowMsgSuccessEnd} onChange={(e) => setFlowMsgSuccessEnd(e.target.value)} className="mt-1 text-sm" />
-                </div>
+
+                {/* ── Captação Messages ── */}
+                {botFlowType === "captacao" && (
+                  <div className="space-y-3 border-l-2 border-primary/20 pl-3">
+                    <p className="text-xs font-semibold text-primary">🏠 Mensagens do Fluxo de Captação</p>
+                    <div>
+                      <label className="text-xs text-muted-foreground">Pedindo o nome</label>
+                      <Input value={flowMsgName} onChange={(e) => setFlowMsgName(e.target.value)} className="mt-1 text-sm" />
+                    </div>
+                    <div>
+                      <label className="text-xs text-muted-foreground">Resposta ao nome <span className="text-[10px] opacity-60">({"{nome}"} será substituído)</span></label>
+                      <Input value={flowMsgNameReply} onChange={(e) => setFlowMsgNameReply(e.target.value)} className="mt-1 text-sm" />
+                    </div>
+                    <div>
+                      <label className="text-xs text-muted-foreground">Pedindo telefone</label>
+                      <Input value={flowMsgPhone} onChange={(e) => setFlowMsgPhone(e.target.value)} className="mt-1 text-sm" />
+                    </div>
+                    <div>
+                      <label className="text-xs text-muted-foreground">Pedindo tipo do imóvel</label>
+                      <Input value={flowMsgType} onChange={(e) => setFlowMsgType(e.target.value)} className="mt-1 text-sm" />
+                    </div>
+                    <div>
+                      <label className="text-xs text-muted-foreground">Pedindo endereço</label>
+                      <Input value={flowMsgAddress} onChange={(e) => setFlowMsgAddress(e.target.value)} className="mt-1 text-sm" />
+                    </div>
+                    <div>
+                      <label className="text-xs text-muted-foreground">Pedindo valor</label>
+                      <Textarea value={flowMsgPrice} onChange={(e) => setFlowMsgPrice(e.target.value)} className="mt-1 min-h-[50px] text-sm" />
+                    </div>
+                    <div>
+                      <label className="text-xs text-muted-foreground">Pedindo observações</label>
+                      <Textarea value={flowMsgNotes} onChange={(e) => setFlowMsgNotes(e.target.value)} className="mt-1 min-h-[50px] text-sm" />
+                    </div>
+                    <div>
+                      <label className="text-xs text-muted-foreground">Mensagem de sucesso</label>
+                      <Input value={flowMsgSuccess} onChange={(e) => setFlowMsgSuccess(e.target.value)} className="mt-1 text-sm" />
+                    </div>
+                    <div>
+                      <label className="text-xs text-muted-foreground">Mensagem final</label>
+                      <Input value={flowMsgSuccessEnd} onChange={(e) => setFlowMsgSuccessEnd(e.target.value)} className="mt-1 text-sm" />
+                    </div>
+                  </div>
+                )}
+
+                {/* ── Grupo WhatsApp Messages ── */}
+                {botFlowType === "grupo_whatsapp" && (
+                  <div className="space-y-3 border-l-2 border-[#25d366]/30 pl-3">
+                    <p className="text-xs font-semibold text-[#25d366]">👥 Mensagens do Fluxo de Grupo</p>
+                    <div>
+                      <label className="text-xs text-muted-foreground">Pedindo o nome</label>
+                      <Input value={grupoMsgName} onChange={(e) => setGrupoMsgName(e.target.value)} className="mt-1 text-sm" />
+                    </div>
+                    <div>
+                      <label className="text-xs text-muted-foreground">Resposta ao nome <span className="text-[10px] opacity-60">({"{nome}"} será substituído)</span></label>
+                      <Input value={grupoMsgNameReply} onChange={(e) => setGrupoMsgNameReply(e.target.value)} className="mt-1 text-sm" />
+                    </div>
+                    <div>
+                      <label className="text-xs text-muted-foreground">Pedindo telefone</label>
+                      <Input value={grupoMsgPhone} onChange={(e) => setGrupoMsgPhone(e.target.value)} className="mt-1 text-sm" />
+                    </div>
+                    <div>
+                      <label className="text-xs text-muted-foreground">Mensagem de sucesso</label>
+                      <Input value={grupoMsgSuccess} onChange={(e) => setGrupoMsgSuccess(e.target.value)} className="mt-1 text-sm" />
+                    </div>
+                    <div>
+                      <label className="text-xs text-muted-foreground">Mensagem final</label>
+                      <Input value={grupoMsgSuccessEnd} onChange={(e) => setGrupoMsgSuccessEnd(e.target.value)} className="mt-1 text-sm" />
+                    </div>
+                    <div>
+                      <label className="text-xs text-muted-foreground font-semibold">🔗 Link do grupo WhatsApp</label>
+                      <Input value={grupoWhatsappLink} onChange={(e) => setGrupoWhatsappLink(e.target.value)} placeholder="https://chat.whatsapp.com/..." className="mt-1 text-sm" />
+                      <p className="text-[10px] text-muted-foreground mt-1">Se preenchido, o botão final redireciona direto para o grupo</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* ── Agendamento Messages ── */}
+                {botFlowType === "agendamento" && (
+                  <div className="space-y-3 border-l-2 border-blue-400/30 pl-3">
+                    <p className="text-xs font-semibold text-blue-500">📅 Mensagens do Fluxo de Agendamento</p>
+                    <div>
+                      <label className="text-xs text-muted-foreground">Pedindo o nome</label>
+                      <Input value={agendMsgName} onChange={(e) => setAgendMsgName(e.target.value)} className="mt-1 text-sm" />
+                    </div>
+                    <div>
+                      <label className="text-xs text-muted-foreground">Resposta ao nome <span className="text-[10px] opacity-60">({"{nome}"} será substituído)</span></label>
+                      <Input value={agendMsgNameReply} onChange={(e) => setAgendMsgNameReply(e.target.value)} className="mt-1 text-sm" />
+                    </div>
+                    <div>
+                      <label className="text-xs text-muted-foreground">Pedindo telefone</label>
+                      <Input value={agendMsgPhone} onChange={(e) => setAgendMsgPhone(e.target.value)} className="mt-1 text-sm" />
+                    </div>
+                    <div>
+                      <label className="text-xs text-muted-foreground">Pedindo interesse (imóvel/região)</label>
+                      <Input value={agendMsgInterest} onChange={(e) => setAgendMsgInterest(e.target.value)} className="mt-1 text-sm" />
+                    </div>
+                    <div>
+                      <label className="text-xs text-muted-foreground">Pedindo data</label>
+                      <Textarea value={agendMsgDate} onChange={(e) => setAgendMsgDate(e.target.value)} className="mt-1 min-h-[50px] text-sm" />
+                    </div>
+                    <div>
+                      <label className="text-xs text-muted-foreground">Pedindo horário</label>
+                      <Textarea value={agendMsgTime} onChange={(e) => setAgendMsgTime(e.target.value)} className="mt-1 min-h-[50px] text-sm" />
+                    </div>
+                    <div>
+                      <label className="text-xs text-muted-foreground">Mensagem de sucesso</label>
+                      <Input value={agendMsgSuccess} onChange={(e) => setAgendMsgSuccess(e.target.value)} className="mt-1 text-sm" />
+                    </div>
+                    <div>
+                      <label className="text-xs text-muted-foreground">Mensagem final</label>
+                      <Input value={agendMsgSuccessEnd} onChange={(e) => setAgendMsgSuccessEnd(e.target.value)} className="mt-1 text-sm" />
+                    </div>
+                  </div>
+                )}
+
+                {/* ── Avaliação Messages ── */}
+                {botFlowType === "avaliacao" && (
+                  <div className="space-y-3 border-l-2 border-amber-400/30 pl-3">
+                    <p className="text-xs font-semibold text-amber-600">💎 Mensagens do Fluxo de Avaliação</p>
+                    <div>
+                      <label className="text-xs text-muted-foreground">Pedindo o nome</label>
+                      <Input value={avalMsgName} onChange={(e) => setAvalMsgName(e.target.value)} className="mt-1 text-sm" />
+                    </div>
+                    <div>
+                      <label className="text-xs text-muted-foreground">Resposta ao nome <span className="text-[10px] opacity-60">({"{nome}"} será substituído)</span></label>
+                      <Input value={avalMsgNameReply} onChange={(e) => setAvalMsgNameReply(e.target.value)} className="mt-1 text-sm" />
+                    </div>
+                    <div>
+                      <label className="text-xs text-muted-foreground">Pedindo telefone</label>
+                      <Input value={avalMsgPhone} onChange={(e) => setAvalMsgPhone(e.target.value)} className="mt-1 text-sm" />
+                    </div>
+                    <div>
+                      <label className="text-xs text-muted-foreground">Pedindo tipo do imóvel</label>
+                      <Input value={avalMsgType} onChange={(e) => setAvalMsgType(e.target.value)} className="mt-1 text-sm" />
+                    </div>
+                    <div>
+                      <label className="text-xs text-muted-foreground">Pedindo endereço completo</label>
+                      <Textarea value={avalMsgAddress} onChange={(e) => setAvalMsgAddress(e.target.value)} className="mt-1 min-h-[50px] text-sm" />
+                    </div>
+                    <div>
+                      <label className="text-xs text-muted-foreground">Pedindo detalhes do imóvel</label>
+                      <Textarea value={avalMsgDetails} onChange={(e) => setAvalMsgDetails(e.target.value)} className="mt-1 min-h-[50px] text-sm" />
+                    </div>
+                    <div>
+                      <label className="text-xs text-muted-foreground">Mensagem de sucesso</label>
+                      <Input value={avalMsgSuccess} onChange={(e) => setAvalMsgSuccess(e.target.value)} className="mt-1 text-sm" />
+                    </div>
+                    <div>
+                      <label className="text-xs text-muted-foreground">Mensagem final</label>
+                      <Input value={avalMsgSuccessEnd} onChange={(e) => setAvalMsgSuccessEnd(e.target.value)} className="mt-1 text-sm" />
+                    </div>
+                  </div>
+                )}
               </div>
             )}
             <Button onClick={saveBotConfig} disabled={savingBot} size="sm" className="gap-1.5 text-xs">

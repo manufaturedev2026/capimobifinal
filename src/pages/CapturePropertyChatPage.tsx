@@ -8,11 +8,15 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { SITE_URL } from "@/lib/siteUrl";
 
+type FlowType = "captacao" | "grupo_whatsapp" | "agendamento" | "avaliacao";
+
 interface BotConfig {
   attendantName: string;
   attendantAvatar: string;
   openingMessage: string;
   chatMode: "flow" | "ai";
+  flowType: FlowType;
+  // Captação messages
   flowMsgName: string;
   flowMsgNameReply: string;
   flowMsgPhone: string;
@@ -22,6 +26,31 @@ interface BotConfig {
   flowMsgNotes: string;
   flowMsgSuccess: string;
   flowMsgSuccessEnd: string;
+  // Grupo WhatsApp
+  grupoMsgName: string;
+  grupoMsgNameReply: string;
+  grupoMsgPhone: string;
+  grupoMsgSuccess: string;
+  grupoMsgSuccessEnd: string;
+  grupoWhatsappLink: string;
+  // Agendamento
+  agendMsgName: string;
+  agendMsgNameReply: string;
+  agendMsgPhone: string;
+  agendMsgInterest: string;
+  agendMsgDate: string;
+  agendMsgTime: string;
+  agendMsgSuccess: string;
+  agendMsgSuccessEnd: string;
+  // Avaliação
+  avalMsgName: string;
+  avalMsgNameReply: string;
+  avalMsgPhone: string;
+  avalMsgType: string;
+  avalMsgAddress: string;
+  avalMsgDetails: string;
+  avalMsgSuccess: string;
+  avalMsgSuccessEnd: string;
 }
 
 const DEFAULT_CONFIG: BotConfig = {
@@ -29,6 +58,8 @@ const DEFAULT_CONFIG: BotConfig = {
   attendantAvatar: "",
   openingMessage: "Olá! 👋 Vou te ajudar a cadastrar seu imóvel para avaliação gratuita! É rápido e sem compromisso 🏡",
   chatMode: "flow",
+  flowType: "captacao",
+  // Captação
   flowMsgName: "Vamos começar? Me diz o seu nome completo 😊",
   flowMsgNameReply: "Prazer, {nome}! 🤝",
   flowMsgPhone: "Qual seu telefone ou WhatsApp? 📱",
@@ -38,9 +69,46 @@ const DEFAULT_CONFIG: BotConfig = {
   flowMsgNotes: "Alguma observação sobre o imóvel? 📝\n\n(Opcional - pode enviar vazio para pular)",
   flowMsgSuccess: "✅ Pronto! Suas informações foram enviadas com sucesso!",
   flowMsgSuccessEnd: "Em breve um corretor vai entrar em contato com você pelo WhatsApp. Obrigado! 🎉",
+  // Grupo WhatsApp
+  grupoMsgName: "Que bom ter você aqui! 🎉 Me diz seu nome para eu te conhecer melhor:",
+  grupoMsgNameReply: "Prazer, {nome}! 🤝",
+  grupoMsgPhone: "Qual seu WhatsApp? Assim eu te adiciono no nosso grupo exclusivo 📱",
+  grupoMsgSuccess: "✅ Perfeito! Você está pronto para entrar no grupo!",
+  grupoMsgSuccessEnd: "No nosso grupo você recebe as melhores oportunidades em primeira mão! 🏡🔥",
+  grupoWhatsappLink: "",
+  // Agendamento
+  agendMsgName: "Olá! 👋 Vou te ajudar a agendar uma visita. Me diz seu nome completo:",
+  agendMsgNameReply: "Prazer, {nome}! 🤝 Vamos agendar sua visita!",
+  agendMsgPhone: "Qual seu telefone ou WhatsApp para confirmarmos? 📱",
+  agendMsgInterest: "Qual imóvel ou região você tem interesse em visitar? 🏠📍",
+  agendMsgDate: "Qual a melhor data para a visita? 📅\n\n(Ex: segunda-feira, 20/01, esta semana...)",
+  agendMsgTime: "E qual o melhor horário? ⏰\n\n(Ex: manhã, 14h, final da tarde...)",
+  agendMsgSuccess: "✅ Visita agendada com sucesso!",
+  agendMsgSuccessEnd: "Um corretor vai confirmar o agendamento pelo WhatsApp. Até breve! 📋🎉",
+  // Avaliação
+  avalMsgName: "Olá! 👋 Vou te ajudar a solicitar uma avaliação GRATUITA do seu imóvel! Me diz seu nome:",
+  avalMsgNameReply: "Prazer, {nome}! 🤝 Vamos avaliar seu imóvel!",
+  avalMsgPhone: "Qual seu telefone ou WhatsApp? 📱",
+  avalMsgType: "Qual o tipo do seu imóvel? 🏠",
+  avalMsgAddress: "Qual o endereço completo do imóvel? 📍\n\n(Rua, número, bairro e cidade)",
+  avalMsgDetails: "Conte mais sobre o imóvel! 📝\n\n(Ex: quantidade de quartos, tamanho, estado de conservação, reformas...)",
+  avalMsgSuccess: "✅ Solicitação de avaliação enviada com sucesso!",
+  avalMsgSuccessEnd: "Um especialista vai entrar em contato em até 24h para agendar a visita de avaliação. Obrigado! 🏡💎",
 };
 
-type Step = "opening" | "name" | "phone" | "type" | "address" | "price" | "notes" | "done";
+// Opening messages per flow type
+const FLOW_OPENINGS: Record<FlowType, string> = {
+  captacao: "Olá! 👋 Vou te ajudar a cadastrar seu imóvel para avaliação gratuita! É rápido e sem compromisso 🏡",
+  grupo_whatsapp: "Olá! 👋 Entre no nosso grupo exclusivo de imóveis e receba as melhores oportunidades! 🏡🔥",
+  agendamento: "Olá! 👋 Vou te ajudar a agendar uma visita a um imóvel! É rápido e fácil 🏠📅",
+  avaliacao: "Olá! 👋 Solicite uma avaliação GRATUITA do seu imóvel! Descubra quanto ele vale no mercado 💎🏡",
+};
+
+type CaptacaoStep = "opening" | "name" | "phone" | "type" | "address" | "price" | "notes" | "done";
+type GrupoStep = "opening" | "name" | "phone" | "done";
+type AgendStep = "opening" | "name" | "phone" | "interest" | "date" | "time" | "done";
+type AvalStep = "opening" | "name" | "phone" | "type" | "address" | "details" | "done";
+type Step = CaptacaoStep | GrupoStep | AgendStep | AvalStep;
 
 const PROPERTY_TYPES = [
   { value: "casa", label: "🏠 Casa" },
@@ -49,6 +117,12 @@ const PROPERTY_TYPES = [
   { value: "comercial", label: "🏪 Comercial" },
   { value: "galpao", label: "🏭 Galpão" },
   { value: "outros", label: "📦 Outros" },
+];
+
+const TIME_OPTIONS = [
+  { value: "manha", label: "☀️ Manhã (8h-12h)" },
+  { value: "tarde", label: "🌤️ Tarde (13h-17h)" },
+  { value: "noite", label: "🌙 Noite (18h-20h)" },
 ];
 
 interface ChatMsg {
@@ -72,13 +146,17 @@ export default function CapturePropertyChatPage() {
   const [inputValue, setInputValue] = useState("");
   const [inputVisible, setInputVisible] = useState(false);
 
-  // Collected data (flow mode)
+  // Collected data
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [propertyType, setPropertyType] = useState("");
   const [address, setAddress] = useState("");
   const [desiredPrice, setDesiredPrice] = useState("");
   const [notes, setNotes] = useState("");
+  const [interest, setInterest] = useState("");
+  const [visitDate, setVisitDate] = useState("");
+  const [visitTime, setVisitTime] = useState("");
+  const [details, setDetails] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
   // AI mode state
@@ -96,6 +174,7 @@ export default function CapturePropertyChatPage() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const isAiMode = config.chatMode === "ai";
+  const flowType = config.flowType || "captacao";
 
   // Load seller + bot config
   useEffect(() => {
@@ -194,7 +273,6 @@ export default function CapturePropertyChatPage() {
       setAiMessages((prev) => [...prev, { role: "assistant", content: reply }]);
       addBotMsgInstant(reply);
 
-      // Check if AI is suggesting form submission
       const lower = reply.toLowerCase();
       const triggerPhrases = [
         "botão abaixo", "clica no botão", "enviar seus dados",
@@ -205,7 +283,6 @@ export default function CapturePropertyChatPage() {
         "dados de contato", "salvar seus dados", "registrar seus dados",
       ];
       const shouldShowForm = triggerPhrases.some(p => lower.includes(p));
-      // Also auto-show form after 6+ user messages (enough data collected)
       const userMsgCount = updatedMessages.filter(m => m.role === "user").length;
       if (shouldShowForm || userMsgCount >= 6) {
         setTimeout(() => setShowCrmForm(true), 500);
@@ -219,16 +296,30 @@ export default function CapturePropertyChatPage() {
   };
 
   // ─── Flow Mode Logic ───
+  const getOpeningMessage = () => {
+    if (config.openingMessage !== DEFAULT_CONFIG.openingMessage) return config.openingMessage;
+    return FLOW_OPENINGS[flowType] || config.openingMessage;
+  };
+
+  const getFirstQuestion = () => {
+    switch (flowType) {
+      case "grupo_whatsapp": return config.grupoMsgName;
+      case "agendamento": return config.agendMsgName;
+      case "avaliacao": return config.avalMsgName;
+      default: return config.flowMsgName;
+    }
+  };
+
   useEffect(() => {
-   if (!isAiMode && !loading && sellerProfile && step === "opening" && messages.length === 0) {
+    if (!isAiMode && !loading && sellerProfile && step === "opening" && messages.length === 0) {
       (async () => {
-        await addBotMsg(config.openingMessage);
-        await addBotMsg(config.flowMsgName);
+        await addBotMsg(getOpeningMessage());
+        await addBotMsg(getFirstQuestion());
         setStep("name");
         setInputVisible(true);
       })();
     }
-  }, [loading, sellerProfile, step, messages.length, addBotMsg, config.openingMessage, config.flowMsgName, isAiMode]);
+  }, [loading, sellerProfile, step, messages.length, addBotMsg, isAiMode]);
 
   // Auto-scroll
   useEffect(() => {
@@ -239,12 +330,8 @@ export default function CapturePropertyChatPage() {
     if (inputVisible && inputRef.current) setTimeout(() => inputRef.current?.focus(), 100);
   }, [inputVisible, step]);
 
-  const handleSend = async () => {
-    const val = inputValue.trim();
-    if (!val && step !== "price" && step !== "notes") return;
-    setInputVisible(false);
-    setInputValue("");
-
+  // ─── Captação Flow ───
+  const handleCaptacaoFlow = async (val: string) => {
     switch (step) {
       case "name":
         setFullName(val);
@@ -280,20 +367,139 @@ export default function CapturePropertyChatPage() {
         setNotes(notesVal);
         if (notesVal) addUserMsg(notesVal);
         else addUserMsg("Sem observações");
-        await submitLead(fullName, phone, propertyType, address, desiredPrice || "0", notesVal);
+        await submitCaptacaoLead(fullName, phone, propertyType, address, desiredPrice || "0", notesVal);
         break;
+    }
+  };
+
+  // ─── Grupo WhatsApp Flow ───
+  const handleGrupoFlow = async (val: string) => {
+    switch (step) {
+      case "name":
+        setFullName(val);
+        addUserMsg(val);
+        await addBotMsg(config.grupoMsgNameReply.replace("{nome}", val));
+        await addBotMsg(config.grupoMsgPhone);
+        setStep("phone");
+        setInputVisible(true);
+        break;
+      case "phone":
+        setPhone(val);
+        addUserMsg(val);
+        await submitGrupoLead(fullName, val);
+        break;
+    }
+  };
+
+  // ─── Agendamento Flow ───
+  const handleAgendamentoFlow = async (val: string) => {
+    switch (step) {
+      case "name":
+        setFullName(val);
+        addUserMsg(val);
+        await addBotMsg(config.agendMsgNameReply.replace("{nome}", val));
+        await addBotMsg(config.agendMsgPhone);
+        setStep("phone");
+        setInputVisible(true);
+        break;
+      case "phone":
+        setPhone(val);
+        addUserMsg(val);
+        await addBotMsg(config.agendMsgInterest);
+        setStep("interest" as Step);
+        setInputVisible(true);
+        break;
+      case "interest":
+        setInterest(val);
+        addUserMsg(val);
+        await addBotMsg(config.agendMsgDate);
+        setStep("date" as Step);
+        setInputVisible(true);
+        break;
+      case "date":
+        setVisitDate(val);
+        addUserMsg(val);
+        await addBotMsg(config.agendMsgTime);
+        setStep("time" as Step);
+        break;
+      case "time":
+        setVisitTime(val);
+        addUserMsg(val);
+        await submitAgendLead(fullName, phone, interest, visitDate, val);
+        break;
+    }
+  };
+
+  // ─── Avaliação Flow ───
+  const handleAvaliacaoFlow = async (val: string) => {
+    switch (step) {
+      case "name":
+        setFullName(val);
+        addUserMsg(val);
+        await addBotMsg(config.avalMsgNameReply.replace("{nome}", val));
+        await addBotMsg(config.avalMsgPhone);
+        setStep("phone");
+        setInputVisible(true);
+        break;
+      case "phone":
+        setPhone(val);
+        addUserMsg(val);
+        await addBotMsg(config.avalMsgType);
+        setStep("type");
+        break;
+      case "address":
+        setAddress(val);
+        addUserMsg(val);
+        await addBotMsg(config.avalMsgDetails);
+        setStep("details" as Step);
+        setInputVisible(true);
+        break;
+      case "details":
+        setDetails(val || "");
+        if (val) addUserMsg(val);
+        else addUserMsg("Sem detalhes adicionais");
+        await submitAvalLead(fullName, phone, propertyType, address, val || "");
+        break;
+    }
+  };
+
+  const handleSend = async () => {
+    const val = inputValue.trim();
+    // Allow empty for optional fields
+    const optionalSteps = ["price", "notes", "details"];
+    if (!val && !optionalSteps.includes(step)) return;
+    setInputVisible(false);
+    setInputValue("");
+
+    switch (flowType) {
+      case "captacao": await handleCaptacaoFlow(val); break;
+      case "grupo_whatsapp": await handleGrupoFlow(val); break;
+      case "agendamento": await handleAgendamentoFlow(val); break;
+      case "avaliacao": await handleAvaliacaoFlow(val); break;
     }
   };
 
   const handleTypeSelect = async (type: string, label: string) => {
     setPropertyType(type);
     addUserMsg(label);
-    await addBotMsg(config.flowMsgAddress);
-    setStep("address");
+    if (flowType === "captacao") {
+      await addBotMsg(config.flowMsgAddress);
+      setStep("address");
+    } else if (flowType === "avaliacao") {
+      await addBotMsg(config.avalMsgAddress);
+      setStep("address");
+    }
     setInputVisible(true);
   };
 
-  const submitLead = async (name: string, ph: string, type: string, addr: string, price: string, obs: string) => {
+  const handleTimeSelect = async (time: string, label: string) => {
+    setVisitTime(time);
+    addUserMsg(label);
+    await submitAgendLead(fullName, phone, interest, visitDate, time);
+  };
+
+  // ─── Submit functions ───
+  const submitCaptacaoLead = async (name: string, ph: string, type: string, addr: string, price: string, obs: string) => {
     if (!sellerProfile || submitted) return;
     setSubmitted(true);
     const priceNum = parseFloat(price.replace(/\D/g, "")) || null;
@@ -310,6 +516,59 @@ export default function CapturePropertyChatPage() {
     });
     await addBotMsg(config.flowMsgSuccess);
     await addBotMsg(config.flowMsgSuccessEnd);
+    setStep("done");
+  };
+
+  const submitGrupoLead = async (name: string, ph: string) => {
+    if (!sellerProfile || submitted) return;
+    setSubmitted(true);
+    await supabase.from("property_capture_leads" as any).insert({
+      seller_id: sellerProfile.id,
+      seller_user_id: sellerProfile.user_id,
+      full_name: name,
+      phone: ph,
+      property_type: "outros",
+      description: "Lead via fluxo Grupo de WhatsApp",
+      status: "novo",
+    });
+    await addBotMsg(config.grupoMsgSuccess);
+    await addBotMsg(config.grupoMsgSuccessEnd);
+    setStep("done");
+  };
+
+  const submitAgendLead = async (name: string, ph: string, interestVal: string, date: string, time: string) => {
+    if (!sellerProfile || submitted) return;
+    setSubmitted(true);
+    await supabase.from("property_capture_leads" as any).insert({
+      seller_id: sellerProfile.id,
+      seller_user_id: sellerProfile.user_id,
+      full_name: name,
+      phone: ph,
+      property_type: "outros",
+      address: interestVal || null,
+      description: `Agendamento de visita\n📅 Data: ${date}\n⏰ Horário: ${time}\n🏠 Interesse: ${interestVal}`,
+      status: "novo",
+    });
+    await addBotMsg(config.agendMsgSuccess);
+    await addBotMsg(config.agendMsgSuccessEnd);
+    setStep("done");
+  };
+
+  const submitAvalLead = async (name: string, ph: string, type: string, addr: string, detailsVal: string) => {
+    if (!sellerProfile || submitted) return;
+    setSubmitted(true);
+    await supabase.from("property_capture_leads" as any).insert({
+      seller_id: sellerProfile.id,
+      seller_user_id: sellerProfile.user_id,
+      full_name: name,
+      phone: ph,
+      property_type: type,
+      address: addr || null,
+      description: `Solicitação de avaliação gratuita\n📝 Detalhes: ${detailsVal || "Não informado"}`,
+      status: "novo",
+    });
+    await addBotMsg(config.avalMsgSuccess);
+    await addBotMsg(config.avalMsgSuccessEnd);
     setStep("done");
   };
 
@@ -339,14 +598,50 @@ export default function CapturePropertyChatPage() {
   const handleWhatsAppRedirect = () => {
     if (!sellerProfile?.phone) return;
     const cleanPhone = sellerProfile.phone.replace(/\D/g, "");
-    const msg = encodeURIComponent(
-      `Olá! Acabei de cadastrar meu imóvel pelo chat:\n\n` +
-      `📋 Nome: ${fullName || crmName}\n` +
-      `🏠 Tipo: ${propertyType || crmPropertyType || "Não informado"}\n` +
-      `📍 Endereço: ${address || crmAddress || "Não informado"}\n` +
-      `💰 Valor: ${desiredPrice && desiredPrice !== "0" ? `R$ ${desiredPrice}` : "A definir"}\n\n` +
-      `Aguardo retorno!`
-    );
+
+    let msg = "";
+    switch (flowType) {
+      case "captacao":
+        msg = encodeURIComponent(
+          `Olá! Acabei de cadastrar meu imóvel pelo chat:\n\n` +
+          `📋 Nome: ${fullName || crmName}\n` +
+          `🏠 Tipo: ${propertyType || crmPropertyType || "Não informado"}\n` +
+          `📍 Endereço: ${address || crmAddress || "Não informado"}\n` +
+          `💰 Valor: ${desiredPrice && desiredPrice !== "0" ? `R$ ${desiredPrice}` : "A definir"}\n\n` +
+          `Aguardo retorno!`
+        );
+        break;
+      case "grupo_whatsapp":
+        if (config.grupoWhatsappLink) {
+          window.open(config.grupoWhatsappLink, "_blank", "noopener");
+          return;
+        }
+        msg = encodeURIComponent(
+          `Olá! Me cadastrei pelo chat e gostaria de entrar no grupo de imóveis!\n\n` +
+          `📋 Nome: ${fullName}\n📱 WhatsApp: ${phone}`
+        );
+        break;
+      case "agendamento":
+        msg = encodeURIComponent(
+          `Olá! Acabei de agendar uma visita pelo chat:\n\n` +
+          `📋 Nome: ${fullName}\n` +
+          `🏠 Interesse: ${interest || "Não informado"}\n` +
+          `📅 Data: ${visitDate || "Não informado"}\n` +
+          `⏰ Horário: ${visitTime || "Não informado"}\n\n` +
+          `Aguardo confirmação!`
+        );
+        break;
+      case "avaliacao":
+        msg = encodeURIComponent(
+          `Olá! Solicitei uma avaliação gratuita pelo chat:\n\n` +
+          `📋 Nome: ${fullName}\n` +
+          `🏠 Tipo: ${propertyType || "Não informado"}\n` +
+          `📍 Endereço: ${address || "Não informado"}\n` +
+          `📝 Detalhes: ${details || "Não informado"}\n\n` +
+          `Aguardo retorno!`
+        );
+        break;
+    }
     window.open(`https://wa.me/${cleanPhone}?text=${msg}`, "_blank", "noopener");
   };
 
@@ -371,8 +666,37 @@ export default function CapturePropertyChatPage() {
 
   const displayName = sellerProfile.company_name || sellerProfile.full_name || config.attendantName;
   const showAiInput = isAiMode && !showCrmForm;
-  const showFlowInput = !isAiMode && inputVisible && step !== "done" && step !== "type";
+  const showFlowInput = !isAiMode && inputVisible && step !== "done" && step !== "type" && step !== "time";
   const isDone = isAiMode ? crmSaved : step === "done";
+
+  const getCtaLabel = () => {
+    switch (flowType) {
+      case "grupo_whatsapp": return config.grupoWhatsappLink ? "🔗 Entrar no Grupo" : "💬 Falar no WhatsApp";
+      case "agendamento": return "💬 Confirmar Agendamento";
+      case "avaliacao": return "💬 Falar com Especialista";
+      default: return "💬 Falar no WhatsApp";
+    }
+  };
+
+  const getInputPlaceholder = () => {
+    switch (step) {
+      case "name": return "Seu nome completo...";
+      case "phone": return "Seu WhatsApp...";
+      case "address": return "Endereço ou localização...";
+      case "price": return "Valor desejado (R$)...";
+      case "notes": return "Observações (opcional)...";
+      case "interest": return "Imóvel ou região de interesse...";
+      case "date": return "Data preferida (ex: 20/01)...";
+      case "details": return "Detalhes do imóvel...";
+      default: return "Digite...";
+    }
+  };
+
+  const getInputType = () => {
+    if (step === "phone") return "tel";
+    if (step === "price") return "number";
+    return "text";
+  };
 
   return (
     <>
@@ -449,14 +773,32 @@ export default function CapturePropertyChatPage() {
             </motion.div>
           )}
 
-          {/* Flow: Property type buttons */}
+          {/* Flow: Property type buttons (Captação + Avaliação) */}
           <AnimatePresence>
-            {!isAiMode && step === "type" && !typing && (
+            {!isAiMode && step === "type" && !typing && (flowType === "captacao" || flowType === "avaliacao") && (
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="flex flex-wrap gap-2 pt-3 pb-2 justify-center">
                 {PROPERTY_TYPES.map((t) => (
                   <button
                     key={t.value}
                     onClick={() => handleTypeSelect(t.value, t.label)}
+                    className="px-4 py-2.5 rounded-full shadow-md text-sm font-medium transition-all active:scale-95"
+                    style={{ background: "#00a884", color: "white" }}
+                  >
+                    {t.label}
+                  </button>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Flow: Time buttons (Agendamento) */}
+          <AnimatePresence>
+            {!isAiMode && step === "time" && !typing && flowType === "agendamento" && (
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="flex flex-wrap gap-2 pt-3 pb-2 justify-center">
+                {TIME_OPTIONS.map((t) => (
+                  <button
+                    key={t.value}
+                    onClick={() => handleTimeSelect(t.value, t.label)}
                     className="px-4 py-2.5 rounded-full shadow-md text-sm font-medium transition-all active:scale-95"
                     style={{ background: "#00a884", color: "white" }}
                   >
@@ -521,17 +863,24 @@ export default function CapturePropertyChatPage() {
           <AnimatePresence>
             {isDone && (
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: "easeOut" }} className="flex flex-col items-center gap-3 pt-4 pb-8">
-                {sellerProfile.phone && (
+                {(sellerProfile.phone || (flowType === "grupo_whatsapp" && config.grupoWhatsappLink)) && (
                   <Button
                     onClick={handleWhatsAppRedirect}
                     className="bg-[#25d366] hover:bg-[#22c55e] text-white font-bold text-base px-8 py-6 rounded-full shadow-lg animate-pulse"
                     size="lg"
                   >
-                    💬 Falar no WhatsApp
+                    {getCtaLabel()}
                   </Button>
                 )}
                 <p className="text-[#667781] text-xs text-center">
-                  Seus dados foram salvos • O corretor entrará em contato
+                  {flowType === "grupo_whatsapp"
+                    ? "Seus dados foram salvos • Clique acima para entrar no grupo"
+                    : flowType === "agendamento"
+                    ? "Seus dados foram salvos • Aguarde a confirmação do agendamento"
+                    : flowType === "avaliacao"
+                    ? "Seus dados foram salvos • Um especialista entrará em contato"
+                    : "Seus dados foram salvos • O corretor entrará em contato"
+                  }
                 </p>
               </motion.div>
             )}
@@ -578,15 +927,8 @@ export default function CapturePropertyChatPage() {
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSend()}
-                placeholder={
-                  step === "name" ? "Seu nome completo..." :
-                  step === "phone" ? "Seu WhatsApp..." :
-                  step === "address" ? "Endereço ou localização..." :
-                  step === "price" ? "Valor desejado (R$)..." :
-                  step === "notes" ? "Observações (opcional)..." :
-                  "Digite..."
-                }
-                type={step === "phone" ? "tel" : step === "price" ? "number" : "text"}
+                placeholder={getInputPlaceholder()}
+                type={getInputType()}
                 className="flex-1 rounded-full border-0 bg-white px-4 py-2.5 text-sm text-[#111b21] shadow-sm focus-visible:ring-0"
               />
               <button
@@ -599,7 +941,9 @@ export default function CapturePropertyChatPage() {
           ) : (
             <>
               <div className="flex-1 bg-white rounded-full px-4 py-2.5 text-sm text-[#667781]">
-                {!isAiMode && step === "type" ? "Selecione o tipo acima..." : "Mensagem"}
+                {!isAiMode && step === "type" ? "Selecione o tipo acima..." :
+                 !isAiMode && step === "time" ? "Selecione o horário acima..." :
+                 "Mensagem"}
               </div>
               <div className="w-10 h-10 rounded-full bg-[#00a884]/50 flex items-center justify-center text-white">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
