@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { BRAZIL_STATES } from "@/data/brazilStates";
 
 interface AdminPushTabProps {
   userId: string;
@@ -36,6 +37,8 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
   const [image, setImage] = useState("");
   const [uploadingImage, setUploadingImage] = useState(false);
   const [audience, setAudience] = useState<"all" | "corretor" | "imobiliaria" | "construtora" | "professionals" | "clients">("all");
+  const [filterState, setFilterState] = useState<string>("all");
+  const [filterCity, setFilterCity] = useState<string>("");
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -100,6 +103,8 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
           url: url.trim() || undefined,
           image: image || undefined,
           audience,
+          state: filterState !== "all" ? filterState : undefined,
+          city: filterCity.trim() || undefined,
         },
       });
 
@@ -205,6 +210,31 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
                   <SelectItem value="construtora">Apenas Construtoras</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium">Estado (UF)</Label>
+                <Select value={filterState} onValueChange={setFilterState}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-60">
+                    <SelectItem value="all">Todos os estados</SelectItem>
+                    {BRAZIL_STATES.map((s) => (
+                      <SelectItem key={s.uf} value={s.uf}>{s.uf} — {s.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs font-medium">Cidade (opcional)</Label>
+                <Input
+                  value={filterCity}
+                  onChange={(e) => setFilterCity(e.target.value)}
+                  placeholder="Ex: Colatina"
+                />
+              </div>
             </div>
 
             <div className="space-y-1.5">
