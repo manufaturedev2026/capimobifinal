@@ -1147,40 +1147,40 @@ export default function CompanyProfile() {
       {/* ═══════════ STATS BAR ═══════════ */}
       <section className={`block relative z-20 ${isNetflix ? "!hidden" : ""}`} style={{ borderBottom: `1px solid ${storeTheme.border}`, background: storeTheme.card }}>
         <div className={`${isMarketplace ? "px-4 md:px-8" : "max-w-[1800px] mx-auto px-4 md:px-8"}`}>
-          <div className="flex items-center gap-6 py-3 overflow-x-auto scrollbar-hide">
-            <div className="flex items-center gap-2 text-sm flex-shrink-0">
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: `${storeTheme.primary}18` }}>
-                <Store size={16} style={{ color: storeTheme.primary }} />
+          <div className="flex items-center gap-3 md:gap-6 py-3 overflow-hidden">
+            <div className="flex items-center gap-1.5 md:gap-2 text-xs md:text-sm flex-shrink-0">
+              <div className="w-7 h-7 md:w-8 md:h-8 rounded-lg flex items-center justify-center" style={{ background: `${storeTheme.primary}18` }}>
+                <Store size={14} style={{ color: storeTheme.primary }} />
               </div>
               <div>
                 <p className="font-bold" style={{ color: storeTheme.text }}>{products.length}</p>
-                <p className="text-[10px]" style={{ color: storeTheme.textMuted }}>Anúncios</p>
+                <p className="text-[9px] md:text-[10px]" style={{ color: storeTheme.textMuted }}>Anúncios</p>
               </div>
             </div>
-            <div className="w-px h-8 flex-shrink-0" style={{ background: storeTheme.border }} />
-            <div className="flex items-center gap-2 text-sm flex-shrink-0">
-              <div className="w-8 h-8 rounded-lg bg-[#25d366]/10 flex items-center justify-center">
-                <MessageCircle size={16} className="text-[#25d366]" />
+            <div className="w-px h-7 md:h-8 flex-shrink-0" style={{ background: storeTheme.border }} />
+            <div className="flex items-center gap-1.5 md:gap-2 text-xs md:text-sm flex-shrink-0">
+              <div className="w-7 h-7 md:w-8 md:h-8 rounded-lg bg-[#25d366]/10 flex items-center justify-center">
+                <MessageCircle size={14} className="text-[#25d366]" />
               </div>
               <div>
                 <p className="font-bold" style={{ color: storeTheme.text }}>Direto</p>
-                <p className="text-[10px]" style={{ color: storeTheme.textMuted }}>WhatsApp</p>
+                <p className="text-[9px] md:text-[10px]" style={{ color: storeTheme.textMuted }}>WhatsApp</p>
               </div>
             </div>
-            <div className="w-px h-8 flex-shrink-0" style={{ background: storeTheme.border }} />
-            <div className="flex items-center gap-2 text-sm flex-shrink-0">
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: `${storeTheme.accent}30` }}>
-                <Shield size={16} style={{ color: storeTheme.accent }} />
+            <div className="w-px h-7 md:h-8 flex-shrink-0" style={{ background: storeTheme.border }} />
+            <div className="flex items-center gap-1.5 md:gap-2 text-xs md:text-sm flex-shrink-0">
+              <div className="w-7 h-7 md:w-8 md:h-8 rounded-lg flex items-center justify-center" style={{ background: `${storeTheme.accent}30` }}>
+                <Shield size={14} style={{ color: storeTheme.accent }} />
               </div>
               <div>
                 <p className="font-bold" style={{ color: storeTheme.text }}>{isPaid ? "Verificado" : "Ativo"}</p>
-                <p className="text-[10px]" style={{ color: storeTheme.textMuted }}>Vendedor</p>
+                <p className="text-[9px] md:text-[10px]" style={{ color: storeTheme.textMuted }}>Vendedor</p>
               </div>
             </div>
             {isPaid && (
               <>
-                <div className="w-px h-8 flex-shrink-0" style={{ background: storeTheme.border }} />
-                <div className="flex items-center gap-2 text-sm flex-shrink-0">
+                <div className="w-px h-7 md:h-8 flex-shrink-0" style={{ background: storeTheme.border }} />
+                <div className="flex items-center gap-1.5 md:gap-2 text-xs md:text-sm flex-shrink-0">
                   <PackageBadge tier={sellerTier} size="sm" />
                 </div>
               </>
