@@ -18,6 +18,7 @@ interface CaptacaoOnlineTabProps {
   sellerSlug: string | null;
   sellerName: string;
   currentTier?: string;
+  onUnreadCountChange?: (count: number) => void;
 }
 
 type Lead = {
@@ -68,7 +69,7 @@ function Section({ icon: Icon, title, badge, defaultOpen = false, children, acce
   );
 }
 
-export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, sellerName, currentTier = "basico" }: CaptacaoOnlineTabProps) {
+export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, sellerName, currentTier = "basico", onUnreadCountChange }: CaptacaoOnlineTabProps) {
   const TIER_ORDER = ["basico", "start", "premium", "vip", "essencial_empresa", "premium_empresa", "prime_empresa", "black"];
   const tierLevel = TIER_ORDER.indexOf(currentTier);
   const hasLandingPage = tierLevel >= 1; // Start+
@@ -99,6 +100,10 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
     fetchCaptureVideo();
     fetchBotConfig();
   }, [sellerId]);
+
+  const syncUnreadCount = (nextLeads: Lead[]) => {
+    onUnreadCountChange?.(nextLeads.filter((lead) => lead.status === "novo").length);
+  };
 
   const fetchCaptureVideo = async () => {
     const { data } = await supabase
@@ -162,19 +167,31 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
       .select("*")
       .eq("seller_id", sellerId)
       .order("created_at", { ascending: false });
-    if (data) setLeads(data as any);
+    if (data) {
+      const nextLeads = data as any;
+      setLeads(nextLeads);
+      syncUnreadCount(nextLeads);
+    }
     setLoading(false);
   };
 
   const updateStatus = async (leadId: string, newStatus: string) => {
     await supabase.from("property_capture_leads" as any).update({ status: newStatus }).eq("id", leadId);
-    setLeads(prev => prev.map(l => l.id === leadId ? { ...l, status: newStatus } : l));
+    setLeads(prev => {
+      const nextLeads = prev.map(l => l.id === leadId ? { ...l, status: newStatus } : l);
+      syncUnreadCount(nextLeads);
+      return nextLeads;
+    });
     toast({ title: `Status atualizado para "${STATUS_CONFIG[newStatus]?.label || newStatus}"` });
   };
 
   const deleteLead = async (leadId: string) => {
     await supabase.from("property_capture_leads" as any).delete().eq("id", leadId);
-    setLeads(prev => prev.filter(l => l.id !== leadId));
+    setLeads(prev => {
+      const nextLeads = prev.filter(l => l.id !== leadId);
+      syncUnreadCount(nextLeads);
+      return nextLeads;
+    });
     toast({ title: "Lead removido" });
   };
 
