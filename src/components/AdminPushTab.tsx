@@ -198,6 +198,7 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Todos os inscritos</SelectItem>
+                  <SelectItem value="clients">Apenas Clientes (não profissionais)</SelectItem>
                   <SelectItem value="professionals">Apenas profissionais (Corretores + Imobiliárias + Construtoras)</SelectItem>
                   <SelectItem value="corretor">Apenas Corretores</SelectItem>
                   <SelectItem value="imobiliaria">Apenas Imobiliárias</SelectItem>
