@@ -7,7 +7,19 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { usePushSubscription } from "@/hooks/usePushSubscription";
+import { useSubscription } from "@/hooks/useSubscription";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+const PUSH_DAILY_LIMITS: Record<string, number> = {
+  basico: 1,
+  start: 1,
+  premium: 2,
+  vip: 3,
+  essencial_empresa: 4,
+  premium_empresa: 5,
+  prime_empresa: 6,
+  black: 6,
+};
 
 interface NotificationsTabProps {
   userId: string;
