@@ -75,6 +75,8 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
           profilesQuery = profilesQuery.eq("seller_category", audience as any);
         }
         if (filterState !== "all") profilesQuery = profilesQuery.eq("state", filterState);
+        // Quando uma cidade específica é selecionada, filtra por ela.
+        // Quando "todas as cidades de X", inclui também profiles sem cidade preenchida (state-only match).
         if (filterCity !== "all") profilesQuery = profilesQuery.ilike("city", filterCity);
 
         const { data: profs } = await profilesQuery;
