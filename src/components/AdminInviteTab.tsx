@@ -31,7 +31,8 @@ export default function AdminInviteTab() {
           if (parsed.ctaUrl) cfg.ctaUrl = parsed.ctaUrl;
           if (parsed.ctaType) cfg.ctaType = parsed.ctaType;
           if (parsed.chatMode) cfg.chatMode = parsed.chatMode;
-          if (parsed.crmRedirectUrl !== undefined) cfg.crmRedirectUrl = parsed.crmRedirectUrl;
+           if (parsed.crmRedirectUrl !== undefined) cfg.crmRedirectUrl = parsed.crmRedirectUrl;
+           if (parsed.crmButtonText) cfg.crmButtonText = parsed.crmButtonText;
           if (parsed.flow?.length) cfg.flow = parsed.flow;
           setConfig(cfg);
         } catch {}
@@ -230,18 +231,27 @@ export default function AdminInviteTab() {
               <div className="bg-primary/5 border border-primary/20 rounded-lg p-3 text-xs text-foreground">
                 <p className="font-semibold mb-1">📋 Modo CRM ativado</p>
                 <p className="text-muted-foreground">
-                  O visitante preencherá nome e WhatsApp. Os dados serão salvos no CRM e depois será redirecionado para a URL abaixo.
+                  O visitante preencherá nome e WhatsApp. Os dados serão salvos no CRM e um botão aparecerá para continuar.
                 </p>
               </div>
               <div>
-                <label className="text-xs text-muted-foreground">URL de redirecionamento após envio</label>
+                <label className="text-xs text-muted-foreground">Texto do botão após envio</label>
+                <Input
+                  value={config.crmButtonText || ""}
+                  onChange={(e) => setConfig((p) => ({ ...p, crmButtonText: e.target.value }))}
+                  placeholder="🚀 Criar Minha Conta Agora"
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground">URL do botão após envio</label>
                 <Input
                   value={config.crmRedirectUrl || ""}
                   onChange={(e) => setConfig((p) => ({ ...p, crmRedirectUrl: e.target.value }))}
-                  placeholder="https://wa.me/5527999999999 ou /login"
+                  placeholder="/login ou https://wa.me/5527999999999"
                   className="mt-1"
                 />
-                <p className="text-[10px] text-muted-foreground mt-1">Deixe vazio para não redirecionar</p>
+                <p className="text-[10px] text-muted-foreground mt-1">Padrão: /login</p>
               </div>
             </div>
           ) : (
