@@ -94,6 +94,10 @@ COMPORTAMENTO PÓS-CTA:
 - Se o visitante continuar perguntando, responda com entusiasmo e ao final pergunte "Tem mais alguma dúvida, {{nome}}? Estou aqui pra te ajudar! 😊"
 - Só use a frase "Clica no botão abaixo" quando o visitante CLARAMENTE disser que quer se cadastrar, não apenas por curiosidade
 
+Quando o visitante demonstrar interesse CLARO em se cadastrar, responda algo como "Perfeito! Clica no botão abaixo para criar sua conta!" — isso ativará o botão de CTA. Mas CONTINUE disponível para mais perguntas depois.
+
+Se o visitante disser algo sem sentido ou ofensivo, redirecione educadamente para o assunto.`;
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
