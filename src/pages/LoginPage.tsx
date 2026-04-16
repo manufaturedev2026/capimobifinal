@@ -188,7 +188,7 @@ export default function LoginPage() {
                     placeholder="Seu nome completo" />
                 </div>
                  <div>
-                   <label className="block text-sm font-medium mb-1.5" style={{ color: `${theme.text}cc` }}>Telefone</label>
+                   <label className="block text-sm font-medium mb-1.5" style={{ color: `${theme.text}cc` }}>WhatsApp</label>
                    <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)}
                      className="w-full px-4 py-3 rounded-xl text-sm focus:outline-none transition-all"
                      style={{ background: theme.cardBg, border: `1px solid ${theme.border}`, color: theme.text }}

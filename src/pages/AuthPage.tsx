@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { Eye, EyeOff, LogIn, UserPlus, Building2, Shield, KeyRound, Sparkles } from "lucide-react";
+import { Eye, EyeOff, LogIn, UserPlus, Building2, Shield, KeyRound, Sparkles, MapPin } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import heroImg from "@/assets/hero-auth.jpg";
 import logoImg from "@/assets/logo-es-corretores.png";
+import { BRAZIL_STATES } from "@/data/brazilStates";
+import { useCitiesByState } from "@/hooks/useCitiesByState";
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(() => {
@@ -15,11 +17,15 @@ export default function AuthPage() {
   });
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [signedUp, setSignedUp] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [selectedState, setSelectedState] = useState("ES");
+  const [selectedCity, setSelectedCity] = useState("");
+  const { cities: stateCities, loading: loadingCities } = useCitiesByState(selectedState);
   const { user, profile, signIn, signUp } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -37,6 +43,18 @@ export default function AuthPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!isLogin) {
+      if (password !== confirmPassword) {
+        toast({ title: "Senhas não conferem", description: "Confirme a mesma senha nos dois campos.", variant: "destructive" });
+        return;
+      }
+      if (!selectedCity) {
+        toast({ title: "Selecione sua cidade", description: "Escolha a cidade para continuar.", variant: "destructive" });
+        return;
+      }
+    }
+
     setLoading(true);
 
     if (isLogin) {
@@ -46,7 +64,7 @@ export default function AuthPage() {
       }
       // useEffect handles redirect after profile loads
     } else {
-      const { error } = await signUp(email, password, fullName, phone);
+      const { error } = await signUp(email, password, fullName, phone, selectedCity, selectedState);
       if (error) {
         toast({ title: "Erro ao cadastrar", description: error.message, variant: "destructive" });
       } else {
@@ -187,10 +205,33 @@ export default function AuthPage() {
                     placeholder="Seu nome completo" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-foreground/80 mb-1.5">Telefone</label>
+                  <label className="block text-sm font-medium text-foreground/80 mb-1.5">WhatsApp</label>
                   <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)}
                     className="w-full px-4 py-3 rounded-xl border border-border bg-secondary text-foreground text-sm placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/50 focus:border-primary/50 focus:outline-none transition-all"
                     placeholder="(27) 99999-9999" />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-sm font-medium text-foreground/80 mb-1.5">Estado</label>
+                    <div className="relative">
+                      <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                      <select value={selectedState} onChange={(e) => { setSelectedState(e.target.value); setSelectedCity(""); }}
+                        className="w-full pl-9 pr-3 py-3 rounded-xl border border-border bg-secondary text-foreground text-sm focus:ring-2 focus:ring-primary/50 focus:border-primary/50 focus:outline-none transition-all appearance-none">
+                        {BRAZIL_STATES.map(s => <option key={s.uf} value={s.uf}>{s.uf}</option>)}
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-foreground/80 mb-1.5">Cidade *</label>
+                    <div className="relative">
+                      <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                      <select value={selectedCity} onChange={(e) => setSelectedCity(e.target.value)} required
+                        className="w-full pl-9 pr-3 py-3 rounded-xl border border-border bg-secondary text-foreground text-sm focus:ring-2 focus:ring-primary/50 focus:border-primary/50 focus:outline-none transition-all appearance-none">
+                        <option value="">{loadingCities ? "Carregando..." : "Selecione"}</option>
+                        {stateCities.map(c => <option key={c} value={c}>{c}</option>)}
+                      </select>
+                    </div>
+                  </div>
                 </div>
               </>
             )}
@@ -214,6 +255,15 @@ export default function AuthPage() {
                 </button>
               </div>
             </div>
+
+            {!isLogin && (
+              <div>
+                <label className="block text-sm font-medium text-foreground/80 mb-1.5">Confirmar Senha</label>
+                <input type={showPassword ? "text" : "password"} required minLength={6} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl border border-border bg-secondary text-foreground text-sm placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/50 focus:border-primary/50 focus:outline-none transition-all"
+                  placeholder="Repita a senha" />
+              </div>
+            )}
 
             <button type="submit" disabled={loading}
               className="w-full py-3.5 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:bg-primary/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-primary/20 mt-2">
