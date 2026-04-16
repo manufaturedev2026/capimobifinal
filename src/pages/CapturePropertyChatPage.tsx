@@ -753,7 +753,7 @@ export default function CapturePropertyChatPage() {
   const displayName = sellerProfile.company_name || sellerProfile.full_name || config.attendantName;
   const showAiInput = isAiMode && !showCrmForm;
   const showFlowInput = !isAiMode && inputVisible && step !== "done" && step !== "type" && step !== "time";
-  const isDone = isAiMode ? crmSaved : step === "done";
+  const isDone = isAiMode ? (aiLeadSaved || crmSaved) : step === "done";
 
   const getCtaLabel = () => {
     switch (flowType) {
