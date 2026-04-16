@@ -32,6 +32,7 @@ export default function InvitePage() {
   // CRM mode state
   const [crmName, setCrmName] = useState("");
   const [crmPhone, setCrmPhone] = useState("");
+  const [crmCategory, setCrmCategory] = useState("imobiliaria");
   const [crmSaving, setCrmSaving] = useState(false);
   const [crmSaved, setCrmSaved] = useState(false);
 
@@ -363,12 +364,14 @@ export default function InvitePage() {
             )}
           </AnimatePresence>
 
-          {/* CTA */}
+          {/* CTA: CRM or Captação Imobiliárias */}
           <AnimatePresence>
-            {showCta && config.ctaType === "crm" && !crmSaved && (
+            {showCta && (config.ctaType === "crm" || config.ctaType === "captacao_imobiliaria") && !crmSaved && (
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="flex flex-col items-center gap-3 pt-4 pb-8 px-4">
                 <div className="bg-white rounded-2xl shadow-lg p-5 w-full max-w-sm space-y-3">
-                  <p className="text-sm font-semibold text-[#075e54] text-center">📋 Deixe seus dados que entraremos em contato!</p>
+                  <p className="text-sm font-semibold text-[#075e54] text-center">
+                    {config.ctaType === "captacao_imobiliaria" ? "🏢 Deixe seus dados e fale com nosso consultor!" : "📋 Deixe seus dados que entraremos em contato!"}
+                  </p>
                   <input
                     type="text"
                     value={crmName}
@@ -384,11 +387,28 @@ export default function InvitePage() {
                     className="w-full bg-[#f0f2f5] rounded-full px-4 py-2.5 text-sm text-[#111b21] outline-none focus:ring-2 focus:ring-[#00a884]/40 placeholder:text-[#667781]"
                     maxLength={15}
                   />
+                  {config.ctaType === "captacao_imobiliaria" && (
+                    <select
+                      value={crmCategory}
+                      onChange={(e) => setCrmCategory(e.target.value)}
+                      className="w-full bg-[#f0f2f5] rounded-full px-4 py-2.5 text-sm text-[#111b21] outline-none focus:ring-2 focus:ring-[#00a884]/40"
+                    >
+                      <option value="imobiliaria">🏢 Imobiliária</option>
+                      <option value="construtora">🏗️ Construtora</option>
+                      <option value="corretor">🏠 Corretor(a)</option>
+                    </select>
+                  )}
                   <Button
                     onClick={async () => {
                       if (!crmName.trim() || !crmPhone.trim()) return;
                       setCrmSaving(true);
                       try {
+                        const categoryLabel = config.ctaType === "captacao_imobiliaria"
+                          ? { imobiliaria: "Imobiliária", construtora: "Construtora", corretor: "Corretor(a)" }[crmCategory] || crmCategory
+                          : "";
+                        const notes = config.ctaType === "captacao_imobiliaria"
+                          ? `Lead captado via chat de captação de imobiliárias | Categoria: ${categoryLabel}`
+                          : "Lead capturado via chat de convite";
                         await supabase.from("crm_contacts").insert({
                           full_name: crmName.trim(),
                           phone: crmPhone.trim(),
@@ -396,7 +416,7 @@ export default function InvitePage() {
                           funnel_stage: "novo",
                           profile_id: "00000000-0000-0000-0000-000000000000",
                           user_id: "00000000-0000-0000-0000-000000000000",
-                          notes: "Lead capturado via chat de convite",
+                          notes,
                         });
                         setCrmSaved(true);
                         trackEvent("crm_submitted");
@@ -409,35 +429,51 @@ export default function InvitePage() {
                     disabled={!crmName.trim() || !crmPhone.trim() || crmSaving}
                     className="w-full bg-[#25d366] hover:bg-[#22c55e] text-white font-bold rounded-full py-5"
                   >
-                    {crmSaving ? "Enviando..." : "Enviar meus dados 🚀"}
+                    {crmSaving ? "Enviando..." : config.ctaType === "captacao_imobiliaria" ? "Enviar e falar no WhatsApp 💬" : "Enviar meus dados 🚀"}
                   </Button>
                 </div>
               </motion.div>
             )}
-            {showCta && config.ctaType === "crm" && crmSaved && (
+            {showCta && (config.ctaType === "crm" || config.ctaType === "captacao_imobiliaria") && crmSaved && (
               <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center gap-3 pt-4 pb-8">
                 <div className="w-16 h-16 rounded-full bg-[#25d366] flex items-center justify-center">
                   <Check size={32} className="text-white" />
                 </div>
                 <p className="text-[#075e54] font-semibold text-center">Dados enviados com sucesso!</p>
-                <p className="text-[#667781] text-xs text-center">Em breve entraremos em contato pelo WhatsApp 📱</p>
+                <p className="text-[#667781] text-xs text-center">
+                  {config.ctaType === "captacao_imobiliaria"
+                    ? "Clique abaixo para falar direto com nosso consultor! 💬"
+                    : "Em breve entraremos em contato pelo WhatsApp 📱"}
+                </p>
                 <Button
                   onClick={() => {
                     trackEvent("signup_clicked");
-                    const url = config.crmRedirectUrl || "/login";
-                    if (url.startsWith("/")) {
-                      navigate(url);
+                    if (config.ctaType === "captacao_imobiliaria") {
+                      const categoryLabel = { imobiliaria: "Imobiliária", construtora: "Construtora", corretor: "Corretor(a)" }[crmCategory] || crmCategory;
+                      const msg = encodeURIComponent(
+                        `Olá! Sou ${crmName.trim()}, ${categoryLabel}.\n\nTenho interesse em conhecer a Capimobi e criar minha loja online.\n\nWhatsApp: ${crmPhone.trim()}`
+                      );
+                      const url = config.crmRedirectUrl || config.ctaUrl || "https://wa.me/55";
+                      const whatsappUrl = url.includes("wa.me") ? `${url}?text=${msg}` : url;
+                      window.open(whatsappUrl, "_blank", "noopener");
                     } else {
-                      window.open(url, "_blank", "noopener");
+                      const url = config.crmRedirectUrl || "/login";
+                      if (url.startsWith("/")) {
+                        navigate(url);
+                      } else {
+                        window.open(url, "_blank", "noopener");
+                      }
                     }
                   }}
                   className="mt-2 bg-[#25d366] hover:bg-[#22c55e] text-white font-bold rounded-full px-6 py-5 animate-pulse"
                 >
-                  {config.crmButtonText || "🚀 Criar Minha Conta Agora"}
+                  {config.ctaType === "captacao_imobiliaria"
+                    ? "💬 Falar com Consultor no WhatsApp"
+                    : (config.crmButtonText || "🚀 Criar Minha Conta Agora")}
                 </Button>
               </motion.div>
             )}
-            {showCta && config.ctaType !== "crm" && (
+            {showCta && config.ctaType !== "crm" && config.ctaType !== "captacao_imobiliaria" && (
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="flex flex-col items-center gap-3 pt-4 pb-8">
                 <Button onClick={() => { trackEvent("signup_clicked"); if (config.ctaType === "internal") navigate(config.ctaUrl); else window.open(config.ctaUrl, "_blank", "noopener"); }} className="bg-[#25d366] hover:bg-[#22c55e] text-white font-bold text-base px-8 py-6 rounded-full shadow-lg animate-pulse" size="lg">
                   {config.ctaText}
