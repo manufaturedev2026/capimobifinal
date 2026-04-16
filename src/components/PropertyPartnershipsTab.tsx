@@ -351,7 +351,7 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
         <p className="text-sm text-muted-foreground mt-1">Compartilhe e encontre imóveis para parceria com outros corretores.</p>
       </div>
 
-      <div className="flex gap-1 bg-secondary/50 rounded-xl p-1 overflow-x-auto">
+      <div className="flex gap-1 bg-secondary/50 rounded-xl p-1 overflow-x-auto scrollbar-hide">
         {([
           { id: "meus" as SubTab, label: "Meus Imóveis", count: myItems.length },
           { id: "disponivel" as SubTab, label: "Disponíveis", count: filteredItems.length },
@@ -362,7 +362,7 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
           <button
             key={tab.id}
             onClick={() => setSubTab(tab.id)}
-            className={`flex-1 px-3 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${
+            className={`flex-shrink-0 px-3 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${
               subTab === tab.id ? "bg-primary text-primary-foreground shadow-md" : "text-muted-foreground hover:text-foreground"
             }`}
           >
@@ -867,28 +867,38 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
           ) : (
             myRequests.map(req => {
               const st = statusConfig[req.status] || statusConfig.pendente;
+              const removed = !req.item;
               const gains = req.item ? calcPartnerGain(req.item.price, req.item.commission_percent, req.item.partner_percent) : null;
               return (
                 <motion.div
                   key={req.id}
                   initial={{ opacity: 0, y: 5 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="bg-card border border-border rounded-2xl p-4 flex gap-3"
+                  className={`bg-card border rounded-2xl p-4 flex gap-3 ${removed ? "border-red-500/30 opacity-70" : "border-border"}`}
                 >
                   <div className="w-16 h-16 rounded-xl bg-muted overflow-hidden flex-shrink-0">
-                    {req.item?.photos?.[0] ? (
+                    {removed ? (
+                      <div className="w-full h-full flex items-center justify-center bg-red-500/10"><XCircle size={20} className="text-red-400" /></div>
+                    ) : req.item?.photos?.[0] ? (
                       <img src={req.item.photos[0]} alt="" className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center"><Home size={20} className="text-muted-foreground/30" /></div>
                     )}
                   </div>
                   <div className="flex-1 min-w-0 space-y-1">
-                    <h3 className="font-bold text-sm text-foreground truncate">{req.item?.title || "Imóvel"}</h3>
+                    <h3 className="font-bold text-sm text-foreground truncate">
+                      {removed ? "Imóvel removido" : req.item?.title || "Imóvel"}
+                    </h3>
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${st.color}`}>
                         <st.icon size={10} /> {st.label}
                       </span>
-                      {gains && gains.partner > 0 && (
+                      {removed && (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold text-red-500 bg-red-500/10">
+                          <XCircle size={10} /> Removido
+                        </span>
+                      )}
+                      {!removed && gains && gains.partner > 0 && (
                         <span className="text-[10px] text-green-600 font-bold">Ganho: {fmt(gains.partner)}</span>
                       )}
                     </div>
@@ -915,26 +925,38 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
           ) : (
             receivedRequests.map(req => {
               const st = statusConfig[req.status] || statusConfig.pendente;
+              const removed = !req.item;
               return (
                 <motion.div
                   key={req.id}
                   initial={{ opacity: 0, y: 5 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="bg-card border border-border rounded-2xl p-4 space-y-3"
+                  className={`bg-card border rounded-2xl p-4 space-y-3 ${removed ? "border-red-500/30 opacity-70" : "border-border"}`}
                 >
                   <div className="flex gap-3">
                     <div className="w-16 h-16 rounded-xl bg-muted overflow-hidden flex-shrink-0">
-                      {req.item?.photos?.[0] ? (
+                      {removed ? (
+                        <div className="w-full h-full flex items-center justify-center bg-red-500/10"><XCircle size={20} className="text-red-400" /></div>
+                      ) : req.item?.photos?.[0] ? (
                         <img src={req.item.photos[0]} alt="" className="w-full h-full object-cover" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center"><Home size={20} className="text-muted-foreground/30" /></div>
                       )}
                     </div>
                     <div className="flex-1 min-w-0 space-y-1">
-                      <h3 className="font-bold text-sm text-foreground truncate">{req.item?.title || "Imóvel"}</h3>
-                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${st.color}`}>
-                        <st.icon size={10} /> {st.label}
-                      </span>
+                      <h3 className="font-bold text-sm text-foreground truncate">
+                        {removed ? "Imóvel removido" : req.item?.title || "Imóvel"}
+                      </h3>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${st.color}`}>
+                          <st.icon size={10} /> {st.label}
+                        </span>
+                        {removed && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold text-red-500 bg-red-500/10">
+                            <XCircle size={10} /> Removido
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
 
@@ -962,7 +984,7 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
                     </div>
                   )}
 
-                  {req.status === "pendente" && (
+                  {req.status === "pendente" && !removed && (
                     <div className="flex gap-2">
                       <button
                         onClick={() => updateRequestStatus(req.id, "aprovado")}
@@ -977,6 +999,10 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
                         <XCircle size={14} /> Recusar
                       </button>
                     </div>
+                  )}
+
+                  {req.status === "pendente" && removed && (
+                    <p className="text-xs text-red-400 text-center py-1">Este imóvel foi removido. Não é possível aprovar esta solicitação.</p>
                   )}
                 </motion.div>
               );
