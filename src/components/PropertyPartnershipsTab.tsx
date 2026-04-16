@@ -191,9 +191,9 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
     setSavingId(null);
   };
 
-  const updateItemPartnershipFields = async (itemId: string, field: string, value: number | null) => {
+  const updateItemPartnershipFields = async (itemId: string, field: "commission_percent" | "partner_percent", value: number | null) => {
     setSavingId(itemId);
-    const { error } = await supabase.from("seller_items").update({ [field]: value }).eq("id", itemId).eq("user_id", userId);
+    const { error } = await supabase.from("seller_items").update({ [field]: value } as any).eq("id", itemId).eq("user_id", userId);
     if (error) toast({ title: "Erro", description: error.message, variant: "destructive" });
     else await loadMyItems();
     setSavingId(null);
