@@ -227,12 +227,16 @@ export default function AdminDashboardTab() {
                 tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }}
               />
               <Tooltip
+                cursor={{ fill: "hsl(var(--muted) / 0.3)" }}
                 contentStyle={{
                   background: "hsl(var(--card))",
                   border: "1px solid hsl(var(--border))",
                   borderRadius: 12,
                   fontSize: 12,
+                  color: "hsl(var(--foreground))",
                 }}
+                labelStyle={{ color: "hsl(var(--foreground))", fontWeight: 600 }}
+                itemStyle={{ color: "hsl(var(--foreground))" }}
               />
               <Bar dataKey="value" radius={[0, 6, 6, 0]}>
                 {funnelData.map((_, i) => (
