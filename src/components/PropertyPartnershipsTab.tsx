@@ -810,15 +810,17 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
                   {/* Partner info + gains */}
                   <div className="px-4 pb-4 space-y-3">
                     {gains && gains.partner > 0 && (
-                      <div className="grid grid-cols-2 gap-2 text-center">
+                      <div className={`grid ${p.role === "owner" ? "grid-cols-2" : "grid-cols-1"} gap-2 text-center`}>
                         <div className="bg-green-500/10 rounded-xl p-2">
-                          <p className="text-[10px] text-muted-foreground">{p.role === "owner" ? "Ganho do parceiro" : "Seu ganho"}</p>
-                          <p className="font-bold text-sm text-green-600">{fmt(gains.partner)}</p>
+                          <p className="text-[10px] text-muted-foreground">{p.role === "owner" ? "Ganho do parceiro" : "Seu ganho estimado"}</p>
+                          <p className="font-bold text-sm text-green-600">{fmt(p.role === "owner" ? gains.partner : gains.partner)}</p>
                         </div>
-                        <div className="bg-primary/10 rounded-xl p-2">
-                          <p className="text-[10px] text-muted-foreground">{p.role === "owner" ? "Seu ganho" : "Ganho do dono"}</p>
-                          <p className="font-bold text-sm text-primary">{fmt(gains.owner)}</p>
-                        </div>
+                        {p.role === "owner" && (
+                          <div className="bg-primary/10 rounded-xl p-2">
+                            <p className="text-[10px] text-muted-foreground">Seu ganho</p>
+                            <p className="font-bold text-sm text-primary">{fmt(gains.owner)}</p>
+                          </div>
+                        )}
                       </div>
                     )}
 
