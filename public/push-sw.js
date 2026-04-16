@@ -1,9 +1,13 @@
+self.addEventListener("install", function (event) {
+  self.skipWaiting();
+});
+
 self.addEventListener("activate", function (event) {
   event.waitUntil(self.clients.claim());
 });
 
 function normalizeNotificationData(raw) {
-  const fallback = { title: "Nova notificação", body: "", url: "/", image: undefined };
+  const fallback = { title: "Nova notificação", body: "Você recebeu uma nova mensagem", url: "/", image: undefined };
 
   if (!raw) return fallback;
 
@@ -30,7 +34,7 @@ function normalizeNotificationData(raw) {
 }
 
 self.addEventListener("push", function (event) {
-  event.waitUntil((async function () {
+  const showPromise = (async function () {
     let data = normalizeNotificationData(null);
 
     try {
@@ -45,22 +49,36 @@ self.addEventListener("push", function (event) {
 
     console.log("[push-sw] payload received:", JSON.stringify(data));
 
-    var options = {
-      body: data.body,
-      icon: "/icons/icon-192x192.png",
-      badge: "/icons/icon-72x72.png",
-      vibrate: [100, 50, 100],
+    const options = {
+      body: data.body || "Você recebeu uma nova mensagem",
+      icon: "/pwa-icon-192.png",
+      badge: "/pwa-icon-192.png",
+      vibrate: [200, 100, 200],
+      tag: "capimobi-push-" + Date.now(),
+      renotify: true,
+      requireInteraction: false,
+      silent: false,
       data: { url: data.url || "/" },
-      actions: [{ action: "open", title: "Abrir" }],
     };
 
     if (data.image) {
       options.image = data.image;
-      console.log("[push-sw] image set:", data.image);
     }
 
-    await self.registration.showNotification(data.title || "Nova notificação", options);
-  })());
+    try {
+      await self.registration.showNotification(data.title || "Nova notificação", options);
+      console.log("[push-sw] notification shown");
+    } catch (err) {
+      console.error("[push-sw] showNotification failed:", err);
+      // Fallback minimal notification
+      await self.registration.showNotification(data.title || "Nova notificação", {
+        body: data.body || "",
+        icon: "/pwa-icon-192.png",
+      });
+    }
+  })();
+
+  event.waitUntil(showPromise);
 });
 
 self.addEventListener("notificationclick", function (event) {
@@ -75,5 +93,15 @@ self.addEventListener("notificationclick", function (event) {
     targetUrl = new URL("/", self.location.origin).toString();
   }
 
-  event.waitUntil(clients.openWindow(targetUrl));
+  event.waitUntil(
+    (async () => {
+      const allClients = await clients.matchAll({ type: "window", includeUncontrolled: true });
+      for (const client of allClients) {
+        if (client.url === targetUrl && "focus" in client) {
+          return client.focus();
+        }
+      }
+      return clients.openWindow(targetUrl);
+    })()
+  );
 });
