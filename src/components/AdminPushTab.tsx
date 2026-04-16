@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { BRAZIL_STATES } from "@/data/brazilStates";
+import { useCitiesByState } from "@/hooks/useCitiesByState";
 
 interface AdminPushTabProps {
   userId: string;
@@ -38,7 +39,8 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
   const [uploadingImage, setUploadingImage] = useState(false);
   const [audience, setAudience] = useState<"all" | "corretor" | "imobiliaria" | "construtora" | "professionals" | "clients">("all");
   const [filterState, setFilterState] = useState<string>("all");
-  const [filterCity, setFilterCity] = useState<string>("");
+  const [filterCity, setFilterCity] = useState<string>("all");
+  const { cities: stateCities, loading: loadingCities } = useCitiesByState(filterState !== "all" ? filterState : "");
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -104,7 +106,7 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
           image: image || undefined,
           audience,
           state: filterState !== "all" ? filterState : undefined,
-          city: filterCity.trim() || undefined,
+          city: filterCity !== "all" ? filterCity : undefined,
         },
       });
 
@@ -215,7 +217,7 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <Label className="text-xs font-medium">Estado (UF)</Label>
-                <Select value={filterState} onValueChange={setFilterState}>
+                <Select value={filterState} onValueChange={(v) => { setFilterState(v); setFilterCity("all"); }}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -228,12 +230,22 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
                 </Select>
               </div>
               <div className="space-y-1.5">
-                <Label className="text-xs font-medium">Cidade (opcional)</Label>
-                <Input
+                <Label className="text-xs font-medium">Cidade</Label>
+                <Select
                   value={filterCity}
-                  onChange={(e) => setFilterCity(e.target.value)}
-                  placeholder="Ex: Colatina"
-                />
+                  onValueChange={setFilterCity}
+                  disabled={filterState === "all" || loadingCities}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={filterState === "all" ? "Selecione um estado" : loadingCities ? "Carregando..." : "Todas as cidades"} />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-60">
+                    <SelectItem value="all">Todas as cidades</SelectItem>
+                    {stateCities.map((c) => (
+                      <SelectItem key={c} value={c}>{c}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
