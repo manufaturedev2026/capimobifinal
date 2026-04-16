@@ -39,6 +39,7 @@ import PwaInstallGuide from "@/components/PwaInstallGuide";
 import { usePwaInstall } from "@/hooks/usePwaInstall";
 import OnboardingTour from "@/components/OnboardingTour";
 import { usePushSubscription } from "@/hooks/usePushSubscription";
+import AiHelpChat from "@/components/AiHelpChat";
 
 type SellerItem = {
   id: string;
@@ -1377,6 +1378,7 @@ export default function SellerDashboard() {
       <div className="lg:hidden h-16" />
       <PwaInstallGuide open={showInstallGuide} onClose={() => setShowInstallGuide(false)} mode={guideMode} />
       <OnboardingTour />
+      <AiHelpChat />
     </div>
   );
 }
