@@ -176,6 +176,28 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
     }
   };
 
+  const togglePartnership = async (itemId: string, enabled: boolean, commPct?: number, partPct?: number) => {
+    setSavingId(itemId);
+    const update: any = { partnership_enabled: enabled };
+    if (commPct !== undefined) update.commission_percent = commPct;
+    if (partPct !== undefined) update.partner_percent = partPct;
+    const { error } = await supabase.from("seller_items").update(update).eq("id", itemId).eq("user_id", userId);
+    if (error) {
+      toast({ title: "Erro", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: enabled ? "Parceria ativada! 🤝" : "Parceria desativada" });
+      await loadMyItems();
+    }
+    setSavingId(null);
+  };
+
+  const updateItemPartnershipFields = async (itemId: string, field: string, value: number | null) => {
+    setSavingId(itemId);
+    const { error } = await supabase.from("seller_items").update({ [field]: value }).eq("id", itemId).eq("user_id", userId);
+    if (error) toast({ title: "Erro", description: error.message, variant: "destructive" });
+    else await loadMyItems();
+    setSavingId(null);
+  };
   const openWhatsApp = (phone: string | null, itemTitle: string, finality: string | null) => {
     if (!phone) { toast({ title: "Telefone não disponível", variant: "destructive" }); return; }
     const cleanPhone = phone.replace(/\D/g, "");
@@ -225,17 +247,17 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
         <p className="text-sm text-muted-foreground mt-1">Compartilhe e encontre imóveis para parceria com outros corretores.</p>
       </div>
 
-      {/* Sub-tabs */}
-      <div className="flex gap-1 bg-secondary/50 rounded-xl p-1">
+      <div className="flex gap-1 bg-secondary/50 rounded-xl p-1 overflow-x-auto">
         {([
+          { id: "meus" as SubTab, label: "Meus Imóveis", count: myItems.length },
           { id: "disponivel" as SubTab, label: "Disponíveis", count: filteredItems.length },
-          { id: "minhas" as SubTab, label: "Minhas Solicitações", count: myRequests.length },
+          { id: "minhas" as SubTab, label: "Solicitações", count: myRequests.length },
           { id: "recebidas" as SubTab, label: "Recebidas", count: receivedRequests.length },
         ]).map(tab => (
           <button
             key={tab.id}
             onClick={() => setSubTab(tab.id)}
-            className={`flex-1 px-3 py-2 rounded-lg text-xs font-bold transition-all ${
+            className={`flex-1 px-3 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${
               subTab === tab.id ? "bg-primary text-primary-foreground shadow-md" : "text-muted-foreground hover:text-foreground"
             }`}
           >
@@ -243,6 +265,115 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
           </button>
         ))}
       </div>
+
+      {/* Meus Imóveis - Ativar Parceria */}
+      {subTab === "meus" && (
+        <div className="space-y-3">
+          <p className="text-xs text-muted-foreground">Ative a parceria nos seus imóveis para que outros corretores possam encontrá-los e solicitar parceria.</p>
+          {myItems.length === 0 ? (
+            <div className="text-center py-16 space-y-3">
+              <Package size={40} className="mx-auto text-muted-foreground/30" />
+              <p className="text-muted-foreground text-sm">Você não tem imóveis ativos.</p>
+            </div>
+          ) : (
+            myItems.map(item => (
+              <motion.div
+                key={item.id}
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                className={`bg-card border rounded-2xl p-4 transition-colors ${item.partnership_enabled ? "border-primary/30" : "border-border"}`}
+              >
+                <div className="flex gap-3">
+                  <div className="w-16 h-16 rounded-xl bg-muted overflow-hidden flex-shrink-0">
+                    {item.photos?.[0] ? (
+                      <img src={item.photos[0]} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center"><Home size={20} className="text-muted-foreground/30" /></div>
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0 space-y-1">
+                    <h3 className="font-bold text-sm text-foreground truncate">{item.title}</h3>
+                    <p className="text-xs text-muted-foreground">{item.city || "Sem cidade"} • {item.finality === "aluguel" ? "Aluguel" : "Venda"}</p>
+                    {item.price && <p className="font-bold text-sm text-primary">{formatCurrency(item.price)}</p>}
+                  </div>
+                  <button
+                    onClick={() => togglePartnership(item.id, !item.partnership_enabled)}
+                    disabled={savingId === item.id}
+                    className="flex-shrink-0 self-start"
+                  >
+                    {item.partnership_enabled ? (
+                      <ToggleRight size={32} className="text-primary" />
+                    ) : (
+                      <ToggleLeft size={32} className="text-muted-foreground" />
+                    )}
+                  </button>
+                </div>
+
+                {/* Partnership config when enabled */}
+                {item.partnership_enabled && (
+                  <div className="mt-3 pt-3 border-t border-border space-y-3">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="text-[10px] font-bold text-muted-foreground uppercase mb-1 block">Comissão Total (%)</label>
+                        <input
+                          type="number"
+                          step="0.5"
+                          min="0"
+                          max="100"
+                          defaultValue={item.commission_percent ?? ""}
+                          onBlur={(e) => {
+                            const v = e.target.value ? parseFloat(e.target.value) : null;
+                            if (v !== item.commission_percent) updateItemPartnershipFields(item.id, "commission_percent", v);
+                          }}
+                          className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+                          placeholder="Ex: 6"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[10px] font-bold text-muted-foreground uppercase mb-1 block">% do Parceiro</label>
+                        <input
+                          type="number"
+                          step="5"
+                          min="0"
+                          max="100"
+                          defaultValue={item.partner_percent ?? ""}
+                          onBlur={(e) => {
+                            const v = e.target.value ? parseFloat(e.target.value) : null;
+                            if (v !== item.partner_percent) updateItemPartnershipFields(item.id, "partner_percent", v);
+                          }}
+                          className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+                          placeholder="Ex: 50"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Preview calculation */}
+                    {item.price && item.commission_percent && item.partner_percent && (() => {
+                      const gains = calcPartnerGain(item.price, item.commission_percent, item.partner_percent, item.finality);
+                      return (
+                        <div className="grid grid-cols-3 gap-2 text-center">
+                          <div className="bg-primary/10 rounded-lg p-2">
+                            <p className="text-[10px] text-muted-foreground">Total</p>
+                            <p className="font-bold text-xs text-primary">{formatCurrency(gains.total)}</p>
+                          </div>
+                          <div className="bg-green-500/10 rounded-lg p-2">
+                            <p className="text-[10px] text-muted-foreground">Parceiro</p>
+                            <p className="font-bold text-xs text-green-600">{formatCurrency(gains.partner)}</p>
+                          </div>
+                          <div className="bg-accent/10 rounded-lg p-2">
+                            <p className="text-[10px] text-muted-foreground">Você</p>
+                            <p className="font-bold text-xs text-accent">{formatCurrency(gains.owner)}</p>
+                          </div>
+                        </div>
+                      );
+                    })()}
+                  </div>
+                )}
+              </motion.div>
+            ))
+          )}
+        </div>
+      )}
 
       {/* Disponíveis */}
       {subTab === "disponivel" && (
