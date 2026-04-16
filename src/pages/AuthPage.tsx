@@ -17,11 +17,15 @@ export default function AuthPage() {
   });
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [signedUp, setSignedUp] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [selectedState, setSelectedState] = useState("ES");
+  const [selectedCity, setSelectedCity] = useState("");
+  const { cities: stateCities, loading: loadingCities } = useCitiesByState(selectedState);
   const { user, profile, signIn, signUp } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
