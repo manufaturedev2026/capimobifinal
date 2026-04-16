@@ -208,7 +208,7 @@ const FLOW_CAPTACAO_IMOBILIARIA: FlowStep[] = [
   ], next: "collect_data" },
   { id: "pricing", type: "bot", messages: [
     "Os preços são imbatíveis, {{nome}}! 💎",
-    "🆓 Start (GRÁTIS): Loja completa + até 5 imóveis + CRM\n💼 Básico (R$29/mês): 15 imóveis + stories + todos layouts\n⭐ VIP (R$59/mês): Ilimitado + vídeo hero + bot captação\n👑 Premium (R$99/mês): Tudo + captação com IA",
+    "🆓 Básico (GRÁTIS): Loja completa + até 5 imóveis + CRM\n💼 Start (R$24,99/mês): 25 imóveis + Stories + contratos + PDF\n⭐ VIP (R$59,99/mês): 60 imóveis + vídeo hero + bot captação\n👑 Premium (R$114,99/mês): 115 imóveis + captação com IA",
     "Para imobiliárias temos planos especiais com desconto! 🏢",
     "Quer que um consultor te apresente o melhor plano?"
   ], next: "choice_final" },
