@@ -621,11 +621,11 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
               </div>
               <p className="text-xs font-mono text-muted-foreground truncate mb-3">{captureUrl}</p>
               <div className="flex gap-2">
-                <Button size="sm" variant="outline" className="flex-1 gap-1.5 text-xs h-8 rounded-xl" onClick={() => copyLink(captureUrl, "Link da página")} disabled={!hasLandingPage}>
+                <Button size="sm" variant="outline" className="flex-1 gap-1.5 text-xs h-8 rounded-xl bg-background text-foreground border-border hover:bg-accent hover:text-accent-foreground" onClick={() => copyLink(captureUrl, "Link da página")} disabled={!hasLandingPage}>
                   <Copy size={11} /> Copiar
                 </Button>
                 <a href={hasLandingPage ? captureUrl : undefined} target="_blank" rel="noopener noreferrer" className="flex-1">
-                  <Button size="sm" variant="outline" className="w-full gap-1.5 text-xs h-8 rounded-xl" disabled={!hasLandingPage}>
+                  <Button size="sm" variant="outline" className="w-full gap-1.5 text-xs h-8 rounded-xl bg-background text-foreground border-border hover:bg-accent hover:text-accent-foreground" disabled={!hasLandingPage}>
                     <Eye size={11} /> Abrir
                   </Button>
                 </a>
@@ -648,11 +648,11 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
               </div>
               <p className="text-xs font-mono text-muted-foreground truncate mb-3">{chatBotUrl}</p>
               <div className="flex gap-2">
-                <Button size="sm" variant="outline" className="flex-1 gap-1.5 text-xs h-8 rounded-xl" onClick={() => copyLink(chatBotUrl, "Link do bot")} disabled={!hasBot}>
+                <Button size="sm" variant="outline" className="flex-1 gap-1.5 text-xs h-8 rounded-xl bg-background text-foreground border-border hover:bg-accent hover:text-accent-foreground" onClick={() => copyLink(chatBotUrl, "Link do bot")} disabled={!hasBot}>
                   <Copy size={11} /> Copiar
                 </Button>
                 <a href={hasBot ? chatBotUrl : undefined} target="_blank" rel="noopener noreferrer" className="flex-1">
-                  <Button size="sm" variant="outline" className="w-full gap-1.5 text-xs h-8 rounded-xl" disabled={!hasBot}>
+                  <Button size="sm" variant="outline" className="w-full gap-1.5 text-xs h-8 rounded-xl bg-background text-foreground border-border hover:bg-accent hover:text-accent-foreground" disabled={!hasBot}>
                     <Eye size={11} /> Abrir
                   </Button>
                 </a>
