@@ -50,6 +50,90 @@ const PROPERTY_TYPE_LABELS: Record<string, string> = {
 
 type MainTab = "links" | "bot" | "leads";
 type FlowType = "captacao" | "grupo_whatsapp" | "agendamento" | "avaliacao";
+type AdTemplate = { id: string; label: string; emoji: string; category: string; generate: (url: string, name: string) => string };
+
+const AD_TEMPLATES: AdTemplate[] = [
+  {
+    id: "captacao_geral",
+    label: "Captação Geral",
+    emoji: "🏡",
+    category: "Captação",
+    generate: (url, name) =>
+      `🏡 Quer vender ou alugar seu imóvel MAIS RÁPIDO e pelo melhor valor?\n\nEu posso te ajudar 👇\n\n🚀 Cadastre seu imóvel 100% GRÁTIS e receba propostas reais de compradores interessados!\n\n✨ O que você ganha:\n✔ Avaliação profissional do seu imóvel\n✔ Divulgação em vários sites e redes sociais\n✔ Atendimento rápido e personalizado\n✔ Estratégia para vender ou alugar mais rápido\n\n💰 Sem burocracia. Sem complicação. Mais resultado!\n\n👉 Cadastre agora:\n${url}\n\n📲 Clique no link ou fale comigo no WhatsApp!\n\n⚠️ Vagas limitadas para novos imóveis essa semana\n\n#imoveis #venderimovel #aluguel #corretordeimoveis #oportunidade #mercadoimobiliario`,
+  },
+  {
+    id: "urgencia",
+    label: "Senso de Urgência",
+    emoji: "⏰",
+    category: "Captação",
+    generate: (url, name) =>
+      `⏰ ATENÇÃO proprietários!\n\nEstou selecionando apenas 5 imóveis esta semana para um trabalho exclusivo de divulgação.\n\n🔥 Se você quer vender ou alugar RÁPIDO, essa é sua chance!\n\n✅ Fotos profissionais\n✅ Divulgação em +10 portais\n✅ Atendimento VIP\n\n📋 Cadastre seu imóvel agora (é grátis):\n${url}\n\n⚠️ Restam poucas vagas!\n\n— ${name}`,
+  },
+  {
+    id: "avaliacao_gratuita",
+    label: "Avaliação Gratuita",
+    emoji: "💎",
+    category: "Avaliação",
+    generate: (url, name) =>
+      `💎 Você sabe quanto vale o seu imóvel HOJE?\n\n🏠 Ofereço avaliação GRATUITA e sem compromisso!\n\nDescubra o valor real do seu patrimônio com quem entende do mercado.\n\n📊 O que está incluso:\n• Análise comparativa da região\n• Avaliação de mercado atualizada\n• Orientação sobre o melhor momento para vender\n\n👉 Cadastre agora para receber sua avaliação:\n${url}\n\n📲 Ou me chame no WhatsApp!\n\n— ${name} | Corretor(a) de Imóveis`,
+  },
+  {
+    id: "stories_instagram",
+    label: "Stories Instagram",
+    emoji: "📱",
+    category: "Redes Sociais",
+    generate: (url, name) =>
+      `📱 DESLIZA PRA CIMA!\n\n🏡 Quer vender seu imóvel?\n\n✅ Cadastro GRÁTIS\n✅ Divulgação profissional\n✅ Propostas reais\n\n🔗 ${url}\n\n#imoveis #venda #corretor`,
+  },
+  {
+    id: "grupo_whatsapp",
+    label: "Grupo WhatsApp",
+    emoji: "💬",
+    category: "WhatsApp",
+    generate: (url, name) =>
+      `👋 Olá! Sou ${name}.\n\n🏡 Você tem um imóvel para vender ou alugar?\n\nEstou fazendo um trabalho especial de captação e posso te ajudar a encontrar o comprador ou inquilino ideal!\n\n✨ Benefícios:\n🔹 Cadastro 100% gratuito\n🔹 Fotos e divulgação profissional\n🔹 Atendimento personalizado\n\n📋 Cadastre aqui:\n${url}\n\nQualquer dúvida, me chame! 😊`,
+  },
+  {
+    id: "facebook_post",
+    label: "Post Facebook",
+    emoji: "👥",
+    category: "Redes Sociais",
+    generate: (url, name) =>
+      `🏠 PROPRIETÁRIOS DE IMÓVEIS, LEIAM ISSO! 👇\n\nVocê sabia que a maioria dos imóveis demora meses para ser vendido por falta de uma boa estratégia de divulgação?\n\n💡 Eu posso mudar isso!\n\nSou ${name} e ofereço um serviço completo de venda e locação com:\n\n📸 Fotos profissionais do seu imóvel\n📣 Divulgação em múltiplas plataformas\n🤝 Negociação especializada\n📊 Acompanhamento em tempo real\n\nE o melhor: o cadastro é 100% GRATUITO!\n\n👉 Comece agora: ${url}\n\nMarque aqui nos comentários alguém que precisa vender ou alugar um imóvel! 👇\n\n#imobiliaria #vendadeimoveis #aluguel #corretor #investimento`,
+  },
+  {
+    id: "investidores",
+    label: "Para Investidores",
+    emoji: "📈",
+    category: "Captação",
+    generate: (url, name) =>
+      `📈 INVESTIDORES: Você tem imóveis parados no seu portfólio?\n\nTransforme seus imóveis em renda AGORA!\n\n💰 Serviço profissional de venda e locação:\n\n🔹 Análise de rentabilidade\n🔹 Precificação estratégica\n🔹 Divulgação premium\n🔹 Filtro de inquilinos/compradores\n\n🏢 Atendo casas, apartamentos, salas comerciais e terrenos.\n\n📋 Cadastre seus imóveis:\n${url}\n\n— ${name}`,
+  },
+  {
+    id: "aluguel",
+    label: "Foco em Aluguel",
+    emoji: "🔑",
+    category: "Captação",
+    generate: (url, name) =>
+      `🔑 Quer ALUGAR seu imóvel com segurança e rapidez?\n\n🏠 Eu cuido de TUDO pra você:\n\n✅ Análise de crédito dos candidatos\n✅ Contrato seguro\n✅ Divulgação em múltiplos canais\n✅ Vistoria completa\n✅ Garantia de recebimento\n\n💡 Sem dor de cabeça. Você recebe, eu administro.\n\n👉 Cadastre seu imóvel gratuitamente:\n${url}\n\n📲 Fale comigo e tire suas dúvidas!\n\n— ${name}`,
+  },
+  {
+    id: "depoimento",
+    label: "Prova Social",
+    emoji: "⭐",
+    category: "Marketing",
+    generate: (url, name) =>
+      `⭐⭐⭐⭐⭐\n\n"Consegui vender meu apartamento em apenas 3 semanas! Super recomendo o trabalho do(a) ${name}." — Cliente satisfeito(a)\n\n🏡 Quer ter o mesmo resultado?\n\nCadastro GRATUITO e sem compromisso!\n\n✅ Avaliação profissional\n✅ Divulgação estratégica\n✅ Propostas reais e qualificadas\n\n👉 Cadastre agora:\n${url}\n\n📲 Me chame no WhatsApp para mais detalhes!\n\n#resultados #imoveis #venda #depoimento`,
+  },
+  {
+    id: "video_script",
+    label: "Roteiro de Vídeo",
+    emoji: "🎬",
+    category: "Vídeo",
+    generate: (url, name) =>
+      `🎬 ROTEIRO PARA VÍDEO / REELS:\n\n[GANCHO - 3s]\n"Você quer vender seu imóvel rápido? Então presta atenção!"\n\n[PROBLEMA - 5s]\n"A maioria dos proprietários perde tempo e dinheiro tentando vender sozinho..."\n\n[SOLUÇÃO - 7s]\n"Eu sou ${name} e ofereço um serviço COMPLETO de venda e divulgação. O cadastro é 100% gratuito!"\n\n[CTA - 5s]\n"Clica no link da bio ou me chama no WhatsApp agora!"\n\n---\n🔗 Link: ${url}\n📝 Dica: grave com boa iluminação e fale olhando para a câmera!`,
+  },
+];
 
 export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, sellerName, currentTier = "basico", onUnreadCountChange }: CaptacaoOnlineTabProps) {
   const TIER_ORDER = ["basico", "start", "premium", "vip", "essencial_empresa", "premium_empresa", "prime_empresa", "black"];
