@@ -163,6 +163,18 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
     })));
   };
 
+  const sendPartnershipPush = async (targetUserId: string, title: string, body: string) => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+      await supabase.functions.invoke("send-push-partnership", {
+        body: { target_user_id: targetUserId, title, body, url: "/painel" },
+      });
+    } catch (e) {
+      console.error("Push notification error:", e);
+    }
+  };
+
   const requestPartnership = async (item: PartnershipItem) => {
     const { error } = await supabase.from("property_partnerships").insert({
       item_id: item.id,
@@ -176,11 +188,18 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
     } else {
       toast({ title: "Solicitação enviada! 🤝" });
       setDetailItem(null);
+      // Send push to owner
+      sendPartnershipPush(
+        item.user_id,
+        "Nova solicitação de parceria 🤝",
+        `Alguém solicitou parceria no imóvel "${item.title}". Confira na aba Parcerias!`
+      );
       loadData();
     }
   };
 
   const updateRequestStatus = async (requestId: string, status: string) => {
+    const req = receivedRequests.find(r => r.id === requestId);
     const { error } = await supabase
       .from("property_partnerships")
       .update({ status })
@@ -190,6 +209,14 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
       toast({ title: "Erro", description: error.message, variant: "destructive" });
     } else {
       toast({ title: status === "aprovado" ? "Parceria aprovada! ✅" : "Parceria recusada" });
+      // Send push to requester
+      if (req) {
+        const title = status === "aprovado" ? "Parceria aprovada! ✅" : "Parceria recusada ❌";
+        const body = status === "aprovado"
+          ? `Sua solicitação de parceria no imóvel "${req.item?.title || "Imóvel"}" foi aprovada!`
+          : `Sua solicitação de parceria no imóvel "${req.item?.title || "Imóvel"}" foi recusada.`;
+        sendPartnershipPush(req.requester_user_id, title, body);
+      }
       loadData();
     }
   };
