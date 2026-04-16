@@ -42,6 +42,62 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
   const [regionData, setRegionData] = useState<Record<string, string[]>>({});
   const availableStates = Object.keys(regionData).sort();
   const stateCities = filterState !== "all" ? (regionData[filterState] || []) : [];
+  const [estimate, setEstimate] = useState<number | null>(null);
+  const [estimating, setEstimating] = useState(false);
+
+  // Estimate number of recipients when filters change
+  useEffect(() => {
+    let cancelled = false;
+    const run = async () => {
+      setEstimating(true);
+      try {
+        const hasCategoryFilter = audience !== "all";
+        const hasRegionFilter = filterState !== "all" || filterCity !== "all";
+
+        if (!hasCategoryFilter && !hasRegionFilter) {
+          // All subscriptions, deduplicated by endpoint
+          const { data } = await supabase.from("push_subscriptions" as any).select("endpoint");
+          if (cancelled) return;
+          const unique = new Set((data || []).map((s: any) => s.endpoint));
+          setEstimate(unique.size);
+          return;
+        }
+
+        // Build profiles query matching server logic
+        let profilesQuery = supabase.from("profiles").select("id");
+        if (audience === "professionals") {
+          profilesQuery = profilesQuery.in("seller_category", ["corretor", "imobiliaria", "construtora"]);
+        } else if (audience === "clients") {
+          profilesQuery = profilesQuery.or(
+            "seller_category.is.null,seller_category.in.(proprietario,autonomo,loja_veiculos,concessionaria)"
+          );
+        } else if (audience !== "all") {
+          profilesQuery = profilesQuery.eq("seller_category", audience as any);
+        }
+        if (filterState !== "all") profilesQuery = profilesQuery.eq("state", filterState);
+        if (filterCity !== "all") profilesQuery = profilesQuery.ilike("city", filterCity);
+
+        const { data: profs } = await profilesQuery;
+        if (cancelled) return;
+        const ids = (profs || []).map((p: any) => p.id);
+        if (ids.length === 0) {
+          setEstimate(0);
+          return;
+        }
+        const { data: subs } = await supabase
+          .from("push_subscriptions" as any)
+          .select("endpoint")
+          .in("seller_id", ids);
+        if (cancelled) return;
+        const unique = new Set((subs || []).map((s: any) => s.endpoint));
+        setEstimate(unique.size);
+      } finally {
+        if (!cancelled) setEstimating(false);
+      }
+    };
+    run();
+    return () => { cancelled = true; };
+  }, [audience, filterState, filterCity, totalSubscribers]);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
