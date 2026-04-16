@@ -707,18 +707,14 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
                   <div className="flex items-center gap-1.5 text-xs font-bold text-muted-foreground">
                     <DollarSign size={14} /> Simulação de Comissão
                   </div>
-                  <div className="grid grid-cols-3 gap-2 text-center">
+                  <div className="grid grid-cols-2 gap-2 text-center">
                     <div className="bg-primary/10 rounded-xl p-2.5">
-                      <p className="text-[10px] text-muted-foreground">Total</p>
+                      <p className="text-[10px] text-muted-foreground">Comissão Total</p>
                       <p className="font-bold text-sm text-primary">{fmt(gains.total)}</p>
                     </div>
                     <div className="bg-green-500/10 rounded-xl p-2.5">
                       <p className="text-[10px] text-muted-foreground">Seu ganho</p>
                       <p className="font-bold text-sm text-green-600">{fmt(gains.partner)}</p>
-                    </div>
-                    <div className="bg-accent/10 rounded-xl p-2.5">
-                      <p className="text-[10px] text-muted-foreground">Dono</p>
-                      <p className="font-bold text-sm text-foreground">{fmt(gains.owner)}</p>
                     </div>
                   </div>
                 </div>
