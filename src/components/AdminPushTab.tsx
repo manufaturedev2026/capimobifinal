@@ -217,7 +217,7 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <Label className="text-xs font-medium">Estado (UF)</Label>
-                <Select value={filterState} onValueChange={setFilterState}>
+                <Select value={filterState} onValueChange={(v) => { setFilterState(v); setFilterCity("all"); }}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -230,12 +230,22 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
                 </Select>
               </div>
               <div className="space-y-1.5">
-                <Label className="text-xs font-medium">Cidade (opcional)</Label>
-                <Input
+                <Label className="text-xs font-medium">Cidade</Label>
+                <Select
                   value={filterCity}
-                  onChange={(e) => setFilterCity(e.target.value)}
-                  placeholder="Ex: Colatina"
-                />
+                  onValueChange={setFilterCity}
+                  disabled={filterState === "all" || loadingCities}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={filterState === "all" ? "Selecione um estado" : loadingCities ? "Carregando..." : "Todas as cidades"} />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-60">
+                    <SelectItem value="all">Todas as cidades</SelectItem>
+                    {stateCities.map((c) => (
+                      <SelectItem key={c} value={c}>{c}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
