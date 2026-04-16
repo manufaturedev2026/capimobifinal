@@ -211,7 +211,7 @@ export default function PartnerBrokerTab({ profileId, userId }: { profileId: str
         <div>
           <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
             <Building2 size={22} className="text-primary" />
-            Parceiro
+            Imobiliárias
           </h2>
           <p className="text-sm text-muted-foreground mt-1">
             Vincule-se a uma imobiliária e tenha sua loja espelho com os imóveis dela.
