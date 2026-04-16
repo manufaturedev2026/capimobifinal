@@ -1148,7 +1148,7 @@ export default function SellerDashboard() {
               <SellerAdsTab profileId={profile.id} userId={user!.id} />
             )}
 
-            {activeTab === "partner" && profile?.id && (
+            {activeTab === "imobiliarias" && profile?.id && (
               isImobiliaria ? (
                 <PartnerAgencyTab profileId={profile.id} userId={user!.id} />
               ) : (
