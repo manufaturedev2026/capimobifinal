@@ -47,7 +47,7 @@ const PROPERTY_TYPE_LABELS: Record<string, string> = {
   comercial: "Comercial", galpao: "Galpão", flat: "Flat", outros: "Outros",
 };
 
-type MainTab = "links" | "bot" | "leads";
+type MainTab = "links" | "bot" | "leads" | "gerador";
 type FlowType = "captacao" | "grupo_whatsapp" | "agendamento" | "avaliacao";
 type AdTemplate = { id: string; label: string; emoji: string; category: string; generate: (url: string, name: string) => string };
 
@@ -386,7 +386,8 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
 
   const TAB_CONFIG: { key: MainTab; label: string; icon: any; count?: number }[] = [
     { key: "leads", label: "Leads", icon: Inbox, count: counts.novo },
-    { key: "links", label: "Links & Marketing", icon: Link2 },
+    { key: "links", label: "Landing Page", icon: Link2 },
+    { key: "gerador", label: "Gerador de Texto", icon: Megaphone },
     { key: "bot", label: "Bot WhatsApp", icon: Bot },
   ];
 
@@ -603,60 +604,30 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
       {/* ════════════════════════════════════════════════════════ */}
       {mainTab === "links" && (
         <div className="space-y-4">
-          {/* Quick Links */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {/* Landing Page Link */}
-            <div className={`rounded-2xl border p-4 relative overflow-hidden ${hasLandingPage ? "border-primary/20 bg-gradient-to-br from-primary/5 to-accent/5" : "border-border bg-muted/30 opacity-60"}`}>
-              {!hasLandingPage && (
-                <div className="absolute inset-0 bg-background/60 backdrop-blur-sm z-10 flex items-center justify-center gap-2">
-                  <Lock size={14} className="text-muted-foreground" />
-                  <span className="text-xs font-semibold text-muted-foreground">Plano Start+</span>
-                </div>
-              )}
-              <div className="flex items-center gap-2.5 mb-3">
-                <div className="w-8 h-8 rounded-xl bg-primary/15 flex items-center justify-center">
-                  <Link2 size={14} className="text-primary" />
-                </div>
-                <p className="text-sm font-bold text-foreground">Landing Page</p>
+          {/* Landing Page Link */}
+          <div className={`rounded-2xl border p-4 relative overflow-hidden ${hasLandingPage ? "border-primary/20 bg-gradient-to-br from-primary/5 to-accent/5" : "border-border bg-muted/30 opacity-60"}`}>
+            {!hasLandingPage && (
+              <div className="absolute inset-0 bg-background/60 backdrop-blur-sm z-10 flex items-center justify-center gap-2">
+                <Lock size={14} className="text-muted-foreground" />
+                <span className="text-xs font-semibold text-muted-foreground">Plano Start+</span>
               </div>
-              <p className="text-xs font-mono text-muted-foreground truncate mb-3">{captureUrl}</p>
-              <div className="flex gap-2">
-                <Button size="sm" variant="outline" className="flex-1 gap-1.5 text-xs h-8 rounded-xl bg-background text-foreground border-border hover:bg-accent hover:text-accent-foreground" onClick={() => copyLink(captureUrl, "Link da página")} disabled={!hasLandingPage}>
-                  <Copy size={11} /> Copiar
-                </Button>
-                <a href={hasLandingPage ? captureUrl : undefined} target="_blank" rel="noopener noreferrer" className="flex-1">
-                  <Button size="sm" variant="outline" className="w-full gap-1.5 text-xs h-8 rounded-xl bg-background text-foreground border-border hover:bg-accent hover:text-accent-foreground" disabled={!hasLandingPage}>
-                    <Eye size={11} /> Abrir
-                  </Button>
-                </a>
+            )}
+            <div className="flex items-center gap-2.5 mb-3">
+              <div className="w-8 h-8 rounded-xl bg-primary/15 flex items-center justify-center">
+                <Link2 size={14} className="text-primary" />
               </div>
+              <p className="text-sm font-bold text-foreground">Landing Page</p>
             </div>
-
-            {/* Bot Link */}
-            <div className={`rounded-2xl border p-4 relative overflow-hidden ${hasBot ? "border-[#25d366]/20 bg-gradient-to-br from-[#25d366]/5 to-accent/5" : "border-border bg-muted/30 opacity-60"}`}>
-              {!hasBot && (
-                <div className="absolute inset-0 bg-background/60 backdrop-blur-sm z-10 flex items-center justify-center gap-2">
-                  <Lock size={14} className="text-muted-foreground" />
-                  <span className="text-xs font-semibold text-muted-foreground">Plano VIP+</span>
-                </div>
-              )}
-              <div className="flex items-center gap-2.5 mb-3">
-                <div className="w-8 h-8 rounded-xl bg-[#25d366]/15 flex items-center justify-center">
-                  <MessageCircle size={14} className="text-[#25d366]" />
-                </div>
-                <p className="text-sm font-bold text-foreground">Bot WhatsApp</p>
-              </div>
-              <p className="text-xs font-mono text-muted-foreground truncate mb-3">{chatBotUrl}</p>
-              <div className="flex gap-2">
-                <Button size="sm" variant="outline" className="flex-1 gap-1.5 text-xs h-8 rounded-xl bg-background text-foreground border-border hover:bg-accent hover:text-accent-foreground" onClick={() => copyLink(chatBotUrl, "Link do bot")} disabled={!hasBot}>
-                  <Copy size={11} /> Copiar
+            <p className="text-xs font-mono text-muted-foreground truncate mb-3">{captureUrl}</p>
+            <div className="flex gap-2">
+              <Button size="sm" variant="outline" className="flex-1 gap-1.5 text-xs h-8 rounded-xl bg-background text-foreground border-border hover:bg-accent hover:text-accent-foreground" onClick={() => copyLink(captureUrl, "Link da página")} disabled={!hasLandingPage}>
+                <Copy size={11} /> Copiar
+              </Button>
+              <a href={hasLandingPage ? captureUrl : undefined} target="_blank" rel="noopener noreferrer" className="flex-1">
+                <Button size="sm" variant="outline" className="w-full gap-1.5 text-xs h-8 rounded-xl bg-background text-foreground border-border hover:bg-accent hover:text-accent-foreground" disabled={!hasLandingPage}>
+                  <Eye size={11} /> Abrir
                 </Button>
-                <a href={hasBot ? chatBotUrl : undefined} target="_blank" rel="noopener noreferrer" className="flex-1">
-                  <Button size="sm" variant="outline" className="w-full gap-1.5 text-xs h-8 rounded-xl bg-background text-foreground border-border hover:bg-accent hover:text-accent-foreground" disabled={!hasBot}>
-                    <Eye size={11} /> Abrir
-                  </Button>
-                </a>
-              </div>
+              </a>
             </div>
           </div>
 
@@ -689,8 +660,14 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
               </div>
             )}
           </div>
+        </div>
+      )}
 
-          {/* Ad Text Generator */}
+      {/* ════════════════════════════════════════════════════════ */}
+      {/* ─── GERADOR DE TEXTO TAB ─── */}
+      {/* ════════════════════════════════════════════════════════ */}
+      {mainTab === "gerador" && (
+        <div className="space-y-4">
           <div className="rounded-2xl border border-border bg-card p-4 space-y-4">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-xl bg-secondary flex items-center justify-center">
@@ -740,7 +717,7 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
                 onClick={generateAdWithAI}
                 size="sm"
                 disabled={generatingAI}
-                className="gap-1.5 text-xs rounded-xl flex-1 bg-gradient-to-r from-violet-600 to-primary text-white hover:opacity-90"
+                className="gap-1.5 text-xs rounded-xl flex-1 bg-gradient-to-r from-violet-600 to-primary text-primary-foreground hover:opacity-90"
               >
                 {generatingAI ? <Loader2 size={12} className="animate-spin" /> : <Bot size={12} />}
                 {generatingAI ? "Gerando..." : "✨ Gerar com IA"}
@@ -776,6 +753,27 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
             </div>
           ) : (
             <>
+              {/* Bot Link */}
+              <div className="rounded-2xl border border-[#25d366]/20 bg-gradient-to-br from-[#25d366]/5 to-accent/5 p-4">
+                <div className="flex items-center gap-2.5 mb-3">
+                  <div className="w-8 h-8 rounded-xl bg-[#25d366]/15 flex items-center justify-center">
+                    <MessageCircle size={14} className="text-[#25d366]" />
+                  </div>
+                  <p className="text-sm font-bold text-foreground">Link do Bot WhatsApp</p>
+                </div>
+                <p className="text-xs font-mono text-muted-foreground truncate mb-3">{chatBotUrl}</p>
+                <div className="flex gap-2">
+                  <Button size="sm" variant="outline" className="flex-1 gap-1.5 text-xs h-8 rounded-xl bg-background text-foreground border-border hover:bg-accent hover:text-accent-foreground" onClick={() => copyLink(chatBotUrl, "Link do bot")}>
+                    <Copy size={11} /> Copiar
+                  </Button>
+                  <a href={chatBotUrl} target="_blank" rel="noopener noreferrer" className="flex-1">
+                    <Button size="sm" variant="outline" className="w-full gap-1.5 text-xs h-8 rounded-xl bg-background text-foreground border-border hover:bg-accent hover:text-accent-foreground">
+                      <Eye size={11} /> Abrir
+                    </Button>
+                  </a>
+                </div>
+              </div>
+
               {/* Chat Mode */}
               <div className="rounded-2xl border border-border bg-card p-4 space-y-3">
                 <p className="text-sm font-bold text-foreground">Modo do Chat</p>
