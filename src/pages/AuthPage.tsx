@@ -90,6 +90,8 @@ export default function AuthPage() {
               .maybeSingle();
 
             if (newProfile) {
+              await supabase.from("profiles").update({ seller_category: sellerCategory }).eq("id", newProfile.id);
+
               // Handle 7-day free trial from /anunciar
               if (trialDays === "7") {
                 await supabase.from("seller_subscriptions").insert({
