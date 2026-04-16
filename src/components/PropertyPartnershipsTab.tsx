@@ -867,7 +867,8 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
           ) : (
             myRequests.map(req => {
               const st = statusConfig[req.status] || statusConfig.pendente;
-              const removed = !req.item;
+              const removed = !req.item || req.item.status === "vendido" || req.item.status === "inativo";
+              const removedLabel = !req.item ? "Imóvel removido" : req.item?.status === "vendido" ? "Imóvel vendido" : "Imóvel desativado";
               const gains = req.item ? calcPartnerGain(req.item.price, req.item.commission_percent, req.item.partner_percent) : null;
               return (
                 <motion.div
