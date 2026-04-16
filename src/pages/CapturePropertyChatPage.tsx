@@ -220,15 +220,15 @@ export default function CapturePropertyChatPage() {
 
   // ─── Flow Mode Logic ───
   useEffect(() => {
-    if (!isAiMode && !loading && sellerProfile && step === "opening" && messages.length === 0) {
+   if (!isAiMode && !loading && sellerProfile && step === "opening" && messages.length === 0) {
       (async () => {
         await addBotMsg(config.openingMessage);
-        await addBotMsg("Vamos começar? Me diz o seu nome completo 😊");
+        await addBotMsg(config.flowMsgName);
         setStep("name");
         setInputVisible(true);
       })();
     }
-  }, [loading, sellerProfile, step, messages.length, addBotMsg, config.openingMessage, isAiMode]);
+  }, [loading, sellerProfile, step, messages.length, addBotMsg, config.openingMessage, config.flowMsgName, isAiMode]);
 
   // Auto-scroll
   useEffect(() => {
