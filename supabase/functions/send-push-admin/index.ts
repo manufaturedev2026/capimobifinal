@@ -141,7 +141,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { title, body, url, image } = await req.json();
+    const { title, body, url, image, audience: audienceFilter } = await req.json();
     if (!title || !body) {
       return new Response(JSON.stringify({ error: "Title and body required" }), {
         status: 400,
@@ -149,10 +149,34 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Fetch ALL push subscriptions across all sellers
-    const { data: subscriptions } = await adminClient
-      .from("push_subscriptions")
-      .select("*");
+    // Filter sellers by category if requested
+    // audienceFilter: "all" | "corretor" | "imobiliaria" | "construtora" | "professionals"
+    let sellerIdsFilter: string[] | null = null;
+    if (audienceFilter && audienceFilter !== "all") {
+      let categoriesToInclude: string[] = [];
+      if (audienceFilter === "professionals") {
+        categoriesToInclude = ["corretor", "imobiliaria", "construtora"];
+      } else {
+        categoriesToInclude = [audienceFilter];
+      }
+      const { data: filteredProfiles } = await adminClient
+        .from("profiles")
+        .select("id")
+        .in("seller_category", categoriesToInclude);
+      sellerIdsFilter = (filteredProfiles || []).map((p: any) => p.id);
+      if (sellerIdsFilter.length === 0) {
+        return new Response(JSON.stringify({ sent: 0, failed: 0, total: 0, message: "No matching sellers" }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
+
+    // Fetch push subscriptions (filtered or all)
+    let subsQuery = adminClient.from("push_subscriptions").select("*");
+    if (sellerIdsFilter) {
+      subsQuery = subsQuery.in("seller_id", sellerIdsFilter);
+    }
+    const { data: subscriptions } = await subsQuery;
 
     if (!subscriptions || subscriptions.length === 0) {
       return new Response(JSON.stringify({ sent: 0, failed: 0, total: 0, message: "No subscribers" }), {

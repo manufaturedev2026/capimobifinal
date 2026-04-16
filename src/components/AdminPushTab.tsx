@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Bell, Send, Users, Clock, CheckCircle2, XCircle, Loader2, Trash2, MessageSquare, Megaphone, ImagePlus, X } from "lucide-react";
+import { Bell, Send, Users, Clock, CheckCircle2, XCircle, Loader2, Trash2, MessageSquare, Megaphone, ImagePlus, X, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface AdminPushTabProps {
   userId: string;
@@ -34,6 +35,7 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
   const [url, setUrl] = useState("");
   const [image, setImage] = useState("");
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [audience, setAudience] = useState<"all" | "corretor" | "imobiliaria" | "construtora" | "professionals">("all");
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -97,6 +99,7 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
           body: body.trim(),
           url: url.trim() || undefined,
           image: image || undefined,
+          audience,
         },
       });
 
@@ -185,6 +188,24 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
           </div>
         ) : (
           <div className="space-y-3">
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium flex items-center gap-1.5">
+                <Target className="w-3.5 h-3.5" /> Público-alvo
+              </Label>
+              <Select value={audience} onValueChange={(v) => setAudience(v as any)}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos os inscritos</SelectItem>
+                  <SelectItem value="professionals">Apenas profissionais (Corretores + Imobiliárias + Construtoras)</SelectItem>
+                  <SelectItem value="corretor">Apenas Corretores</SelectItem>
+                  <SelectItem value="imobiliaria">Apenas Imobiliárias</SelectItem>
+                  <SelectItem value="construtora">Apenas Construtoras</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
             <div className="space-y-1.5">
               <Label className="text-xs font-medium">Título *</Label>
               <Input
