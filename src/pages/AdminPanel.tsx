@@ -51,7 +51,7 @@ export default function AdminPanel() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [tierFilter, setTierFilter] = useState<string>("todos");
-  const [tab, setTab] = useState<"sellers" | "billing" | "referrals" | "crm" | "seo" | "vendas" | "config" | "push" | "site" | "ads" | "invite">("sellers");
+  const [tab, setTab] = useState<"dashboard" | "sellers" | "billing" | "referrals" | "crm" | "seo" | "vendas" | "config" | "push" | "site" | "ads" | "invite">("dashboard");
   const [homepageMode, setHomepageMode] = useState<string>("single");
   const [homepageTheme, setHomepageTheme] = useState<string>("azul");
   const [loginHeroUrl, setLoginHeroUrl] = useState<string>("");
@@ -396,6 +396,7 @@ export default function AdminPanel() {
   const adminThemeVars = getMarketplaceThemeCssVars(adminTheme);
 
   const sidebarItems = [
+    { key: "dashboard" as const, label: "Dashboard", icon: BarChart3 },
     { key: "sellers" as const, label: "Vendedores", icon: Users },
     { key: "billing" as const, label: "Faturamento", icon: DollarSign },
     { key: "crm" as const, label: "CRM WhatsApp", icon: MessageCircle },
@@ -795,6 +796,11 @@ export default function AdminPanel() {
             </div>
           </div>
         )}
+
+      {/* Dashboard Tab */}
+      {tab === "dashboard" && (
+        <AdminDashboardTab />
+      )}
 
       {/* Invite Tab */}
       {tab === "invite" && (
