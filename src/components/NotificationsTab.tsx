@@ -254,6 +254,28 @@ export default function NotificationsTab({ userId, sellerId }: NotificationsTabP
         </div>
       </div>
 
+      {/* Daily limit indicator */}
+      <div
+        className={`p-4 rounded-xl border ${
+          limitReached ? "border-destructive/50 bg-destructive/5" : "border-border bg-card"
+        }`}
+      >
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <Clock className={`w-4 h-4 ${limitReached ? "text-destructive" : "text-primary"}`} />
+            <span className="text-sm font-bold text-foreground">Envios hoje</span>
+          </div>
+          <span className={`text-sm font-bold ${limitReached ? "text-destructive" : "text-foreground"}`}>
+            {sentToday} / {dailyLimit}
+          </span>
+        </div>
+        <p className="text-xs text-muted-foreground mt-1">
+          {limitReached
+            ? "Você atingiu o limite diário do seu plano. Faça upgrade para enviar mais."
+            : `Seu plano permite ${dailyLimit} envio${dailyLimit > 1 ? "s" : ""} de push por dia.`}
+        </p>
+      </div>
+
       {/* Compose */}
       <div className="p-6 rounded-xl border border-border bg-card space-y-4">
         <h3 className="text-base font-bold text-foreground flex items-center gap-2">
