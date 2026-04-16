@@ -352,17 +352,6 @@ export default function InvitePage() {
                         });
                         setCrmSaved(true);
                         addBubble("Obrigado! Em breve entraremos em contato 🤝", "attendant");
-                        // Redirect after CRM save
-                        if (config.crmRedirectUrl) {
-                          setTimeout(() => {
-                            const url = config.crmRedirectUrl;
-                            if (url.startsWith("/")) {
-                              navigate(url);
-                            } else {
-                              window.open(url, "_blank", "noopener");
-                            }
-                          }, 1500);
-                        }
                       } catch (e) {
                         console.error("CRM save error:", e);
                       }
@@ -383,6 +372,21 @@ export default function InvitePage() {
                 </div>
                 <p className="text-[#075e54] font-semibold text-center">Dados enviados com sucesso!</p>
                 <p className="text-[#667781] text-xs text-center">Em breve entraremos em contato pelo WhatsApp 📱</p>
+                {config.crmRedirectUrl && (
+                  <Button
+                    onClick={() => {
+                      const url = config.crmRedirectUrl;
+                      if (url.startsWith("/")) {
+                        navigate(url);
+                      } else {
+                        window.open(url, "_blank", "noopener");
+                      }
+                    }}
+                    className="mt-2 bg-[#075e54] hover:bg-[#064e46] text-white font-bold rounded-full px-6 py-5"
+                  >
+                    {config.crmRedirectUrl.includes("wa.me") ? "💬 Chamar no WhatsApp" : "🔗 Continuar"}
+                  </Button>
+                )}
               </motion.div>
             )}
             {showCta && config.ctaType !== "crm" && (
