@@ -660,48 +660,73 @@ export default function CapturePropertyChatPage() {
     if (!sellerProfile?.phone) return;
     const cleanPhone = sellerProfile.phone.replace(/\D/g, "");
 
+    // AI mode: use extracted data or local state
+    const leadName = fullName || crmName || aiExtractedData?.full_name || "";
+    const leadPhone = phone || aiExtractedData?.phone || "";
+    const leadType = propertyType || crmPropertyType || aiExtractedData?.property_type || "";
+    const leadAddress = address || crmAddress || aiExtractedData?.address || "";
+    const leadPrice = desiredPrice || aiExtractedData?.desired_price || "";
+    const leadNotes = notes || aiExtractedData?.notes || "";
+    const leadFinality = aiExtractedData?.finality || "";
+
     let msg = "";
-    switch (flowType) {
-      case "captacao":
-        msg = encodeURIComponent(
-          `Olá! Acabei de cadastrar meu imóvel pelo chat:\n\n` +
-          `📋 Nome: ${fullName || crmName}\n` +
-          `🏠 Tipo: ${propertyType || crmPropertyType || "Não informado"}\n` +
-          `📍 Endereço: ${address || crmAddress || "Não informado"}\n` +
-          `💰 Valor: ${desiredPrice && desiredPrice !== "0" ? `R$ ${desiredPrice}` : "A definir"}\n\n` +
-          `Aguardo retorno!`
-        );
-        break;
-      case "grupo_whatsapp":
-        if (config.grupoWhatsappLink) {
-          window.open(config.grupoWhatsappLink, "_blank", "noopener");
-          return;
-        }
-        msg = encodeURIComponent(
-          `Olá! Me cadastrei pelo chat e gostaria de entrar no grupo de imóveis!\n\n` +
-          `📋 Nome: ${fullName}\n📱 WhatsApp: ${phone}`
-        );
-        break;
-      case "agendamento":
-        msg = encodeURIComponent(
-          `Olá! Acabei de agendar uma visita pelo chat:\n\n` +
-          `📋 Nome: ${fullName}\n` +
-          `🏠 Interesse: ${interest || "Não informado"}\n` +
-          `📅 Data: ${visitDate || "Não informado"}\n` +
-          `⏰ Horário: ${visitTime || "Não informado"}\n\n` +
-          `Aguardo confirmação!`
-        );
-        break;
-      case "avaliacao":
-        msg = encodeURIComponent(
-          `Olá! Solicitei uma avaliação gratuita pelo chat:\n\n` +
-          `📋 Nome: ${fullName}\n` +
-          `🏠 Tipo: ${propertyType || "Não informado"}\n` +
-          `📍 Endereço: ${address || "Não informado"}\n` +
-          `📝 Detalhes: ${details || "Não informado"}\n\n` +
-          `Aguardo retorno!`
-        );
-        break;
+    if (isAiMode) {
+      // AI mode: comprehensive pre-filled message
+      const parts = [
+        `Olá! Acabei de cadastrar meu imóvel pelo chat com IA:\n`,
+        `📋 Nome: ${leadName}`,
+        leadPhone ? `📱 WhatsApp: ${leadPhone}` : null,
+        leadType ? `🏠 Tipo: ${leadType}` : null,
+        leadAddress ? `📍 Endereço: ${leadAddress}` : null,
+        leadFinality ? `📌 Finalidade: ${leadFinality}` : null,
+        leadPrice && leadPrice !== "0" ? `💰 Valor: R$ ${leadPrice}` : null,
+        leadNotes ? `📝 Obs: ${leadNotes}` : null,
+        `\nAguardo retorno!`,
+      ].filter(Boolean).join("\n");
+      msg = encodeURIComponent(parts);
+    } else {
+      switch (flowType) {
+        case "captacao":
+          msg = encodeURIComponent(
+            `Olá! Acabei de cadastrar meu imóvel pelo chat:\n\n` +
+            `📋 Nome: ${leadName}\n` +
+            `🏠 Tipo: ${leadType || "Não informado"}\n` +
+            `📍 Endereço: ${leadAddress || "Não informado"}\n` +
+            `💰 Valor: ${leadPrice && leadPrice !== "0" ? `R$ ${leadPrice}` : "A definir"}\n\n` +
+            `Aguardo retorno!`
+          );
+          break;
+        case "grupo_whatsapp":
+          if (config.grupoWhatsappLink) {
+            window.open(config.grupoWhatsappLink, "_blank", "noopener");
+            return;
+          }
+          msg = encodeURIComponent(
+            `Olá! Me cadastrei pelo chat e gostaria de entrar no grupo de imóveis!\n\n` +
+            `📋 Nome: ${fullName}\n📱 WhatsApp: ${phone}`
+          );
+          break;
+        case "agendamento":
+          msg = encodeURIComponent(
+            `Olá! Acabei de agendar uma visita pelo chat:\n\n` +
+            `📋 Nome: ${fullName}\n` +
+            `🏠 Interesse: ${interest || "Não informado"}\n` +
+            `📅 Data: ${visitDate || "Não informado"}\n` +
+            `⏰ Horário: ${visitTime || "Não informado"}\n\n` +
+            `Aguardo confirmação!`
+          );
+          break;
+        case "avaliacao":
+          msg = encodeURIComponent(
+            `Olá! Solicitei uma avaliação gratuita pelo chat:\n\n` +
+            `📋 Nome: ${fullName}\n` +
+            `🏠 Tipo: ${propertyType || "Não informado"}\n` +
+            `📍 Endereço: ${address || "Não informado"}\n` +
+            `📝 Detalhes: ${details || "Não informado"}\n\n` +
+            `Aguardo retorno!`
+          );
+          break;
+      }
     }
     window.open(`https://wa.me/${cleanPhone}?text=${msg}`, "_blank", "noopener");
   };
