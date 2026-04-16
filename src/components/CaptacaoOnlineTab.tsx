@@ -314,21 +314,21 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
       </div>
 
       {/* ─── Main Navigation Tabs ─── */}
-      <div className="flex gap-1 bg-secondary/50 rounded-2xl p-1">
+      <div className="flex gap-1 bg-muted/50 rounded-2xl p-1">
         {TAB_CONFIG.map(tab => (
           <button
             key={tab.key}
             onClick={() => setMainTab(tab.key)}
             className={`flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all ${
               mainTab === tab.key
-                ? "bg-background text-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground"
+                ? "bg-primary text-primary-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted"
             }`}
           >
             <tab.icon size={14} />
             <span className="hidden sm:inline">{tab.label}</span>
             {tab.count !== undefined && tab.count > 0 && (
-              <span className="bg-blue-500 text-white text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center">{tab.count}</span>
+              <span className="bg-primary-foreground text-primary text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center">{tab.count}</span>
             )}
           </button>
         ))}
