@@ -175,6 +175,7 @@ export default function VenderPage() {
    const [password, setPassword] = useState("");
    const [confirmPassword, setConfirmPassword] = useState("");
    const [submitting, setSubmitting] = useState(false);
+   const [sellerCategory, setSellerCategory] = useState<"corretor" | "imobiliaria" | "construtora">("corretor");
    const [salesVideoUrl, setSalesVideoUrl] = useState("");
    const [salesVideoTitle, setSalesVideoTitle] = useState("");
    const { cities: stateCities, loading: loadingCities } = useCitiesByState(state);
@@ -216,13 +217,25 @@ export default function VenderPage() {
       });
       if (authError) throw authError;
 
+      // Save seller_category to profile (wait for trigger to create it)
+      if (authData.user?.id) {
+        for (let i = 0; i < 10; i++) {
+          const { data: prof } = await supabase.from("profiles").select("id").eq("user_id", authData.user.id).maybeSingle();
+          if (prof) {
+            await supabase.from("profiles").update({ seller_category: sellerCategory }).eq("id", prof.id);
+            break;
+          }
+          await new Promise(r => setTimeout(r, 500));
+        }
+      }
+
       try {
         await supabase.from("crm_contacts").insert({
           full_name: fullName.trim(),
           email: email.trim(),
           phone: phone.trim() || null,
           funnel_stage: "novo",
-          notes: "Lead via /anunciar — cadastro de corretor",
+          notes: `Lead via /anunciar — ${sellerCategory}`,
           profile_id: authData.user?.id || "",
           user_id: authData.user?.id || "",
         } as any);
@@ -342,6 +355,15 @@ export default function VenderPage() {
                   <Phone className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/60" />
                   <input type="tel" required placeholder="WhatsApp *" value={phone} onChange={(e) => setPhone(e.target.value)}
                     className="w-full pl-10 md:pl-11 pr-4 py-3 md:py-3.5 rounded-xl bg-black/40 border border-white/15 text-white placeholder:text-white/40 outline-none transition-colors text-sm focus:border-white/30" />
+                </div>
+                <div className="relative">
+                  <User className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/60" />
+                  <select value={sellerCategory} onChange={(e) => setSellerCategory(e.target.value as any)} required
+                    className="w-full pl-10 md:pl-11 pr-3 py-3 md:py-3.5 rounded-xl bg-black/40 border border-white/15 text-white outline-none transition-colors text-sm appearance-none focus:border-white/30">
+                    <option value="corretor" className="bg-gray-900">Sou Corretor(a)</option>
+                    <option value="imobiliaria" className="bg-gray-900">Sou Imobiliária</option>
+                    <option value="construtora" className="bg-gray-900">Sou Construtora</option>
+                  </select>
                 </div>
                  <div className="grid grid-cols-2 gap-2 md:gap-3">
                    <div className="relative">
