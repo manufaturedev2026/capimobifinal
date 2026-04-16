@@ -133,10 +133,107 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
   const [avalMsgDetails, setAvalMsgDetails] = useState("Conte mais sobre o imóvel! 📝\n\n(Ex: quantidade de quartos, tamanho, estado de conservação, reformas...)");
   const [avalMsgSuccess, setAvalMsgSuccess] = useState("✅ Solicitação de avaliação enviada com sucesso!");
   const [avalMsgSuccessEnd, setAvalMsgSuccessEnd] = useState("Um especialista vai entrar em contato em até 24h para agendar a visita de avaliação. Obrigado! 🏡💎");
+
+  const captureUrl = `${window.location.origin}/captar-imovel/${sellerSlug || sellerId}`;
+  const chatBotUrl = `${window.location.origin}/captar-imovel/${sellerSlug || sellerId}/chat`;
+
+  useEffect(() => {
+    fetchLeads();
+    fetchCaptureVideo();
+    fetchBotConfig();
+  }, [sellerId]);
+
+  const syncUnreadCount = (nextLeads: Lead[]) => {
+    onUnreadCountChange?.(nextLeads.filter((lead) => lead.status === "novo").length);
+  };
+
+  const fetchCaptureVideo = async () => {
+    const { data } = await supabase
+      .from("profiles")
+      .select("capture_video_url, capture_video_title")
+      .eq("id", sellerId)
+      .maybeSingle();
+    if (data?.capture_video_url) setCaptureVideoUrl(data.capture_video_url);
+    if ((data as any)?.capture_video_title) setCaptureVideoTitle((data as any).capture_video_title);
+  };
+
+  const fetchBotConfig = async () => {
+    const { data } = await supabase
+      .from("platform_settings")
+      .select("value")
+      .eq("key", `capture_bot_config_${sellerId}`)
+      .maybeSingle();
+    if (data?.value) {
+      try {
+        const cfg = JSON.parse(data.value);
+        if (cfg.attendantName) setBotAttendantName(cfg.attendantName);
+        if (cfg.attendantAvatar) setBotAttendantAvatar(cfg.attendantAvatar);
+        if (cfg.openingMessage) setBotOpeningMessage(cfg.openingMessage);
+        if (cfg.chatMode) setBotChatMode(cfg.chatMode);
+        if (cfg.flowType) setBotFlowType(cfg.flowType);
+        // Captação
+        if (cfg.flowMsgName) setFlowMsgName(cfg.flowMsgName);
+        if (cfg.flowMsgNameReply) setFlowMsgNameReply(cfg.flowMsgNameReply);
+        if (cfg.flowMsgPhone) setFlowMsgPhone(cfg.flowMsgPhone);
+        if (cfg.flowMsgType) setFlowMsgType(cfg.flowMsgType);
+        if (cfg.flowMsgAddress) setFlowMsgAddress(cfg.flowMsgAddress);
+        if (cfg.flowMsgPrice) setFlowMsgPrice(cfg.flowMsgPrice);
+        if (cfg.flowMsgNotes) setFlowMsgNotes(cfg.flowMsgNotes);
+        if (cfg.flowMsgSuccess) setFlowMsgSuccess(cfg.flowMsgSuccess);
+        if (cfg.flowMsgSuccessEnd) setFlowMsgSuccessEnd(cfg.flowMsgSuccessEnd);
+        // Grupo
+        if (cfg.grupoMsgName) setGrupoMsgName(cfg.grupoMsgName);
+        if (cfg.grupoMsgNameReply) setGrupoMsgNameReply(cfg.grupoMsgNameReply);
+        if (cfg.grupoMsgPhone) setGrupoMsgPhone(cfg.grupoMsgPhone);
+        if (cfg.grupoMsgSuccess) setGrupoMsgSuccess(cfg.grupoMsgSuccess);
+        if (cfg.grupoMsgSuccessEnd) setGrupoMsgSuccessEnd(cfg.grupoMsgSuccessEnd);
+        if (cfg.grupoWhatsappLink) setGrupoWhatsappLink(cfg.grupoWhatsappLink);
+        // Agendamento
+        if (cfg.agendMsgName) setAgendMsgName(cfg.agendMsgName);
+        if (cfg.agendMsgNameReply) setAgendMsgNameReply(cfg.agendMsgNameReply);
+        if (cfg.agendMsgPhone) setAgendMsgPhone(cfg.agendMsgPhone);
+        if (cfg.agendMsgInterest) setAgendMsgInterest(cfg.agendMsgInterest);
+        if (cfg.agendMsgDate) setAgendMsgDate(cfg.agendMsgDate);
+        if (cfg.agendMsgTime) setAgendMsgTime(cfg.agendMsgTime);
+        if (cfg.agendMsgSuccess) setAgendMsgSuccess(cfg.agendMsgSuccess);
+        if (cfg.agendMsgSuccessEnd) setAgendMsgSuccessEnd(cfg.agendMsgSuccessEnd);
+        // Avaliação
+        if (cfg.avalMsgName) setAvalMsgName(cfg.avalMsgName);
+        if (cfg.avalMsgNameReply) setAvalMsgNameReply(cfg.avalMsgNameReply);
+        if (cfg.avalMsgPhone) setAvalMsgPhone(cfg.avalMsgPhone);
+        if (cfg.avalMsgType) setAvalMsgType(cfg.avalMsgType);
+        if (cfg.avalMsgAddress) setAvalMsgAddress(cfg.avalMsgAddress);
+        if (cfg.avalMsgDetails) setAvalMsgDetails(cfg.avalMsgDetails);
+        if (cfg.avalMsgSuccess) setAvalMsgSuccess(cfg.avalMsgSuccess);
+        if (cfg.avalMsgSuccessEnd) setAvalMsgSuccessEnd(cfg.avalMsgSuccessEnd);
+      } catch {}
+    }
+  };
+
+  const saveBotConfig = async () => {
+    setSavingBot(true);
+    const configStr = JSON.stringify({
+      attendantName: botAttendantName,
+      attendantAvatar: botAttendantAvatar,
+      openingMessage: botOpeningMessage,
+      chatMode: botChatMode,
+      flowType: botFlowType,
+      // Captação
+      flowMsgName, flowMsgNameReply, flowMsgPhone, flowMsgType,
+      flowMsgAddress, flowMsgPrice, flowMsgNotes, flowMsgSuccess, flowMsgSuccessEnd,
+      // Grupo
+      grupoMsgName, grupoMsgNameReply, grupoMsgPhone,
+      grupoMsgSuccess, grupoMsgSuccessEnd, grupoWhatsappLink,
+      // Agendamento
+      agendMsgName, agendMsgNameReply, agendMsgPhone, agendMsgInterest,
+      agendMsgDate, agendMsgTime, agendMsgSuccess, agendMsgSuccessEnd,
+      // Avaliação
+      avalMsgName, avalMsgNameReply, avalMsgPhone, avalMsgType,
+      avalMsgAddress, avalMsgDetails, avalMsgSuccess, avalMsgSuccessEnd,
     });
     const { error } = await supabase
       .from("platform_settings")
-      .upsert({ key: `capture_bot_config_${sellerId}`, value: config, updated_at: new Date().toISOString() } as any, { onConflict: "key" });
+      .upsert({ key: `capture_bot_config_${sellerId}`, value: configStr, updated_at: new Date().toISOString() } as any, { onConflict: "key" });
     setSavingBot(false);
     if (error) {
       toast({ title: "Erro ao salvar bot", variant: "destructive" });
