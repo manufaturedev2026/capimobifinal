@@ -163,8 +163,40 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
       requester: profileMap.get(r.requester_profile_id) || null,
     })));
   };
+  const loadActivePartnerships = async () => {
+    // Fetch approved partnerships where user is either owner or requester
+    const [{ data: asRequester }, { data: asOwner }] = await Promise.all([
+      supabase.from("property_partnerships").select("*").eq("requester_user_id", userId).eq("status", "aprovado"),
+      supabase.from("property_partnerships").select("*").eq("owner_user_id", userId).eq("status", "aprovado"),
+    ]);
 
-  const sendPartnershipPush = async (targetUserId: string, title: string, body: string) => {
+    const all = [
+      ...(asRequester || []).map(r => ({ ...r, _role: "requester" as const })),
+      ...(asOwner || []).map(r => ({ ...r, _role: "owner" as const })),
+    ];
+
+    if (!all.length) { setActivePartnerships([]); return; }
+
+    const itemIds = [...new Set(all.map(r => r.item_id))];
+    const partnerUserIds = [...new Set(all.map(r => r._role === "owner" ? r.requester_user_id : r.owner_user_id))];
+
+    const [{ data: items }, { data: profiles }] = await Promise.all([
+      supabase.from("seller_items").select(ITEM_FIELDS).in("id", itemIds),
+      supabase.from("profiles").select("id, user_id, full_name, phone, logo_url, company_name, creci").in("user_id", partnerUserIds),
+    ]);
+
+    const itemMap = new Map((items || []).map(i => [i.id, i]));
+    const profileMap = new Map((profiles || []).map(p => [p.user_id, p]));
+
+    setActivePartnerships(all.map(r => ({
+      ...r,
+      item: itemMap.get(r.item_id) || null,
+      partner: profileMap.get(r._role === "owner" ? r.requester_user_id : r.owner_user_id) || null,
+      role: r._role,
+    })));
+  };
+
+
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
