@@ -8,6 +8,16 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { SITE_URL } from "@/lib/siteUrl";
 
+const notifyNewCaptureLead = (targetUserId: string, leadName: string, summary?: string) => {
+  supabase.functions.invoke("notify-new-lead", {
+    body: {
+      target_user_id: targetUserId,
+      title: "Novo lead de captação 🏠",
+      body: summary || `${leadName} entrou em contato.`,
+      url: "/painel?tab=captacao",
+    },
+  }).catch(() => {});
+};
 type FlowType = "captacao" | "grupo_whatsapp" | "agendamento" | "avaliacao";
 
 interface BotConfig {
