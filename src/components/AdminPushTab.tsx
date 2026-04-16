@@ -342,6 +342,25 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
               </div>
             </div>
 
+            {/* Estimate badge */}
+            <div className="flex items-center gap-2 p-3 rounded-lg border border-primary/20 bg-primary/5">
+              <Target className="w-4 h-4 text-primary shrink-0" />
+              <div className="flex-1 text-xs">
+                {estimating ? (
+                  <span className="text-muted-foreground flex items-center gap-1.5">
+                    <Loader2 className="w-3 h-3 animate-spin" /> Calculando estimativa...
+                  </span>
+                ) : (
+                  <>
+                    <span className="font-bold text-foreground">
+                      ~{estimate ?? 0} dispositivo{estimate !== 1 ? "s" : ""}
+                    </span>
+                    <span className="text-muted-foreground"> receberão esta notificação</span>
+                  </>
+                )}
+              </div>
+            </div>
+
             <div className="space-y-1.5">
               <Label className="text-xs font-medium">Título *</Label>
               <Input
