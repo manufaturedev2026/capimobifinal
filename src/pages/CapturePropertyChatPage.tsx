@@ -288,7 +288,7 @@ export default function CapturePropertyChatPage() {
   const handleTypeSelect = async (type: string, label: string) => {
     setPropertyType(type);
     addUserMsg(label);
-    await addBotMsg("Ótimo! Qual o endereço ou localização do imóvel? 📍");
+    await addBotMsg(config.flowMsgAddress);
     setStep("address");
     setInputVisible(true);
   };
