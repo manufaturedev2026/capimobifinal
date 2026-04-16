@@ -693,23 +693,67 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
           </div>
 
           {/* Ad Text Generator */}
-          <div className="rounded-2xl border border-border bg-card p-4 space-y-3">
+          <div className="rounded-2xl border border-border bg-card p-4 space-y-4">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-xl bg-secondary flex items-center justify-center">
                 <Megaphone size={14} className="text-muted-foreground" />
               </div>
               <div>
                 <p className="text-sm font-bold text-foreground">Gerador de Texto</p>
-                <p className="text-[10px] text-muted-foreground">Copie e cole nas redes sociais</p>
+                <p className="text-[10px] text-muted-foreground">Escolha um modelo e personalize</p>
               </div>
             </div>
-            <Button onClick={generateAdText} size="sm" variant="secondary" className="gap-1.5 text-xs rounded-xl border border-border">
-              <Sparkles size={12} /> Gerar Texto de Anúncio
-            </Button>
+
+            {/* Template Categories */}
+            {(() => {
+              const categories = [...new Set(AD_TEMPLATES.map(t => t.category))];
+              return (
+                <div className="space-y-3">
+                  {categories.map(cat => (
+                    <div key={cat}>
+                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">{cat}</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {AD_TEMPLATES.filter(t => t.category === cat).map(tpl => (
+                          <button
+                            key={tpl.id}
+                            onClick={() => { setSelectedTemplate(tpl.id); generateAdText(tpl.id); }}
+                            className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all flex items-center gap-1.5 ${
+                              selectedTemplate === tpl.id
+                                ? "bg-primary text-primary-foreground border-primary shadow-sm"
+                                : "bg-card text-muted-foreground border-border hover:border-primary/30 hover:text-foreground"
+                            }`}
+                          >
+                            <span>{tpl.emoji}</span> {tpl.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              );
+            })()}
+
+            {/* Action Buttons */}
+            <div className="flex gap-2">
+              <Button onClick={() => generateAdText()} size="sm" variant="secondary" className="gap-1.5 text-xs rounded-xl border border-border flex-1">
+                <Sparkles size={12} /> Gerar Modelo
+              </Button>
+              <Button
+                onClick={generateAdWithAI}
+                size="sm"
+                disabled={generatingAI}
+                className="gap-1.5 text-xs rounded-xl flex-1 bg-gradient-to-r from-violet-600 to-primary text-white hover:opacity-90"
+              >
+                {generatingAI ? <Loader2 size={12} className="animate-spin" /> : <Bot size={12} />}
+                {generatingAI ? "Gerando..." : "✨ Gerar com IA"}
+              </Button>
+            </div>
+
+            {/* Generated Text */}
             {generatedAd && (
               <div className="space-y-2">
-                <Textarea value={generatedAd} onChange={e => setGeneratedAd(e.target.value)} className="min-h-[160px] text-sm rounded-xl" />
-                <Button onClick={copyAd} size="sm" className="gap-1.5 text-xs rounded-xl">
+                <Textarea value={generatedAd} onChange={e => setGeneratedAd(e.target.value)} className="min-h-[200px] text-sm rounded-xl" />
+                <Button onClick={copyAd} size="sm" className="gap-1.5 text-xs rounded-xl w-full">
                   <Copy size={12} /> Copiar Texto
                 </Button>
               </div>
