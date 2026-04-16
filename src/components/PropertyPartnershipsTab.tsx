@@ -25,6 +25,7 @@ type PartnershipItem = {
   bathrooms: number | null;
   parking_spots: number | null;
   area: number | null;
+  status: string;
 };
 
 type PartnershipRequest = {
@@ -49,7 +50,7 @@ type SellerProfile = {
 
 type SubTab = "meus" | "disponivel" | "vigentes" | "minhas" | "recebidas";
 
-const ITEM_FIELDS = "id, title, price, photos, city, state, neighborhood, finality, commission_percent, partner_percent, partnership_enabled, seller_id, user_id, category, description, bedrooms, bathrooms, parking_spots, area";
+const ITEM_FIELDS = "id, title, price, photos, city, state, neighborhood, finality, commission_percent, partner_percent, partnership_enabled, seller_id, user_id, category, description, bedrooms, bathrooms, parking_spots, area, status";
 
 export default function PropertyPartnershipsTab({ profileId, userId }: { profileId: string; userId: string }) {
   const { toast } = useToast();
@@ -867,7 +868,8 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
           ) : (
             myRequests.map(req => {
               const st = statusConfig[req.status] || statusConfig.pendente;
-              const removed = !req.item;
+              const removed = !req.item || req.item.status === "vendido" || req.item.status === "inativo";
+              const removedLabel = !req.item ? "Imóvel removido" : req.item?.status === "vendido" ? "Imóvel vendido" : "Imóvel desativado";
               const gains = req.item ? calcPartnerGain(req.item.price, req.item.commission_percent, req.item.partner_percent) : null;
               return (
                 <motion.div
@@ -887,7 +889,7 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
                   </div>
                   <div className="flex-1 min-w-0 space-y-1">
                     <h3 className="font-bold text-sm text-foreground truncate">
-                      {removed ? "Imóvel removido" : req.item?.title || "Imóvel"}
+                      {removed ? removedLabel : req.item?.title || "Imóvel"}
                     </h3>
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${st.color}`}>
@@ -895,7 +897,7 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
                       </span>
                       {removed && (
                         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold text-red-500 bg-red-500/10">
-                          <XCircle size={10} /> Removido
+                          <XCircle size={10} /> {!req.item ? "Removido" : req.item?.status === "vendido" ? "Vendido" : "Desativado"}
                         </span>
                       )}
                       {!removed && gains && gains.partner > 0 && (
@@ -925,7 +927,8 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
           ) : (
             receivedRequests.map(req => {
               const st = statusConfig[req.status] || statusConfig.pendente;
-              const removed = !req.item;
+              const removed = !req.item || req.item.status === "vendido" || req.item.status === "inativo";
+              const removedLabel = !req.item ? "Imóvel removido" : req.item?.status === "vendido" ? "Imóvel vendido" : "Imóvel desativado";
               return (
                 <motion.div
                   key={req.id}
@@ -945,7 +948,7 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
                     </div>
                     <div className="flex-1 min-w-0 space-y-1">
                       <h3 className="font-bold text-sm text-foreground truncate">
-                        {removed ? "Imóvel removido" : req.item?.title || "Imóvel"}
+                        {removed ? removedLabel : req.item?.title || "Imóvel"}
                       </h3>
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${st.color}`}>
@@ -953,7 +956,7 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
                         </span>
                         {removed && (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold text-red-500 bg-red-500/10">
-                            <XCircle size={10} /> Removido
+                            <XCircle size={10} /> {!req.item ? "Removido" : req.item?.status === "vendido" ? "Vendido" : "Desativado"}
                           </span>
                         )}
                       </div>
