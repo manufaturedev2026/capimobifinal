@@ -227,12 +227,16 @@ export default function AdminDashboardTab() {
                 tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }}
               />
               <Tooltip
+                cursor={{ fill: "hsl(var(--muted) / 0.3)" }}
                 contentStyle={{
                   background: "hsl(var(--card))",
                   border: "1px solid hsl(var(--border))",
                   borderRadius: 12,
                   fontSize: 12,
+                  color: "hsl(var(--foreground))",
                 }}
+                labelStyle={{ color: "hsl(var(--foreground))", fontWeight: 600 }}
+                itemStyle={{ color: "hsl(var(--foreground))" }}
               />
               <Bar dataKey="value" radius={[0, 6, 6, 0]}>
                 {funnelData.map((_, i) => (
@@ -257,12 +261,16 @@ export default function AdminDashboardTab() {
               <XAxis dataKey="date" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} />
               <YAxis tick={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }} />
               <Tooltip
+                cursor={{ stroke: "hsl(var(--muted-foreground))", strokeOpacity: 0.3 }}
                 contentStyle={{
                   background: "hsl(var(--card))",
                   border: "1px solid hsl(var(--border))",
                   borderRadius: 12,
                   fontSize: 12,
+                  color: "hsl(var(--foreground))",
                 }}
+                labelStyle={{ color: "hsl(var(--foreground))", fontWeight: 600 }}
+                itemStyle={{ color: "hsl(var(--foreground))" }}
               />
               <Legend wrapperStyle={{ fontSize: 11 }} />
               <Area type="monotone" dataKey="visitas" name="Visitas" stroke="#00AEEF" fill="#00AEEF" fillOpacity={0.15} strokeWidth={2} />
@@ -299,7 +307,17 @@ export default function AdminDashboardTab() {
                     <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip />
+                <Tooltip
+                  contentStyle={{
+                    background: "hsl(var(--card))",
+                    border: "1px solid hsl(var(--border))",
+                    borderRadius: 12,
+                    fontSize: 12,
+                    color: "hsl(var(--foreground))",
+                  }}
+                  labelStyle={{ color: "hsl(var(--foreground))", fontWeight: 600 }}
+                  itemStyle={{ color: "hsl(var(--foreground))" }}
+                />
               </PieChart>
             </ResponsiveContainer>
           ) : (
@@ -331,7 +349,17 @@ export default function AdminDashboardTab() {
                     <Cell key={i} fill={CHART_COLORS[(i + 2) % CHART_COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip />
+                <Tooltip
+                  contentStyle={{
+                    background: "hsl(var(--card))",
+                    border: "1px solid hsl(var(--border))",
+                    borderRadius: 12,
+                    fontSize: 12,
+                    color: "hsl(var(--foreground))",
+                  }}
+                  labelStyle={{ color: "hsl(var(--foreground))", fontWeight: 600 }}
+                  itemStyle={{ color: "hsl(var(--foreground))" }}
+                />
               </PieChart>
             </ResponsiveContainer>
           ) : (
