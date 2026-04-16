@@ -28,6 +28,10 @@ const AI_STRATEGY_INFO: Record<string, { title: string; description: string }> =
     title: "🔗 URL Externa",
     description: "A IA apresenta benefícios e conduz o visitante até clicar no link de destino configurado.",
   },
+  captacao_imobiliaria: {
+    title: "🏢 Captação de Imobiliárias",
+    description: "A IA apresenta os benefícios para imobiliárias/construtoras (lojas espelho, gestão de equipe, parcerias), salva no CRM marcando como corretora e direciona para WhatsApp do consultor.",
+  },
 };
 
 export default function AdminInviteTab() {
@@ -260,7 +264,11 @@ export default function AdminInviteTab() {
               value={config.ctaType}
               onChange={(e) => {
                 const v = e.target.value as InviteChatConfig["ctaType"];
-                setConfig((p) => ({ ...p, ctaType: v, ctaUrl: v === "internal" ? "/login" : v === "whatsapp" ? "https://wa.me/55" : v === "crm" ? "" : "https://" }));
+                setConfig((p) => ({
+                  ...p,
+                  ctaType: v,
+                  ctaUrl: v === "internal" ? "/login" : v === "whatsapp" ? "https://wa.me/55" : v === "crm" || v === "captacao_imobiliaria" ? "" : "https://",
+                }));
               }}
               className="w-full text-sm bg-card text-foreground border border-border rounded px-3 py-2 mt-1"
             >
@@ -269,14 +277,17 @@ export default function AdminInviteTab() {
               <option value="whatsapp">💬 WhatsApp direto</option>
               <option value="whatsapp_group">👥 Grupo WhatsApp</option>
               <option value="url">🔗 URL externa</option>
+              <option value="captacao_imobiliaria">🏢 Captação de Imobiliárias</option>
             </select>
           </div>
-          {config.ctaType === "crm" ? (
+          {(config.ctaType === "crm" || config.ctaType === "captacao_imobiliaria") ? (
             <div className="sm:col-span-2 space-y-3">
               <div className="bg-primary/5 border border-primary/20 rounded-lg p-3 text-xs text-foreground">
-                <p className="font-semibold mb-1">📋 Modo CRM ativado</p>
+                <p className="font-semibold mb-1">{config.ctaType === "captacao_imobiliaria" ? "🏢 Modo Captação Imobiliárias" : "📋 Modo CRM ativado"}</p>
                 <p className="text-muted-foreground">
-                  O visitante preencherá nome e WhatsApp. Os dados serão salvos no CRM e um botão aparecerá para continuar.
+                  {config.ctaType === "captacao_imobiliaria"
+                    ? "O visitante preencherá nome, WhatsApp e tipo (Imobiliária/Construtora/Corretor). Os dados serão salvos no CRM e um botão de WhatsApp aparecerá com mensagem pré-preenchida."
+                    : "O visitante preencherá nome e WhatsApp. Os dados serão salvos no CRM e um botão aparecerá para continuar."}
                 </p>
               </div>
               <div>
@@ -318,7 +329,7 @@ export default function AdminInviteTab() {
       <div className="bg-card border border-border rounded-xl p-4 space-y-3">
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-semibold text-foreground">🔀 Fluxo da Conversa — {
-            { internal: "📱 Cadastro", crm: "📋 CRM", whatsapp: "💬 WhatsApp", whatsapp_group: "👥 Grupo", url: "🔗 URL" }[config.ctaType]
+            { internal: "📱 Cadastro", crm: "📋 CRM", whatsapp: "💬 WhatsApp", whatsapp_group: "👥 Grupo", url: "🔗 URL", captacao_imobiliaria: "🏢 Imobiliárias" }[config.ctaType]
           }</h3>
           <Button variant="ghost" size="sm" onClick={resetToDefault} className="text-xs text-muted-foreground">Restaurar padrão</Button>
         </div>
