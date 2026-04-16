@@ -7,6 +7,29 @@ import { useToast } from "@/hooks/use-toast";
 import { Save, ExternalLink, Copy, MessageCircle, User, ChevronDown, ChevronRight, Plus, Trash2, Bot, GitBranch } from "lucide-react";
 import { DEFAULT_CONFIG, STEP_TYPE_LABELS, STEP_NAMES, type InviteChatConfig, type FlowStep, type BotStep, type ChoiceStep, type InputStep } from "@/data/inviteFlow";
 
+const AI_STRATEGY_INFO: Record<string, { title: string; description: string }> = {
+  internal: {
+    title: "📱 Cadastro Interno",
+    description: "A IA descobre o perfil do visitante, apresenta funcionalidades detalhadas e guia naturalmente até criar uma conta gratuita na plataforma.",
+  },
+  crm: {
+    title: "📋 Captura CRM",
+    description: "A IA cria urgência e exclusividade, convencendo o visitante a deixar nome e WhatsApp para ser contatado por um consultor especializado.",
+  },
+  whatsapp: {
+    title: "💬 WhatsApp Direto",
+    description: "A IA é mais rápida e direta, criando conexão pessoal e urgência para o visitante iniciar uma conversa instantânea no WhatsApp com a equipe.",
+  },
+  whatsapp_group: {
+    title: "👥 Grupo WhatsApp",
+    description: "A IA apresenta o grupo como uma comunidade exclusiva de corretores, destacando networking, dicas e parcerias. Cria FOMO com vagas limitadas.",
+  },
+  url: {
+    title: "🔗 URL Externa",
+    description: "A IA apresenta benefícios e conduz o visitante até clicar no link de destino configurado.",
+  },
+};
+
 export default function AdminInviteTab() {
   const { toast } = useToast();
   const [config, setConfig] = useState<InviteChatConfig>({ ...DEFAULT_CONFIG });
