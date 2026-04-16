@@ -178,13 +178,18 @@ export default function CapturePropertyChatPage() {
 
       // Check if AI is suggesting form submission
       const lower = reply.toLowerCase();
-      if (
-        lower.includes("botão abaixo") ||
-        lower.includes("clica no botão") ||
-        lower.includes("enviar seus dados") ||
-        lower.includes("preencha o formulário") ||
-        lower.includes("formulário abaixo")
-      ) {
+      const triggerPhrases = [
+        "botão abaixo", "clica no botão", "enviar seus dados",
+        "preencha o formulário", "formulário abaixo", "dados foram coletados",
+        "confirmar seus dados", "confirme seus dados", "enviar as informações",
+        "pronto para enviar", "envie seus dados", "cadastrar seus dados",
+        "clique abaixo", "finalize o cadastro", "concluir o cadastro",
+        "dados de contato", "salvar seus dados", "registrar seus dados",
+      ];
+      const shouldShowForm = triggerPhrases.some(p => lower.includes(p));
+      // Also auto-show form after 6+ user messages (enough data collected)
+      const userMsgCount = updatedMessages.filter(m => m.role === "user").length;
+      if (shouldShowForm || userMsgCount >= 6) {
         setTimeout(() => setShowCrmForm(true), 500);
       }
     } catch (e) {
