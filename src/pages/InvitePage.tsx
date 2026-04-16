@@ -431,7 +431,7 @@ export default function InvitePage() {
             )}
             {showCta && config.ctaType !== "crm" && (
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="flex flex-col items-center gap-3 pt-4 pb-8">
-                <Button onClick={() => { if (config.ctaType === "internal") navigate(config.ctaUrl); else window.open(config.ctaUrl, "_blank", "noopener"); }} className="bg-[#25d366] hover:bg-[#22c55e] text-white font-bold text-base px-8 py-6 rounded-full shadow-lg animate-pulse" size="lg">
+                <Button onClick={() => { trackEvent("signup_clicked"); if (config.ctaType === "internal") navigate(config.ctaUrl); else window.open(config.ctaUrl, "_blank", "noopener"); }} className="bg-[#25d366] hover:bg-[#22c55e] text-white font-bold text-base px-8 py-6 rounded-full shadow-lg animate-pulse" size="lg">
                   {config.ctaText}
                 </Button>
                 <p className="text-[#667781] text-xs text-center">Cadastro rápido • 100% gratuito • Sem cartão de crédito</p>
