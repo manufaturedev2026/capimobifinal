@@ -265,7 +265,7 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <div className="p-4 rounded-xl border border-border bg-card">
           <div className="flex items-center gap-2 mb-1">
             <Users className="w-4 h-4 text-primary" />
@@ -278,7 +278,21 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
             <Bell className="w-4 h-4 text-primary" />
             <span className="text-xs text-muted-foreground font-medium">Corretores</span>
           </div>
-          <p className="text-2xl font-bold text-foreground">{totalSellers}</p>
+          <p className="text-2xl font-bold text-foreground">{totalCorretores}</p>
+        </div>
+        <div className="p-4 rounded-xl border border-border bg-card">
+          <div className="flex items-center gap-2 mb-1">
+            <Bell className="w-4 h-4 text-primary" />
+            <span className="text-xs text-muted-foreground font-medium">Imobiliárias</span>
+          </div>
+          <p className="text-2xl font-bold text-foreground">{totalImobiliarias}</p>
+        </div>
+        <div className="p-4 rounded-xl border border-border bg-card">
+          <div className="flex items-center gap-2 mb-1">
+            <Bell className="w-4 h-4 text-primary" />
+            <span className="text-xs text-muted-foreground font-medium">Construtoras</span>
+          </div>
+          <p className="text-2xl font-bold text-foreground">{totalConstrutoras}</p>
         </div>
         <div className="p-4 rounded-xl border border-border bg-card hidden md:block">
           <div className="flex items-center gap-2 mb-1">
