@@ -766,6 +766,93 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
         </DialogContent>
       </Dialog>
 
+      {/* ===== VIGENTES ===== */}
+      {subTab === "vigentes" && (
+        <div className="space-y-3">
+          {activePartnerships.length === 0 ? (
+            <div className="text-center py-16 space-y-3">
+              <Handshake size={40} className="mx-auto text-muted-foreground/30" />
+              <p className="text-muted-foreground text-sm">Você ainda não tem parcerias vigentes.</p>
+              <p className="text-xs text-muted-foreground">Parcerias aprovadas aparecerão aqui.</p>
+            </div>
+          ) : (
+            activePartnerships.map(p => {
+              const gains = p.item ? calcPartnerGain(p.item.price, p.item.commission_percent, p.item.partner_percent) : null;
+              return (
+                <motion.div
+                  key={p.id}
+                  initial={{ opacity: 0, y: 5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-card border border-green-500/30 rounded-2xl overflow-hidden"
+                >
+                  <div className="flex gap-3 p-4">
+                    <div className="w-20 h-20 rounded-xl bg-muted overflow-hidden flex-shrink-0">
+                      {p.item?.photos?.[0] ? (
+                        <img src={p.item.photos[0]} alt="" className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center"><Home size={20} className="text-muted-foreground/30" /></div>
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0 space-y-1">
+                      <h3 className="font-bold text-sm text-foreground line-clamp-1">{p.item?.title || "Imóvel"}</h3>
+                      <p className="text-xs text-muted-foreground flex items-center gap-1">
+                        <MapPin size={10} /> {p.item?.city || "Cidade não informada"}
+                      </p>
+                      {p.item?.price && (
+                        <p className="font-bold text-sm text-primary">{fmt(p.item.price)}{p.item.finality === "aluguel" ? "/mês" : ""}</p>
+                      )}
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold text-green-600 bg-green-500/10">
+                        <CheckCircle2 size={10} /> {p.role === "owner" ? "Você é o dono" : "Você é o parceiro"}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Partner info + gains */}
+                  <div className="px-4 pb-4 space-y-3">
+                    {gains && gains.partner > 0 && (
+                      <div className="grid grid-cols-2 gap-2 text-center">
+                        <div className="bg-green-500/10 rounded-xl p-2">
+                          <p className="text-[10px] text-muted-foreground">{p.role === "owner" ? "Ganho do parceiro" : "Seu ganho"}</p>
+                          <p className="font-bold text-sm text-green-600">{fmt(gains.partner)}</p>
+                        </div>
+                        <div className="bg-primary/10 rounded-xl p-2">
+                          <p className="text-[10px] text-muted-foreground">{p.role === "owner" ? "Seu ganho" : "Ganho do dono"}</p>
+                          <p className="font-bold text-sm text-primary">{fmt(gains.owner)}</p>
+                        </div>
+                      </div>
+                    )}
+
+                    {p.partner && (
+                      <div className="flex items-center gap-2 bg-secondary/50 rounded-xl p-2.5">
+                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
+                          {p.partner.logo_url ? (
+                            <img src={p.partner.logo_url} alt="" className="w-full h-full object-cover" />
+                          ) : (
+                            <span className="text-xs font-bold text-primary">{p.partner.full_name.charAt(0)}</span>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-bold text-foreground truncate">{p.partner.company_name || p.partner.full_name}</p>
+                          {p.partner.creci && <p className="text-[10px] text-muted-foreground">CRECI: {p.partner.creci}</p>}
+                        </div>
+                        {p.partner.phone && (
+                          <button
+                            onClick={() => openWhatsApp(p.partner!.phone, p.item?.title || "Imóvel", p.item?.finality || null)}
+                            className="px-3 py-1.5 rounded-lg bg-green-500 text-white text-[10px] font-bold hover:bg-green-600 transition-colors flex items-center gap-1"
+                          >
+                            <Phone size={12} /> WhatsApp
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              );
+            })
+          )}
+        </div>
+      )}
+
       {/* ===== MINHAS SOLICITAÇÕES ===== */}
       {subTab === "minhas" && (
         <div className="space-y-3">
