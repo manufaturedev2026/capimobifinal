@@ -14,7 +14,7 @@ Você conhece todas as funcionalidades:
 - **CRM**: funil kanban, contatos, follow-ups, templates WhatsApp
 - **Stories**: publicação automática e manual, expiração em 24h
 - **Equipe**: adicionar corretores manuais ou parceiros, lojas espelho (?corretor=slug)
-- **Planos**: Básico (grátis), Start, VIP, Premium, Black, planos Empresa
+- **Planos**: Básico (grátis, 5 imóveis), Start (R$24,99, 25 imóveis), VIP (R$59,99, 60 imóveis), Premium (R$114,99, 115 imóveis), Exclusive/Prime/Black (empresa, ilimitado)
 - **Captação**: página de captação de imóveis, leads de proprietários
 - **Gestão de Aluguéis**: contratos, pagamentos, lembretes
 - **Notificações Push**: envio para inscritos da loja

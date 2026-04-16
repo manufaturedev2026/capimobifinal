@@ -55,11 +55,11 @@ FUNCIONALIDADES DETALHADAS DA CAPIMOBI:
 - Gestão de aluguéis com lembretes
 
 💰 PLANOS E PREÇOS:
-- Start (GRATUITO): Loja completa, até 5 imóveis, CRM básico
-- Básico (R$29/mês): Até 15 imóveis, todos os layouts, stories
-- VIP (R$59/mês): Imóveis ilimitados, vídeo hero, bot de captação
-- Premium (R$99/mês): Tudo do VIP + captação com IA
-- Planos empresariais disponíveis`;
+- Básico (GRATUITO): Loja completa, até 5 imóveis, CRM, 1 push/dia
+- Start (R$24,99/mês): Até 25 imóveis, Stories, contratos, 1 push/dia
+- VIP (R$59,99/mês): Até 60 imóveis, vídeo hero, bot de captação, 2 push/dia
+- Premium (R$114,99/mês): Até 115 imóveis, captação com IA, 3 push/dia
+- Planos empresariais (Exclusive, Prime, Black) com imóveis ilimitados e múltiplos corretores`;
 
 const STRATEGY_PROMPTS: Record<string, string> = {
   // ─── Cadastro Interno ───
@@ -181,7 +181,7 @@ ESTRATÉGIA "CAPTAÇÃO DE IMOBILIÁRIAS":
    - Para Construtoras: Divulgação de lançamentos, landing pages otimizadas, stories automáticos, propostas em PDF profissional
    - Para Corretores: Loja profissional gratuita, CRM integrado, bot de captação, compartilhamento via WhatsApp
 4. Destaque a PARCERIA: cada corretor ganha sua loja espelhada conectada à empresa mestre
-5. Mencione que o plano Start é GRATUITO e já inclui loja completa
+5. Mencione que o plano Básico é GRATUITO e já inclui loja completa (Start é o primeiro pago, R$24,99)
 6. Crie urgência: "Estamos expandindo para sua região" ou "Vagas limitadas para configuração assistida"
 7. Incentive a deixar os dados para um consultor entrar em contato
 
