@@ -1249,6 +1249,17 @@ export default function SellerDashboard() {
                     >
                       {nav.locked ? <Lock size={16} /> : <nav.icon size={16} />}
                       {nav.label}
+                      {nav.id === "crm" && newCrmCount > 0 && (
+                        <span className="ml-auto bg-destructive text-destructive-foreground text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
+                          {newCrmCount}
+                        </span>
+                      )}
+                      {nav.id === "captacao" && newCaptureCount > 0 && (
+                        <span className="ml-auto bg-destructive text-destructive-foreground text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
+                          {newCaptureCount}
+                        </span>
+                      )}
+                      {nav.locked && <Lock size={14} className="ml-auto text-muted-foreground/40" />}
                     </button>
                   ))}
                   <Link to="/painel/novo" onClick={() => setMobileMenuOpen(false)}
