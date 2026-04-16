@@ -226,6 +226,18 @@ export default function CapturePropertyChatPage() {
   }, []);
 
   // ─── AI Mode Logic ───
+  // Extracted lead data from AI tool calling
+  const [aiExtractedData, setAiExtractedData] = useState<{
+    full_name?: string;
+    phone?: string;
+    property_type?: string;
+    address?: string;
+    desired_price?: string;
+    notes?: string;
+    finality?: string;
+  } | null>(null);
+  const [aiLeadSaved, setAiLeadSaved] = useState(false);
+
   const startAiChat = useCallback(async () => {
     setTyping(true);
     try {
@@ -252,6 +264,34 @@ export default function CapturePropertyChatPage() {
     }
   }, [isAiMode, loading, sellerProfile, startAiChat]);
 
+  // Auto-save extracted lead to CRM
+  const saveExtractedLeadRef = useRef(false);
+  const saveExtractedLead = useCallback(async (extracted: { full_name?: string; phone?: string; property_type?: string; address?: string; desired_price?: string; notes?: string; finality?: string }) => {
+    if (!sellerProfile || saveExtractedLeadRef.current) return;
+    saveExtractedLeadRef.current = true;
+    setAiLeadSaved(true);
+    try {
+      const priceNum = extracted.desired_price ? parseFloat(extracted.desired_price.replace(/\D/g, "")) || null : null;
+      await supabase.from("property_capture_leads" as any).insert({
+        seller_id: sellerProfile.id,
+        seller_user_id: sellerProfile.user_id,
+        full_name: (extracted.full_name || "").slice(0, 100),
+        phone: (extracted.phone || "").slice(0, 20),
+        property_type: extracted.property_type || "outros",
+        address: extracted.address || null,
+        desired_price: priceNum,
+        description: [
+          extracted.finality ? `Finalidade: ${extracted.finality}` : null,
+          extracted.notes || null,
+          "Lead capturado via chat IA de captação",
+        ].filter(Boolean).join("\n"),
+        status: "novo",
+      });
+    } catch (e) {
+      console.error("Auto-save lead error:", e);
+    }
+  }, [sellerProfile]);
+
   const sendAiMessage = async () => {
     const text = aiInput.trim();
     if (!text || aiLoading) return;
@@ -273,19 +313,40 @@ export default function CapturePropertyChatPage() {
       setAiMessages((prev) => [...prev, { role: "assistant", content: reply }]);
       addBotMsgInstant(reply);
 
-      const lower = reply.toLowerCase();
-      const triggerPhrases = [
-        "botão abaixo", "clica no botão", "enviar seus dados",
-        "preencha o formulário", "formulário abaixo", "dados foram coletados",
-        "confirmar seus dados", "confirme seus dados", "enviar as informações",
-        "pronto para enviar", "envie seus dados", "cadastrar seus dados",
-        "clique abaixo", "finalize o cadastro", "concluir o cadastro",
-        "dados de contato", "salvar seus dados", "registrar seus dados",
-      ];
-      const shouldShowForm = triggerPhrases.some(p => lower.includes(p));
-      const userMsgCount = updatedMessages.filter(m => m.role === "user").length;
-      if (shouldShowForm || userMsgCount >= 6) {
-        setTimeout(() => setShowCrmForm(true), 500);
+      // Check for extracted data from AI tool calling
+      if (data?.extractedData) {
+        const extracted = data.extractedData;
+        setAiExtractedData(prev => ({ ...prev, ...extracted }));
+        // Auto-save to CRM
+        await saveExtractedLead(extracted);
+        // Update local state for WhatsApp redirect
+        if (extracted.full_name) setFullName(extracted.full_name);
+        if (extracted.phone) setPhone(extracted.phone);
+        if (extracted.property_type) setPropertyType(extracted.property_type);
+        if (extracted.address) setAddress(extracted.address);
+        if (extracted.desired_price) setDesiredPrice(extracted.desired_price);
+        if (extracted.notes) setNotes(extracted.notes);
+        // Show WhatsApp button directly (no form needed)
+        setTimeout(() => {
+          setCrmSaved(true);
+          setShowCrmForm(true);
+        }, 800);
+      } else {
+        // Fallback: detect trigger phrases
+        const lower = reply.toLowerCase();
+        const triggerPhrases = [
+          "botão abaixo", "clica no botão", "enviar seus dados",
+          "preencha o formulário", "formulário abaixo", "dados foram coletados",
+          "confirmar seus dados", "confirme seus dados", "enviar as informações",
+          "pronto para enviar", "envie seus dados", "cadastrar seus dados",
+          "clique abaixo", "finalize o cadastro", "concluir o cadastro",
+          "dados de contato", "salvar seus dados", "registrar seus dados",
+        ];
+        const shouldShowForm = triggerPhrases.some(p => lower.includes(p));
+        const userMsgCount = updatedMessages.filter(m => m.role === "user").length;
+        if (shouldShowForm || userMsgCount >= 6) {
+          setTimeout(() => setShowCrmForm(true), 500);
+        }
       }
     } catch (e) {
       console.error("AI error:", e);
