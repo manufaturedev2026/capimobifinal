@@ -1104,6 +1104,7 @@ export default function SellerDashboard() {
                 sellerSlug={profile.slug || null}
                 sellerName={profile.company_name || profile.full_name || "Corretor"}
                 currentTier={currentTier}
+                onUnreadCountChange={setNewCaptureCount}
               />
             )}
 
