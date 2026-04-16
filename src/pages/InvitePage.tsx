@@ -416,6 +416,7 @@ export default function InvitePage() {
                 <p className="text-[#667781] text-xs text-center">Em breve entraremos em contato pelo WhatsApp 📱</p>
                 <Button
                   onClick={() => {
+                    trackEvent("signup_clicked");
                     const url = config.crmRedirectUrl || "/login";
                     if (url.startsWith("/")) {
                       navigate(url);
