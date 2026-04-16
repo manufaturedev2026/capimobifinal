@@ -103,8 +103,24 @@ export default function SellerDashboard() {
         .eq("funnel_stage", "novo");
       setNewCrmCount(count ?? 0);
     };
+    const fetchPartnershipCount = async () => {
+      const [{ count: c1 }, { count: c2 }] = await Promise.all([
+        supabase
+          .from("property_partnerships")
+          .select("*", { count: "exact", head: true })
+          .eq("owner_user_id", user.id)
+          .eq("status", "pendente"),
+        supabase
+          .from("partnership_requests")
+          .select("*", { count: "exact", head: true })
+          .eq("agency_user_id", user.id)
+          .eq("status", "pendente"),
+      ]);
+      setNewPartnershipCount((c1 ?? 0) + (c2 ?? 0));
+    };
     fetchCaptureCount();
     fetchCrmCount();
+    fetchPartnershipCount();
     const ch1 = supabase
       .channel("capture-leads-badge")
       .on("postgres_changes", { event: "*", schema: "public", table: "property_capture_leads" }, fetchCaptureCount)
@@ -113,7 +129,15 @@ export default function SellerDashboard() {
       .channel("crm-contacts-badge")
       .on("postgres_changes", { event: "*", schema: "public", table: "seller_crm_contacts" }, fetchCrmCount)
       .subscribe();
-    return () => { supabase.removeChannel(ch1); supabase.removeChannel(ch2); };
+    const ch3 = supabase
+      .channel("property-partnerships-badge")
+      .on("postgres_changes", { event: "*", schema: "public", table: "property_partnerships" }, fetchPartnershipCount)
+      .subscribe();
+    const ch4 = supabase
+      .channel("partnership-requests-badge")
+      .on("postgres_changes", { event: "*", schema: "public", table: "partnership_requests" }, fetchPartnershipCount)
+      .subscribe();
+    return () => { supabase.removeChannel(ch1); supabase.removeChannel(ch2); supabase.removeChannel(ch3); supabase.removeChannel(ch4); };
   }, [user?.id]);
 
   useEffect(() => {
