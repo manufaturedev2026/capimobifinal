@@ -95,8 +95,7 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
       .from("seller_items")
       .select(ITEM_FIELDS)
       .eq("partnership_enabled", true)
-      .eq("status", "ativo")
-      .neq("user_id", userId);
+      .eq("status", "ativo");
 
     if (!items?.length) { setAvailableItems([]); return; }
 
