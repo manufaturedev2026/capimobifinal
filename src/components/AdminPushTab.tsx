@@ -286,7 +286,7 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
               <Label className="text-xs font-medium flex items-center gap-1.5">
                 <Target className="w-3.5 h-3.5" /> Público-alvo
               </Label>
-              <Select value={audience} onValueChange={(v) => setAudience(v as any)}>
+              <Select value={audience} onValueChange={(v) => { setAudience(v as any); if (v === "clients") { setFilterState("all"); setFilterCity("all"); } }}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
