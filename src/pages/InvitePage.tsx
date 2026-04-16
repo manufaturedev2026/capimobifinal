@@ -118,6 +118,7 @@ export default function InvitePage() {
     if (!text || aiLoading) return;
     setAiInput("");
     addBubble(text, "user");
+    trackEvent("message_sent");
 
     const updatedMessages = [...aiMessages, { role: "user" as const, content: text }];
     setAiMessages(updatedMessages);
@@ -159,6 +160,7 @@ export default function InvitePage() {
           lower.includes("crie sua conta") ||
           lower.includes("cadastre-se")
         ) {
+          trackEvent("cta_shown");
           setTimeout(() => setShowCta(true), 500);
         }
       } catch (e) {
