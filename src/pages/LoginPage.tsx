@@ -270,7 +270,7 @@ export default function LoginPage() {
           {!signedUp && isLogin && (
             <p className="text-center text-sm mt-8" style={{ color: theme.textMuted }}>
               <button onClick={() => setIsLogin(false)} className="font-semibold hover:underline" style={{ color: theme.primary }}>
-                Criar conta da loja
+                Quero me Cadastrar
               </button>
             </p>
           )}
