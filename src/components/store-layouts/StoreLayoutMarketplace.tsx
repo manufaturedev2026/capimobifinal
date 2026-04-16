@@ -287,12 +287,19 @@ export default function StoreLayoutMarketplace({
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.7, delay: 0.2 }}
-            className="flex items-center gap-2 mb-2"
+            className="flex flex-col gap-0.5 mb-2"
           >
-            <Sparkles size={14} style={{ color: storeTheme.primary }} />
-            <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest" style={{ color: storeTheme.primary }}>
-              {dbProfile?.full_name || "Corretor"} — Corretor Imobiliário
-            </span>
+            <div className="flex items-center gap-2">
+              <Sparkles size={14} style={{ color: storeTheme.primary }} />
+              <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest" style={{ color: storeTheme.primary }}>
+                {dbProfile?.full_name || "Corretor"} — Corretor Imobiliário
+              </span>
+            </div>
+            {dbProfile?.creci && (
+              <span className="text-[10px] md:text-xs font-medium ml-[22px]" style={{ color: `${storeTheme.text}99` }}>
+                CRECI {dbProfile.creci}
+              </span>
+            )}
           </motion.div>
 
           <motion.h1
