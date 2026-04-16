@@ -1378,6 +1378,7 @@ export default function SellerDashboard() {
       <div className="lg:hidden h-16" />
       <PwaInstallGuide open={showInstallGuide} onClose={() => setShowInstallGuide(false)} mode={guideMode} />
       <OnboardingTour />
+      <AiHelpChat />
     </div>
   );
 }
