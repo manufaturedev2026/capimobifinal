@@ -370,9 +370,9 @@ export default function NotificationsTab({ userId, sellerId }: NotificationsTabP
               <p className="text-[10px] text-muted-foreground">Imagem exibida na notificação (ex: foto do imóvel)</p>
             </div>
 
-            <Button onClick={handleSend} disabled={sending || uploadingImage || !title.trim() || !body.trim()} className="w-full gap-2">
+            <Button onClick={handleSend} disabled={sending || uploadingImage || !title.trim() || !body.trim() || limitReached} className="w-full gap-2">
               {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-              Enviar para {subscriberCount} inscrito{subscriberCount !== 1 ? "s" : ""}
+              {limitReached ? "Limite diário atingido" : `Enviar para ${subscriberCount} inscrito${subscriberCount !== 1 ? "s" : ""}`}
             </Button>
           </div>
         )}
