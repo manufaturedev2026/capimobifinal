@@ -92,6 +92,17 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
   const [botChatMode, setBotChatMode] = useState<"flow" | "ai">("flow");
   const [savingBot, setSavingBot] = useState(false);
 
+  // Flow step messages
+  const [flowMsgName, setFlowMsgName] = useState("Vamos começar? Me diz o seu nome completo 😊");
+  const [flowMsgNameReply, setFlowMsgNameReply] = useState("Prazer, {nome}! 🤝");
+  const [flowMsgPhone, setFlowMsgPhone] = useState("Qual seu telefone ou WhatsApp? 📱");
+  const [flowMsgType, setFlowMsgType] = useState("Perfeito! Agora me diz: qual o tipo do imóvel? 🏠");
+  const [flowMsgAddress, setFlowMsgAddress] = useState("Ótimo! Qual o endereço ou localização do imóvel? 📍");
+  const [flowMsgPrice, setFlowMsgPrice] = useState("Tem um valor em mente para o imóvel? 💰\n\n(Se não tiver, pode digitar 0 ou pular)");
+  const [flowMsgNotes, setFlowMsgNotes] = useState("Alguma observação sobre o imóvel? 📝\n\n(Opcional - pode enviar vazio para pular)");
+  const [flowMsgSuccess, setFlowMsgSuccess] = useState("✅ Pronto! Suas informações foram enviadas com sucesso!");
+  const [flowMsgSuccessEnd, setFlowMsgSuccessEnd] = useState("Em breve um corretor vai entrar em contato com você pelo WhatsApp. Obrigado! 🎉");
+
   const captureUrl = `${window.location.origin}/captar-imovel/${sellerSlug || sellerId}`;
   const chatBotUrl = `${window.location.origin}/captar-imovel/${sellerSlug || sellerId}/chat`;
 
@@ -128,6 +139,15 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
         if (cfg.attendantAvatar) setBotAttendantAvatar(cfg.attendantAvatar);
         if (cfg.openingMessage) setBotOpeningMessage(cfg.openingMessage);
         if (cfg.chatMode) setBotChatMode(cfg.chatMode);
+        if (cfg.flowMsgName) setFlowMsgName(cfg.flowMsgName);
+        if (cfg.flowMsgNameReply) setFlowMsgNameReply(cfg.flowMsgNameReply);
+        if (cfg.flowMsgPhone) setFlowMsgPhone(cfg.flowMsgPhone);
+        if (cfg.flowMsgType) setFlowMsgType(cfg.flowMsgType);
+        if (cfg.flowMsgAddress) setFlowMsgAddress(cfg.flowMsgAddress);
+        if (cfg.flowMsgPrice) setFlowMsgPrice(cfg.flowMsgPrice);
+        if (cfg.flowMsgNotes) setFlowMsgNotes(cfg.flowMsgNotes);
+        if (cfg.flowMsgSuccess) setFlowMsgSuccess(cfg.flowMsgSuccess);
+        if (cfg.flowMsgSuccessEnd) setFlowMsgSuccessEnd(cfg.flowMsgSuccessEnd);
       } catch {}
     }
   };
@@ -139,6 +159,15 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
       attendantAvatar: botAttendantAvatar,
       openingMessage: botOpeningMessage,
       chatMode: botChatMode,
+      flowMsgName,
+      flowMsgNameReply,
+      flowMsgPhone,
+      flowMsgType,
+      flowMsgAddress,
+      flowMsgPrice,
+      flowMsgNotes,
+      flowMsgSuccess,
+      flowMsgSuccessEnd,
     });
     const { error } = await supabase
       .from("platform_settings")
@@ -382,14 +411,48 @@ ${captureUrl}
           </div>
         </div>
         {botChatMode === "flow" && (
-          <div>
-            <label className="text-xs text-muted-foreground">Mensagem de abertura</label>
-            <Textarea
-              value={botOpeningMessage}
-              onChange={(e) => setBotOpeningMessage(e.target.value)}
-              placeholder="Olá! 👋 Vou te ajudar a cadastrar seu imóvel..."
-              className="mt-1 min-h-[80px] text-sm"
-            />
+          <div className="space-y-3">
+            <p className="text-xs font-semibold text-muted-foreground">📝 Mensagens do Fluxo</p>
+            <div>
+              <label className="text-xs text-muted-foreground">Mensagem de abertura</label>
+              <Textarea value={botOpeningMessage} onChange={(e) => setBotOpeningMessage(e.target.value)} placeholder="Olá! 👋 Vou te ajudar..." className="mt-1 min-h-[60px] text-sm" />
+            </div>
+            <div>
+              <label className="text-xs text-muted-foreground">Pedindo o nome</label>
+              <Input value={flowMsgName} onChange={(e) => setFlowMsgName(e.target.value)} className="mt-1 text-sm" />
+            </div>
+            <div>
+              <label className="text-xs text-muted-foreground">Resposta ao nome <span className="text-[10px] opacity-60">({"{nome}"} será substituído)</span></label>
+              <Input value={flowMsgNameReply} onChange={(e) => setFlowMsgNameReply(e.target.value)} className="mt-1 text-sm" />
+            </div>
+            <div>
+              <label className="text-xs text-muted-foreground">Pedindo telefone</label>
+              <Input value={flowMsgPhone} onChange={(e) => setFlowMsgPhone(e.target.value)} className="mt-1 text-sm" />
+            </div>
+            <div>
+              <label className="text-xs text-muted-foreground">Pedindo tipo do imóvel</label>
+              <Input value={flowMsgType} onChange={(e) => setFlowMsgType(e.target.value)} className="mt-1 text-sm" />
+            </div>
+            <div>
+              <label className="text-xs text-muted-foreground">Pedindo endereço</label>
+              <Input value={flowMsgAddress} onChange={(e) => setFlowMsgAddress(e.target.value)} className="mt-1 text-sm" />
+            </div>
+            <div>
+              <label className="text-xs text-muted-foreground">Pedindo valor</label>
+              <Textarea value={flowMsgPrice} onChange={(e) => setFlowMsgPrice(e.target.value)} className="mt-1 min-h-[50px] text-sm" />
+            </div>
+            <div>
+              <label className="text-xs text-muted-foreground">Pedindo observações</label>
+              <Textarea value={flowMsgNotes} onChange={(e) => setFlowMsgNotes(e.target.value)} className="mt-1 min-h-[50px] text-sm" />
+            </div>
+            <div>
+              <label className="text-xs text-muted-foreground">Mensagem de sucesso</label>
+              <Input value={flowMsgSuccess} onChange={(e) => setFlowMsgSuccess(e.target.value)} className="mt-1 text-sm" />
+            </div>
+            <div>
+              <label className="text-xs text-muted-foreground">Mensagem final</label>
+              <Input value={flowMsgSuccessEnd} onChange={(e) => setFlowMsgSuccessEnd(e.target.value)} className="mt-1 text-sm" />
+            </div>
           </div>
         )}
         <Button onClick={saveBotConfig} disabled={savingBot} size="sm" className="gap-1.5 text-xs">

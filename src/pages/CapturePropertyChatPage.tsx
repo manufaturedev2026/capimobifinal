@@ -13,6 +13,15 @@ interface BotConfig {
   attendantAvatar: string;
   openingMessage: string;
   chatMode: "flow" | "ai";
+  flowMsgName: string;
+  flowMsgNameReply: string;
+  flowMsgPhone: string;
+  flowMsgType: string;
+  flowMsgAddress: string;
+  flowMsgPrice: string;
+  flowMsgNotes: string;
+  flowMsgSuccess: string;
+  flowMsgSuccessEnd: string;
 }
 
 const DEFAULT_CONFIG: BotConfig = {
@@ -20,6 +29,15 @@ const DEFAULT_CONFIG: BotConfig = {
   attendantAvatar: "",
   openingMessage: "Olá! 👋 Vou te ajudar a cadastrar seu imóvel para avaliação gratuita! É rápido e sem compromisso 🏡",
   chatMode: "flow",
+  flowMsgName: "Vamos começar? Me diz o seu nome completo 😊",
+  flowMsgNameReply: "Prazer, {nome}! 🤝",
+  flowMsgPhone: "Qual seu telefone ou WhatsApp? 📱",
+  flowMsgType: "Perfeito! Agora me diz: qual o tipo do imóvel? 🏠",
+  flowMsgAddress: "Ótimo! Qual o endereço ou localização do imóvel? 📍",
+  flowMsgPrice: "Tem um valor em mente para o imóvel? 💰\n\n(Se não tiver, pode digitar 0 ou pular)",
+  flowMsgNotes: "Alguma observação sobre o imóvel? 📝\n\n(Opcional - pode enviar vazio para pular)",
+  flowMsgSuccess: "✅ Pronto! Suas informações foram enviadas com sucesso!",
+  flowMsgSuccessEnd: "Em breve um corretor vai entrar em contato com você pelo WhatsApp. Obrigado! 🎉",
 };
 
 type Step = "opening" | "name" | "phone" | "type" | "address" | "price" | "notes" | "done";
@@ -202,15 +220,15 @@ export default function CapturePropertyChatPage() {
 
   // ─── Flow Mode Logic ───
   useEffect(() => {
-    if (!isAiMode && !loading && sellerProfile && step === "opening" && messages.length === 0) {
+   if (!isAiMode && !loading && sellerProfile && step === "opening" && messages.length === 0) {
       (async () => {
         await addBotMsg(config.openingMessage);
-        await addBotMsg("Vamos começar? Me diz o seu nome completo 😊");
+        await addBotMsg(config.flowMsgName);
         setStep("name");
         setInputVisible(true);
       })();
     }
-  }, [loading, sellerProfile, step, messages.length, addBotMsg, config.openingMessage, isAiMode]);
+  }, [loading, sellerProfile, step, messages.length, addBotMsg, config.openingMessage, config.flowMsgName, isAiMode]);
 
   // Auto-scroll
   useEffect(() => {
@@ -231,21 +249,21 @@ export default function CapturePropertyChatPage() {
       case "name":
         setFullName(val);
         addUserMsg(val);
-        await addBotMsg(`Prazer, ${val}! 🤝`);
-        await addBotMsg("Qual seu telefone ou WhatsApp? 📱");
+        await addBotMsg(config.flowMsgNameReply.replace("{nome}", val));
+        await addBotMsg(config.flowMsgPhone);
         setStep("phone");
         setInputVisible(true);
         break;
       case "phone":
         setPhone(val);
         addUserMsg(val);
-        await addBotMsg("Perfeito! Agora me diz: qual o tipo do imóvel? 🏠");
+        await addBotMsg(config.flowMsgType);
         setStep("type");
         break;
       case "address":
         setAddress(val);
         addUserMsg(val);
-        await addBotMsg("Tem um valor em mente para o imóvel? 💰\n\n(Se não tiver, pode digitar 0 ou pular)");
+        await addBotMsg(config.flowMsgPrice);
         setStep("price");
         setInputVisible(true);
         break;
@@ -253,7 +271,7 @@ export default function CapturePropertyChatPage() {
         const priceVal = val || "0";
         setDesiredPrice(priceVal);
         addUserMsg(priceVal === "0" || !val ? "Sem valor definido" : `R$ ${priceVal}`);
-        await addBotMsg("Alguma observação sobre o imóvel? 📝\n\n(Opcional - pode enviar vazio para pular)");
+        await addBotMsg(config.flowMsgNotes);
         setStep("notes");
         setInputVisible(true);
         break;
@@ -270,7 +288,7 @@ export default function CapturePropertyChatPage() {
   const handleTypeSelect = async (type: string, label: string) => {
     setPropertyType(type);
     addUserMsg(label);
-    await addBotMsg("Ótimo! Qual o endereço ou localização do imóvel? 📍");
+    await addBotMsg(config.flowMsgAddress);
     setStep("address");
     setInputVisible(true);
   };
@@ -290,8 +308,8 @@ export default function CapturePropertyChatPage() {
       description: obs || null,
       status: "novo",
     });
-    await addBotMsg("✅ Pronto! Suas informações foram enviadas com sucesso!");
-    await addBotMsg("Em breve um corretor vai entrar em contato com você pelo WhatsApp. Obrigado! 🎉");
+    await addBotMsg(config.flowMsgSuccess);
+    await addBotMsg(config.flowMsgSuccessEnd);
     setStep("done");
   };
 
