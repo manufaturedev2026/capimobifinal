@@ -197,6 +197,9 @@ export default function SellerItemForm() {
               has_ac: !!d.has_ac,
               foot_traffic: d.foot_traffic || "",
               ideal_for: d.ideal_for || "",
+              partnership_enabled: !!d.partnership_enabled,
+              commission_percent: d.commission_percent?.toString() || "",
+              partner_percent: d.partner_percent?.toString() || "",
             });
           }
         });
@@ -343,6 +346,9 @@ export default function SellerItemForm() {
       foot_traffic: strOrNull(form.foot_traffic),
       ideal_for: strOrNull(form.ideal_for),
       show_financing: form.show_financing || false,
+      partnership_enabled: form.partnership_enabled || false,
+      commission_percent: numOrNull(form.commission_percent),
+      partner_percent: numOrNull(form.partner_percent),
     };
 
     let error;
