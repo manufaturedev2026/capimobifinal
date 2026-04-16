@@ -670,6 +670,7 @@ export default function CapturePropertyChatPage() {
         description: "Lead capturado via chat IA de captação",
         status: "novo",
       });
+      notifyNewCaptureLead(sellerProfile.user_id, crmName.trim(), `${crmName.trim()} entrou em contato pelo chat.`);
       setCrmSaved(true);
       addBotMsgInstant("✅ Seus dados foram enviados com sucesso! Em breve entraremos em contato 🤝");
     } catch (e) {
