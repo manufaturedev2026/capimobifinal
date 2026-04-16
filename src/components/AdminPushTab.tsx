@@ -286,7 +286,7 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
               <Label className="text-xs font-medium flex items-center gap-1.5">
                 <Target className="w-3.5 h-3.5" /> Público-alvo
               </Label>
-              <Select value={audience} onValueChange={(v) => setAudience(v as any)}>
+              <Select value={audience} onValueChange={(v) => { setAudience(v as any); if (v === "clients") { setFilterState("all"); setFilterCity("all"); } }}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -301,48 +301,50 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
               </Select>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1.5">
-                <Label className="text-xs font-medium">Estado (UF)</Label>
-                <Select value={filterState} onValueChange={(v) => { setFilterState(v); setFilterCity("all"); }}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="max-h-60">
-                    <SelectItem value="all">Todos os estados</SelectItem>
-                    {availableStates.map((uf) => {
-                      const meta = BRAZIL_STATES.find((s) => s.uf === uf);
-                      return (
-                        <SelectItem key={uf} value={uf}>
-                          {uf}{meta ? ` — ${meta.name}` : ""}
-                        </SelectItem>
-                      );
-                    })}
-                  </SelectContent>
-                </Select>
-                {availableStates.length === 0 && (
-                  <p className="text-[10px] text-muted-foreground">Nenhum imóvel cadastrado ainda</p>
-                )}
+            {audience !== "clients" && (
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-medium">Estado (UF)</Label>
+                  <Select value={filterState} onValueChange={(v) => { setFilterState(v); setFilterCity("all"); }}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-60">
+                      <SelectItem value="all">Todos os estados</SelectItem>
+                      {availableStates.map((uf) => {
+                        const meta = BRAZIL_STATES.find((s) => s.uf === uf);
+                        return (
+                          <SelectItem key={uf} value={uf}>
+                            {uf}{meta ? ` — ${meta.name}` : ""}
+                          </SelectItem>
+                        );
+                      })}
+                    </SelectContent>
+                  </Select>
+                  {availableStates.length === 0 && (
+                    <p className="text-[10px] text-muted-foreground">Nenhum imóvel cadastrado ainda</p>
+                  )}
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-medium">Cidade</Label>
+                  <Select
+                    value={filterCity}
+                    onValueChange={setFilterCity}
+                    disabled={filterState === "all" || stateCities.length === 0}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder={filterState === "all" ? "Selecione um estado" : "Todas as cidades"} />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-60">
+                      <SelectItem value="all">Todas as cidades de {filterState}</SelectItem>
+                      {stateCities.map((c) => (
+                        <SelectItem key={c} value={c}>{c}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
-              <div className="space-y-1.5">
-                <Label className="text-xs font-medium">Cidade</Label>
-                <Select
-                  value={filterCity}
-                  onValueChange={setFilterCity}
-                  disabled={filterState === "all" || stateCities.length === 0}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder={filterState === "all" ? "Selecione um estado" : "Todas as cidades"} />
-                  </SelectTrigger>
-                  <SelectContent className="max-h-60">
-                    <SelectItem value="all">Todas as cidades de {filterState}</SelectItem>
-                    {stateCities.map((c) => (
-                      <SelectItem key={c} value={c}>{c}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
+            )}
 
             {/* Estimate badge */}
             <div className="flex items-center gap-2 p-3 rounded-lg border border-primary/20 bg-primary/5">
