@@ -340,9 +340,29 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
     toast({ title: `${label} copiado!`, description: url });
   };
 
-  const generateAdText = () => {
-    const text = `🏡 Quer vender ou alugar seu imóvel MAIS RÁPIDO e pelo melhor valor?\n\nEu posso te ajudar 👇\n\n🚀 Cadastre seu imóvel 100% GRÁTIS e receba propostas reais de compradores interessados!\n\n✨ O que você ganha:\n✔ Avaliação profissional do seu imóvel\n✔ Divulgação em vários sites e redes sociais\n✔ Atendimento rápido e personalizado\n✔ Estratégia para vender ou alugar mais rápido\n\n💰 Sem burocracia. Sem complicação. Mais resultado!\n\n👉 Cadastre agora:\n${captureUrl}\n\n📲 Clique no link ou fale comigo no WhatsApp!\n\n⚠️ Vagas limitadas para novos imóveis essa semana\n\n#imoveis #venderimovel #aluguel #corretordeimoveis #oportunidade #mercadoimobiliario`;
-    setGeneratedAd(text);
+  const generateAdText = (templateId?: string) => {
+    const tpl = AD_TEMPLATES.find(t => t.id === (templateId || selectedTemplate));
+    if (tpl) setGeneratedAd(tpl.generate(captureUrl, sellerName));
+  };
+
+  const generateAdWithAI = async () => {
+    setGeneratingAI(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("capture-chat", {
+        body: {
+          action: "generate_ad_copy",
+          sellerName,
+          captureUrl,
+          templateHint: AD_TEMPLATES.find(t => t.id === selectedTemplate)?.label || "Captação",
+        },
+      });
+      if (error) throw error;
+      setGeneratedAd(data?.text || "Erro ao gerar texto.");
+    } catch {
+      toast({ title: "Erro ao gerar com IA", variant: "destructive" });
+    }
+    setGeneratingAI(false);
+  };
   };
 
   const copyAd = () => {
