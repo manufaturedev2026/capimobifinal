@@ -8,7 +8,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { BRAZIL_STATES } from "@/data/brazilStates";
-import { useCitiesByState } from "@/hooks/useCitiesByState";
 
 interface AdminPushTabProps {
   userId: string;
@@ -40,7 +39,9 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
   const [audience, setAudience] = useState<"all" | "corretor" | "imobiliaria" | "construtora" | "professionals" | "clients">("all");
   const [filterState, setFilterState] = useState<string>("all");
   const [filterCity, setFilterCity] = useState<string>("all");
-  const { cities: stateCities, loading: loadingCities } = useCitiesByState(filterState !== "all" ? filterState : "");
+  const [regionData, setRegionData] = useState<Record<string, string[]>>({});
+  const availableStates = Object.keys(regionData).sort();
+  const stateCities = filterState !== "all" ? (regionData[filterState] || []) : [];
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -83,6 +84,34 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
       .limit(20);
 
     setLogs((logData as unknown as NotificationLog[]) || []);
+
+    // Load distinct states/cities from active listings (paginate to bypass 1000 row cap)
+    const regions: Record<string, Set<string>> = {};
+    let from = 0;
+    const pageSize = 1000;
+    while (true) {
+      const { data: items } = await supabase
+        .from("seller_items")
+        .select("state, city")
+        .eq("status", "ativo")
+        .range(from, from + pageSize - 1);
+      if (!items || items.length === 0) break;
+      for (const it of items as any[]) {
+        const uf = (it.state || "").trim().toUpperCase();
+        const ct = (it.city || "").trim();
+        if (!uf) continue;
+        if (!regions[uf]) regions[uf] = new Set();
+        if (ct) regions[uf].add(ct);
+      }
+      if (items.length < pageSize) break;
+      from += pageSize;
+    }
+    const regionMap: Record<string, string[]> = {};
+    for (const uf of Object.keys(regions)) {
+      regionMap[uf] = Array.from(regions[uf]).sort((a, b) => a.localeCompare(b, "pt-BR"));
+    }
+    setRegionData(regionMap);
+
     setLoading(false);
   };
 
@@ -223,24 +252,32 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
                   </SelectTrigger>
                   <SelectContent className="max-h-60">
                     <SelectItem value="all">Todos os estados</SelectItem>
-                    {BRAZIL_STATES.map((s) => (
-                      <SelectItem key={s.uf} value={s.uf}>{s.uf} — {s.name}</SelectItem>
-                    ))}
+                    {availableStates.map((uf) => {
+                      const meta = BRAZIL_STATES.find((s) => s.uf === uf);
+                      return (
+                        <SelectItem key={uf} value={uf}>
+                          {uf}{meta ? ` — ${meta.name}` : ""}
+                        </SelectItem>
+                      );
+                    })}
                   </SelectContent>
                 </Select>
+                {availableStates.length === 0 && (
+                  <p className="text-[10px] text-muted-foreground">Nenhum imóvel cadastrado ainda</p>
+                )}
               </div>
               <div className="space-y-1.5">
                 <Label className="text-xs font-medium">Cidade</Label>
                 <Select
                   value={filterCity}
                   onValueChange={setFilterCity}
-                  disabled={filterState === "all" || loadingCities}
+                  disabled={filterState === "all" || stateCities.length === 0}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder={filterState === "all" ? "Selecione um estado" : loadingCities ? "Carregando..." : "Todas as cidades"} />
+                    <SelectValue placeholder={filterState === "all" ? "Selecione um estado" : "Todas as cidades"} />
                   </SelectTrigger>
                   <SelectContent className="max-h-60">
-                    <SelectItem value="all">Todas as cidades</SelectItem>
+                    <SelectItem value="all">Todas as cidades de {filterState}</SelectItem>
                     {stateCities.map((c) => (
                       <SelectItem key={c} value={c}>{c}</SelectItem>
                     ))}
