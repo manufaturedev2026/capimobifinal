@@ -733,7 +733,7 @@ export default function MarketplaceHome() {
             <Crown size={16} style={{ color: PRIMARY }} />
             <h2 className="font-display font-bold text-lg" style={{ color: TEXT }}>O que você procura?</h2>
           </div>
-          <div className="flex gap-2.5 md:gap-3 overflow-x-auto scrollbar-hide pb-2 md:grid md:grid-cols-6 md:overflow-visible">
+          <div className="flex gap-2.5 md:gap-3 overflow-x-auto scrollbar-hide pb-2 pr-4 md:pr-0 md:grid md:grid-cols-6 md:overflow-visible">
             {QUICK_ACTIONS.map((action, idx) => {
               const Icon = action.icon;
               const isActive = activeCategory === action.slug;
@@ -787,7 +787,7 @@ export default function MarketplaceHome() {
           <div className="md:hidden relative">
             <div
               ref={promoScrollRef}
-              className="flex gap-3 overflow-x-auto overflow-y-hidden scrollbar-hide snap-x snap-mandatory pb-2"
+              className="flex gap-3 overflow-x-auto overflow-y-hidden scrollbar-hide snap-x snap-mandatory pb-2 pr-4"
               style={{ overscrollBehaviorX: "contain" }}
             >
               {promoBanners.map((banner, bIdx) => (

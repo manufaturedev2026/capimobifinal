@@ -365,7 +365,7 @@ export default function PropertiesPage() {
 
       {/* Categories - Carousel */}
       <section className="px-4 md:px-8 lg:px-12 mt-6 relative z-10">
-        <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-3 pl-1 pr-8 snap-x snap-mandatory md:grid md:grid-cols-5 md:overflow-visible md:pl-0 md:pr-0">
+        <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-3 pl-1 pr-10 snap-x snap-mandatory md:grid md:grid-cols-5 md:overflow-visible md:pl-0 md:pr-0">
           {propertyCategories.map((cat, i) => {
             const Icon = iconMap[cat.icon] || Building2;
             const isActive = activeCategory === cat.slug;
@@ -410,7 +410,7 @@ export default function PropertiesPage() {
       {/* Featured Products Carousel */}
       <section className="pt-8 pb-2">
         <h3 className="font-display font-semibold text-base text-foreground mb-4 px-4 md:px-8 lg:px-12">Destaques</h3>
-        <div className="flex gap-3 overflow-x-auto md:overflow-visible scrollbar-hide pb-2 snap-x snap-mandatory md:snap-none px-4 md:px-8 lg:px-12 md:grid md:grid-cols-7">
+        <div className="flex gap-3 overflow-x-auto md:overflow-visible scrollbar-hide pb-2 snap-x snap-mandatory md:snap-none px-4 pr-8 md:px-8 md:pr-8 lg:px-12 lg:pr-12 md:grid md:grid-cols-7">
           {featuredProducts.map((product, i) => {
             const company = allSellers[product.companyId];
             return (
