@@ -733,7 +733,6 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
                 )}
               </p>
             )}
-            )}
           </div>
         </div>
       )}
