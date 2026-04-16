@@ -927,7 +927,8 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
           ) : (
             receivedRequests.map(req => {
               const st = statusConfig[req.status] || statusConfig.pendente;
-              const removed = !req.item;
+              const removed = !req.item || req.item.status === "vendido" || req.item.status === "inativo";
+              const removedLabel = !req.item ? "Imóvel removido" : req.item?.status === "vendido" ? "Imóvel vendido" : "Imóvel desativado";
               return (
                 <motion.div
                   key={req.id}
