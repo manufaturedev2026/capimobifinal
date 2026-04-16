@@ -37,6 +37,8 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
   const [image, setImage] = useState("");
   const [uploadingImage, setUploadingImage] = useState(false);
   const [audience, setAudience] = useState<"all" | "corretor" | "imobiliaria" | "construtora" | "professionals" | "clients">("all");
+  const [filterState, setFilterState] = useState<string>("all");
+  const [filterCity, setFilterCity] = useState<string>("");
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
