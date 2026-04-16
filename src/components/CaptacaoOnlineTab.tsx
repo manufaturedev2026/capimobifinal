@@ -753,6 +753,27 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
             </div>
           ) : (
             <>
+              {/* Bot Link */}
+              <div className="rounded-2xl border border-[#25d366]/20 bg-gradient-to-br from-[#25d366]/5 to-accent/5 p-4">
+                <div className="flex items-center gap-2.5 mb-3">
+                  <div className="w-8 h-8 rounded-xl bg-[#25d366]/15 flex items-center justify-center">
+                    <MessageCircle size={14} className="text-[#25d366]" />
+                  </div>
+                  <p className="text-sm font-bold text-foreground">Link do Bot WhatsApp</p>
+                </div>
+                <p className="text-xs font-mono text-muted-foreground truncate mb-3">{chatBotUrl}</p>
+                <div className="flex gap-2">
+                  <Button size="sm" variant="outline" className="flex-1 gap-1.5 text-xs h-8 rounded-xl bg-background text-foreground border-border hover:bg-accent hover:text-accent-foreground" onClick={() => copyLink(chatBotUrl, "Link do bot")}>
+                    <Copy size={11} /> Copiar
+                  </Button>
+                  <a href={chatBotUrl} target="_blank" rel="noopener noreferrer" className="flex-1">
+                    <Button size="sm" variant="outline" className="w-full gap-1.5 text-xs h-8 rounded-xl bg-background text-foreground border-border hover:bg-accent hover:text-accent-foreground">
+                      <Eye size={11} /> Abrir
+                    </Button>
+                  </a>
+                </div>
+              </div>
+
               {/* Chat Mode */}
               <div className="rounded-2xl border border-border bg-card p-4 space-y-3">
                 <p className="text-sm font-bold text-foreground">Modo do Chat</p>
