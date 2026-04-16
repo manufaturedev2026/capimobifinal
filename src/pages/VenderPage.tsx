@@ -340,7 +340,7 @@ export default function VenderPage() {
                 </div>
                 <div className="relative">
                   <Phone className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/60" />
-                  <input type="tel" placeholder="WhatsApp (opcional)" value={phone} onChange={(e) => setPhone(e.target.value)}
+                  <input type="tel" required placeholder="WhatsApp *" value={phone} onChange={(e) => setPhone(e.target.value)}
                     className="w-full pl-10 md:pl-11 pr-4 py-3 md:py-3.5 rounded-xl bg-black/40 border border-white/15 text-white placeholder:text-white/40 outline-none transition-colors text-sm focus:border-white/30" />
                 </div>
                  <div className="grid grid-cols-2 gap-2 md:gap-3">
