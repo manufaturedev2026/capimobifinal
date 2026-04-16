@@ -99,6 +99,9 @@ const INITIAL_FORM = {
   foot_traffic: "",
   ideal_for: "",
   show_financing: false,
+  partnership_enabled: false,
+  commission_percent: "",
+  partner_percent: "",
 };
 
 export default function SellerItemForm() {
