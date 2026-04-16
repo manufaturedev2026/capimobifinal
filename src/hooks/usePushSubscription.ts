@@ -44,21 +44,40 @@ export function usePushSubscription(sellerId?: string) {
 
     setPermission(Notification.permission);
 
-    navigator.serviceWorker
-      .getRegistrations()
-      .then(async (registrations) => {
+    // Check if THIS device is subscribed to THIS specific seller
+    (async () => {
+      try {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        let currentEndpoint: string | null = null;
         for (const reg of registrations) {
           const url = reg.active?.scriptURL || reg.installing?.scriptURL || reg.waiting?.scriptURL || "";
           if (url.includes("push-sw")) {
             const subscription = await reg.pushManager.getSubscription();
             if (subscription) {
-              setIsSubscribed(true);
-              return;
+              currentEndpoint = subscription.endpoint;
+              break;
             }
           }
         }
-      })
-      .catch(() => {});
+
+        if (!currentEndpoint || !sellerId) {
+          setIsSubscribed(false);
+          return;
+        }
+
+        // Check DB if this endpoint is already saved for this seller
+        const { data } = await supabase
+          .from("push_subscriptions" as any)
+          .select("id")
+          .eq("seller_id", sellerId)
+          .eq("endpoint", currentEndpoint)
+          .maybeSingle();
+
+        setIsSubscribed(!!data);
+      } catch {
+        setIsSubscribed(false);
+      }
+    })();
   }, [sellerId]);
 
   const subscribe = useCallback(async () => {
