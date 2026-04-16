@@ -198,6 +198,16 @@ export default function LoginPage() {
                      style={{ background: theme.cardBg, border: `1px solid ${theme.border}`, color: theme.text }}
                      placeholder="(27) 99999-9999" />
                  </div>
+                 <div>
+                   <label className="block text-sm font-medium mb-1.5" style={{ color: `${theme.text}cc` }}>Você é *</label>
+                   <select value={sellerCategory} onChange={(e) => setSellerCategory(e.target.value as any)} required
+                     className="w-full px-4 py-3 rounded-xl text-sm focus:outline-none transition-all appearance-none"
+                     style={{ background: theme.cardBg, border: `1px solid ${theme.border}`, color: theme.text }}>
+                     <option value="corretor">Corretor(a)</option>
+                     <option value="imobiliaria">Imobiliária</option>
+                     <option value="construtora">Construtora</option>
+                   </select>
+                 </div>
                  <div className="grid grid-cols-2 gap-3">
                    <div>
                      <label className="block text-sm font-medium mb-1.5" style={{ color: `${theme.text}cc` }}>Estado</label>
