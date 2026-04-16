@@ -8,6 +8,16 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { SITE_URL } from "@/lib/siteUrl";
 
+const notifyNewCaptureLead = (targetUserId: string, leadName: string, summary?: string) => {
+  supabase.functions.invoke("notify-new-lead", {
+    body: {
+      target_user_id: targetUserId,
+      title: "Novo lead de captação 🏠",
+      body: summary || `${leadName} entrou em contato.`,
+      url: "/painel?tab=captacao",
+    },
+  }).catch(() => {});
+};
 type FlowType = "captacao" | "grupo_whatsapp" | "agendamento" | "avaliacao";
 
 interface BotConfig {
@@ -287,6 +297,14 @@ export default function CapturePropertyChatPage() {
         ].filter(Boolean).join("\n"),
         status: "novo",
       });
+      supabase.functions.invoke("notify-new-lead", {
+        body: {
+          target_user_id: sellerProfile.user_id,
+          title: "Novo lead de captação 🏠",
+          body: `${(extracted.full_name || "Visitante").slice(0, 60)} quer vender um imóvel.`,
+          url: "/painel?tab=captacao",
+        },
+      }).catch(() => {});
     } catch (e) {
       console.error("Auto-save lead error:", e);
     }
@@ -575,6 +593,7 @@ export default function CapturePropertyChatPage() {
       description: obs || null,
       status: "novo",
     });
+    notifyNewCaptureLead(sellerProfile.user_id, name, `${name} quer vender um imóvel.`);
     await addBotMsg(config.flowMsgSuccess);
     await addBotMsg(config.flowMsgSuccessEnd);
     setStep("done");
@@ -592,6 +611,7 @@ export default function CapturePropertyChatPage() {
       description: "Lead via fluxo Grupo de WhatsApp",
       status: "novo",
     });
+    notifyNewCaptureLead(sellerProfile.user_id, name, `${name} pediu para entrar no grupo de WhatsApp.`);
     await addBotMsg(config.grupoMsgSuccess);
     await addBotMsg(config.grupoMsgSuccessEnd);
     setStep("done");
@@ -610,6 +630,7 @@ export default function CapturePropertyChatPage() {
       description: `Agendamento de visita\n📅 Data: ${date}\n⏰ Horário: ${time}\n🏠 Interesse: ${interestVal}`,
       status: "novo",
     });
+    notifyNewCaptureLead(sellerProfile.user_id, name, `${name} agendou visita: ${date} às ${time}.`);
     await addBotMsg(config.agendMsgSuccess);
     await addBotMsg(config.agendMsgSuccessEnd);
     setStep("done");
@@ -628,6 +649,7 @@ export default function CapturePropertyChatPage() {
       description: `Solicitação de avaliação gratuita\n📝 Detalhes: ${detailsVal || "Não informado"}`,
       status: "novo",
     });
+    notifyNewCaptureLead(sellerProfile.user_id, name, `${name} solicitou avaliação gratuita.`);
     await addBotMsg(config.avalMsgSuccess);
     await addBotMsg(config.avalMsgSuccessEnd);
     setStep("done");
@@ -648,6 +670,7 @@ export default function CapturePropertyChatPage() {
         description: "Lead capturado via chat IA de captação",
         status: "novo",
       });
+      notifyNewCaptureLead(sellerProfile.user_id, crmName.trim(), `${crmName.trim()} entrou em contato pelo chat.`);
       setCrmSaved(true);
       addBotMsgInstant("✅ Seus dados foram enviados com sucesso! Em breve entraremos em contato 🤝");
     } catch (e) {
