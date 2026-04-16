@@ -102,6 +102,7 @@ export default function AdminAdsCrmTab() {
   useEffect(() => { fetchRequests(); }, []);
 
   const updateStatus = async (id: string, newStatus: string) => {
+    const req = requests.find((r) => r.id === id);
     const { error } = await supabase
       .from("ad_requests")
       .update({ status: newStatus } as any)
@@ -111,7 +112,28 @@ export default function AdminAdsCrmTab() {
       return;
     }
     setRequests((prev) => prev.map((r) => r.id === id ? { ...r, status: newStatus } : r));
-    toast({ title: `Status atualizado para "${STAGES.find((s) => s.key === newStatus)?.label}"` });
+    const stageLabel = STAGES.find((s) => s.key === newStatus)?.label || newStatus;
+    toast({ title: `Status atualizado para "${stageLabel}"` });
+
+    // Push notification to broker about ADS status change
+    if (req && ["pendente", "em_analise", "aprovado", "ativo", "concluido"].includes(newStatus)) {
+      const messages: Record<string, { title: string; body: string }> = {
+        pendente: { title: "Solicitação de ADS recebida ⏳", body: `Sua solicitação ${req.itemTitle ? `para "${req.itemTitle}"` : ""} está pendente.` },
+        em_analise: { title: "ADS em análise 🔍", body: `Estamos analisando sua solicitação${req.itemTitle ? ` para "${req.itemTitle}"` : ""}.` },
+        aprovado: { title: "ADS aprovado ✅", body: `Sua solicitação${req.itemTitle ? ` para "${req.itemTitle}"` : ""} foi aprovada!` },
+        ativo: { title: "Seu ADS está ativo 🚀", body: `Sua campanha${req.itemTitle ? ` de "${req.itemTitle}"` : ""} está rodando.` },
+        concluido: { title: "ADS concluído 🎉", body: `Sua campanha${req.itemTitle ? ` de "${req.itemTitle}"` : ""} foi concluída.` },
+      };
+      const msg = messages[newStatus];
+      supabase.functions.invoke("notify-new-lead", {
+        body: {
+          target_user_id: req.user_id,
+          title: msg.title,
+          body: msg.body,
+          url: "/painel?tab=ads",
+        },
+      }).catch(() => {});
+    }
   };
 
   const handleDrop = (e: React.DragEvent, stageKey: string) => {
