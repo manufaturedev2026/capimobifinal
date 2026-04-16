@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Handshake, Search, Phone, CheckCircle2, XCircle, Clock, ExternalLink, DollarSign, Home, Filter } from "lucide-react";
+import { Handshake, Search, Phone, CheckCircle2, XCircle, Clock, ExternalLink, DollarSign, Home, Filter, ToggleLeft, ToggleRight, Edit, Package } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 type PartnershipItem = {
@@ -39,11 +39,11 @@ type SellerProfile = {
   creci: string | null;
 };
 
-type SubTab = "disponivel" | "minhas" | "recebidas";
+type SubTab = "meus" | "disponivel" | "minhas" | "recebidas";
 
 export default function PropertyPartnershipsTab({ profileId, userId }: { profileId: string; userId: string }) {
   const { toast } = useToast();
-  const [subTab, setSubTab] = useState<SubTab>("disponivel");
+  const [subTab, setSubTab] = useState<SubTab>("meus");
   const [availableItems, setAvailableItems] = useState<(PartnershipItem & { seller: SellerProfile | null })[]>([]);
   const [myRequests, setMyRequests] = useState<(PartnershipRequest & { item: PartnershipItem | null; owner: SellerProfile | null })[]>([]);
   const [receivedRequests, setReceivedRequests] = useState<(PartnershipRequest & { item: PartnershipItem | null; requester: SellerProfile | null })[]>([]);
