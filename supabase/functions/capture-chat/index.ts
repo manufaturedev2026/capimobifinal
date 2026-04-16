@@ -1,8 +1,21 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+};
+
+// Limites diários de geração de texto com IA por plano
+const AI_GEN_DAILY_LIMITS: Record<string, number> = {
+  basico: 5,
+  start: 10,
+  premium: 20,   // VIP
+  vip: 50,       // Premium
+  essencial_empresa: 100, // Exclusive
+  premium_empresa: 200,   // Prime
+  prime_empresa: 400,     // Black
+  black: 400,
 };
 
 const SYSTEM_PROMPT = `Você é um assistente imobiliário inteligente que ajuda proprietários a cadastrar seus imóveis para venda ou aluguel.
@@ -81,6 +94,61 @@ serve(async (req) => {
     // ── Generate Ad Copy with AI ──
     if (action === "generate_ad_copy") {
       const { sellerName, captureUrl, templateHint } = body;
+
+      // Validar limite diário por plano
+      const authHeader = req.headers.get("Authorization");
+      if (!authHeader) {
+        return new Response(JSON.stringify({ error: "Não autenticado" }), {
+          status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+      const supabaseAnon = Deno.env.get("SUPABASE_ANON_KEY")!;
+      const supabaseService = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+      const userClient = createClient(supabaseUrl, supabaseAnon, {
+        global: { headers: { Authorization: authHeader } },
+      });
+      const { data: userData } = await userClient.auth.getUser();
+      const user = userData?.user;
+      if (!user) {
+        return new Response(JSON.stringify({ error: "Sessão inválida" }), {
+          status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const admin = createClient(supabaseUrl, supabaseService);
+
+      // Buscar plano vigente
+      const { data: subRows } = await admin
+        .from("seller_subscriptions")
+        .select("tier, seller_id")
+        .eq("user_id", user.id)
+        .eq("is_active", true)
+        .order("created_at", { ascending: false })
+        .limit(1);
+      const tier = (subRows?.[0]?.tier as string) || "basico";
+      const sellerId = subRows?.[0]?.seller_id as string | undefined;
+      const dailyLimit = AI_GEN_DAILY_LIMITS[tier] ?? 5;
+
+      // Contar gerações nas últimas 24h
+      const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+      const { count: usedToday } = await admin
+        .from("ai_text_generations_log")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", user.id)
+        .gte("created_at", since);
+
+      if ((usedToday ?? 0) >= dailyLimit) {
+        return new Response(JSON.stringify({
+          error: `Limite diário atingido (${dailyLimit} gerações/dia no seu plano). Faça upgrade para gerar mais.`,
+          limitReached: true,
+          used: usedToday,
+          limit: dailyLimit,
+        }), {
+          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
       const adPrompt = `Você é um copywriter especialista em marketing imobiliário brasileiro.
 
 Gere um texto de anúncio criativo e persuasivo para redes sociais (Instagram, Facebook, WhatsApp).
@@ -120,7 +188,22 @@ REGRAS:
 
       const aiData = await aiResp.json();
       const text = aiData.choices?.[0]?.message?.content || "Erro ao gerar texto.";
-      return new Response(JSON.stringify({ text }), {
+
+      // Registrar uso (best-effort, não bloqueia resposta)
+      if (sellerId) {
+        await admin.from("ai_text_generations_log").insert({
+          user_id: user.id,
+          seller_id: sellerId,
+          action: "generate_ad_copy",
+        });
+      }
+
+      return new Response(JSON.stringify({
+        text,
+        used: (usedToday ?? 0) + 1,
+        limit: dailyLimit,
+        remaining: Math.max(0, dailyLimit - ((usedToday ?? 0) + 1)),
+      }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
