@@ -270,6 +270,9 @@ ${captureUrl}
     perdido: leads.filter(l => l.status === "perdido").length,
   };
 
+  type CaptureSubTab = "landing" | "bot";
+  const [captureTab, setCaptureTab] = useState<CaptureSubTab>("landing");
+
   return (
     <div className="space-y-4">
       {/* Header */}
@@ -278,233 +281,262 @@ ${captureUrl}
         <p className="text-sm text-muted-foreground">Capte imóveis automaticamente com seu link exclusivo ou bot interativo</p>
       </div>
 
-      {/* ─── Quick Links Row ─── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        {/* Landing Page Link */}
-        <div className={`rounded-2xl border p-3.5 flex items-center gap-3 relative overflow-hidden ${hasLandingPage ? "border-primary/20 bg-gradient-to-r from-primary/5 to-accent/5" : "border-border bg-muted/30 opacity-60"}`}>
-          {!hasLandingPage && (
-            <div className="absolute inset-0 bg-background/60 backdrop-blur-sm z-10 flex items-center justify-center gap-2">
-              <Lock size={14} className="text-muted-foreground" />
-              <span className="text-xs font-semibold text-muted-foreground">Plano Start+</span>
-            </div>
-          )}
-          <div className="w-9 h-9 rounded-xl bg-primary/15 flex items-center justify-center flex-shrink-0">
-            <Link2 size={16} className="text-primary" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Landing Page</p>
-            <p className="text-xs font-mono text-foreground truncate">{captureUrl}</p>
-          </div>
-          <div className="flex gap-1.5 flex-shrink-0">
-            <Button size="icon" variant="ghost" className="h-7 w-7 text-foreground hover:text-primary" onClick={() => copyLink(captureUrl, "Link da página")} disabled={!hasLandingPage}>
-              <Copy size={12} />
-            </Button>
-            <a href={hasLandingPage ? captureUrl : undefined} target="_blank" rel="noopener noreferrer">
-              <Button size="icon" variant="ghost" className="h-7 w-7 text-foreground hover:text-primary" disabled={!hasLandingPage}><ExternalLink size={12} /></Button>
-            </a>
-          </div>
-        </div>
-
-        {/* Bot Link */}
-        <div className={`rounded-2xl border p-3.5 flex items-center gap-3 relative overflow-hidden ${hasBot ? "border-[#25d366]/20 bg-gradient-to-r from-[#25d366]/5 to-accent/5" : "border-border bg-muted/30 opacity-60"}`}>
-          {!hasBot && (
-            <div className="absolute inset-0 bg-background/60 backdrop-blur-sm z-10 flex items-center justify-center gap-2">
-              <Lock size={14} className="text-muted-foreground" />
-              <span className="text-xs font-semibold text-muted-foreground">Plano VIP+</span>
-            </div>
-          )}
-          <div className="w-9 h-9 rounded-xl bg-[#25d366]/15 flex items-center justify-center flex-shrink-0">
-            <MessageCircle size={16} className="text-[#25d366]" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Bot WhatsApp</p>
-            <p className="text-xs font-mono text-foreground truncate">{chatBotUrl}</p>
-          </div>
-          <div className="flex gap-1.5 flex-shrink-0">
-            <Button size="icon" variant="ghost" className="h-7 w-7 text-foreground hover:text-[#25d366]" onClick={() => copyLink(chatBotUrl, "Link do bot")} disabled={!hasBot}>
-              <Copy size={12} />
-            </Button>
-            <a href={hasBot ? chatBotUrl : undefined} target="_blank" rel="noopener noreferrer">
-              <Button size="icon" variant="ghost" className="h-7 w-7 text-foreground hover:text-[#25d366]" disabled={!hasBot}><ExternalLink size={12} /></Button>
-            </a>
-          </div>
-        </div>
+      {/* ─── Sub-tabs ─── */}
+      <div className="flex gap-2 border-b border-border pb-0">
+        <button
+          onClick={() => setCaptureTab("landing")}
+          className={`px-4 py-2.5 text-sm font-semibold rounded-t-xl transition-all border-b-2 ${
+            captureTab === "landing"
+              ? "border-primary text-primary bg-primary/5"
+              : "border-transparent text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          📄 Landing Page
+        </button>
+        <button
+          onClick={() => setCaptureTab("bot")}
+          className={`px-4 py-2.5 text-sm font-semibold rounded-t-xl transition-all border-b-2 ${
+            captureTab === "bot"
+              ? "border-primary text-primary bg-primary/5"
+              : "border-transparent text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          💬 Bot WhatsApp
+        </button>
       </div>
 
-      {/* ─── Collapsible Sections ─── */}
+      {/* ─── Landing Page Tab ─── */}
+      {captureTab === "landing" && (
+        <div className="space-y-4">
+          {/* Landing Page Link */}
+          <div className={`rounded-2xl border p-3.5 flex items-center gap-3 relative overflow-hidden ${hasLandingPage ? "border-primary/20 bg-gradient-to-r from-primary/5 to-accent/5" : "border-border bg-muted/30 opacity-60"}`}>
+            {!hasLandingPage && (
+              <div className="absolute inset-0 bg-background/60 backdrop-blur-sm z-10 flex items-center justify-center gap-2">
+                <Lock size={14} className="text-muted-foreground" />
+                <span className="text-xs font-semibold text-muted-foreground">Plano Start+</span>
+              </div>
+            )}
+            <div className="w-9 h-9 rounded-xl bg-primary/15 flex items-center justify-center flex-shrink-0">
+              <Link2 size={16} className="text-primary" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Link da Landing Page</p>
+              <p className="text-xs font-mono text-foreground truncate">{captureUrl}</p>
+            </div>
+            <div className="flex gap-1.5 flex-shrink-0">
+              <Button size="icon" variant="ghost" className="h-7 w-7 text-foreground hover:text-primary" onClick={() => copyLink(captureUrl, "Link da página")} disabled={!hasLandingPage}>
+                <Copy size={12} />
+              </Button>
+              <a href={hasLandingPage ? captureUrl : undefined} target="_blank" rel="noopener noreferrer">
+                <Button size="icon" variant="ghost" className="h-7 w-7 text-foreground hover:text-primary" disabled={!hasLandingPage}><ExternalLink size={12} /></Button>
+              </a>
+            </div>
+          </div>
 
-      {/* Gerador de Texto */}
-      <Section icon={Megaphone} title="Gerador de Texto para Anúncio">
-        <Button onClick={generateAdText} size="sm" variant="secondary" className="gap-1.5 text-xs border border-border">
-          <Sparkles size={12} /> Gerar Texto
-        </Button>
-        {generatedAd && (
-          <div className="space-y-2">
-            <Textarea value={generatedAd} onChange={e => setGeneratedAd(e.target.value)} className="min-h-[160px] text-sm" />
-            <Button onClick={copyAd} size="sm" className="gap-1.5 text-xs">
-              <Copy size={12} /> Copiar Texto
+          {/* Vídeo */}
+          <Section icon={Video} title="Vídeo da Página de Captação">
+            <p className="text-xs text-muted-foreground">
+              Cole o link de um vídeo do YouTube para exibir na parte inferior da sua página de captação.
+            </p>
+            <Input
+              value={captureVideoTitle}
+              onChange={e => setCaptureVideoTitle(e.target.value)}
+              placeholder="Título do vídeo (ex: Conheça nosso trabalho)"
+              className="text-sm"
+            />
+            <div className="flex gap-2">
+              <Input
+                value={captureVideoUrl}
+                onChange={e => setCaptureVideoUrl(e.target.value)}
+                placeholder="https://www.youtube.com/watch?v=..."
+                className="flex-1 text-sm"
+              />
+              <Button onClick={saveCaptureVideo} size="sm" disabled={savingVideo} className="gap-1.5 text-xs">
+                {savingVideo ? <Loader2 size={12} className="animate-spin" /> : null}
+                Salvar
+              </Button>
+            </div>
+            {captureVideoUrl && (
+              <div className="aspect-video rounded-xl overflow-hidden border border-border">
+                <iframe
+                  src={captureVideoUrl.replace("watch?v=", "embed/").replace("youtu.be/", "youtube.com/embed/").split("&")[0]}
+                  className="w-full h-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+            )}
+          </Section>
+
+          {/* Gerador de Texto */}
+          <Section icon={Megaphone} title="Gerador de Texto para Anúncio">
+            <Button onClick={generateAdText} size="sm" variant="secondary" className="gap-1.5 text-xs border border-border">
+              <Sparkles size={12} /> Gerar Texto
             </Button>
-          </div>
-        )}
-      </Section>
-
-      {/* Configurar Bot */}
-      {hasBot ? (
-      <Section icon={MessageCircle} title="Configurar Bot de Captação" accent>
-        <p className="text-xs text-muted-foreground">
-          Personalize o chat interativo que coleta informações do imóvel automaticamente.
-        </p>
-
-        {/* Chat Mode Toggle */}
-        <div>
-          <label className="text-xs text-muted-foreground font-semibold">Modo do Chat</label>
-          <div className="flex gap-2 mt-1.5">
-            <button
-              onClick={() => setBotChatMode("flow")}
-              className={`flex-1 px-3 py-2.5 rounded-xl text-xs font-semibold border transition-all ${
-                botChatMode === "flow"
-                  ? "bg-primary text-primary-foreground border-primary"
-                  : "bg-card text-muted-foreground border-border hover:border-primary/40"
-              }`}
-            >
-              🔀 Fluxo Fixo
-            </button>
-            <button
-              onClick={() => hasBotAI ? setBotChatMode("ai") : toast({ title: "🔒 IA disponível no plano Premium+", variant: "destructive" })}
-              className={`flex-1 px-3 py-2.5 rounded-xl text-xs font-semibold border transition-all relative ${
-                !hasBotAI
-                  ? "bg-muted/50 text-muted-foreground border-border cursor-not-allowed opacity-60"
-                  : botChatMode === "ai"
-                    ? "bg-primary text-primary-foreground border-primary"
-                    : "bg-card text-muted-foreground border-border hover:border-primary/40"
-              }`}
-            >
-              🤖 IA Inteligente
-              {!hasBotAI && <Lock size={10} className="inline ml-1" />}
-            </button>
-          </div>
-          <p className="text-[10px] text-muted-foreground mt-1">
-            {botChatMode === "ai"
-              ? "A IA conduz a conversa naturalmente e coleta dados do imóvel de forma inteligente"
-              : "O bot segue um roteiro fixo com perguntas pré-definidas"}
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label className="text-xs text-muted-foreground">Nome do atendente</label>
-            <Input
-              value={botAttendantName}
-              onChange={(e) => setBotAttendantName(e.target.value)}
-              placeholder="Assistente Imobiliário"
-              className="mt-1"
-            />
-          </div>
-          <div>
-            <label className="text-xs text-muted-foreground">URL do avatar (opcional)</label>
-            <Input
-              value={botAttendantAvatar}
-              onChange={(e) => setBotAttendantAvatar(e.target.value)}
-              placeholder="https://..."
-              className="mt-1"
-            />
-          </div>
-        </div>
-        {botChatMode === "flow" && (
-          <div className="space-y-3">
-            <p className="text-xs font-semibold text-muted-foreground">📝 Mensagens do Fluxo</p>
-            <div>
-              <label className="text-xs text-muted-foreground">Mensagem de abertura</label>
-              <Textarea value={botOpeningMessage} onChange={(e) => setBotOpeningMessage(e.target.value)} placeholder="Olá! 👋 Vou te ajudar..." className="mt-1 min-h-[60px] text-sm" />
-            </div>
-            <div>
-              <label className="text-xs text-muted-foreground">Pedindo o nome</label>
-              <Input value={flowMsgName} onChange={(e) => setFlowMsgName(e.target.value)} className="mt-1 text-sm" />
-            </div>
-            <div>
-              <label className="text-xs text-muted-foreground">Resposta ao nome <span className="text-[10px] opacity-60">({"{nome}"} será substituído)</span></label>
-              <Input value={flowMsgNameReply} onChange={(e) => setFlowMsgNameReply(e.target.value)} className="mt-1 text-sm" />
-            </div>
-            <div>
-              <label className="text-xs text-muted-foreground">Pedindo telefone</label>
-              <Input value={flowMsgPhone} onChange={(e) => setFlowMsgPhone(e.target.value)} className="mt-1 text-sm" />
-            </div>
-            <div>
-              <label className="text-xs text-muted-foreground">Pedindo tipo do imóvel</label>
-              <Input value={flowMsgType} onChange={(e) => setFlowMsgType(e.target.value)} className="mt-1 text-sm" />
-            </div>
-            <div>
-              <label className="text-xs text-muted-foreground">Pedindo endereço</label>
-              <Input value={flowMsgAddress} onChange={(e) => setFlowMsgAddress(e.target.value)} className="mt-1 text-sm" />
-            </div>
-            <div>
-              <label className="text-xs text-muted-foreground">Pedindo valor</label>
-              <Textarea value={flowMsgPrice} onChange={(e) => setFlowMsgPrice(e.target.value)} className="mt-1 min-h-[50px] text-sm" />
-            </div>
-            <div>
-              <label className="text-xs text-muted-foreground">Pedindo observações</label>
-              <Textarea value={flowMsgNotes} onChange={(e) => setFlowMsgNotes(e.target.value)} className="mt-1 min-h-[50px] text-sm" />
-            </div>
-            <div>
-              <label className="text-xs text-muted-foreground">Mensagem de sucesso</label>
-              <Input value={flowMsgSuccess} onChange={(e) => setFlowMsgSuccess(e.target.value)} className="mt-1 text-sm" />
-            </div>
-            <div>
-              <label className="text-xs text-muted-foreground">Mensagem final</label>
-              <Input value={flowMsgSuccessEnd} onChange={(e) => setFlowMsgSuccessEnd(e.target.value)} className="mt-1 text-sm" />
-            </div>
-          </div>
-        )}
-        <Button onClick={saveBotConfig} disabled={savingBot} size="sm" className="gap-1.5 text-xs">
-          <Save size={12} /> {savingBot ? "Salvando..." : "Salvar Bot"}
-        </Button>
-      </Section>
-      ) : (
-        <div className="rounded-2xl border border-border bg-muted/30 p-5 flex items-center gap-3 opacity-70">
-          <Lock size={18} className="text-muted-foreground" />
-          <div>
-            <p className="text-sm font-semibold text-foreground">Bot de Captação</p>
-            <p className="text-xs text-muted-foreground">Disponível a partir do plano VIP</p>
-          </div>
+            {generatedAd && (
+              <div className="space-y-2">
+                <Textarea value={generatedAd} onChange={e => setGeneratedAd(e.target.value)} className="min-h-[160px] text-sm" />
+                <Button onClick={copyAd} size="sm" className="gap-1.5 text-xs">
+                  <Copy size={12} /> Copiar Texto
+                </Button>
+              </div>
+            )}
+          </Section>
         </div>
       )}
 
-      {/* Vídeo */}
-      <Section icon={Video} title="Vídeo da Página de Captação">
-        <p className="text-xs text-muted-foreground">
-          Cole o link de um vídeo do YouTube para exibir na parte inferior da sua página de captação.
-        </p>
-        <Input
-          value={captureVideoTitle}
-          onChange={e => setCaptureVideoTitle(e.target.value)}
-          placeholder="Título do vídeo (ex: Conheça nosso trabalho)"
-          className="text-sm"
-        />
-        <div className="flex gap-2">
-          <Input
-            value={captureVideoUrl}
-            onChange={e => setCaptureVideoUrl(e.target.value)}
-            placeholder="https://www.youtube.com/watch?v=..."
-            className="flex-1 text-sm"
-          />
-          <Button onClick={saveCaptureVideo} size="sm" disabled={savingVideo} className="gap-1.5 text-xs">
-            {savingVideo ? <Loader2 size={12} className="animate-spin" /> : null}
-            Salvar
-          </Button>
-        </div>
-        {captureVideoUrl && (
-          <div className="aspect-video rounded-xl overflow-hidden border border-border">
-            <iframe
-              src={captureVideoUrl.replace("watch?v=", "embed/").replace("youtu.be/", "youtube.com/embed/").split("&")[0]}
-              className="w-full h-full"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
+      {/* ─── Bot WhatsApp Tab ─── */}
+      {captureTab === "bot" && (
+        <div className="space-y-4">
+          {/* Bot Link */}
+          <div className={`rounded-2xl border p-3.5 flex items-center gap-3 relative overflow-hidden ${hasBot ? "border-[#25d366]/20 bg-gradient-to-r from-[#25d366]/5 to-accent/5" : "border-border bg-muted/30 opacity-60"}`}>
+            {!hasBot && (
+              <div className="absolute inset-0 bg-background/60 backdrop-blur-sm z-10 flex items-center justify-center gap-2">
+                <Lock size={14} className="text-muted-foreground" />
+                <span className="text-xs font-semibold text-muted-foreground">Plano VIP+</span>
+              </div>
+            )}
+            <div className="w-9 h-9 rounded-xl bg-[#25d366]/15 flex items-center justify-center flex-shrink-0">
+              <MessageCircle size={16} className="text-[#25d366]" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Link do Bot WhatsApp</p>
+              <p className="text-xs font-mono text-foreground truncate">{chatBotUrl}</p>
+            </div>
+            <div className="flex gap-1.5 flex-shrink-0">
+              <Button size="icon" variant="ghost" className="h-7 w-7 text-foreground hover:text-[#25d366]" onClick={() => copyLink(chatBotUrl, "Link do bot")} disabled={!hasBot}>
+                <Copy size={12} />
+              </Button>
+              <a href={hasBot ? chatBotUrl : undefined} target="_blank" rel="noopener noreferrer">
+                <Button size="icon" variant="ghost" className="h-7 w-7 text-foreground hover:text-[#25d366]" disabled={!hasBot}><ExternalLink size={12} /></Button>
+              </a>
+            </div>
           </div>
-        )}
-      </Section>
 
-      {/* ─── Leads de Captação ─── */}
+          {/* Configurar Bot */}
+          {hasBot ? (
+          <Section icon={MessageCircle} title="Configurar Bot de Captação" accent>
+            <p className="text-xs text-muted-foreground">
+              Personalize o chat interativo que coleta informações do imóvel automaticamente.
+            </p>
+
+            {/* Chat Mode Toggle */}
+            <div>
+              <label className="text-xs text-muted-foreground font-semibold">Modo do Chat</label>
+              <div className="flex gap-2 mt-1.5">
+                <button
+                  onClick={() => setBotChatMode("flow")}
+                  className={`flex-1 px-3 py-2.5 rounded-xl text-xs font-semibold border transition-all ${
+                    botChatMode === "flow"
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "bg-card text-muted-foreground border-border hover:border-primary/40"
+                  }`}
+                >
+                  🔀 Fluxo Fixo
+                </button>
+                <button
+                  onClick={() => hasBotAI ? setBotChatMode("ai") : toast({ title: "🔒 IA disponível no plano Premium+", variant: "destructive" })}
+                  className={`flex-1 px-3 py-2.5 rounded-xl text-xs font-semibold border transition-all relative ${
+                    !hasBotAI
+                      ? "bg-muted/50 text-muted-foreground border-border cursor-not-allowed opacity-60"
+                      : botChatMode === "ai"
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-card text-muted-foreground border-border hover:border-primary/40"
+                  }`}
+                >
+                  🤖 IA Inteligente
+                  {!hasBotAI && <Lock size={10} className="inline ml-1" />}
+                </button>
+              </div>
+              <p className="text-[10px] text-muted-foreground mt-1">
+                {botChatMode === "ai"
+                  ? "A IA conduz a conversa naturalmente e coleta dados do imóvel de forma inteligente"
+                  : "O bot segue um roteiro fixo com perguntas pré-definidas"}
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs text-muted-foreground">Nome do atendente</label>
+                <Input
+                  value={botAttendantName}
+                  onChange={(e) => setBotAttendantName(e.target.value)}
+                  placeholder="Assistente Imobiliário"
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground">URL do avatar (opcional)</label>
+                <Input
+                  value={botAttendantAvatar}
+                  onChange={(e) => setBotAttendantAvatar(e.target.value)}
+                  placeholder="https://..."
+                  className="mt-1"
+                />
+              </div>
+            </div>
+            {botChatMode === "flow" && (
+              <div className="space-y-3">
+                <p className="text-xs font-semibold text-muted-foreground">📝 Mensagens do Fluxo</p>
+                <div>
+                  <label className="text-xs text-muted-foreground">Mensagem de abertura</label>
+                  <Textarea value={botOpeningMessage} onChange={(e) => setBotOpeningMessage(e.target.value)} placeholder="Olá! 👋 Vou te ajudar..." className="mt-1 min-h-[60px] text-sm" />
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground">Pedindo o nome</label>
+                  <Input value={flowMsgName} onChange={(e) => setFlowMsgName(e.target.value)} className="mt-1 text-sm" />
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground">Resposta ao nome <span className="text-[10px] opacity-60">({"{nome}"} será substituído)</span></label>
+                  <Input value={flowMsgNameReply} onChange={(e) => setFlowMsgNameReply(e.target.value)} className="mt-1 text-sm" />
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground">Pedindo telefone</label>
+                  <Input value={flowMsgPhone} onChange={(e) => setFlowMsgPhone(e.target.value)} className="mt-1 text-sm" />
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground">Pedindo tipo do imóvel</label>
+                  <Input value={flowMsgType} onChange={(e) => setFlowMsgType(e.target.value)} className="mt-1 text-sm" />
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground">Pedindo endereço</label>
+                  <Input value={flowMsgAddress} onChange={(e) => setFlowMsgAddress(e.target.value)} className="mt-1 text-sm" />
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground">Pedindo valor</label>
+                  <Textarea value={flowMsgPrice} onChange={(e) => setFlowMsgPrice(e.target.value)} className="mt-1 min-h-[50px] text-sm" />
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground">Pedindo observações</label>
+                  <Textarea value={flowMsgNotes} onChange={(e) => setFlowMsgNotes(e.target.value)} className="mt-1 min-h-[50px] text-sm" />
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground">Mensagem de sucesso</label>
+                  <Input value={flowMsgSuccess} onChange={(e) => setFlowMsgSuccess(e.target.value)} className="mt-1 text-sm" />
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground">Mensagem final</label>
+                  <Input value={flowMsgSuccessEnd} onChange={(e) => setFlowMsgSuccessEnd(e.target.value)} className="mt-1 text-sm" />
+                </div>
+              </div>
+            )}
+            <Button onClick={saveBotConfig} disabled={savingBot} size="sm" className="gap-1.5 text-xs">
+              <Save size={12} /> {savingBot ? "Salvando..." : "Salvar Bot"}
+            </Button>
+          </Section>
+          ) : (
+            <div className="rounded-2xl border border-border bg-muted/30 p-5 flex items-center gap-3 opacity-70">
+              <Lock size={18} className="text-muted-foreground" />
+              <div>
+                <p className="text-sm font-semibold text-foreground">Bot de Captação</p>
+                <p className="text-xs text-muted-foreground">Disponível a partir do plano VIP</p>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ─── Leads de Captação (sempre visível) ─── */}
       <Section icon={LayoutList} title="Leads de Captação" badge={`${leads.length}`} defaultOpen accent>
         {/* Status Filter Chips */}
         <div className="flex flex-wrap gap-2">
@@ -514,7 +546,7 @@ ${captureUrl}
               onClick={() => setStatusFilter(key)}
               className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
                 statusFilter === key
-                  ? "bg-primary text-white"
+                  ? "bg-primary text-primary-foreground"
                   : "bg-secondary text-muted-foreground hover:bg-secondary/80"
               }`}
             >
