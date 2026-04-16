@@ -362,7 +362,6 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
     }
     setGeneratingAI(false);
   };
-  };
 
   const copyAd = () => {
     navigator.clipboard.writeText(generatedAd);
