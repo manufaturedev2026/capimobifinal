@@ -108,30 +108,52 @@ export default function InvitePage() {
     setAiLoading(true);
     setTyping(true);
 
-    try {
-      const { data, error } = await supabase.functions.invoke("invite-chat", {
-        body: { messages: updatedMessages },
-      });
-      if (error) throw error;
-      const reply = data?.reply || "Desculpe, tente novamente!";
-      const aiMsg = { role: "assistant" as const, content: reply };
-      setAiMessages((prev) => [...prev, aiMsg]);
-      addBubble(reply, "attendant");
+    let retries = 0;
+    const maxRetries = 2;
+    let success = false;
 
-      // Check if AI is suggesting signup
-      const lower = reply.toLowerCase();
-      if (
-        lower.includes("botão abaixo") ||
-        lower.includes("clica no botão") ||
-        lower.includes("criar sua conta") ||
-        lower.includes("crie sua conta") ||
-        lower.includes("cadastre-se")
-      ) {
-        setTimeout(() => setShowCta(true), 500);
+    while (retries <= maxRetries && !success) {
+      try {
+        const { data, error } = await supabase.functions.invoke("invite-chat", {
+          body: { messages: updatedMessages },
+        });
+
+        if (error) {
+          // Check for rate limit or payment errors in the response
+          if (data?.error) {
+            addBubble(data.error, "attendant");
+            success = true;
+            break;
+          }
+          throw error;
+        }
+
+        const reply = data?.reply || "Desculpe, tente novamente!";
+        const aiMsg = { role: "assistant" as const, content: reply };
+        setAiMessages((prev) => [...prev, aiMsg]);
+        addBubble(reply, "attendant");
+        success = true;
+
+        // Check if AI is suggesting signup
+        const lower = reply.toLowerCase();
+        if (
+          lower.includes("botão abaixo") ||
+          lower.includes("clica no botão") ||
+          lower.includes("criar sua conta") ||
+          lower.includes("crie sua conta") ||
+          lower.includes("cadastre-se")
+        ) {
+          setTimeout(() => setShowCta(true), 500);
+        }
+      } catch (e) {
+        retries++;
+        console.error(`AI error (attempt ${retries}/${maxRetries + 1}):`, e);
+        if (retries <= maxRetries) {
+          await new Promise(r => setTimeout(r, 1500 * retries));
+        } else {
+          addBubble("Estou com uma lentidão momentânea, mas já já volto! Tente enviar sua mensagem novamente em alguns segundos 😊", "attendant");
+        }
       }
-    } catch (e) {
-      console.error("AI error:", e);
-      addBubble("Ops! Algo deu errado. Tente novamente 😊", "attendant");
     }
     setAiLoading(false);
     setTyping(false);
