@@ -139,7 +139,7 @@ REGRAS:
       ? `${SYSTEM_PROMPT}\n\nVocê está representando o corretor/imobiliária "${sellerName}". Mencione o nome quando apropriado.`
       : SYSTEM_PROMPT;
 
-    const body: any = {
+    const aiBody: any = {
       model: "google/gemini-3-flash-preview",
       messages: [
         { role: "system", content: contextPrompt },
@@ -155,7 +155,7 @@ REGRAS:
         Authorization: `Bearer ${LOVABLE_API_KEY}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(body),
+      body: JSON.stringify(aiBody),
     });
 
     if (!response.ok) {
