@@ -85,14 +85,17 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
   const [captureVideoTitle, setCaptureVideoTitle] = useState("");
   const [savingVideo, setSavingVideo] = useState(false);
 
+  type FlowType = "captacao" | "grupo_whatsapp" | "agendamento" | "avaliacao";
+
   // Bot config
   const [botAttendantName, setBotAttendantName] = useState("Assistente Imobiliário");
   const [botAttendantAvatar, setBotAttendantAvatar] = useState("");
   const [botOpeningMessage, setBotOpeningMessage] = useState("Olá! 👋 Vou te ajudar a cadastrar seu imóvel para avaliação gratuita! É rápido e sem compromisso 🏡");
   const [botChatMode, setBotChatMode] = useState<"flow" | "ai">("flow");
+  const [botFlowType, setBotFlowType] = useState<FlowType>("captacao");
   const [savingBot, setSavingBot] = useState(false);
 
-  // Flow step messages
+  // Captação messages
   const [flowMsgName, setFlowMsgName] = useState("Vamos começar? Me diz o seu nome completo 😊");
   const [flowMsgNameReply, setFlowMsgNameReply] = useState("Prazer, {nome}! 🤝");
   const [flowMsgPhone, setFlowMsgPhone] = useState("Qual seu telefone ou WhatsApp? 📱");
@@ -103,71 +106,33 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
   const [flowMsgSuccess, setFlowMsgSuccess] = useState("✅ Pronto! Suas informações foram enviadas com sucesso!");
   const [flowMsgSuccessEnd, setFlowMsgSuccessEnd] = useState("Em breve um corretor vai entrar em contato com você pelo WhatsApp. Obrigado! 🎉");
 
-  const captureUrl = `${window.location.origin}/captar-imovel/${sellerSlug || sellerId}`;
-  const chatBotUrl = `${window.location.origin}/captar-imovel/${sellerSlug || sellerId}/chat`;
+  // Grupo WhatsApp messages
+  const [grupoMsgName, setGrupoMsgName] = useState("Que bom ter você aqui! 🎉 Me diz seu nome para eu te conhecer melhor:");
+  const [grupoMsgNameReply, setGrupoMsgNameReply] = useState("Prazer, {nome}! 🤝");
+  const [grupoMsgPhone, setGrupoMsgPhone] = useState("Qual seu WhatsApp? Assim eu te adiciono no nosso grupo exclusivo 📱");
+  const [grupoMsgSuccess, setGrupoMsgSuccess] = useState("✅ Perfeito! Você está pronto para entrar no grupo!");
+  const [grupoMsgSuccessEnd, setGrupoMsgSuccessEnd] = useState("No nosso grupo você recebe as melhores oportunidades em primeira mão! 🏡🔥");
+  const [grupoWhatsappLink, setGrupoWhatsappLink] = useState("");
 
-  useEffect(() => {
-    fetchLeads();
-    fetchCaptureVideo();
-    fetchBotConfig();
-  }, [sellerId]);
+  // Agendamento messages
+  const [agendMsgName, setAgendMsgName] = useState("Olá! 👋 Vou te ajudar a agendar uma visita. Me diz seu nome completo:");
+  const [agendMsgNameReply, setAgendMsgNameReply] = useState("Prazer, {nome}! 🤝 Vamos agendar sua visita!");
+  const [agendMsgPhone, setAgendMsgPhone] = useState("Qual seu telefone ou WhatsApp para confirmarmos? 📱");
+  const [agendMsgInterest, setAgendMsgInterest] = useState("Qual imóvel ou região você tem interesse em visitar? 🏠📍");
+  const [agendMsgDate, setAgendMsgDate] = useState("Qual a melhor data para a visita? 📅\n\n(Ex: segunda-feira, 20/01, esta semana...)");
+  const [agendMsgTime, setAgendMsgTime] = useState("E qual o melhor horário? ⏰\n\n(Ex: manhã, 14h, final da tarde...)");
+  const [agendMsgSuccess, setAgendMsgSuccess] = useState("✅ Visita agendada com sucesso!");
+  const [agendMsgSuccessEnd, setAgendMsgSuccessEnd] = useState("Um corretor vai confirmar o agendamento pelo WhatsApp. Até breve! 📋🎉");
 
-  const syncUnreadCount = (nextLeads: Lead[]) => {
-    onUnreadCountChange?.(nextLeads.filter((lead) => lead.status === "novo").length);
-  };
-
-  const fetchCaptureVideo = async () => {
-    const { data } = await supabase
-      .from("profiles")
-      .select("capture_video_url, capture_video_title")
-      .eq("id", sellerId)
-      .maybeSingle();
-    if (data?.capture_video_url) setCaptureVideoUrl(data.capture_video_url);
-    if ((data as any)?.capture_video_title) setCaptureVideoTitle((data as any).capture_video_title);
-  };
-
-  const fetchBotConfig = async () => {
-    const { data } = await supabase
-      .from("platform_settings")
-      .select("value")
-      .eq("key", `capture_bot_config_${sellerId}`)
-      .maybeSingle();
-    if (data?.value) {
-      try {
-        const cfg = JSON.parse(data.value);
-        if (cfg.attendantName) setBotAttendantName(cfg.attendantName);
-        if (cfg.attendantAvatar) setBotAttendantAvatar(cfg.attendantAvatar);
-        if (cfg.openingMessage) setBotOpeningMessage(cfg.openingMessage);
-        if (cfg.chatMode) setBotChatMode(cfg.chatMode);
-        if (cfg.flowMsgName) setFlowMsgName(cfg.flowMsgName);
-        if (cfg.flowMsgNameReply) setFlowMsgNameReply(cfg.flowMsgNameReply);
-        if (cfg.flowMsgPhone) setFlowMsgPhone(cfg.flowMsgPhone);
-        if (cfg.flowMsgType) setFlowMsgType(cfg.flowMsgType);
-        if (cfg.flowMsgAddress) setFlowMsgAddress(cfg.flowMsgAddress);
-        if (cfg.flowMsgPrice) setFlowMsgPrice(cfg.flowMsgPrice);
-        if (cfg.flowMsgNotes) setFlowMsgNotes(cfg.flowMsgNotes);
-        if (cfg.flowMsgSuccess) setFlowMsgSuccess(cfg.flowMsgSuccess);
-        if (cfg.flowMsgSuccessEnd) setFlowMsgSuccessEnd(cfg.flowMsgSuccessEnd);
-      } catch {}
-    }
-  };
-
-  const saveBotConfig = async () => {
-    setSavingBot(true);
-    const config = JSON.stringify({
-      attendantName: botAttendantName,
-      attendantAvatar: botAttendantAvatar,
-      openingMessage: botOpeningMessage,
-      chatMode: botChatMode,
-      flowMsgName,
-      flowMsgNameReply,
-      flowMsgPhone,
-      flowMsgType,
-      flowMsgAddress,
-      flowMsgPrice,
-      flowMsgNotes,
-      flowMsgSuccess,
-      flowMsgSuccessEnd,
+  // Avaliação messages
+  const [avalMsgName, setAvalMsgName] = useState("Olá! 👋 Vou te ajudar a solicitar uma avaliação GRATUITA do seu imóvel! Me diz seu nome:");
+  const [avalMsgNameReply, setAvalMsgNameReply] = useState("Prazer, {nome}! 🤝 Vamos avaliar seu imóvel!");
+  const [avalMsgPhone, setAvalMsgPhone] = useState("Qual seu telefone ou WhatsApp? 📱");
+  const [avalMsgType, setAvalMsgType] = useState("Qual o tipo do seu imóvel? 🏠");
+  const [avalMsgAddress, setAvalMsgAddress] = useState("Qual o endereço completo do imóvel? 📍\n\n(Rua, número, bairro e cidade)");
+  const [avalMsgDetails, setAvalMsgDetails] = useState("Conte mais sobre o imóvel! 📝\n\n(Ex: quantidade de quartos, tamanho, estado de conservação, reformas...)");
+  const [avalMsgSuccess, setAvalMsgSuccess] = useState("✅ Solicitação de avaliação enviada com sucesso!");
+  const [avalMsgSuccessEnd, setAvalMsgSuccessEnd] = useState("Um especialista vai entrar em contato em até 24h para agendar a visita de avaliação. Obrigado! 🏡💎");
     });
     const { error } = await supabase
       .from("platform_settings")
