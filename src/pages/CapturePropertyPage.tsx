@@ -119,6 +119,16 @@ export default function CapturePropertyPage() {
         status: "novo",
       });
 
+      // Push notification to broker about the new capture lead
+      supabase.functions.invoke("notify-new-lead", {
+        body: {
+          target_user_id: broker.user_id,
+          title: "Novo lead de captação 🏠",
+          body: `${form.full_name.trim()} quer vender um imóvel.`,
+          url: "/painel?tab=captacao",
+        },
+      }).catch(() => {});
+
       setSubmitted(true);
     } catch {
       toast({ title: "Erro ao enviar", description: "Tente novamente.", variant: "destructive" });
