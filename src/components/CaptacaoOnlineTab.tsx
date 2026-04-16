@@ -147,6 +147,7 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
   const [generatedAd, setGeneratedAd] = useState("");
   const [selectedTemplate, setSelectedTemplate] = useState<string>("captacao_geral");
   const [generatingAI, setGeneratingAI] = useState(false);
+  const [aiUsage, setAiUsage] = useState<{ used: number; limit: number } | null>(null);
   const [captureVideoUrl, setCaptureVideoUrl] = useState("");
   const [captureVideoTitle, setCaptureVideoTitle] = useState("");
   const [savingVideo, setSavingVideo] = useState(false);
