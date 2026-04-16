@@ -27,6 +27,7 @@ export default function LoginPage() {
    const [signedUp, setSignedUp] = useState(false);
    const [selectedState, setSelectedState] = useState("ES");
    const [selectedCity, setSelectedCity] = useState("");
+   const [sellerCategory, setSellerCategory] = useState<"corretor" | "imobiliaria" | "construtora">("corretor");
    const { cities: stateCities, loading: loadingCities } = useCitiesByState(selectedState);
 
   const { user, profile, signIn, signUp } = useAuth();
@@ -115,6 +116,9 @@ export default function LoginPage() {
               .maybeSingle();
 
             if (newProfile) {
+              // Save seller category
+              await supabase.from("profiles").update({ seller_category: sellerCategory }).eq("id", newProfile.id);
+
               if (trialDays === "7") {
                 await supabase.from("seller_subscriptions").insert({
                   user_id: newUser.id,
@@ -193,6 +197,16 @@ export default function LoginPage() {
                      className="w-full px-4 py-3 rounded-xl text-sm focus:outline-none transition-all"
                      style={{ background: theme.cardBg, border: `1px solid ${theme.border}`, color: theme.text }}
                      placeholder="(27) 99999-9999" />
+                 </div>
+                 <div>
+                   <label className="block text-sm font-medium mb-1.5" style={{ color: `${theme.text}cc` }}>Você é *</label>
+                   <select value={sellerCategory} onChange={(e) => setSellerCategory(e.target.value as any)} required
+                     className="w-full px-4 py-3 rounded-xl text-sm focus:outline-none transition-all appearance-none"
+                     style={{ background: theme.cardBg, border: `1px solid ${theme.border}`, color: theme.text }}>
+                     <option value="corretor">Corretor(a)</option>
+                     <option value="imobiliaria">Imobiliária</option>
+                     <option value="construtora">Construtora</option>
+                   </select>
                  </div>
                  <div className="grid grid-cols-2 gap-3">
                    <div>
