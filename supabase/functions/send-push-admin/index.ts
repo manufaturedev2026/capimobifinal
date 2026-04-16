@@ -150,19 +150,21 @@ Deno.serve(async (req) => {
     }
 
     // Filter sellers by category if requested
-    // audienceFilter: "all" | "corretor" | "imobiliaria" | "construtora" | "professionals"
+    // audienceFilter: "all" | "corretor" | "imobiliaria" | "construtora" | "professionals" | "clients"
     let sellerIdsFilter: string[] | null = null;
     if (audienceFilter && audienceFilter !== "all") {
-      let categoriesToInclude: string[] = [];
+      let profilesQuery = adminClient.from("profiles").select("id");
       if (audienceFilter === "professionals") {
-        categoriesToInclude = ["corretor", "imobiliaria", "construtora"];
+        profilesQuery = profilesQuery.in("seller_category", ["corretor", "imobiliaria", "construtora"]);
+      } else if (audienceFilter === "clients") {
+        // Clients = not a professional category (null OR proprietario/autonomo/loja_veiculos/concessionaria)
+        profilesQuery = profilesQuery.or(
+          "seller_category.is.null,seller_category.in.(proprietario,autonomo,loja_veiculos,concessionaria)"
+        );
       } else {
-        categoriesToInclude = [audienceFilter];
+        profilesQuery = profilesQuery.eq("seller_category", audienceFilter);
       }
-      const { data: filteredProfiles } = await adminClient
-        .from("profiles")
-        .select("id")
-        .in("seller_category", categoriesToInclude);
+      const { data: filteredProfiles } = await profilesQuery;
       sellerIdsFilter = (filteredProfiles || []).map((p: any) => p.id);
       if (sellerIdsFilter.length === 0) {
         return new Response(JSON.stringify({ sent: 0, failed: 0, total: 0, message: "No matching sellers" }), {
