@@ -27,6 +27,9 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
   const { toast } = useToast();
   const [totalSubscribers, setTotalSubscribers] = useState(0);
   const [totalSellers, setTotalSellers] = useState(0);
+  const [totalCorretores, setTotalCorretores] = useState(0);
+  const [totalImobiliarias, setTotalImobiliarias] = useState(0);
+  const [totalConstrutoras, setTotalConstrutoras] = useState(0);
   const [logs, setLogs] = useState<NotificationLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
@@ -126,13 +129,33 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
 
     setTotalSubscribers(subCount || 0);
 
-    // Count unique seller_ids with subscriptions
+    // Count unique seller_ids with subscriptions, joined with profile category
     const { data: sellerData } = await supabase
       .from("push_subscriptions" as any)
       .select("seller_id");
 
-    const uniqueSellers = new Set((sellerData || []).map((s: any) => s.seller_id));
-    setTotalSellers(uniqueSellers.size);
+    const uniqueSellerIds = Array.from(new Set((sellerData || []).map((s: any) => s.seller_id))).filter(Boolean);
+    setTotalSellers(uniqueSellerIds.length);
+
+    if (uniqueSellerIds.length > 0) {
+      const { data: profs } = await supabase
+        .from("profiles")
+        .select("id, seller_category")
+        .in("id", uniqueSellerIds);
+      const counts = { corretor: 0, imobiliaria: 0, construtora: 0 };
+      for (const p of (profs || []) as any[]) {
+        if (p.seller_category === "corretor") counts.corretor++;
+        else if (p.seller_category === "imobiliaria") counts.imobiliaria++;
+        else if (p.seller_category === "construtora") counts.construtora++;
+      }
+      setTotalCorretores(counts.corretor);
+      setTotalImobiliarias(counts.imobiliaria);
+      setTotalConstrutoras(counts.construtora);
+    } else {
+      setTotalCorretores(0);
+      setTotalImobiliarias(0);
+      setTotalConstrutoras(0);
+    }
 
     const { data: logData } = await supabase
       .from("push_notifications_log" as any)
@@ -242,7 +265,7 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <div className="p-4 rounded-xl border border-border bg-card">
           <div className="flex items-center gap-2 mb-1">
             <Users className="w-4 h-4 text-primary" />
@@ -255,7 +278,21 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
             <Bell className="w-4 h-4 text-primary" />
             <span className="text-xs text-muted-foreground font-medium">Corretores</span>
           </div>
-          <p className="text-2xl font-bold text-foreground">{totalSellers}</p>
+          <p className="text-2xl font-bold text-foreground">{totalCorretores}</p>
+        </div>
+        <div className="p-4 rounded-xl border border-border bg-card">
+          <div className="flex items-center gap-2 mb-1">
+            <Bell className="w-4 h-4 text-primary" />
+            <span className="text-xs text-muted-foreground font-medium">Imobiliárias</span>
+          </div>
+          <p className="text-2xl font-bold text-foreground">{totalImobiliarias}</p>
+        </div>
+        <div className="p-4 rounded-xl border border-border bg-card">
+          <div className="flex items-center gap-2 mb-1">
+            <Bell className="w-4 h-4 text-primary" />
+            <span className="text-xs text-muted-foreground font-medium">Construtoras</span>
+          </div>
+          <p className="text-2xl font-bold text-foreground">{totalConstrutoras}</p>
         </div>
         <div className="p-4 rounded-xl border border-border bg-card hidden md:block">
           <div className="flex items-center gap-2 mb-1">
