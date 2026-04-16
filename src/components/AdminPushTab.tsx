@@ -252,24 +252,32 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
                   </SelectTrigger>
                   <SelectContent className="max-h-60">
                     <SelectItem value="all">Todos os estados</SelectItem>
-                    {BRAZIL_STATES.map((s) => (
-                      <SelectItem key={s.uf} value={s.uf}>{s.uf} — {s.name}</SelectItem>
-                    ))}
+                    {availableStates.map((uf) => {
+                      const meta = BRAZIL_STATES.find((s) => s.uf === uf);
+                      return (
+                        <SelectItem key={uf} value={uf}>
+                          {uf}{meta ? ` — ${meta.name}` : ""}
+                        </SelectItem>
+                      );
+                    })}
                   </SelectContent>
                 </Select>
+                {availableStates.length === 0 && (
+                  <p className="text-[10px] text-muted-foreground">Nenhum imóvel cadastrado ainda</p>
+                )}
               </div>
               <div className="space-y-1.5">
                 <Label className="text-xs font-medium">Cidade</Label>
                 <Select
                   value={filterCity}
                   onValueChange={setFilterCity}
-                  disabled={filterState === "all" || loadingCities}
+                  disabled={filterState === "all" || stateCities.length === 0}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder={filterState === "all" ? "Selecione um estado" : loadingCities ? "Carregando..." : "Todas as cidades"} />
+                    <SelectValue placeholder={filterState === "all" ? "Selecione um estado" : "Todas as cidades"} />
                   </SelectTrigger>
                   <SelectContent className="max-h-60">
-                    <SelectItem value="all">Todas as cidades</SelectItem>
+                    <SelectItem value="all">Todas as cidades de {filterState}</SelectItem>
                     {stateCities.map((c) => (
                       <SelectItem key={c} value={c}>{c}</SelectItem>
                     ))}
