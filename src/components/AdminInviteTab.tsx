@@ -5,7 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Save, ExternalLink, Copy, MessageCircle, User, ChevronDown, ChevronRight, Plus, Trash2, Bot, GitBranch } from "lucide-react";
-import { DEFAULT_CONFIG, STEP_TYPE_LABELS, STEP_NAMES, type InviteChatConfig, type FlowStep, type BotStep, type ChoiceStep, type InputStep } from "@/data/inviteFlow";
+import { DEFAULT_CONFIG, DEFAULT_FLOWS, STEP_TYPE_LABELS, STEP_NAMES, type InviteChatConfig, type FlowStep, type BotStep, type ChoiceStep, type InputStep, type CtaType } from "@/data/inviteFlow";
 
 const AI_STRATEGY_INFO: Record<string, { title: string; description: string }> = {
   internal: {
@@ -54,9 +54,15 @@ export default function AdminInviteTab() {
           if (parsed.ctaUrl) cfg.ctaUrl = parsed.ctaUrl;
           if (parsed.ctaType) cfg.ctaType = parsed.ctaType;
           if (parsed.chatMode) cfg.chatMode = parsed.chatMode;
-           if (parsed.crmRedirectUrl !== undefined) cfg.crmRedirectUrl = parsed.crmRedirectUrl;
-           if (parsed.crmButtonText) cfg.crmButtonText = parsed.crmButtonText;
-          if (parsed.flow?.length) cfg.flow = parsed.flow;
+          if (parsed.crmRedirectUrl !== undefined) cfg.crmRedirectUrl = parsed.crmRedirectUrl;
+          if (parsed.crmButtonText) cfg.crmButtonText = parsed.crmButtonText;
+          // Migrate: old single flow → per-CTA flows
+          if (parsed.flows) {
+            cfg.flows = { ...DEFAULT_FLOWS, ...parsed.flows };
+          } else if (parsed.flow?.length) {
+            cfg.flows = { ...DEFAULT_FLOWS, [cfg.ctaType]: parsed.flow };
+          }
+          cfg.flow = cfg.flows[cfg.ctaType] || DEFAULT_FLOWS[cfg.ctaType];
           setConfig(cfg);
         } catch {}
       }
@@ -76,7 +82,11 @@ export default function AdminInviteTab() {
   };
 
   const resetToDefault = () => {
-    setConfig({ ...DEFAULT_CONFIG });
+    setConfig((prev) => {
+      const ctaFlows = { ...prev.flows };
+      ctaFlows[prev.ctaType] = [...DEFAULT_FLOWS[prev.ctaType]];
+      return { ...prev, flows: ctaFlows, flow: ctaFlows[prev.ctaType] };
+    });
     toast({ title: "Fluxo restaurado ao padrão" });
   };
 
@@ -89,11 +99,14 @@ export default function AdminInviteTab() {
     });
   };
 
+  const activeFlow = config.flows[config.ctaType] || DEFAULT_FLOWS[config.ctaType];
+
   const updateStep = (id: string, updater: (step: FlowStep) => FlowStep) => {
-    setConfig((prev) => ({
-      ...prev,
-      flow: prev.flow.map((s) => (s.id === id ? updater(s) : s)),
-    }));
+    setConfig((prev) => {
+      const ctaFlows = { ...prev.flows };
+      ctaFlows[prev.ctaType] = (ctaFlows[prev.ctaType] || []).map((s) => (s.id === id ? updater(s) : s));
+      return { ...prev, flows: ctaFlows, flow: ctaFlows[prev.ctaType] };
+    });
   };
 
   const updateBotMessage = (stepId: string, msgIndex: number, text: string) => {
