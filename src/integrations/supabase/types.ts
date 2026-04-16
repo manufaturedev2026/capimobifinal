@@ -666,6 +666,57 @@ export type Database = {
           },
         ]
       }
+      property_partnerships: {
+        Row: {
+          created_at: string
+          id: string
+          item_id: string
+          message: string | null
+          owner_user_id: string
+          requester_profile_id: string
+          requester_user_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          item_id: string
+          message?: string | null
+          owner_user_id: string
+          requester_profile_id: string
+          requester_user_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          item_id?: string
+          message?: string | null
+          owner_user_id?: string
+          requester_profile_id?: string
+          requester_user_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "property_partnerships_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "seller_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "property_partnerships_requester_profile_id_fkey"
+            columns: ["requester_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       push_notifications_log: {
         Row: {
           body: string
@@ -1091,6 +1142,7 @@ export type Database = {
           ceiling_height: number | null
           city: string | null
           color: string | null
+          commission_percent: number | null
           condo_fee: number | null
           created_at: string
           description: string | null
@@ -1122,6 +1174,8 @@ export type Database = {
           neighborhood: string | null
           owner_phone: string | null
           parking_spots: number | null
+          partner_percent: number | null
+          partnership_enabled: boolean
           photos: string[] | null
           pool: boolean | null
           price: number | null
@@ -1165,6 +1219,7 @@ export type Database = {
           ceiling_height?: number | null
           city?: string | null
           color?: string | null
+          commission_percent?: number | null
           condo_fee?: number | null
           created_at?: string
           description?: string | null
@@ -1196,6 +1251,8 @@ export type Database = {
           neighborhood?: string | null
           owner_phone?: string | null
           parking_spots?: number | null
+          partner_percent?: number | null
+          partnership_enabled?: boolean
           photos?: string[] | null
           pool?: boolean | null
           price?: number | null
@@ -1239,6 +1296,7 @@ export type Database = {
           ceiling_height?: number | null
           city?: string | null
           color?: string | null
+          commission_percent?: number | null
           condo_fee?: number | null
           created_at?: string
           description?: string | null
@@ -1270,6 +1328,8 @@ export type Database = {
           neighborhood?: string | null
           owner_phone?: string | null
           parking_spots?: number | null
+          partner_percent?: number | null
+          partnership_enabled?: boolean
           photos?: string[] | null
           pool?: boolean | null
           price?: number | null
