@@ -260,9 +260,12 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
     finalizado: { label: "Finalizado", color: "text-blue-500 bg-blue-500/10", icon: CheckCircle2 },
   };
 
-  const filteredItems = availableItems.filter(i =>
-    !searchTerm || i.title.toLowerCase().includes(searchTerm.toLowerCase()) || i.city?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredItems = availableItems.filter(i => {
+    if (!searchTerm) return true;
+    const q = searchTerm.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const match = (v: string | null) => v?.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(q);
+    return match(i.title) || match(i.city) || match(i.state) || match(i.neighborhood) || match(i.category);
+  });
 
   const alreadyRequested = new Set(myRequests.map(r => r.item_id));
 
