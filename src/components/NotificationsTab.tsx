@@ -7,7 +7,19 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { usePushSubscription } from "@/hooks/usePushSubscription";
+import { useSubscription } from "@/hooks/useSubscription";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+const PUSH_DAILY_LIMITS: Record<string, number> = {
+  basico: 1,
+  start: 1,
+  premium: 2,
+  vip: 3,
+  essencial_empresa: 4,
+  premium_empresa: 5,
+  prime_empresa: 6,
+  black: 6,
+};
 
 interface NotificationsTabProps {
   userId: string;
@@ -39,6 +51,15 @@ export default function NotificationsTab({ userId, sellerId }: NotificationsTabP
   const [image, setImage] = useState("");
   const [uploadingImage, setUploadingImage] = useState(false);
   const [items, setItems] = useState<{ id: string; title: string; slug: string | null; photos: string[] | null }[]>([]);
+
+  const { currentTier } = useSubscription(userId);
+  const dailyLimit = PUSH_DAILY_LIMITS[currentTier] ?? 1;
+  const sentToday = logs.filter((l) => {
+    const d = new Date(l.created_at);
+    const now = new Date();
+    return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth() && d.getDate() === now.getDate();
+  }).length;
+  const limitReached = sentToday >= dailyLimit;
 
   const fetchData = async () => {
     // Get subscriber count
@@ -126,6 +147,15 @@ export default function NotificationsTab({ userId, sellerId }: NotificationsTabP
       });
 
       if (error) throw error;
+
+      if (data?.error === "daily_limit_reached") {
+        toast({
+          title: "Limite diário atingido",
+          description: data.message || `Seu plano permite ${data.limit} envio(s) por dia.`,
+          variant: "destructive",
+        });
+        return;
+      }
 
       toast({
         title: "Notificação enviada! 🚀",
@@ -224,6 +254,28 @@ export default function NotificationsTab({ userId, sellerId }: NotificationsTabP
         </div>
       </div>
 
+      {/* Daily limit indicator */}
+      <div
+        className={`p-4 rounded-xl border ${
+          limitReached ? "border-destructive/50 bg-destructive/5" : "border-border bg-card"
+        }`}
+      >
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <Clock className={`w-4 h-4 ${limitReached ? "text-destructive" : "text-primary"}`} />
+            <span className="text-sm font-bold text-foreground">Envios hoje</span>
+          </div>
+          <span className={`text-sm font-bold ${limitReached ? "text-destructive" : "text-foreground"}`}>
+            {sentToday} / {dailyLimit}
+          </span>
+        </div>
+        <p className="text-xs text-muted-foreground mt-1">
+          {limitReached
+            ? "Você atingiu o limite diário do seu plano. Faça upgrade para enviar mais."
+            : `Seu plano permite ${dailyLimit} envio${dailyLimit > 1 ? "s" : ""} de push por dia.`}
+        </p>
+      </div>
+
       {/* Compose */}
       <div className="p-6 rounded-xl border border-border bg-card space-y-4">
         <h3 className="text-base font-bold text-foreground flex items-center gap-2">
@@ -318,9 +370,9 @@ export default function NotificationsTab({ userId, sellerId }: NotificationsTabP
               <p className="text-[10px] text-muted-foreground">Imagem exibida na notificação (ex: foto do imóvel)</p>
             </div>
 
-            <Button onClick={handleSend} disabled={sending || uploadingImage || !title.trim() || !body.trim()} className="w-full gap-2">
+            <Button onClick={handleSend} disabled={sending || uploadingImage || !title.trim() || !body.trim() || limitReached} className="w-full gap-2">
               {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-              Enviar para {subscriberCount} inscrito{subscriberCount !== 1 ? "s" : ""}
+              {limitReached ? "Limite diário atingido" : `Enviar para ${subscriberCount} inscrito${subscriberCount !== 1 ? "s" : ""}`}
             </Button>
           </div>
         )}
