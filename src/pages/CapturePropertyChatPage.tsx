@@ -249,21 +249,21 @@ export default function CapturePropertyChatPage() {
       case "name":
         setFullName(val);
         addUserMsg(val);
-        await addBotMsg(`Prazer, ${val}! 🤝`);
-        await addBotMsg("Qual seu telefone ou WhatsApp? 📱");
+        await addBotMsg(config.flowMsgNameReply.replace("{nome}", val));
+        await addBotMsg(config.flowMsgPhone);
         setStep("phone");
         setInputVisible(true);
         break;
       case "phone":
         setPhone(val);
         addUserMsg(val);
-        await addBotMsg("Perfeito! Agora me diz: qual o tipo do imóvel? 🏠");
+        await addBotMsg(config.flowMsgType);
         setStep("type");
         break;
       case "address":
         setAddress(val);
         addUserMsg(val);
-        await addBotMsg("Tem um valor em mente para o imóvel? 💰\n\n(Se não tiver, pode digitar 0 ou pular)");
+        await addBotMsg(config.flowMsgPrice);
         setStep("price");
         setInputVisible(true);
         break;
@@ -271,7 +271,7 @@ export default function CapturePropertyChatPage() {
         const priceVal = val || "0";
         setDesiredPrice(priceVal);
         addUserMsg(priceVal === "0" || !val ? "Sem valor definido" : `R$ ${priceVal}`);
-        await addBotMsg("Alguma observação sobre o imóvel? 📝\n\n(Opcional - pode enviar vazio para pular)");
+        await addBotMsg(config.flowMsgNotes);
         setStep("notes");
         setInputVisible(true);
         break;
