@@ -64,6 +64,16 @@ export default function WhatsAppLeadCapture({
         notes,
         ...((!partnerBrokerSellerId && teamMemberId) ? { team_member_id: teamMemberId } : {}),
       } as any);
+
+      // Push notification to seller about the new lead
+      supabase.functions.invoke("notify-new-lead", {
+        body: {
+          target_user_id: targetUserId,
+          title: "Novo lead no CRM 🎯",
+          body: `${name.trim()} entrou em contato via WhatsApp.`,
+          url: "/painel?tab=crm",
+        },
+      }).catch(() => {});
     } catch {}
     setSaving(false);
     // Call onComplete BEFORE closing the dialog so the WhatsApp redirect
