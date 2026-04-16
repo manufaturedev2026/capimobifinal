@@ -948,7 +948,7 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
                     </div>
                     <div className="flex-1 min-w-0 space-y-1">
                       <h3 className="font-bold text-sm text-foreground truncate">
-                        {removed ? "Imóvel removido" : req.item?.title || "Imóvel"}
+                        {removed ? removedLabel : req.item?.title || "Imóvel"}
                       </h3>
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${st.color}`}>
