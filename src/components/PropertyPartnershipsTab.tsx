@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Handshake, Search, Phone, CheckCircle2, XCircle, Clock, ExternalLink, DollarSign, Home, Filter, ToggleLeft, ToggleRight, Edit, Package } from "lucide-react";
+import { Handshake, Search, Phone, CheckCircle2, XCircle, Clock, DollarSign, Home, Package, X, MapPin, BedDouble, Bath, Car, Maximize, FileText } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 type PartnershipItem = {
   id: string;
@@ -10,6 +11,8 @@ type PartnershipItem = {
   price: number | null;
   photos: string[] | null;
   city: string | null;
+  state: string | null;
+  neighborhood: string | null;
   finality: string | null;
   commission_percent: number | null;
   partner_percent: number | null;
@@ -17,6 +20,11 @@ type PartnershipItem = {
   seller_id: string;
   user_id: string;
   category: string;
+  description: string | null;
+  bedrooms: number | null;
+  bathrooms: number | null;
+  parking_spots: number | null;
+  area: number | null;
 };
 
 type PartnershipRequest = {
@@ -41,6 +49,8 @@ type SellerProfile = {
 
 type SubTab = "meus" | "disponivel" | "minhas" | "recebidas";
 
+const ITEM_FIELDS = "id, title, price, photos, city, state, neighborhood, finality, commission_percent, partner_percent, partnership_enabled, seller_id, user_id, category, description, bedrooms, bathrooms, parking_spots, area";
+
 export default function PropertyPartnershipsTab({ profileId, userId }: { profileId: string; userId: string }) {
   const { toast } = useToast();
   const [subTab, setSubTab] = useState<SubTab>("meus");
@@ -51,6 +61,14 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
   const [loading, setLoading] = useState(true);
   const [savingId, setSavingId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+
+  // Dialog states
+  const [configItem, setConfigItem] = useState<PartnershipItem | null>(null);
+  const [configCommission, setConfigCommission] = useState("");
+  const [configPartner, setConfigPartner] = useState("");
+  const [configDescription, setConfigDescription] = useState("");
+
+  const [detailItem, setDetailItem] = useState<(PartnershipItem & { seller: SellerProfile | null }) | null>(null);
 
   useEffect(() => {
     loadData();
@@ -65,7 +83,7 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
   const loadMyItems = async () => {
     const { data } = await supabase
       .from("seller_items")
-      .select("id, title, price, photos, city, finality, commission_percent, partner_percent, partnership_enabled, seller_id, user_id, category")
+      .select(ITEM_FIELDS)
       .eq("user_id", userId)
       .eq("status", "ativo")
       .order("created_at", { ascending: false });
@@ -75,7 +93,7 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
   const loadAvailable = async () => {
     const { data: items } = await supabase
       .from("seller_items")
-      .select("id, title, price, photos, city, finality, commission_percent, partner_percent, partnership_enabled, seller_id, user_id, category")
+      .select(ITEM_FIELDS)
       .eq("partnership_enabled", true)
       .eq("status", "ativo")
       .neq("user_id", userId);
@@ -105,7 +123,7 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
     const ownerIds = [...new Set(requests.map(r => r.owner_user_id))];
 
     const [{ data: items }, { data: profiles }] = await Promise.all([
-      supabase.from("seller_items").select("id, title, price, photos, city, finality, commission_percent, partner_percent, partnership_enabled, seller_id, user_id, category").in("id", itemIds),
+      supabase.from("seller_items").select(ITEM_FIELDS).in("id", itemIds),
       supabase.from("profiles").select("id, user_id, full_name, phone, logo_url, company_name, creci").in("user_id", ownerIds),
     ]);
 
@@ -132,7 +150,7 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
     const requesterProfileIds = [...new Set(requests.map(r => r.requester_profile_id))];
 
     const [{ data: items }, { data: profiles }] = await Promise.all([
-      supabase.from("seller_items").select("id, title, price, photos, city, finality, commission_percent, partner_percent, partnership_enabled, seller_id, user_id, category").in("id", itemIds),
+      supabase.from("seller_items").select(ITEM_FIELDS).in("id", itemIds),
       supabase.from("profiles").select("id, full_name, phone, logo_url, company_name, creci").in("id", requesterProfileIds),
     ]);
 
@@ -158,6 +176,7 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
       toast({ title: "Erro", description: error.message, variant: "destructive" });
     } else {
       toast({ title: "Solicitação enviada! 🤝" });
+      setDetailItem(null);
       loadData();
     }
   };
@@ -176,28 +195,46 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
     }
   };
 
-  const togglePartnership = async (itemId: string, enabled: boolean, commPct?: number, partPct?: number) => {
-    setSavingId(itemId);
-    const update: any = { partnership_enabled: enabled };
-    if (commPct !== undefined) update.commission_percent = commPct;
-    if (partPct !== undefined) update.partner_percent = partPct;
-    const { error } = await supabase.from("seller_items").update(update).eq("id", itemId).eq("user_id", userId);
+  const openConfigDialog = (item: PartnershipItem) => {
+    setConfigItem(item);
+    setConfigCommission(item.commission_percent?.toString() || "");
+    setConfigPartner(item.partner_percent?.toString() || "");
+    setConfigDescription(item.description || "");
+  };
+
+  const savePartnershipConfig = async () => {
+    if (!configItem) return;
+    setSavingId(configItem.id);
+    const commPct = configCommission ? parseFloat(configCommission) : null;
+    const partPct = configPartner ? parseFloat(configPartner) : null;
+
+    const { error } = await supabase.from("seller_items").update({
+      partnership_enabled: true,
+      commission_percent: commPct,
+      partner_percent: partPct,
+      description: configDescription || null,
+    } as any).eq("id", configItem.id).eq("user_id", userId);
+
     if (error) {
       toast({ title: "Erro", description: error.message, variant: "destructive" });
     } else {
-      toast({ title: enabled ? "Parceria ativada! 🤝" : "Parceria desativada" });
+      toast({ title: "Parceria ativada! 🤝" });
+      setConfigItem(null);
       await loadMyItems();
     }
     setSavingId(null);
   };
 
-  const updateItemPartnershipFields = async (itemId: string, field: "commission_percent" | "partner_percent", value: number | null) => {
+  const disablePartnership = async (itemId: string) => {
     setSavingId(itemId);
-    const { error } = await supabase.from("seller_items").update({ [field]: value } as any).eq("id", itemId).eq("user_id", userId);
-    if (error) toast({ title: "Erro", description: error.message, variant: "destructive" });
-    else await loadMyItems();
+    const { error } = await supabase.from("seller_items").update({ partnership_enabled: false } as any).eq("id", itemId).eq("user_id", userId);
+    if (!error) {
+      toast({ title: "Parceria desativada" });
+      await loadMyItems();
+    }
     setSavingId(null);
   };
+
   const openWhatsApp = (phone: string | null, itemTitle: string, finality: string | null) => {
     if (!phone) { toast({ title: "Telefone não disponível", variant: "destructive" }); return; }
     const cleanPhone = phone.replace(/\D/g, "");
@@ -206,16 +243,16 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
     window.open(`https://wa.me/55${cleanPhone}?text=${msg}`, "_blank");
   };
 
-  const calcPartnerGain = (price: number | null, commissionPct: number | null, partnerPct: number | null, finality: string | null) => {
+  const calcPartnerGain = (price: number | null, commissionPct: number | null, partnerPct: number | null) => {
     if (!commissionPct || !partnerPct) return { total: 0, partner: 0, owner: 0 };
-    const base = finality === "aluguel" ? (price || 0) : (price || 0);
+    const base = price || 0;
     const total = base * (commissionPct / 100);
     const partner = total * (partnerPct / 100);
     const owner = total - partner;
     return { total, partner, owner };
   };
 
-  const formatCurrency = (v: number) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  const fmt = (v: number) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
   const statusConfig: Record<string, { label: string; color: string; icon: any }> = {
     pendente: { label: "Pendente", color: "text-amber-500 bg-amber-500/10", icon: Clock },
@@ -266,116 +303,213 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
         ))}
       </div>
 
-      {/* Meus Imóveis - Ativar Parceria */}
+      {/* ===== MEUS IMÓVEIS ===== */}
       {subTab === "meus" && (
         <div className="space-y-3">
-          <p className="text-xs text-muted-foreground">Ative a parceria nos seus imóveis para que outros corretores possam encontrá-los e solicitar parceria.</p>
+          <p className="text-xs text-muted-foreground">Seus imóveis ativos. Clique em "Procurar Parceria" para disponibilizar na rede.</p>
           {myItems.length === 0 ? (
             <div className="text-center py-16 space-y-3">
               <Package size={40} className="mx-auto text-muted-foreground/30" />
               <p className="text-muted-foreground text-sm">Você não tem imóveis ativos.</p>
             </div>
           ) : (
-            myItems.map(item => (
-              <motion.div
-                key={item.id}
-                initial={{ opacity: 0, y: 5 }}
-                animate={{ opacity: 1, y: 0 }}
-                className={`bg-card border rounded-2xl p-4 transition-colors ${item.partnership_enabled ? "border-primary/30" : "border-border"}`}
-              >
-                <div className="flex gap-3">
-                  <div className="w-16 h-16 rounded-xl bg-muted overflow-hidden flex-shrink-0">
+            <div className="grid gap-4 sm:grid-cols-2">
+              {myItems.map(item => (
+                <motion.div
+                  key={item.id}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-card border border-border rounded-2xl overflow-hidden hover:border-primary/20 transition-colors"
+                >
+                  {/* Photo */}
+                  <div className="relative aspect-[16/10] bg-muted">
                     {item.photos?.[0] ? (
-                      <img src={item.photos[0]} alt="" className="w-full h-full object-cover" />
+                      <img src={item.photos[0]} alt={item.title} className="w-full h-full object-cover" />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center"><Home size={20} className="text-muted-foreground/30" /></div>
+                      <div className="w-full h-full flex items-center justify-center"><Home size={32} className="text-muted-foreground/30" /></div>
+                    )}
+                    <div className="absolute top-2 left-2 px-2 py-1 rounded-lg bg-black/60 text-white text-[10px] font-bold uppercase">
+                      {item.finality === "aluguel" ? "Aluguel" : "Venda"}
+                    </div>
+                    {item.partnership_enabled && (
+                      <div className="absolute top-2 right-2 px-2 py-1 rounded-lg bg-green-500 text-white text-[10px] font-bold flex items-center gap-1">
+                        <Handshake size={10} /> Parceria Ativa
+                      </div>
                     )}
                   </div>
-                  <div className="flex-1 min-w-0 space-y-1">
-                    <h3 className="font-bold text-sm text-foreground truncate">{item.title}</h3>
-                    <p className="text-xs text-muted-foreground">{item.city || "Sem cidade"} • {item.finality === "aluguel" ? "Aluguel" : "Venda"}</p>
-                    {item.price && <p className="font-bold text-sm text-primary">{formatCurrency(item.price)}</p>}
-                  </div>
-                  <button
-                    onClick={() => togglePartnership(item.id, !item.partnership_enabled)}
-                    disabled={savingId === item.id}
-                    className="flex-shrink-0 self-start"
-                  >
-                    {item.partnership_enabled ? (
-                      <ToggleRight size={32} className="text-primary" />
-                    ) : (
-                      <ToggleLeft size={32} className="text-muted-foreground" />
-                    )}
-                  </button>
-                </div>
 
-                {/* Partnership config when enabled */}
-                {item.partnership_enabled && (
-                  <div className="mt-3 pt-3 border-t border-border space-y-3">
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <label className="text-[10px] font-bold text-muted-foreground uppercase mb-1 block">Comissão Total (%)</label>
-                        <input
-                          type="number"
-                          step="0.5"
-                          min="0"
-                          max="100"
-                          defaultValue={item.commission_percent ?? ""}
-                          onBlur={(e) => {
-                            const v = e.target.value ? parseFloat(e.target.value) : null;
-                            if (v !== item.commission_percent) updateItemPartnershipFields(item.id, "commission_percent", v);
-                          }}
-                          className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
-                          placeholder="Ex: 6"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-[10px] font-bold text-muted-foreground uppercase mb-1 block">% do Parceiro</label>
-                        <input
-                          type="number"
-                          step="5"
-                          min="0"
-                          max="100"
-                          defaultValue={item.partner_percent ?? ""}
-                          onBlur={(e) => {
-                            const v = e.target.value ? parseFloat(e.target.value) : null;
-                            if (v !== item.partner_percent) updateItemPartnershipFields(item.id, "partner_percent", v);
-                          }}
-                          className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
-                          placeholder="Ex: 50"
-                        />
-                      </div>
+                  <div className="p-4 space-y-3">
+                    <div>
+                      <h3 className="font-display font-bold text-sm text-foreground line-clamp-1">{item.title}</h3>
+                      <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
+                        <MapPin size={10} /> {item.city || "Sem cidade"}{item.neighborhood ? ` • ${item.neighborhood}` : ""}
+                      </p>
                     </div>
 
-                    {/* Preview calculation */}
-                    {item.price && item.commission_percent && item.partner_percent && (() => {
-                      const gains = calcPartnerGain(item.price, item.commission_percent, item.partner_percent, item.finality);
-                      return (
-                        <div className="grid grid-cols-3 gap-2 text-center">
-                          <div className="bg-primary/10 rounded-lg p-2">
-                            <p className="text-[10px] text-muted-foreground">Total</p>
-                            <p className="font-bold text-xs text-primary">{formatCurrency(gains.total)}</p>
-                          </div>
-                          <div className="bg-green-500/10 rounded-lg p-2">
-                            <p className="text-[10px] text-muted-foreground">Parceiro</p>
-                            <p className="font-bold text-xs text-green-600">{formatCurrency(gains.partner)}</p>
-                          </div>
-                          <div className="bg-accent/10 rounded-lg p-2">
-                            <p className="text-[10px] text-muted-foreground">Você</p>
-                            <p className="font-bold text-xs text-accent">{formatCurrency(gains.owner)}</p>
-                          </div>
-                        </div>
-                      );
-                    })()}
+                    {item.price ? (
+                      <p className="font-display font-extrabold text-lg text-primary">
+                        {fmt(item.price)}{item.finality === "aluguel" ? "/mês" : ""}
+                      </p>
+                    ) : (
+                      <p className="text-sm text-muted-foreground">Preço não informado</p>
+                    )}
+
+                    {/* Specs */}
+                    <div className="flex gap-3 text-xs text-muted-foreground">
+                      {item.bedrooms ? <span className="flex items-center gap-1"><BedDouble size={12} /> {item.bedrooms}</span> : null}
+                      {item.bathrooms ? <span className="flex items-center gap-1"><Bath size={12} /> {item.bathrooms}</span> : null}
+                      {item.parking_spots ? <span className="flex items-center gap-1"><Car size={12} /> {item.parking_spots}</span> : null}
+                      {item.area ? <span className="flex items-center gap-1"><Maximize size={12} /> {item.area}m²</span> : null}
+                    </div>
+
+                    {/* Partnership info when active */}
+                    {item.partnership_enabled && item.commission_percent && item.partner_percent && (
+                      <div className="bg-green-500/10 rounded-xl p-2.5 text-center">
+                        <p className="text-[10px] text-muted-foreground">Comissão {item.commission_percent}% • Parceiro recebe {item.partner_percent}%</p>
+                        <p className="font-bold text-xs text-green-600 mt-0.5">
+                          Ganho do parceiro: {fmt(calcPartnerGain(item.price, item.commission_percent, item.partner_percent).partner)}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Action buttons */}
+                    <div className="flex gap-2">
+                      {item.partnership_enabled ? (
+                        <>
+                          <button
+                            onClick={() => openConfigDialog(item)}
+                            className="flex-1 py-2.5 rounded-xl bg-primary/10 text-primary text-xs font-bold hover:bg-primary/20 transition-colors flex items-center justify-center gap-1.5"
+                          >
+                            <FileText size={14} /> Editar Parceria
+                          </button>
+                          <button
+                            onClick={() => disablePartnership(item.id)}
+                            disabled={savingId === item.id}
+                            className="px-3 py-2.5 rounded-xl bg-red-500/10 text-red-500 text-xs font-bold hover:bg-red-500/20 transition-colors"
+                          >
+                            <X size={14} />
+                          </button>
+                        </>
+                      ) : (
+                        <button
+                          onClick={() => openConfigDialog(item)}
+                          className="flex-1 py-2.5 rounded-xl bg-primary text-primary-foreground text-xs font-bold hover:bg-primary/90 transition-colors flex items-center justify-center gap-1.5"
+                        >
+                          <Handshake size={14} /> Procurar Parceria
+                        </button>
+                      )}
+                    </div>
                   </div>
-                )}
-              </motion.div>
-            ))
+                </motion.div>
+              ))}
+            </div>
           )}
         </div>
       )}
 
-      {/* Disponíveis */}
+      {/* ===== CONFIG DIALOG ===== */}
+      <Dialog open={!!configItem} onOpenChange={(open) => !open && setConfigItem(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-base">
+              <Handshake size={18} className="text-primary" /> Configurar Parceria
+            </DialogTitle>
+          </DialogHeader>
+
+          {configItem && (
+            <div className="space-y-4">
+              {/* Item preview */}
+              <div className="flex gap-3 bg-secondary/50 rounded-xl p-3">
+                <div className="w-16 h-16 rounded-xl bg-muted overflow-hidden flex-shrink-0">
+                  {configItem.photos?.[0] ? (
+                    <img src={configItem.photos[0]} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center"><Home size={20} className="text-muted-foreground/30" /></div>
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-bold text-sm text-foreground truncate">{configItem.title}</h3>
+                  <p className="text-xs text-muted-foreground">{configItem.city || "Sem cidade"}</p>
+                  {configItem.price && <p className="font-bold text-sm text-primary mt-0.5">{fmt(configItem.price)}</p>}
+                </div>
+              </div>
+
+              {/* Commission fields */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-bold text-muted-foreground mb-1.5 block">Comissão Total (%)</label>
+                  <input
+                    type="number"
+                    step="0.5"
+                    min="0"
+                    max="100"
+                    value={configCommission}
+                    onChange={(e) => setConfigCommission(e.target.value)}
+                    className="w-full px-3 py-2.5 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+                    placeholder="Ex: 6"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-muted-foreground mb-1.5 block">% do Parceiro</label>
+                  <input
+                    type="number"
+                    step="5"
+                    min="0"
+                    max="100"
+                    value={configPartner}
+                    onChange={(e) => setConfigPartner(e.target.value)}
+                    className="w-full px-3 py-2.5 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+                    placeholder="Ex: 50"
+                  />
+                </div>
+              </div>
+
+              {/* Live preview */}
+              {configCommission && configPartner && configItem.price && (() => {
+                const gains = calcPartnerGain(configItem.price, parseFloat(configCommission), parseFloat(configPartner));
+                return (
+                  <div className="grid grid-cols-3 gap-2 text-center">
+                    <div className="bg-primary/10 rounded-xl p-2.5">
+                      <p className="text-[10px] text-muted-foreground">Total</p>
+                      <p className="font-bold text-xs text-primary">{fmt(gains.total)}</p>
+                    </div>
+                    <div className="bg-green-500/10 rounded-xl p-2.5">
+                      <p className="text-[10px] text-muted-foreground">Parceiro</p>
+                      <p className="font-bold text-xs text-green-600">{fmt(gains.partner)}</p>
+                    </div>
+                    <div className="bg-accent/10 rounded-xl p-2.5">
+                      <p className="text-[10px] text-muted-foreground">Você</p>
+                      <p className="font-bold text-xs text-foreground">{fmt(gains.owner)}</p>
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {/* Description */}
+              <div>
+                <label className="text-xs font-bold text-muted-foreground mb-1.5 block">Descrição para parceiros</label>
+                <textarea
+                  value={configDescription}
+                  onChange={(e) => setConfigDescription(e.target.value)}
+                  rows={3}
+                  className="w-full px-3 py-2.5 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none resize-none"
+                  placeholder="Informações adicionais para o parceiro..."
+                />
+              </div>
+
+              <button
+                onClick={savePartnershipConfig}
+                disabled={savingId === configItem.id}
+                className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"
+              >
+                <Handshake size={16} /> {configItem.partnership_enabled ? "Salvar Alterações" : "Ativar Parceria"}
+              </button>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* ===== DISPONÍVEIS ===== */}
       {subTab === "disponivel" && (
         <div className="space-y-4">
           <div className="relative">
@@ -396,97 +530,56 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
           ) : (
             <div className="grid gap-4 sm:grid-cols-2">
               {filteredItems.map(item => {
-                const gains = calcPartnerGain(item.price, item.commission_percent, item.partner_percent, item.finality);
+                const gains = calcPartnerGain(item.price, item.commission_percent, item.partner_percent);
                 const requested = alreadyRequested.has(item.id);
                 return (
                   <motion.div
                     key={item.id}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-card border border-border rounded-2xl overflow-hidden hover:border-primary/30 transition-colors"
+                    onClick={() => setDetailItem(item)}
+                    className="bg-card border border-border rounded-2xl overflow-hidden hover:border-primary/30 transition-colors cursor-pointer group"
                   >
                     {/* Photo */}
-                    <div className="relative aspect-[16/9] bg-muted">
+                    <div className="relative aspect-[16/10] bg-muted overflow-hidden">
                       {item.photos?.[0] ? (
-                        <img src={item.photos[0]} alt={item.title} className="w-full h-full object-cover" />
+                        <img src={item.photos[0]} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center"><Home size={32} className="text-muted-foreground/30" /></div>
                       )}
-                      <div className="absolute top-2 left-2 px-2 py-1 rounded-lg bg-black/60 text-white text-[10px] font-bold uppercase">
-                        {item.finality === "aluguel" ? "Aluguel" : "Venda"}
+                      <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/70 to-transparent p-3 pt-8">
+                        <p className="text-white font-bold text-sm line-clamp-1">{item.title}</p>
+                        <p className="text-white/80 text-xs flex items-center gap-1">
+                          <MapPin size={10} /> {item.city || "Cidade não informada"}
+                        </p>
                       </div>
                       {item.partner_percent && (
-                        <div className="absolute top-2 right-2 px-2 py-1 rounded-lg bg-primary text-primary-foreground text-[10px] font-bold">
-                          {item.partner_percent}% para você
+                        <div className="absolute top-2 right-2 px-2 py-1 rounded-lg bg-green-500 text-white text-[10px] font-bold">
+                          {item.partner_percent}% pra você
+                        </div>
+                      )}
+                      {requested && (
+                        <div className="absolute top-2 left-2 px-2 py-1 rounded-lg bg-amber-500 text-white text-[10px] font-bold">
+                          Solicitado
                         </div>
                       )}
                     </div>
 
-                    <div className="p-4 space-y-3">
-                      <div>
-                        <h3 className="font-display font-bold text-sm text-foreground line-clamp-1">{item.title}</h3>
-                        <p className="text-xs text-muted-foreground">{item.city || "Cidade não informada"}</p>
-                      </div>
-
-                      {item.price && (
-                        <p className="font-display font-extrabold text-lg text-primary">
-                          {formatCurrency(item.price)}{item.finality === "aluguel" ? "/mês" : ""}
-                        </p>
-                      )}
-
-                      {/* Commission breakdown */}
-                      <div className="bg-secondary/50 rounded-xl p-3 space-y-1.5">
-                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                          <DollarSign size={12} /> Simulação de Comissão
-                        </div>
-                        <div className="grid grid-cols-2 gap-2">
-                          <div className="text-center bg-green-500/10 rounded-lg p-2">
-                            <p className="text-[10px] text-muted-foreground">Seu ganho</p>
-                            <p className="font-bold text-sm text-green-600">{formatCurrency(gains.partner)}</p>
+                    <div className="p-3 space-y-2">
+                      <div className="flex items-center justify-between">
+                        {item.price ? (
+                          <p className="font-display font-extrabold text-base text-primary">
+                            {fmt(item.price)}{item.finality === "aluguel" ? "/mês" : ""}
+                          </p>
+                        ) : (
+                          <p className="text-sm text-muted-foreground">Consulte</p>
+                        )}
+                        {gains.partner > 0 && (
+                          <div className="text-right">
+                            <p className="text-[10px] text-muted-foreground">Ganho/venda</p>
+                            <p className="font-bold text-sm text-green-600">{fmt(gains.partner)}</p>
                           </div>
-                          <div className="text-center bg-primary/10 rounded-lg p-2">
-                            <p className="text-[10px] text-muted-foreground">Ganho do dono</p>
-                            <p className="font-bold text-sm text-primary">{formatCurrency(gains.owner)}</p>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Seller info */}
-                      {item.seller && (
-                        <div className="flex items-center gap-2">
-                          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
-                            {item.seller.logo_url ? (
-                              <img src={item.seller.logo_url} alt="" className="w-full h-full object-cover" />
-                            ) : (
-                              <span className="text-xs font-bold text-primary">{item.seller.full_name.charAt(0)}</span>
-                            )}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-xs font-bold text-foreground truncate">{item.seller.full_name}</p>
-                            {item.seller.creci && <p className="text-[10px] text-muted-foreground">CRECI: {item.seller.creci}</p>}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Actions */}
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => requestPartnership(item)}
-                          disabled={requested}
-                          className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1.5 ${
-                            requested
-                              ? "bg-muted text-muted-foreground cursor-not-allowed"
-                              : "bg-primary text-primary-foreground hover:bg-primary/90"
-                          }`}
-                        >
-                          <Handshake size={14} /> {requested ? "Solicitado" : "Solicitar Parceria"}
-                        </button>
-                        <button
-                          onClick={() => openWhatsApp(item.seller?.phone || null, item.title, item.finality)}
-                          className="px-3 py-2.5 rounded-xl bg-green-500 text-white text-xs font-bold hover:bg-green-600 transition-colors flex items-center gap-1.5"
-                        >
-                          <Phone size={14} /> WhatsApp
-                        </button>
+                        )}
                       </div>
                     </div>
                   </motion.div>
@@ -497,7 +590,120 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
         </div>
       )}
 
-      {/* Minhas Solicitações */}
+      {/* ===== DETAIL DIALOG ===== */}
+      <Dialog open={!!detailItem} onOpenChange={(open) => !open && setDetailItem(null)}>
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+          {detailItem && (() => {
+            const gains = calcPartnerGain(detailItem.price, detailItem.commission_percent, detailItem.partner_percent);
+            const requested = alreadyRequested.has(detailItem.id);
+            return (
+              <>
+                <DialogHeader>
+                  <DialogTitle className="text-base">{detailItem.title}</DialogTitle>
+                </DialogHeader>
+
+                {/* Photos */}
+                <div className="relative aspect-[16/10] bg-muted rounded-xl overflow-hidden -mx-2">
+                  {detailItem.photos?.[0] ? (
+                    <img src={detailItem.photos[0]} alt={detailItem.title} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center"><Home size={40} className="text-muted-foreground/30" /></div>
+                  )}
+                </div>
+
+                {/* Price + Location */}
+                <div className="space-y-2">
+                  {detailItem.price && (
+                    <p className="font-display font-extrabold text-2xl text-primary">
+                      {fmt(detailItem.price)}{detailItem.finality === "aluguel" ? "/mês" : ""}
+                    </p>
+                  )}
+                  <p className="text-sm text-muted-foreground flex items-center gap-1">
+                    <MapPin size={14} /> {[detailItem.neighborhood, detailItem.city, detailItem.state].filter(Boolean).join(", ") || "Localização não informada"}
+                  </p>
+                </div>
+
+                {/* Specs */}
+                <div className="flex gap-4 text-sm text-muted-foreground">
+                  {detailItem.bedrooms ? <span className="flex items-center gap-1"><BedDouble size={14} /> {detailItem.bedrooms} quartos</span> : null}
+                  {detailItem.bathrooms ? <span className="flex items-center gap-1"><Bath size={14} /> {detailItem.bathrooms} banheiros</span> : null}
+                  {detailItem.parking_spots ? <span className="flex items-center gap-1"><Car size={14} /> {detailItem.parking_spots} vagas</span> : null}
+                  {detailItem.area ? <span className="flex items-center gap-1"><Maximize size={14} /> {detailItem.area}m²</span> : null}
+                </div>
+
+                {/* Description */}
+                {detailItem.description && (
+                  <div>
+                    <h4 className="text-xs font-bold text-muted-foreground uppercase mb-1">Descrição</h4>
+                    <p className="text-sm text-foreground whitespace-pre-line">{detailItem.description}</p>
+                  </div>
+                )}
+
+                {/* Commission */}
+                <div className="bg-secondary/50 rounded-xl p-4 space-y-2">
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-muted-foreground">
+                    <DollarSign size={14} /> Simulação de Comissão
+                  </div>
+                  <div className="grid grid-cols-3 gap-2 text-center">
+                    <div className="bg-primary/10 rounded-xl p-2.5">
+                      <p className="text-[10px] text-muted-foreground">Total</p>
+                      <p className="font-bold text-sm text-primary">{fmt(gains.total)}</p>
+                    </div>
+                    <div className="bg-green-500/10 rounded-xl p-2.5">
+                      <p className="text-[10px] text-muted-foreground">Seu ganho</p>
+                      <p className="font-bold text-sm text-green-600">{fmt(gains.partner)}</p>
+                    </div>
+                    <div className="bg-accent/10 rounded-xl p-2.5">
+                      <p className="text-[10px] text-muted-foreground">Dono</p>
+                      <p className="font-bold text-sm text-foreground">{fmt(gains.owner)}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Seller info */}
+                {detailItem.seller && (
+                  <div className="flex items-center gap-3 bg-secondary/50 rounded-xl p-3">
+                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
+                      {detailItem.seller.logo_url ? (
+                        <img src={detailItem.seller.logo_url} alt="" className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="text-sm font-bold text-primary">{detailItem.seller.full_name.charAt(0)}</span>
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-bold text-foreground truncate">{detailItem.seller.company_name || detailItem.seller.full_name}</p>
+                      {detailItem.seller.creci && <p className="text-xs text-muted-foreground">CRECI: {detailItem.seller.creci}</p>}
+                    </div>
+                  </div>
+                )}
+
+                {/* Actions */}
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => requestPartnership(detailItem)}
+                    disabled={requested}
+                    className={`flex-1 py-3 rounded-xl text-sm font-bold transition-colors flex items-center justify-center gap-2 ${
+                      requested
+                        ? "bg-muted text-muted-foreground cursor-not-allowed"
+                        : "bg-primary text-primary-foreground hover:bg-primary/90"
+                    }`}
+                  >
+                    <Handshake size={16} /> {requested ? "Já Solicitado" : "Solicitar Parceria"}
+                  </button>
+                  <button
+                    onClick={() => openWhatsApp(detailItem.seller?.phone || null, detailItem.title, detailItem.finality)}
+                    className="px-4 py-3 rounded-xl bg-green-500 text-white text-sm font-bold hover:bg-green-600 transition-colors flex items-center gap-2"
+                  >
+                    <Phone size={16} /> WhatsApp
+                  </button>
+                </div>
+              </>
+            );
+          })()}
+        </DialogContent>
+      </Dialog>
+
+      {/* ===== MINHAS SOLICITAÇÕES ===== */}
       {subTab === "minhas" && (
         <div className="space-y-3">
           {myRequests.length === 0 ? (
@@ -508,7 +714,7 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
           ) : (
             myRequests.map(req => {
               const st = statusConfig[req.status] || statusConfig.pendente;
-              const gains = req.item ? calcPartnerGain(req.item.price, req.item.commission_percent, req.item.partner_percent, req.item.finality) : null;
+              const gains = req.item ? calcPartnerGain(req.item.price, req.item.commission_percent, req.item.partner_percent) : null;
               return (
                 <motion.div
                   key={req.id}
@@ -529,8 +735,8 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
                       <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${st.color}`}>
                         <st.icon size={10} /> {st.label}
                       </span>
-                      {gains && (
-                        <span className="text-[10px] text-green-600 font-bold">Ganho estimado: {formatCurrency(gains.partner)}</span>
+                      {gains && gains.partner > 0 && (
+                        <span className="text-[10px] text-green-600 font-bold">Ganho: {fmt(gains.partner)}</span>
                       )}
                     </div>
                     {req.owner && (
@@ -544,7 +750,7 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
         </div>
       )}
 
-      {/* Recebidas */}
+      {/* ===== RECEBIDAS ===== */}
       {subTab === "recebidas" && (
         <div className="space-y-3">
           {receivedRequests.length === 0 ? (
@@ -579,7 +785,6 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
                     </div>
                   </div>
 
-                  {/* Requester info */}
                   {req.requester && (
                     <div className="flex items-center gap-2 bg-secondary/50 rounded-xl p-2.5">
                       <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
@@ -604,7 +809,6 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
                     </div>
                   )}
 
-                  {/* Actions for pending */}
                   {req.status === "pendente" && (
                     <div className="flex gap-2">
                       <button
