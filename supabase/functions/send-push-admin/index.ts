@@ -141,7 +141,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { title, body, url, image, audience: audienceFilter } = await req.json();
+    const { title, body, url, image, audience: audienceFilter, state: stateFilter, city: cityFilter } = await req.json();
     if (!title || !body) {
       return new Response(JSON.stringify({ error: "Title and body required" }), {
         status: 400,
@@ -149,20 +149,30 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Filter sellers by category if requested
+    // Filter sellers by category and/or region
     // audienceFilter: "all" | "corretor" | "imobiliaria" | "construtora" | "professionals" | "clients"
+    const hasCategoryFilter = audienceFilter && audienceFilter !== "all";
+    const hasRegionFilter = (stateFilter && stateFilter !== "all") || (cityFilter && cityFilter.trim());
     let sellerIdsFilter: string[] | null = null;
-    if (audienceFilter && audienceFilter !== "all") {
+
+    if (hasCategoryFilter || hasRegionFilter) {
       let profilesQuery = adminClient.from("profiles").select("id");
-      if (audienceFilter === "professionals") {
-        profilesQuery = profilesQuery.in("seller_category", ["corretor", "imobiliaria", "construtora"]);
-      } else if (audienceFilter === "clients") {
-        // Clients = not a professional category (null OR proprietario/autonomo/loja_veiculos/concessionaria)
-        profilesQuery = profilesQuery.or(
-          "seller_category.is.null,seller_category.in.(proprietario,autonomo,loja_veiculos,concessionaria)"
-        );
-      } else {
-        profilesQuery = profilesQuery.eq("seller_category", audienceFilter);
+      if (hasCategoryFilter) {
+        if (audienceFilter === "professionals") {
+          profilesQuery = profilesQuery.in("seller_category", ["corretor", "imobiliaria", "construtora"]);
+        } else if (audienceFilter === "clients") {
+          profilesQuery = profilesQuery.or(
+            "seller_category.is.null,seller_category.in.(proprietario,autonomo,loja_veiculos,concessionaria)"
+          );
+        } else {
+          profilesQuery = profilesQuery.eq("seller_category", audienceFilter);
+        }
+      }
+      if (stateFilter && stateFilter !== "all") {
+        profilesQuery = profilesQuery.eq("state", stateFilter);
+      }
+      if (cityFilter && cityFilter.trim()) {
+        profilesQuery = profilesQuery.ilike("city", cityFilter.trim());
       }
       const { data: filteredProfiles } = await profilesQuery;
       sellerIdsFilter = (filteredProfiles || []).map((p: any) => p.id);
