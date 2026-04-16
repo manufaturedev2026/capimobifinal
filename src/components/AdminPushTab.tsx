@@ -27,6 +27,9 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
   const { toast } = useToast();
   const [totalSubscribers, setTotalSubscribers] = useState(0);
   const [totalSellers, setTotalSellers] = useState(0);
+  const [totalCorretores, setTotalCorretores] = useState(0);
+  const [totalImobiliarias, setTotalImobiliarias] = useState(0);
+  const [totalConstrutoras, setTotalConstrutoras] = useState(0);
   const [logs, setLogs] = useState<NotificationLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
