@@ -47,7 +47,7 @@ type SellerProfile = {
   creci: string | null;
 };
 
-type SubTab = "meus" | "disponivel" | "minhas" | "recebidas";
+type SubTab = "meus" | "disponivel" | "vigentes" | "minhas" | "recebidas";
 
 const ITEM_FIELDS = "id, title, price, photos, city, state, neighborhood, finality, commission_percent, partner_percent, partnership_enabled, seller_id, user_id, category, description, bedrooms, bathrooms, parking_spots, area";
 
@@ -58,6 +58,7 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
   const [myRequests, setMyRequests] = useState<(PartnershipRequest & { item: PartnershipItem | null; owner: SellerProfile | null })[]>([]);
   const [myItems, setMyItems] = useState<PartnershipItem[]>([]);
   const [receivedRequests, setReceivedRequests] = useState<(PartnershipRequest & { item: PartnershipItem | null; requester: SellerProfile | null })[]>([]);
+  const [activePartnerships, setActivePartnerships] = useState<(PartnershipRequest & { item: PartnershipItem | null; partner: SellerProfile | null; role: "owner" | "requester" })[]>([]);
   const [loading, setLoading] = useState(true);
   const [savingId, setSavingId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -76,7 +77,7 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
 
   const loadData = async () => {
     setLoading(true);
-    await Promise.all([loadMyItems(), loadAvailable(), loadMyRequests(), loadReceivedRequests()]);
+    await Promise.all([loadMyItems(), loadAvailable(), loadMyRequests(), loadReceivedRequests(), loadActivePartnerships()]);
     setLoading(false);
   };
 
@@ -160,6 +161,38 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
       ...r,
       item: itemMap.get(r.item_id) || null,
       requester: profileMap.get(r.requester_profile_id) || null,
+    })));
+  };
+  const loadActivePartnerships = async () => {
+    // Fetch approved partnerships where user is either owner or requester
+    const [{ data: asRequester }, { data: asOwner }] = await Promise.all([
+      supabase.from("property_partnerships").select("*").eq("requester_user_id", userId).eq("status", "aprovado"),
+      supabase.from("property_partnerships").select("*").eq("owner_user_id", userId).eq("status", "aprovado"),
+    ]);
+
+    const all = [
+      ...(asRequester || []).map(r => ({ ...r, _role: "requester" as const })),
+      ...(asOwner || []).map(r => ({ ...r, _role: "owner" as const })),
+    ];
+
+    if (!all.length) { setActivePartnerships([]); return; }
+
+    const itemIds = [...new Set(all.map(r => r.item_id))];
+    const partnerUserIds = [...new Set(all.map(r => r._role === "owner" ? r.requester_user_id : r.owner_user_id))];
+
+    const [{ data: items }, { data: profiles }] = await Promise.all([
+      supabase.from("seller_items").select(ITEM_FIELDS).in("id", itemIds),
+      supabase.from("profiles").select("id, user_id, full_name, phone, logo_url, company_name, creci").in("user_id", partnerUserIds),
+    ]);
+
+    const itemMap = new Map((items || []).map(i => [i.id, i]));
+    const profileMap = new Map((profiles || []).map(p => [p.user_id, p]));
+
+    setActivePartnerships(all.map(r => ({
+      ...r,
+      item: itemMap.get(r.item_id) || null,
+      partner: profileMap.get(r._role === "owner" ? r.requester_user_id : r.owner_user_id) || null,
+      role: r._role,
     })));
   };
 
@@ -317,6 +350,7 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
         {([
           { id: "meus" as SubTab, label: "Meus Imóveis", count: myItems.length },
           { id: "disponivel" as SubTab, label: "Disponíveis", count: filteredItems.length },
+          { id: "vigentes" as SubTab, label: "Vigentes", count: activePartnerships.length },
           { id: "minhas" as SubTab, label: "Solicitações", count: myRequests.length },
           { id: "recebidas" as SubTab, label: "Recebidas", count: receivedRequests.length },
         ]).map(tab => (
@@ -731,6 +765,93 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
           })()}
         </DialogContent>
       </Dialog>
+
+      {/* ===== VIGENTES ===== */}
+      {subTab === "vigentes" && (
+        <div className="space-y-3">
+          {activePartnerships.length === 0 ? (
+            <div className="text-center py-16 space-y-3">
+              <Handshake size={40} className="mx-auto text-muted-foreground/30" />
+              <p className="text-muted-foreground text-sm">Você ainda não tem parcerias vigentes.</p>
+              <p className="text-xs text-muted-foreground">Parcerias aprovadas aparecerão aqui.</p>
+            </div>
+          ) : (
+            activePartnerships.map(p => {
+              const gains = p.item ? calcPartnerGain(p.item.price, p.item.commission_percent, p.item.partner_percent) : null;
+              return (
+                <motion.div
+                  key={p.id}
+                  initial={{ opacity: 0, y: 5 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-card border border-green-500/30 rounded-2xl overflow-hidden"
+                >
+                  <div className="flex gap-3 p-4">
+                    <div className="w-20 h-20 rounded-xl bg-muted overflow-hidden flex-shrink-0">
+                      {p.item?.photos?.[0] ? (
+                        <img src={p.item.photos[0]} alt="" className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center"><Home size={20} className="text-muted-foreground/30" /></div>
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0 space-y-1">
+                      <h3 className="font-bold text-sm text-foreground line-clamp-1">{p.item?.title || "Imóvel"}</h3>
+                      <p className="text-xs text-muted-foreground flex items-center gap-1">
+                        <MapPin size={10} /> {p.item?.city || "Cidade não informada"}
+                      </p>
+                      {p.item?.price && (
+                        <p className="font-bold text-sm text-primary">{fmt(p.item.price)}{p.item.finality === "aluguel" ? "/mês" : ""}</p>
+                      )}
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold text-green-600 bg-green-500/10">
+                        <CheckCircle2 size={10} /> {p.role === "owner" ? "Você é o dono" : "Você é o parceiro"}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Partner info + gains */}
+                  <div className="px-4 pb-4 space-y-3">
+                    {gains && gains.partner > 0 && (
+                      <div className="grid grid-cols-2 gap-2 text-center">
+                        <div className="bg-green-500/10 rounded-xl p-2">
+                          <p className="text-[10px] text-muted-foreground">{p.role === "owner" ? "Ganho do parceiro" : "Seu ganho"}</p>
+                          <p className="font-bold text-sm text-green-600">{fmt(gains.partner)}</p>
+                        </div>
+                        <div className="bg-primary/10 rounded-xl p-2">
+                          <p className="text-[10px] text-muted-foreground">{p.role === "owner" ? "Seu ganho" : "Ganho do dono"}</p>
+                          <p className="font-bold text-sm text-primary">{fmt(gains.owner)}</p>
+                        </div>
+                      </div>
+                    )}
+
+                    {p.partner && (
+                      <div className="flex items-center gap-2 bg-secondary/50 rounded-xl p-2.5">
+                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
+                          {p.partner.logo_url ? (
+                            <img src={p.partner.logo_url} alt="" className="w-full h-full object-cover" />
+                          ) : (
+                            <span className="text-xs font-bold text-primary">{p.partner.full_name.charAt(0)}</span>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-bold text-foreground truncate">{p.partner.company_name || p.partner.full_name}</p>
+                          {p.partner.creci && <p className="text-[10px] text-muted-foreground">CRECI: {p.partner.creci}</p>}
+                        </div>
+                        {p.partner.phone && (
+                          <button
+                            onClick={() => openWhatsApp(p.partner!.phone, p.item?.title || "Imóvel", p.item?.finality || null)}
+                            className="px-3 py-1.5 rounded-lg bg-green-500 text-white text-[10px] font-bold hover:bg-green-600 transition-colors flex items-center gap-1"
+                          >
+                            <Phone size={12} /> WhatsApp
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </motion.div>
+              );
+            })
+          )}
+        </div>
+      )}
 
       {/* ===== MINHAS SOLICITAÇÕES ===== */}
       {subTab === "minhas" && (
