@@ -99,7 +99,7 @@ Deno.serve(async (req) => {
             Use essa senha para entrar. <strong>No primeiro login você será obrigado(a) a criar uma nova senha</strong> e a temporária deixará de funcionar.
           </p>
           <table width="100%" cellpadding="0" cellspacing="0"><tr><td align="center">
-            <a href="https://capimobi001.lovable.app/login" style="display:inline-block;background:#1e40af;color:#ffffff;padding:14px 36px;border-radius:10px;text-decoration:none;font-weight:bold;font-size:15px">Acessar minha conta</a>
+            <a href="https://capimobi.com.br/login" style="display:inline-block;background:#1e40af;color:#ffffff;padding:14px 36px;border-radius:10px;text-decoration:none;font-weight:bold;font-size:15px">Acessar minha conta</a>
           </td></tr></table>
           <p style="margin:32px 0 0;color:#94a3b8;font-size:13px;line-height:1.6;border-top:1px solid #e2e8f0;padding-top:20px">
             ⚠️ Se você não solicitou esta recuperação, entre em contato conosco imediatamente — sua conta pode ter sido comprometida.

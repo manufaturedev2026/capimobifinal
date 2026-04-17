@@ -10,7 +10,7 @@ type SendRow = { id: string; batch_id: string; to_email: string; subject: string
 const DEFAULT_HTML = `<div style="font-family:system-ui,sans-serif;max-width:560px;margin:auto;padding:24px;background:#f8fafc;border-radius:12px;color:#0f172a">
   <h2>Olá {{nome}}!</h2>
   <p>Escreva sua mensagem aqui...</p>
-  <p style="margin-top:20px"><a href="https://capimobi001.lovable.app/painel" style="background:#2563eb;color:#fff;padding:12px 20px;border-radius:8px;text-decoration:none">Acessar Painel</a></p>
+  <p style="margin-top:20px"><a href="https://capimobi.com.br/painel" style="background:#2563eb;color:#fff;padding:12px 20px;border-radius:8px;text-decoration:none">Acessar Painel</a></p>
 </div>`;
 
 const TIERS = ["start", "basico", "premium", "vip", "essencial_empresa", "premium_empresa", "prime_empresa", "black"] as const;
