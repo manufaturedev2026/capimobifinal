@@ -225,32 +225,54 @@ export function getStoreTheme(themeId: string | null | undefined): StoreTheme {
   return STORE_THEMES.find((t) => t.id === themeId) || STORE_THEMES[0];
 }
 
+/** Theme is locked for Básico tier (only default allowed). */
+export function isThemeAllowed(themeId: string, tier: string): boolean {
+  if (tier !== "basico") return true;
+  return themeId === "default";
+}
+
 interface StoreThemePickerProps {
   selected: string;
   onChange: (themeId: string) => void;
+  tier?: string;
+  onLocked?: () => void;
 }
 
-export default function StoreThemePicker({ selected, onChange }: StoreThemePickerProps) {
+export default function StoreThemePicker({ selected, onChange, tier = "premium", onLocked }: StoreThemePickerProps) {
+  const isBasico = tier === "basico";
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2 mb-2">
         <Palette size={18} className="text-primary" />
         <h2 className="font-display font-bold text-foreground">Tema da Loja</h2>
+        {isBasico && (
+          <span className="ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-600 border border-amber-500/30">
+            Upgrade para Start
+          </span>
+        )}
       </div>
-      <p className="text-xs text-muted-foreground">Escolha o tema visual da sua loja. Os visitantes verão sua loja com essas cores.</p>
+      <p className="text-xs text-muted-foreground">
+        {isBasico
+          ? "Plano Básico inclui apenas o tema Padrão. Faça upgrade para Start e desbloqueie todos os temas."
+          : "Escolha o tema visual da sua loja. Os visitantes verão sua loja com essas cores."}
+      </p>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {STORE_THEMES.map((theme) => {
           const isSelected = selected === theme.id;
+          const allowed = isThemeAllowed(theme.id, tier);
           return (
             <motion.button
               key={theme.id}
-              onClick={() => onChange(theme.id)}
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
+              onClick={() => {
+                if (allowed) onChange(theme.id);
+                else onLocked?.();
+              }}
+              whileHover={allowed ? { scale: 1.03 } : undefined}
+              whileTap={allowed ? { scale: 0.97 } : undefined}
               className={`relative rounded-xl overflow-hidden border-2 transition-all ${
                 isSelected ? "border-primary ring-2 ring-primary/30" : "border-border hover:border-primary/40"
-              }`}
+              } ${!allowed ? "opacity-40 cursor-not-allowed grayscale" : ""}`}
             >
               {/* Mini preview */}
               <div className="flex flex-col">

@@ -151,6 +151,8 @@ export default function SellerCustomization({ embedded }: { embedded?: boolean }
         <div className="bg-card border border-border rounded-2xl p-5">
           <StoreThemePicker
             selected={form.store_theme}
+            tier={sellerTier}
+            onLocked={() => toast({ title: "Tema exclusivo a partir do plano Start", description: "Faça upgrade para desbloquear todos os temas.", variant: "destructive" })}
             onChange={(themeId) => { setForm((f) => ({ ...f, store_theme: themeId })); autoSaveField("store_theme", themeId); }}
           />
         </div>
