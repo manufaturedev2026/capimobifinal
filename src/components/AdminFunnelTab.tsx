@@ -113,7 +113,7 @@ export default function AdminFunnelTab() {
         <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>
       ) : tab === "steps" ? (
         <div className="space-y-4">
-          <button onClick={addStep} className="w-full py-3 border-2 border-dashed rounded-xl flex items-center justify-center gap-2 hover:bg-muted">
+          <button onClick={addStep} className="w-full py-3 border-2 border-dashed border-border rounded-xl flex items-center justify-center gap-2 hover:bg-muted text-foreground">
             <Plus className="w-5 h-5" /> Adicionar etapa
           </button>
 
