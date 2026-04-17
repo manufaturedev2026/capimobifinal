@@ -270,11 +270,17 @@ export default function AdminApifyLeadsTab() {
   async function loadTemplate() {
     const { data } = await supabase
       .from("platform_settings").select("key, value")
-      .in("key", ["apify_invite_template_name", "apify_invite_template_subject", "apify_invite_template_html"]);
+      .in("key", [
+        "apify_invite_template_name", "apify_invite_template_subject", "apify_invite_template_html",
+        "apify_leads_template_name", "apify_leads_template_subject", "apify_leads_template_html",
+      ]);
     const map = Object.fromEntries((data || []).map((s) => [s.key, s.value]));
     if (map.apify_invite_template_name) setTplName(map.apify_invite_template_name);
     if (map.apify_invite_template_subject) setTplSubject(map.apify_invite_template_subject);
     if (map.apify_invite_template_html) setTplHtml(map.apify_invite_template_html);
+    if (map.apify_leads_template_name) setTpl2Name(map.apify_leads_template_name);
+    if (map.apify_leads_template_subject) setTpl2Subject(map.apify_leads_template_subject);
+    if (map.apify_leads_template_html) setTpl2Html(map.apify_leads_template_html);
   }
 
   async function saveTemplate() {
@@ -295,6 +301,26 @@ export default function AdminApifyLeadsTab() {
     setTplName(INVITE_TEMPLATE.name);
     setTplSubject(INVITE_TEMPLATE.subject);
     setTplHtml(INVITE_TEMPLATE.html);
+  }
+
+  async function saveTemplate2() {
+    setTpl2Saving(true);
+    const rows = [
+      { key: "apify_leads_template_name", value: tpl2Name },
+      { key: "apify_leads_template_subject", value: tpl2Subject },
+      { key: "apify_leads_template_html", value: tpl2Html },
+    ];
+    const { error } = await supabase.from("platform_settings").upsert(rows, { onConflict: "key" });
+    setTpl2Saving(false);
+    if (error) toast({ title: "Erro ao salvar", description: error.message, variant: "destructive" });
+    else toast({ title: "Template salvo!", description: "As alterações foram aplicadas" });
+  }
+
+  function resetTemplate2() {
+    if (!confirm("Restaurar o template original? As alterações não salvas serão perdidas.")) return;
+    setTpl2Name(APIFY_LEADS_TEMPLATE.name);
+    setTpl2Subject(APIFY_LEADS_TEMPLATE.subject);
+    setTpl2Html(APIFY_LEADS_TEMPLATE.html);
   }
 
   async function loadLeads() {
