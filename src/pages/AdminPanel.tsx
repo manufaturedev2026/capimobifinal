@@ -1444,6 +1444,75 @@ export default function AdminPanel() {
         </DialogContent>
       </Dialog>
 
+      {/* Category Dialog */}
+      <Dialog open={categoryDialogOpen} onOpenChange={setCategoryDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Alterar categoria do cliente</DialogTitle>
+          </DialogHeader>
+          {categorySeller && (
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                <strong>{categorySeller.company_name || categorySeller.full_name}</strong>
+              </p>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground">Categoria</label>
+                <div className="grid grid-cols-1 gap-2">
+                  {[
+                    { value: "corretor", label: "Corretor(a)" },
+                    { value: "imobiliaria", label: "Imobiliária" },
+                    { value: "construtora", label: "Construtora" },
+                  ].map((opt) => (
+                    <button
+                      key={opt.value}
+                      onClick={() => setCategoryValue(opt.value)}
+                      className={`flex items-center justify-between px-4 py-3 rounded-lg border-2 transition ${
+                        categoryValue === opt.value
+                          ? "border-primary bg-primary/5"
+                          : "border-input hover:border-primary/50"
+                      }`}
+                    >
+                      <span className="font-medium text-foreground">{opt.label}</span>
+                      {categoryValue === opt.value && <Check size={16} className="text-primary" />}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="flex gap-2 justify-end pt-2">
+                <button
+                  onClick={() => setCategoryDialogOpen(false)}
+                  className="px-4 py-2 rounded-lg border border-input bg-background text-sm font-medium hover:bg-secondary"
+                >
+                  Cancelar
+                </button>
+                <button
+                  disabled={categorySaving}
+                  onClick={async () => {
+                    if (!categorySeller) return;
+                    setCategorySaving(true);
+                    const { error } = await supabase
+                      .from("profiles")
+                      .update({ seller_category: categoryValue as any })
+                      .eq("id", categorySeller.id);
+                    setCategorySaving(false);
+                    if (error) {
+                      toast({ title: "Erro ao atualizar", description: error.message, variant: "destructive" });
+                    } else {
+                      toast({ title: "Categoria atualizada!" });
+                      setSellers((prev) => prev.map((s) => s.id === categorySeller.id ? { ...s, seller_category: categoryValue } : s));
+                      setCategoryDialogOpen(false);
+                    }
+                  }}
+                  className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 disabled:opacity-50"
+                >
+                  {categorySaving ? "Salvando..." : "Salvar"}
+                </button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
       {/* Ban Dialog */}
       {banDialogOpen && banSeller && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
