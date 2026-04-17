@@ -275,7 +275,7 @@ export default function AdminApifyLeadsTab() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold">Integração Apify Leads</h2>
+          <h2 className="text-2xl font-bold text-foreground">Integração Apify Leads</h2>
           <p className="text-sm text-muted-foreground">Captação automática de leads imobiliários do Brasil</p>
         </div>
       </div>
