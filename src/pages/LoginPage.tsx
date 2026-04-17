@@ -373,7 +373,7 @@ export default function LoginPage() {
                 style={{ background: theme.cardBg, border: `1px solid ${theme.border}` }}>
                 <h3 className="font-display font-bold text-xl mb-2" style={{ color: theme.text }}>Recuperar senha</h3>
                 <p className="text-sm mb-4" style={{ color: theme.textMuted }}>
-                  Digite seu e-mail e enviaremos um link para criar uma nova senha.
+                  Digite seu e-mail. Enviaremos uma <strong>senha temporária</strong> para você acessar — depois você criará uma nova no primeiro login.
                 </p>
                 <form onSubmit={handleForgotPassword} className="space-y-3">
                   <input type="email" required value={forgotEmail} onChange={(e) => setForgotEmail(e.target.value)}
@@ -389,7 +389,7 @@ export default function LoginPage() {
                     <button type="submit" disabled={forgotLoading}
                       className="flex-1 py-3 rounded-xl font-bold text-sm disabled:opacity-50"
                       style={{ background: theme.primary, color: "#fff" }}>
-                      {forgotLoading ? "Enviando..." : "Enviar link"}
+                      {forgotLoading ? "Enviando..." : "Enviar senha temporária"}
                     </button>
                   </div>
                 </form>
