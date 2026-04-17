@@ -139,6 +139,10 @@ Deno.serve(async (req) => {
         await admin.from("lead_campaign_sends").insert({
           campaign_id: campaignId, lead_id: lead.id, to_email: lead.email!, status: "enviado",
         });
+        // Mark as contacted so they won't receive again
+        await admin.from("leads_imobiliarios")
+          .update({ status: "contatado", ultima_atualizacao: new Date().toISOString() })
+          .eq("id", lead.id);
         sent++;
       } catch (e) {
         await admin.from("lead_campaign_sends").insert({
