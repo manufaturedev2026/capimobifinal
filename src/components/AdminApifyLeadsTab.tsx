@@ -603,13 +603,14 @@ export default function AdminApifyLeadsTab() {
       </div>
 
       <Tabs value={tab} onValueChange={setTab}>
-        <TabsList className="grid grid-cols-4 lg:grid-cols-7 h-auto">
+        <TabsList className="grid grid-cols-4 lg:grid-cols-8 h-auto">
           <TabsTrigger value="dashboard" className="gap-1"><Activity className="h-4 w-4" />Dashboard</TabsTrigger>
           <TabsTrigger value="config" className="gap-1"><SettingsIcon className="h-4 w-4" />Config</TabsTrigger>
           <TabsTrigger value="search" className="gap-1"><Search className="h-4 w-4" />Buscar</TabsTrigger>
           <TabsTrigger value="leads" className="gap-1"><Database className="h-4 w-4" />Leads</TabsTrigger>
           <TabsTrigger value="filters" className="gap-1"><Filter className="h-4 w-4" />Filtros</TabsTrigger>
           <TabsTrigger value="campaigns" className="gap-1"><Mail className="h-4 w-4" />Campanhas</TabsTrigger>
+          <TabsTrigger value="templates" className="gap-1"><FileText className="h-4 w-4" />Templates</TabsTrigger>
           <TabsTrigger value="logs" className="gap-1"><History className="h-4 w-4" />Logs</TabsTrigger>
         </TabsList>
 
