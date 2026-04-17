@@ -211,6 +211,29 @@ export default function AdminApifyLeadsTab() {
     setRuns((data || []) as Run[]);
   }
 
+  async function cancelRunningRuns() {
+    const running = runs.filter((r) => r.status === "rodando");
+    if (running.length === 0) {
+      toast({ title: "Nada para cancelar", description: "Não há buscas em execução." });
+      return;
+    }
+    if (!confirm(`Marcar ${running.length} busca(s) "Rodando" como erro/cancelada?`)) return;
+    const { error } = await supabase
+      .from("apify_search_runs")
+      .update({
+        status: "erro",
+        error_message: "Cancelado manualmente pelo admin",
+        finished_at: new Date().toISOString(),
+      })
+      .in("id", running.map((r) => r.id));
+    if (error) {
+      toast({ title: "Erro", description: error.message, variant: "destructive" });
+      return;
+    }
+    toast({ title: "Cancelado", description: `${running.length} busca(s) marcada(s) como erro.` });
+    await loadRuns();
+  }
+
   async function runSearch() {
     if (!apifyToken) {
       toast({ title: "Configure o Token Apify", description: "Vá em Configurações Apify", variant: "destructive" });
@@ -749,7 +772,12 @@ export default function AdminApifyLeadsTab() {
             <CardHeader>
               <CardTitle className="text-base flex items-center justify-between">
                 Histórico de Buscas
-                <Button size="sm" variant="outline" onClick={loadRuns}><RefreshCw className="h-4 w-4 mr-1" />Atualizar</Button>
+                <div className="flex gap-2">
+                  <Button size="sm" variant="destructive" onClick={cancelRunningRuns} disabled={!runs.some((r) => r.status === "rodando")}>
+                    <XCircle className="h-4 w-4 mr-1" />Cancelar Rodando
+                  </Button>
+                  <Button size="sm" variant="outline" onClick={loadRuns}><RefreshCw className="h-4 w-4 mr-1" />Atualizar</Button>
+                </div>
               </CardTitle>
             </CardHeader>
             <CardContent>
