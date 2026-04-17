@@ -167,10 +167,18 @@ export default function AdminApifyLeadsTab() {
   const [campSending, setCampSending] = useState(false);
   const [campTesting, setCampTesting] = useState(false);
 
+  // Templates editor
+  const [tplName, setTplName] = useState(INVITE_TEMPLATE.name);
+  const [tplSubject, setTplSubject] = useState(INVITE_TEMPLATE.subject);
+  const [tplHtml, setTplHtml] = useState(INVITE_TEMPLATE.html);
+  const [tplSaving, setTplSaving] = useState(false);
+  const [tplPreview, setTplPreview] = useState(false);
+
   useEffect(() => {
     loadSettings();
     loadLeads();
     loadRuns();
+    loadTemplate();
   }, []);
 
   async function loadSettings() {
