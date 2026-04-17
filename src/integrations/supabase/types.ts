@@ -318,6 +318,80 @@ export type Database = {
           },
         ]
       }
+      funnel_sends: {
+        Row: {
+          day_offset: number
+          error_message: string | null
+          id: string
+          profile_id: string
+          sent_at: string
+          status: string
+          step_id: string
+          to_email: string
+          user_id: string
+        }
+        Insert: {
+          day_offset: number
+          error_message?: string | null
+          id?: string
+          profile_id: string
+          sent_at?: string
+          status?: string
+          step_id: string
+          to_email: string
+          user_id: string
+        }
+        Update: {
+          day_offset?: number
+          error_message?: string | null
+          id?: string
+          profile_id?: string
+          sent_at?: string
+          status?: string
+          step_id?: string
+          to_email?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "funnel_sends_step_id_fkey"
+            columns: ["step_id"]
+            isOneToOne: false
+            referencedRelation: "funnel_steps"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      funnel_steps: {
+        Row: {
+          content_html: string
+          created_at: string
+          day_offset: number
+          id: string
+          is_active: boolean
+          subject: string
+          updated_at: string
+        }
+        Insert: {
+          content_html: string
+          created_at?: string
+          day_offset: number
+          id?: string
+          is_active?: boolean
+          subject: string
+          updated_at?: string
+        }
+        Update: {
+          content_html?: string
+          created_at?: string
+          day_offset?: number
+          id?: string
+          is_active?: boolean
+          subject?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       generated_contracts: {
         Row: {
           content: string
