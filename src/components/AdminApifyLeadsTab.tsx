@@ -223,6 +223,13 @@ export default function AdminApifyLeadsTab() {
   const [campTestEmail, setCampTestEmail] = useState("");
   const [campSending, setCampSending] = useState(false);
   const [campTesting, setCampTesting] = useState(false);
+  const [campMaxRecipients, setCampMaxRecipients] = useState<number | "">("");
+  const [campSkipSent, setCampSkipSent] = useState(true);
+  const [campMode, setCampMode] = useState<"segment" | "selected">("segment");
+
+  // Already-sent leads tracking + selection
+  const [sentLeadIds, setSentLeadIds] = useState<Set<string>>(new Set());
+  const [selectedLeadIds, setSelectedLeadIds] = useState<Set<string>>(new Set());
 
   // Templates editor (1 - Convite Capimobi)
   const [tplName, setTplName] = useState(INVITE_TEMPLATE.name);
