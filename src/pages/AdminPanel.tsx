@@ -31,6 +31,7 @@ interface SellerWithSub {
   email: string;
   phone: string | null;
   seller_type: string;
+  seller_category: string | null;
   city: string | null;
   account_manager: string | null;
   manager_phone: string | null;
@@ -56,7 +57,12 @@ export default function AdminPanel() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [tierFilter, setTierFilter] = useState<string>("todos");
-  const [tab, setTab] = useState<"dashboard" | "sellers" | "billing" | "referrals" | "crm" | "seo" | "vendas" | "config" | "push" | "site" | "smtp" | "funnel" | "broadcast" | "ads" | "invite" | "apify">("dashboard");
+  const [tab, setTab] = useState<"dashboard" | "clientes" | "billing" | "referrals" | "crm" | "seo" | "vendas" | "config" | "push" | "site" | "smtp" | "funnel" | "broadcast" | "ads" | "invite" | "apify">("dashboard");
+  // Category edit dialog
+  const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
+  const [categorySeller, setCategorySeller] = useState<SellerWithSub | null>(null);
+  const [categoryValue, setCategoryValue] = useState<string>("corretor");
+  const [categorySaving, setCategorySaving] = useState(false);
   const [homepageMode, setHomepageMode] = useState<string>("single");
   const [homepageTheme, setHomepageTheme] = useState<string>("azul");
   const [loginHeroUrl, setLoginHeroUrl] = useState<string>("");
@@ -263,6 +269,7 @@ export default function AdminPanel() {
       email: p.email,
       phone: p.phone,
       seller_type: p.seller_type,
+      seller_category: p.seller_category || null,
       city: p.city,
       account_manager: p.account_manager || null,
       manager_phone: p.manager_phone || null,
@@ -458,7 +465,7 @@ export default function AdminPanel() {
 
   const sidebarItems = [
     { key: "dashboard" as const, label: "Dashboard", icon: BarChart3 },
-    { key: "sellers" as const, label: "Vendedores", icon: Users },
+    { key: "clientes" as const, label: "Clientes", icon: Users },
     { key: "billing" as const, label: "Faturamento", icon: DollarSign },
     { key: "crm" as const, label: "CRM WhatsApp", icon: MessageCircle },
     { key: "ads" as const, label: "CRM de ADS", icon: Megaphone },
@@ -564,7 +571,7 @@ export default function AdminPanel() {
         <main className="flex-1 overflow-y-auto p-4 md:p-6 max-w-5xl">
 
 
-        {tab === "sellers" && (
+        {tab === "clientes" && (
           <div className="space-y-3">
             {/* Tier Filter */}
             <div className="flex items-center gap-2 flex-wrap mb-2">
@@ -616,6 +623,20 @@ export default function AdminPanel() {
                             {tierConfig?.name}
                           </span>
                         )}
+                        {(() => {
+                          const cat = seller.seller_category;
+                          const catLabel = cat === "imobiliaria" ? "Imobiliária" : cat === "construtora" ? "Construtora" : cat === "corretor" ? "Corretor(a)" : "Sem categoria";
+                          const catColor = cat === "imobiliaria" ? "bg-blue-500/15 text-blue-600" : cat === "construtora" ? "bg-orange-500/15 text-orange-600" : cat === "corretor" ? "bg-purple-500/15 text-purple-600" : "bg-muted text-muted-foreground";
+                          return (
+                            <button
+                              onClick={() => { setCategorySeller(seller); setCategoryValue(cat || "corretor"); setCategoryDialogOpen(true); }}
+                              className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${catColor} hover:opacity-80 transition`}
+                              title="Clique para alterar a categoria"
+                            >
+                              {catLabel}
+                            </button>
+                          );
+                        })()}
                       </div>
                       <p className="text-xs text-muted-foreground">{seller.email} • {seller.seller_type} • {seller.city || "—"}</p>
                       {sub && (
@@ -1416,6 +1437,75 @@ export default function AdminPanel() {
                   className="flex-1 px-3 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 disabled:opacity-60"
                 >
                   {planSaving ? "Salvando..." : "Confirmar"}
+                </button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Category Dialog */}
+      <Dialog open={categoryDialogOpen} onOpenChange={setCategoryDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Alterar categoria do cliente</DialogTitle>
+          </DialogHeader>
+          {categorySeller && (
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                <strong>{categorySeller.company_name || categorySeller.full_name}</strong>
+              </p>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground">Categoria</label>
+                <div className="grid grid-cols-1 gap-2">
+                  {[
+                    { value: "corretor", label: "Corretor(a)" },
+                    { value: "imobiliaria", label: "Imobiliária" },
+                    { value: "construtora", label: "Construtora" },
+                  ].map((opt) => (
+                    <button
+                      key={opt.value}
+                      onClick={() => setCategoryValue(opt.value)}
+                      className={`flex items-center justify-between px-4 py-3 rounded-lg border-2 transition ${
+                        categoryValue === opt.value
+                          ? "border-primary bg-primary/5"
+                          : "border-input hover:border-primary/50"
+                      }`}
+                    >
+                      <span className="font-medium text-foreground">{opt.label}</span>
+                      {categoryValue === opt.value && <Check size={16} className="text-primary" />}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="flex gap-2 justify-end pt-2">
+                <button
+                  onClick={() => setCategoryDialogOpen(false)}
+                  className="px-4 py-2 rounded-lg border border-input bg-background text-sm font-medium hover:bg-secondary"
+                >
+                  Cancelar
+                </button>
+                <button
+                  disabled={categorySaving}
+                  onClick={async () => {
+                    if (!categorySeller) return;
+                    setCategorySaving(true);
+                    const { error } = await supabase
+                      .from("profiles")
+                      .update({ seller_category: categoryValue as any })
+                      .eq("id", categorySeller.id);
+                    setCategorySaving(false);
+                    if (error) {
+                      toast({ title: "Erro ao atualizar", description: error.message, variant: "destructive" });
+                    } else {
+                      toast({ title: "Categoria atualizada!" });
+                      setSellers((prev) => prev.map((s) => s.id === categorySeller.id ? { ...s, seller_category: categoryValue } : s));
+                      setCategoryDialogOpen(false);
+                    }
+                  }}
+                  className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 disabled:opacity-50"
+                >
+                  {categorySaving ? "Salvando..." : "Salvar"}
                 </button>
               </div>
             </div>
