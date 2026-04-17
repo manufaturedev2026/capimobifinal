@@ -123,6 +123,63 @@ const INVITE_TEMPLATE = {
 </div>`,
 };
 
+const APIFY_LEADS_TEMPLATE = {
+  name: "Integração Apify Leads - Chamada WhatsApp",
+  subject: "{{nome}}, achei sua {{empresa}} e quero te mostrar algo 🚀",
+  html: `<div style="font-family:'Segoe UI',Arial,sans-serif;max-width:600px;margin:0 auto;background:#f4f6fb;padding:24px 0;">
+  <div style="max-width:560px;margin:0 auto;padding:0 16px;">
+    <div style="text-align:center;padding:8px 0 24px;">
+      <p style="font-size:28px;font-weight:bold;color:#1e40af;margin:0;letter-spacing:-0.5px;">
+        Cap<span style="color:#ffffff;background:#1e40af;padding:0 6px;border-radius:4px;">i</span><span style="color:#f59e0b;">mobi</span>
+      </p>
+    </div>
+    <div style="background:#ffffff;border-radius:16px;padding:40px 32px;box-shadow:0 4px 24px rgba(30,64,175,0.08);">
+      <h1 style="font-size:24px;font-weight:bold;color:#0f172a;margin:0 0 16px;">Olá {{nome}}, tudo bem? 👋</h1>
+      <p style="font-size:15px;color:#334155;line-height:1.6;margin:0 0 16px;">
+        Encontrei a <strong>{{empresa}}</strong> em <strong>{{cidade}}/{{estado}}</strong> e fiquei impressionado com o trabalho de vocês. Sou da <strong>Capimobi</strong> — uma plataforma criada para corretores e imobiliárias venderem mais com tecnologia de verdade.
+      </p>
+      <p style="font-size:15px;color:#334155;line-height:1.6;margin:0 0 24px;">
+        Quero te apresentar como a Capimobi pode <strong>multiplicar seus leads</strong> e organizar todo o seu processo comercial em um só lugar:
+      </p>
+      <div style="background:#f0f9ff;border-left:4px solid #1e40af;border-radius:8px;padding:16px 20px;margin:0 0 24px;">
+        <p style="font-size:14px;font-weight:bold;color:#0f172a;margin:0 0 12px;">🏡 Tudo que você precisa, em uma plataforma só:</p>
+        <ul style="margin:0;padding-left:20px;color:#334155;font-size:14px;line-height:1.8;">
+          <li><strong>Site profissional</strong> com sua marca, domínio e SEO automático</li>
+          <li><strong>CRM completo</strong> com funil Kanban e histórico de cada lead</li>
+          <li><strong>WhatsApp integrado</strong> com captura automática de contatos</li>
+          <li><strong>Stories</strong> estilo Instagram para destacar imóveis</li>
+          <li><strong>Propostas em PDF</strong> com QR Code, fotos e mapa</li>
+          <li><strong>Simulador de financiamento</strong> Caixa, Itaú, Bradesco</li>
+          <li><strong>Notificações Push</strong> para reengajar visitantes</li>
+          <li><strong>Sistema de parcerias</strong> entre corretores e imobiliárias</li>
+          <li><strong>Captação de imóveis</strong> via link público compartilhável</li>
+        </ul>
+      </div>
+      <p style="font-size:15px;color:#334155;line-height:1.6;margin:0 0 16px;">
+        <strong>Bora trocar uma ideia rápida no WhatsApp?</strong> Em 5 minutos eu te mostro como funciona e você decide se faz sentido para a {{empresa}}.
+      </p>
+      <div style="text-align:center;margin:32px 0;">
+        <a href="https://wa.me/5527999999999?text=Ol%C3%A1!%20Recebi%20o%20e-mail%20da%20Capimobi%20e%20quero%20saber%20mais" style="background:#25D366;color:#ffffff;font-size:16px;font-weight:bold;border-radius:12px;padding:16px 40px;text-decoration:none;display:inline-block;box-shadow:0 4px 12px rgba(37,211,102,0.35);">
+          💬 Falar no WhatsApp agora
+        </a>
+      </div>
+      <div style="text-align:center;margin:0 0 24px;">
+        <a href="https://capimobi001.lovable.app" style="font-size:14px;color:#1e40af;text-decoration:underline;font-weight:600;">
+          🌐 Conhecer o site capimobi001.lovable.app
+        </a>
+      </div>
+      <p style="font-size:13px;color:#64748b;line-height:1.5;margin:24px 0 0;padding-top:24px;border-top:1px solid #e2e8f0;text-align:center;">
+        Se preferir, é só responder este e-mail — eu pessoalmente te respondo. 💙
+      </p>
+    </div>
+    <div style="text-align:center;padding:24px 0 8px;">
+      <p style="font-size:13px;color:#475569;font-weight:600;margin:0;">Capimobi — Plataforma de corretores e imobiliárias</p>
+      <p style="font-size:12px;color:#94a3b8;margin:4px 0 0;">Se não deseja mais receber, basta ignorar este e-mail.</p>
+    </div>
+  </div>
+</div>`,
+};
+
 export default function AdminApifyLeadsTab() {
   const { toast } = useToast();
   const [tab, setTab] = useState("dashboard");
