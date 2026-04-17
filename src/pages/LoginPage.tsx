@@ -37,6 +37,32 @@ export default function LoginPage() {
   const { toast } = useToast();
 
   const [isNewSignup, setIsNewSignup] = useState(false);
+  const [showForgot, setShowForgot] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [forgotLoading, setForgotLoading] = useState(false);
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!forgotEmail.trim()) {
+      toast({ title: "Digite seu e-mail", variant: "destructive" });
+      return;
+    }
+    setForgotLoading(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(forgotEmail, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    setForgotLoading(false);
+    if (error) {
+      toast({ title: "Erro ao enviar", description: error.message, variant: "destructive" });
+    } else {
+      toast({
+        title: "E-mail enviado!",
+        description: "Verifique sua caixa de entrada para redefinir sua senha.",
+      });
+      setShowForgot(false);
+      setForgotEmail("");
+    }
+  };
 
   // Dynamic theme from admin settings
   const [themeId, setThemeId] = useState<string>("azul");
@@ -282,11 +308,50 @@ export default function LoginPage() {
           </form>
 
           {!signedUp && isLogin && (
-            <p className="text-center text-sm mt-8" style={{ color: theme.textMuted }}>
-              <button onClick={() => setIsLogin(false)} className="font-semibold hover:underline" style={{ color: theme.primary }}>
-                Quero me Cadastrar
-              </button>
-            </p>
+            <>
+              <p className="text-center text-sm mt-4">
+                <button onClick={() => { setShowForgot(true); setForgotEmail(email); }} className="font-medium hover:underline" style={{ color: theme.textMuted }}>
+                  Esqueci minha senha
+                </button>
+              </p>
+              <p className="text-center text-sm mt-6" style={{ color: theme.textMuted }}>
+                <button onClick={() => setIsLogin(false)} className="font-semibold hover:underline" style={{ color: theme.primary }}>
+                  Quero me Cadastrar
+                </button>
+              </p>
+            </>
+          )}
+
+          {showForgot && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/70 backdrop-blur-sm" onClick={() => setShowForgot(false)}>
+              <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
+                onClick={(e) => e.stopPropagation()}
+                className="w-full max-w-md p-6 rounded-2xl"
+                style={{ background: theme.cardBg, border: `1px solid ${theme.border}` }}>
+                <h3 className="font-display font-bold text-xl mb-2" style={{ color: theme.text }}>Recuperar senha</h3>
+                <p className="text-sm mb-4" style={{ color: theme.textMuted }}>
+                  Digite seu e-mail e enviaremos um link para criar uma nova senha.
+                </p>
+                <form onSubmit={handleForgotPassword} className="space-y-3">
+                  <input type="email" required value={forgotEmail} onChange={(e) => setForgotEmail(e.target.value)}
+                    className="w-full px-4 py-3 rounded-xl text-sm focus:outline-none"
+                    style={{ background: theme.darkBase, border: `1px solid ${theme.border}`, color: theme.text }}
+                    placeholder="seu@email.com" autoFocus />
+                  <div className="flex gap-2">
+                    <button type="button" onClick={() => setShowForgot(false)}
+                      className="flex-1 py-3 rounded-xl font-semibold text-sm"
+                      style={{ background: "transparent", border: `1px solid ${theme.border}`, color: theme.text }}>
+                      Cancelar
+                    </button>
+                    <button type="submit" disabled={forgotLoading}
+                      className="flex-1 py-3 rounded-xl font-bold text-sm disabled:opacity-50"
+                      style={{ background: theme.primary, color: "#fff" }}>
+                      {forgotLoading ? "Enviando..." : "Enviar link"}
+                    </button>
+                  </div>
+                </form>
+              </motion.div>
+            </div>
           )}
           {!signedUp && !isLogin && (
             <p className="text-center text-sm mt-8" style={{ color: theme.textMuted }}>
