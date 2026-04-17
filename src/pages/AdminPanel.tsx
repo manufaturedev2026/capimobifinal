@@ -328,6 +328,55 @@ export default function AdminPanel() {
     }
   };
 
+  const openPlanDialog = (seller: SellerWithSub) => {
+    setPlanSeller(seller);
+    setPlanTier(seller.subscription?.tier || "start");
+    setPlanDuration("30");
+    setPlanCustomDays("");
+    setPlanDialogOpen(true);
+  };
+
+  const confirmPlanChange = async () => {
+    if (!planSeller) return;
+    setPlanSaving(true);
+    const days = planDuration === "custom" ? parseInt(planCustomDays || "0", 10) : parseInt(planDuration, 10);
+    if (!days || days < 1) {
+      toast({ title: "Informe a quantidade de dias", variant: "destructive" });
+      setPlanSaving(false);
+      return;
+    }
+    const tierConfig = PACKAGE_CONFIG[planTier as keyof typeof PACKAGE_CONFIG];
+    const maxItems = (tierConfig as any)?.maxItems ?? 5;
+    const expiresAt = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString();
+
+    await supabase
+      .from("seller_subscriptions")
+      .update({ is_active: false } as any)
+      .eq("seller_id", planSeller.id)
+      .eq("is_active", true);
+
+    const { error } = await supabase.from("seller_subscriptions").insert({
+      user_id: planSeller.user_id,
+      seller_id: planSeller.id,
+      tier: planTier,
+      max_items: maxItems,
+      started_at: new Date().toISOString(),
+      expires_at: expiresAt,
+      is_active: true,
+      payment_method: "admin",
+      payment_status: "confirmado",
+    } as any);
+
+    setPlanSaving(false);
+    if (error) {
+      toast({ title: "Erro ao alterar plano", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: `Plano atualizado para ${(tierConfig as any)?.name || planTier} por ${days} dias!` });
+      setPlanDialogOpen(false);
+      fetchSellers();
+    }
+  };
+
   const filteredSellers = sellers.filter((s) => {
     const matchesSearch =
       s.full_name.toLowerCase().includes(search.toLowerCase()) ||
