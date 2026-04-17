@@ -1444,39 +1444,88 @@ export default function AdminApifyLeadsTab() {
               <Textarea value={campHtml} onChange={(e) => setCampHtml(e.target.value)} rows={8}
                         placeholder="<p>Olá {{nome}},</p><p>Sou da Capimobi e gostaria de apresentar...</p>" />
             </div>
-            <div className="grid grid-cols-3 gap-3">
+            {/* Modo de envio */}
+            <div className="rounded-lg border p-3 space-y-3">
+              <Label className="text-sm font-semibold">Para quem enviar?</Label>
+              <div className="grid grid-cols-2 gap-2">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={campMode === "segment" ? "default" : "outline"}
+                  onClick={() => setCampMode("segment")}
+                >
+                  Por filtros (segmento)
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={campMode === "selected" ? "default" : "outline"}
+                  onClick={() => setCampMode("selected")}
+                >
+                  Selecionados ({selectedLeadIds.size})
+                </Button>
+              </div>
+
+              {campMode === "segment" && (
+                <div className="grid grid-cols-3 gap-3">
+                  <div>
+                    <Label className="text-xs">Tipo</Label>
+                    <Select value={campTipo} onValueChange={setCampTipo}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="todos">Todos</SelectItem>
+                        <SelectItem value="imobiliaria">Imobiliárias</SelectItem>
+                        <SelectItem value="corretor">Corretores</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label className="text-xs">Estado</Label>
+                    <Select value={campEstado || "all"} onValueChange={(v) => setCampEstado(v === "all" ? "" : v)}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Todos</SelectItem>
+                        {BRAZIL_STATES.map((s) => <SelectItem key={s.uf} value={s.uf}>{s.uf}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label className="text-xs">Status</Label>
+                    <Select value={campStatus} onValueChange={setCampStatus}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="todos">Todos</SelectItem>
+                        <SelectItem value="novo">Novos</SelectItem>
+                        <SelectItem value="contatado">Contatados</SelectItem>
+                        <SelectItem value="qualificado">Qualificados</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Limite e proteção contra duplicidade */}
+            <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label>Tipo</Label>
-                <Select value={campTipo} onValueChange={setCampTipo}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="todos">Todos</SelectItem>
-                    <SelectItem value="imobiliaria">Imobiliárias</SelectItem>
-                    <SelectItem value="corretor">Corretores</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Label>Quantidade máxima de envios</Label>
+                <Input
+                  type="number"
+                  min={1}
+                  value={campMaxRecipients}
+                  onChange={(e) => setCampMaxRecipients(e.target.value === "" ? "" : Number(e.target.value))}
+                  placeholder="Deixe em branco para enviar a todos"
+                />
+                <p className="text-[11px] text-muted-foreground mt-1">Limita o total de e-mails desta campanha.</p>
               </div>
               <div>
-                <Label>Estado</Label>
-                <Select value={campEstado || "all"} onValueChange={(v) => setCampEstado(v === "all" ? "" : v)}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Todos</SelectItem>
-                    {BRAZIL_STATES.map((s) => <SelectItem key={s.uf} value={s.uf}>{s.uf}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label>Status</Label>
-                <Select value={campStatus} onValueChange={setCampStatus}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="todos">Todos</SelectItem>
-                    <SelectItem value="novo">Novos</SelectItem>
-                    <SelectItem value="contatado">Contatados</SelectItem>
-                    <SelectItem value="qualificado">Qualificados</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Label>Pular leads que já receberam</Label>
+                <div className="flex items-center gap-2 h-10 px-3 rounded-md border bg-background">
+                  <Switch checked={campSkipSent} onCheckedChange={setCampSkipSent} />
+                  <span className="text-sm text-muted-foreground">
+                    {campSkipSent ? "Sim — só novos contatos" : "Não — pode reenviar"}
+                  </span>
+                </div>
               </div>
             </div>
             <div>
