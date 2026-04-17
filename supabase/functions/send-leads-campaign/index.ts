@@ -23,6 +23,9 @@ interface CampaignBody {
     has_whatsapp?: boolean;
   };
   test_email?: string;
+  max_recipients?: number;
+  lead_ids?: string[];
+  skip_already_sent?: boolean;
 }
 
 Deno.serve(async (req) => {
@@ -78,24 +81,54 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Build query
-    let q = admin.from("leads_imobiliarios").select("id, nome, empresa, email, cidade, estado").not("email", "is", null);
-    const f = body.segment_filter || {};
-    if (f.tipo_lead && f.tipo_lead !== "todos") q = q.eq("tipo_lead", f.tipo_lead);
-    if (f.estado) q = q.eq("estado", f.estado);
-    if (f.cidade) q = q.eq("cidade", f.cidade);
-    if (f.status && f.status !== "todos") q = q.eq("status", f.status);
-    if (f.has_whatsapp) q = q.not("whatsapp", "is", null);
-    // Always exclude leads already contacted/qualified/converted unless explicitly requested
-    if (!f.status || f.status === "todos" || f.status === "novo") {
-      q = q.eq("status", "novo");
+    // Build query — either by IDs or by segment
+    let leads: Array<{ id: string; nome: string | null; empresa: string | null; email: string | null; cidade: string | null; estado: string | null }> = [];
+
+    if (body.lead_ids && body.lead_ids.length > 0) {
+      const { data, error } = await admin
+        .from("leads_imobiliarios")
+        .select("id, nome, empresa, email, cidade, estado")
+        .in("id", body.lead_ids)
+        .not("email", "is", null);
+      if (error) throw error;
+      leads = (data || []) as typeof leads;
+    } else {
+      let q = admin.from("leads_imobiliarios").select("id, nome, empresa, email, cidade, estado").not("email", "is", null);
+      const f = body.segment_filter || {};
+      if (f.tipo_lead && f.tipo_lead !== "todos") q = q.eq("tipo_lead", f.tipo_lead);
+      if (f.estado) q = q.eq("estado", f.estado);
+      if (f.cidade) q = q.eq("cidade", f.cidade);
+      if (f.status && f.status !== "todos") q = q.eq("status", f.status);
+      if (f.has_whatsapp) q = q.not("whatsapp", "is", null);
+      if (!f.status || f.status === "todos" || f.status === "novo") {
+        q = q.eq("status", "novo");
+      }
+      const { data, error } = await q.limit(5000);
+      if (error) throw error;
+      leads = (data || []) as typeof leads;
     }
 
-    const { data: leads, error: leadsErr } = await q.limit(5000);
-    if (leadsErr) throw leadsErr;
-    if (!leads || leads.length === 0) {
+    // Skip already-sent leads (by default true)
+    const skipSent = body.skip_already_sent !== false;
+    if (skipSent && leads.length > 0) {
+      const ids = leads.map((l) => l.id);
+      const { data: prevSends } = await admin
+        .from("lead_campaign_sends")
+        .select("lead_id")
+        .in("lead_id", ids)
+        .eq("status", "enviado");
+      const sentSet = new Set((prevSends || []).map((r: any) => r.lead_id));
+      leads = leads.filter((l) => !sentSet.has(l.id));
+    }
+
+    // Apply max_recipients limit
+    if (body.max_recipients && body.max_recipients > 0 && leads.length > body.max_recipients) {
+      leads = leads.slice(0, body.max_recipients);
+    }
+
+    if (leads.length === 0) {
       await client.close();
-      return json({ ok: true, sent: 0, failed: 0, message: "Nenhum lead encontrado" });
+      return json({ ok: true, sent: 0, failed: 0, total: 0, message: "Nenhum lead disponível para envio (todos já receberam ou nenhum encontrado)." });
     }
 
     // Create or update campaign
@@ -106,7 +139,7 @@ Deno.serve(async (req) => {
         name: body.name || body.subject,
         subject: body.subject,
         content_html: body.content_html,
-        segment_filter: f,
+        segment_filter: body.segment_filter || {},
         total_recipients: leads.length,
         status: "enviando",
         started_at: new Date().toISOString(),
@@ -139,7 +172,6 @@ Deno.serve(async (req) => {
         await admin.from("lead_campaign_sends").insert({
           campaign_id: campaignId, lead_id: lead.id, to_email: lead.email!, status: "enviado",
         });
-        // Mark as contacted so they won't receive again
         await admin.from("leads_imobiliarios")
           .update({ status: "contatado", ultima_atualizacao: new Date().toISOString() })
           .eq("id", lead.id);
