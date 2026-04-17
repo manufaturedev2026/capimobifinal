@@ -93,6 +93,10 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (user && profile) {
+      if ((profile as any).must_change_password) {
+        navigate("/reset-password?force=1", { replace: true });
+        return;
+      }
       if (isNewSignup) {
         navigate("/painel", { replace: true });
       } else {
