@@ -657,12 +657,16 @@ export default function AdminPanel() {
                     </div>
 
                     <div className="flex gap-1.5 flex-wrap">
-                      {sub?.payment_status === "pendente" && (
+                       {sub?.payment_status === "pendente" && (
                         <button onClick={() => approvePayment(sub.id)}
                           className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-green-500/10 text-green-600 text-xs font-semibold hover:bg-green-500/20">
                           <Check size={12} /> Aprovar
                         </button>
                       )}
+                      <button onClick={() => openPlanDialog(seller)}
+                        className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-amber-500/10 text-amber-600 text-xs font-semibold hover:bg-amber-500/20">
+                        <Crown size={12} /> Plano
+                      </button>
                        {sub && (
                         <>
                           <button onClick={() => renewSubscription(sub.id)}
