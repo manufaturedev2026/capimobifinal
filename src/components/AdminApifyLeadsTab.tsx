@@ -105,7 +105,7 @@ const INVITE_TEMPLATE = {
         Sem compromisso, sem cartão de crédito. Crie sua loja em menos de 5 minutos e comece a receber leads ainda hoje.
       </p>
       <div style="text-align:center;margin:32px 0;">
-        <a href="https://capimobi001.lovable.app/cadastro" style="background:#1e40af;color:#ffffff;font-size:16px;font-weight:bold;border-radius:12px;padding:16px 40px;text-decoration:none;display:inline-block;box-shadow:0 4px 12px rgba(30,64,175,0.3);">
+        <a href="https://capimobi.com.br/cadastro" style="background:#1e40af;color:#ffffff;font-size:16px;font-weight:bold;border-radius:12px;padding:16px 40px;text-decoration:none;display:inline-block;box-shadow:0 4px 12px rgba(30,64,175,0.3);">
           🚀 Criar Minha Loja Grátis
         </a>
       </div>
@@ -165,8 +165,8 @@ const APIFY_LEADS_TEMPLATE = {
         </a>
       </div>
       <div style="text-align:center;margin:0 0 24px;">
-        <a href="https://capimobi001.lovable.app" style="font-size:14px;color:#1e40af;text-decoration:underline;font-weight:600;">
-          🌐 Conhecer o site capimobi001.lovable.app
+        <a href="https://capimobi.com.br" style="font-size:14px;color:#1e40af;text-decoration:underline;font-weight:600;">
+          🌐 Conhecer o site capimobi.com.br
         </a>
       </div>
       <p style="font-size:13px;color:#64748b;line-height:1.5;margin:24px 0 0;padding-top:24px;border-top:1px solid #e2e8f0;text-align:center;">

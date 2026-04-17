@@ -23,7 +23,7 @@ type Send = {
 const DEFAULT_HTML = `<div style="font-family:system-ui,sans-serif;max-width:560px;margin:auto;padding:24px;background:#f8fafc;border-radius:12px;color:#0f172a">
   <h2>Olá {{nome}}, bem-vindo(a) à Capimobi!</h2>
   <p>Estamos felizes em ter você conosco. Acesse seu painel e comece a anunciar agora.</p>
-  <p style="margin-top:20px"><a href="https://capimobi001.lovable.app/painel" style="background:#2563eb;color:#fff;padding:12px 20px;border-radius:8px;text-decoration:none">Acessar Painel</a></p>
+  <p style="margin-top:20px"><a href="https://capimobi.com.br/painel" style="background:#2563eb;color:#fff;padding:12px 20px;border-radius:8px;text-decoration:none">Acessar Painel</a></p>
 </div>`;
 
 export default function AdminFunnelTab() {
