@@ -987,10 +987,39 @@ export default function AdminApifyLeadsTab() {
                 </label>
               </div>
 
+              {selectedLeadIds.size > 0 && (
+                <div className="flex items-center justify-between gap-3 rounded-lg border border-primary/30 bg-primary/5 p-3">
+                  <p className="text-sm font-medium text-foreground">
+                    {selectedLeadIds.size} lead(s) selecionado(s)
+                  </p>
+                  <div className="flex gap-2">
+                    <Button size="sm" variant="ghost" onClick={() => setSelectedLeadIds(new Set())}>Limpar</Button>
+                    <Button size="sm" onClick={() => { setCampMode("selected"); setCampOpen(true); }}>
+                      <Send className="h-4 w-4 mr-1" />Enviar campanha para selecionados
+                    </Button>
+                  </div>
+                </div>
+              )}
+
               <div className="border rounded-lg overflow-hidden">
                 <Table>
                   <TableHeader>
                     <TableRow>
+                      <TableHead className="w-10">
+                        <Checkbox
+                          checked={
+                            filteredLeads.slice(0, 200).length > 0 &&
+                            filteredLeads.slice(0, 200).every((l) => selectedLeadIds.has(l.id))
+                          }
+                          onCheckedChange={(v) => {
+                            const next = new Set(selectedLeadIds);
+                            const visible = filteredLeads.slice(0, 200);
+                            if (v) visible.forEach((l) => { if (l.email) next.add(l.id); });
+                            else visible.forEach((l) => next.delete(l.id));
+                            setSelectedLeadIds(next);
+                          }}
+                        />
+                      </TableHead>
                       <TableHead>Nome</TableHead>
                       <TableHead>Tipo</TableHead>
                       <TableHead>Cidade/UF</TableHead>
@@ -1001,13 +1030,33 @@ export default function AdminApifyLeadsTab() {
                   </TableHeader>
                   <TableBody>
                     {loading ? (
-                      <TableRow><TableCell colSpan={6} className="text-center py-8"><Loader2 className="h-5 w-5 animate-spin mx-auto" /></TableCell></TableRow>
+                      <TableRow><TableCell colSpan={7} className="text-center py-8"><Loader2 className="h-5 w-5 animate-spin mx-auto" /></TableCell></TableRow>
                     ) : filteredLeads.length === 0 ? (
-                      <TableRow><TableCell colSpan={6} className="text-center py-8 text-muted-foreground">Nenhum lead encontrado</TableCell></TableRow>
-                    ) : filteredLeads.slice(0, 200).map((l) => (
-                      <TableRow key={l.id}>
+                      <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">Nenhum lead encontrado</TableCell></TableRow>
+                    ) : filteredLeads.slice(0, 200).map((l) => {
+                      const alreadySent = sentLeadIds.has(l.id);
+                      return (
+                      <TableRow key={l.id} className={alreadySent ? "bg-muted/30" : ""}>
                         <TableCell>
-                          <div className="font-medium">{l.nome}</div>
+                          <Checkbox
+                            disabled={!l.email}
+                            checked={selectedLeadIds.has(l.id)}
+                            onCheckedChange={(v) => {
+                              const next = new Set(selectedLeadIds);
+                              if (v) next.add(l.id); else next.delete(l.id);
+                              setSelectedLeadIds(next);
+                            }}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <div className="font-medium flex items-center gap-2">
+                            {l.nome}
+                            {alreadySent && (
+                              <Badge variant="secondary" className="text-[10px] gap-1">
+                                <Mail className="h-3 w-3" />Já recebeu
+                              </Badge>
+                            )}
+                          </div>
                           {l.empresa && l.empresa !== l.nome && <div className="text-xs text-muted-foreground">{l.empresa}</div>}
                         </TableCell>
                         <TableCell>
@@ -1049,7 +1098,7 @@ export default function AdminApifyLeadsTab() {
                           </div>
                         </TableCell>
                       </TableRow>
-                    ))}
+                    );})}
                   </TableBody>
                 </Table>
               </div>
