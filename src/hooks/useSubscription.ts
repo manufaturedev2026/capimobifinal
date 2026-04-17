@@ -54,7 +54,7 @@ export const PACKAGE_CONFIG = {
       "Até 5 anúncios ativos",
       "Vitrine própria (sua loja online)",
       "URL personalizada /seu-nome",
-      "1 Layout (Showcase) + 1 Tema",
+      "1 Layout (Marketplace) + 1 Tema",
       "Painel do vendedor completo",
       "Estatísticas básicas",
       "Gerador de contratos (1 modelo)",

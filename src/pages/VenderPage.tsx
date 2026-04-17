@@ -121,7 +121,7 @@ const PLANS = [
   {
     key: "basico", name: "Básico", subtitle: "Para experimentar", price: 0, priceLabel: "Gratuito",
     setupFee: null, popular: false,
-    benefits: ["Até 5 anúncios ativos", "Vitrine própria (sua loja online)", "URL personalizada /seu-nome", "1 Layout (Showcase) + 1 Tema", "Painel do vendedor completo", "Estatísticas básicas", "Gerador de contratos (1 modelo)", "QR Code dos anúncios e propostas PDF", "Calculadora de Lucro (ROI)", "Sistema de Parcerias entre corretores", "Push: 1 envio por dia", "Gerador de Texto IA: 5/dia"],
+    benefits: ["Até 5 anúncios ativos", "Vitrine própria (sua loja online)", "URL personalizada /seu-nome", "1 Layout (Marketplace) + 1 Tema", "Painel do vendedor completo", "Estatísticas básicas", "Gerador de contratos (1 modelo)", "QR Code dos anúncios e propostas PDF", "Calculadora de Lucro (ROI)", "Sistema de Parcerias entre corretores", "Push: 1 envio por dia", "Gerador de Texto IA: 5/dia"],
     cta: "Criar conta grátis",
   },
   {
