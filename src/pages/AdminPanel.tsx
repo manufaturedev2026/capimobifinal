@@ -623,6 +623,20 @@ export default function AdminPanel() {
                             {tierConfig?.name}
                           </span>
                         )}
+                        {(() => {
+                          const cat = seller.seller_category;
+                          const catLabel = cat === "imobiliaria" ? "Imobiliária" : cat === "construtora" ? "Construtora" : cat === "corretor" ? "Corretor(a)" : "Sem categoria";
+                          const catColor = cat === "imobiliaria" ? "bg-blue-500/15 text-blue-600" : cat === "construtora" ? "bg-orange-500/15 text-orange-600" : cat === "corretor" ? "bg-purple-500/15 text-purple-600" : "bg-muted text-muted-foreground";
+                          return (
+                            <button
+                              onClick={() => { setCategorySeller(seller); setCategoryValue(cat || "corretor"); setCategoryDialogOpen(true); }}
+                              className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${catColor} hover:opacity-80 transition`}
+                              title="Clique para alterar a categoria"
+                            >
+                              {catLabel}
+                            </button>
+                          );
+                        })()}
                       </div>
                       <p className="text-xs text-muted-foreground">{seller.email} • {seller.seller_type} • {seller.city || "—"}</p>
                       {sub && (
