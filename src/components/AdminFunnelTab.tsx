@@ -118,24 +118,24 @@ export default function AdminFunnelTab() {
           </button>
 
           {steps.map((s, i) => (
-            <div key={s.id} className="bg-card border rounded-xl p-4 space-y-3">
+            <div key={s.id} className="bg-card text-card-foreground border border-border rounded-xl p-4 space-y-3 shadow-sm">
               <div className="flex items-center justify-between gap-3 flex-wrap">
                 <div className="flex items-center gap-2">
                   <Calendar className="w-4 h-4 text-primary" />
-                  <span className="font-semibold">Dia</span>
+                  <span className="font-semibold text-foreground">Dia</span>
                   <input type="number" min={0} value={s.day_offset}
                     onChange={(e) => { const v = [...steps]; v[i] = { ...s, day_offset: parseInt(e.target.value) || 0 }; setSteps(v); }}
-                    className="w-20 px-2 py-1 border rounded bg-background" />
+                    className="w-20 px-2 py-1 border border-input rounded bg-background text-foreground" />
                   <span className="text-sm text-muted-foreground">após o cadastro</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <button onClick={() => { const v = [...steps]; v[i] = { ...s, is_active: !s.is_active }; setSteps(v); updateStep({ ...s, is_active: !s.is_active }); }}
-                    className={`px-3 py-1.5 rounded-lg text-sm flex items-center gap-1 ${s.is_active ? "bg-green-500/10 text-green-600" : "bg-muted text-muted-foreground"}`}>
+                    className={`px-3 py-1.5 rounded-lg text-sm flex items-center gap-1 ${s.is_active ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"}`}>
                     {s.is_active ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
                     {s.is_active ? "Ativa" : "Inativa"}
                   </button>
                   <button onClick={() => updateStep(s)} disabled={saving === s.id}
-                    className="px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-sm flex items-center gap-1">
+                    className="px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-sm flex items-center gap-1 hover:opacity-90">
                     {saving === s.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />} Salvar
                   </button>
                   <button onClick={() => deleteStep(s.id)} className="p-2 rounded-lg hover:bg-destructive/10 text-destructive">
@@ -148,14 +148,14 @@ export default function AdminFunnelTab() {
                 <label className="text-xs font-medium text-muted-foreground">Assunto</label>
                 <input value={s.subject}
                   onChange={(e) => { const v = [...steps]; v[i] = { ...s, subject: e.target.value }; setSteps(v); }}
-                  className="w-full px-3 py-2 border rounded-lg bg-background" />
+                  className="w-full px-3 py-2 border border-input rounded-lg bg-background text-foreground" />
               </div>
 
               <div>
                 <label className="text-xs font-medium text-muted-foreground">Conteúdo (HTML)</label>
                 <textarea value={s.content_html}
                   onChange={(e) => { const v = [...steps]; v[i] = { ...s, content_html: e.target.value }; setSteps(v); }}
-                  rows={8} className="w-full px-3 py-2 border rounded-lg bg-background font-mono text-xs" />
+                  rows={8} className="w-full px-3 py-2 border border-input rounded-lg bg-background text-foreground font-mono text-xs" />
               </div>
             </div>
           ))}
