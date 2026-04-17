@@ -161,21 +161,33 @@ export default function AdminApifyLeadsTab() {
       setTab("config");
       return;
     }
+
     setSearching(true);
     const { data, error } = await supabase.functions.invoke("apify-search-leads", {
       body: { tipo_lead: tipoLead, estado, cidade, palavra_chave: palavraChave, quantidade },
     });
     setSearching(false);
-    if (error || (data as any)?.error) {
-      toast({ title: "Erro na busca", description: error?.message || (data as any)?.error, variant: "destructive" });
-    } else {
-      toast({
-        title: "Busca concluída",
-        description: `${(data as any).importados} importados • ${(data as any).duplicados} duplicados (atualizados) • ${(data as any).retornados} retornados`,
-      });
-      loadLeads();
-      loadRuns();
+
+    const payload = data as any;
+
+    if (error) {
+      toast({ title: "Erro na busca", description: error.message, variant: "destructive" });
+      await loadRuns();
+      return;
     }
+
+    if (payload?.success === false || payload?.error) {
+      toast({ title: "Busca não iniciada", description: payload?.error || "Falha ao iniciar a busca.", variant: "destructive" });
+      await loadRuns();
+      return;
+    }
+
+    toast({
+      title: "Busca iniciada",
+      description: payload?.message || "A captura está rodando em segundo plano.",
+    });
+
+    await loadRuns();
   }
 
   async function deleteLead(id: string) {
