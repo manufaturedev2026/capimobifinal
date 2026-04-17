@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Shield, Users, Package, DollarSign, Search, Check, X, RefreshCw, ArrowLeft, Crown, Star, Zap, Globe, Plus, Trash2, ExternalLink, Copy, Megaphone, LayoutDashboard, Building2, Rocket, FileText, UserCog, Filter, Camera, Phone, Ban, ShieldOff, Clock, MessageCircle, MapPin, Palette, Bell, Video, Save, Eye, BarChart3, Mail } from "lucide-react";
+import { Shield, Users, Package, DollarSign, Search, Check, X, RefreshCw, ArrowLeft, Crown, Star, Zap, Globe, Plus, Trash2, ExternalLink, Copy, Megaphone, LayoutDashboard, Building2, Rocket, FileText, UserCog, Filter, Camera, Phone, Ban, ShieldOff, Clock, MessageCircle, MapPin, Palette, Bell, Video, Save, Eye, BarChart3, Mail, Send } from "lucide-react";
 import { Link } from "react-router-dom";
 import { MARKETPLACE_THEMES } from "@/lib/marketplaceThemes";
 import { getMarketplaceThemeCssVars } from "@/lib/marketplaceThemeCssVars";
@@ -18,6 +18,7 @@ import AdminAdsCrmTab from "@/components/AdminAdsCrmTab";
 import AdminInviteTab from "@/components/AdminInviteTab";
 import AdminDashboardTab from "@/components/AdminDashboardTab";
 import AdminSmtpTab from "@/components/AdminSmtpTab";
+import AdminFunnelTab from "@/components/AdminFunnelTab";
 import { LOGIN_HERO_PRESETS, normalizeLoginHeroSetting, resolveLoginHeroImage } from "@/data/loginHeroPresets";
 
 interface SellerWithSub {
@@ -53,7 +54,7 @@ export default function AdminPanel() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [tierFilter, setTierFilter] = useState<string>("todos");
-  const [tab, setTab] = useState<"dashboard" | "sellers" | "billing" | "referrals" | "crm" | "seo" | "vendas" | "config" | "push" | "site" | "smtp" | "ads" | "invite">("dashboard");
+  const [tab, setTab] = useState<"dashboard" | "sellers" | "billing" | "referrals" | "crm" | "seo" | "vendas" | "config" | "push" | "site" | "smtp" | "funnel" | "ads" | "invite">("dashboard");
   const [homepageMode, setHomepageMode] = useState<string>("single");
   const [homepageTheme, setHomepageTheme] = useState<string>("azul");
   const [loginHeroUrl, setLoginHeroUrl] = useState<string>("");
@@ -409,6 +410,7 @@ export default function AdminPanel() {
     { key: "config" as const, label: "Configurações", icon: LayoutDashboard },
     { key: "site" as const, label: "Dados do Site", icon: Globe },
     { key: "smtp" as const, label: "E-mail SMTP", icon: Mail },
+    { key: "funnel" as const, label: "Funil de E-mails", icon: Send },
     { key: "invite" as const, label: "Convite", icon: MessageCircle },
   ];
 
@@ -1229,6 +1231,13 @@ export default function AdminPanel() {
       {/* SMTP Tab */}
       {tab === "smtp" && (
         <AdminSmtpTab />
+      )}
+
+      {/* Funnel Tab */}
+      {tab === "funnel" && (
+        <div className="px-4 lg:px-8 py-6">
+          <AdminFunnelTab />
+        </div>
       )}
 
       {/* ADS CRM Tab */}
