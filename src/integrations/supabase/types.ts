@@ -100,6 +100,69 @@ export type Database = {
         }
         Relationships: []
       }
+      broadcast_sends: {
+        Row: {
+          batch_id: string
+          error_message: string | null
+          id: string
+          profile_id: string | null
+          sent_at: string
+          status: string
+          subject: string
+          tier_filter: string | null
+          to_email: string
+        }
+        Insert: {
+          batch_id: string
+          error_message?: string | null
+          id?: string
+          profile_id?: string | null
+          sent_at?: string
+          status?: string
+          subject: string
+          tier_filter?: string | null
+          to_email: string
+        }
+        Update: {
+          batch_id?: string
+          error_message?: string | null
+          id?: string
+          profile_id?: string | null
+          sent_at?: string
+          status?: string
+          subject?: string
+          tier_filter?: string | null
+          to_email?: string
+        }
+        Relationships: []
+      }
+      broadcast_templates: {
+        Row: {
+          content_html: string
+          created_at: string
+          id: string
+          name: string
+          subject: string
+          updated_at: string
+        }
+        Insert: {
+          content_html: string
+          created_at?: string
+          id?: string
+          name: string
+          subject: string
+          updated_at?: string
+        }
+        Update: {
+          content_html?: string
+          created_at?: string
+          id?: string
+          name?: string
+          subject?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       commissions: {
         Row: {
           amount: number
