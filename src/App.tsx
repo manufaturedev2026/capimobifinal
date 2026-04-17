@@ -46,11 +46,7 @@ const InvitePage = lazyPage(() => import("@/pages/InvitePage"));
 
 const queryClient = new QueryClient();
 
-const RouteLoader = () => (
-  <div className="flex min-h-[50vh] items-center justify-center">
-    <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary/20 border-t-primary" />
-  </div>
-);
+const RouteLoader = () => <div className="min-h-[50vh]" />;
 
 // No fixed BROKER_ID — the logged-in user IS the broker
 const HomeRedirect = () => {
