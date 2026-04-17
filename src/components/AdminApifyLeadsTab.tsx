@@ -639,13 +639,21 @@ export default function AdminApifyLeadsTab() {
       toast({ title: "Preencha assunto e conteúdo", variant: "destructive" });
       return;
     }
+    if (!test && campMode === "selected" && selectedLeadIds.size === 0) {
+      toast({ title: "Selecione ao menos 1 lead", description: "Marque os checkboxes na lista de leads", variant: "destructive" });
+      return;
+    }
     if (test) setCampTesting(true); else setCampSending(true);
+    const useSelected = !test && campMode === "selected";
     const { data, error } = await supabase.functions.invoke("send-leads-campaign", {
       body: {
         name: campName || campSubject,
         subject: campSubject,
         content_html: campHtml,
-        segment_filter: { tipo_lead: campTipo, estado: campEstado, status: campStatus },
+        segment_filter: useSelected ? undefined : { tipo_lead: campTipo, estado: campEstado, status: campStatus },
+        lead_ids: useSelected ? Array.from(selectedLeadIds) : undefined,
+        max_recipients: !test && campMaxRecipients !== "" ? Number(campMaxRecipients) : undefined,
+        skip_already_sent: campSkipSent,
         test_email: test ? campTestEmail : undefined,
       },
     });
@@ -658,7 +666,11 @@ export default function AdminApifyLeadsTab() {
         title: test ? "E-mail de teste enviado" : "Campanha enviada",
         description: test ? campTestEmail : `${d.sent} enviados • ${d.failed} falhas • ${d.total} destinatários`,
       });
-      if (!test) setCampOpen(false);
+      if (!test) {
+        setCampOpen(false);
+        setSelectedLeadIds(new Set());
+        loadSentLeadIds();
+      }
     }
   }
 
