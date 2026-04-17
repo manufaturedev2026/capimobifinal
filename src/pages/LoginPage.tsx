@@ -198,8 +198,44 @@ export default function LoginPage() {
       </div>
 
       {/* Form Panel */}
-      <div className="relative w-full lg:w-1/2 flex items-center justify-center px-6 py-10 lg:py-12">
-        <ThemeParticles color={theme.primary} glowColor={theme.promoAccent || theme.primary} count={30} />
+      <div className="relative w-full lg:w-1/2 flex items-center justify-center px-6 py-10 lg:py-12 overflow-hidden">
+        {/* Local particles (contained in this panel) */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+          <style>{`
+            @keyframes loginFloatUp {
+              0% { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
+              10% { opacity: var(--lp-opacity); }
+              90% { opacity: 0.4; }
+              100% { transform: translateY(calc(-100vh - 20px)) translateX(var(--lp-drift)) scale(0.3); opacity: 0; }
+            }
+          `}</style>
+          {Array.from({ length: 35 }).map((_, i) => {
+            const left = (i * 7.3) % 100;
+            const delay = (i * 0.4) % 8;
+            const duration = 7 + ((i * 1.7) % 8);
+            const size = 2 + ((i * 1.3) % 4);
+            const opacity = 0.35 + ((i * 0.13) % 0.5);
+            const drift = -40 + ((i * 11) % 80);
+            const glow = theme.promoAccent || theme.primary;
+            return (
+              <div
+                key={i}
+                className="absolute rounded-full"
+                style={{
+                  left: `${left}%`,
+                  bottom: "-6px",
+                  width: size,
+                  height: size,
+                  background: `radial-gradient(circle, ${theme.primary} 0%, ${glow} 60%, transparent 100%)`,
+                  boxShadow: `0 0 ${size + 4}px ${theme.primary}aa`,
+                  ["--lp-opacity" as any]: opacity,
+                  ["--lp-drift" as any]: `${drift}px`,
+                  animation: `loginFloatUp ${duration}s ${delay}s ease-in infinite`,
+                }}
+              />
+            );
+          })}
+        </div>
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }} className="relative z-10 w-full max-w-md">
           <div className="mb-8">
             <h2 className="font-display font-bold text-2xl lg:text-3xl" style={{ color: theme.text }}>
