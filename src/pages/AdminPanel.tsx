@@ -21,6 +21,7 @@ import AdminSmtpTab from "@/components/AdminSmtpTab";
 import AdminFunnelTab from "@/components/AdminFunnelTab";
 import AdminBroadcastTab from "@/components/AdminBroadcastTab";
 import AdminApifyLeadsTab from "@/components/AdminApifyLeadsTab";
+import AdminManagersTab from "@/components/AdminManagersTab";
 import { LOGIN_HERO_PRESETS, normalizeLoginHeroSetting, resolveLoginHeroImage } from "@/data/loginHeroPresets";
 
 interface SellerWithSub {
@@ -57,7 +58,8 @@ export default function AdminPanel() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [tierFilter, setTierFilter] = useState<string>("todos");
-  const [tab, setTab] = useState<"dashboard" | "clientes" | "billing" | "referrals" | "crm" | "seo" | "vendas" | "config" | "push" | "site" | "smtp" | "funnel" | "broadcast" | "ads" | "invite" | "apify">("dashboard");
+  const [tab, setTab] = useState<"dashboard" | "clientes" | "managers" | "billing" | "referrals" | "crm" | "seo" | "vendas" | "config" | "push" | "site" | "smtp" | "funnel" | "broadcast" | "ads" | "invite" | "apify">("dashboard");
+  const [managersList, setManagersList] = useState<Array<{ id: string; name: string; phone: string | null; photo_url: string | null }>>([]);
   // Category edit dialog
   const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
   const [categorySeller, setCategorySeller] = useState<SellerWithSub | null>(null);
@@ -117,6 +119,7 @@ export default function AdminPanel() {
       fetchSellers();
       fetchAdRequests();
       fetchBans();
+      fetchManagersList();
       // Fetch homepage mode
       supabase.from("platform_settings").select("value").eq("key", "homepage_mode").maybeSingle().then(({ data }) => {
         if (data?.value) setHomepageMode(data.value);
@@ -249,6 +252,15 @@ export default function AdminPanel() {
       toast({ title: "Solicitação apagada" });
       fetchAdRequests();
     }
+  };
+
+  const fetchManagersList = async () => {
+    const { data } = await supabase
+      .from("account_managers")
+      .select("id, name, phone, photo_url")
+      .eq("is_active", true)
+      .order("name");
+    setManagersList((data as any[]) || []);
   };
 
   const fetchSellers = async () => {
@@ -466,6 +478,7 @@ export default function AdminPanel() {
   const sidebarItems = [
     { key: "dashboard" as const, label: "Dashboard", icon: BarChart3 },
     { key: "clientes" as const, label: "Clientes", icon: Users },
+    { key: "managers" as const, label: "Gerentes", icon: UserCog },
     { key: "billing" as const, label: "Faturamento", icon: DollarSign },
     { key: "crm" as const, label: "CRM WhatsApp", icon: MessageCircle },
     { key: "ads" as const, label: "CRM de ADS", icon: Megaphone },
@@ -932,60 +945,77 @@ export default function AdminPanel() {
       <Dialog open={managerDialogOpen} onOpenChange={setManagerDialogOpen}>
         <DialogContent className="max-w-sm">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2"><UserCog size={18} /> Gerente de Conta</DialogTitle>
+            <DialogTitle className="flex items-center gap-2"><UserCog size={18} /> Atribuir Gerente</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 pt-2">
-            {/* Photo */}
-            <div className="flex flex-col items-center gap-2">
-              <div
-                onClick={() => managerPhotoRef.current?.click()}
-                className="w-20 h-20 rounded-full bg-secondary border-2 border-dashed border-border flex items-center justify-center cursor-pointer hover:border-primary transition-colors overflow-hidden"
-              >
-                {managerPhotoUrl ? (
-                  <img src={managerPhotoUrl} alt="Gerente" className="w-full h-full object-cover" />
-                ) : (
-                  <Camera size={24} className="text-muted-foreground" />
-                )}
+          <div className="space-y-3 pt-2">
+            {managersList.length === 0 ? (
+              <div className="text-center py-6">
+                <p className="text-sm text-muted-foreground mb-3">Nenhum gerente cadastrado.</p>
+                <button
+                  onClick={() => { setManagerDialogOpen(false); setTab("managers"); }}
+                  className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold"
+                >
+                  Cadastrar gerentes
+                </button>
               </div>
-              <input ref={managerPhotoRef} type="file" accept="image/*" className="hidden" onChange={handleManagerPhotoUpload} />
-              <p className="text-[10px] text-muted-foreground">
-                {managerPhotoUploading ? "Enviando..." : "Clique para enviar foto"}
-              </p>
-            </div>
-
-            {/* Name */}
-            <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-foreground">Nome do Gerente</label>
-              <input
-                value={managerName}
-                onChange={(e) => setManagerName(e.target.value)}
-                placeholder="Ex: Gabriel"
-                className="w-full px-3 py-2 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
-              />
-            </div>
-
-            {/* WhatsApp */}
-            <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-foreground flex items-center gap-1"><Phone size={12} /> WhatsApp</label>
-              <input
-                value={managerPhoneVal}
-                onChange={(e) => setManagerPhoneVal(e.target.value)}
-                placeholder="5527999999999"
-                className="w-full px-3 py-2 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
-              />
-              <p className="text-[10px] text-muted-foreground">Formato: DDI + DDD + número (ex: 5527999999999)</p>
-            </div>
-
-            <button
-              onClick={saveManager}
-              disabled={managerPhotoUploading}
-              className="w-full py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-bold hover:bg-primary/90 transition-colors disabled:opacity-50"
-            >
-              Salvar
-            </button>
+            ) : (
+              <>
+                <p className="text-xs text-muted-foreground">Selecione um gerente cadastrado:</p>
+                <div className="space-y-2 max-h-72 overflow-y-auto">
+                  <button
+                    onClick={() => { setManagerName(""); setManagerPhoneVal(""); setManagerPhotoUrl(""); }}
+                    className={`w-full flex items-center gap-3 p-2 rounded-lg border-2 transition ${
+                      !managerName ? "border-primary bg-primary/5" : "border-input hover:border-primary/50"
+                    }`}
+                  >
+                    <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
+                      <X size={16} className="text-muted-foreground" />
+                    </div>
+                    <span className="text-sm font-medium text-foreground">Sem gerente</span>
+                  </button>
+                  {managersList.map((m) => (
+                    <button
+                      key={m.id}
+                      onClick={() => {
+                        setManagerName(m.name);
+                        setManagerPhoneVal(m.phone || "");
+                        setManagerPhotoUrl(m.photo_url || "");
+                      }}
+                      className={`w-full flex items-center gap-3 p-2 rounded-lg border-2 transition ${
+                        managerName === m.name ? "border-primary bg-primary/5" : "border-input hover:border-primary/50"
+                      }`}
+                    >
+                      {m.photo_url ? (
+                        <img src={m.photo_url} alt="" className="w-10 h-10 rounded-full object-cover" />
+                      ) : (
+                        <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
+                          <UserCog size={16} className="text-muted-foreground" />
+                        </div>
+                      )}
+                      <div className="flex-1 text-left">
+                        <p className="text-sm font-semibold text-foreground">{m.name}</p>
+                        {m.phone && <p className="text-[10px] text-muted-foreground">{m.phone}</p>}
+                      </div>
+                      {managerName === m.name && <Check size={16} className="text-primary" />}
+                    </button>
+                  ))}
+                </div>
+                <button
+                  onClick={saveManager}
+                  className="w-full py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-bold hover:bg-primary/90 transition-colors"
+                >
+                  Salvar
+                </button>
+              </>
+            )}
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Managers Tab */}
+      {tab === "managers" && (
+        <AdminManagersTab />
+      )}
 
       {/* Vendas Tab */}
       {tab === "vendas" && (
