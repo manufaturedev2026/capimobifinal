@@ -1242,6 +1242,8 @@ export default function AdminApifyLeadsTab() {
             </DialogContent>
           </Dialog>
         </TabsContent>
+
+        <TabsContent value="logs" className="space-y-4">
           <Card>
             <CardHeader>
               <CardTitle className="text-base flex items-center justify-between">
