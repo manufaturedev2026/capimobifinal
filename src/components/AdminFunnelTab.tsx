@@ -91,11 +91,11 @@ export default function AdminFunnelTab() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 text-foreground">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h2 className="text-2xl font-bold flex items-center gap-2"><Mail className="w-6 h-6" /> Funil de E-mails</h2>
-          <p className="text-sm text-muted-foreground">Sequência automática para novos corretores cadastrados. Use <code className="bg-muted px-1 rounded">{"{{nome}}"}</code> nos textos.</p>
+          <h2 className="text-2xl font-bold flex items-center gap-2 text-foreground"><Mail className="w-6 h-6 text-primary" /> Funil de E-mails</h2>
+          <p className="text-sm text-muted-foreground">Sequência automática para novos corretores cadastrados. Use <code className="bg-muted text-foreground px-1 rounded">{"{{nome}}"}</code> nos textos.</p>
         </div>
         <button onClick={runNow} disabled={running}
           className="px-4 py-2 rounded-lg bg-primary text-primary-foreground font-medium flex items-center gap-2 disabled:opacity-50">
