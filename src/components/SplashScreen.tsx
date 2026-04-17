@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 export default function SplashScreen() {
-  const { site_name, site_logo_url, site_splash_image_url, site_splash_enabled, loaded } = useSiteSettings();
+  const { site_name, site_logo_url, site_splash_image_url, site_splash_enabled, site_splash_bg_color, loaded } = useSiteSettings();
   const [hidden, setHidden] = useState(false);
   const [fadeOut, setFadeOut] = useState(false);
 
@@ -37,7 +37,10 @@ export default function SplashScreen() {
         {/* Anel único girando ao redor da logo */}
         <div className="absolute h-52 w-52 rounded-full border-4 border-transparent border-t-primary border-r-primary/40 animate-spin" />
         {/* Logo central */}
-        <div className="relative h-36 w-36 rounded-full bg-black shadow-xl flex items-center justify-center overflow-hidden px-4">
+        <div
+          className="relative h-36 w-36 rounded-full shadow-xl flex items-center justify-center overflow-hidden px-4"
+          style={{ backgroundColor: site_splash_bg_color || "#000000" }}
+        >
           {splashImage ? (
             <img
               src={splashImage}

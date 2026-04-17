@@ -13,6 +13,7 @@ const SITE_KEYS = [
   "site_privacy_html",
   "site_splash_image_url",
   "site_splash_enabled",
+  "site_splash_bg_color",
 ] as const;
 
 type SiteSettings = Record<(typeof SITE_KEYS)[number], string>;
@@ -42,6 +43,7 @@ const DEFAULTS: SiteSettings = {
   site_privacy_html: DEFAULT_PRIVACY,
   site_splash_image_url: "",
   site_splash_enabled: "true",
+  site_splash_bg_color: "#000000",
 };
 
 export default function AdminSiteTab() {
@@ -224,6 +226,29 @@ export default function AdminSiteTab() {
               className="w-full mt-2 rounded-xl border border-input bg-background px-4 py-2 text-xs text-muted-foreground focus:ring-2 focus:ring-ring focus:outline-none"
               placeholder="Ou cole a URL da imagem (PNG transparente recomendado)"
             />
+            <div className="mt-4 pt-4 border-t border-border">
+              <label className="block text-sm font-medium text-foreground mb-2">Cor de fundo do círculo da logo</label>
+              <div className="flex items-center gap-3">
+                <input
+                  type="color"
+                  value={settings.site_splash_bg_color || "#000000"}
+                  onChange={(e) => setSettings((p) => ({ ...p, site_splash_bg_color: e.target.value }))}
+                  className="h-10 w-16 rounded-lg border border-border cursor-pointer bg-transparent"
+                />
+                <input
+                  value={settings.site_splash_bg_color || "#000000"}
+                  onChange={(e) => setSettings((p) => ({ ...p, site_splash_bg_color: e.target.value }))}
+                  className="flex-1 rounded-xl border border-input bg-background px-4 py-2 text-sm text-foreground font-mono focus:ring-2 focus:ring-ring focus:outline-none"
+                  placeholder="#000000"
+                />
+                <button
+                  onClick={() => setSettings((p) => ({ ...p, site_splash_bg_color: "#000000" }))}
+                  className="text-xs text-muted-foreground hover:underline"
+                >
+                  Padrão
+                </button>
+              </div>
+            </div>
           </>
         )}
       </Section>
