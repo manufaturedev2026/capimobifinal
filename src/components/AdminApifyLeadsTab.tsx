@@ -299,6 +299,140 @@ export default function AdminApifyLeadsTab() {
     toast({ title: `${ids.length} leads excluídos` });
   }
 
+  function exportLeadsCSV() {
+    const rows = filteredLeads;
+    if (rows.length === 0) {
+      toast({ title: "Nada para exportar", variant: "destructive" });
+      return;
+    }
+    const headers = [
+      "nome", "tipo_lead", "empresa", "email", "whatsapp", "telefone",
+      "site", "instagram", "cidade", "estado", "endereco", "status",
+      "rating", "reviews_count", "origem", "data_captacao", "observacoes",
+    ];
+    const escape = (v: any) => {
+      if (v === null || v === undefined) return "";
+      const s = String(v).replace(/"/g, '""');
+      return /[",\n;]/.test(s) ? `"${s}"` : s;
+    };
+    const csv = [
+      headers.join(","),
+      ...rows.map((r: any) => headers.map((h) => escape(r[h])).join(",")),
+    ].join("\n");
+    const blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `leads_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast({ title: `${rows.length} leads exportados` });
+  }
+
+  function parseCSV(text: string): Record<string, string>[] {
+    const lines: string[] = [];
+    let cur = "";
+    let inQuotes = false;
+    for (let i = 0; i < text.length; i++) {
+      const c = text[i];
+      if (c === '"') {
+        if (inQuotes && text[i + 1] === '"') { cur += '"'; i++; }
+        else inQuotes = !inQuotes;
+      } else if (c === "\n" && !inQuotes) {
+        lines.push(cur); cur = "";
+      } else if (c === "\r" && !inQuotes) {
+        // skip
+      } else cur += c;
+    }
+    if (cur) lines.push(cur);
+    if (lines.length === 0) return [];
+    const splitLine = (line: string): string[] => {
+      const out: string[] = [];
+      let val = ""; let q = false;
+      for (let i = 0; i < line.length; i++) {
+        const c = line[i];
+        if (c === '"') {
+          if (q && line[i + 1] === '"') { val += '"'; i++; }
+          else q = !q;
+        } else if ((c === "," || c === ";") && !q) {
+          out.push(val); val = "";
+        } else val += c;
+      }
+      out.push(val);
+      return out;
+    };
+    const headers = splitLine(lines[0]).map((h) => h.trim().toLowerCase().replace(/^\ufeff/, ""));
+    return lines.slice(1).filter((l) => l.trim()).map((l) => {
+      const vals = splitLine(l);
+      const obj: Record<string, string> = {};
+      headers.forEach((h, i) => { obj[h] = (vals[i] || "").trim(); });
+      return obj;
+    });
+  }
+
+  async function importLeadsCSV(file: File) {
+    try {
+      const text = await file.text();
+      const rows = parseCSV(text);
+      if (rows.length === 0) {
+        toast({ title: "CSV vazio ou inválido", variant: "destructive" });
+        return;
+      }
+      const cleanPhone = (p?: string) => {
+        if (!p) return null;
+        const d = p.replace(/\D/g, "");
+        return d.length >= 8 ? d : null;
+      };
+      const isEmail = (e?: string) => !!e && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
+      const records = rows
+        .map((r) => {
+          const nome = r.nome || r.name || r.empresa || r.company || "";
+          if (!nome) return null;
+          const tipo = (r.tipo_lead || r.tipo || "imobiliaria").toLowerCase();
+          const email = (r.email || "").toLowerCase().trim();
+          const tel = cleanPhone(r.whatsapp || r.telefone || r.phone);
+          return {
+            nome,
+            tipo_lead: ["corretor", "imobiliaria"].includes(tipo) ? tipo : "imobiliaria",
+            empresa: r.empresa || r.company || nome,
+            email: isEmail(email) ? email : null,
+            whatsapp: cleanPhone(r.whatsapp) || tel,
+            telefone: cleanPhone(r.telefone) || tel,
+            site: r.site || r.website || null,
+            instagram: r.instagram || null,
+            cidade: r.cidade || r.city || null,
+            estado: r.estado || r.state || null,
+            endereco: r.endereco || r.address || null,
+            status: r.status || "novo",
+            origem: r.origem || "csv_import",
+            observacoes: r.observacoes || r.notes || null,
+          };
+        })
+        .filter(Boolean) as any[];
+      if (records.length === 0) {
+        toast({ title: "Nenhum lead válido encontrado", description: "O CSV precisa ter ao menos a coluna 'nome'.", variant: "destructive" });
+        return;
+      }
+      let imported = 0;
+      let duplicated = 0;
+      for (const lead of records) {
+        let existing = null as any;
+        if (lead.email) {
+          const { data } = await supabase
+            .from("leads_imobiliarios").select("id").eq("email", lead.email).maybeSingle();
+          existing = data;
+        }
+        if (existing) { duplicated++; continue; }
+        const { error } = await supabase.from("leads_imobiliarios").insert(lead);
+        if (!error) imported++;
+      }
+      toast({ title: "Importação concluída", description: `${imported} novos, ${duplicated} duplicados ignorados.` });
+      await loadLeads();
+    } catch (err: any) {
+      toast({ title: "Erro ao importar", description: err.message, variant: "destructive" });
+    }
+  }
+
   async function markStatus(id: string, status: string) {
     await supabase.from("leads_imobiliarios").update({ status }).eq("id", id);
     setLeads((p) => p.map((l) => (l.id === id ? { ...l, status } : l)));
