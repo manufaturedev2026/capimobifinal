@@ -224,12 +224,19 @@ export default function AdminApifyLeadsTab() {
   const [campSending, setCampSending] = useState(false);
   const [campTesting, setCampTesting] = useState(false);
 
-  // Templates editor
+  // Templates editor (1 - Convite Capimobi)
   const [tplName, setTplName] = useState(INVITE_TEMPLATE.name);
   const [tplSubject, setTplSubject] = useState(INVITE_TEMPLATE.subject);
   const [tplHtml, setTplHtml] = useState(INVITE_TEMPLATE.html);
   const [tplSaving, setTplSaving] = useState(false);
   const [tplPreview, setTplPreview] = useState(false);
+
+  // Templates editor (2 - Integração Apify Leads / WhatsApp)
+  const [tpl2Name, setTpl2Name] = useState(APIFY_LEADS_TEMPLATE.name);
+  const [tpl2Subject, setTpl2Subject] = useState(APIFY_LEADS_TEMPLATE.subject);
+  const [tpl2Html, setTpl2Html] = useState(APIFY_LEADS_TEMPLATE.html);
+  const [tpl2Saving, setTpl2Saving] = useState(false);
+  const [tpl2Preview, setTpl2Preview] = useState(false);
 
   useEffect(() => {
     loadSettings();
