@@ -2,34 +2,26 @@ import { useEffect, useState } from "react";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 export default function SplashScreen() {
-  const { site_name, site_logo_url, loaded } = useSiteSettings();
+  const { site_name, site_logo_url, site_splash_image_url, site_splash_enabled, loaded } = useSiteSettings();
   const [hidden, setHidden] = useState(false);
   const [fadeOut, setFadeOut] = useState(false);
 
   useEffect(() => {
-    // Mostra por no mínimo 900ms para experiência fluida
-    const minTimer = setTimeout(() => {
-      if (loaded) startFade();
-    }, 900);
-
-    return () => clearTimeout(minTimer);
-  }, [loaded]);
-
-  useEffect(() => {
     if (loaded) {
-      const t = setTimeout(startFade, 900);
+      const t = setTimeout(() => {
+        setFadeOut(true);
+        setTimeout(() => setHidden(true), 500);
+      }, 900);
       return () => clearTimeout(t);
     }
   }, [loaded]);
 
-  const startFade = () => {
-    setFadeOut(true);
-    setTimeout(() => setHidden(true), 500);
-  };
-
+  // Disabled by admin → don't render
+  if (loaded && site_splash_enabled === "false") return null;
   if (hidden) return null;
 
   const displayName = site_name || "Capimobi";
+  const splashImage = site_splash_image_url || site_logo_url;
 
   return (
     <div
@@ -48,9 +40,9 @@ export default function SplashScreen() {
         />
         {/* Logo central */}
         <div className="relative h-36 w-36 rounded-full bg-card shadow-lg flex items-center justify-center overflow-hidden px-4">
-          {site_logo_url ? (
+          {splashImage ? (
             <img
-              src={site_logo_url}
+              src={splashImage}
               alt={displayName}
               className="h-full w-full object-contain p-3 animate-pulse"
             />

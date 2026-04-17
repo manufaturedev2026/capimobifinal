@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Globe, Image, FileText, Save, Upload, Loader2, Type, Shield } from "lucide-react";
+import { Globe, Image, FileText, Save, Upload, Loader2, Type, Shield, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { invalidateSiteSettings } from "@/hooks/useSiteSettings";
@@ -11,6 +11,8 @@ const SITE_KEYS = [
   "site_footer_text",
   "site_terms_html",
   "site_privacy_html",
+  "site_splash_image_url",
+  "site_splash_enabled",
 ] as const;
 
 type SiteSettings = Record<(typeof SITE_KEYS)[number], string>;
@@ -38,6 +40,8 @@ const DEFAULTS: SiteSettings = {
   site_footer_text: DEFAULT_FOOTER,
   site_terms_html: DEFAULT_TERMS,
   site_privacy_html: DEFAULT_PRIVACY,
+  site_splash_image_url: "",
+  site_splash_enabled: "true",
 };
 
 export default function AdminSiteTab() {
@@ -48,6 +52,7 @@ export default function AdminSiteTab() {
   const [uploading, setUploading] = useState<string | null>(null);
   const logoRef = useRef<HTMLInputElement>(null);
   const faviconRef = useRef<HTMLInputElement>(null);
+  const splashRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     (async () => {
@@ -82,10 +87,10 @@ export default function AdminSiteTab() {
     setSaving(false);
   };
 
-  const handleUpload = async (field: "site_logo_url" | "site_favicon_url", file: File) => {
+  const handleUpload = async (field: "site_logo_url" | "site_favicon_url" | "site_splash_image_url", file: File) => {
     setUploading(field);
     const ext = file.name.split(".").pop() || "png";
-    const path = `site/${field.replace("site_", "").replace("_url", "")}.${ext}`;
+    const path = `site/${field.replace("site_", "").replace("_url", "")}-${Date.now()}.${ext}`;
     const { error } = await supabase.storage.from("seller-assets").upload(path, file, { upsert: true });
     if (error) {
       toast({ title: "Erro no upload", description: error.message, variant: "destructive" });
@@ -106,6 +111,8 @@ export default function AdminSiteTab() {
       </div>
     );
   }
+
+  const splashEnabled = settings.site_splash_enabled !== "false";
 
   return (
     <div className="space-y-5">
@@ -165,6 +172,60 @@ export default function AdminSiteTab() {
           className="w-full mt-2 rounded-xl border border-input bg-background px-4 py-2 text-xs text-muted-foreground focus:ring-2 focus:ring-ring focus:outline-none"
           placeholder="Ou cole a URL do favicon"
         />
+      </Section>
+
+      {/* Splash Screen */}
+      <Section icon={Sparkles} title="Splash Screen (Tela de Carregamento)" desc="Imagem exibida com anéis girando enquanto o site carrega. Se vazio, usa a logo do site ou o texto padrão.">
+        <label className="flex items-center gap-3 mb-4 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={splashEnabled}
+            onChange={(e) => setSettings((p) => ({ ...p, site_splash_enabled: e.target.checked ? "true" : "false" }))}
+            className="w-5 h-5 rounded accent-primary"
+          />
+          <span className="text-sm font-medium text-foreground">Exibir splash screen ao carregar o site</span>
+        </label>
+
+        {splashEnabled && (
+          <>
+            <div className="flex items-center gap-4">
+              {settings.site_splash_image_url && (
+                <img src={settings.site_splash_image_url} alt="Splash" className="h-20 w-20 object-contain rounded-full border border-border bg-secondary p-2" />
+              )}
+              <input
+                ref={splashRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => { const f = e.target.files?.[0]; if (f) handleUpload("site_splash_image_url", f); }}
+              />
+              <div className="flex flex-col gap-2">
+                <button
+                  onClick={() => splashRef.current?.click()}
+                  disabled={uploading === "site_splash_image_url"}
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-secondary text-secondary-foreground text-sm font-medium hover:bg-secondary/80 transition-colors disabled:opacity-50"
+                >
+                  {uploading === "site_splash_image_url" ? <Loader2 size={16} className="animate-spin" /> : <Upload size={16} />}
+                  Enviar Imagem do Splash
+                </button>
+                {settings.site_splash_image_url && (
+                  <button
+                    onClick={() => setSettings((p) => ({ ...p, site_splash_image_url: "" }))}
+                    className="text-xs text-destructive hover:underline text-left"
+                  >
+                    Remover imagem (usar padrão)
+                  </button>
+                )}
+              </div>
+            </div>
+            <input
+              value={settings.site_splash_image_url}
+              onChange={(e) => setSettings((p) => ({ ...p, site_splash_image_url: e.target.value }))}
+              className="w-full mt-2 rounded-xl border border-input bg-background px-4 py-2 text-xs text-muted-foreground focus:ring-2 focus:ring-ring focus:outline-none"
+              placeholder="Ou cole a URL da imagem (PNG transparente recomendado)"
+            />
+          </>
+        )}
       </Section>
 
       {/* Footer */}
