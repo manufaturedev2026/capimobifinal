@@ -1323,6 +1323,25 @@ export default function AdminApifyLeadsTab() {
                 Usar template
               </Button>
             </div>
+            <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/5 p-3 flex items-center justify-between gap-3">
+              <div className="text-sm">
+                <p className="font-semibold text-foreground">💬 Integração Apify Leads (WhatsApp)</p>
+                <p className="text-xs text-muted-foreground">Convida o lead a falar no WhatsApp e conhecer o site</p>
+              </div>
+              <Button
+                size="sm"
+                type="button"
+                variant="secondary"
+                onClick={() => {
+                  setCampName(tpl2Name);
+                  setCampSubject(tpl2Subject);
+                  setCampHtml(tpl2Html);
+                  toast({ title: "Template carregado", description: "Você pode editar antes de enviar" });
+                }}
+              >
+                Usar template
+              </Button>
+            </div>
             <div>
               <Label>Nome interno</Label>
               <Input value={campName} onChange={(e) => setCampName(e.target.value)} placeholder="Ex: Convite Capimobi - Out/2025" />
