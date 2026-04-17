@@ -10,6 +10,7 @@ export interface SiteSettings {
   site_privacy_html: string;
   site_splash_image_url: string;
   site_splash_enabled: string; // "true" | "false"
+  site_splash_bg_color: string; // hex color
 }
 
 const DEFAULTS: SiteSettings = {
@@ -21,6 +22,7 @@ const DEFAULTS: SiteSettings = {
   site_privacy_html: "",
   site_splash_image_url: "",
   site_splash_enabled: "true",
+  site_splash_bg_color: "#000000",
 };
 
 let cachedSettings: SiteSettings | null = null;
