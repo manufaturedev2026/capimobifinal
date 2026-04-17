@@ -1142,9 +1142,9 @@ export default function AdminApifyLeadsTab() {
                 size="sm"
                 type="button"
                 onClick={() => {
-                  setCampName(INVITE_TEMPLATE.name);
-                  setCampSubject(INVITE_TEMPLATE.subject);
-                  setCampHtml(INVITE_TEMPLATE.html);
+                  setCampName(tplName);
+                  setCampSubject(tplSubject);
+                  setCampHtml(tplHtml);
                   toast({ title: "Template carregado", description: "Você pode editar antes de enviar" });
                 }}
               >
