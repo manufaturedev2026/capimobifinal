@@ -165,9 +165,9 @@ export default function AdminFunnelTab() {
           )}
         </div>
       ) : (
-        <div className="bg-card border rounded-xl overflow-hidden">
+        <div className="bg-card text-card-foreground border border-border rounded-xl overflow-hidden shadow-sm">
           <table className="w-full text-sm">
-            <thead className="bg-muted">
+            <thead className="bg-muted text-muted-foreground">
               <tr>
                 <th className="text-left p-3">Data</th>
                 <th className="text-left p-3">E-mail</th>
@@ -178,12 +178,12 @@ export default function AdminFunnelTab() {
             </thead>
             <tbody>
               {sends.map(h => (
-                <tr key={h.id} className="border-t">
-                  <td className="p-3">{new Date(h.sent_at).toLocaleString("pt-BR")}</td>
-                  <td className="p-3">{h.to_email}</td>
-                  <td className="p-3">Dia {h.day_offset}</td>
+                <tr key={h.id} className="border-t border-border">
+                  <td className="p-3 text-foreground">{new Date(h.sent_at).toLocaleString("pt-BR")}</td>
+                  <td className="p-3 text-foreground">{h.to_email}</td>
+                  <td className="p-3 text-foreground">Dia {h.day_offset}</td>
                   <td className="p-3">
-                    <span className={`px-2 py-0.5 rounded text-xs ${h.status === "enviado" ? "bg-green-500/10 text-green-600" : "bg-red-500/10 text-red-600"}`}>{h.status}</span>
+                    <span className={`px-2 py-0.5 rounded text-xs ${h.status === "enviado" ? "bg-primary/10 text-primary" : "bg-destructive/10 text-destructive"}`}>{h.status}</span>
                   </td>
                   <td className="p-3 text-xs text-muted-foreground max-w-xs truncate">{h.error_message}</td>
                 </tr>
