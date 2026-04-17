@@ -384,25 +384,39 @@ export default function AdminApifyLeadsTab() {
         return d.length >= 8 ? d : null;
       };
       const isEmail = (e?: string) => !!e && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
+      const inferTipo = (text: string): string => {
+        const t = (text || "").toLowerCase();
+        if (/imobili[áa]ria|im[óo]veis|realty|real estate/.test(t)) return "imobiliaria";
+        if (/corretor|agente imobili[áa]rio|broker/.test(t)) return "corretor";
+        return "imobiliaria";
+      };
       const records = rows
         .map((r) => {
-          const nome = r.nome || r.name || r.empresa || r.company || "";
+          // suporta CSV nativo e CSV exportado da Apify (Google Places)
+          const nome = r.nome || r.name || r.title || r.empresa || r.company || "";
           if (!nome) return null;
-          const tipo = (r.tipo_lead || r.tipo || "imobiliaria").toLowerCase();
-          const email = (r.email || "").toLowerCase().trim();
+          const categoria = r.categoryname || r["categories/0"] || r.categoria || "";
+          const tipoRaw = (r.tipo_lead || r.tipo || "").toLowerCase();
+          const tipo = ["corretor", "imobiliaria"].includes(tipoRaw)
+            ? tipoRaw
+            : inferTipo(`${nome} ${categoria}`);
+          const email = (r.email || r.emails || "").toLowerCase().trim();
           const tel = cleanPhone(r.whatsapp || r.telefone || r.phone);
+          const endereco = r.endereco || r.address || r.street || null;
           return {
             nome,
-            tipo_lead: ["corretor", "imobiliaria"].includes(tipo) ? tipo : "imobiliaria",
+            tipo_lead: tipo,
             empresa: r.empresa || r.company || nome,
             email: isEmail(email) ? email : null,
             whatsapp: cleanPhone(r.whatsapp) || tel,
-            telefone: cleanPhone(r.telefone) || tel,
+            telefone: cleanPhone(r.telefone || r.phone) || tel,
             site: r.site || r.website || null,
             instagram: r.instagram || null,
             cidade: r.cidade || r.city || null,
             estado: r.estado || r.state || null,
-            endereco: r.endereco || r.address || null,
+            endereco,
+            rating: r.rating || r.totalscore ? Number(r.rating || r.totalscore) || null : null,
+            reviews_count: r.reviews_count || r.reviewscount ? Number(r.reviews_count || r.reviewscount) || null : null,
             status: r.status || "novo",
             origem: r.origem || "csv_import",
             observacoes: r.observacoes || r.notes || null,
