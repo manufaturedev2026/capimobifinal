@@ -123,6 +123,63 @@ const INVITE_TEMPLATE = {
 </div>`,
 };
 
+const APIFY_LEADS_TEMPLATE = {
+  name: "Integração Apify Leads - Chamada WhatsApp",
+  subject: "{{nome}}, achei sua {{empresa}} e quero te mostrar algo 🚀",
+  html: `<div style="font-family:'Segoe UI',Arial,sans-serif;max-width:600px;margin:0 auto;background:#f4f6fb;padding:24px 0;">
+  <div style="max-width:560px;margin:0 auto;padding:0 16px;">
+    <div style="text-align:center;padding:8px 0 24px;">
+      <p style="font-size:28px;font-weight:bold;color:#1e40af;margin:0;letter-spacing:-0.5px;">
+        Cap<span style="color:#ffffff;background:#1e40af;padding:0 6px;border-radius:4px;">i</span><span style="color:#f59e0b;">mobi</span>
+      </p>
+    </div>
+    <div style="background:#ffffff;border-radius:16px;padding:40px 32px;box-shadow:0 4px 24px rgba(30,64,175,0.08);">
+      <h1 style="font-size:24px;font-weight:bold;color:#0f172a;margin:0 0 16px;">Olá {{nome}}, tudo bem? 👋</h1>
+      <p style="font-size:15px;color:#334155;line-height:1.6;margin:0 0 16px;">
+        Encontrei a <strong>{{empresa}}</strong> em <strong>{{cidade}}/{{estado}}</strong> e fiquei impressionado com o trabalho de vocês. Sou da <strong>Capimobi</strong> — uma plataforma criada para corretores e imobiliárias venderem mais com tecnologia de verdade.
+      </p>
+      <p style="font-size:15px;color:#334155;line-height:1.6;margin:0 0 24px;">
+        Quero te apresentar como a Capimobi pode <strong>multiplicar seus leads</strong> e organizar todo o seu processo comercial em um só lugar:
+      </p>
+      <div style="background:#f0f9ff;border-left:4px solid #1e40af;border-radius:8px;padding:16px 20px;margin:0 0 24px;">
+        <p style="font-size:14px;font-weight:bold;color:#0f172a;margin:0 0 12px;">🏡 Tudo que você precisa, em uma plataforma só:</p>
+        <ul style="margin:0;padding-left:20px;color:#334155;font-size:14px;line-height:1.8;">
+          <li><strong>Site profissional</strong> com sua marca, domínio e SEO automático</li>
+          <li><strong>CRM completo</strong> com funil Kanban e histórico de cada lead</li>
+          <li><strong>WhatsApp integrado</strong> com captura automática de contatos</li>
+          <li><strong>Stories</strong> estilo Instagram para destacar imóveis</li>
+          <li><strong>Propostas em PDF</strong> com QR Code, fotos e mapa</li>
+          <li><strong>Simulador de financiamento</strong> Caixa, Itaú, Bradesco</li>
+          <li><strong>Notificações Push</strong> para reengajar visitantes</li>
+          <li><strong>Sistema de parcerias</strong> entre corretores e imobiliárias</li>
+          <li><strong>Captação de imóveis</strong> via link público compartilhável</li>
+        </ul>
+      </div>
+      <p style="font-size:15px;color:#334155;line-height:1.6;margin:0 0 16px;">
+        <strong>Bora trocar uma ideia rápida no WhatsApp?</strong> Em 5 minutos eu te mostro como funciona e você decide se faz sentido para a {{empresa}}.
+      </p>
+      <div style="text-align:center;margin:32px 0;">
+        <a href="https://wa.me/5527999999999?text=Ol%C3%A1!%20Recebi%20o%20e-mail%20da%20Capimobi%20e%20quero%20saber%20mais" style="background:#25D366;color:#ffffff;font-size:16px;font-weight:bold;border-radius:12px;padding:16px 40px;text-decoration:none;display:inline-block;box-shadow:0 4px 12px rgba(37,211,102,0.35);">
+          💬 Falar no WhatsApp agora
+        </a>
+      </div>
+      <div style="text-align:center;margin:0 0 24px;">
+        <a href="https://capimobi001.lovable.app" style="font-size:14px;color:#1e40af;text-decoration:underline;font-weight:600;">
+          🌐 Conhecer o site capimobi001.lovable.app
+        </a>
+      </div>
+      <p style="font-size:13px;color:#64748b;line-height:1.5;margin:24px 0 0;padding-top:24px;border-top:1px solid #e2e8f0;text-align:center;">
+        Se preferir, é só responder este e-mail — eu pessoalmente te respondo. 💙
+      </p>
+    </div>
+    <div style="text-align:center;padding:24px 0 8px;">
+      <p style="font-size:13px;color:#475569;font-weight:600;margin:0;">Capimobi — Plataforma de corretores e imobiliárias</p>
+      <p style="font-size:12px;color:#94a3b8;margin:4px 0 0;">Se não deseja mais receber, basta ignorar este e-mail.</p>
+    </div>
+  </div>
+</div>`,
+};
+
 export default function AdminApifyLeadsTab() {
   const { toast } = useToast();
   const [tab, setTab] = useState("dashboard");
@@ -167,12 +224,19 @@ export default function AdminApifyLeadsTab() {
   const [campSending, setCampSending] = useState(false);
   const [campTesting, setCampTesting] = useState(false);
 
-  // Templates editor
+  // Templates editor (1 - Convite Capimobi)
   const [tplName, setTplName] = useState(INVITE_TEMPLATE.name);
   const [tplSubject, setTplSubject] = useState(INVITE_TEMPLATE.subject);
   const [tplHtml, setTplHtml] = useState(INVITE_TEMPLATE.html);
   const [tplSaving, setTplSaving] = useState(false);
   const [tplPreview, setTplPreview] = useState(false);
+
+  // Templates editor (2 - Integração Apify Leads / WhatsApp)
+  const [tpl2Name, setTpl2Name] = useState(APIFY_LEADS_TEMPLATE.name);
+  const [tpl2Subject, setTpl2Subject] = useState(APIFY_LEADS_TEMPLATE.subject);
+  const [tpl2Html, setTpl2Html] = useState(APIFY_LEADS_TEMPLATE.html);
+  const [tpl2Saving, setTpl2Saving] = useState(false);
+  const [tpl2Preview, setTpl2Preview] = useState(false);
 
   useEffect(() => {
     loadSettings();
@@ -206,11 +270,17 @@ export default function AdminApifyLeadsTab() {
   async function loadTemplate() {
     const { data } = await supabase
       .from("platform_settings").select("key, value")
-      .in("key", ["apify_invite_template_name", "apify_invite_template_subject", "apify_invite_template_html"]);
+      .in("key", [
+        "apify_invite_template_name", "apify_invite_template_subject", "apify_invite_template_html",
+        "apify_leads_template_name", "apify_leads_template_subject", "apify_leads_template_html",
+      ]);
     const map = Object.fromEntries((data || []).map((s) => [s.key, s.value]));
     if (map.apify_invite_template_name) setTplName(map.apify_invite_template_name);
     if (map.apify_invite_template_subject) setTplSubject(map.apify_invite_template_subject);
     if (map.apify_invite_template_html) setTplHtml(map.apify_invite_template_html);
+    if (map.apify_leads_template_name) setTpl2Name(map.apify_leads_template_name);
+    if (map.apify_leads_template_subject) setTpl2Subject(map.apify_leads_template_subject);
+    if (map.apify_leads_template_html) setTpl2Html(map.apify_leads_template_html);
   }
 
   async function saveTemplate() {
@@ -231,6 +301,26 @@ export default function AdminApifyLeadsTab() {
     setTplName(INVITE_TEMPLATE.name);
     setTplSubject(INVITE_TEMPLATE.subject);
     setTplHtml(INVITE_TEMPLATE.html);
+  }
+
+  async function saveTemplate2() {
+    setTpl2Saving(true);
+    const rows = [
+      { key: "apify_leads_template_name", value: tpl2Name },
+      { key: "apify_leads_template_subject", value: tpl2Subject },
+      { key: "apify_leads_template_html", value: tpl2Html },
+    ];
+    const { error } = await supabase.from("platform_settings").upsert(rows, { onConflict: "key" });
+    setTpl2Saving(false);
+    if (error) toast({ title: "Erro ao salvar", description: error.message, variant: "destructive" });
+    else toast({ title: "Template salvo!", description: "As alterações foram aplicadas" });
+  }
+
+  function resetTemplate2() {
+    if (!confirm("Restaurar o template original? As alterações não salvas serão perdidas.")) return;
+    setTpl2Name(APIFY_LEADS_TEMPLATE.name);
+    setTpl2Subject(APIFY_LEADS_TEMPLATE.subject);
+    setTpl2Html(APIFY_LEADS_TEMPLATE.html);
   }
 
   async function loadLeads() {
@@ -1071,6 +1161,86 @@ export default function AdminApifyLeadsTab() {
               />
             </DialogContent>
           </Dialog>
+
+          {/* Template 2 - Integração Apify Leads */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base flex items-center justify-between flex-wrap gap-2">
+                <span className="flex items-center gap-2"><MessageCircle className="h-4 w-4" /> Template Integração Apify Leads (WhatsApp)</span>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" onClick={() => setTpl2Preview(true)}>
+                    <Eye className="h-4 w-4 mr-1" /> Pré-visualizar
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={resetTemplate2}>
+                    <RotateCcw className="h-4 w-4 mr-1" /> Restaurar padrão
+                  </Button>
+                  <Button size="sm" onClick={saveTemplate2} disabled={tpl2Saving}>
+                    {tpl2Saving ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Save className="h-4 w-4 mr-1" />}
+                    Salvar
+                  </Button>
+                </div>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-xs text-muted-foreground">
+                Template focado em <strong>chamar o lead no WhatsApp</strong> e apresentar o site/funções da plataforma.
+                Variáveis disponíveis:{" "}
+                <code className="bg-muted px-1 rounded">{"{{nome}}"}</code>,{" "}
+                <code className="bg-muted px-1 rounded">{"{{empresa}}"}</code>,{" "}
+                <code className="bg-muted px-1 rounded">{"{{cidade}}"}</code>,{" "}
+                <code className="bg-muted px-1 rounded">{"{{estado}}"}</code>
+              </p>
+
+              <div>
+                <Label>Nome interno do template</Label>
+                <Input value={tpl2Name} onChange={(e) => setTpl2Name(e.target.value)} placeholder="Integração Apify Leads - ..." />
+              </div>
+
+              <div>
+                <Label>Assunto do e-mail</Label>
+                <Input value={tpl2Subject} onChange={(e) => setTpl2Subject(e.target.value)} placeholder="{{nome}}, ..." />
+              </div>
+
+              <div>
+                <Label>Conteúdo HTML</Label>
+                <Textarea
+                  value={tpl2Html}
+                  onChange={(e) => setTpl2Html(e.target.value)}
+                  rows={20}
+                  className="font-mono text-xs"
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  💡 Lembre de trocar o número <code className="bg-muted px-1 rounded">5527999999999</code> no link <code>wa.me</code> pelo seu WhatsApp real.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Dialog open={tpl2Preview} onOpenChange={setTpl2Preview}>
+            <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Pré-visualização do e-mail (Apify Leads)</DialogTitle>
+              </DialogHeader>
+              <div className="text-xs text-muted-foreground mb-2">
+                <strong>Assunto:</strong>{" "}
+                {tpl2Subject
+                  .replace(/{{nome}}/g, "João Silva")
+                  .replace(/{{empresa}}/g, "Imobiliária Exemplo")
+                  .replace(/{{cidade}}/g, "Vitória")
+                  .replace(/{{estado}}/g, "ES")}
+              </div>
+              <div
+                className="border border-border rounded-lg overflow-hidden bg-white"
+                dangerouslySetInnerHTML={{
+                  __html: tpl2Html
+                    .replace(/{{nome}}/g, "João Silva")
+                    .replace(/{{empresa}}/g, "Imobiliária Exemplo")
+                    .replace(/{{cidade}}/g, "Vitória")
+                    .replace(/{{estado}}/g, "ES"),
+                }}
+              />
+            </DialogContent>
+          </Dialog>
         </TabsContent>
 
         <TabsContent value="logs" className="space-y-4">
@@ -1147,6 +1317,25 @@ export default function AdminApifyLeadsTab() {
                   setCampName(tplName);
                   setCampSubject(tplSubject);
                   setCampHtml(tplHtml);
+                  toast({ title: "Template carregado", description: "Você pode editar antes de enviar" });
+                }}
+              >
+                Usar template
+              </Button>
+            </div>
+            <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/5 p-3 flex items-center justify-between gap-3">
+              <div className="text-sm">
+                <p className="font-semibold text-foreground">💬 Integração Apify Leads (WhatsApp)</p>
+                <p className="text-xs text-muted-foreground">Convida o lead a falar no WhatsApp e conhecer o site</p>
+              </div>
+              <Button
+                size="sm"
+                type="button"
+                variant="secondary"
+                onClick={() => {
+                  setCampName(tpl2Name);
+                  setCampSubject(tpl2Subject);
+                  setCampHtml(tpl2Html);
                   toast({ title: "Template carregado", description: "Você pode editar antes de enviar" });
                 }}
               >
