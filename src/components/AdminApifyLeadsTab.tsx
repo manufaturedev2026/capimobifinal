@@ -66,6 +66,62 @@ const QUICK_SEARCHES = [
   "corretor autônomo Rio de Janeiro",
 ];
 
+const INVITE_TEMPLATE = {
+  name: "Convite Capimobi - Conheça a Plataforma",
+  subject: "{{nome}}, uma oportunidade gratuita para sua imobiliária 🏡",
+  html: `<div style="font-family:'Segoe UI',Arial,sans-serif;max-width:600px;margin:0 auto;background:#f4f6fb;padding:24px 0;">
+  <div style="max-width:560px;margin:0 auto;padding:0 16px;">
+    <div style="text-align:center;padding:8px 0 24px;">
+      <p style="font-size:28px;font-weight:bold;color:#1e40af;margin:0;letter-spacing:-0.5px;">
+        Cap<span style="color:#ffffff;background:#1e40af;padding:0 6px;border-radius:4px;">i</span><span style="color:#f59e0b;">mobi</span>
+      </p>
+    </div>
+    <div style="background:#ffffff;border-radius:16px;padding:40px 32px;box-shadow:0 4px 24px rgba(30,64,175,0.08);">
+      <h1 style="font-size:24px;font-weight:bold;color:#0f172a;margin:0 0 16px;">Olá {{nome}}! 👋</h1>
+      <p style="font-size:15px;color:#334155;line-height:1.6;margin:0 0 16px;">
+        Sou da <strong>Capimobi</strong>, a plataforma que está revolucionando o mercado imobiliário brasileiro — e quero apresentar uma <strong>oportunidade exclusiva e 100% gratuita</strong> para a <strong>{{empresa}}</strong> em <strong>{{cidade}}/{{estado}}</strong>.
+      </p>
+      <p style="font-size:15px;color:#334155;line-height:1.6;margin:0 0 24px;">
+        Criamos uma vitrine digital profissional para corretores e imobiliárias se destacarem no Google e converterem mais leads, sem mensalidade no plano inicial.
+      </p>
+      <div style="background:#f0f9ff;border-left:4px solid #1e40af;border-radius:8px;padding:16px 20px;margin:0 0 24px;">
+        <p style="font-size:14px;font-weight:bold;color:#0f172a;margin:0 0 12px;">✨ O que você ganha na Capimobi:</p>
+        <ul style="margin:0;padding-left:20px;color:#334155;font-size:14px;line-height:1.8;">
+          <li><strong>Loja virtual personalizada</strong> com seu logo, cores e domínio próprio</li>
+          <li><strong>CRM Kanban</strong> para gestão completa de leads</li>
+          <li><strong>WhatsApp inteligente</strong> com captura automática de contatos</li>
+          <li><strong>Stories estilo Instagram</strong> para destacar imóveis</li>
+          <li><strong>Gerador de propostas em PDF</strong> com QR Code e mapa</li>
+          <li><strong>Simulador de financiamento</strong> Caixa, Itaú, Bradesco</li>
+          <li><strong>Notificações Push</strong> para fidelizar visitantes</li>
+          <li><strong>SEO automático</strong> por bairro e cidade — apareça no Google</li>
+          <li><strong>Sistema de parcerias</strong> entre corretores e imobiliárias</li>
+          <li><strong>Captação de imóveis</strong> via link público compartilhável</li>
+        </ul>
+      </div>
+      <p style="font-size:15px;color:#334155;line-height:1.6;margin:0 0 24px;">
+        Sem compromisso, sem cartão de crédito. Crie sua loja em menos de 5 minutos e comece a receber leads ainda hoje.
+      </p>
+      <div style="text-align:center;margin:32px 0;">
+        <a href="https://capimobi001.lovable.app/cadastro" style="background:#1e40af;color:#ffffff;font-size:16px;font-weight:bold;border-radius:12px;padding:16px 40px;text-decoration:none;display:inline-block;box-shadow:0 4px 12px rgba(30,64,175,0.3);">
+          🚀 Criar Minha Loja Grátis
+        </a>
+      </div>
+      <p style="font-size:13px;color:#64748b;line-height:1.5;margin:0;text-align:center;">
+        Já são centenas de corretores e imobiliárias crescendo conosco.<br>Junte-se a nós e leve seus negócios para o próximo nível.
+      </p>
+      <p style="font-size:13px;color:#64748b;line-height:1.5;margin:24px 0 0;padding-top:24px;border-top:1px solid #e2e8f0;text-align:center;">
+        Dúvidas? Responda este e-mail que eu pessoalmente te respondo. 💙
+      </p>
+    </div>
+    <div style="text-align:center;padding:24px 0 8px;">
+      <p style="font-size:13px;color:#475569;font-weight:600;margin:0;">Capimobi — Plataforma de corretores e imobiliárias</p>
+      <p style="font-size:12px;color:#94a3b8;margin:4px 0 0;">Se não deseja mais receber, basta ignorar este e-mail.</p>
+    </div>
+  </div>
+</div>`,
+};
+
 export default function AdminApifyLeadsTab() {
   const { toast } = useToast();
   const [tab, setTab] = useState("dashboard");
