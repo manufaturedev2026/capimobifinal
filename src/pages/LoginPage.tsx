@@ -11,6 +11,7 @@ import { normalizeLoginHeroSetting, resolveLoginHeroImage } from "@/data/loginHe
 import heroImgDefault from "@/assets/hero-anunciar.jpg";
 import { BRAZIL_STATES } from "@/data/brazilStates";
 import { useCitiesByState } from "@/hooks/useCitiesByState";
+import ThemeParticles from "@/components/ThemeParticles";
 
 export default function LoginPage() {
   const [isLogin, setIsLogin] = useState(() => {
@@ -196,8 +197,9 @@ export default function LoginPage() {
       </div>
 
       {/* Form Panel */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center px-6 py-10 lg:py-12">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }} className="w-full max-w-md">
+      <div className="relative w-full lg:w-1/2 flex items-center justify-center px-6 py-10 lg:py-12">
+        <ThemeParticles color={theme.primary} glowColor={theme.promoAccent || theme.primary} count={30} />
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }} className="relative z-10 w-full max-w-md">
           <div className="mb-8">
             <h2 className="font-display font-bold text-2xl lg:text-3xl" style={{ color: theme.text }}>
               {isLogin ? "Acesse sua conta" : "Crie sua conta"}
