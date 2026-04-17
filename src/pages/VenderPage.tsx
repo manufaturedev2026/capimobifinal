@@ -304,11 +304,11 @@ export default function VenderPage() {
                 Tenha seu próprio site, seus próprios clientes e controle total das suas vendas.
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-3">
-                <Button onClick={scrollToForm} size="lg" className="text-white font-bold rounded-xl px-6 md:px-8 text-sm md:text-base shadow-lg" style={{ background: `linear-gradient(to right, ${theme.primary}, ${theme.promoAccent || theme.primary})`, boxShadow: `0 10px 25px ${theme.primary}40` }}>
-                  Criar Meu Site Agora <ArrowRight className="ml-2 w-4 h-4 md:w-5 md:h-5" />
+              <div className="flex flex-row gap-2 sm:gap-3">
+                <Button onClick={scrollToForm} size="lg" className="flex-1 sm:flex-none text-white font-bold rounded-xl px-3 sm:px-6 md:px-8 text-xs sm:text-sm md:text-base shadow-lg whitespace-nowrap" style={{ background: `linear-gradient(to right, ${theme.primary}, ${theme.promoAccent || theme.primary})`, boxShadow: `0 10px 25px ${theme.primary}40` }}>
+                  Criar Meu Site <ArrowRight className="ml-1.5 sm:ml-2 w-4 h-4 md:w-5 md:h-5" />
                 </Button>
-                <Button onClick={() => document.getElementById("planos")?.scrollIntoView({ behavior: "smooth" })} variant="outline" className="rounded-xl border-white/20 text-white/70 hover:text-white hover:bg-white/5 text-sm">
+                <Button onClick={() => document.getElementById("planos")?.scrollIntoView({ behavior: "smooth" })} variant="outline" className="flex-1 sm:flex-none rounded-xl border-white/20 text-white/70 hover:text-white hover:bg-white/5 text-xs sm:text-sm whitespace-nowrap">
                   Ver Planos <ChevronRight className="ml-1 w-4 h-4" />
                 </Button>
               </div>
