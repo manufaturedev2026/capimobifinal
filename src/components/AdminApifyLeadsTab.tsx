@@ -330,6 +330,19 @@ export default function AdminApifyLeadsTab() {
   }
 
   function parseCSV(text: string): Record<string, string>[] {
+    // Remove BOM
+    text = text.replace(/^\ufeff/, "");
+    // Auto-detect delimiter from header line (handles , ; and \t)
+    const firstNl = text.indexOf("\n");
+    const headerLine = firstNl >= 0 ? text.slice(0, firstNl) : text;
+    const counts: Record<string, number> = { ",": 0, ";": 0, "\t": 0 };
+    let inQH = false;
+    for (const c of headerLine) {
+      if (c === '"') inQH = !inQH;
+      else if (!inQH && (c === "," || c === ";" || c === "\t")) counts[c]++;
+    }
+    const delim = Object.entries(counts).sort((a, b) => b[1] - a[1])[0][0];
+
     const lines: string[] = [];
     let cur = "";
     let inQuotes = false;
@@ -354,7 +367,7 @@ export default function AdminApifyLeadsTab() {
         if (c === '"') {
           if (q && line[i + 1] === '"') { val += '"'; i++; }
           else q = !q;
-        } else if ((c === "," || c === ";") && !q) {
+        } else if (c === delim && !q) {
           out.push(val); val = "";
         } else val += c;
       }
