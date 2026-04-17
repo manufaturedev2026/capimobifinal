@@ -308,18 +308,15 @@ export default function LoginPage() {
           </form>
 
           {!signedUp && isLogin && (
-            <>
-              <p className="text-center text-sm mt-4">
-                <button onClick={() => { setShowForgot(true); setForgotEmail(email); }} className="font-medium hover:underline" style={{ color: theme.textMuted }}>
-                  Esqueci minha senha
-                </button>
-              </p>
-              <p className="text-center text-sm mt-6" style={{ color: theme.textMuted }}>
-                <button onClick={() => setIsLogin(false)} className="font-semibold hover:underline" style={{ color: theme.primary }}>
-                  Quero me Cadastrar
-                </button>
-              </p>
-            </>
+            <p className="text-center text-sm mt-6 flex items-center justify-center gap-3" style={{ color: theme.textMuted }}>
+              <button onClick={() => { setShowForgot(true); setForgotEmail(email); }} className="font-medium hover:underline" style={{ color: theme.textMuted }}>
+                Esqueci minha senha
+              </button>
+              <span style={{ color: theme.border }}>•</span>
+              <button onClick={() => setIsLogin(false)} className="font-semibold hover:underline" style={{ color: theme.primary }}>
+                Quero me Cadastrar
+              </button>
+            </p>
           )}
 
           {showForgot && (
