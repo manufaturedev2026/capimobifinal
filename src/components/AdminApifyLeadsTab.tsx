@@ -160,7 +160,7 @@ const APIFY_LEADS_TEMPLATE = {
         <strong>Bora trocar uma ideia rápida no WhatsApp?</strong> Em 5 minutos eu te mostro como funciona e você decide se faz sentido para a {{empresa}}.
       </p>
       <div style="text-align:center;margin:32px 0;">
-        <a href="https://wa.me/5527999999999?text=Ol%C3%A1!%20Recebi%20o%20e-mail%20da%20Capimobi%20e%20quero%20saber%20mais" style="background:#25D366;color:#ffffff;font-size:16px;font-weight:bold;border-radius:12px;padding:16px 40px;text-decoration:none;display:inline-block;box-shadow:0 4px 12px rgba(37,211,102,0.35);">
+        <a href="https://wa.me/5527995055993?text=Ol%C3%A1!%20Recebi%20o%20e-mail%20da%20Capimobi%20e%20quero%20saber%20mais" style="background:#25D366;color:#ffffff;font-size:16px;font-weight:bold;border-radius:12px;padding:16px 40px;text-decoration:none;display:inline-block;box-shadow:0 4px 12px rgba(37,211,102,0.35);">
           💬 Falar no WhatsApp agora
         </a>
       </div>
@@ -1299,7 +1299,7 @@ export default function AdminApifyLeadsTab() {
                   className="font-mono text-xs"
                 />
                 <p className="text-xs text-muted-foreground mt-1">
-                  💡 Lembre de trocar o número <code className="bg-muted px-1 rounded">5527999999999</code> no link <code>wa.me</code> pelo seu WhatsApp real.
+                  💡 Lembre de trocar o número <code className="bg-muted px-1 rounded">5527995055993</code> no link <code>wa.me</code> pelo seu WhatsApp real.
                 </p>
               </div>
             </CardContent>
