@@ -250,7 +250,27 @@ export default function AdminApifyLeadsTab() {
     loadLeads();
     loadRuns();
     loadTemplate();
+    loadSentLeadIds();
   }, []);
+
+  async function loadSentLeadIds() {
+    const ids = new Set<string>();
+    const pageSize = 1000;
+    let from = 0;
+    while (true) {
+      const { data, error } = await supabase
+        .from("lead_campaign_sends")
+        .select("lead_id")
+        .eq("status", "enviado")
+        .not("lead_id", "is", null)
+        .range(from, from + pageSize - 1);
+      if (error || !data || data.length === 0) break;
+      data.forEach((r: any) => { if (r.lead_id) ids.add(r.lead_id); });
+      if (data.length < pageSize) break;
+      from += pageSize;
+    }
+    setSentLeadIds(ids);
+  }
 
   async function loadSettings() {
     const { data } = await supabase
