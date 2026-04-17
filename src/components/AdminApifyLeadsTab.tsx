@@ -772,9 +772,23 @@ export default function AdminApifyLeadsTab() {
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader><DialogTitle>Nova Campanha de E-mail</DialogTitle></DialogHeader>
           <div className="space-y-4">
-            <div>
-              <Label>Nome interno</Label>
-              <Input value={campName} onChange={(e) => setCampName(e.target.value)} placeholder="Ex: Apresentação Capimobi - Out/2025" />
+            <div className="rounded-lg border border-primary/20 bg-primary/5 p-3 flex items-center justify-between gap-3">
+              <div className="text-sm">
+                <p className="font-semibold text-foreground">📧 Template de Convite Capimobi</p>
+                <p className="text-xs text-muted-foreground">Carregue o e-mail bonito apresentando a plataforma</p>
+              </div>
+              <Button
+                size="sm"
+                type="button"
+                onClick={() => {
+                  setCampName(INVITE_TEMPLATE.name);
+                  setCampSubject(INVITE_TEMPLATE.subject);
+                  setCampHtml(INVITE_TEMPLATE.html);
+                  toast({ title: "Template carregado", description: "Você pode editar antes de enviar" });
+                }}
+              >
+                Usar template
+              </Button>
             </div>
             <div>
               <Label>Assunto</Label>
