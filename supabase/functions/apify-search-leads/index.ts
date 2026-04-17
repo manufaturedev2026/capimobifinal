@@ -108,8 +108,8 @@ Deno.serve(async (req) => {
 
     const queries = buildQueries({ ...input, quantidade });
 
-    // Call Apify run-sync-get-dataset-items
-    const apifyUrl = `https://api.apify.com/v2/acts/${actorId}/run-sync-get-dataset-items?token=${apifyToken}`;
+    // Start Apify run asynchronously (does NOT wait for completion)
+    const startUrl = `https://api.apify.com/v2/acts/${actorId}/runs?token=${apifyToken}`;
     const body = {
       searchStringsArray: queries,
       maxCrawledPlacesPerSearch: Math.ceil(quantidade / queries.length),
@@ -118,85 +118,129 @@ Deno.serve(async (req) => {
       scrapeContacts: true,
     };
 
-    const apifyRes = await fetch(apifyUrl, {
+    const startRes = await fetch(startUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
 
-    if (!apifyRes.ok) {
-      const txt = await apifyRes.text();
-      throw new Error(`Apify ${apifyRes.status}: ${txt.slice(0, 300)}`);
+    if (!startRes.ok) {
+      const txt = await startRes.text();
+      throw new Error(`Apify ${startRes.status}: ${txt.slice(0, 300)}`);
     }
 
-    const items = (await apifyRes.json()) as any[];
-    const retornados = items.length;
-
-    let importados = 0, duplicados = 0;
-
-    for (const it of items) {
-      const nome = it.title || it.name;
-      if (!nome) continue;
-
-      const email = (it.emails?.[0] || it.email || null)?.toLowerCase().trim();
-      const telefone = cleanPhone(it.phone || it.phoneUnformatted);
-      const whatsapp = telefone;
-      const placeId = it.placeId || it.cid || null;
-
-      const tipo = inferTipoLead(nome, it.categoryName, input.tipo_lead === "ambos" ? undefined : input.tipo_lead);
-
-      const lead = {
-        nome,
-        tipo_lead: tipo,
-        empresa: nome,
-        email: isValidEmail(email) ? email : null,
-        whatsapp,
-        telefone,
-        site: it.website || null,
-        instagram: it.instagrams?.[0] || null,
-        cidade: it.city || input.cidade,
-        estado: it.state || input.estado,
-        endereco: it.address || null,
-        cep: it.postalCode || null,
-        rating: it.totalScore || null,
-        reviews_count: it.reviewsCount || null,
-        google_place_id: placeId,
-        apify_run_id: runId,
-        raw_data: it,
-        ultima_atualizacao: new Date().toISOString(),
-      };
-
-      // Dedup by place_id or email
-      let existing = null as any;
-      if (placeId) {
-        const { data } = await supabase.from("leads_imobiliarios").select("id").eq("google_place_id", placeId).maybeSingle();
-        existing = data;
-      }
-      if (!existing && lead.email) {
-        const { data } = await supabase.from("leads_imobiliarios").select("id").eq("email", lead.email).maybeSingle();
-        existing = data;
-      }
-
-      if (existing) {
-        await supabase.from("leads_imobiliarios").update(lead).eq("id", existing.id);
-        duplicados++;
-      } else {
-        const { error } = await supabase.from("leads_imobiliarios").insert(lead);
-        if (!error) importados++;
-      }
-    }
+    const runJson = await startRes.json();
+    const apifyRunId: string = runJson?.data?.id;
+    const datasetId: string = runJson?.data?.defaultDatasetId;
 
     await supabase.from("apify_search_runs").update({
-      status: "concluido",
-      quantidade_retornada: retornados,
-      quantidade_importada: importados,
-      quantidade_duplicada: duplicados,
-      duration_ms: Date.now() - startedAt,
-      finished_at: new Date().toISOString(),
+      apify_run_id: apifyRunId,
     }).eq("id", runId);
 
+    // Background task: poll until finished, then import
+    const processInBackground = async () => {
+      const bgStart = Date.now();
+      try {
+        // Poll status (max ~25 min)
+        let status = "RUNNING";
+        for (let i = 0; i < 300; i++) {
+          await new Promise((r) => setTimeout(r, 5000));
+          const sRes = await fetch(`https://api.apify.com/v2/actor-runs/${apifyRunId}?token=${apifyToken}`);
+          if (!sRes.ok) continue;
+          const sJson = await sRes.json();
+          status = sJson?.data?.status;
+          if (["SUCCEEDED", "FAILED", "ABORTED", "TIMED-OUT"].includes(status)) break;
+        }
+
+        if (status !== "SUCCEEDED") {
+          await supabase.from("apify_search_runs").update({
+            status: "erro",
+            error_message: `Apify run terminou com status: ${status}`,
+            duration_ms: Date.now() - bgStart,
+            finished_at: new Date().toISOString(),
+          }).eq("id", runId);
+          return;
+        }
+
+        // Fetch dataset items
+        const dsRes = await fetch(`https://api.apify.com/v2/datasets/${datasetId}/items?token=${apifyToken}&clean=true&format=json`);
+        const items = (await dsRes.json()) as any[];
+        const retornados = items.length;
+
+        let importados = 0, duplicados = 0;
+
+        for (const it of items) {
+          const nome = it.title || it.name;
+          if (!nome) continue;
+
+          const email = (it.emails?.[0] || it.email || null)?.toLowerCase().trim();
+          const telefone = cleanPhone(it.phone || it.phoneUnformatted);
+          const placeId = it.placeId || it.cid || null;
+          const tipo = inferTipoLead(nome, it.categoryName, input.tipo_lead === "ambos" ? undefined : input.tipo_lead);
+
+          const lead = {
+            nome, tipo_lead: tipo, empresa: nome,
+            email: isValidEmail(email) ? email : null,
+            whatsapp: telefone, telefone,
+            site: it.website || null,
+            instagram: it.instagrams?.[0] || null,
+            cidade: it.city || input.cidade,
+            estado: it.state || input.estado,
+            endereco: it.address || null,
+            cep: it.postalCode || null,
+            rating: it.totalScore || null,
+            reviews_count: it.reviewsCount || null,
+            google_place_id: placeId,
+            apify_run_id: runId,
+            raw_data: it,
+            ultima_atualizacao: new Date().toISOString(),
+          };
+
+          let existing = null as any;
+          if (placeId) {
+            const { data } = await supabase.from("leads_imobiliarios").select("id").eq("google_place_id", placeId).maybeSingle();
+            existing = data;
+          }
+          if (!existing && lead.email) {
+            const { data } = await supabase.from("leads_imobiliarios").select("id").eq("email", lead.email).maybeSingle();
+            existing = data;
+          }
+
+          if (existing) {
+            await supabase.from("leads_imobiliarios").update(lead).eq("id", existing.id);
+            duplicados++;
+          } else {
+            const { error } = await supabase.from("leads_imobiliarios").insert(lead);
+            if (!error) importados++;
+          }
+        }
+
+        await supabase.from("apify_search_runs").update({
+          status: "concluido",
+          quantidade_retornada: retornados,
+          quantidade_importada: importados,
+          quantidade_duplicada: duplicados,
+          duration_ms: Date.now() - bgStart,
+          finished_at: new Date().toISOString(),
+        }).eq("id", runId);
+      } catch (e: any) {
+        console.error("background task error", e);
+        await supabase.from("apify_search_runs").update({
+          status: "erro",
+          error_message: e?.message || String(e),
+          duration_ms: Date.now() - bgStart,
+          finished_at: new Date().toISOString(),
+        }).eq("id", runId);
+      }
+    };
+
+    // @ts-ignore - EdgeRuntime is available in Supabase Edge Functions
+    EdgeRuntime.waitUntil(processInBackground());
+
+    // Return immediately
     return new Response(JSON.stringify({
-      success: true, run_id: runId, retornados, importados, duplicados,
+      success: true, run_id: runId, apify_run_id: apifyRunId,
+      message: "Busca iniciada em segundo plano. Acompanhe o status na aba de runs.",
     }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
   } catch (err: any) {
     console.error("apify-search-leads error", err);
