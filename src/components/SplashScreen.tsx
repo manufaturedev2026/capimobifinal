@@ -40,22 +40,22 @@ export default function SplashScreen() {
     >
       <div className="relative flex items-center justify-center">
         {/* Anel girando externo */}
-        <div className="absolute h-40 w-40 rounded-full border-4 border-transparent border-t-primary border-r-primary/60 animate-spin" />
+        <div className="absolute h-56 w-56 rounded-full border-4 border-transparent border-t-primary border-r-primary/60 animate-spin" />
         {/* Anel girando interno (sentido contrário) */}
         <div
-          className="absolute h-32 w-32 rounded-full border-4 border-transparent border-b-accent border-l-accent/60"
+          className="absolute h-44 w-44 rounded-full border-4 border-transparent border-b-accent border-l-accent/60"
           style={{ animation: "spin 1.5s linear infinite reverse" }}
         />
         {/* Logo central */}
-        <div className="relative h-24 w-24 rounded-full bg-card shadow-lg flex items-center justify-center overflow-hidden">
+        <div className="relative h-36 w-36 rounded-full bg-card shadow-lg flex items-center justify-center overflow-hidden px-4">
           {site_logo_url ? (
             <img
               src={site_logo_url}
               alt={displayName}
-              className="h-full w-full object-contain p-2 animate-pulse"
+              className="h-full w-full object-contain p-3 animate-pulse"
             />
           ) : (
-            <span className="text-2xl font-display font-bold">
+            <span className="text-xl font-bold whitespace-nowrap animate-pulse">
               <span className="text-primary">Cap</span>
               <span className="text-foreground">i</span>
               <span className="text-primary">mobi</span>
