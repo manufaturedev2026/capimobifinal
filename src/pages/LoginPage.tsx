@@ -49,16 +49,20 @@ export default function LoginPage() {
       return;
     }
     setForgotLoading(true);
-    const { error } = await supabase.auth.resetPasswordForEmail(forgotEmail, {
-      redirectTo: `${SITE_URL}/reset-password`,
+    const { data, error } = await supabase.functions.invoke("send-temp-password", {
+      body: { email: forgotEmail.trim() },
     });
     setForgotLoading(false);
-    if (error) {
-      toast({ title: "Erro ao enviar", description: error.message, variant: "destructive" });
+    if (error || (data as any)?.error) {
+      toast({
+        title: "Erro ao enviar",
+        description: (data as any)?.error || error?.message || "Tente novamente",
+        variant: "destructive",
+      });
     } else {
       toast({
-        title: "E-mail enviado!",
-        description: "Verifique sua caixa de entrada para redefinir sua senha.",
+        title: "Senha temporária enviada!",
+        description: "Verifique seu e-mail. Use a senha temporária para entrar — você será obrigado a criar uma nova no primeiro acesso.",
       });
       setShowForgot(false);
       setForgotEmail("");
