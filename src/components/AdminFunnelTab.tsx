@@ -91,11 +91,11 @@ export default function AdminFunnelTab() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 text-foreground">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h2 className="text-2xl font-bold flex items-center gap-2"><Mail className="w-6 h-6" /> Funil de E-mails</h2>
-          <p className="text-sm text-muted-foreground">Sequência automática para novos corretores cadastrados. Use <code className="bg-muted px-1 rounded">{"{{nome}}"}</code> nos textos.</p>
+          <h2 className="text-2xl font-bold flex items-center gap-2 text-foreground"><Mail className="w-6 h-6 text-primary" /> Funil de E-mails</h2>
+          <p className="text-sm text-muted-foreground">Sequência automática para novos corretores cadastrados. Use <code className="bg-muted text-foreground px-1 rounded">{"{{nome}}"}</code> nos textos.</p>
         </div>
         <button onClick={runNow} disabled={running}
           className="px-4 py-2 rounded-lg bg-primary text-primary-foreground font-medium flex items-center gap-2 disabled:opacity-50">
@@ -113,29 +113,29 @@ export default function AdminFunnelTab() {
         <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>
       ) : tab === "steps" ? (
         <div className="space-y-4">
-          <button onClick={addStep} className="w-full py-3 border-2 border-dashed rounded-xl flex items-center justify-center gap-2 hover:bg-muted">
+          <button onClick={addStep} className="w-full py-3 border-2 border-dashed border-border rounded-xl flex items-center justify-center gap-2 hover:bg-muted text-foreground">
             <Plus className="w-5 h-5" /> Adicionar etapa
           </button>
 
           {steps.map((s, i) => (
-            <div key={s.id} className="bg-card border rounded-xl p-4 space-y-3">
+            <div key={s.id} className="bg-card text-card-foreground border border-border rounded-xl p-4 space-y-3 shadow-sm">
               <div className="flex items-center justify-between gap-3 flex-wrap">
                 <div className="flex items-center gap-2">
                   <Calendar className="w-4 h-4 text-primary" />
-                  <span className="font-semibold">Dia</span>
+                  <span className="font-semibold text-foreground">Dia</span>
                   <input type="number" min={0} value={s.day_offset}
                     onChange={(e) => { const v = [...steps]; v[i] = { ...s, day_offset: parseInt(e.target.value) || 0 }; setSteps(v); }}
-                    className="w-20 px-2 py-1 border rounded bg-background" />
+                    className="w-20 px-2 py-1 border border-input rounded bg-background text-foreground" />
                   <span className="text-sm text-muted-foreground">após o cadastro</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <button onClick={() => { const v = [...steps]; v[i] = { ...s, is_active: !s.is_active }; setSteps(v); updateStep({ ...s, is_active: !s.is_active }); }}
-                    className={`px-3 py-1.5 rounded-lg text-sm flex items-center gap-1 ${s.is_active ? "bg-green-500/10 text-green-600" : "bg-muted text-muted-foreground"}`}>
+                    className={`px-3 py-1.5 rounded-lg text-sm flex items-center gap-1 ${s.is_active ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground"}`}>
                     {s.is_active ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
                     {s.is_active ? "Ativa" : "Inativa"}
                   </button>
                   <button onClick={() => updateStep(s)} disabled={saving === s.id}
-                    className="px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-sm flex items-center gap-1">
+                    className="px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-sm flex items-center gap-1 hover:opacity-90">
                     {saving === s.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />} Salvar
                   </button>
                   <button onClick={() => deleteStep(s.id)} className="p-2 rounded-lg hover:bg-destructive/10 text-destructive">
@@ -148,14 +148,14 @@ export default function AdminFunnelTab() {
                 <label className="text-xs font-medium text-muted-foreground">Assunto</label>
                 <input value={s.subject}
                   onChange={(e) => { const v = [...steps]; v[i] = { ...s, subject: e.target.value }; setSteps(v); }}
-                  className="w-full px-3 py-2 border rounded-lg bg-background" />
+                  className="w-full px-3 py-2 border border-input rounded-lg bg-background text-foreground" />
               </div>
 
               <div>
                 <label className="text-xs font-medium text-muted-foreground">Conteúdo (HTML)</label>
                 <textarea value={s.content_html}
                   onChange={(e) => { const v = [...steps]; v[i] = { ...s, content_html: e.target.value }; setSteps(v); }}
-                  rows={8} className="w-full px-3 py-2 border rounded-lg bg-background font-mono text-xs" />
+                  rows={8} className="w-full px-3 py-2 border border-input rounded-lg bg-background text-foreground font-mono text-xs" />
               </div>
             </div>
           ))}
@@ -165,9 +165,9 @@ export default function AdminFunnelTab() {
           )}
         </div>
       ) : (
-        <div className="bg-card border rounded-xl overflow-hidden">
+        <div className="bg-card text-card-foreground border border-border rounded-xl overflow-hidden shadow-sm">
           <table className="w-full text-sm">
-            <thead className="bg-muted">
+            <thead className="bg-muted text-muted-foreground">
               <tr>
                 <th className="text-left p-3">Data</th>
                 <th className="text-left p-3">E-mail</th>
@@ -178,12 +178,12 @@ export default function AdminFunnelTab() {
             </thead>
             <tbody>
               {sends.map(h => (
-                <tr key={h.id} className="border-t">
-                  <td className="p-3">{new Date(h.sent_at).toLocaleString("pt-BR")}</td>
-                  <td className="p-3">{h.to_email}</td>
-                  <td className="p-3">Dia {h.day_offset}</td>
+                <tr key={h.id} className="border-t border-border">
+                  <td className="p-3 text-foreground">{new Date(h.sent_at).toLocaleString("pt-BR")}</td>
+                  <td className="p-3 text-foreground">{h.to_email}</td>
+                  <td className="p-3 text-foreground">Dia {h.day_offset}</td>
                   <td className="p-3">
-                    <span className={`px-2 py-0.5 rounded text-xs ${h.status === "enviado" ? "bg-green-500/10 text-green-600" : "bg-red-500/10 text-red-600"}`}>{h.status}</span>
+                    <span className={`px-2 py-0.5 rounded text-xs ${h.status === "enviado" ? "bg-primary/10 text-primary" : "bg-destructive/10 text-destructive"}`}>{h.status}</span>
                   </td>
                   <td className="p-3 text-xs text-muted-foreground max-w-xs truncate">{h.error_message}</td>
                 </tr>
