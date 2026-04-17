@@ -92,6 +92,13 @@ export default function AdminPanel() {
   const [managerPhotoUploading, setManagerPhotoUploading] = useState(false);
   const managerPhotoRef = useRef<HTMLInputElement>(null);
 
+  // Plan change dialog state
+  const [planDialogOpen, setPlanDialogOpen] = useState(false);
+  const [planSeller, setPlanSeller] = useState<SellerWithSub | null>(null);
+  const [planTier, setPlanTier] = useState<string>("start");
+  const [planDuration, setPlanDuration] = useState<string>("30");
+  const [planCustomDays, setPlanCustomDays] = useState<string>("");
+  const [planSaving, setPlanSaving] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !adminLoading) {
