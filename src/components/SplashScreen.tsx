@@ -46,9 +46,9 @@ export default function SplashScreen() {
             />
           ) : (
             <span className="text-2xl font-bold whitespace-nowrap animate-pulse">
-              <span className="text-primary">Cap</span>
-              <span className="text-accent">i</span>
-              <span className="text-foreground">mobi</span>
+              <span className="text-accent">Cap</span>
+              <span className="text-white">i</span>
+              <span className="text-primary">mobi</span>
             </span>
           )}
         </div>
