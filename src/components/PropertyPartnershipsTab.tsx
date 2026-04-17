@@ -544,13 +544,13 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
                       <p className="text-[10px] text-muted-foreground">Total</p>
                       <p className="font-bold text-xs text-primary">{fmt(gains.total)}</p>
                     </div>
-                    <div className="bg-green-500/10 rounded-xl p-2.5">
+                    <div className="bg-primary/10 rounded-xl p-2.5">
                       <p className="text-[10px] text-muted-foreground">Parceiro</p>
-                      <p className="font-bold text-xs text-green-600">{fmt(gains.partner)}</p>
+                      <p className="font-bold text-xs text-primary">{fmt(gains.partner)}</p>
                     </div>
-                    <div className="bg-accent/10 rounded-xl p-2.5">
+                    <div className="bg-primary/10 rounded-xl p-2.5">
                       <p className="text-[10px] text-muted-foreground">Você</p>
-                      <p className="font-bold text-xs text-foreground">{fmt(gains.owner)}</p>
+                      <p className="font-bold text-xs text-primary">{fmt(gains.owner)}</p>
                     </div>
                   </div>
                 );
