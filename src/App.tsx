@@ -16,6 +16,7 @@ import CompareBar from "@/components/CompareBar";
 import ScrollToTop from "@/components/ScrollToTop";
 import { CustomDomainRedirect } from "@/components/CustomDomainRedirect";
 import RouteErrorBoundary from "@/components/RouteErrorBoundary";
+import SplashScreen from "@/components/SplashScreen";
 import { lazyPage } from "@/lib/chunkRecovery";
 
 const MarketplaceHome = lazyPage(() => import("@/pages/MarketplaceHome"));
@@ -187,6 +188,7 @@ const App = () => (
           <WhatsAppTeamPickerProvider>
             <CompareProvider>
               <TooltipProvider>
+                <SplashScreen />
                 <Toaster />
                 <Sonner />
                 <BrowserRouter>
