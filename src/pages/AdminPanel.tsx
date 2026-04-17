@@ -704,7 +704,7 @@ export default function AdminPanel() {
 
                     <div className="flex gap-1.5 flex-wrap">
                       <Link
-                        to={`/empresa/${seller.slug || seller.id}`}
+                        to={getSellerStoreUrl(seller)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-semibold hover:bg-primary/20"
