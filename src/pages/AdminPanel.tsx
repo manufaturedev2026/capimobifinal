@@ -19,6 +19,7 @@ import AdminInviteTab from "@/components/AdminInviteTab";
 import AdminDashboardTab from "@/components/AdminDashboardTab";
 import AdminSmtpTab from "@/components/AdminSmtpTab";
 import AdminFunnelTab from "@/components/AdminFunnelTab";
+import AdminBroadcastTab from "@/components/AdminBroadcastTab";
 import { LOGIN_HERO_PRESETS, normalizeLoginHeroSetting, resolveLoginHeroImage } from "@/data/loginHeroPresets";
 
 interface SellerWithSub {
@@ -54,7 +55,7 @@ export default function AdminPanel() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [tierFilter, setTierFilter] = useState<string>("todos");
-  const [tab, setTab] = useState<"dashboard" | "sellers" | "billing" | "referrals" | "crm" | "seo" | "vendas" | "config" | "push" | "site" | "smtp" | "funnel" | "ads" | "invite">("dashboard");
+  const [tab, setTab] = useState<"dashboard" | "sellers" | "billing" | "referrals" | "crm" | "seo" | "vendas" | "config" | "push" | "site" | "smtp" | "funnel" | "broadcast" | "ads" | "invite">("dashboard");
   const [homepageMode, setHomepageMode] = useState<string>("single");
   const [homepageTheme, setHomepageTheme] = useState<string>("azul");
   const [loginHeroUrl, setLoginHeroUrl] = useState<string>("");
@@ -411,6 +412,7 @@ export default function AdminPanel() {
     { key: "site" as const, label: "Dados do Site", icon: Globe },
     { key: "smtp" as const, label: "E-mail SMTP", icon: Mail },
     { key: "funnel" as const, label: "Funil de E-mails", icon: Send },
+    { key: "broadcast" as const, label: "Broadcast E-mail", icon: Megaphone },
     { key: "invite" as const, label: "Convite", icon: MessageCircle },
   ];
 
@@ -1237,6 +1239,13 @@ export default function AdminPanel() {
       {tab === "funnel" && (
         <div className="px-4 lg:px-8 py-6">
           <AdminFunnelTab />
+        </div>
+      )}
+
+      {/* Broadcast Tab */}
+      {tab === "broadcast" && (
+        <div className="px-4 lg:px-8 py-6">
+          <AdminBroadcastTab />
         </div>
       )}
 
