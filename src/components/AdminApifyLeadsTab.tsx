@@ -252,6 +252,29 @@ export default function AdminApifyLeadsTab() {
     setLeads((p) => p.filter((l) => l.id !== id));
   }
 
+  async function deleteAllLeads() {
+    const count = filteredLeads.length;
+    if (count === 0) {
+      toast({ title: "Nenhum lead para excluir" });
+      return;
+    }
+    const usingFilter = fSearch || fEstado || fTipo || fStatus || fHasEmail || fHasWhats;
+    const msg = usingFilter
+      ? `Excluir ${count} leads filtrados? Esta ação não pode ser desfeita.`
+      : `Excluir TODOS os ${count} leads? Esta ação não pode ser desfeita.`;
+    if (!confirm(msg)) return;
+    if (!confirm("Tem certeza absoluta? Os leads serão removidos permanentemente.")) return;
+
+    const ids = filteredLeads.map((l) => l.id);
+    const { error } = await supabase.from("leads_imobiliarios").delete().in("id", ids);
+    if (error) {
+      toast({ title: "Erro ao excluir", description: error.message, variant: "destructive" });
+      return;
+    }
+    setLeads((p) => p.filter((l) => !ids.includes(l.id)));
+    toast({ title: `${ids.length} leads excluídos` });
+  }
+
   async function markStatus(id: string, status: string) {
     await supabase.from("leads_imobiliarios").update({ status }).eq("id", id);
     setLeads((p) => p.map((l) => (l.id === id ? { ...l, status } : l)));
@@ -531,11 +554,16 @@ export default function AdminApifyLeadsTab() {
         <TabsContent value="leads" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle className="text-base flex items-center justify-between">
-                Leads Importados ({filteredLeads.length})
-                <Button size="sm" variant="outline" onClick={loadLeads}>
-                  <RefreshCw className="h-4 w-4 mr-1" />Atualizar
-                </Button>
+              <CardTitle className="text-base flex items-center justify-between gap-2">
+                <span>Leads Importados ({filteredLeads.length})</span>
+                <div className="flex gap-2">
+                  <Button size="sm" variant="outline" onClick={loadLeads}>
+                    <RefreshCw className="h-4 w-4 mr-1" />Atualizar
+                  </Button>
+                  <Button size="sm" variant="destructive" onClick={deleteAllLeads} disabled={filteredLeads.length === 0}>
+                    <Trash2 className="h-4 w-4 mr-1" />Limpar todos
+                  </Button>
+                </div>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
