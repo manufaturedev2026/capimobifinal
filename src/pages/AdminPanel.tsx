@@ -410,9 +410,21 @@ export default function AdminPanel() {
 
   const openManagerDialog = (seller: SellerWithSub) => {
     setManagerEditSellerId(seller.id);
-    setManagerName(seller.account_manager || "");
-    setManagerPhoneVal(seller.manager_phone || "");
-    setManagerPhotoUrl(seller.manager_photo || "");
+    // Se cliente já tem gerente, mantém. Senão, pré-seleciona o gerente padrão (primeiro ativo da lista).
+    if (seller.account_manager) {
+      setManagerName(seller.account_manager);
+      setManagerPhoneVal(seller.manager_phone || "");
+      setManagerPhotoUrl(seller.manager_photo || "");
+    } else if (managersList.length > 0) {
+      const def = managersList[0];
+      setManagerName(def.name);
+      setManagerPhoneVal(def.phone || "");
+      setManagerPhotoUrl(def.photo_url || "");
+    } else {
+      setManagerName("");
+      setManagerPhoneVal("");
+      setManagerPhotoUrl("");
+    }
     setManagerDialogOpen(true);
   };
 
