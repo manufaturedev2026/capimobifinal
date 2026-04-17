@@ -49,16 +49,20 @@ export default function LoginPage() {
       return;
     }
     setForgotLoading(true);
-    const { error } = await supabase.auth.resetPasswordForEmail(forgotEmail, {
-      redirectTo: `${SITE_URL}/reset-password`,
+    const { data, error } = await supabase.functions.invoke("send-temp-password", {
+      body: { email: forgotEmail.trim() },
     });
     setForgotLoading(false);
-    if (error) {
-      toast({ title: "Erro ao enviar", description: error.message, variant: "destructive" });
+    if (error || (data as any)?.error) {
+      toast({
+        title: "Erro ao enviar",
+        description: (data as any)?.error || error?.message || "Tente novamente",
+        variant: "destructive",
+      });
     } else {
       toast({
-        title: "E-mail enviado!",
-        description: "Verifique sua caixa de entrada para redefinir sua senha.",
+        title: "Senha temporária enviada!",
+        description: "Verifique seu e-mail. Use a senha temporária para entrar — você será obrigado a criar uma nova no primeiro acesso.",
       });
       setShowForgot(false);
       setForgotEmail("");
@@ -89,6 +93,10 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (user && profile) {
+      if ((profile as any).must_change_password) {
+        navigate("/reset-password?force=1", { replace: true });
+        return;
+      }
       if (isNewSignup) {
         navigate("/painel", { replace: true });
       } else {
@@ -365,7 +373,7 @@ export default function LoginPage() {
                 style={{ background: theme.cardBg, border: `1px solid ${theme.border}` }}>
                 <h3 className="font-display font-bold text-xl mb-2" style={{ color: theme.text }}>Recuperar senha</h3>
                 <p className="text-sm mb-4" style={{ color: theme.textMuted }}>
-                  Digite seu e-mail e enviaremos um link para criar uma nova senha.
+                  Digite seu e-mail. Enviaremos uma <strong>senha temporária</strong> para você acessar — depois você criará uma nova no primeiro login.
                 </p>
                 <form onSubmit={handleForgotPassword} className="space-y-3">
                   <input type="email" required value={forgotEmail} onChange={(e) => setForgotEmail(e.target.value)}
@@ -381,7 +389,7 @@ export default function LoginPage() {
                     <button type="submit" disabled={forgotLoading}
                       className="flex-1 py-3 rounded-xl font-bold text-sm disabled:opacity-50"
                       style={{ background: theme.primary, color: "#fff" }}>
-                      {forgotLoading ? "Enviando..." : "Enviar link"}
+                      {forgotLoading ? "Enviando..." : "Enviar senha temporária"}
                     </button>
                   </div>
                 </form>

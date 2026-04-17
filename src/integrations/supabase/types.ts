@@ -704,6 +704,7 @@ export type Database = {
           logo_url: string | null
           manager_phone: string | null
           manager_photo: string | null
+          must_change_password: boolean
           open_for_partnerships: boolean
           phone: string | null
           referral_balance: number
@@ -754,6 +755,7 @@ export type Database = {
           logo_url?: string | null
           manager_phone?: string | null
           manager_photo?: string | null
+          must_change_password?: boolean
           open_for_partnerships?: boolean
           phone?: string | null
           referral_balance?: number
@@ -806,6 +808,7 @@ export type Database = {
           logo_url?: string | null
           manager_phone?: string | null
           manager_photo?: string | null
+          must_change_password?: boolean
           open_for_partnerships?: boolean
           phone?: string | null
           referral_balance?: number

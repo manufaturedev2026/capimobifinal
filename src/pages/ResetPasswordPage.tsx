@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Eye, EyeOff, KeyRound } from "lucide-react";
@@ -18,6 +18,8 @@ export default function ResetPasswordPage() {
   const [checking, setChecking] = useState(true);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
+  const isForced = searchParams.get("force") === "1";
 
   const [themeId, setThemeId] = useState<string>("azul");
   const [loginHeroUrl, setLoginHeroUrl] = useState<string | null>(null);
@@ -32,7 +34,6 @@ export default function ResetPasswordPage() {
   }, []);
 
   useEffect(() => {
-    // Supabase puts recovery token in URL hash; onAuthStateChange will fire with PASSWORD_RECOVERY
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "PASSWORD_RECOVERY" || (event === "SIGNED_IN" && session)) {
         setValidSession(true);
@@ -40,7 +41,6 @@ export default function ResetPasswordPage() {
       }
     });
 
-    // Also check existing session (in case event already fired)
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) setValidSession(true);
       setChecking(false);
@@ -65,6 +65,12 @@ export default function ResetPasswordPage() {
     }
     setLoading(true);
     const { error } = await supabase.auth.updateUser({ password });
+    if (!error) {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        await supabase.from("profiles").update({ must_change_password: false }).eq("user_id", user.id);
+      }
+    }
     setLoading(false);
     if (error) {
       toast({ title: "Erro ao alterar senha", description: error.message, variant: "destructive" });
@@ -114,8 +120,14 @@ export default function ResetPasswordPage() {
           ) : (
             <>
               <div className="mb-8">
-                <h2 className="font-display font-bold text-2xl lg:text-3xl" style={{ color: theme.text }}>Defina sua nova senha</h2>
-                <p style={{ color: theme.textMuted }} className="mt-2 text-sm">Use no mínimo 6 caracteres.</p>
+                <h2 className="font-display font-bold text-2xl lg:text-3xl" style={{ color: theme.text }}>
+                  {isForced ? "Crie sua nova senha" : "Defina sua nova senha"}
+                </h2>
+                <p style={{ color: theme.textMuted }} className="mt-2 text-sm">
+                  {isForced
+                    ? "Você entrou com uma senha temporária. Defina agora uma senha permanente para continuar."
+                    : "Use no mínimo 6 caracteres."}
+                </p>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
