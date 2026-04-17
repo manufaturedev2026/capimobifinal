@@ -121,25 +121,25 @@ const PLANS = [
   {
     key: "basico", name: "Básico", subtitle: "Para experimentar", price: 0, priceLabel: "Gratuito",
     setupFee: null, popular: false,
-    benefits: ["Até 5 anúncios ativos", "Imóveis na Vitrine", "1 Layout (Showcase) + 1 Tema", "Painel do vendedor completo", "Estatísticas básicas", "Gerador de contratos (1 modelo)", "QR Code dos anúncios"],
+    benefits: ["Até 5 anúncios ativos", "Imóveis na Vitrine", "1 Layout (Showcase) + 1 Tema", "Painel do vendedor completo", "Estatísticas básicas", "Gerador de contratos (1 modelo)", "QR Code dos anúncios", "Push: 1 envio por dia", "Gerador de Texto IA: 5/dia"],
     cta: "Criar conta grátis",
   },
   {
     key: "start", name: "Start", subtitle: "Para corretores iniciantes", price: 24.99, priceLabel: "R$24,99",
     setupFee: 299, popular: false,
-    benefits: ["Até 25 anúncios ativos", "Vitrine Lvl 1 — mais visibilidade", "1 Layout (Showcase) + 3 Temas", "CRM Kanban completo", "Stories (estilo Instagram)", "Página de Captação de imóveis", "Todos os modelos de contrato", "Simulador de Financiamento", "PDF de Proposta profissional", "Selo Start + Hero Banner", "Destaque na listagem"],
+    benefits: ["Até 25 anúncios ativos", "Vitrine Lvl 1 — mais visibilidade", "1 Layout (Showcase) + 3 Temas", "CRM Kanban completo", "Stories (estilo Instagram)", "Página de Captação de imóveis", "Todos os modelos de contrato", "Simulador de Financiamento", "PDF de Proposta profissional", "Selo Start + Hero Banner", "Destaque na listagem", "Push: 1 envio por dia", "Gerador de Texto IA: 10/dia"],
     cta: "Começar agora",
   },
   {
     key: "premium", name: "VIP", subtitle: "⭐ Mais popular", price: 59.99, priceLabel: "R$59,99",
     setupFee: 719, popular: true,
-    benefits: ["Até 60 anúncios ativos", "Vitrine Lvl 2 — destaque superior", "4 Layouts + 6 Temas", "Tudo do Start +", "Notificações Push", "Vídeo banner hero (autoplay)", "Modo Cinema imersivo", "Efeitos visuais na loja", "Gestão de Aluguéis completa", "Sistema de ADS integrado", "Estatísticas avançadas", "Selo VIP nos anúncios", "Suporte prioritário"],
+    benefits: ["Até 60 anúncios ativos", "Vitrine Lvl 2 — destaque superior", "4 Layouts + 6 Temas", "Tudo do Start +", "Bot de Captação (fluxo fixo)", "Push Notifications: 2 envios por dia", "Vídeo banner hero (autoplay)", "Modo Cinema imersivo", "Efeitos visuais na loja", "Gestão de Aluguéis completa", "Sistema de ADS integrado", "Estatísticas avançadas", "Selo VIP nos anúncios", "Suporte prioritário", "Gerador de Texto IA: 20/dia"],
     cta: "Assinar VIP",
   },
   {
     key: "vip", name: "Premium", subtitle: "Para dominar o mercado", price: 114.99, priceLabel: "R$114,99",
     setupFee: 1379, popular: false,
-    benefits: ["Até 115 anúncios ativos", "Vitrine Lvl 3 — máximo individual", "Todos os 7 Layouts + Temas", "Tudo do VIP +", "Instagram na loja", "SEO otimizado (cidade/bairro)", "Destaque Épico (até 5 imóveis)", "Galeria Showroom + Copywriting", "Selo Premium exclusivo", "Suporte VIP dedicado"],
+    benefits: ["Até 115 anúncios ativos", "Vitrine Lvl 3 — máximo individual", "Todos os 7 Layouts + Temas", "Tudo do VIP +", "Captação com IA Inteligente", "Instagram na loja", "SEO otimizado (cidade/bairro)", "Destaque Épico (até 5 imóveis)", "Galeria Showroom + Copywriting", "Selo Premium exclusivo", "Push Notifications: 3 envios por dia", "Suporte VIP dedicado", "Gerador de Texto IA: 50/dia"],
     cta: "Assinar Premium",
   },
 ];
@@ -147,17 +147,17 @@ const PLANS = [
 const ENTERPRISE_PLANS = [
   {
     key: "essencial_empresa", name: "Exclusive", subtitle: "Para imobiliárias", price: 199.99, priceLabel: "R$199,99",
-    benefits: ["Anúncios ilimitados", "Vitrine Lvl 4 — prioridade empresa", "Todos os layouts + temas", "Tudo do Premium +", "Até 5 corretores vinculados", "Lojas espelho por corretor", "WhatsApp Team Picker", "Analytics por corretor", "Selo Exclusive", "Suporte dedicado"],
+    benefits: ["Anúncios ilimitados", "Vitrine Lvl 4 — prioridade empresa", "Todos os layouts + temas", "Tudo do Premium +", "Até 5 corretores vinculados", "Lojas espelho por corretor", "WhatsApp Team Picker", "Analytics por corretor", "Selo Exclusive", "Push Notifications: 4 envios por dia", "Suporte dedicado", "Gerador de Texto IA: 100/dia"],
     cta: "Assinar Exclusive",
   },
   {
     key: "premium_empresa", name: "Prime", subtitle: "Para grandes imobiliárias", price: 349.99, priceLabel: "R$349,99",
-    benefits: ["Anúncios ilimitados", "Vitrine Lvl 5 — destaque premium", "Tudo do Exclusive +", "Até 10 corretores vinculados", "Domínio personalizado", "Selo Prime", "Suporte premium dedicado"],
+    benefits: ["Anúncios ilimitados", "Vitrine Lvl 5 — destaque premium", "Tudo do Exclusive +", "Até 10 corretores vinculados", "Domínio personalizado", "Selo Prime", "Push Notifications: 5 envios por dia", "Suporte premium dedicado", "Gerador de Texto IA: 200/dia"],
     cta: "Assinar Prime",
   },
   {
     key: "prime_empresa", name: "Black", subtitle: "★ Para construtoras e redes", price: 599.99, priceLabel: "R$599,99",
-    benefits: ["Anúncios ilimitados", "Vitrine Lvl 6 — máximo absoluto", "Tudo do Prime +", "Corretores ilimitados", "Gerente de conta VIP dedicado", "Selo Black ★ exclusivo", "Suporte 24/7 prioritário"],
+    benefits: ["Anúncios ilimitados", "Vitrine Lvl 6 — máximo absoluto", "Tudo do Prime +", "Corretores ilimitados", "Gerente de conta VIP dedicado", "Selo Black ★ exclusivo", "Push Notifications: 6 envios por dia", "Suporte 24/7 prioritário", "Gerador de Texto IA: 400/dia"],
     cta: "Assinar Black",
   },
 ];
