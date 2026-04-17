@@ -791,6 +791,10 @@ export default function AdminApifyLeadsTab() {
               </Button>
             </div>
             <div>
+              <Label>Nome interno</Label>
+              <Input value={campName} onChange={(e) => setCampName(e.target.value)} placeholder="Ex: Convite Capimobi - Out/2025" />
+            </div>
+            <div>
               <Label>Assunto</Label>
               <Input value={campSubject} onChange={(e) => setCampSubject(e.target.value)} placeholder="Olá {{nome}}, conheça a Capimobi" />
             </div>
