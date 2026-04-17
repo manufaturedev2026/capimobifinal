@@ -92,6 +92,13 @@ export default function AdminPanel() {
   const [managerPhotoUploading, setManagerPhotoUploading] = useState(false);
   const managerPhotoRef = useRef<HTMLInputElement>(null);
 
+  // Plan change dialog state
+  const [planDialogOpen, setPlanDialogOpen] = useState(false);
+  const [planSeller, setPlanSeller] = useState<SellerWithSub | null>(null);
+  const [planTier, setPlanTier] = useState<string>("start");
+  const [planDuration, setPlanDuration] = useState<string>("30");
+  const [planCustomDays, setPlanCustomDays] = useState<string>("");
+  const [planSaving, setPlanSaving] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !adminLoading) {
@@ -317,6 +324,55 @@ export default function AdminPanel() {
       .eq("id", subId);
     if (!error) {
       toast({ title: "Assinatura renovada por +30 dias!" });
+      fetchSellers();
+    }
+  };
+
+  const openPlanDialog = (seller: SellerWithSub) => {
+    setPlanSeller(seller);
+    setPlanTier(seller.subscription?.tier || "start");
+    setPlanDuration("30");
+    setPlanCustomDays("");
+    setPlanDialogOpen(true);
+  };
+
+  const confirmPlanChange = async () => {
+    if (!planSeller) return;
+    setPlanSaving(true);
+    const days = planDuration === "custom" ? parseInt(planCustomDays || "0", 10) : parseInt(planDuration, 10);
+    if (!days || days < 1) {
+      toast({ title: "Informe a quantidade de dias", variant: "destructive" });
+      setPlanSaving(false);
+      return;
+    }
+    const tierConfig = PACKAGE_CONFIG[planTier as keyof typeof PACKAGE_CONFIG];
+    const maxItems = (tierConfig as any)?.maxItems ?? 5;
+    const expiresAt = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString();
+
+    await supabase
+      .from("seller_subscriptions")
+      .update({ is_active: false } as any)
+      .eq("seller_id", planSeller.id)
+      .eq("is_active", true);
+
+    const { error } = await supabase.from("seller_subscriptions").insert({
+      user_id: planSeller.user_id,
+      seller_id: planSeller.id,
+      tier: planTier,
+      max_items: maxItems,
+      started_at: new Date().toISOString(),
+      expires_at: expiresAt,
+      is_active: true,
+      payment_method: "admin",
+      payment_status: "confirmado",
+    } as any);
+
+    setPlanSaving(false);
+    if (error) {
+      toast({ title: "Erro ao alterar plano", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: `Plano atualizado para ${(tierConfig as any)?.name || planTier} por ${days} dias!` });
+      setPlanDialogOpen(false);
       fetchSellers();
     }
   };
@@ -601,12 +657,16 @@ export default function AdminPanel() {
                     </div>
 
                     <div className="flex gap-1.5 flex-wrap">
-                      {sub?.payment_status === "pendente" && (
+                       {sub?.payment_status === "pendente" && (
                         <button onClick={() => approvePayment(sub.id)}
                           className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-green-500/10 text-green-600 text-xs font-semibold hover:bg-green-500/20">
                           <Check size={12} /> Aprovar
                         </button>
                       )}
+                      <button onClick={() => openPlanDialog(seller)}
+                        className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-amber-500/10 text-amber-600 text-xs font-semibold hover:bg-amber-500/20">
+                        <Crown size={12} /> Plano
+                      </button>
                        {sub && (
                         <>
                           <button onClick={() => renewSubscription(sub.id)}
@@ -1265,6 +1325,103 @@ export default function AdminPanel() {
 
         </main>
       </div>
+
+      {/* Plan Change Dialog */}
+      <Dialog open={planDialogOpen} onOpenChange={setPlanDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Crown size={18} className="text-amber-500" /> Alterar Plano
+            </DialogTitle>
+          </DialogHeader>
+          {planSeller && (
+            <div className="space-y-4">
+              <div className="text-sm text-muted-foreground">
+                <span className="font-semibold text-foreground">{planSeller.company_name || planSeller.full_name}</span>
+                <br />
+                <span className="text-xs">{planSeller.email}</span>
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-foreground mb-2 block">Plano</label>
+                <select
+                  value={planTier}
+                  onChange={(e) => setPlanTier(e.target.value)}
+                  className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm text-foreground"
+                >
+                  {(Object.keys(PACKAGE_CONFIG) as (keyof typeof PACKAGE_CONFIG)[]).map((t) => (
+                    <option key={t} value={t}>
+                      {(PACKAGE_CONFIG[t] as any).name} — até {(PACKAGE_CONFIG[t] as any).maxItems} anúncios
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-foreground mb-2 block">Duração</label>
+                <div className="grid grid-cols-4 gap-2">
+                  {[
+                    { v: "7", l: "7 dias" },
+                    { v: "30", l: "30 dias" },
+                    { v: "90", l: "90 dias" },
+                    { v: "365", l: "1 ano" },
+                  ].map((opt) => (
+                    <button
+                      key={opt.v}
+                      type="button"
+                      onClick={() => setPlanDuration(opt.v)}
+                      className={`px-2 py-2 rounded-lg text-xs font-semibold border transition-colors ${
+                        planDuration === opt.v
+                          ? "bg-primary text-primary-foreground border-primary"
+                          : "bg-background text-foreground border-input hover:bg-secondary"
+                      }`}
+                    >
+                      {opt.l}
+                    </button>
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setPlanDuration("custom")}
+                  className={`mt-2 w-full px-3 py-2 rounded-lg text-xs font-semibold border transition-colors ${
+                    planDuration === "custom"
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "bg-background text-foreground border-input hover:bg-secondary"
+                  }`}
+                >
+                  Personalizado
+                </button>
+                {planDuration === "custom" && (
+                  <input
+                    type="number"
+                    min={1}
+                    placeholder="Quantidade de dias"
+                    value={planCustomDays}
+                    onChange={(e) => setPlanCustomDays(e.target.value)}
+                    className="mt-2 w-full px-3 py-2 rounded-lg border border-input bg-background text-sm text-foreground"
+                  />
+                )}
+              </div>
+
+              <div className="flex gap-2 pt-2">
+                <button
+                  onClick={() => setPlanDialogOpen(false)}
+                  className="flex-1 px-3 py-2 rounded-lg border border-input bg-background text-sm font-semibold text-foreground hover:bg-secondary"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={confirmPlanChange}
+                  disabled={planSaving}
+                  className="flex-1 px-3 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 disabled:opacity-60"
+                >
+                  {planSaving ? "Salvando..." : "Confirmar"}
+                </button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Ban Dialog */}
       {banDialogOpen && banSeller && (
