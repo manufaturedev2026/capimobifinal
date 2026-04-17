@@ -203,7 +203,35 @@ export default function AdminApifyLeadsTab() {
     else toast({ title: "Configurações salvas" });
   }
 
-  async function loadLeads() {
+  async function loadTemplate() {
+    const { data } = await supabase
+      .from("platform_settings").select("key, value")
+      .in("key", ["apify_invite_template_name", "apify_invite_template_subject", "apify_invite_template_html"]);
+    const map = Object.fromEntries((data || []).map((s) => [s.key, s.value]));
+    if (map.apify_invite_template_name) setTplName(map.apify_invite_template_name);
+    if (map.apify_invite_template_subject) setTplSubject(map.apify_invite_template_subject);
+    if (map.apify_invite_template_html) setTplHtml(map.apify_invite_template_html);
+  }
+
+  async function saveTemplate() {
+    setTplSaving(true);
+    const rows = [
+      { key: "apify_invite_template_name", value: tplName },
+      { key: "apify_invite_template_subject", value: tplSubject },
+      { key: "apify_invite_template_html", value: tplHtml },
+    ];
+    const { error } = await supabase.from("platform_settings").upsert(rows, { onConflict: "key" });
+    setTplSaving(false);
+    if (error) toast({ title: "Erro ao salvar", description: error.message, variant: "destructive" });
+    else toast({ title: "Template salvo!", description: "As alterações foram aplicadas" });
+  }
+
+  function resetTemplate() {
+    if (!confirm("Restaurar o template original? As alterações não salvas serão perdidas.")) return;
+    setTplName(INVITE_TEMPLATE.name);
+    setTplSubject(INVITE_TEMPLATE.subject);
+    setTplHtml(INVITE_TEMPLATE.html);
+  }
     setLoading(true);
     // Paginação para superar o limite default de 1000 do Supabase
     const pageSize = 1000;
