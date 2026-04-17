@@ -232,6 +232,8 @@ export default function AdminApifyLeadsTab() {
     setTplSubject(INVITE_TEMPLATE.subject);
     setTplHtml(INVITE_TEMPLATE.html);
   }
+
+  async function loadLeads() {
     setLoading(true);
     // Paginação para superar o limite default de 1000 do Supabase
     const pageSize = 1000;
