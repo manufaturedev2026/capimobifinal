@@ -485,9 +485,10 @@ export default function AdminApifyLeadsTab() {
                 </div>
                 <div>
                   <Label>Cidade</Label>
-                  <Select value={cidade} onValueChange={setCidade} disabled={!estado}>
+                  <Select value={cidade || "all"} onValueChange={(v) => setCidade(v === "all" ? "" : v)} disabled={!estado}>
                     <SelectTrigger><SelectValue placeholder={estado ? "Selecione" : "Escolha o estado"} /></SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="all">Todas as cidades</SelectItem>
                       {cities.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
                     </SelectContent>
                   </Select>
