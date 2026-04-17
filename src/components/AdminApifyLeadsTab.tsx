@@ -772,7 +772,12 @@ export default function AdminApifyLeadsTab() {
             <CardHeader>
               <CardTitle className="text-base flex items-center justify-between">
                 Histórico de Buscas
-                <Button size="sm" variant="outline" onClick={loadRuns}><RefreshCw className="h-4 w-4 mr-1" />Atualizar</Button>
+                <div className="flex gap-2">
+                  <Button size="sm" variant="destructive" onClick={cancelRunningRuns} disabled={!runs.some((r) => r.status === "rodando")}>
+                    <XCircle className="h-4 w-4 mr-1" />Cancelar Rodando
+                  </Button>
+                  <Button size="sm" variant="outline" onClick={loadRuns}><RefreshCw className="h-4 w-4 mr-1" />Atualizar</Button>
+                </div>
               </CardTitle>
             </CardHeader>
             <CardContent>
