@@ -12,6 +12,7 @@ import heroImgDefault from "@/assets/hero-anunciar.jpg";
 import { BRAZIL_STATES } from "@/data/brazilStates";
 import { useCitiesByState } from "@/hooks/useCitiesByState";
 import ThemeParticles from "@/components/ThemeParticles";
+import { SITE_URL } from "@/lib/siteUrl";
 
 export default function LoginPage() {
   const [isLogin, setIsLogin] = useState(() => {
@@ -50,7 +51,7 @@ export default function LoginPage() {
     }
     setForgotLoading(true);
     const { error } = await supabase.auth.resetPasswordForEmail(forgotEmail, {
-      redirectTo: `${window.location.origin}/reset-password`,
+      redirectTo: `${SITE_URL}/reset-password`,
     });
     setForgotLoading(false);
     if (error) {
