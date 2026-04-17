@@ -100,6 +100,66 @@ export type Database = {
         }
         Relationships: []
       }
+      apify_search_runs: {
+        Row: {
+          actor_id: string | null
+          apify_run_id: string | null
+          cidade: string | null
+          created_at: string
+          duration_ms: number | null
+          error_message: string | null
+          estado: string | null
+          finished_at: string | null
+          id: string
+          palavra_chave: string | null
+          quantidade_duplicada: number
+          quantidade_importada: number
+          quantidade_retornada: number
+          quantidade_solicitada: number
+          status: string
+          tipo_lead: string
+          user_id: string
+        }
+        Insert: {
+          actor_id?: string | null
+          apify_run_id?: string | null
+          cidade?: string | null
+          created_at?: string
+          duration_ms?: number | null
+          error_message?: string | null
+          estado?: string | null
+          finished_at?: string | null
+          id?: string
+          palavra_chave?: string | null
+          quantidade_duplicada?: number
+          quantidade_importada?: number
+          quantidade_retornada?: number
+          quantidade_solicitada?: number
+          status?: string
+          tipo_lead?: string
+          user_id: string
+        }
+        Update: {
+          actor_id?: string | null
+          apify_run_id?: string | null
+          cidade?: string | null
+          created_at?: string
+          duration_ms?: number | null
+          error_message?: string | null
+          estado?: string | null
+          finished_at?: string | null
+          id?: string
+          palavra_chave?: string | null
+          quantidade_duplicada?: number
+          quantidade_importada?: number
+          quantidade_retornada?: number
+          quantidade_solicitada?: number
+          status?: string
+          tipo_lead?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       broadcast_sends: {
         Row: {
           batch_id: string
@@ -608,6 +668,186 @@ export type Database = {
           referrer?: string | null
           session_id?: string
           user_agent?: string | null
+        }
+        Relationships: []
+      }
+      lead_campaign_sends: {
+        Row: {
+          campaign_id: string
+          error_message: string | null
+          id: string
+          lead_id: string | null
+          sent_at: string
+          status: string
+          to_email: string
+        }
+        Insert: {
+          campaign_id: string
+          error_message?: string | null
+          id?: string
+          lead_id?: string | null
+          sent_at?: string
+          status?: string
+          to_email: string
+        }
+        Update: {
+          campaign_id?: string
+          error_message?: string | null
+          id?: string
+          lead_id?: string | null
+          sent_at?: string
+          status?: string
+          to_email?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_campaign_sends_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "lead_campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lead_campaign_sends_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads_imobiliarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lead_campaigns: {
+        Row: {
+          content_html: string
+          created_at: string
+          failed_count: number
+          finished_at: string | null
+          id: string
+          name: string
+          scheduled_for: string | null
+          segment_filter: Json | null
+          sent_count: number
+          started_at: string | null
+          status: string
+          subject: string
+          total_recipients: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content_html: string
+          created_at?: string
+          failed_count?: number
+          finished_at?: string | null
+          id?: string
+          name: string
+          scheduled_for?: string | null
+          segment_filter?: Json | null
+          sent_count?: number
+          started_at?: string | null
+          status?: string
+          subject: string
+          total_recipients?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content_html?: string
+          created_at?: string
+          failed_count?: number
+          finished_at?: string | null
+          id?: string
+          name?: string
+          scheduled_for?: string | null
+          segment_filter?: Json | null
+          sent_count?: number
+          started_at?: string | null
+          status?: string
+          subject?: string
+          total_recipients?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      leads_imobiliarios: {
+        Row: {
+          apify_run_id: string | null
+          cep: string | null
+          cidade: string | null
+          created_at: string
+          data_captacao: string
+          email: string | null
+          empresa: string | null
+          endereco: string | null
+          estado: string | null
+          google_place_id: string | null
+          id: string
+          instagram: string | null
+          nome: string
+          observacoes: string | null
+          origem: string
+          rating: number | null
+          raw_data: Json | null
+          reviews_count: number | null
+          site: string | null
+          status: string
+          telefone: string | null
+          tipo_lead: string
+          ultima_atualizacao: string
+          whatsapp: string | null
+        }
+        Insert: {
+          apify_run_id?: string | null
+          cep?: string | null
+          cidade?: string | null
+          created_at?: string
+          data_captacao?: string
+          email?: string | null
+          empresa?: string | null
+          endereco?: string | null
+          estado?: string | null
+          google_place_id?: string | null
+          id?: string
+          instagram?: string | null
+          nome: string
+          observacoes?: string | null
+          origem?: string
+          rating?: number | null
+          raw_data?: Json | null
+          reviews_count?: number | null
+          site?: string | null
+          status?: string
+          telefone?: string | null
+          tipo_lead?: string
+          ultima_atualizacao?: string
+          whatsapp?: string | null
+        }
+        Update: {
+          apify_run_id?: string | null
+          cep?: string | null
+          cidade?: string | null
+          created_at?: string
+          data_captacao?: string
+          email?: string | null
+          empresa?: string | null
+          endereco?: string | null
+          estado?: string | null
+          google_place_id?: string | null
+          id?: string
+          instagram?: string | null
+          nome?: string
+          observacoes?: string | null
+          origem?: string
+          rating?: number | null
+          raw_data?: Json | null
+          reviews_count?: number | null
+          site?: string | null
+          status?: string
+          telefone?: string | null
+          tipo_lead?: string
+          ultima_atualizacao?: string
+          whatsapp?: string | null
         }
         Relationships: []
       }
