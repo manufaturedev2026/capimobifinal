@@ -256,6 +256,39 @@ export type Database = {
         }
         Relationships: []
       }
+      email_logs: {
+        Row: {
+          context: string | null
+          created_at: string
+          error_message: string | null
+          id: string
+          message: string | null
+          status: string
+          subject: string
+          to_email: string
+        }
+        Insert: {
+          context?: string | null
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          message?: string | null
+          status?: string
+          subject: string
+          to_email: string
+        }
+        Update: {
+          context?: string | null
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          message?: string | null
+          status?: string
+          subject?: string
+          to_email?: string
+        }
+        Relationships: []
+      }
       favorites: {
         Row: {
           created_at: string
@@ -1540,6 +1573,66 @@ export type Database = {
         }
         Relationships: []
       }
+      smtp_settings: {
+        Row: {
+          created_at: string
+          enabled: boolean
+          host: string
+          id: string
+          last_test_at: string | null
+          last_test_error: string | null
+          last_test_status: string | null
+          password_encrypted: string | null
+          port: number
+          reply_to: string | null
+          security: string
+          sender_email: string
+          sender_name: string
+          updated_at: string
+          use_for_recovery: boolean
+          use_for_signup: boolean
+          username: string
+        }
+        Insert: {
+          created_at?: string
+          enabled?: boolean
+          host?: string
+          id?: string
+          last_test_at?: string | null
+          last_test_error?: string | null
+          last_test_status?: string | null
+          password_encrypted?: string | null
+          port?: number
+          reply_to?: string | null
+          security?: string
+          sender_email?: string
+          sender_name?: string
+          updated_at?: string
+          use_for_recovery?: boolean
+          use_for_signup?: boolean
+          username?: string
+        }
+        Update: {
+          created_at?: string
+          enabled?: boolean
+          host?: string
+          id?: string
+          last_test_at?: string | null
+          last_test_error?: string | null
+          last_test_status?: string | null
+          password_encrypted?: string | null
+          port?: number
+          reply_to?: string | null
+          security?: string
+          sender_email?: string
+          sender_name?: string
+          updated_at?: string
+          use_for_recovery?: boolean
+          use_for_signup?: boolean
+          username?: string
+        }
+        Relationships: []
+      }
       store_domains: {
         Row: {
           created_at: string
@@ -1758,6 +1851,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      decrypt_smtp_password: {
+        Args: { p_encrypted: string; p_key: string }
+        Returns: string
+      }
+      encrypt_smtp_password: {
+        Args: { p_key: string; p_password: string }
+        Returns: string
+      }
       generate_item_slug: {
         Args: { p_item_id: string; p_title: string }
         Returns: string
