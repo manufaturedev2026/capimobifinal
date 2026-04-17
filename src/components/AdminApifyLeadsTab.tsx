@@ -554,11 +554,16 @@ export default function AdminApifyLeadsTab() {
         <TabsContent value="leads" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle className="text-base flex items-center justify-between">
-                Leads Importados ({filteredLeads.length})
-                <Button size="sm" variant="outline" onClick={loadLeads}>
-                  <RefreshCw className="h-4 w-4 mr-1" />Atualizar
-                </Button>
+              <CardTitle className="text-base flex items-center justify-between gap-2">
+                <span>Leads Importados ({filteredLeads.length})</span>
+                <div className="flex gap-2">
+                  <Button size="sm" variant="outline" onClick={loadLeads}>
+                    <RefreshCw className="h-4 w-4 mr-1" />Atualizar
+                  </Button>
+                  <Button size="sm" variant="destructive" onClick={deleteAllLeads} disabled={filteredLeads.length === 0}>
+                    <Trash2 className="h-4 w-4 mr-1" />Limpar todos
+                  </Button>
+                </div>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
