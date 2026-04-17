@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { BRAZIL_STATES } from "@/data/brazilStates";
 import { useCitiesByState } from "@/hooks/useCitiesByState";
@@ -223,6 +224,13 @@ export default function AdminApifyLeadsTab() {
   const [campTestEmail, setCampTestEmail] = useState("");
   const [campSending, setCampSending] = useState(false);
   const [campTesting, setCampTesting] = useState(false);
+  const [campMaxRecipients, setCampMaxRecipients] = useState<number | "">("");
+  const [campSkipSent, setCampSkipSent] = useState(true);
+  const [campMode, setCampMode] = useState<"segment" | "selected">("segment");
+
+  // Already-sent leads tracking + selection
+  const [sentLeadIds, setSentLeadIds] = useState<Set<string>>(new Set());
+  const [selectedLeadIds, setSelectedLeadIds] = useState<Set<string>>(new Set());
 
   // Templates editor (1 - Convite Capimobi)
   const [tplName, setTplName] = useState(INVITE_TEMPLATE.name);
@@ -243,7 +251,27 @@ export default function AdminApifyLeadsTab() {
     loadLeads();
     loadRuns();
     loadTemplate();
+    loadSentLeadIds();
   }, []);
+
+  async function loadSentLeadIds() {
+    const ids = new Set<string>();
+    const pageSize = 1000;
+    let from = 0;
+    while (true) {
+      const { data, error } = await supabase
+        .from("lead_campaign_sends")
+        .select("lead_id")
+        .eq("status", "enviado")
+        .not("lead_id", "is", null)
+        .range(from, from + pageSize - 1);
+      if (error || !data || data.length === 0) break;
+      data.forEach((r: any) => { if (r.lead_id) ids.add(r.lead_id); });
+      if (data.length < pageSize) break;
+      from += pageSize;
+    }
+    setSentLeadIds(ids);
+  }
 
   async function loadSettings() {
     const { data } = await supabase
@@ -612,13 +640,21 @@ export default function AdminApifyLeadsTab() {
       toast({ title: "Preencha assunto e conteúdo", variant: "destructive" });
       return;
     }
+    if (!test && campMode === "selected" && selectedLeadIds.size === 0) {
+      toast({ title: "Selecione ao menos 1 lead", description: "Marque os checkboxes na lista de leads", variant: "destructive" });
+      return;
+    }
     if (test) setCampTesting(true); else setCampSending(true);
+    const useSelected = !test && campMode === "selected";
     const { data, error } = await supabase.functions.invoke("send-leads-campaign", {
       body: {
         name: campName || campSubject,
         subject: campSubject,
         content_html: campHtml,
-        segment_filter: { tipo_lead: campTipo, estado: campEstado, status: campStatus },
+        segment_filter: useSelected ? undefined : { tipo_lead: campTipo, estado: campEstado, status: campStatus },
+        lead_ids: useSelected ? Array.from(selectedLeadIds) : undefined,
+        max_recipients: !test && campMaxRecipients !== "" ? Number(campMaxRecipients) : undefined,
+        skip_already_sent: campSkipSent,
         test_email: test ? campTestEmail : undefined,
       },
     });
@@ -631,7 +667,11 @@ export default function AdminApifyLeadsTab() {
         title: test ? "E-mail de teste enviado" : "Campanha enviada",
         description: test ? campTestEmail : `${d.sent} enviados • ${d.failed} falhas • ${d.total} destinatários`,
       });
-      if (!test) setCampOpen(false);
+      if (!test) {
+        setCampOpen(false);
+        setSelectedLeadIds(new Set());
+        loadSentLeadIds();
+      }
     }
   }
 
@@ -947,10 +987,39 @@ export default function AdminApifyLeadsTab() {
                 </label>
               </div>
 
+              {selectedLeadIds.size > 0 && (
+                <div className="flex items-center justify-between gap-3 rounded-lg border border-primary/30 bg-primary/5 p-3">
+                  <p className="text-sm font-medium text-foreground">
+                    {selectedLeadIds.size} lead(s) selecionado(s)
+                  </p>
+                  <div className="flex gap-2">
+                    <Button size="sm" variant="ghost" onClick={() => setSelectedLeadIds(new Set())}>Limpar</Button>
+                    <Button size="sm" onClick={() => { setCampMode("selected"); setCampOpen(true); }}>
+                      <Send className="h-4 w-4 mr-1" />Enviar campanha para selecionados
+                    </Button>
+                  </div>
+                </div>
+              )}
+
               <div className="border rounded-lg overflow-hidden">
                 <Table>
                   <TableHeader>
                     <TableRow>
+                      <TableHead className="w-10">
+                        <Checkbox
+                          checked={
+                            filteredLeads.slice(0, 200).length > 0 &&
+                            filteredLeads.slice(0, 200).every((l) => selectedLeadIds.has(l.id))
+                          }
+                          onCheckedChange={(v) => {
+                            const next = new Set(selectedLeadIds);
+                            const visible = filteredLeads.slice(0, 200);
+                            if (v) visible.forEach((l) => { if (l.email) next.add(l.id); });
+                            else visible.forEach((l) => next.delete(l.id));
+                            setSelectedLeadIds(next);
+                          }}
+                        />
+                      </TableHead>
                       <TableHead>Nome</TableHead>
                       <TableHead>Tipo</TableHead>
                       <TableHead>Cidade/UF</TableHead>
@@ -961,13 +1030,33 @@ export default function AdminApifyLeadsTab() {
                   </TableHeader>
                   <TableBody>
                     {loading ? (
-                      <TableRow><TableCell colSpan={6} className="text-center py-8"><Loader2 className="h-5 w-5 animate-spin mx-auto" /></TableCell></TableRow>
+                      <TableRow><TableCell colSpan={7} className="text-center py-8"><Loader2 className="h-5 w-5 animate-spin mx-auto" /></TableCell></TableRow>
                     ) : filteredLeads.length === 0 ? (
-                      <TableRow><TableCell colSpan={6} className="text-center py-8 text-muted-foreground">Nenhum lead encontrado</TableCell></TableRow>
-                    ) : filteredLeads.slice(0, 200).map((l) => (
-                      <TableRow key={l.id}>
+                      <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">Nenhum lead encontrado</TableCell></TableRow>
+                    ) : filteredLeads.slice(0, 200).map((l) => {
+                      const alreadySent = sentLeadIds.has(l.id);
+                      return (
+                      <TableRow key={l.id} className={alreadySent ? "bg-muted/30" : ""}>
                         <TableCell>
-                          <div className="font-medium">{l.nome}</div>
+                          <Checkbox
+                            disabled={!l.email}
+                            checked={selectedLeadIds.has(l.id)}
+                            onCheckedChange={(v) => {
+                              const next = new Set(selectedLeadIds);
+                              if (v) next.add(l.id); else next.delete(l.id);
+                              setSelectedLeadIds(next);
+                            }}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <div className="font-medium flex items-center gap-2">
+                            {l.nome}
+                            {alreadySent && (
+                              <Badge variant="secondary" className="text-[10px] gap-1">
+                                <Mail className="h-3 w-3" />Já recebeu
+                              </Badge>
+                            )}
+                          </div>
                           {l.empresa && l.empresa !== l.nome && <div className="text-xs text-muted-foreground">{l.empresa}</div>}
                         </TableCell>
                         <TableCell>
@@ -1009,7 +1098,7 @@ export default function AdminApifyLeadsTab() {
                           </div>
                         </TableCell>
                       </TableRow>
-                    ))}
+                    );})}
                   </TableBody>
                 </Table>
               </div>
@@ -1355,39 +1444,88 @@ export default function AdminApifyLeadsTab() {
               <Textarea value={campHtml} onChange={(e) => setCampHtml(e.target.value)} rows={8}
                         placeholder="<p>Olá {{nome}},</p><p>Sou da Capimobi e gostaria de apresentar...</p>" />
             </div>
-            <div className="grid grid-cols-3 gap-3">
+            {/* Modo de envio */}
+            <div className="rounded-lg border p-3 space-y-3">
+              <Label className="text-sm font-semibold">Para quem enviar?</Label>
+              <div className="grid grid-cols-2 gap-2">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={campMode === "segment" ? "default" : "outline"}
+                  onClick={() => setCampMode("segment")}
+                >
+                  Por filtros (segmento)
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={campMode === "selected" ? "default" : "outline"}
+                  onClick={() => setCampMode("selected")}
+                >
+                  Selecionados ({selectedLeadIds.size})
+                </Button>
+              </div>
+
+              {campMode === "segment" && (
+                <div className="grid grid-cols-3 gap-3">
+                  <div>
+                    <Label className="text-xs">Tipo</Label>
+                    <Select value={campTipo} onValueChange={setCampTipo}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="todos">Todos</SelectItem>
+                        <SelectItem value="imobiliaria">Imobiliárias</SelectItem>
+                        <SelectItem value="corretor">Corretores</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label className="text-xs">Estado</Label>
+                    <Select value={campEstado || "all"} onValueChange={(v) => setCampEstado(v === "all" ? "" : v)}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Todos</SelectItem>
+                        {BRAZIL_STATES.map((s) => <SelectItem key={s.uf} value={s.uf}>{s.uf}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label className="text-xs">Status</Label>
+                    <Select value={campStatus} onValueChange={setCampStatus}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="todos">Todos</SelectItem>
+                        <SelectItem value="novo">Novos</SelectItem>
+                        <SelectItem value="contatado">Contatados</SelectItem>
+                        <SelectItem value="qualificado">Qualificados</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Limite e proteção contra duplicidade */}
+            <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label>Tipo</Label>
-                <Select value={campTipo} onValueChange={setCampTipo}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="todos">Todos</SelectItem>
-                    <SelectItem value="imobiliaria">Imobiliárias</SelectItem>
-                    <SelectItem value="corretor">Corretores</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Label>Quantidade máxima de envios</Label>
+                <Input
+                  type="number"
+                  min={1}
+                  value={campMaxRecipients}
+                  onChange={(e) => setCampMaxRecipients(e.target.value === "" ? "" : Number(e.target.value))}
+                  placeholder="Deixe em branco para enviar a todos"
+                />
+                <p className="text-[11px] text-muted-foreground mt-1">Limita o total de e-mails desta campanha.</p>
               </div>
               <div>
-                <Label>Estado</Label>
-                <Select value={campEstado || "all"} onValueChange={(v) => setCampEstado(v === "all" ? "" : v)}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Todos</SelectItem>
-                    {BRAZIL_STATES.map((s) => <SelectItem key={s.uf} value={s.uf}>{s.uf}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label>Status</Label>
-                <Select value={campStatus} onValueChange={setCampStatus}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="todos">Todos</SelectItem>
-                    <SelectItem value="novo">Novos</SelectItem>
-                    <SelectItem value="contatado">Contatados</SelectItem>
-                    <SelectItem value="qualificado">Qualificados</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Label>Pular leads que já receberam</Label>
+                <div className="flex items-center gap-2 h-10 px-3 rounded-md border bg-background">
+                  <Switch checked={campSkipSent} onCheckedChange={setCampSkipSent} />
+                  <span className="text-sm text-muted-foreground">
+                    {campSkipSent ? "Sim — só novos contatos" : "Não — pode reenviar"}
+                  </span>
+                </div>
               </div>
             </div>
             <div>
