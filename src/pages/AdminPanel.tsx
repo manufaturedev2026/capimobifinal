@@ -31,6 +31,7 @@ interface SellerWithSub {
   email: string;
   phone: string | null;
   seller_type: string;
+  seller_category: string | null;
   city: string | null;
   account_manager: string | null;
   manager_phone: string | null;
@@ -56,7 +57,12 @@ export default function AdminPanel() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [tierFilter, setTierFilter] = useState<string>("todos");
-  const [tab, setTab] = useState<"dashboard" | "sellers" | "billing" | "referrals" | "crm" | "seo" | "vendas" | "config" | "push" | "site" | "smtp" | "funnel" | "broadcast" | "ads" | "invite" | "apify">("dashboard");
+  const [tab, setTab] = useState<"dashboard" | "clientes" | "billing" | "referrals" | "crm" | "seo" | "vendas" | "config" | "push" | "site" | "smtp" | "funnel" | "broadcast" | "ads" | "invite" | "apify">("dashboard");
+  // Category edit dialog
+  const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
+  const [categorySeller, setCategorySeller] = useState<SellerWithSub | null>(null);
+  const [categoryValue, setCategoryValue] = useState<string>("corretor");
+  const [categorySaving, setCategorySaving] = useState(false);
   const [homepageMode, setHomepageMode] = useState<string>("single");
   const [homepageTheme, setHomepageTheme] = useState<string>("azul");
   const [loginHeroUrl, setLoginHeroUrl] = useState<string>("");
@@ -263,6 +269,7 @@ export default function AdminPanel() {
       email: p.email,
       phone: p.phone,
       seller_type: p.seller_type,
+      seller_category: p.seller_category || null,
       city: p.city,
       account_manager: p.account_manager || null,
       manager_phone: p.manager_phone || null,
@@ -458,7 +465,7 @@ export default function AdminPanel() {
 
   const sidebarItems = [
     { key: "dashboard" as const, label: "Dashboard", icon: BarChart3 },
-    { key: "sellers" as const, label: "Vendedores", icon: Users },
+    { key: "clientes" as const, label: "Clientes", icon: Users },
     { key: "billing" as const, label: "Faturamento", icon: DollarSign },
     { key: "crm" as const, label: "CRM WhatsApp", icon: MessageCircle },
     { key: "ads" as const, label: "CRM de ADS", icon: Megaphone },
@@ -564,7 +571,7 @@ export default function AdminPanel() {
         <main className="flex-1 overflow-y-auto p-4 md:p-6 max-w-5xl">
 
 
-        {tab === "sellers" && (
+        {tab === "clientes" && (
           <div className="space-y-3">
             {/* Tier Filter */}
             <div className="flex items-center gap-2 flex-wrap mb-2">
