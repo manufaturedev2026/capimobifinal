@@ -29,7 +29,7 @@ export default function SplashScreen() {
         fadeOut ? "opacity-0 pointer-events-none" : "opacity-100"
       }`}
       style={{
-        background: `radial-gradient(circle at center, hsl(var(--background)) 0%, hsl(var(--secondary)) 100%)`,
+        background: "#000000",
       }}
       aria-hidden="true"
     >
