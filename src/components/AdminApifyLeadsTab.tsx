@@ -18,7 +18,7 @@ import {
   Activity, Search, Settings as SettingsIcon, Database, Mail, History,
   Loader2, Play, RefreshCw, MessageCircle, Trash2, Send, Filter, MapPin,
   CheckCircle2, XCircle, Building2, User, Globe, Instagram, Phone,
-  Upload, Download,
+  Upload, Download, FileText, Save, Eye, RotateCcw,
 } from "lucide-react";
 
 type Lead = {
@@ -167,10 +167,18 @@ export default function AdminApifyLeadsTab() {
   const [campSending, setCampSending] = useState(false);
   const [campTesting, setCampTesting] = useState(false);
 
+  // Templates editor
+  const [tplName, setTplName] = useState(INVITE_TEMPLATE.name);
+  const [tplSubject, setTplSubject] = useState(INVITE_TEMPLATE.subject);
+  const [tplHtml, setTplHtml] = useState(INVITE_TEMPLATE.html);
+  const [tplSaving, setTplSaving] = useState(false);
+  const [tplPreview, setTplPreview] = useState(false);
+
   useEffect(() => {
     loadSettings();
     loadLeads();
     loadRuns();
+    loadTemplate();
   }, []);
 
   async function loadSettings() {
@@ -195,7 +203,35 @@ export default function AdminApifyLeadsTab() {
     else toast({ title: "Configurações salvas" });
   }
 
-  async function loadLeads() {
+  async function loadTemplate() {
+    const { data } = await supabase
+      .from("platform_settings").select("key, value")
+      .in("key", ["apify_invite_template_name", "apify_invite_template_subject", "apify_invite_template_html"]);
+    const map = Object.fromEntries((data || []).map((s) => [s.key, s.value]));
+    if (map.apify_invite_template_name) setTplName(map.apify_invite_template_name);
+    if (map.apify_invite_template_subject) setTplSubject(map.apify_invite_template_subject);
+    if (map.apify_invite_template_html) setTplHtml(map.apify_invite_template_html);
+  }
+
+  async function saveTemplate() {
+    setTplSaving(true);
+    const rows = [
+      { key: "apify_invite_template_name", value: tplName },
+      { key: "apify_invite_template_subject", value: tplSubject },
+      { key: "apify_invite_template_html", value: tplHtml },
+    ];
+    const { error } = await supabase.from("platform_settings").upsert(rows, { onConflict: "key" });
+    setTplSaving(false);
+    if (error) toast({ title: "Erro ao salvar", description: error.message, variant: "destructive" });
+    else toast({ title: "Template salvo!", description: "As alterações foram aplicadas" });
+  }
+
+  function resetTemplate() {
+    if (!confirm("Restaurar o template original? As alterações não salvas serão perdidas.")) return;
+    setTplName(INVITE_TEMPLATE.name);
+    setTplSubject(INVITE_TEMPLATE.subject);
+    setTplHtml(INVITE_TEMPLATE.html);
+  }
     setLoading(true);
     // Paginação para superar o limite default de 1000 do Supabase
     const pageSize = 1000;
@@ -567,13 +603,14 @@ export default function AdminApifyLeadsTab() {
       </div>
 
       <Tabs value={tab} onValueChange={setTab}>
-        <TabsList className="grid grid-cols-4 lg:grid-cols-7 h-auto">
+        <TabsList className="grid grid-cols-4 lg:grid-cols-8 h-auto">
           <TabsTrigger value="dashboard" className="gap-1"><Activity className="h-4 w-4" />Dashboard</TabsTrigger>
           <TabsTrigger value="config" className="gap-1"><SettingsIcon className="h-4 w-4" />Config</TabsTrigger>
           <TabsTrigger value="search" className="gap-1"><Search className="h-4 w-4" />Buscar</TabsTrigger>
           <TabsTrigger value="leads" className="gap-1"><Database className="h-4 w-4" />Leads</TabsTrigger>
           <TabsTrigger value="filters" className="gap-1"><Filter className="h-4 w-4" />Filtros</TabsTrigger>
           <TabsTrigger value="campaigns" className="gap-1"><Mail className="h-4 w-4" />Campanhas</TabsTrigger>
+          <TabsTrigger value="templates" className="gap-1"><FileText className="h-4 w-4" />Templates</TabsTrigger>
           <TabsTrigger value="logs" className="gap-1"><History className="h-4 w-4" />Logs</TabsTrigger>
         </TabsList>
 
@@ -956,7 +993,84 @@ export default function AdminApifyLeadsTab() {
           </Card>
         </TabsContent>
 
-        {/* LOGS */}
+        {/* TEMPLATES */}
+        <TabsContent value="templates" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base flex items-center justify-between flex-wrap gap-2">
+                <span className="flex items-center gap-2"><FileText className="h-4 w-4" /> Template de Convite Capimobi</span>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" onClick={() => setTplPreview(true)}>
+                    <Eye className="h-4 w-4 mr-1" /> Pré-visualizar
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={resetTemplate}>
+                    <RotateCcw className="h-4 w-4 mr-1" /> Restaurar padrão
+                  </Button>
+                  <Button size="sm" onClick={saveTemplate} disabled={tplSaving}>
+                    {tplSaving ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Save className="h-4 w-4 mr-1" />}
+                    Salvar
+                  </Button>
+                </div>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-xs text-muted-foreground">
+                Edite o template usado pelo botão "Usar template" em Campanhas. Variáveis disponíveis:{" "}
+                <code className="bg-muted px-1 rounded">{"{{nome}}"}</code>,{" "}
+                <code className="bg-muted px-1 rounded">{"{{empresa}}"}</code>,{" "}
+                <code className="bg-muted px-1 rounded">{"{{cidade}}"}</code>,{" "}
+                <code className="bg-muted px-1 rounded">{"{{estado}}"}</code>
+              </p>
+
+              <div>
+                <Label>Nome interno do template</Label>
+                <Input value={tplName} onChange={(e) => setTplName(e.target.value)} placeholder="Convite Capimobi - ..." />
+              </div>
+
+              <div>
+                <Label>Assunto do e-mail</Label>
+                <Input value={tplSubject} onChange={(e) => setTplSubject(e.target.value)} placeholder="{{nome}}, ..." />
+              </div>
+
+              <div>
+                <Label>Conteúdo HTML</Label>
+                <Textarea
+                  value={tplHtml}
+                  onChange={(e) => setTplHtml(e.target.value)}
+                  rows={20}
+                  className="font-mono text-xs"
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Dialog open={tplPreview} onOpenChange={setTplPreview}>
+            <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Pré-visualização do e-mail</DialogTitle>
+              </DialogHeader>
+              <div className="text-xs text-muted-foreground mb-2">
+                <strong>Assunto:</strong>{" "}
+                {tplSubject
+                  .replace(/{{nome}}/g, "João Silva")
+                  .replace(/{{empresa}}/g, "Imobiliária Exemplo")
+                  .replace(/{{cidade}}/g, "Vitória")
+                  .replace(/{{estado}}/g, "ES")}
+              </div>
+              <div
+                className="border border-border rounded-lg overflow-hidden bg-white"
+                dangerouslySetInnerHTML={{
+                  __html: tplHtml
+                    .replace(/{{nome}}/g, "João Silva")
+                    .replace(/{{empresa}}/g, "Imobiliária Exemplo")
+                    .replace(/{{cidade}}/g, "Vitória")
+                    .replace(/{{estado}}/g, "ES"),
+                }}
+              />
+            </DialogContent>
+          </Dialog>
+        </TabsContent>
+
         <TabsContent value="logs" className="space-y-4">
           <Card>
             <CardHeader>
@@ -1028,9 +1142,9 @@ export default function AdminApifyLeadsTab() {
                 size="sm"
                 type="button"
                 onClick={() => {
-                  setCampName(INVITE_TEMPLATE.name);
-                  setCampSubject(INVITE_TEMPLATE.subject);
-                  setCampHtml(INVITE_TEMPLATE.html);
+                  setCampName(tplName);
+                  setCampSubject(tplSubject);
+                  setCampHtml(tplHtml);
                   toast({ title: "Template carregado", description: "Você pode editar antes de enviar" });
                 }}
               >
