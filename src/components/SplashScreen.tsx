@@ -55,10 +55,8 @@ export default function SplashScreen() {
               className="h-full w-full object-contain p-3 animate-pulse"
             />
           ) : (
-            <span className="text-xl font-bold whitespace-nowrap animate-pulse">
-              <span className="text-primary">Cap</span>
-              <span className="text-foreground">i</span>
-              <span className="text-primary">mobi</span>
+            <span className="text-xl font-bold whitespace-nowrap animate-pulse text-primary">
+              Cap<span className="text-foreground">i</span>mobi
             </span>
           )}
         </div>
