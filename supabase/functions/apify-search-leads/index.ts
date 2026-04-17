@@ -13,6 +13,9 @@ interface SearchInput {
   quantidade: number;
 }
 
+const APIFY_RUN_MEMORY_MB = 1024;
+const APIFY_RUN_TIMEOUT_SECONDS = 1800;
+
 function buildQueries(input: SearchInput): string[] {
   const local = [input.cidade, input.estado].filter(Boolean).join(", ");
   const base = input.palavra_chave?.trim();
@@ -50,6 +53,30 @@ function isValidEmail(e?: string | null): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
 }
 
+function normalizeApifyStartError(status: number, text: string) {
+  const lower = text.toLowerCase();
+
+  if (status === 401 || lower.includes("user-or-token-not-found")) {
+    return {
+      code: "APIFY_AUTH_INVALID",
+      message: "Token da Apify inválido. Revise o campo Apify API Token nas configurações.",
+    };
+  }
+
+  if (status === 402 || lower.includes("actor-memory-limit-exceeded")) {
+    return {
+      code: "APIFY_MEMORY_LIMIT",
+      message:
+        "Sua conta da Apify está sem memória disponível no momento. Aguarde as execuções ativas terminarem ou faça upgrade do plano. Reduzi os próximos runs para 1024MB para ajudar.",
+    };
+  }
+
+  return {
+    code: "APIFY_START_FAILED",
+    message: `Falha ao iniciar busca na Apify (${status}).`,
+  };
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -58,7 +85,6 @@ Deno.serve(async (req) => {
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
   const supabase = createClient(supabaseUrl, serviceKey);
 
-  // Auth check (admin)
   const authHeader = req.headers.get("Authorization") || "";
   const userClient = createClient(supabaseUrl, Deno.env.get("SUPABASE_ANON_KEY")!, {
     global: { headers: { Authorization: authHeader } },
@@ -66,25 +92,33 @@ Deno.serve(async (req) => {
   const { data: userData } = await userClient.auth.getUser();
   if (!userData?.user) {
     return new Response(JSON.stringify({ error: "Não autenticado" }), {
-      status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      status: 401,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
+
   const { data: roleRow } = await supabase
-    .from("user_roles").select("role").eq("user_id", userData.user.id).eq("role", "admin").maybeSingle();
+    .from("user_roles")
+    .select("role")
+    .eq("user_id", userData.user.id)
+    .eq("role", "admin")
+    .maybeSingle();
   if (!roleRow) {
     return new Response(JSON.stringify({ error: "Apenas administradores" }), {
-      status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      status: 403,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 
   let runId: string | null = null;
+
   try {
     const input = (await req.json()) as SearchInput;
     const quantidade = Math.min(Math.max(input.quantidade || 50, 1), 1000);
 
-    // Load Apify config from platform_settings
     const { data: settings } = await supabase
-      .from("platform_settings").select("key, value")
+      .from("platform_settings")
+      .select("key, value")
       .in("key", ["apify_token", "apify_actor_id"]);
 
     const settingsMap = Object.fromEntries((settings || []).map((s) => [s.key, s.value]));
@@ -93,26 +127,34 @@ Deno.serve(async (req) => {
 
     if (!apifyToken) throw new Error("Token da Apify não configurado");
 
-    // Create run record
     const { data: runRow, error: runErr } = await supabase
-      .from("apify_search_runs").insert({
+      .from("apify_search_runs")
+      .insert({
         user_id: userData.user.id,
         tipo_lead: input.tipo_lead,
-        estado: input.estado, cidade: input.cidade,
+        estado: input.estado,
+        cidade: input.cidade,
         palavra_chave: input.palavra_chave,
         quantidade_solicitada: quantidade,
-        actor_id: actorId, status: "rodando",
-      }).select().single();
+        actor_id: actorId,
+        status: "rodando",
+      })
+      .select()
+      .single();
     if (runErr) throw runErr;
     runId = runRow.id;
 
     const queries = buildQueries({ ...input, quantidade });
+    const maxPerSearch = Math.max(1, Math.ceil(quantidade / Math.max(queries.length, 1)));
+    const startUrl = new URL(`https://api.apify.com/v2/acts/${actorId}/runs`);
+    startUrl.searchParams.set("token", apifyToken);
+    startUrl.searchParams.set("memory", String(APIFY_RUN_MEMORY_MB));
+    startUrl.searchParams.set("timeout", String(APIFY_RUN_TIMEOUT_SECONDS));
+    startUrl.searchParams.set("maxItems", String(quantidade));
 
-    // Start Apify run asynchronously (does NOT wait for completion)
-    const startUrl = `https://api.apify.com/v2/acts/${actorId}/runs?token=${apifyToken}`;
     const body = {
       searchStringsArray: queries,
-      maxCrawledPlacesPerSearch: Math.ceil(quantidade / queries.length),
+      maxCrawledPlacesPerSearch: maxPerSearch,
       language: "pt-BR",
       countryCode: "br",
       scrapeContacts: true,
@@ -126,22 +168,39 @@ Deno.serve(async (req) => {
 
     if (!startRes.ok) {
       const txt = await startRes.text();
-      throw new Error(`Apify ${startRes.status}: ${txt.slice(0, 300)}`);
+      const normalized = normalizeApifyStartError(startRes.status, txt);
+
+      if (runId) {
+        await supabase
+          .from("apify_search_runs")
+          .update({
+            status: "erro",
+            error_message: normalized.message,
+            duration_ms: Date.now() - startedAt,
+            finished_at: new Date().toISOString(),
+          })
+          .eq("id", runId);
+      }
+
+      return new Response(
+        JSON.stringify({ success: false, code: normalized.code, error: normalized.message }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
     }
 
     const runJson = await startRes.json();
-    const apifyRunId: string = runJson?.data?.id;
-    const datasetId: string = runJson?.data?.defaultDatasetId;
+    const apifyRunId: string | null = runJson?.data?.id || null;
+    const datasetId: string | null = runJson?.data?.defaultDatasetId || null;
 
-    await supabase.from("apify_search_runs").update({
-      apify_run_id: apifyRunId,
-    }).eq("id", runId);
+    await supabase.from("apify_search_runs").update({ apify_run_id: apifyRunId }).eq("id", runId);
 
-    // Background task: poll until finished, then import
     const processInBackground = async () => {
       const bgStart = Date.now();
       try {
-        // Poll status (max ~25 min)
+        if (!apifyRunId || !datasetId) {
+          throw new Error("Run iniciado sem identificadores válidos da Apify.");
+        }
+
         let status = "RUNNING";
         for (let i = 0; i < 300; i++) {
           await new Promise((r) => setTimeout(r, 5000));
@@ -162,12 +221,16 @@ Deno.serve(async (req) => {
           return;
         }
 
-        // Fetch dataset items
         const dsRes = await fetch(`https://api.apify.com/v2/datasets/${datasetId}/items?token=${apifyToken}&clean=true&format=json`);
+        if (!dsRes.ok) {
+          throw new Error(`Falha ao ler dataset da Apify (${dsRes.status}).`);
+        }
+
         const items = (await dsRes.json()) as any[];
         const retornados = items.length;
 
-        let importados = 0, duplicados = 0;
+        let importados = 0;
+        let duplicados = 0;
 
         for (const it of items) {
           const nome = it.title || it.name;
@@ -179,9 +242,12 @@ Deno.serve(async (req) => {
           const tipo = inferTipoLead(nome, it.categoryName, input.tipo_lead === "ambos" ? undefined : input.tipo_lead);
 
           const lead = {
-            nome, tipo_lead: tipo, empresa: nome,
+            nome,
+            tipo_lead: tipo,
+            empresa: nome,
             email: isValidEmail(email) ? email : null,
-            whatsapp: telefone, telefone,
+            whatsapp: telefone,
+            telefone,
             site: it.website || null,
             instagram: it.instagrams?.[0] || null,
             cidade: it.city || input.cidade,
@@ -198,11 +264,19 @@ Deno.serve(async (req) => {
 
           let existing = null as any;
           if (placeId) {
-            const { data } = await supabase.from("leads_imobiliarios").select("id").eq("google_place_id", placeId).maybeSingle();
+            const { data } = await supabase
+              .from("leads_imobiliarios")
+              .select("id")
+              .eq("google_place_id", placeId)
+              .maybeSingle();
             existing = data;
           }
           if (!existing && lead.email) {
-            const { data } = await supabase.from("leads_imobiliarios").select("id").eq("email", lead.email).maybeSingle();
+            const { data } = await supabase
+              .from("leads_imobiliarios")
+              .select("id")
+              .eq("email", lead.email)
+              .maybeSingle();
             existing = data;
           }
 
@@ -237,21 +311,25 @@ Deno.serve(async (req) => {
     // @ts-ignore - EdgeRuntime is available in Supabase Edge Functions
     EdgeRuntime.waitUntil(processInBackground());
 
-    // Return immediately
     return new Response(JSON.stringify({
-      success: true, run_id: runId, apify_run_id: apifyRunId,
-      message: "Busca iniciada em segundo plano. Acompanhe o status na aba de runs.",
+      success: true,
+      run_id: runId,
+      apify_run_id: apifyRunId,
+      message: "Busca iniciada em segundo plano. Acompanhe o status na aba de logs.",
     }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
   } catch (err: any) {
     console.error("apify-search-leads error", err);
     if (runId) {
       await supabase.from("apify_search_runs").update({
-        status: "erro", error_message: err?.message || String(err),
-        duration_ms: Date.now() - startedAt, finished_at: new Date().toISOString(),
+        status: "erro",
+        error_message: err?.message || String(err),
+        duration_ms: Date.now() - startedAt,
+        finished_at: new Date().toISOString(),
       }).eq("id", runId);
     }
     return new Response(JSON.stringify({ error: err?.message || "Erro desconhecido" }), {
-      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 });
