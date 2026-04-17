@@ -1161,9 +1161,87 @@ export default function AdminApifyLeadsTab() {
               />
             </DialogContent>
           </Dialog>
-        </TabsContent>
 
-        <TabsContent value="logs" className="space-y-4">
+          {/* Template 2 - Integração Apify Leads */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base flex items-center justify-between flex-wrap gap-2">
+                <span className="flex items-center gap-2"><MessageCircle className="h-4 w-4" /> Template Integração Apify Leads (WhatsApp)</span>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" onClick={() => setTpl2Preview(true)}>
+                    <Eye className="h-4 w-4 mr-1" /> Pré-visualizar
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={resetTemplate2}>
+                    <RotateCcw className="h-4 w-4 mr-1" /> Restaurar padrão
+                  </Button>
+                  <Button size="sm" onClick={saveTemplate2} disabled={tpl2Saving}>
+                    {tpl2Saving ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Save className="h-4 w-4 mr-1" />}
+                    Salvar
+                  </Button>
+                </div>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-xs text-muted-foreground">
+                Template focado em <strong>chamar o lead no WhatsApp</strong> e apresentar o site/funções da plataforma.
+                Variáveis disponíveis:{" "}
+                <code className="bg-muted px-1 rounded">{"{{nome}}"}</code>,{" "}
+                <code className="bg-muted px-1 rounded">{"{{empresa}}"}</code>,{" "}
+                <code className="bg-muted px-1 rounded">{"{{cidade}}"}</code>,{" "}
+                <code className="bg-muted px-1 rounded">{"{{estado}}"}</code>
+              </p>
+
+              <div>
+                <Label>Nome interno do template</Label>
+                <Input value={tpl2Name} onChange={(e) => setTpl2Name(e.target.value)} placeholder="Integração Apify Leads - ..." />
+              </div>
+
+              <div>
+                <Label>Assunto do e-mail</Label>
+                <Input value={tpl2Subject} onChange={(e) => setTpl2Subject(e.target.value)} placeholder="{{nome}}, ..." />
+              </div>
+
+              <div>
+                <Label>Conteúdo HTML</Label>
+                <Textarea
+                  value={tpl2Html}
+                  onChange={(e) => setTpl2Html(e.target.value)}
+                  rows={20}
+                  className="font-mono text-xs"
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  💡 Lembre de trocar o número <code className="bg-muted px-1 rounded">5527999999999</code> no link <code>wa.me</code> pelo seu WhatsApp real.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Dialog open={tpl2Preview} onOpenChange={setTpl2Preview}>
+            <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Pré-visualização do e-mail (Apify Leads)</DialogTitle>
+              </DialogHeader>
+              <div className="text-xs text-muted-foreground mb-2">
+                <strong>Assunto:</strong>{" "}
+                {tpl2Subject
+                  .replace(/{{nome}}/g, "João Silva")
+                  .replace(/{{empresa}}/g, "Imobiliária Exemplo")
+                  .replace(/{{cidade}}/g, "Vitória")
+                  .replace(/{{estado}}/g, "ES")}
+              </div>
+              <div
+                className="border border-border rounded-lg overflow-hidden bg-white"
+                dangerouslySetInnerHTML={{
+                  __html: tpl2Html
+                    .replace(/{{nome}}/g, "João Silva")
+                    .replace(/{{empresa}}/g, "Imobiliária Exemplo")
+                    .replace(/{{cidade}}/g, "Vitória")
+                    .replace(/{{estado}}/g, "ES"),
+                }}
+              />
+            </DialogContent>
+          </Dialog>
+        </TabsContent>
           <Card>
             <CardHeader>
               <CardTitle className="text-base flex items-center justify-between">
