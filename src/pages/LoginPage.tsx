@@ -11,6 +11,7 @@ import { normalizeLoginHeroSetting, resolveLoginHeroImage } from "@/data/loginHe
 import heroImgDefault from "@/assets/hero-anunciar.jpg";
 import { BRAZIL_STATES } from "@/data/brazilStates";
 import { useCitiesByState } from "@/hooks/useCitiesByState";
+import ThemeParticles from "@/components/ThemeParticles";
 
 export default function LoginPage() {
   const [isLogin, setIsLogin] = useState(() => {
