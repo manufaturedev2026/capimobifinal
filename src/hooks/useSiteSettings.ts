@@ -8,6 +8,8 @@ export interface SiteSettings {
   site_footer_text: string;
   site_terms_html: string;
   site_privacy_html: string;
+  site_splash_image_url: string;
+  site_splash_enabled: string; // "true" | "false"
 }
 
 const DEFAULTS: SiteSettings = {
@@ -17,6 +19,8 @@ const DEFAULTS: SiteSettings = {
   site_footer_text: "",
   site_terms_html: "",
   site_privacy_html: "",
+  site_splash_image_url: "",
+  site_splash_enabled: "true",
 };
 
 let cachedSettings: SiteSettings | null = null;
