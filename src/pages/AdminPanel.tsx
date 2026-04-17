@@ -119,6 +119,7 @@ export default function AdminPanel() {
       fetchSellers();
       fetchAdRequests();
       fetchBans();
+      fetchManagersList();
       // Fetch homepage mode
       supabase.from("platform_settings").select("value").eq("key", "homepage_mode").maybeSingle().then(({ data }) => {
         if (data?.value) setHomepageMode(data.value);
