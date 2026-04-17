@@ -197,12 +197,22 @@ export default function AdminApifyLeadsTab() {
 
   async function loadLeads() {
     setLoading(true);
-    const { data } = await supabase
-      .from("leads_imobiliarios")
-      .select("*")
-      .order("data_captacao", { ascending: false })
-      .limit(500);
-    setLeads((data || []) as Lead[]);
+    // Paginação para superar o limite default de 1000 do Supabase
+    const pageSize = 1000;
+    let from = 0;
+    const all: Lead[] = [];
+    while (true) {
+      const { data, error } = await supabase
+        .from("leads_imobiliarios")
+        .select("*")
+        .order("data_captacao", { ascending: false })
+        .range(from, from + pageSize - 1);
+      if (error || !data || data.length === 0) break;
+      all.push(...(data as Lead[]));
+      if (data.length < pageSize) break;
+      from += pageSize;
+    }
+    setLeads(all);
     setLoading(false);
   }
 
