@@ -86,6 +86,10 @@ Deno.serve(async (req) => {
     if (f.cidade) q = q.eq("cidade", f.cidade);
     if (f.status && f.status !== "todos") q = q.eq("status", f.status);
     if (f.has_whatsapp) q = q.not("whatsapp", "is", null);
+    // Always exclude leads already contacted/qualified/converted unless explicitly requested
+    if (!f.status || f.status === "todos" || f.status === "novo") {
+      q = q.eq("status", "novo");
+    }
 
     const { data: leads, error: leadsErr } = await q.limit(5000);
     if (leadsErr) throw leadsErr;
@@ -135,6 +139,10 @@ Deno.serve(async (req) => {
         await admin.from("lead_campaign_sends").insert({
           campaign_id: campaignId, lead_id: lead.id, to_email: lead.email!, status: "enviado",
         });
+        // Mark as contacted so they won't receive again
+        await admin.from("leads_imobiliarios")
+          .update({ status: "contatado", ultima_atualizacao: new Date().toISOString() })
+          .eq("id", lead.id);
         sent++;
       } catch (e) {
         await admin.from("lead_campaign_sends").insert({
