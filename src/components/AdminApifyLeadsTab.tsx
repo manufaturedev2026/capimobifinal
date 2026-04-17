@@ -993,7 +993,84 @@ export default function AdminApifyLeadsTab() {
           </Card>
         </TabsContent>
 
-        {/* LOGS */}
+        {/* TEMPLATES */}
+        <TabsContent value="templates" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base flex items-center justify-between flex-wrap gap-2">
+                <span className="flex items-center gap-2"><FileText className="h-4 w-4" /> Template de Convite Capimobi</span>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" onClick={() => setTplPreview(true)}>
+                    <Eye className="h-4 w-4 mr-1" /> Pré-visualizar
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={resetTemplate}>
+                    <RotateCcw className="h-4 w-4 mr-1" /> Restaurar padrão
+                  </Button>
+                  <Button size="sm" onClick={saveTemplate} disabled={tplSaving}>
+                    {tplSaving ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Save className="h-4 w-4 mr-1" />}
+                    Salvar
+                  </Button>
+                </div>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-xs text-muted-foreground">
+                Edite o template usado pelo botão "Usar template" em Campanhas. Variáveis disponíveis:{" "}
+                <code className="bg-muted px-1 rounded">{"{{nome}}"}</code>,{" "}
+                <code className="bg-muted px-1 rounded">{"{{empresa}}"}</code>,{" "}
+                <code className="bg-muted px-1 rounded">{"{{cidade}}"}</code>,{" "}
+                <code className="bg-muted px-1 rounded">{"{{estado}}"}</code>
+              </p>
+
+              <div>
+                <Label>Nome interno do template</Label>
+                <Input value={tplName} onChange={(e) => setTplName(e.target.value)} placeholder="Convite Capimobi - ..." />
+              </div>
+
+              <div>
+                <Label>Assunto do e-mail</Label>
+                <Input value={tplSubject} onChange={(e) => setTplSubject(e.target.value)} placeholder="{{nome}}, ..." />
+              </div>
+
+              <div>
+                <Label>Conteúdo HTML</Label>
+                <Textarea
+                  value={tplHtml}
+                  onChange={(e) => setTplHtml(e.target.value)}
+                  rows={20}
+                  className="font-mono text-xs"
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Dialog open={tplPreview} onOpenChange={setTplPreview}>
+            <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Pré-visualização do e-mail</DialogTitle>
+              </DialogHeader>
+              <div className="text-xs text-muted-foreground mb-2">
+                <strong>Assunto:</strong>{" "}
+                {tplSubject
+                  .replace(/{{nome}}/g, "João Silva")
+                  .replace(/{{empresa}}/g, "Imobiliária Exemplo")
+                  .replace(/{{cidade}}/g, "Vitória")
+                  .replace(/{{estado}}/g, "ES")}
+              </div>
+              <div
+                className="border border-border rounded-lg overflow-hidden bg-white"
+                dangerouslySetInnerHTML={{
+                  __html: tplHtml
+                    .replace(/{{nome}}/g, "João Silva")
+                    .replace(/{{empresa}}/g, "Imobiliária Exemplo")
+                    .replace(/{{cidade}}/g, "Vitória")
+                    .replace(/{{estado}}/g, "ES"),
+                }}
+              />
+            </DialogContent>
+          </Dialog>
+        </TabsContent>
+
         <TabsContent value="logs" className="space-y-4">
           <Card>
             <CardHeader>
