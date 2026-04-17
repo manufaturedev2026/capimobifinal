@@ -714,9 +714,27 @@ export default function AdminApifyLeadsTab() {
             <CardHeader>
               <CardTitle className="text-base flex items-center justify-between gap-2">
                 <span>Leads Importados ({filteredLeads.length})</span>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                   <Button size="sm" variant="outline" onClick={loadLeads}>
                     <RefreshCw className="h-4 w-4 mr-1" />Atualizar
+                  </Button>
+                  <Button size="sm" variant="outline" asChild>
+                    <label className="cursor-pointer">
+                      <Upload className="h-4 w-4 mr-1" />Importar CSV
+                      <input
+                        type="file"
+                        accept=".csv,text/csv"
+                        className="hidden"
+                        onChange={(e) => {
+                          const f = e.target.files?.[0];
+                          if (f) importLeadsCSV(f);
+                          e.target.value = "";
+                        }}
+                      />
+                    </label>
+                  </Button>
+                  <Button size="sm" variant="outline" onClick={exportLeadsCSV} disabled={filteredLeads.length === 0}>
+                    <Download className="h-4 w-4 mr-1" />Exportar CSV
                   </Button>
                   <Button size="sm" variant="destructive" onClick={deleteAllLeads} disabled={filteredLeads.length === 0}>
                     <Trash2 className="h-4 w-4 mr-1" />Limpar todos
