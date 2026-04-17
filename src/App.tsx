@@ -43,6 +43,7 @@ const SearchPage = lazyPage(() => import("@/pages/SearchPage"));
 const SeoLandingPage = lazyPage(() => import("@/pages/SeoLandingPage"));
 const SeoBrokersPage = lazyPage(() => import("@/pages/SeoBrokersPage"));
 const InvitePage = lazyPage(() => import("@/pages/InvitePage"));
+const ResetPasswordPage = lazyPage(() => import("@/pages/ResetPasswordPage"));
 
 const queryClient = new QueryClient();
 
@@ -153,6 +154,7 @@ const AppLayout = () => {
               <Route path="/anunciar" element={<VenderPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/entrar" element={<Navigate to="/login" replace />} />
+              <Route path="/reset-password" element={<ResetPasswordPage />} />
               <Route path="/painel" element={<RequireAuth><SellerDashboard /></RequireAuth>} />
               <Route path="/painel/novo" element={<RequireAuth><SellerItemForm /></RequireAuth>} />
               <Route path="/painel/editar/:id" element={<RequireAuth><SellerItemForm /></RequireAuth>} />
