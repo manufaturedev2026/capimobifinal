@@ -86,6 +86,10 @@ Deno.serve(async (req) => {
     if (f.cidade) q = q.eq("cidade", f.cidade);
     if (f.status && f.status !== "todos") q = q.eq("status", f.status);
     if (f.has_whatsapp) q = q.not("whatsapp", "is", null);
+    // Always exclude leads already contacted/qualified/converted unless explicitly requested
+    if (!f.status || f.status === "todos" || f.status === "novo") {
+      q = q.eq("status", "novo");
+    }
 
     const { data: leads, error: leadsErr } = await q.limit(5000);
     if (leadsErr) throw leadsErr;
