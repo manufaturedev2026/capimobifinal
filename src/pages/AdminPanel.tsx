@@ -254,6 +254,15 @@ export default function AdminPanel() {
     }
   };
 
+  const fetchManagersList = async () => {
+    const { data } = await supabase
+      .from("account_managers")
+      .select("id, name, phone, photo_url")
+      .eq("is_active", true)
+      .order("name");
+    setManagersList((data as any[]) || []);
+  };
+
   const fetchSellers = async () => {
     setLoading(true);
     const { data: profiles } = await supabase.from("profiles").select("*");
