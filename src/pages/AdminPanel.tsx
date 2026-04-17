@@ -703,6 +703,14 @@ export default function AdminPanel() {
                     </div>
 
                     <div className="flex gap-1.5 flex-wrap">
+                      <Link
+                        to={`/empresa/${seller.slug || seller.id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-semibold hover:bg-primary/20"
+                      >
+                        <Eye size={12} /> Ver Loja
+                      </Link>
                        {sub?.payment_status === "pendente" && (
                         <button onClick={() => approvePayment(sub.id)}
                           className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-green-500/10 text-green-600 text-xs font-semibold hover:bg-green-500/20">
