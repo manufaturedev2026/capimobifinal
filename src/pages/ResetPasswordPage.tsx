@@ -120,8 +120,14 @@ export default function ResetPasswordPage() {
           ) : (
             <>
               <div className="mb-8">
-                <h2 className="font-display font-bold text-2xl lg:text-3xl" style={{ color: theme.text }}>Defina sua nova senha</h2>
-                <p style={{ color: theme.textMuted }} className="mt-2 text-sm">Use no mínimo 6 caracteres.</p>
+                <h2 className="font-display font-bold text-2xl lg:text-3xl" style={{ color: theme.text }}>
+                  {isForced ? "Crie sua nova senha" : "Defina sua nova senha"}
+                </h2>
+                <p style={{ color: theme.textMuted }} className="mt-2 text-sm">
+                  {isForced
+                    ? "Você entrou com uma senha temporária. Defina agora uma senha permanente para continuar."
+                    : "Use no mínimo 6 caracteres."}
+                </p>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
