@@ -712,12 +712,14 @@ export default function CapturePropertyChatPage() {
   };
 
   const handleWhatsAppRedirect = () => {
-    // CTA URL personalizado tem prioridade absoluta (qualquer fluxo)
-    const customCtaUrl =
-      flowType === "captacao" ? config.captacaoCtaUrl :
-      flowType === "grupo_whatsapp" ? config.grupoWhatsappLink :
-      flowType === "agendamento" ? config.agendCtaUrl :
-      flowType === "avaliacao" ? config.avalCtaUrl : "";
+    // CTA URL personalizado tem prioridade absoluta
+    // Modo IA usa aiCtaUrl; modo fluxo usa o CTA do fluxo ativo
+    const customCtaUrl = isAiMode
+      ? config.aiCtaUrl
+      : flowType === "captacao" ? config.captacaoCtaUrl :
+        flowType === "grupo_whatsapp" ? config.grupoWhatsappLink :
+        flowType === "agendamento" ? config.agendCtaUrl :
+        flowType === "avaliacao" ? config.avalCtaUrl : "";
     if (customCtaUrl && customCtaUrl.trim()) {
       window.open(customCtaUrl.trim(), "_blank", "noopener");
       return;
@@ -821,6 +823,7 @@ export default function CapturePropertyChatPage() {
   const isDone = isAiMode ? (aiLeadSaved || crmSaved) : step === "done";
 
   const getCtaLabel = () => {
+    if (isAiMode) return config.aiCtaLabel || "💬 Falar no WhatsApp";
     switch (flowType) {
       case "captacao": return config.captacaoCtaLabel || "💬 Falar no WhatsApp";
       case "grupo_whatsapp": return config.grupoCtaLabel || (config.grupoWhatsappLink ? "🔗 Entrar no Grupo" : "💬 Falar no WhatsApp");
