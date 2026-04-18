@@ -238,6 +238,32 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
     }
   };
 
+  const endPartnership = async (partnershipId: string, partnerUserId: string, itemTitle: string, role: "owner" | "requester") => {
+    const confirmMsg = role === "owner"
+      ? `Encerrar a parceria do imóvel "${itemTitle}"? O parceiro será notificado.`
+      : `Sair da parceria do imóvel "${itemTitle}"? O dono do imóvel será notificado.`;
+    if (!window.confirm(confirmMsg)) return;
+
+    setSavingId(partnershipId);
+    const { error } = await supabase
+      .from("property_partnerships")
+      .update({ status: "finalizado" })
+      .eq("id", partnershipId);
+
+    if (error) {
+      toast({ title: "Erro", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Parceria encerrada" });
+      const title = role === "owner" ? "Parceria encerrada" : "Parceiro saiu da parceria";
+      const body = role === "owner"
+        ? `O dono encerrou a parceria do imóvel "${itemTitle}".`
+        : `O parceiro saiu da parceria do imóvel "${itemTitle}".`;
+      sendPartnershipPush(partnerUserId, title, body);
+      await loadActivePartnerships();
+    }
+    setSavingId(null);
+  };
+
   const updateRequestStatus = async (requestId: string, status: string) => {
     const req = receivedRequests.find(r => r.id === requestId);
     const { error } = await supabase
