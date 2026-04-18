@@ -1263,17 +1263,27 @@ export default function StoreLayoutNetflix({
                                 className="absolute top-0 left-3 right-3 h-[1px] opacity-0 group-hover:opacity-100 transition-opacity duration-500"
                                 style={{ background: `linear-gradient(90deg, transparent, ${storeTheme.primary}, transparent)` }}
                               />
-                              <h3 className="text-[11px] md:text-xs font-bold line-clamp-2 leading-snug mb-1.5 group-hover:translate-x-0.5 transition-transform" style={{ color: storeTheme.text }}>
+                              <h3 className="text-[12px] md:text-sm font-black line-clamp-2 leading-snug mb-2 group-hover:translate-x-0.5 transition-transform uppercase tracking-tight" style={{ color: storeTheme.text, letterSpacing: "-0.01em" }}>
                                 {product.title}
                               </h3>
                               {product.price > 0 && (
-                                <p className="text-sm md:text-lg font-black" style={{ color: storeTheme.primary, textShadow: `0 0 12px ${storeTheme.primary}40` }}>
-                                  R$ {product.price.toLocaleString("pt-BR")}
-                                  {product.isAluguel && <span className="text-[10px] font-normal ml-1" style={{ color: storeTheme.textMuted }}>/mês</span>}
-                                </p>
+                                <div className="inline-flex items-baseline gap-1 px-2.5 py-1.5 rounded-lg" style={{
+                                  background: `linear-gradient(135deg, ${storeTheme.primary}20, ${storeTheme.primary}08)`,
+                                  border: `1px solid ${storeTheme.primary}40`,
+                                  boxShadow: `0 0 16px ${storeTheme.primary}30, inset 0 1px 0 ${storeTheme.primary}30`,
+                                }}>
+                                  <span className="text-[9px] md:text-[10px] font-black uppercase tracking-widest" style={{ color: storeTheme.primary }}>R$</span>
+                                  <span className="text-base md:text-xl font-black leading-none" style={{
+                                    color: storeTheme.text,
+                                    textShadow: `0 0 12px ${storeTheme.primary}80, 0 0 24px ${storeTheme.primary}40`,
+                                  }}>
+                                    {product.price.toLocaleString("pt-BR")}
+                                  </span>
+                                  {product.isAluguel && <span className="text-[9px] font-bold ml-0.5" style={{ color: storeTheme.textMuted }}>/mês</span>}
+                                </div>
                               )}
                               {product.accepts_financing && (
-                                <p className="text-[9px] mt-1 font-semibold flex items-center gap-1" style={{ color: storeTheme.primary }}>
+                                <p className="text-[9px] mt-1.5 font-semibold flex items-center gap-1" style={{ color: storeTheme.primary }}>
                                   <ShieldCheck size={10} /> Aceita financiamento
                                 </p>
                               )}
@@ -1290,18 +1300,19 @@ export default function StoreLayoutNetflix({
                               )}
                               <button
                                 onClick={(e) => { e.preventDefault(); handleWhatsApp(product.title, product.id); }}
-                                className="relative mt-3 w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-[11px] font-bold overflow-hidden group/wpp transition-all hover:scale-[1.02] active:scale-95"
+                                className="relative mt-3 w-full flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-[11px] font-black uppercase tracking-widest overflow-hidden group/wpp transition-all hover:scale-[1.02] active:scale-95"
                                 style={{
                                   background: `linear-gradient(135deg, ${storeTheme.primary}, ${storeTheme.primary}dd)`,
                                   color: "#fff",
-                                  boxShadow: `0 6px 16px -4px ${storeTheme.primary}70, inset 0 1px 0 rgba(255,255,255,0.3)`,
+                                  boxShadow: `0 8px 24px -4px ${storeTheme.primary}90, 0 0 0 1px ${storeTheme.primary}, inset 0 1px 0 rgba(255,255,255,0.4)`,
+                                  textShadow: "0 1px 2px rgba(0,0,0,0.3)",
                                 }}
                               >
                                 <div
                                   className="absolute inset-0 -translate-x-full group-hover/wpp:translate-x-full transition-transform duration-700"
-                                  style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)" }}
+                                  style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent)" }}
                                 />
-                                <MessageCircle size={12} className="relative z-10" />
+                                <MessageCircle size={13} className="relative z-10" />
                                 <span className="relative z-10">WhatsApp</span>
                               </button>
                             </div>
