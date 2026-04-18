@@ -211,6 +211,9 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
   const [agendCtaUrl, setAgendCtaUrl] = useState("");
   const [avalCtaLabel, setAvalCtaLabel] = useState("💬 Falar com Especialista");
   const [avalCtaUrl, setAvalCtaUrl] = useState("");
+  // CTA do modo IA (usado quando chatMode === "ai")
+  const [aiCtaLabel, setAiCtaLabel] = useState("💬 Falar no WhatsApp");
+  const [aiCtaUrl, setAiCtaUrl] = useState("");
 
   const FLOW_HASH: Record<FlowType, string> = {
     captacao: "captacao",
@@ -293,6 +296,8 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
         if (cfg.agendCtaUrl) setAgendCtaUrl(cfg.agendCtaUrl);
         if (cfg.avalCtaLabel) setAvalCtaLabel(cfg.avalCtaLabel);
         if (cfg.avalCtaUrl) setAvalCtaUrl(cfg.avalCtaUrl);
+        if (cfg.aiCtaLabel) setAiCtaLabel(cfg.aiCtaLabel);
+        if (cfg.aiCtaUrl) setAiCtaUrl(cfg.aiCtaUrl);
       } catch {}
     }
   };
@@ -314,6 +319,7 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
       grupoCtaLabel,
       agendCtaLabel, agendCtaUrl,
       avalCtaLabel, avalCtaUrl,
+      aiCtaLabel, aiCtaUrl,
     });
     const { error } = await supabase
       .from("platform_settings")
@@ -933,6 +939,23 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
                   ))}
                 </div>
               </div>
+
+              {/* AI Mode CTA Config */}
+              {botChatMode === "ai" && (
+                <div className="rounded-2xl border border-border bg-card p-4 space-y-3">
+                  <p className="text-sm font-bold text-foreground">🤖 Botão Final (Modo IA)</p>
+                  <p className="text-[11px] text-muted-foreground">
+                    Após a IA coletar os dados do lead, este botão é exibido para encerrar o atendimento. Personalize o texto e o destino conforme o objetivo do fluxo.
+                  </p>
+                  <CtaFields
+                    label={aiCtaLabel}
+                    url={aiCtaUrl}
+                    onLabel={setAiCtaLabel}
+                    onUrl={setAiCtaUrl}
+                    hint="Se preenchido, o botão abre essa URL (ex: Calendly, link de grupo, landing page). Vazio = abre WhatsApp do corretor com o resumo do lead."
+                  />
+                </div>
+              )}
 
               {/* Flow Config (only for flow mode) */}
               {botChatMode === "flow" && (
