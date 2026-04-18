@@ -91,10 +91,14 @@ export default function StoreLayoutMinimal({
     }, 100);
 
   return (
-    <div style={{ background: storeTheme.bg, overflowX: "clip", maxWidth: "100%", fontFamily: "'Inter', sans-serif" }}>
+    <div style={{ background: storeTheme.bg, overflowX: "clip", maxWidth: "100%", fontFamily: "'Manrope', 'Inter', sans-serif" }}>
       <style>{`
-        .minimal-display { font-family: 'Playfair Display', serif; letter-spacing: -0.015em; }
-        .minimal-mono { font-family: 'Inter', sans-serif; font-feature-settings: 'tnum'; }
+        .minimal-display { font-family: 'Sora', 'Inter', sans-serif; letter-spacing: -0.028em; font-feature-settings: 'ss01'; }
+        .minimal-body { font-family: 'Manrope', 'Inter', sans-serif; letter-spacing: -0.005em; }
+        .minimal-mono { font-family: 'Space Grotesk', 'Inter', sans-serif; font-feature-settings: 'tnum'; }
+        .minimal-price { font-family: 'Space Grotesk', 'Sora', sans-serif; font-feature-settings: 'tnum', 'ss01'; letter-spacing: -0.04em; }
+        .minimal-card { transition: transform .5s cubic-bezier(.2,.8,.2,1), box-shadow .5s, border-color .5s; }
+        .minimal-card:hover { transform: translateY(-4px); }
         @keyframes minimalParticleUp {
           0% { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
           10% { opacity: var(--mp-opacity); }
