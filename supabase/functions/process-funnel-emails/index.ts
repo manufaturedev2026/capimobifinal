@@ -12,6 +12,16 @@ Deno.serve(async (req) => {
   try {
     const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 
+    let onlyProfileId: string | null = null;
+    let onlyDayOffset: number | null = null;
+    if (req.method === "POST") {
+      try {
+        const body = await req.json();
+        if (body?.profile_id) onlyProfileId = String(body.profile_id);
+        if (body?.day_offset !== undefined && body?.day_offset !== null) onlyDayOffset = Number(body.day_offset);
+      } catch (_) { /* no body */ }
+    }
+
     const { data: settings } = await admin.from("smtp_settings").select("*").limit(1).maybeSingle();
     if (!settings || !settings.enabled || !settings.password_encrypted) {
       return json({ error: "SMTP não configurado ou desativado" }, 400);
