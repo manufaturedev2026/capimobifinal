@@ -348,27 +348,6 @@ export default function StoreLayoutMinimal({
                   </span>
                 </div>
               )}
-              <div className="flex gap-2">
-                {dbProfile?.phone && (
-                  <button
-                    onClick={() => handleWhatsApp(sellerDisplayName)}
-                    className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-[#25d366] text-white font-bold text-[11px] hover:bg-[#22c55e] transition-colors"
-                  >
-                    <MessageCircle size={13} /> WhatsApp
-                  </button>
-                )}
-                {dbProfile?.instagram && (
-                  <a
-                    href={`https://instagram.com/${dbProfile.instagram.replace(/^@/, "")}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-center px-3 py-2.5 rounded-xl bg-gradient-to-r from-[#833AB4] via-[#E1306C] to-[#F77737] text-white font-bold text-[11px] hover:opacity-90 transition-opacity"
-                    aria-label="Instagram"
-                  >
-                    <Instagram size={13} />
-                  </a>
-                )}
-              </div>
             </div>
           </motion.div>
         </div>
