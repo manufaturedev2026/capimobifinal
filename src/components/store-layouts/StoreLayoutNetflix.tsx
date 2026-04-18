@@ -845,80 +845,16 @@ export default function StoreLayoutNetflix({
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.5 }}
-                      className="relative rounded-2xl overflow-hidden"
+                      className="rounded-2xl p-4"
                       style={{
-                        background: `linear-gradient(160deg, ${storeTheme.card} 0%, ${storeTheme.primary}10 100%)`,
-                        border: `1px solid ${storeTheme.primary}40`,
-                        boxShadow: `0 20px 50px -10px ${storeTheme.primary}40, inset 0 1px 0 ${storeTheme.primary}30`,
+                        background: `linear-gradient(160deg, ${storeTheme.card}, ${storeTheme.primary}08)`,
+                        border: `1px solid ${storeTheme.primary}30`,
+                        boxShadow: `0 10px 30px -10px ${storeTheme.primary}30`,
                       }}
                     >
-                      {/* Animated grid background */}
-                      <div className="absolute inset-0 opacity-[0.07] pointer-events-none" style={{
-                        backgroundImage: `linear-gradient(${storeTheme.primary} 1px, transparent 1px), linear-gradient(90deg, ${storeTheme.primary} 1px, transparent 1px)`,
-                        backgroundSize: "20px 20px",
-                      }} />
-                      {/* Top glow line */}
-                      <motion.div
-                        className="absolute top-0 left-0 right-0 h-[2px] pointer-events-none z-20"
-                        style={{ background: `linear-gradient(90deg, transparent, ${storeTheme.primary}, transparent)` }}
-                        animate={{ opacity: [0.4, 1, 0.4] }}
-                        transition={{ duration: 3, repeat: Infinity }}
-                      />
-
-                      <div
-                        className="relative px-4 py-4 flex items-center gap-2.5 overflow-hidden"
-                        style={{
-                          background: `linear-gradient(135deg, ${storeTheme.primary} 0%, ${storeTheme.primary}dd 50%, ${storeTheme.primary} 100%)`,
-                          boxShadow: `inset 0 -1px 0 rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.3)`,
-                        }}
-                      >
-                        {/* Animated grid overlay */}
-                        <div className="absolute inset-0 opacity-20 pointer-events-none" style={{
-                          backgroundImage: `linear-gradient(rgba(255,255,255,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.4) 1px, transparent 1px)`,
-                          backgroundSize: "12px 12px",
-                          maskImage: "linear-gradient(90deg, transparent, black, transparent)",
-                        }} />
-                        {/* Shimmer sweep */}
-                        <motion.div
-                          className="absolute inset-0 -translate-x-full"
-                          style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent)" }}
-                          animate={{ translateX: ["-100%", "200%"] }}
-                          transition={{ duration: 2.5, repeat: Infinity, repeatDelay: 1.5, ease: "easeInOut" }}
-                        />
-                        {/* Floating sparkles */}
-                        {[...Array(3)].map((_, i) => (
-                          <motion.div
-                            key={i}
-                            className="absolute w-1 h-1 rounded-full bg-white pointer-events-none"
-                            style={{
-                              left: `${20 + i * 30}%`,
-                              top: `${30 + (i % 2) * 40}%`,
-                              boxShadow: "0 0 8px rgba(255,255,255,0.9)",
-                            }}
-                            animate={{ opacity: [0, 1, 0], scale: [0, 1.4, 0] }}
-                            transition={{ duration: 2, repeat: Infinity, delay: i * 0.6 }}
-                          />
-                        ))}
-                        {/* Pulsing badge ring */}
-                        <div className="relative">
-                          <motion.div
-                            className="absolute inset-0 rounded-full pointer-events-none"
-                            style={{ border: "2px solid rgba(255,255,255,0.9)" }}
-                            animate={{ scale: [1, 1.6, 1], opacity: [0.7, 0, 0.7] }}
-                            transition={{ duration: 2, repeat: Infinity }}
-                          />
-                          <BadgeCheck size={18} className="text-white relative z-10 drop-shadow-lg" fill="rgba(255,255,255,0.15)" />
-                        </div>
-                        <span className="relative z-10 text-[11px] font-black uppercase tracking-[0.2em] text-white"
-                          style={{ textShadow: "0 1px 8px rgba(0,0,0,0.4), 0 0 12px rgba(255,255,255,0.4)" }}
-                        >
-                          Profissional Verificado
-                        </span>
-                        {/* Crown corner accent */}
-                        <Crown size={12} className="ml-auto text-white/80 relative z-10" fill="rgba(255,255,255,0.3)" />
-                      </div>
-
-                      <div className="relative p-4 space-y-4">
+                      <h5 className="text-[11px] font-black uppercase tracking-widest mb-3 flex items-center gap-1.5" style={{ color: storeTheme.primary }}>
+                        <BadgeCheck size={12} /> Profissional Verificado
+                      </h5>
                         <div className="flex items-center gap-3">
                           <div className="relative">
                             <motion.div
