@@ -5,6 +5,7 @@ import {
   MapPin, Image, Bed, Bath, Ruler, Search, X,
   Home, Building2, Key, Trees, Store, Landmark,
   ArrowRight, Sparkles, Heart, ChevronDown, LayoutDashboard,
+  MessageCircle, Instagram, Shield, BadgeCheck, Zap, Clock,
 } from "lucide-react";
 import type { StoreLayoutProps } from "./types";
 import { useAuth } from "@/hooks/useAuth";
