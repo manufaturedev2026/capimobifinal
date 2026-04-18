@@ -459,7 +459,7 @@ export default function StoreLayoutNetflix({
                 <Star size={10} className="lg:w-3 lg:h-3" fill="#facc15" /> {(4 + ((currentBillboard.id || "").length % 10) / 10).toFixed(1)}
               </span>
               <span className="text-green-400 font-bold">98% Match</span>
-              <span className="text-white/50">2024</span>
+              <span className="text-white/50">2026</span>
               <span className="px-1.5 py-0.5 border border-white/30 text-white/70 text-[9px] lg:text-[10px] font-semibold">HD</span>
               {currentBillboard.area && (
                 <span className="text-white/50">{currentBillboard.area}m²</span>
