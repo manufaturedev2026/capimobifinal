@@ -12,6 +12,16 @@ Deno.serve(async (req) => {
   try {
     const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 
+    let onlyProfileId: string | null = null;
+    let onlyDayOffset: number | null = null;
+    if (req.method === "POST") {
+      try {
+        const body = await req.json();
+        if (body?.profile_id) onlyProfileId = String(body.profile_id);
+        if (body?.day_offset !== undefined && body?.day_offset !== null) onlyDayOffset = Number(body.day_offset);
+      } catch (_) { /* no body */ }
+    }
+
     const { data: settings } = await admin.from("smtp_settings").select("*").limit(1).maybeSingle();
     if (!settings || !settings.enabled || !settings.password_encrypted) {
       return json({ error: "SMTP não configurado ou desativado" }, 400);
@@ -31,10 +41,17 @@ Deno.serve(async (req) => {
 
     if (!steps || steps.length === 0) return json({ ok: true, processed: 0, message: "Nenhuma etapa ativa" });
 
-    const { data: profiles } = await admin
+    const stepsFiltered = onlyDayOffset !== null
+      ? steps.filter((s: any) => s.day_offset === onlyDayOffset)
+      : steps;
+    if (stepsFiltered.length === 0) return json({ ok: true, processed: 0, message: "Nenhuma etapa para o filtro" });
+
+    let profilesQuery = admin
       .from("profiles")
       .select("id, user_id, full_name, email, created_at")
       .not("email", "is", null);
+    if (onlyProfileId) profilesQuery = profilesQuery.eq("id", onlyProfileId);
+    const { data: profiles } = await profilesQuery;
 
     if (!profiles) return json({ ok: true, processed: 0 });
 
@@ -53,8 +70,9 @@ Deno.serve(async (req) => {
     for (const profile of profiles) {
       const ageDays = Math.floor((now - new Date(profile.created_at).getTime()) / 86400000);
 
-      for (const step of steps) {
-        if (ageDays !== step.day_offset) continue;
+      for (const step of stepsFiltered) {
+        // When invoked directly with a profile_id, ignore age check (immediate send)
+        if (!onlyProfileId && ageDays !== step.day_offset) continue;
 
         const { data: existing } = await admin
           .from("funnel_sends")
