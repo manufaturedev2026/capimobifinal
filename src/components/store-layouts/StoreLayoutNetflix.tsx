@@ -291,6 +291,8 @@ export default function StoreLayoutNetflix({
 }: StoreLayoutProps) {
   const { user } = useAuth();
   const [billboardIdx, setBillboardIdx] = useState(0);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
   const accent = "#e50914";
   const isIOSStandalone = isIOSStandaloneApp();
   const isMobile = useIsMobile();
