@@ -606,15 +606,15 @@ export default function StoreLayoutAppleStore(props: StoreLayoutProps) {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "-50px" }}
                   transition={{ duration: 0.6, delay: Math.min(idx * 0.04, 0.3) }}
-                  className="group luxe-card rounded-3xl overflow-hidden transition-all duration-500"
+                  className="group luxe-card rounded-3xl overflow-hidden transition-all duration-500 tilt-card"
                 >
-                  <Link to={`/imovel/${p.slug || p.id}`} className="block">
+                  <Link to={`/imovel/${p.slug || p.id}`} className="block tilt-inner">
                     <div className="aspect-[4/3] overflow-hidden relative" style={{ background: C.bg }}>
                       <img
                         src={getProductImage(p)}
                         alt={p.title}
                         loading="lazy"
-                        className="w-full h-full object-cover transition-transform duration-[1200ms] group-hover:scale-[1.06]"
+                        className="w-full h-full object-cover tilt-img"
                       />
                       <div
                         className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
