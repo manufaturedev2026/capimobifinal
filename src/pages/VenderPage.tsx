@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import MarketplaceNavbar from "@/components/MarketplaceNavbar";
+import ThemeParticles from "@/components/ThemeParticles";
 import { getMarketplaceTheme } from "@/lib/marketplaceThemes";
 import { getMarketplaceThemeCssVars } from "@/lib/marketplaceThemeCssVars";
 import { supabase } from "@/integrations/supabase/client";
