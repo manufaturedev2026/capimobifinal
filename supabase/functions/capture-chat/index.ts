@@ -34,10 +34,10 @@ OBJETIVO: Coletar nome, telefone, data/horário preferido e qual imóvel/região
 FLUXO IDEAL: 1) Cumprimente e peça o nome 2) Que imóvel/região quer visitar 3) Melhor dia e horário 4) Telefone/WhatsApp para confirmação 5) Confirme o agendamento.
 BENEFÍCIOS: visita sem compromisso, atendimento exclusivo, flexibilidade de horários.`,
 
-  avaliacao: `Você é um assistente que oferece AVALIAÇÃO GRATUITA de imóveis para proprietários que querem saber quanto vale seu imóvel.
-OBJETIVO: Coletar nome, telefone, tipo e localização do imóvel para enviar a avaliação profissional.
-FLUXO IDEAL: 1) Cumprimente e peça o nome 2) Tipo do imóvel 3) Endereço/bairro 4) Características (área, quartos) 5) Telefone/WhatsApp para enviar a avaliação 6) Confirme.
-BENEFÍCIOS: avaliação 100% gratuita feita por especialistas, baseada no mercado local, sem compromisso de venda.`,
+  avaliacao: `Você é um assistente que oferece AVALIAÇÃO GRATUITA de mercado para proprietários que querem APENAS DESCOBRIR QUANTO VALE seu imóvel. NÃO ofereça anunciar, vender ou alugar — o foco é só informar o valor estimado.
+OBJETIVO: Coletar nome, telefone, tipo e localização do imóvel para enviar a avaliação profissional por WhatsApp.
+FLUXO IDEAL: 1) Cumprimente e peça o nome 2) Tipo do imóvel 3) Endereço/bairro 4) Características (área, quartos) 5) Telefone/WhatsApp para enviar a avaliação 6) Confirme que a avaliação será enviada em breve.
+BENEFÍCIOS: avaliação 100% gratuita feita por especialistas, baseada no mercado local, sem compromisso nenhum de venda ou anúncio.`,
 };
 
 const SYSTEM_BASE = `Você é um assistente imobiliário inteligente.
@@ -223,7 +223,7 @@ REGRAS:
         captacao: `Olá! 👋 Sou o assistente${sellerTag ? " de" + sellerTag : ""}. Vou te ajudar a anunciar seu imóvel para venda ou aluguel. Para começar, qual é o seu nome? 😊`,
         grupo_whatsapp: `Olá! 👋 Sou o assistente${sellerTag ? " de" + sellerTag : ""}. Vou te liberar o acesso ao nosso grupo exclusivo de imóveis no WhatsApp! 🏡🔥 Para começar, qual é o seu nome?`,
         agendamento: `Olá! 👋 Sou o assistente${sellerTag ? " de" + sellerTag : ""}. Vou te ajudar a agendar uma visita ao imóvel. 📅 Para começar, qual é o seu nome?`,
-        avaliacao: `Olá! 👋 Sou o assistente${sellerTag ? " de" + sellerTag : ""}. Vou te ajudar a fazer uma avaliação 100% gratuita do seu imóvel. 💎 Para começar, qual é o seu nome?`,
+        avaliacao: `Olá! 👋 Sou o assistente${sellerTag ? " de" + sellerTag : ""}. Vou te ajudar a descobrir quanto vale seu imóvel com uma avaliação 100% gratuita, sem compromisso. 💎 Para começar, qual é o seu nome?`,
       };
       return new Response(JSON.stringify({ reply: greetings[flowKey], extractedData: null }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
