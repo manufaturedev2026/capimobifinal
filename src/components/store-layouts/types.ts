@@ -29,6 +29,7 @@ export const STORE_LAYOUTS = [
   { id: "netflix", name: "Netflix", desc: "Carrossel de categorias + grid de cards", preview: "🎬" },
   { id: "minimal", name: "Minimal", desc: "Limpo e elegante, sem distrações", preview: "✨" },
   { id: "marketplace", name: "Marketplace", desc: "Estilo Mercado Livre com busca e badges", preview: "🛒" },
+  { id: "cyberpunk_marketplace", name: "Cyberpunk", desc: "Marketplace com estética Cyberpunk 2077: neon, scanlines e glitch", preview: "🤖" },
   { id: "magazine", name: "Magazine", desc: "Cards grandes estilo revista", preview: "📰" },
   { id: "gallery", name: "Galeria", desc: "Mosaico estilo Pinterest", preview: "🖼️" },
   { id: "elegant", name: "Elegant", desc: "Estilo site de imobiliária profissional", preview: "🏢" },
@@ -40,12 +41,12 @@ export type StoreLayoutId = typeof STORE_LAYOUTS[number]["id"];
 export const LAYOUTS_BY_TIER: Record<string, string[]> = {
   basico: ["marketplace"],
   start: ["marketplace"],
-  vip: ["marketplace", "netflix", "minimal"],
-  premium: ["marketplace", "netflix", "minimal", "magazine", "gallery", "elegant"],
-  essencial_empresa: ["marketplace", "netflix", "minimal"],
-  premium_empresa: ["marketplace", "netflix", "minimal", "magazine", "gallery", "elegant"],
-  prime_empresa: ["marketplace", "netflix", "minimal", "magazine", "gallery", "elegant"],
-  black: ["marketplace", "netflix", "minimal", "magazine", "gallery", "elegant"],
+  vip: ["marketplace", "netflix", "minimal", "cyberpunk_marketplace"],
+  premium: ["marketplace", "netflix", "minimal", "magazine", "gallery", "elegant", "cyberpunk_marketplace"],
+  essencial_empresa: ["marketplace", "netflix", "minimal", "cyberpunk_marketplace"],
+  premium_empresa: ["marketplace", "netflix", "minimal", "magazine", "gallery", "elegant", "cyberpunk_marketplace"],
+  prime_empresa: ["marketplace", "netflix", "minimal", "magazine", "gallery", "elegant", "cyberpunk_marketplace"],
+  black: ["marketplace", "netflix", "minimal", "magazine", "gallery", "elegant", "cyberpunk_marketplace"],
 };
 
 export function isLayoutAllowed(layoutId: string, tier: string | null | undefined): boolean {
@@ -56,6 +57,6 @@ export function isLayoutAllowed(layoutId: string, tier: string | null | undefine
 /** Returns the minimum tier required for a layout */
 export function getMinTierForLayout(layoutId: string): string {
   if (["magazine", "gallery", "elegant"].includes(layoutId)) return "Premium";
-  if (["netflix", "minimal"].includes(layoutId)) return "VIP";
+  if (["netflix", "minimal", "cyberpunk_marketplace"].includes(layoutId)) return "VIP";
   return "";
 }
