@@ -253,10 +253,9 @@ export default function AdminAdsCrmTab() {
                     />
                   ))}
                 </div>
-              </div>
-            );
-          })}
-        </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
