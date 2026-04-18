@@ -183,10 +183,10 @@ export default function StoreLayoutMinimal({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="font-display font-light text-2xl md:text-5xl leading-tight text-white drop-shadow-lg"
+            className="minimal-display font-light text-3xl md:text-6xl leading-[1.05] text-white drop-shadow-lg"
           >
             Imóveis em{" "}
-            <span className="font-bold" style={{ color: storeTheme.primary }}>{currentHeroCity}</span>
+            <span className="italic font-medium" style={{ color: storeTheme.primary }}>{currentHeroCity}</span>
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 10 }}
