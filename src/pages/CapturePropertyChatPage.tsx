@@ -712,6 +712,16 @@ export default function CapturePropertyChatPage() {
   };
 
   const handleWhatsAppRedirect = () => {
+    // CTA URL personalizado tem prioridade absoluta (qualquer fluxo)
+    const customCtaUrl =
+      flowType === "captacao" ? config.captacaoCtaUrl :
+      flowType === "grupo_whatsapp" ? config.grupoWhatsappLink :
+      flowType === "agendamento" ? config.agendCtaUrl :
+      flowType === "avaliacao" ? config.avalCtaUrl : "";
+    if (customCtaUrl && customCtaUrl.trim()) {
+      window.open(customCtaUrl.trim(), "_blank", "noopener");
+      return;
+    }
     if (!sellerProfile?.phone) return;
     const cleanPhone = sellerProfile.phone.replace(/\D/g, "");
 
