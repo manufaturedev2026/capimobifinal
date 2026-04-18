@@ -79,7 +79,7 @@ PERSONA E TOM:
 OBJETIVO: Convidar o visitante a entrar no grupo exclusivo de imóveis (aluguel e venda), onde recebe ofertas novas, oportunidades e imóveis antes de todo mundo. NÃO peça para anunciar imóvel — o foco é receber ofertas.
 
 FLUXO DE CONVERSA (siga nesta ordem, UMA pergunta por vez):
-1) Convide para o grupo gratuito e ofereça 3 caminhos: "Sim, quero entrar" / "Quero saber mais" / "Depois vejo"
+1) Convide para o grupo gratuito de forma natural e pergunte se a pessoa quer entrar
 2) Se SIM: peça nome
 3) WhatsApp para envio do link
 4) Busca para COMPRAR ou ALUGAR
@@ -381,7 +381,7 @@ REGRAS:
       const sellerTag = sellerName ? ` ${sellerName}` : "";
       const greetings: Record<string, string> = {
         captacao: `Olá 👋 Seja bem-vindo(a)${sellerTag ? " à" + sellerTag : ""}! Vou te ajudar a cadastrar seu imóvel para venda ou aluguel de forma rápida e gratuita. 🏡\n\nPara começar, qual tipo de imóvel você deseja anunciar? (Casa, Apartamento, Terreno, Sala Comercial, Galpão, Fazenda/Sítio ou Outro)`,
-        grupo_whatsapp: `Olá 👋 Seja bem-vindo(a)${sellerTag ? " à" + sellerTag : ""}! Temos um grupo exclusivo de imóveis de aluguel e venda com novas oportunidades todos os dias. 🏡🔥\n\nPosso te colocar gratuitamente no grupo? 😊\n\n• Sim, quero entrar\n• Quero saber mais\n• Depois vejo`,
+        grupo_whatsapp: `Olá 👋 Seja bem-vindo(a)${sellerTag ? " à" + sellerTag : ""}! Temos um grupo exclusivo de imóveis de aluguel e venda com novas oportunidades todos os dias. 🏡🔥\n\nPosso te colocar gratuitamente no grupo? 😊`,
         agendamento: `Olá 👋 Seja bem-vindo(a)${sellerTag ? " à" + sellerTag : ""}! Vou te ajudar a agendar sua visita ao imóvel de forma rápida e organizada. 📅 Para começar, qual imóvel você deseja visitar?`,
         avaliacao: `Olá 👋 Seja bem-vindo(a)${sellerTag ? " à" + sellerTag : ""}! Vou te ajudar com a avaliação do seu imóvel de forma rápida e gratuita. Para começar, qual tipo de imóvel você deseja avaliar? (Casa, Apartamento, Terreno, Sala Comercial, Galpão ou Outro)`,
       };
