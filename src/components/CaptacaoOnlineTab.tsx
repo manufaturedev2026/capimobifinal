@@ -202,6 +202,16 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
   const [avalMsgSuccess, setAvalMsgSuccess] = useState("✅ Solicitação de avaliação enviada com sucesso!");
   const [avalMsgSuccessEnd, setAvalMsgSuccessEnd] = useState("Um especialista vai entrar em contato em até 24h para agendar a visita de avaliação. Obrigado! 🏡💎");
 
+  // CTA Buttons (texto + URL opcional) por fluxo
+  const [captacaoCtaLabel, setCaptacaoCtaLabel] = useState("💬 Falar no WhatsApp");
+  const [captacaoCtaUrl, setCaptacaoCtaUrl] = useState("");
+  const [grupoCtaLabel, setGrupoCtaLabel] = useState("🔗 Entrar no Grupo");
+  // grupoWhatsappLink já existe e funciona como CTA URL do fluxo Grupo
+  const [agendCtaLabel, setAgendCtaLabel] = useState("💬 Confirmar Agendamento");
+  const [agendCtaUrl, setAgendCtaUrl] = useState("");
+  const [avalCtaLabel, setAvalCtaLabel] = useState("💬 Falar com Especialista");
+  const [avalCtaUrl, setAvalCtaUrl] = useState("");
+
   const FLOW_HASH: Record<FlowType, string> = {
     captacao: "captacao",
     grupo_whatsapp: "grupo",
@@ -276,6 +286,13 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
         if (cfg.avalMsgDetails) setAvalMsgDetails(cfg.avalMsgDetails);
         if (cfg.avalMsgSuccess) setAvalMsgSuccess(cfg.avalMsgSuccess);
         if (cfg.avalMsgSuccessEnd) setAvalMsgSuccessEnd(cfg.avalMsgSuccessEnd);
+        if (cfg.captacaoCtaLabel) setCaptacaoCtaLabel(cfg.captacaoCtaLabel);
+        if (cfg.captacaoCtaUrl) setCaptacaoCtaUrl(cfg.captacaoCtaUrl);
+        if (cfg.grupoCtaLabel) setGrupoCtaLabel(cfg.grupoCtaLabel);
+        if (cfg.agendCtaLabel) setAgendCtaLabel(cfg.agendCtaLabel);
+        if (cfg.agendCtaUrl) setAgendCtaUrl(cfg.agendCtaUrl);
+        if (cfg.avalCtaLabel) setAvalCtaLabel(cfg.avalCtaLabel);
+        if (cfg.avalCtaUrl) setAvalCtaUrl(cfg.avalCtaUrl);
       } catch {}
     }
   };
@@ -293,6 +310,10 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
       agendMsgDate, agendMsgTime, agendMsgSuccess, agendMsgSuccessEnd,
       avalMsgName, avalMsgNameReply, avalMsgPhone, avalMsgType,
       avalMsgAddress, avalMsgDetails, avalMsgSuccess, avalMsgSuccessEnd,
+      captacaoCtaLabel, captacaoCtaUrl,
+      grupoCtaLabel,
+      agendCtaLabel, agendCtaUrl,
+      avalCtaLabel, avalCtaUrl,
     });
     const { error } = await supabase
       .from("platform_settings")
@@ -945,6 +966,7 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
                           <Field label="Pedindo observações" value={flowMsgNotes} onChange={setFlowMsgNotes} multiline />
                           <Field label="Mensagem de sucesso" value={flowMsgSuccess} onChange={setFlowMsgSuccess} />
                           <Field label="Mensagem final" value={flowMsgSuccessEnd} onChange={setFlowMsgSuccessEnd} />
+                          <CtaFields label={captacaoCtaLabel} url={captacaoCtaUrl} onLabel={setCaptacaoCtaLabel} onUrl={setCaptacaoCtaUrl} hint="Se preenchido, o botão final abre essa URL. Vazio = abre WhatsApp do corretor." />
                         </>
                       )}
 
@@ -956,11 +978,7 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
                           <Field label="Pedindo telefone" value={grupoMsgPhone} onChange={setGrupoMsgPhone} />
                           <Field label="Mensagem de sucesso" value={grupoMsgSuccess} onChange={setGrupoMsgSuccess} />
                           <Field label="Mensagem final" value={grupoMsgSuccessEnd} onChange={setGrupoMsgSuccessEnd} />
-                          <div>
-                            <label className="text-xs text-muted-foreground font-semibold">🔗 Link do grupo WhatsApp</label>
-                            <Input value={grupoWhatsappLink} onChange={e => setGrupoWhatsappLink(e.target.value)} placeholder="https://chat.whatsapp.com/..." className="mt-1 text-sm" />
-                            <p className="text-[10px] text-muted-foreground mt-1">Se preenchido, o botão final redireciona direto para o grupo</p>
-                          </div>
+                          <CtaFields label={grupoCtaLabel} url={grupoWhatsappLink} onLabel={setGrupoCtaLabel} onUrl={setGrupoWhatsappLink} urlPlaceholder="https://chat.whatsapp.com/..." hint="Link do grupo (WhatsApp/Telegram). Se preenchido, o botão final leva direto para o grupo." />
                         </>
                       )}
 
@@ -975,6 +993,7 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
                           <Field label="Pedindo horário" value={agendMsgTime} onChange={setAgendMsgTime} multiline />
                           <Field label="Mensagem de sucesso" value={agendMsgSuccess} onChange={setAgendMsgSuccess} />
                           <Field label="Mensagem final" value={agendMsgSuccessEnd} onChange={setAgendMsgSuccessEnd} />
+                          <CtaFields label={agendCtaLabel} url={agendCtaUrl} onLabel={setAgendCtaLabel} onUrl={setAgendCtaUrl} hint="Se preenchido, o botão final abre essa URL (ex: link do Calendly). Vazio = abre WhatsApp." />
                         </>
                       )}
 
@@ -988,7 +1007,9 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
                           <Field label="Pedindo endereço" value={avalMsgAddress} onChange={setAvalMsgAddress} multiline />
                           <Field label="Pedindo detalhes" value={avalMsgDetails} onChange={setAvalMsgDetails} multiline />
                           <Field label="Mensagem de sucesso" value={avalMsgSuccess} onChange={setAvalMsgSuccess} />
+                          <Field label="Mensagem de sucesso" value={avalMsgSuccess} onChange={setAvalMsgSuccess} />
                           <Field label="Mensagem final" value={avalMsgSuccessEnd} onChange={setAvalMsgSuccessEnd} />
+                          <CtaFields label={avalCtaLabel} url={avalCtaUrl} onLabel={setAvalCtaLabel} onUrl={setAvalCtaUrl} hint="Se preenchido, o botão final abre essa URL. Vazio = abre WhatsApp do especialista." />
                         </>
                       )}
                     </div>
@@ -1020,6 +1041,27 @@ function Field({ label, value, onChange, multiline }: {
       ) : (
         <Input value={value} onChange={e => onChange(e.target.value)} className="mt-1 text-sm" />
       )}
+    </div>
+  );
+}
+
+/* ── CTA Button Editor (label + URL) ── */
+function CtaFields({ label, url, onLabel, onUrl, hint, urlPlaceholder }: {
+  label: string; url: string; onLabel: (v: string) => void; onUrl: (v: string) => void;
+  hint?: string; urlPlaceholder?: string;
+}) {
+  return (
+    <div className="rounded-xl border border-primary/20 bg-primary/5 p-3 space-y-2">
+      <p className="text-xs font-bold text-foreground">🎯 Botão de Ação Final (CTA)</p>
+      <div>
+        <label className="text-xs text-muted-foreground">Texto do botão</label>
+        <Input value={label} onChange={e => onLabel(e.target.value)} placeholder="Ex: Falar no WhatsApp" className="mt-1 text-sm" />
+      </div>
+      <div>
+        <label className="text-xs text-muted-foreground">Link do botão (opcional)</label>
+        <Input value={url} onChange={e => onUrl(e.target.value)} placeholder={urlPlaceholder || "https://..."} className="mt-1 text-sm" />
+        {hint && <p className="text-[10px] text-muted-foreground mt-1">{hint}</p>}
+      </div>
     </div>
   );
 }

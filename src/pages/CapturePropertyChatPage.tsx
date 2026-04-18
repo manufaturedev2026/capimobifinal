@@ -67,6 +67,14 @@ interface BotConfig {
   avalMsgDetails: string;
   avalMsgSuccess: string;
   avalMsgSuccessEnd: string;
+  // CTA personalizados
+  captacaoCtaLabel?: string;
+  captacaoCtaUrl?: string;
+  grupoCtaLabel?: string;
+  agendCtaLabel?: string;
+  agendCtaUrl?: string;
+  avalCtaLabel?: string;
+  avalCtaUrl?: string;
 }
 
 const DEFAULT_CONFIG: BotConfig = {
@@ -704,6 +712,16 @@ export default function CapturePropertyChatPage() {
   };
 
   const handleWhatsAppRedirect = () => {
+    // CTA URL personalizado tem prioridade absoluta (qualquer fluxo)
+    const customCtaUrl =
+      flowType === "captacao" ? config.captacaoCtaUrl :
+      flowType === "grupo_whatsapp" ? config.grupoWhatsappLink :
+      flowType === "agendamento" ? config.agendCtaUrl :
+      flowType === "avaliacao" ? config.avalCtaUrl : "";
+    if (customCtaUrl && customCtaUrl.trim()) {
+      window.open(customCtaUrl.trim(), "_blank", "noopener");
+      return;
+    }
     if (!sellerProfile?.phone) return;
     const cleanPhone = sellerProfile.phone.replace(/\D/g, "");
 
@@ -804,9 +822,10 @@ export default function CapturePropertyChatPage() {
 
   const getCtaLabel = () => {
     switch (flowType) {
-      case "grupo_whatsapp": return config.grupoWhatsappLink ? "🔗 Entrar no Grupo" : "💬 Falar no WhatsApp";
-      case "agendamento": return "💬 Confirmar Agendamento";
-      case "avaliacao": return "💬 Falar com Especialista";
+      case "captacao": return config.captacaoCtaLabel || "💬 Falar no WhatsApp";
+      case "grupo_whatsapp": return config.grupoCtaLabel || (config.grupoWhatsappLink ? "🔗 Entrar no Grupo" : "💬 Falar no WhatsApp");
+      case "agendamento": return config.agendCtaLabel || "💬 Confirmar Agendamento";
+      case "avaliacao": return config.avalCtaLabel || "💬 Falar com Especialista";
       default: return "💬 Falar no WhatsApp";
     }
   };
