@@ -1149,17 +1149,12 @@ export default function CompanyProfile() {
         data-company-stats-bar
         className={`block relative z-20 overflow-hidden ${isNetflix ? "!hidden" : ""}`}
         style={{
-          borderBottom: `1px solid ${storeTheme.primary}30`,
           background: `linear-gradient(135deg, ${storeTheme.card} 0%, ${storeTheme.primary}08 50%, ${storeTheme.card} 100%)`,
         }}
       >
         <div
-          className="absolute inset-x-0 top-0 h-[1px] opacity-60"
+          className="absolute inset-x-0 bottom-0 h-[1px] opacity-50"
           style={{ background: `linear-gradient(90deg, transparent, ${storeTheme.primary}, transparent)` }}
-        />
-        <div
-          className="absolute inset-x-0 bottom-0 h-[1px] opacity-40"
-          style={{ background: `linear-gradient(90deg, transparent, ${storeTheme.accent || storeTheme.primary}, transparent)` }}
         />
         <div
           className="pointer-events-none absolute -top-12 left-1/4 w-48 h-48 rounded-full blur-3xl opacity-20"
