@@ -374,17 +374,48 @@ export default function StoreLayoutNetflix({
 
           {/* Billboard content — Netflix style */}
           <div className="absolute bottom-[8%] lg:bottom-[15%] left-4 lg:left-12 z-10 max-w-lg">
-            {/* Netflix badge */}
+            {/* Netflix badge + meta line */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.3 }}
-              className="flex items-center gap-1.5 mb-2 lg:mb-3"
+              className="flex items-center gap-2 mb-2 lg:mb-3 flex-wrap"
             >
               <span className="font-black text-xl lg:text-3xl leading-none" style={{ fontFamily: "'Bebas Neue', sans-serif", color: storeTheme.primary }}>I</span>
               <span className="text-[8px] lg:text-xs text-gray-300 uppercase tracking-[0.25em] font-semibold border-l border-gray-500 pl-2">
                 Imóvel em Destaque
               </span>
+              {/* TOP 1 badge */}
+              {billboardIdx === 0 && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[#e50914] text-white text-[8px] lg:text-[10px] font-black uppercase tracking-wider">
+                  <Trophy size={10} fill="#fff" /> #1 da Lista
+                </span>
+              )}
+              {/* Premium tag highlight */}
+              {currentBillboard.tag && ["premium", "luxo", "alto-padrao", "exclusivo"].includes(currentBillboard.tag) && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[8px] lg:text-[10px] font-black uppercase tracking-wider"
+                  style={{ background: "linear-gradient(135deg, #FFD700, #FFA500)", color: "#000" }}>
+                  <Crown size={10} /> {currentBillboard.tag}
+                </span>
+              )}
+            </motion.div>
+
+            {/* Rating + Year + specs meta row (Netflix-style) */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.35 }}
+              className="hidden lg:flex items-center gap-3 mb-2 text-xs"
+            >
+              <span className="flex items-center gap-1 text-yellow-400 font-bold">
+                <Star size={12} fill="#facc15" /> {(4 + ((currentBillboard.id || "").length % 10) / 10).toFixed(1)}
+              </span>
+              <span className="text-green-400 font-bold">98% Match</span>
+              <span className="text-white/50">2024</span>
+              <span className="px-1.5 py-0.5 border border-white/30 text-white/70 text-[10px] font-semibold">HD</span>
+              {currentBillboard.area && (
+                <span className="text-white/50">{currentBillboard.area}m²</span>
+              )}
             </motion.div>
 
             {/* Title — big and bold */}
