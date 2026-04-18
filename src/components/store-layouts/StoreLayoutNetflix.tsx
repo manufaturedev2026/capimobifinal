@@ -682,14 +682,14 @@ export default function StoreLayoutNetflix({
                 }}
               >
                 {allImages[0] ? (
-                  <img src={allImages[0].image} alt="Todos" className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover/cat:scale-105" />
+                  <img src={allImages[0].image} alt="Todos" className="w-full h-full rounded-[inherit] object-cover transition-transform duration-700 ease-out group-hover/cat:scale-105" />
                 ) : (
-                  <div className="w-full h-full bg-[#2a2a2a]" />
+                  <div className="w-full h-full rounded-[inherit] bg-[#2a2a2a]" />
                 )}
-                <div className="absolute inset-0" style={{
+                <div className="absolute inset-0 rounded-[inherit]" style={{
                    background: "linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.35) 45%, transparent 75%)",
                 }} />
-                <div className="absolute inset-0 opacity-0 group-hover/cat:opacity-100 transition-opacity duration-500 pointer-events-none" style={{
+                <div className="absolute inset-0 rounded-[inherit] opacity-0 group-hover/cat:opacity-100 transition-opacity duration-500 pointer-events-none" style={{
                   background: "linear-gradient(135deg, transparent 30%, rgba(255,255,255,0.18) 50%, transparent 70%)",
                 }} />
                 <div className="absolute bottom-0 left-0 right-0 p-3 text-center">
@@ -732,21 +732,21 @@ export default function StoreLayoutNetflix({
                   }}
                 >
                   {coverImg ? (
-                    <img src={coverImg} alt={c.name} className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover/cat:scale-105" />
+                    <img src={coverImg} alt={c.name} className="w-full h-full rounded-[inherit] object-cover transition-transform duration-700 ease-out group-hover/cat:scale-105" />
                   ) : (
-                    <div className="w-full h-full bg-[#2a2a2a]" />
+                    <div className="w-full h-full rounded-[inherit] bg-[#2a2a2a]" />
                   )}
-                  <div className="absolute inset-0" style={{
+                  <div className="absolute inset-0 rounded-[inherit]" style={{
                      background: "linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.35) 45%, transparent 75%)",
                   }} />
                   {/* Shimmer on hover */}
-                  <div className="absolute inset-0 opacity-0 group-hover/cat:opacity-100 transition-opacity duration-500 pointer-events-none" style={{
+                  <div className="absolute inset-0 rounded-[inherit] opacity-0 group-hover/cat:opacity-100 transition-opacity duration-500 pointer-events-none" style={{
                     background: `linear-gradient(135deg, transparent 30%, ${storeTheme.primary}30 50%, transparent 70%)`,
                   }} />
                   {/* Active glow pulse */}
                   {isActive && (
                     <motion.div
-                      className="absolute inset-0 pointer-events-none"
+                      className="absolute inset-0 rounded-[inherit] pointer-events-none"
                       animate={{ opacity: [0.3, 0.7, 0.3] }}
                       transition={{ duration: 2, repeat: Infinity }}
                       style={{ background: `linear-gradient(180deg, ${storeTheme.primary}40 0%, transparent 50%)` }}
