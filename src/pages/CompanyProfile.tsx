@@ -861,11 +861,6 @@ export default function CompanyProfile() {
 
           {/* Big action buttons */}
           <div className="flex gap-2 w-full max-w-sm">
-            {company.whatsapp && (
-              <button onClick={() => handleWhatsApp(heroProduct?.title || company.name)} className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl bg-[#25d366] text-white font-bold text-sm shadow-lg active:scale-95 transition-transform">
-                <MessageCircle size={18} /> WhatsApp
-              </button>
-            )}
             {(company as any).instagram && ["start", "vip", "premium", "essencial_empresa", "premium_empresa", "prime_empresa"].includes(sellerTier || "") && (
               <a href={`https://instagram.com/${(company as any).instagram.replace(/^@/, "")}`} target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl bg-gradient-to-r from-[#833AB4] via-[#E1306C] to-[#F77737] text-white font-bold text-sm shadow-lg active:scale-95 transition-transform">
                 <Instagram size={18} /> Instagram
