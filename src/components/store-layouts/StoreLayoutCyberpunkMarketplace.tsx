@@ -45,8 +45,8 @@ export default function StoreLayoutCyberpunkMarketplace(props: StoreLayoutProps)
       document.head.appendChild(link);
     }
 
-    if (document.getElementById(id)) return;
-    const style = document.createElement("style");
+    const existingStyle = document.getElementById(id) as HTMLStyleElement | null;
+    const style = existingStyle ?? document.createElement("style");
     style.id = id;
     style.textContent = `
       @keyframes cp-particle-float {
@@ -363,7 +363,9 @@ export default function StoreLayoutCyberpunkMarketplace(props: StoreLayoutProps)
       /* Smooth scroll */
       html { scroll-behavior: smooth; }
     `;
-    document.head.appendChild(style);
+    if (!existingStyle) {
+      document.head.appendChild(style);
+    }
   }, [scrolled]);
 
   // Subtle particles
