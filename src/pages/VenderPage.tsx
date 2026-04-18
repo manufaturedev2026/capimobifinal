@@ -268,7 +268,9 @@ export default function VenderPage() {
         <meta name="description" content="Crie seu site imobiliário profissional com CRM completo, gestão de leads, contratos, stories e muito mais. Comece gratuitamente." />
       </Helmet>
 
-      <div className="min-h-screen text-white overflow-x-hidden" style={{ ...themeVars, background: theme.darkBase }}>
+      <div className="min-h-screen text-white overflow-x-hidden relative" style={{ ...themeVars, background: theme.darkBase }}>
+
+        <ThemeParticles color={theme.primary} count={60} />
 
         <MarketplaceNavbar theme={theme} user={user} showImoveisScroll={false} />
 
