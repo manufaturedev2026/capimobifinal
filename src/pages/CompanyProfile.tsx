@@ -630,7 +630,7 @@ export default function CompanyProfile() {
       {isDbProfile && dbProfile?.id && <StoreEffects sellerId={dbProfile.id} />}
       {!isIOSStandalone && <ThemeParticles color={storeTheme.primary} sellerId={dbProfile?.id} />}
       {/* ═══════════ MOBILE PROFILE HERO ═══════════ */}
-      <section className={`lg:hidden relative overflow-hidden ${isMinimal || isMarketplace || isNetflix || false ? "hidden" : ""}`}>
+      <section data-company-hero-mobile className={`lg:hidden relative overflow-hidden ${isMinimal || isMarketplace || isNetflix || false ? "hidden" : ""}`}>
         {isMarketplace ? (
           /* ── Marketplace-style compact hero ── */
           <>
@@ -949,7 +949,7 @@ export default function CompanyProfile() {
         </div>
       )}
 
-      <section className={`hidden lg:block relative overflow-hidden ${isMinimal || isMarketplace || isNetflix || false ? "!hidden" : ""} ${hasVideoHero ? "h-[70vh]" : "h-[60vh]"}`}>
+      <section data-company-hero className={`hidden lg:block relative overflow-hidden ${isMinimal || isMarketplace || isNetflix || false ? "!hidden" : ""} ${hasVideoHero ? "h-[70vh]" : "h-[60vh]"}`}>
         {/* Video background or sliding images */}
         {hasVideoHero ? (
           <iframe
@@ -1145,7 +1145,7 @@ export default function CompanyProfile() {
       </section>
 
       {/* ═══════════ STATS BAR ═══════════ */}
-      <section className={`block relative z-20 overflow-hidden ${isNetflix ? "!hidden" : ""}`} style={{ borderBottom: `1px solid ${storeTheme.border}`, background: storeTheme.card }}>
+      <section data-company-stats-bar className={`block relative z-20 overflow-hidden ${isNetflix ? "!hidden" : ""}`} style={{ borderBottom: `1px solid ${storeTheme.border}`, background: storeTheme.card }}>
         <div className={`${isMarketplace ? "px-3 md:px-8" : "max-w-[1800px] mx-auto px-3 md:px-8"}`}>
           <div className="flex items-center gap-2 sm:gap-3 md:gap-6 py-2.5 md:py-3 overflow-x-auto scrollbar-hide">
             <div className="flex items-center gap-1.5 md:gap-2 text-xs md:text-sm flex-shrink-0">
