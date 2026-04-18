@@ -99,6 +99,10 @@ export default function StoreLayoutCyberpunkMarketplace(props: StoreLayoutProps)
       /* Force full bleed */
       body.cp-active main,
       body.cp-active [class*="max-w-"] { max-width: none !important; }
+      /* Hide the marketplace hero banner carousel inside the theme */
+      .cp-wrapper .relative.h-\[55vh\],
+      .cp-wrapper [class*="h-[55vh]"],
+      .cp-wrapper [class*="h-[85vh]"] { display: none !important; }
 
       /* ============= BACKGROUND ============= */
       .cp-bg-base {
