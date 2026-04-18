@@ -352,7 +352,14 @@ export default function StoreLayoutNetflix({
               transition={{ duration: 1.5, ease: "easeOut" }}
               className="absolute inset-0"
             >
-              <img src={currentBillboard.image} alt={currentBillboard.title} className="w-full h-full object-cover" />
+              <motion.img
+                src={currentBillboard.image}
+                alt={currentBillboard.title}
+                className="w-full h-full object-cover"
+                initial={{ scale: 1.15 }}
+                animate={{ scale: 1.05 }}
+                transition={{ duration: 8, ease: "easeOut" }}
+              />
               {/* Netflix-style gradients */}
               <div className="absolute inset-0" style={{
                 background: "linear-gradient(to right, #141414 0%, rgba(20,20,20,0.85) 25%, rgba(20,20,20,0.4) 50%, transparent 70%)",
@@ -360,6 +367,44 @@ export default function StoreLayoutNetflix({
               <div className="absolute inset-0" style={{
                 background: "linear-gradient(to top, #141414 0%, rgba(20,20,20,0.6) 30%, transparent 60%)",
               }} />
+              {/* Cinematic vignette */}
+              <div className="absolute inset-0 pointer-events-none" style={{
+                background: `radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.7) 100%)`,
+              }} />
+              {/* Color tint glow */}
+              <motion.div
+                className="absolute inset-0 pointer-events-none mix-blend-overlay"
+                style={{ background: `radial-gradient(circle at 30% 50%, ${storeTheme.primary}40, transparent 60%)` }}
+                animate={{ opacity: [0.4, 0.8, 0.4] }}
+                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+              />
+              {/* Floating particles */}
+              {[...Array(10)].map((_, i) => (
+                <motion.div
+                  key={`p-${currentBillboard.id}-${i}`}
+                  className="absolute w-1 h-1 rounded-full pointer-events-none"
+                  style={{
+                    background: storeTheme.primary,
+                    left: `${10 + (i * 9)}%`,
+                    top: `${20 + (i % 4) * 18}%`,
+                    boxShadow: `0 0 10px ${storeTheme.primary}`,
+                  }}
+                  animate={{
+                    y: [0, -30, 0],
+                    opacity: [0, 1, 0],
+                    scale: [0, 1.5, 0],
+                  }}
+                  transition={{ duration: 4 + (i % 3), repeat: Infinity, delay: i * 0.4, ease: "easeInOut" }}
+                />
+              ))}
+              {/* Scan line */}
+              <motion.div
+                className="absolute left-0 right-0 h-[2px] pointer-events-none"
+                style={{ background: `linear-gradient(90deg, transparent, ${storeTheme.primary}80, transparent)`, boxShadow: `0 0 20px ${storeTheme.primary}` }}
+                initial={{ top: "0%" }}
+                animate={{ top: "100%" }}
+                transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+              />
             </motion.div>
           </AnimatePresence>
 
@@ -637,33 +682,56 @@ export default function StoreLayoutNetflix({
               const count = categoryCounts[c.slug] || 0;
 
               return (
-                <button
+                <motion.button
                   key={c.slug}
                   onClick={() => setActiveCategory(c.slug)}
+                  whileHover={{ scale: 1.06, y: -6 }}
+                  whileTap={{ scale: 0.96 }}
+                  transition={{ type: "spring", stiffness: 300 }}
                   className="flex-shrink-0 relative overflow-hidden rounded-md transition-all duration-300 group/cat"
                   style={{
                     width: "clamp(120px, 18vw, 180px)",
                     aspectRatio: "2/3",
-                     outline: isActive ? "2px solid #fff" : "2px solid transparent",
-                     outlineOffset: 2,
+                    outline: isActive ? `2px solid ${storeTheme.primary}` : "2px solid transparent",
+                    outlineOffset: 2,
+                    boxShadow: isActive
+                      ? `0 0 30px ${storeTheme.primary}80, 0 0 60px ${storeTheme.primary}40, 0 20px 40px rgba(0,0,0,0.5)`
+                      : "0 8px 20px rgba(0,0,0,0.4)",
                   }}
                 >
                   {coverImg ? (
-                    <img src={coverImg} alt={c.name} className="w-full h-full object-cover transition-transform duration-500 group-hover/cat:scale-110" />
+                    <img src={coverImg} alt={c.name} className="w-full h-full object-cover transition-transform duration-700 group-hover/cat:scale-125" />
                   ) : (
                     <div className="w-full h-full bg-[#2a2a2a]" />
                   )}
                   <div className="absolute inset-0" style={{
-                     background: "linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 40%, transparent 70%)",
+                     background: "linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.4) 40%, transparent 70%)",
                   }} />
+                  {/* Shimmer on hover */}
+                  <div className="absolute inset-0 opacity-0 group-hover/cat:opacity-100 transition-opacity duration-500 pointer-events-none" style={{
+                    background: `linear-gradient(135deg, transparent 30%, ${storeTheme.primary}30 50%, transparent 70%)`,
+                  }} />
+                  {/* Active glow pulse */}
+                  {isActive && (
+                    <motion.div
+                      className="absolute inset-0 pointer-events-none"
+                      animate={{ opacity: [0.3, 0.7, 0.3] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                      style={{ background: `linear-gradient(180deg, ${storeTheme.primary}40 0%, transparent 50%)` }}
+                    />
+                  )}
                   <div className="absolute bottom-0 left-0 right-0 p-2.5 text-center">
-                    <span className="text-white font-bold text-xs md:text-sm drop-shadow-lg block">{c.name}</span>
-                    <span className="text-white/60 text-[9px] md:text-[10px]">{count} imóveis</span>
+                    <span className="text-white font-black text-xs md:text-sm drop-shadow-lg block uppercase tracking-wider">{c.name}</span>
+                    <span className="text-[9px] md:text-[10px] font-bold" style={{ color: isActive ? storeTheme.primary : "rgba(255,255,255,0.6)" }}>{count} imóveis</span>
                   </div>
                   {isActive && (
-                    <div className="absolute top-0 left-0 right-0 h-[3px] bg-white" />
+                    <motion.div
+                      layoutId="netflix-cat-active"
+                      className="absolute top-0 left-0 right-0 h-[3px]"
+                      style={{ background: storeTheme.primary, boxShadow: `0 0 12px ${storeTheme.primary}` }}
+                    />
                   )}
-                </button>
+                </motion.button>
               );
             })}
         </div>
@@ -954,56 +1022,80 @@ export default function StoreLayoutNetflix({
                     {visibleProducts.map((product: any, i: number) => {
                       const productLink = `/imoveis/produto/${product.slug || product.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`;
                       return (
-                        <motion.div
-                          key={product.id}
-                          initial={{ opacity: 0, y: 24 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: Math.min(i * 0.03, 0.5), duration: 0.4 }}
-                          whileHover={{ y: -6, transition: { duration: 0.25 } }}
-                        >
-                          <Link
-                            to={productLink}
-                            className="block rounded-2xl overflow-hidden group transition-all"
-                            style={{
-                              background: storeTheme.card,
-                              border: `1px solid ${storeTheme.border}`,
-                              boxShadow: `0 2px 8px rgba(0,0,0,0.2)`,
-                            }}
-                            onMouseEnter={(e) => {
-                              (e.currentTarget as HTMLElement).style.boxShadow = `0 12px 40px ${storeTheme.primary}30, 0 4px 12px rgba(0,0,0,0.3)`;
-                            }}
-                            onMouseLeave={(e) => {
-                              (e.currentTarget as HTMLElement).style.boxShadow = `0 2px 8px rgba(0,0,0,0.2)`;
-                            }}
+                          <motion.div
+                            key={product.id}
+                            initial={{ opacity: 0, y: 24 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: Math.min(i * 0.03, 0.5), duration: 0.4 }}
+                            whileHover={{ y: -10, scale: 1.02, transition: { duration: 0.25, type: "spring", stiffness: 300 } }}
+                            className="relative"
                           >
-                            <div className="relative aspect-[4/3] overflow-hidden">
-                              {product.image ? (
-                                <img src={product.image} alt={product.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy" />
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center" style={{ background: storeTheme.border }}>
-                                  <Image size={28} style={{ color: storeTheme.textMuted }} />
-                                </div>
-                              )}
-                              <div
-                                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                                style={{ background: `linear-gradient(to top, ${storeTheme.primary}40, transparent 60%)` }}
-                              />
-                              {product.tag && (
-                                <span className={`absolute top-2.5 left-2.5 px-2.5 py-1 rounded-lg text-[9px] font-bold shadow-lg backdrop-blur-sm ${getTagStyle(product.tag)}`}>
-                                  {getTagLabel(product.tag)}
+                            {/* Animated glow border on hover */}
+                            <div
+                              className="absolute -inset-[1px] rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                              style={{
+                                background: `linear-gradient(135deg, ${storeTheme.primary}, transparent, ${storeTheme.primary})`,
+                                filter: "blur(8px)",
+                              }}
+                            />
+                            <Link
+                              to={productLink}
+                              className="relative block rounded-2xl overflow-hidden group transition-all"
+                              style={{
+                                background: storeTheme.card,
+                                border: `1px solid ${storeTheme.border}`,
+                                boxShadow: `0 4px 12px rgba(0,0,0,0.3)`,
+                              }}
+                              onMouseEnter={(e) => {
+                                (e.currentTarget as HTMLElement).style.boxShadow = `0 20px 60px ${storeTheme.primary}50, 0 8px 20px rgba(0,0,0,0.4), inset 0 1px 0 ${storeTheme.primary}40`;
+                                (e.currentTarget as HTMLElement).style.borderColor = storeTheme.primary;
+                              }}
+                              onMouseLeave={(e) => {
+                                (e.currentTarget as HTMLElement).style.boxShadow = `0 4px 12px rgba(0,0,0,0.3)`;
+                                (e.currentTarget as HTMLElement).style.borderColor = storeTheme.border;
+                              }}
+                            >
+                              <div className="relative aspect-[4/3] overflow-hidden">
+                                {product.image ? (
+                                  <img src={product.image} alt={product.title} className="w-full h-full object-cover group-hover:scale-125 transition-transform duration-1000 ease-out" loading="lazy" />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center" style={{ background: storeTheme.border }}>
+                                    <Image size={28} style={{ color: storeTheme.textMuted }} />
+                                  </div>
+                                )}
+                                {/* Bottom gradient */}
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                                {/* Shimmer sweep on hover */}
+                                <div
+                                  className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out pointer-events-none"
+                                  style={{ background: `linear-gradient(90deg, transparent, ${storeTheme.primary}40, transparent)` }}
+                                />
+                                {/* Color glow on hover */}
+                                <div
+                                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                                  style={{ background: `linear-gradient(to top, ${storeTheme.primary}50, transparent 60%)` }}
+                                />
+                                {product.tag && (
+                                  <span className={`absolute top-2.5 left-2.5 px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider shadow-lg backdrop-blur-md ${getTagStyle(product.tag)}`}
+                                    style={{ boxShadow: `0 4px 12px rgba(0,0,0,0.4)` }}>
+                                    {getTagLabel(product.tag)}
+                                  </span>
+                                )}
+                                {product.isAluguel && (
+                                  <span className="absolute bottom-2.5 left-2.5 px-2.5 py-1 rounded-lg text-[9px] font-bold shadow-lg backdrop-blur-sm" style={{ background: `${storeTheme.primary}dd`, color: "#fff" }}>
+                                    🏠 Aluguel
+                                  </span>
+                                )}
+                                {/* HD badge */}
+                                <span className="absolute top-2.5 right-2.5 px-1.5 py-0.5 border border-white/40 text-white/90 text-[8px] font-black tracking-wider backdrop-blur-md bg-black/30 rounded">
+                                  HD
                                 </span>
-                              )}
-                              {product.isAluguel && (
-                                <span className="absolute bottom-2.5 left-2.5 px-2.5 py-1 rounded-lg text-[9px] font-bold shadow-lg backdrop-blur-sm" style={{ background: `${storeTheme.primary}dd`, color: "#fff" }}>
-                                  🏠 Aluguel
-                                </span>
-                              )}
-                              {product.status === "vendido" && (
-                                <div className="absolute inset-0 bg-black/70 flex items-center justify-center">
-                                  <span className="text-red-400 font-bold text-xs uppercase tracking-[0.2em]">Vendido</span>
-                                </div>
-                              )}
-                            </div>
+                                {product.status === "vendido" && (
+                                  <div className="absolute inset-0 bg-black/70 flex items-center justify-center">
+                                    <span className="text-red-400 font-bold text-xs uppercase tracking-[0.2em]">Vendido</span>
+                                  </div>
+                                )}
+                              </div>
                             <div className="p-3 md:p-3.5">
                               <h3 className="text-[11px] md:text-xs font-bold line-clamp-2 leading-snug mb-1.5" style={{ color: storeTheme.text }}>
                                 {product.title}
