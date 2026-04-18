@@ -241,7 +241,7 @@ export default function AdminAdsCrmTab() {
                   </span>
                 </div>
 
-                <div className="space-y-2 min-h-[100px] max-h-[65vh] overflow-y-auto bg-secondary/30 rounded-xl p-2 scrollbar-hide">
+                <div className="space-y-2 min-h-[100px] bg-secondary/30 rounded-xl p-2">
                   {stageRequests.map((req) => (
                     <AdCard
                       key={req.id}
