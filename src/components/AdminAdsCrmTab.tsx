@@ -222,17 +222,16 @@ export default function AdminAdsCrmTab() {
       </div>
 
       {/* Kanban Pipeline */}
-      <div className="overflow-x-auto pb-4">
-        <div className="flex gap-3 min-w-[900px]">
-          {STAGES.map((stage) => {
-            const stageRequests = filtered.filter((r) => r.status === stage.key);
-            return (
-              <div
-                key={stage.key}
-                className="flex-1 min-w-[220px]"
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={(e) => handleDrop(e, stage.key)}
-              >
+      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3 pb-4">
+        {STAGES.map((stage) => {
+          const stageRequests = filtered.filter((r) => r.status === stage.key);
+          return (
+            <div
+              key={stage.key}
+              className="min-w-0"
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={(e) => handleDrop(e, stage.key)}
+            >
                 <div className="flex items-center gap-2 mb-3">
                   <div className={`w-2.5 h-2.5 rounded-full ${stage.color}`} />
                   <span className="text-xs font-bold text-foreground">{stage.label}</span>
