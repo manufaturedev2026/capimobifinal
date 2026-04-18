@@ -850,8 +850,17 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
                             <p className="text-[10px] text-muted-foreground">Seu ganho</p>
                             <p className="font-bold text-sm text-primary">{fmt(gains.owner)}</p>
                           </div>
-                        )}
-                      </div>
+                    )}
+
+                    <button
+                      onClick={() => endPartnership(p.id, p.role === "owner" ? p.requester_user_id : p.owner_user_id, p.item?.title || "Imóvel", p.role)}
+                      disabled={savingId === p.id}
+                      className="w-full px-3 py-2 rounded-lg border border-red-500/40 text-red-500 text-xs font-bold hover:bg-red-500/10 transition-colors flex items-center justify-center gap-1.5 disabled:opacity-50"
+                    >
+                      <XCircle size={14} />
+                      {p.role === "owner" ? "Encerrar parceria" : "Sair da parceria"}
+                    </button>
+                  </div>
                     )}
 
                     {p.partner && (
