@@ -623,11 +623,9 @@ export default function VenderPage() {
                         <p className="text-2xl md:text-3xl font-black">
                           {plan.priceLabel}<span className="text-xs md:text-sm font-normal text-white/40">/mês</span>
                         </p>
-                        {plan.setupFee && (
-                          <p className="text-[10px] md:text-[11px] text-white/30 mt-1">
-                            + R${plan.setupFee.toLocaleString("pt-BR")} de implementação
-                          </p>
-                        )}
+                        <p className="text-[10px] md:text-[11px] font-bold mt-1" style={{ color: theme.primary }}>
+                          ✨ 7 dias grátis
+                        </p>
                       </>
                     )}
                   </div>
