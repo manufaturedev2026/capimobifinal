@@ -215,6 +215,21 @@ REGRAS:
 
     const flowKey = (typeof flowType === "string" && FLOW_PROMPTS[flowType]) ? flowType : "captacao";
     const flowSpecific = FLOW_PROMPTS[flowKey];
+
+    // Saudações fixas por fluxo (evita IA improvisar mensagem genérica de captação)
+    if (messages.length === 0) {
+      const sellerTag = sellerName ? ` ${sellerName}` : "";
+      const greetings: Record<string, string> = {
+        captacao: `Olá! 👋 Sou o assistente${sellerTag ? " de" + sellerTag : ""}. Vou te ajudar a anunciar seu imóvel para venda ou aluguel. Para começar, qual é o seu nome? 😊`,
+        grupo_whatsapp: `Olá! 👋 Sou o assistente${sellerTag ? " de" + sellerTag : ""}. Vou te liberar o acesso ao nosso grupo exclusivo de imóveis no WhatsApp! 🏡🔥 Para começar, qual é o seu nome?`,
+        agendamento: `Olá! 👋 Sou o assistente${sellerTag ? " de" + sellerTag : ""}. Vou te ajudar a agendar uma visita ao imóvel. 📅 Para começar, qual é o seu nome?`,
+        avaliacao: `Olá! 👋 Sou o assistente${sellerTag ? " de" + sellerTag : ""}. Vou te ajudar a fazer uma avaliação 100% gratuita do seu imóvel. 💎 Para começar, qual é o seu nome?`,
+      };
+      return new Response(JSON.stringify({ reply: greetings[flowKey], extractedData: null }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     let contextPrompt = `${SYSTEM_BASE}\n\n${flowSpecific}`;
     if (sellerName) {
       contextPrompt += `\n\nVocê está representando o corretor/imobiliária "${sellerName}". Mencione o nome quando apropriado.`;
