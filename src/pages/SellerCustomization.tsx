@@ -21,8 +21,6 @@ const LAYOUT_PREVIEWS: Record<string, string> = {
   gallery: layoutGallery,
   elegant: layoutElegant,
   marketplace: layoutMarketplace,
-  cyberpunk_marketplace: layoutMarketplace,
-  apple_store: layoutMarketplace,
 };
 
 export default function SellerCustomization({ embedded }: { embedded?: boolean }) {
