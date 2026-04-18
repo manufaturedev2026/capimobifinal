@@ -1063,54 +1063,6 @@ export default function StoreLayoutNetflix({
         );
       })()}
 
-      {/* ══════ MAP / LOCATION ══════ */}
-      {(dbProfile?.address || dbProfile?.city || dbProfile?.state) && (
-        <section className="px-4 lg:px-12 py-10 lg:py-14">
-          <div className="max-w-5xl mx-auto">
-            <div className="flex items-center gap-2 mb-4">
-              <MapPin size={18} style={{ color: storeTheme.primary }} />
-              <h3 className="font-bold text-base lg:text-xl" style={{ color: storeTheme.text }}>
-                Onde nos encontrar
-              </h3>
-            </div>
-            <p className="text-xs lg:text-sm mb-5" style={{ color: storeTheme.textMuted }}>
-              Visite nosso escritório ou entre em contato para uma reunião presencial.
-            </p>
-            <div
-              className="rounded-2xl overflow-hidden"
-              style={{ border: `1px solid ${storeTheme.border}`, background: storeTheme.card }}
-            >
-              <div className="relative aspect-[16/9] bg-black/20">
-                <iframe
-                  src={`https://maps.google.com/maps?q=${encodeURIComponent(
-                    [dbProfile.address, dbProfile.city, dbProfile.state].filter(Boolean).join(", ")
-                  )}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
-                  className="w-full h-full border-0"
-                  allowFullScreen
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  title="Localização do escritório"
-                />
-              </div>
-              <a
-                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                  [dbProfile.address, dbProfile.city, dbProfile.state].filter(Boolean).join(", ")
-                )}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 px-4 py-3 text-xs lg:text-sm hover:opacity-80 transition-opacity"
-                style={{ color: storeTheme.textMuted, borderTop: `1px solid ${storeTheme.border}` }}
-              >
-                <MapPin size={14} style={{ color: storeTheme.primary }} className="flex-shrink-0" />
-                <span className="line-clamp-1">
-                  {[dbProfile.address, dbProfile.city, dbProfile.state].filter(Boolean).join(", ")}
-                </span>
-              </a>
-            </div>
-          </div>
-        </section>
-      )}
-
     </div>
   );
 }

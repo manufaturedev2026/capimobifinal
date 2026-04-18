@@ -2119,6 +2119,22 @@ export default function CompanyProfile() {
         </section>
       )}
 
+      {/* ═══ MAP SECTION (DB PROFILE) ═══ */}
+      {isDbProfile && (dbProfile?.address || dbProfile?.city || dbProfile?.state) && (
+        <section className="max-w-[1800px] mx-auto px-4 md:px-8 pb-10">
+          <div className="flex items-center gap-2 mb-3">
+            <MapPin size={18} style={{ color: storeTheme.primary }} />
+            <h2 className="font-display font-bold text-lg" style={{ color: storeTheme.text }}>
+              Onde nos encontrar
+            </h2>
+          </div>
+          <p className="text-xs md:text-sm mb-4" style={{ color: storeTheme.textMuted }}>
+            Visite nosso escritório ou entre em contato para uma reunião presencial.
+          </p>
+          <MapEmbed address={[dbProfile.address, dbProfile.city, dbProfile.state].filter(Boolean).join(", ")} />
+        </section>
+      )}
+
       {company.whatsapp && (dbProfile as any)?.show_floating_whatsapp && (
         <motion.button
           initial={{ scale: 0 }}
