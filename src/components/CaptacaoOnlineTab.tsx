@@ -220,7 +220,7 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
     captacao: "Olá! 👋 Vou te ajudar a cadastrar seu imóvel para venda ou aluguel de forma rápida e 100% gratuita. 🏡\n\nFazemos a divulgação profissional, encontramos compradores/inquilinos qualificados e cuidamos de toda a negociação para você. Vamos começar?",
     grupo_whatsapp: "Olá! 👋 Que bom ter você por aqui!\n\nVou te adicionar ao nosso grupo VIP no WhatsApp 📲, onde compartilhamos em primeira mão as melhores oportunidades de imóveis: lançamentos, ofertas exclusivas e descontos especiais. 🏡🔥\n\nVamos garantir sua vaga?",
     agendamento: "Olá! 👋 Vou te ajudar a agendar uma visita ao imóvel de seu interesse. 📅\n\nÉ rápido, sem compromisso e você escolhe o melhor dia e horário. Nosso corretor especializado te acompanha pessoalmente para tirar todas as dúvidas. Vamos marcar?",
-    avaliacao: "Olá! 👋 Vou te ajudar a solicitar uma avaliação 100% GRATUITA do seu imóvel. 💎\n\nNossa análise considera o mercado atual da sua região, características do imóvel e tendências de preço, para você saber exatamente quanto vale o seu patrimônio. Vamos começar?",
+    avaliacao: "Olá! 👋 Vou te ajudar a solicitar uma avaliação profissional do seu imóvel. 💎\n\nNosso avaliador analisa o mercado atual da sua região, características do imóvel e tendências de preço com critérios técnicos para você entender o valor real do seu patrimônio. Vamos começar?",
   };
 
   // Detecta se a mensagem atual é uma das pré-prontas (assim podemos substituir sem perder customização do usuário)
