@@ -666,6 +666,123 @@ export default function StoreLayoutNetflix({
         </div>
       </div>
 
+      {/* ══════ CURATED NETFLIX ROWS (desktop only) ══════ */}
+      <div className="hidden lg:block pb-12">
+        {(() => {
+          // TOP 10 — first 10 with image
+          const top10 = filteredProducts.filter((p: any) => p.image && p.status !== "vendido").slice(0, 10);
+          // EM ALTA — items sorted by views_count desc
+          const trending = [...filteredProducts]
+            .filter((p: any) => p.image && p.status !== "vendido")
+            .sort((a: any, b: any) => (b.views_count || 0) - (a.views_count || 0))
+            .slice(0, 12);
+          // RECÉM-CHEGADOS — sorted by created_at desc
+          const newest = [...filteredProducts]
+            .filter((p: any) => p.image && p.status !== "vendido")
+            .sort((a: any, b: any) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime())
+            .slice(0, 12);
+          // PREMIUM — items with premium-ish tag or top price
+          const premiumTags = ["premium", "luxo", "alto-padrao", "exclusivo", "epico"];
+          let premium = filteredProducts.filter((p: any) => p.image && premiumTags.includes(p.tag));
+          if (premium.length < 6) {
+            const byPrice = [...filteredProducts]
+              .filter((p: any) => p.image && p.price > 0 && !premium.find((x: any) => x.id === p.id))
+              .sort((a: any, b: any) => (b.price || 0) - (a.price || 0))
+              .slice(0, 12 - premium.length);
+            premium = [...premium, ...byPrice];
+          }
+          // PARA VOCÊ — shuffle stable based on id length
+          const forYou = [...filteredProducts]
+            .filter((p: any) => p.image && p.status !== "vendido")
+            .sort((a: any, b: any) => ((a.id || "").length % 7) - ((b.id || "").length % 7))
+            .slice(0, 12);
+
+          return (
+            <>
+              {top10.length >= 3 && (
+                <NetflixRow
+                  title="🔥 Top 10 imóveis na sua região"
+                  subtitle="Os anúncios mais procurados agora"
+                  items={top10}
+                  corretorSlug={corretorSlug}
+                  getTagLabel={getTagLabel}
+                  getTagStyle={getTagStyle}
+                  accent={accent}
+                  icon={Trophy}
+                  ranked
+                  gradient="linear-gradient(135deg, #e50914, #ff6b6b)"
+                />
+              )}
+              {trending.length >= 3 && (
+                <NetflixRow
+                  title="Em Alta esta semana"
+                  subtitle="O que todo mundo está olhando"
+                  items={trending}
+                  corretorSlug={corretorSlug}
+                  getTagLabel={getTagLabel}
+                  getTagStyle={getTagStyle}
+                  accent={accent}
+                  icon={Flame}
+                  badge="top"
+                />
+              )}
+              {newest.length >= 3 && (
+                <NetflixRow
+                  title="Recém-chegados"
+                  subtitle="Acabaram de entrar no catálogo"
+                  items={newest}
+                  corretorSlug={corretorSlug}
+                  getTagLabel={getTagLabel}
+                  getTagStyle={getTagStyle}
+                  accent={accent}
+                  icon={Sparkles}
+                  badge="novo"
+                />
+              )}
+              {premium.length >= 3 && (
+                <NetflixRow
+                  title="Coleção Premium"
+                  subtitle="Imóveis exclusivos para clientes exigentes"
+                  items={premium}
+                  corretorSlug={corretorSlug}
+                  getTagLabel={getTagLabel}
+                  getTagStyle={getTagStyle}
+                  accent={accent}
+                  icon={Crown}
+                  badge="exclusivo"
+                  gradient="linear-gradient(135deg, #FFD700, #FFA500)"
+                />
+              )}
+              {forYou.length >= 3 && (
+                <NetflixRow
+                  title="Selecionados para você"
+                  subtitle="Curadoria personalizada"
+                  items={forYou}
+                  corretorSlug={corretorSlug}
+                  getTagLabel={getTagLabel}
+                  getTagStyle={getTagStyle}
+                  accent={accent}
+                  icon={Award}
+                />
+              )}
+              {/* Per-category rows (existing) */}
+              {rows.map(row => (
+                <NetflixRow
+                  key={row.name}
+                  title={row.name}
+                  items={row.items}
+                  corretorSlug={corretorSlug}
+                  getTagLabel={getTagLabel}
+                  getTagStyle={getTagStyle}
+                  accent={accent}
+                  icon={Home}
+                />
+              ))}
+            </>
+          );
+        })()}
+      </div>
+
       {filteredProducts.length > 0 && (
         <section id="products-grid" className="lg:hidden px-4 pb-10">
           <div className="flex items-center justify-between mb-4">
