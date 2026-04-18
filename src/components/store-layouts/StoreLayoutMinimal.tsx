@@ -144,7 +144,7 @@ export default function StoreLayoutMinimal({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
-        className={`relative h-[300px] md:h-[480px] overflow-hidden ${isIOSStandalone ? "mx-0" : "-mx-4 md:-mx-6"} -mt-6 md:-mt-6 mb-0`}
+        className={`relative h-[300px] md:h-[480px] overflow-hidden ${isIOSStandalone ? "mx-0" : "-mx-4 md:-mx-6"} mt-0 mb-0`}
       >
         {/* Auto-rotating background images */}
         <AnimatePresence mode="wait">
