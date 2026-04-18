@@ -1298,9 +1298,8 @@ export default function StoreLayoutNetflix({
                                   {product.neighborhood ? `${product.neighborhood}, ${product.city}` : product.city}
                                 </p>
                               )}
-                              <button
-                                onClick={(e) => { e.preventDefault(); handleWhatsApp(product.title, product.id); }}
-                                className="relative mt-3 w-full flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-[11px] font-black uppercase tracking-widest overflow-hidden group/wpp transition-all hover:scale-[1.02] active:scale-95"
+                              <div
+                                className="relative mt-3 w-full flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-[11px] font-black uppercase tracking-widest overflow-hidden group/info transition-all group-hover:scale-[1.02]"
                                 style={{
                                   background: `linear-gradient(135deg, ${storeTheme.primary}, ${storeTheme.primary}dd)`,
                                   color: "#fff",
@@ -1309,12 +1308,12 @@ export default function StoreLayoutNetflix({
                                 }}
                               >
                                 <div
-                                  className="absolute inset-0 -translate-x-full group-hover/wpp:translate-x-full transition-transform duration-700"
+                                  className="absolute inset-0 -translate-x-full group-hover/info:translate-x-full transition-transform duration-700"
                                   style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent)" }}
                                 />
-                                <MessageCircle size={13} className="relative z-10" />
-                                <span className="relative z-10">WhatsApp</span>
-                              </button>
+                                <Info size={13} className="relative z-10" />
+                                <span className="relative z-10">Informações</span>
+                              </div>
                             </div>
                           </Link>
                         </motion.div>
