@@ -466,13 +466,20 @@ export default function StoreLayoutNetflix({
               )}
             </motion.div>
 
-            {/* Title — big and bold */}
+            {/* Title — ÉPICO com gradient + glow */}
             <motion.h2
               key={`title-${currentBillboard.id}`}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.6 }}
-              className="font-black text-lg lg:text-4xl xl:text-5xl text-white leading-[1.05] drop-shadow-2xl mb-1 lg:mb-2"
+              className="font-black text-2xl lg:text-6xl xl:text-7xl leading-[1.0] mb-1 lg:mb-2 tracking-tight"
+              style={{
+                background: `linear-gradient(135deg, #ffffff 0%, #ffffff 40%, ${storeTheme.primary} 100%)`,
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+                filter: `drop-shadow(0 4px 20px ${storeTheme.primary}60) drop-shadow(0 2px 8px rgba(0,0,0,0.8))`,
+              }}
             >
               {currentBillboard.title}
             </motion.h2>
@@ -483,26 +490,46 @@ export default function StoreLayoutNetflix({
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.4 }}
-                className="text-white/50 text-[10px] lg:text-sm flex items-center gap-1 mb-1 lg:mb-2"
+                className="text-white/60 text-[11px] lg:text-sm flex items-center gap-1.5 mb-2 lg:mb-3 uppercase tracking-[0.15em] font-semibold"
               >
-                <MapPin size={10} />
+                <MapPin size={11} style={{ color: storeTheme.primary }} />
                 {currentBillboard.neighborhood
                   ? `${currentBillboard.neighborhood}, ${currentBillboard.city}`
                   : currentBillboard.city}
               </motion.p>
             )}
 
-            {/* Price */}
+            {/* Price — ÉPICO com glow + animação */}
             {currentBillboard.price > 0 && (
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.5 }}
-                className="font-black text-base lg:text-2xl mb-1 lg:mb-2"
-                style={{ color: storeTheme.primary }}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.5, type: "spring", stiffness: 200 }}
+                className="inline-flex items-baseline gap-1.5 mb-2 lg:mb-3 px-3 lg:px-5 py-1.5 lg:py-2 rounded-lg"
+                style={{
+                  background: `linear-gradient(135deg, ${storeTheme.primary}25, ${storeTheme.primary}10)`,
+                  border: `1px solid ${storeTheme.primary}50`,
+                  boxShadow: `0 0 30px ${storeTheme.primary}50, inset 0 1px 0 ${storeTheme.primary}40`,
+                  backdropFilter: "blur(10px)",
+                }}
               >
-                R$ {currentBillboard.price.toLocaleString("pt-BR")}
-              </motion.p>
+                <span className="text-[10px] lg:text-sm font-black uppercase tracking-widest" style={{ color: storeTheme.primary }}>R$</span>
+                <motion.span
+                  className="font-black text-2xl lg:text-5xl xl:text-6xl leading-none"
+                  style={{
+                    color: "#fff",
+                    textShadow: `0 0 20px ${storeTheme.primary}, 0 0 40px ${storeTheme.primary}80, 0 4px 8px rgba(0,0,0,0.6)`,
+                  }}
+                  animate={{ textShadow: [
+                    `0 0 20px ${storeTheme.primary}, 0 0 40px ${storeTheme.primary}80, 0 4px 8px rgba(0,0,0,0.6)`,
+                    `0 0 30px ${storeTheme.primary}, 0 0 60px ${storeTheme.primary}, 0 4px 8px rgba(0,0,0,0.6)`,
+                    `0 0 20px ${storeTheme.primary}, 0 0 40px ${storeTheme.primary}80, 0 4px 8px rgba(0,0,0,0.6)`,
+                  ]}}
+                  transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  {currentBillboard.price.toLocaleString("pt-BR")}
+                </motion.span>
+              </motion.div>
             )}
 
             {/* Description — Netflix synopsis style */}
@@ -1236,17 +1263,27 @@ export default function StoreLayoutNetflix({
                                 className="absolute top-0 left-3 right-3 h-[1px] opacity-0 group-hover:opacity-100 transition-opacity duration-500"
                                 style={{ background: `linear-gradient(90deg, transparent, ${storeTheme.primary}, transparent)` }}
                               />
-                              <h3 className="text-[11px] md:text-xs font-bold line-clamp-2 leading-snug mb-1.5 group-hover:translate-x-0.5 transition-transform" style={{ color: storeTheme.text }}>
+                              <h3 className="text-[12px] md:text-sm font-black line-clamp-2 leading-snug mb-2 group-hover:translate-x-0.5 transition-transform uppercase tracking-tight" style={{ color: storeTheme.text, letterSpacing: "-0.01em" }}>
                                 {product.title}
                               </h3>
                               {product.price > 0 && (
-                                <p className="text-sm md:text-lg font-black" style={{ color: storeTheme.primary, textShadow: `0 0 12px ${storeTheme.primary}40` }}>
-                                  R$ {product.price.toLocaleString("pt-BR")}
-                                  {product.isAluguel && <span className="text-[10px] font-normal ml-1" style={{ color: storeTheme.textMuted }}>/mês</span>}
-                                </p>
+                                <div className="inline-flex items-baseline gap-1 px-2.5 py-1.5 rounded-lg" style={{
+                                  background: `linear-gradient(135deg, ${storeTheme.primary}20, ${storeTheme.primary}08)`,
+                                  border: `1px solid ${storeTheme.primary}40`,
+                                  boxShadow: `0 0 16px ${storeTheme.primary}30, inset 0 1px 0 ${storeTheme.primary}30`,
+                                }}>
+                                  <span className="text-[9px] md:text-[10px] font-black uppercase tracking-widest" style={{ color: storeTheme.primary }}>R$</span>
+                                  <span className="text-base md:text-xl font-black leading-none" style={{
+                                    color: storeTheme.text,
+                                    textShadow: `0 0 12px ${storeTheme.primary}80, 0 0 24px ${storeTheme.primary}40`,
+                                  }}>
+                                    {product.price.toLocaleString("pt-BR")}
+                                  </span>
+                                  {product.isAluguel && <span className="text-[9px] font-bold ml-0.5" style={{ color: storeTheme.textMuted }}>/mês</span>}
+                                </div>
                               )}
                               {product.accepts_financing && (
-                                <p className="text-[9px] mt-1 font-semibold flex items-center gap-1" style={{ color: storeTheme.primary }}>
+                                <p className="text-[9px] mt-1.5 font-semibold flex items-center gap-1" style={{ color: storeTheme.primary }}>
                                   <ShieldCheck size={10} /> Aceita financiamento
                                 </p>
                               )}
@@ -1263,18 +1300,19 @@ export default function StoreLayoutNetflix({
                               )}
                               <button
                                 onClick={(e) => { e.preventDefault(); handleWhatsApp(product.title, product.id); }}
-                                className="relative mt-3 w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-[11px] font-bold overflow-hidden group/wpp transition-all hover:scale-[1.02] active:scale-95"
+                                className="relative mt-3 w-full flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-[11px] font-black uppercase tracking-widest overflow-hidden group/wpp transition-all hover:scale-[1.02] active:scale-95"
                                 style={{
                                   background: `linear-gradient(135deg, ${storeTheme.primary}, ${storeTheme.primary}dd)`,
                                   color: "#fff",
-                                  boxShadow: `0 6px 16px -4px ${storeTheme.primary}70, inset 0 1px 0 rgba(255,255,255,0.3)`,
+                                  boxShadow: `0 8px 24px -4px ${storeTheme.primary}90, 0 0 0 1px ${storeTheme.primary}, inset 0 1px 0 rgba(255,255,255,0.4)`,
+                                  textShadow: "0 1px 2px rgba(0,0,0,0.3)",
                                 }}
                               >
                                 <div
                                   className="absolute inset-0 -translate-x-full group-hover/wpp:translate-x-full transition-transform duration-700"
-                                  style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)" }}
+                                  style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent)" }}
                                 />
-                                <MessageCircle size={12} className="relative z-10" />
+                                <MessageCircle size={13} className="relative z-10" />
                                 <span className="relative z-10">WhatsApp</span>
                               </button>
                             </div>
