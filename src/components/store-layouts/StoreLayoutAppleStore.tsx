@@ -33,7 +33,6 @@ const APPLE_NAV = [
   { id: "alugar", label: "Alugar" },
   { id: "lancamentos", label: "Lançamentos" },
   { id: "corretores", label: "Corretores" },
-  { id: "anunciar", label: "Anunciar", to: "/anunciar" },
   { id: "contato", label: "Contato" },
 ];
 
@@ -227,29 +226,23 @@ export default function StoreLayoutAppleStore(props: StoreLayoutProps) {
           </Link>
 
           <nav className="hidden md:flex items-center gap-8" style={{ color: `${C.text}d0` }}>
-            {APPLE_NAV.map((item) =>
-              item.to ? (
-                <Link key={item.id} to={item.to} className="hover:text-white transition-colors">
-                  {item.label}
-                </Link>
-              ) : (
-                <button
-                  key={item.id}
-                  onClick={() => {
-                    if (item.id === "corretores") document.getElementById("apple-broker")?.scrollIntoView({ behavior: "smooth" });
-                    else if (item.id === "contato") handleWhatsApp("Olá! Tenho interesse nos seus imóveis.");
-                    else if (item.id === "lancamentos") document.getElementById("apple-grid")?.scrollIntoView({ behavior: "smooth" });
-                    else {
-                      setActiveCategory(item.id === "alugar" ? "aluguel" : "todos");
-                      document.getElementById("apple-grid")?.scrollIntoView({ behavior: "smooth" });
-                    }
-                  }}
-                  className="hover:text-white transition-colors"
-                >
-                  {item.label}
-                </button>
-              ),
-            )}
+            {APPLE_NAV.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => {
+                  if (item.id === "corretores") document.getElementById("apple-broker")?.scrollIntoView({ behavior: "smooth" });
+                  else if (item.id === "contato") handleWhatsApp("Olá! Tenho interesse nos seus imóveis.");
+                  else if (item.id === "lancamentos") document.getElementById("apple-grid")?.scrollIntoView({ behavior: "smooth" });
+                  else {
+                    setActiveCategory(item.id === "alugar" ? "aluguel" : "todos");
+                    document.getElementById("apple-grid")?.scrollIntoView({ behavior: "smooth" });
+                  }
+                }}
+                className="hover:text-white transition-colors"
+              >
+                {item.label}
+              </button>
+            ))}
           </nav>
 
           <div className="flex items-center gap-3">
