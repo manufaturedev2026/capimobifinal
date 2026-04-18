@@ -884,6 +884,47 @@ export type Database = {
         }
         Relationships: []
       }
+      partner_store_listings: {
+        Row: {
+          created_at: string
+          id: string
+          is_visible: boolean
+          item_id: string
+          partner_profile_id: string
+          partner_user_id: string
+          partnership_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_visible?: boolean
+          item_id: string
+          partner_profile_id: string
+          partner_user_id: string
+          partnership_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_visible?: boolean
+          item_id?: string
+          partner_profile_id?: string
+          partner_user_id?: string
+          partnership_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "partner_store_listings_partnership_id_fkey"
+            columns: ["partnership_id"]
+            isOneToOne: false
+            referencedRelation: "property_partnerships"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       partnership_requests: {
         Row: {
           agency_profile_id: string
