@@ -408,14 +408,14 @@ export default function StoreLayoutNetflix({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.35 }}
-              className="hidden lg:flex items-center gap-3 mb-2 text-xs"
+              className="flex items-center gap-2 lg:gap-3 mb-2 text-[10px] lg:text-xs flex-wrap"
             >
               <span className="flex items-center gap-1 text-yellow-400 font-bold">
-                <Star size={12} fill="#facc15" /> {(4 + ((currentBillboard.id || "").length % 10) / 10).toFixed(1)}
+                <Star size={10} className="lg:w-3 lg:h-3" fill="#facc15" /> {(4 + ((currentBillboard.id || "").length % 10) / 10).toFixed(1)}
               </span>
               <span className="text-green-400 font-bold">98% Match</span>
               <span className="text-white/50">2024</span>
-              <span className="px-1.5 py-0.5 border border-white/30 text-white/70 text-[10px] font-semibold">HD</span>
+              <span className="px-1.5 py-0.5 border border-white/30 text-white/70 text-[9px] lg:text-[10px] font-semibold">HD</span>
               {currentBillboard.area && (
                 <span className="text-white/50">{currentBillboard.area}m²</span>
               )}
