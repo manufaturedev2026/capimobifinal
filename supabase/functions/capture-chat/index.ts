@@ -204,7 +204,7 @@ REGRAS:
     }
 
     // ── Chat Mode ──
-    const { messages, sellerName, mode } = body;
+    const { messages, sellerName, mode, flowType } = body;
 
     if (!messages || !Array.isArray(messages)) {
       return new Response(JSON.stringify({ error: "Messages array required" }), {
@@ -213,9 +213,12 @@ REGRAS:
       });
     }
 
-    const contextPrompt = sellerName
-      ? `${SYSTEM_PROMPT}\n\nVocê está representando o corretor/imobiliária "${sellerName}". Mencione o nome quando apropriado.`
-      : SYSTEM_PROMPT;
+    const flowKey = (typeof flowType === "string" && FLOW_PROMPTS[flowType]) ? flowType : "captacao";
+    const flowSpecific = FLOW_PROMPTS[flowKey];
+    let contextPrompt = `${SYSTEM_BASE}\n\n${flowSpecific}`;
+    if (sellerName) {
+      contextPrompt += `\n\nVocê está representando o corretor/imobiliária "${sellerName}". Mencione o nome quando apropriado.`;
+    }
 
     const aiBody: any = {
       model: "google/gemini-3-flash-preview",
