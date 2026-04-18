@@ -812,9 +812,10 @@ export default function CapturePropertyChatPage() {
 
   const getCtaLabel = () => {
     switch (flowType) {
-      case "grupo_whatsapp": return config.grupoWhatsappLink ? "🔗 Entrar no Grupo" : "💬 Falar no WhatsApp";
-      case "agendamento": return "💬 Confirmar Agendamento";
-      case "avaliacao": return "💬 Falar com Especialista";
+      case "captacao": return config.captacaoCtaLabel || "💬 Falar no WhatsApp";
+      case "grupo_whatsapp": return config.grupoCtaLabel || (config.grupoWhatsappLink ? "🔗 Entrar no Grupo" : "💬 Falar no WhatsApp");
+      case "agendamento": return config.agendCtaLabel || "💬 Confirmar Agendamento";
+      case "avaliacao": return config.avalCtaLabel || "💬 Falar com Especialista";
       default: return "💬 Falar no WhatsApp";
     }
   };
