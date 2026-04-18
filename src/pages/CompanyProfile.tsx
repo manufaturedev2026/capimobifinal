@@ -1145,7 +1145,7 @@ export default function CompanyProfile() {
       </section>
 
       {/* ═══════════ STATS BAR ═══════════ */}
-      <section className={`block relative z-20 overflow-hidden ${isNetflix ? "!hidden" : ""}`} style={{ borderBottom: `1px solid ${storeTheme.border}`, background: storeTheme.card }}>
+      <section data-company-stats-bar className={`block relative z-20 overflow-hidden ${isNetflix ? "!hidden" : ""}`} style={{ borderBottom: `1px solid ${storeTheme.border}`, background: storeTheme.card }}>
         <div className={`${isMarketplace ? "px-3 md:px-8" : "max-w-[1800px] mx-auto px-3 md:px-8"}`}>
           <div className="flex items-center gap-2 sm:gap-3 md:gap-6 py-2.5 md:py-3 overflow-x-auto scrollbar-hide">
             <div className="flex items-center gap-1.5 md:gap-2 text-xs md:text-sm flex-shrink-0">
