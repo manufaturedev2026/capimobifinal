@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { AI_PREGENERATED_ADS } from "@/data/aiPregeneratedAds";
+import { getNextAdVariant } from "@/data/aiPregeneratedAds";
 import {
   Link2, Copy, ExternalLink, User, Phone, MapPin, Home, DollarSign, Clock,
   Loader2, Inbox, Sparkles, Image as ImageIcon, Trash2, Video,
@@ -343,8 +343,8 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
 
   const generateAdText = (templateId?: string) => {
     const id = templateId || selectedTemplate;
-    // Prefer the AI-pregenerated premium version (higher quality)
-    const aiText = AI_PREGENERATED_ADS[id];
+    // Rotate through the AI-pregenerated premium variants on each click
+    const aiText = getNextAdVariant(id);
     if (aiText) {
       const filled = aiText
         .replace(/\{url\}/g, captureUrl || "")
