@@ -430,6 +430,19 @@ export default function StoreLayoutNetflix({
         </div>
       )}
 
+      {/* Fallback top bar when there's no billboard (no items yet) */}
+      {!(billboard.length > 0 && currentBillboard) && (
+        <div className="relative w-full px-4 lg:px-12 pt-4 z-20">
+          <Link
+            to={user && dbProfile && user.id === dbProfile.user_id ? "/painel" : "/login"}
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-medium text-white/80 hover:text-white transition-colors"
+            style={{ background: "rgba(255,255,255,0.1)", backdropFilter: "blur(8px)" }}
+          >
+            <LayoutDashboard size={14} /> {user && dbProfile && user.id === dbProfile.user_id ? "Painel" : "Entrar"}
+          </Link>
+        </div>
+      )}
+
       {/* Stories Bar */}
       {storiesBar && <div className="px-4 lg:px-12 pt-4">{storiesBar}</div>}
 
