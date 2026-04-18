@@ -8,11 +8,17 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { SITE_URL } from "@/lib/siteUrl";
 
-const notifyNewCaptureLead = (targetUserId: string, leadName: string, summary?: string) => {
+const FLOW_PUSH_TITLE: Record<string, string> = {
+  captacao: "Novo lead de captação 🏠",
+  grupo_whatsapp: "Novo lead do grupo 👥",
+  agendamento: "Nova visita agendada 📅",
+  avaliacao: "Novo pedido de avaliação 💎",
+};
+const notifyNewCaptureLead = (targetUserId: string, leadName: string, summary?: string, flow?: string) => {
   supabase.functions.invoke("notify-new-lead", {
     body: {
       target_user_id: targetUserId,
-      title: "Novo lead de captação 🏠",
+      title: FLOW_PUSH_TITLE[flow || "captacao"] || FLOW_PUSH_TITLE.captacao,
       body: summary || `${leadName} entrou em contato.`,
       url: "/painel?tab=captacao",
     },
@@ -308,11 +314,18 @@ export default function CapturePropertyChatPage() {
         ].filter(Boolean).join("\n"),
         status: "novo",
       });
+      const FLOW_PUSH: Record<FlowType, { title: string; verb: string }> = {
+        captacao: { title: "Novo lead de captação 🏠", verb: "quer vender ou alugar um imóvel." },
+        grupo_whatsapp: { title: "Novo lead do grupo 👥", verb: "pediu para entrar no grupo de WhatsApp." },
+        agendamento: { title: "Nova visita agendada 📅", verb: "quer agendar uma visita." },
+        avaliacao: { title: "Novo pedido de avaliação 💎", verb: "solicitou uma avaliação gratuita." },
+      };
+      const pushCfg = FLOW_PUSH[flowType] || FLOW_PUSH.captacao;
       supabase.functions.invoke("notify-new-lead", {
         body: {
           target_user_id: sellerProfile.user_id,
-          title: "Novo lead de captação 🏠",
-          body: `${(extracted.full_name || "Visitante").slice(0, 60)} quer vender um imóvel.`,
+          title: pushCfg.title,
+          body: `${(extracted.full_name || "Visitante").slice(0, 60)} ${pushCfg.verb}`,
           url: "/painel?tab=captacao",
         },
       }).catch(() => {});
@@ -604,7 +617,7 @@ export default function CapturePropertyChatPage() {
       description: obs || null,
       status: "novo",
     });
-    notifyNewCaptureLead(sellerProfile.user_id, name, `${name} quer vender um imóvel.`);
+    notifyNewCaptureLead(sellerProfile.user_id, name, `${name} quer vender ou alugar um imóvel.`, "captacao");
     await addBotMsg(config.flowMsgSuccess);
     await addBotMsg(config.flowMsgSuccessEnd);
     setStep("done");
@@ -622,7 +635,7 @@ export default function CapturePropertyChatPage() {
       description: "Lead via fluxo Grupo de WhatsApp",
       status: "novo",
     });
-    notifyNewCaptureLead(sellerProfile.user_id, name, `${name} pediu para entrar no grupo de WhatsApp.`);
+    notifyNewCaptureLead(sellerProfile.user_id, name, `${name} pediu para entrar no grupo de WhatsApp.`, "grupo_whatsapp");
     await addBotMsg(config.grupoMsgSuccess);
     await addBotMsg(config.grupoMsgSuccessEnd);
     setStep("done");
@@ -641,7 +654,7 @@ export default function CapturePropertyChatPage() {
       description: `Agendamento de visita\n📅 Data: ${date}\n⏰ Horário: ${time}\n🏠 Interesse: ${interestVal}`,
       status: "novo",
     });
-    notifyNewCaptureLead(sellerProfile.user_id, name, `${name} agendou visita: ${date} às ${time}.`);
+    notifyNewCaptureLead(sellerProfile.user_id, name, `${name} quer agendar uma visita: ${date} às ${time}.`, "agendamento");
     await addBotMsg(config.agendMsgSuccess);
     await addBotMsg(config.agendMsgSuccessEnd);
     setStep("done");
@@ -660,7 +673,7 @@ export default function CapturePropertyChatPage() {
       description: `Solicitação de avaliação gratuita\n📝 Detalhes: ${detailsVal || "Não informado"}`,
       status: "novo",
     });
-    notifyNewCaptureLead(sellerProfile.user_id, name, `${name} solicitou avaliação gratuita.`);
+    notifyNewCaptureLead(sellerProfile.user_id, name, `${name} solicitou uma avaliação gratuita.`, "avaliacao");
     await addBotMsg(config.avalMsgSuccess);
     await addBotMsg(config.avalMsgSuccessEnd);
     setStep("done");
