@@ -383,23 +383,9 @@ export default function CapturePropertyChatPage() {
           setCrmSaved(true);
           setShowCrmForm(true);
         }, 800);
-      } else {
-        // Fallback: detect trigger phrases
-        const lower = reply.toLowerCase();
-        const triggerPhrases = [
-          "botão abaixo", "clica no botão", "enviar seus dados",
-          "preencha o formulário", "formulário abaixo", "dados foram coletados",
-          "confirmar seus dados", "confirme seus dados", "enviar as informações",
-          "pronto para enviar", "envie seus dados", "cadastrar seus dados",
-          "clique abaixo", "finalize o cadastro", "concluir o cadastro",
-          "dados de contato", "salvar seus dados", "registrar seus dados",
-        ];
-        const shouldShowForm = triggerPhrases.some(p => lower.includes(p));
-        const userMsgCount = updatedMessages.filter(m => m.role === "user").length;
-        if (shouldShowForm || userMsgCount >= 6) {
-          setTimeout(() => setShowCrmForm(true), 500);
-        }
       }
+      // Sem fallback de formulário: a IA é responsável por chamar save_lead.
+      // Quando isso acontecer, o CTA do WhatsApp aparece direto (igual aos outros fluxos).
     } catch (e) {
       console.error("AI error:", e);
       addBotMsgInstant("Ops! Algo deu errado. Tente novamente 😊");
