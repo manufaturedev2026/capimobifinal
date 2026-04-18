@@ -1321,21 +1321,6 @@ export default function CompanyProfile() {
 
               {/* Category Navigation */}
               <div className="rounded-2xl p-4" style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}>
-                <style>{`
-                  @keyframes sideCatSpin { to { transform: rotate(360deg); } }
-                  .side-cat-ring {
-                    position: absolute;
-                    inset: -2px;
-                    border-radius: 14px;
-                    padding: 2px;
-                    background: conic-gradient(from 0deg, transparent 0deg, var(--side-ring) 80deg, transparent 180deg, var(--side-ring) 260deg, transparent 360deg);
-                    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-                    -webkit-mask-composite: xor;
-                    mask-composite: exclude;
-                    animation: sideCatSpin 3s linear infinite;
-                    pointer-events: none;
-                  }
-                `}</style>
                 <h3 className="font-display font-bold text-sm mb-3" style={{ color: storeTheme.text }}>Categorias</h3>
                 <nav className="space-y-1">
                   {subcategories.map((cat) => {
@@ -1348,21 +1333,19 @@ export default function CompanyProfile() {
                         key={cat.slug}
                         onClick={() => { setActiveCategory(cat.slug); setTimeout(() => document.getElementById("products-grid")?.scrollIntoView({ behavior: "smooth", block: "start" }), 100); }}
                         disabled={isDisabled}
-                        className={`relative w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-medium transition-all`}
+                        className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-medium transition-all`}
                         style={{
                           background: isActive ? storeTheme.primary : "transparent",
                           color: isActive ? "#fff" : storeTheme.textMuted,
-                          boxShadow: isActive ? `0 8px 24px -8px ${storeTheme.primary}80` : "none",
+                          boxShadow: isActive ? "0 4px 12px rgba(0,0,0,0.15)" : "none",
                           opacity: isDisabled ? 0.45 : 1,
                           cursor: isDisabled ? "not-allowed" : "pointer",
-                          ["--side-ring" as any]: storeTheme.primary,
                         }}
                       >
-                        {isActive && <span className="side-cat-ring" aria-hidden />}
-                        <Icon size={14} className="relative z-10" />
-                        <span className="relative z-10 flex-1 text-left">{cat.name}</span>
+                        <Icon size={14} />
+                        <span className="flex-1 text-left">{cat.name}</span>
                         {count > 0 || cat.slug === "todos" ? (
-                          <span className="relative z-10 text-[10px] px-1.5 py-0.5 rounded-full" style={{ background: isActive ? "rgba(255,255,255,0.2)" : `${storeTheme.border}` }}>{count}</span>
+                          <span className="text-[10px] px-1.5 py-0.5 rounded-full" style={{ background: isActive ? "rgba(255,255,255,0.2)" : `${storeTheme.border}` }}>{count}</span>
                         ) : null}
                       </button>
                     );
