@@ -11,7 +11,8 @@ import ThemeParticles from "@/components/ThemeParticles";
 import {
  StoreLayoutNetflix, StoreLayoutMinimal, StoreLayoutMagazine,
  StoreLayoutGallery, StoreLayoutElegant,
- StoreLayoutMarketplace, StoreLayoutCyberpunkMarketplace,
+  StoreLayoutMarketplace, StoreLayoutCyberpunkMarketplace,
+  StoreLayoutAppleStore,
 } from "@/components/store-layouts";
 import type { StoreLayoutProps } from "@/components/store-layouts";
 import { getStoreTheme } from "@/components/StoreThemePicker";
@@ -1397,6 +1398,7 @@ export default function CompanyProfile() {
                 
                 case "marketplace": return <StoreLayoutMarketplace {...layoutProps} />;
                 case "cyberpunk_marketplace": return <StoreLayoutCyberpunkMarketplace {...layoutProps} />;
+                case "apple_store": return <StoreLayoutAppleStore {...layoutProps} />;
                 default: return <StoreLayoutMarketplace {...layoutProps} />;
               }
             })()}

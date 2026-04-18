@@ -33,20 +33,21 @@ export const STORE_LAYOUTS = [
   { id: "magazine", name: "Magazine", desc: "Cards grandes estilo revista", preview: "📰" },
   { id: "gallery", name: "Galeria", desc: "Mosaico estilo Pinterest", preview: "🖼️" },
   { id: "elegant", name: "Elegant", desc: "Estilo site de imobiliária profissional", preview: "🏢" },
+  { id: "apple_store", name: "Apple Store", desc: "Premium minimalista inspirado na Apple.com", preview: "🍎" },
 ] as const;
 
 export type StoreLayoutId = typeof STORE_LAYOUTS[number]["id"];
 
 /** Layouts allowed per subscription tier */
 export const LAYOUTS_BY_TIER: Record<string, string[]> = {
-  basico: ["marketplace", "cyberpunk_marketplace"],
-  start: ["marketplace", "cyberpunk_marketplace"],
-  vip: ["marketplace", "netflix", "minimal", "cyberpunk_marketplace"],
-  premium: ["marketplace", "netflix", "minimal", "magazine", "gallery", "elegant", "cyberpunk_marketplace"],
-  essencial_empresa: ["marketplace", "netflix", "minimal", "cyberpunk_marketplace"],
-  premium_empresa: ["marketplace", "netflix", "minimal", "magazine", "gallery", "elegant", "cyberpunk_marketplace"],
-  prime_empresa: ["marketplace", "netflix", "minimal", "magazine", "gallery", "elegant", "cyberpunk_marketplace"],
-  black: ["marketplace", "netflix", "minimal", "magazine", "gallery", "elegant", "cyberpunk_marketplace"],
+  basico: ["marketplace", "cyberpunk_marketplace", "apple_store"],
+  start: ["marketplace", "cyberpunk_marketplace", "apple_store"],
+  vip: ["marketplace", "netflix", "minimal", "cyberpunk_marketplace", "apple_store"],
+  premium: ["marketplace", "netflix", "minimal", "magazine", "gallery", "elegant", "cyberpunk_marketplace", "apple_store"],
+  essencial_empresa: ["marketplace", "netflix", "minimal", "cyberpunk_marketplace", "apple_store"],
+  premium_empresa: ["marketplace", "netflix", "minimal", "magazine", "gallery", "elegant", "cyberpunk_marketplace", "apple_store"],
+  prime_empresa: ["marketplace", "netflix", "minimal", "magazine", "gallery", "elegant", "cyberpunk_marketplace", "apple_store"],
+  black: ["marketplace", "netflix", "minimal", "magazine", "gallery", "elegant", "cyberpunk_marketplace", "apple_store"],
 };
 
 export function isLayoutAllowed(layoutId: string, tier: string | null | undefined): boolean {
