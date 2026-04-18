@@ -274,7 +274,7 @@ export default function VenderPage() {
                 0% { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
                 10% { opacity: var(--hp-opacity); }
                 90% { opacity: 0.3; }
-                100% { transform: translateY(-100%) translateX(var(--hp-drift)) scale(0.2); opacity: 0; }
+                100% { transform: translateY(-700px) translateX(var(--hp-drift)) scale(0.2); opacity: 0; }
               }
             `}</style>
             {Array.from({ length: 50 }).map((_, i) => {
