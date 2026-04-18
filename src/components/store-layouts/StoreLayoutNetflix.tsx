@@ -845,112 +845,16 @@ export default function StoreLayoutNetflix({
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.5 }}
-                      className="relative rounded-2xl overflow-hidden isolate"
+                      className="rounded-2xl p-4"
                       style={{
-                        background: `linear-gradient(160deg, ${storeTheme.card} 0%, ${storeTheme.primary}10 100%)`,
-                        border: `1px solid ${storeTheme.primary}40`,
-                        boxShadow: `0 20px 50px -10px ${storeTheme.primary}40, inset 0 1px 0 ${storeTheme.primary}30`,
+                        background: `linear-gradient(160deg, ${storeTheme.card}, ${storeTheme.primary}08)`,
+                        border: `1px solid ${storeTheme.primary}30`,
+                        boxShadow: `0 10px 30px -10px ${storeTheme.primary}30`,
                       }}
                     >
-                      {/* Aurora orbs flutuantes */}
-                      <motion.div
-                        className="absolute -top-20 -right-20 w-48 h-48 rounded-full pointer-events-none blur-3xl opacity-40"
-                        style={{ background: `radial-gradient(circle, ${storeTheme.primary}, transparent 70%)`, zIndex: 0 }}
-                        animate={{ x: [0, 30, 0], y: [0, 20, 0], scale: [1, 1.15, 1] }}
-                        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-                      />
-                      <motion.div
-                        className="absolute -bottom-24 -left-16 w-56 h-56 rounded-full pointer-events-none blur-3xl opacity-30"
-                        style={{ background: `radial-gradient(circle, ${storeTheme.primary}, transparent 70%)`, zIndex: 0 }}
-                        animate={{ x: [0, -20, 0], y: [0, -25, 0], scale: [1, 1.2, 1] }}
-                        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-                      />
-                      {/* Animated grid background */}
-                      <div className="absolute inset-0 opacity-[0.07] pointer-events-none" style={{
-                        backgroundImage: `linear-gradient(${storeTheme.primary} 1px, transparent 1px), linear-gradient(90deg, ${storeTheme.primary} 1px, transparent 1px)`,
-                        backgroundSize: "20px 20px",
-                      }} />
-                      {/* Top glow line */}
-                      <motion.div
-                        className="absolute top-0 left-0 right-0 h-[2px] pointer-events-none z-20"
-                        style={{ background: `linear-gradient(90deg, transparent, ${storeTheme.primary}, transparent)` }}
-                        animate={{ opacity: [0.4, 1, 0.4] }}
-                        transition={{ duration: 3, repeat: Infinity }}
-                      />
-                      {/* Floating particles */}
-                      {[...Array(5)].map((_, i) => (
-                        <motion.div
-                          key={`p-${i}`}
-                          className="absolute w-1 h-1 rounded-full pointer-events-none z-10"
-                          style={{
-                            left: `${15 + i * 18}%`,
-                            top: `${60 + (i % 2) * 20}%`,
-                            background: storeTheme.primary,
-                            boxShadow: `0 0 8px ${storeTheme.primary}`,
-                          }}
-                          animate={{
-                            y: [0, -60, 0],
-                            opacity: [0, 1, 0],
-                            scale: [0, 1.2, 0],
-                          }}
-                          transition={{ duration: 4 + i * 0.5, repeat: Infinity, delay: i * 0.8, ease: "easeInOut" }}
-                        />
-                      ))}
-
-                      <div
-                        className="relative px-4 py-4 flex items-center gap-2.5 overflow-hidden"
-                        style={{
-                          background: `linear-gradient(135deg, ${storeTheme.primary} 0%, ${storeTheme.primary}dd 50%, ${storeTheme.primary} 100%)`,
-                          boxShadow: `inset 0 -1px 0 rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.3)`,
-                        }}
-                      >
-                        {/* Animated grid overlay */}
-                        <div className="absolute inset-0 opacity-20 pointer-events-none" style={{
-                          backgroundImage: `linear-gradient(rgba(255,255,255,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.4) 1px, transparent 1px)`,
-                          backgroundSize: "12px 12px",
-                          maskImage: "linear-gradient(90deg, transparent, black, transparent)",
-                        }} />
-                        {/* Shimmer sweep */}
-                        <motion.div
-                          className="absolute inset-0 -translate-x-full"
-                          style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent)" }}
-                          animate={{ translateX: ["-100%", "200%"] }}
-                          transition={{ duration: 2.5, repeat: Infinity, repeatDelay: 1.5, ease: "easeInOut" }}
-                        />
-                        {/* Floating sparkles */}
-                        {[...Array(3)].map((_, i) => (
-                          <motion.div
-                            key={i}
-                            className="absolute w-1 h-1 rounded-full bg-white pointer-events-none"
-                            style={{
-                              left: `${20 + i * 30}%`,
-                              top: `${30 + (i % 2) * 40}%`,
-                              boxShadow: "0 0 8px rgba(255,255,255,0.9)",
-                            }}
-                            animate={{ opacity: [0, 1, 0], scale: [0, 1.4, 0] }}
-                            transition={{ duration: 2, repeat: Infinity, delay: i * 0.6 }}
-                          />
-                        ))}
-                        {/* Pulsing badge ring */}
-                        <div className="relative">
-                          <motion.div
-                            className="absolute inset-0 rounded-full pointer-events-none"
-                            style={{ border: "2px solid rgba(255,255,255,0.9)" }}
-                            animate={{ scale: [1, 1.6, 1], opacity: [0.7, 0, 0.7] }}
-                            transition={{ duration: 2, repeat: Infinity }}
-                          />
-                          <BadgeCheck size={18} className="text-white relative z-10 drop-shadow-lg" fill="rgba(255,255,255,0.15)" />
-                        </div>
-                        <span className="relative z-10 text-[11px] font-black uppercase tracking-[0.2em] text-white"
-                          style={{ textShadow: "0 1px 8px rgba(0,0,0,0.4), 0 0 12px rgba(255,255,255,0.4)" }}
-                        >
-                          Profissional Verificado
-                        </span>
-                        {/* Crown corner accent */}
-                        <Crown size={12} className="ml-auto text-white/80 relative z-10" fill="rgba(255,255,255,0.3)" />
-                      </div>
-
-                      <div className="relative p-4 space-y-4">
+                      <h5 className="text-[11px] font-black uppercase tracking-widest mb-3 flex items-center gap-1.5" style={{ color: storeTheme.primary }}>
+                        <BadgeCheck size={12} /> Profissional Verificado
+                      </h5>
                         <div className="flex items-center gap-3">
                           <div className="relative">
                             <motion.div
@@ -1071,108 +975,42 @@ export default function StoreLayoutNetflix({
                           )}
                         </div>
 
-                        <motion.div
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.4 }}
-                          className="relative mt-4 rounded-xl p-3 overflow-hidden"
-                          style={{
-                            background: `linear-gradient(135deg, ${storeTheme.primary}18 0%, ${storeTheme.primary}05 100%)`,
-                            border: `1px solid ${storeTheme.primary}40`,
-                            boxShadow: `0 8px 25px -8px ${storeTheme.primary}50, inset 0 1px 0 ${storeTheme.primary}30`,
-                          }}
-                        >
-                          {/* Aurora orb */}
-                          <motion.div
-                            className="absolute -top-10 -right-10 w-32 h-32 rounded-full pointer-events-none blur-2xl opacity-40"
-                            style={{ background: `radial-gradient(circle, ${storeTheme.primary}, transparent 70%)` }}
-                            animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
-                            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                          />
-                          {/* Top shimmer line */}
-                          <motion.div
-                            className="absolute top-0 left-0 right-0 h-[1.5px] pointer-events-none"
-                            style={{ background: `linear-gradient(90deg, transparent, ${storeTheme.primary}, transparent)` }}
-                            animate={{ opacity: [0.4, 1, 0.4] }}
-                            transition={{ duration: 2.5, repeat: Infinity }}
-                          />
+                    </motion.div>
+                  )}
 
-                          {/* ÉPICO header */}
-                          <div className="relative flex items-center gap-2 mb-3">
-                            <motion.div
-                              animate={{ rotate: [0, 8, -8, 0], scale: [1, 1.15, 1] }}
-                              transition={{ duration: 3, repeat: Infinity }}
-                              className="relative"
-                            >
-                              <Crown size={14} style={{ color: storeTheme.primary, filter: `drop-shadow(0 0 6px ${storeTheme.primary})` }} fill={`${storeTheme.primary}40`} />
-                            </motion.div>
-                            <p className="text-[10px] font-black uppercase tracking-[0.2em]"
-                              style={{
-                                background: `linear-gradient(90deg, ${storeTheme.primary}, #fff, ${storeTheme.primary})`,
-                                backgroundSize: "200% 100%",
-                                WebkitBackgroundClip: "text",
-                                WebkitTextFillColor: "transparent",
-                                backgroundClip: "text",
-                                animation: "shimmer 3s linear infinite",
-                              }}
-                            >
-                              Por que escolher
-                            </p>
-                            <Sparkles size={10} style={{ color: storeTheme.primary }} className="ml-auto animate-pulse" />
-                          </div>
-
-                          <div className="relative space-y-2">
-                            {[
-                              { txt: "Resposta rápida via WhatsApp", icon: MessageCircle },
-                              { txt: "Vendedor premium verificado", icon: ShieldCheck },
-                              { txt: `${allProducts.length} imóveis disponíveis`, icon: Home },
-                            ].map((item, i) => (
-                              <motion.div
-                                key={i}
-                                initial={{ opacity: 0, x: -12 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: 0.5 + i * 0.12 }}
-                                whileHover={{ x: 4, scale: 1.03 }}
-                                className="relative flex items-center gap-2 px-2.5 py-2 rounded-lg overflow-hidden cursor-default group/item"
-                                style={{
-                                  background: `linear-gradient(90deg, ${storeTheme.primary}15, transparent)`,
-                                  border: `1px solid ${storeTheme.primary}25`,
-                                  boxShadow: `inset 2px 0 0 ${storeTheme.primary}`,
-                                }}
-                              >
-                                {/* Hover sweep */}
-                                <motion.div
-                                  className="absolute inset-0 -translate-x-full opacity-0 group-hover/item:opacity-100 pointer-events-none"
-                                  style={{ background: `linear-gradient(90deg, transparent, ${storeTheme.primary}30, transparent)` }}
-                                  animate={{ translateX: ["-100%", "200%"] }}
-                                  transition={{ duration: 1.5, repeat: Infinity }}
-                                />
-                                <motion.div
-                                  whileHover={{ rotate: 360 }}
-                                  transition={{ duration: 0.6 }}
-                                  className="relative flex-shrink-0 w-6 h-6 rounded-md flex items-center justify-center"
-                                  style={{
-                                    background: `linear-gradient(135deg, ${storeTheme.primary}, ${storeTheme.primary}aa)`,
-                                    boxShadow: `0 0 12px ${storeTheme.primary}90, inset 0 1px 0 rgba(255,255,255,0.3)`,
-                                  }}
-                                >
-                                  <item.icon size={11} className="text-white relative z-10" />
-                                </motion.div>
-                                <span className="text-[10px] font-semibold flex-1 relative z-10" style={{ color: storeTheme.text }}>
-                                  {item.txt}
-                                </span>
-                                <motion.span
-                                  className="text-[11px] font-black relative z-10"
-                                  style={{ color: storeTheme.primary, textShadow: `0 0 10px ${storeTheme.primary}` }}
-                                  animate={{ opacity: [0.6, 1, 0.6], scale: [1, 1.15, 1] }}
-                                  transition={{ duration: 2, repeat: Infinity, delay: i * 0.3 }}
-                                >
-                                  ✓
-                                </motion.span>
-                              </motion.div>
-                            ))}
-                          </div>
-                        </motion.div>
+                  {/* ─── Por que escolher (mesmo estilo lateral) ─── */}
+                  {dbProfile && (
+                    <motion.div
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.05 }}
+                      className="rounded-2xl p-4"
+                      style={{
+                        background: `linear-gradient(160deg, ${storeTheme.card}, ${storeTheme.primary}08)`,
+                        border: `1px solid ${storeTheme.primary}30`,
+                        boxShadow: `0 10px 30px -10px ${storeTheme.primary}30`,
+                      }}
+                    >
+                      <h5 className="text-[11px] font-black uppercase tracking-widest mb-3 flex items-center gap-1.5" style={{ color: storeTheme.primary }}>
+                        <Crown size={12} /> Por que escolher
+                      </h5>
+                      <div className="space-y-1">
+                        {[
+                          { txt: "Resposta rápida via WhatsApp", icon: MessageCircle },
+                          { txt: "Vendedor premium verificado", icon: ShieldCheck },
+                          { txt: `${allProducts.length} imóveis disponíveis`, icon: Home },
+                        ].map((item, i) => (
+                          <motion.div
+                            key={i}
+                            whileHover={{ x: 4 }}
+                            className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium"
+                            style={{ color: storeTheme.text }}
+                          >
+                            <item.icon size={12} style={{ color: storeTheme.primary }} className="flex-shrink-0" />
+                            <span className="flex-1">{item.txt}</span>
+                            <span className="text-[10px] font-black" style={{ color: storeTheme.primary }}>✓</span>
+                          </motion.div>
+                        ))}
                       </div>
                     </motion.div>
                   )}
