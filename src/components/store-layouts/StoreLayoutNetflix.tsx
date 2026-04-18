@@ -5,6 +5,7 @@ import {
   MapPin, Image, ChevronLeft, ChevronRight, Play, Plus,
   MessageCircle, Bed, Bath, Maximize, Car, Info, ChevronDown,
   Volume2, VolumeX, Share2, Clapperboard, LayoutDashboard, ArrowRight, Home,
+  Star, Flame, Sparkles, TrendingUp, Award, Crown, Trophy,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import type { StoreLayoutProps } from "./types";
