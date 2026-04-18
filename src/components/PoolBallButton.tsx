@@ -193,7 +193,7 @@ export function PoolBallButton({
       drag
       dragMomentum={false}
       dragElastic={0}
-      dragConstraints={bounds}
+      dragConstraints={{ left: bounds.minX, right: bounds.maxX, top: bounds.minY, bottom: bounds.maxY }}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       onPointerDown={handlePointerDown}
