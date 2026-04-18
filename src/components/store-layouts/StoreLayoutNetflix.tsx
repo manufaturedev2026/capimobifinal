@@ -616,7 +616,7 @@ export default function StoreLayoutNetflix({
                 }} />
                 <div className="absolute bottom-0 left-0 right-0 p-2.5 text-center">
                   <span className="text-white font-bold text-xs md:text-sm drop-shadow-lg block">Todos</span>
-                  <span className="text-white/60 text-[9px] md:text-[10px]">{filteredProducts.length} imóveis</span>
+                  <span className="text-white/60 text-[9px] md:text-[10px]">{categoryCounts.todos ?? products.length} imóveis</span>
                 </div>
                 {isActive && (
                    <div className="absolute top-0 left-0 right-0 h-[3px] bg-white" />
