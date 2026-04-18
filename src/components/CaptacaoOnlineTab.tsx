@@ -757,6 +757,23 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
               </Button>
             </div>
 
+            {/* Generated Ad Output */}
+            {generatedAd && (
+              <div className="rounded-2xl border border-border bg-card p-4 space-y-3">
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-xs font-semibold text-foreground uppercase tracking-wide">Texto gerado</p>
+                  <Button onClick={copyAd} size="sm" variant="secondary" className="gap-1.5 text-xs rounded-xl h-8">
+                    <Copy size={12} /> Copiar
+                  </Button>
+                </div>
+                <Textarea
+                  value={generatedAd}
+                  onChange={e => setGeneratedAd(e.target.value)}
+                  className="min-h-[260px] text-sm leading-relaxed font-mono whitespace-pre-wrap"
+                />
+              </div>
+            )}
+
             {/* Daily Usage Indicator */}
             {aiUsage && (
               <p className="text-[11px] text-muted-foreground text-center">
