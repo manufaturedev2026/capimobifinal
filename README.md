@@ -1,73 +1,62 @@
-# Welcome to your Lovable project
+# Capimobi — Plataforma Imobiliária
 
-## Project info
+Plataforma white-label para corretores e imobiliárias com CRM, captação de leads, lojas personalizadas, stories, push notifications e mais.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## 🚀 Checklist pós-remix
 
-## How can I edit this code?
+Quando você faz **remix** desse projeto, o código + estrutura do banco são copiados, mas **dados e credenciais externas** começam zerados. Siga esse checklist:
 
-There are several ways of editing your application.
+### ✅ Já vem pronto automaticamente
+- Backend Lovable Cloud (Supabase) com todas as tabelas e RLS
+- Lovable AI (LOVABLE_API_KEY) — para chat de IA, geração de copy, etc.
+- Seeds básicos: 6 etapas do funil CRM, configurações padrão da plataforma
+- Buckets de storage (`seller-uploads`, `seller-photos`, `seller-assets`)
 
-**Use Lovable**
+### ⚙️ Precisa configurar manualmente
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+#### 1. SMTP (envio de e-mails) — **obrigatório**
+- Vá no painel admin → aba **SMTP**
+- Configure host/porta/usuário/senha do seu provedor (Hostinger, Gmail, SendGrid, etc.)
+- A `SMTP_ENCRYPTION_KEY` tem fallback automático, mas para **produção** adicione um secret próprio:
+  ```bash
+  openssl rand -base64 32
+  ```
 
-Changes made via Lovable will be committed automatically to this repo.
+#### 2. Push Notifications (Web Push) — **opcional**
+Sem isso, push fica desativado mas o app continua funcionando.
 
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```bash
+npx web-push generate-vapid-keys
 ```
 
-**Edit a file directly in GitHub**
+Adicione 3 secrets no Lovable Cloud:
+- `VAPID_PUBLIC_KEY` — chave pública gerada
+- `VAPID_PRIVATE_KEY` — chave privada gerada
+- `VAPID_SUBJECT` — `mailto:seu@email.com`
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+> 💡 Dica: você também pode editar `supabase/functions/get-vapid-key/index.ts` e colocar a `VAPID_PUBLIC_KEY` direto no `FALLBACK_VAPID_PUBLIC_KEY` (ela é segura para hardcode).
 
-**Use GitHub Codespaces**
+#### 3. Stripe (pagamentos) — **opcional**
+Só precisa se for vender planos.
+- `STRIPE_SECRET_KEY` (secret)
+- Configure webhook apontando para `/functions/v1/stripe-webhook`
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+#### 4. Apify (captação de leads automática) — **opcional**
+- `APIFY_TOKEN` (secret)
 
-## What technologies are used for this project?
+#### 5. Domínio customizado
+Configure URL Forwarding 301 no seu registrador apontando para o domínio Lovable (`*.lovable.app`).
 
-This project is built with:
+---
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## 🏗️ Stack
+- React 18 + Vite + TypeScript + Tailwind
+- Supabase (DB + Auth + Storage + Edge Functions)
+- Lovable AI Gateway
+- Framer Motion, shadcn/ui
 
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+## 🔧 Desenvolvimento local
+```bash
+npm install
+npm run dev
+```
