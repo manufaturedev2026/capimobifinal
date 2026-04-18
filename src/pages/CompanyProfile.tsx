@@ -2015,65 +2015,35 @@ export default function CompanyProfile() {
             )}
           </div>
 
-          {/* ── Bloco 2: Por que escolher (estilo sidebar) ── */}
-          <div
-            className="rounded-2xl p-4"
-            style={{
-              background: `linear-gradient(160deg, ${storeTheme.card}, ${storeTheme.primary}08)`,
-              border: `1px solid ${storeTheme.primary}30`,
-              boxShadow: `0 10px 30px -10px ${storeTheme.primary}30`,
-            }}
-          >
-            <h5 className="text-[11px] font-black uppercase tracking-widest mb-3 flex items-center gap-1.5" style={{ color: storeTheme.primary }}>
-              <Shield size={12} /> Por que escolher
-            </h5>
-            <div className="space-y-1">
-              {[
-                { txt: "Resposta rápida via WhatsApp", icon: Zap },
-                { txt: isPaid ? "Vendedor premium verificado" : "Vendedor ativo", icon: BadgeCheck },
-                { txt: `${products.length} imóveis disponíveis`, icon: Store },
-                { txt: dbProfile?.city || "Espírito Santo", icon: MapPin },
-              ].map((item, i) => (
-                <div
-                  key={i}
-                  className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all hover:translate-x-1"
-                  style={{ color: storeTheme.text }}
-                >
-                  <item.icon size={12} style={{ color: storeTheme.primary }} className="flex-shrink-0" />
-                  <span className="flex-1">{item.txt}</span>
-                  <span className="text-[10px] font-black" style={{ color: storeTheme.primary }}>✓</span>
-                </div>
-              ))}
+          {/* ── Bloco 2: Mapa de Localização (estilo sidebar) ── */}
+          {(company?.address || dbProfile?.address || dbProfile?.city) && (
+            <div
+              className="rounded-2xl p-4 flex flex-col"
+              style={{
+                background: `linear-gradient(160deg, ${storeTheme.card}, ${storeTheme.primary}08)`,
+                border: `1px solid ${storeTheme.primary}30`,
+                boxShadow: `0 10px 30px -10px ${storeTheme.primary}30`,
+              }}
+            >
+              <h5 className="text-[11px] font-black uppercase tracking-widest mb-3 flex items-center gap-1.5" style={{ color: storeTheme.primary }}>
+                <MapPin size={12} /> Localização
+              </h5>
+              <div className="flex-1 rounded-xl overflow-hidden" style={{ border: `1px solid ${storeTheme.primary}20`, minHeight: 240 }}>
+                <MapEmbed address={company?.address || [dbProfile?.address, dbProfile?.city, dbProfile?.state].filter(Boolean).join(", ")} />
+              </div>
+              {(company?.address || dbProfile?.address) && (
+                <p className="text-[11px] mt-3 flex items-start gap-1.5" style={{ color: storeTheme.textMuted }}>
+                  <MapPin size={11} style={{ color: storeTheme.primary }} className="mt-0.5 flex-shrink-0" />
+                  <span>{company?.address || [dbProfile?.address, dbProfile?.city, dbProfile?.state].filter(Boolean).join(", ")}</span>
+                </p>
+              )}
             </div>
-          </div>
+          )}
         </div>
       </section>
 
       {/* ═══ STICKY MOBILE BOTTOM BAR ═══ */}
 
-      {/* ═══ MAP SECTION ═══ */}
-      {company?.show_location && company?.address && (
-        <section className="max-w-[1800px] mx-auto px-4 md:px-8 pb-6">
-          <h2 className="font-display font-bold text-lg mb-3" style={{ color: storeTheme.text }}>Localização</h2>
-          <MapEmbed address={company.address} />
-        </section>
-      )}
-
-      {/* ═══ MAP SECTION (DB PROFILE) ═══ */}
-      {isDbProfile && (dbProfile?.address || dbProfile?.city || dbProfile?.state) && (
-        <section className="max-w-[1800px] mx-auto px-4 md:px-8 pb-10">
-          <div className="flex items-center gap-2 mb-3">
-            <MapPin size={18} style={{ color: storeTheme.primary }} />
-            <h2 className="font-display font-bold text-lg" style={{ color: storeTheme.text }}>
-              Onde nos encontrar
-            </h2>
-          </div>
-          <p className="text-xs md:text-sm mb-4" style={{ color: storeTheme.textMuted }}>
-            Visite nosso escritório ou entre em contato para uma reunião presencial.
-          </p>
-          <MapEmbed address={[dbProfile.address, dbProfile.city, dbProfile.state].filter(Boolean).join(", ")} />
-        </section>
-      )}
 
       {company.whatsapp && (dbProfile as any)?.show_floating_whatsapp && (
         <motion.button
