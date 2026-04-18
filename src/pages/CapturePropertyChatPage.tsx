@@ -253,7 +253,7 @@ export default function CapturePropertyChatPage() {
     try {
       const sellerName = sellerProfile?.company_name || sellerProfile?.full_name || "";
       const { data, error } = await supabase.functions.invoke("capture-chat", {
-        body: { messages: [], sellerName },
+        body: { messages: [], sellerName, flowType },
       });
       if (error) throw error;
       const reply = data?.reply || "Olá! 👋 Vou te ajudar a cadastrar seu imóvel. Qual é o seu nome? 😊";
@@ -324,7 +324,7 @@ export default function CapturePropertyChatPage() {
     try {
       const sellerName = sellerProfile?.company_name || sellerProfile?.full_name || "";
       const { data, error } = await supabase.functions.invoke("capture-chat", {
-        body: { messages: updatedMessages, sellerName },
+        body: { messages: updatedMessages, sellerName, flowType },
       });
       if (error) throw error;
       const reply = data?.reply || "Desculpe, tente novamente!";
