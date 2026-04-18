@@ -40,10 +40,10 @@ const APPLE_NAV = [
 const APPLE_CATEGORIES: { slug: string; name: string; tagline: string }[] = [
   { slug: "casa", name: "Casas", tagline: "Espaço para viver bem." },
   { slug: "apartamento", name: "Apartamentos", tagline: "Cidade na sua janela." },
-  { slug: "alto-padrao", name: "Alto Padrão", tagline: "O extraordinário, todos os dias." },
-  { slug: "lancamento", name: "Lançamentos", tagline: "Acabou de chegar." },
+  { slug: "terreno", name: "Terrenos", tagline: "Comece do zero, do seu jeito." },
   { slug: "comercial", name: "Comerciais", tagline: "Onde o trabalho acontece." },
-  { slug: "aluguel", name: "Temporada", tagline: "Sinta-se em casa, em qualquer lugar." },
+  { slug: "galpao", name: "Galpões", tagline: "Escala para o seu negócio." },
+  { slug: "aluguel", name: "Aluguel", tagline: "Sinta-se em casa, sem compromisso." },
 ];
 
 const APPLE_BENEFITS = [
