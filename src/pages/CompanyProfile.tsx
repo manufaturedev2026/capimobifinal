@@ -2051,15 +2051,7 @@ export default function CompanyProfile() {
                       : "Especialista em imóveis"}
                 </p>
                 <div className="flex gap-2 mt-3 flex-wrap lg:justify-center">
-                  {company.whatsapp && (
-                    <button
-                      onClick={() => handleWhatsApp(heroProduct?.title || company.name, heroProduct?.id)}
-                      className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-white font-bold text-[11px] active:scale-95 transition-transform"
-                      style={{ background: `linear-gradient(135deg, ${storeTheme.primary}, ${storeTheme.primary}dd)`, boxShadow: `0 8px 20px -5px ${storeTheme.primary}80` }}
-                    >
-                      <MessageCircle size={13} /> WhatsApp
-                    </button>
-                  )}
+                
                   {(company as any).instagram && ["start", "vip", "premium", "essencial_empresa", "premium_empresa", "prime_empresa"].includes(sellerTier || "") && (
                     <a
                       href={`https://instagram.com/${(company as any).instagram.replace(/^@/, "")}`}
