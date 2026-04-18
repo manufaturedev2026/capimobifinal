@@ -204,6 +204,11 @@ export default function StoreLayoutMinimal({
                dbProfile?.seller_category === "construtora" ? "Construtora" :
                "Corretor(a) de Imóveis"}
             </p>
+            {dbProfile?.creci && (
+              <p className="minimal-mono text-[10px] uppercase tracking-[0.28em] mt-1 font-bold inline-flex items-center gap-1.5" style={{ color: storeTheme.primary }}>
+                <Shield size={10} /> CRECI {dbProfile.creci}
+              </p>
+            )}
           </motion.div>
           <motion.p
             initial={{ opacity: 0, y: 10 }}
