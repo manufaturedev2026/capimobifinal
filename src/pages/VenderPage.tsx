@@ -477,7 +477,7 @@ export default function VenderPage() {
 
         {/* ═══ FEATURES GRID ═══ */}
         <section className="py-12 md:py-16 lg:py-24">
-          <div className="max-w-6xl mx-auto px-4 grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
+          <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {FEATURES.map((f, i) => (
               <motion.div
                 key={f.title}
