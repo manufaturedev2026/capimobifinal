@@ -1357,22 +1357,6 @@ export default function CompanyProfile() {
 
           {/* ═══════════ MAIN CONTENT ═══════════ */}
           <div className={`flex-1 min-w-0 ${isNetflix ? "w-full" : ""}`}>
-            {/* ═══ CTA Captação — acima das categorias ═══ */}
-            <section className="px-4 mb-4">
-              <div className={`${isMarketplace ? "" : "max-w-[1800px] mx-auto"}`}>
-                <div className="rounded-2xl p-6 md:p-10 text-center" style={{ background: `linear-gradient(135deg, ${storeTheme.primary}20, ${storeTheme.primary}08)`, border: `1px solid ${storeTheme.primary}30` }}>
-                  <Home size={28} className="mx-auto mb-3" style={{ color: storeTheme.primary }} />
-                  <h2 className="font-display font-bold text-lg md:text-2xl mb-2" style={{ color: storeTheme.text }}>Quer anunciar seu imóvel?</h2>
-                  <p className="text-xs md:text-sm mb-5 max-w-md mx-auto" style={{ color: storeTheme.textMuted }}>
-                    Cadastre seu imóvel gratuitamente com {company?.name || dbProfile?.company_name || dbProfile?.full_name || "o corretor"} e alcance mais compradores.
-                  </p>
-                  <Link to={`/captar-imovel/${dbProfile?.slug || id}`} className="inline-flex items-center gap-2 px-6 md:px-8 py-3 rounded-xl font-bold text-xs md:text-sm text-white transition-all hover:scale-105" style={{ background: storeTheme.primary, boxShadow: `0 8px 24px ${storeTheme.primary}40` }}>
-                    Anunciar meu imóvel <ArrowRight size={14} />
-                  </Link>
-                </div>
-              </div>
-            </section>
-
             {/* ═══ DYNAMIC MOBILE LAYOUT ═══ */}
             {(() => {
               const layoutProps: StoreLayoutProps = {
