@@ -342,7 +342,18 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
   };
 
   const generateAdText = (templateId?: string) => {
-    const tpl = AD_TEMPLATES.find(t => t.id === (templateId || selectedTemplate));
+    const id = templateId || selectedTemplate;
+    // Prefer the AI-pregenerated premium version (higher quality)
+    const aiText = AI_PREGENERATED_ADS[id];
+    if (aiText) {
+      const filled = aiText
+        .replace(/\{url\}/g, captureUrl || "")
+        .replace(/\{name\}/g, sellerName || "Corretor");
+      setGeneratedAd(filled);
+      return;
+    }
+    // Fallback to the legacy template generator
+    const tpl = AD_TEMPLATES.find(t => t.id === id);
     if (tpl) setGeneratedAd(tpl.generate(captureUrl, sellerName));
   };
 
