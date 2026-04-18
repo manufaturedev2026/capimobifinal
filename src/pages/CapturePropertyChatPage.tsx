@@ -67,6 +67,14 @@ interface BotConfig {
   avalMsgDetails: string;
   avalMsgSuccess: string;
   avalMsgSuccessEnd: string;
+  // CTA personalizados
+  captacaoCtaLabel?: string;
+  captacaoCtaUrl?: string;
+  grupoCtaLabel?: string;
+  agendCtaLabel?: string;
+  agendCtaUrl?: string;
+  avalCtaLabel?: string;
+  avalCtaUrl?: string;
 }
 
 const DEFAULT_CONFIG: BotConfig = {
