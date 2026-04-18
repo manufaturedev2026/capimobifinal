@@ -9,9 +9,9 @@ import { useAuth } from "@/hooks/useAuth";
 import StoreEffects from "@/components/StoreEffects";
 import ThemeParticles from "@/components/ThemeParticles";
 import {
-  StoreLayoutNetflix, StoreLayoutMinimal, StoreLayoutMagazine,
-  StoreLayoutGallery, StoreLayoutElegant,
-  StoreLayoutMarketplace,
+ StoreLayoutNetflix, StoreLayoutMinimal, StoreLayoutMagazine,
+ StoreLayoutGallery, StoreLayoutElegant,
+ StoreLayoutMarketplace, StoreLayoutCyberpunkMarketplace,
 } from "@/components/store-layouts";
 import type { StoreLayoutProps } from "@/components/store-layouts";
 import { getStoreTheme } from "@/components/StoreThemePicker";
@@ -1396,6 +1396,7 @@ export default function CompanyProfile() {
                 case "elegant": return <StoreLayoutElegant {...layoutProps} />;
                 
                 case "marketplace": return <StoreLayoutMarketplace {...layoutProps} />;
+                case "cyberpunk_marketplace": return <StoreLayoutCyberpunkMarketplace {...layoutProps} />;
                 default: return <StoreLayoutMarketplace {...layoutProps} />;
               }
             })()}
