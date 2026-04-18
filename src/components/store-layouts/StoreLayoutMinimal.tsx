@@ -815,14 +815,14 @@ export default function StoreLayoutMinimal({
               </div>
 
               {/* CTAs */}
-              <div className="flex flex-wrap gap-3">
+              <div className="flex flex-row gap-3">
                 {dbProfile?.phone && (
                   <button
                     onClick={() => handleWhatsApp(sellerDisplayName)}
-                    className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#25d366] text-white minimal-body font-bold text-sm hover:bg-[#22c55e] transition-all hover:scale-105"
+                    className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-3 rounded-xl bg-[#25d366] text-white minimal-body font-bold text-xs sm:text-sm hover:bg-[#22c55e] transition-all hover:scale-105 whitespace-nowrap"
                     style={{ boxShadow: "0 8px 24px rgba(37, 211, 102, 0.35)" }}
                   >
-                    <MessageCircle size={16} /> Falar no WhatsApp
+                    <MessageCircle size={16} /> <span className="truncate">Falar no WhatsApp</span>
                   </button>
                 )}
                 {dbProfile?.instagram && (
@@ -830,7 +830,7 @@ export default function StoreLayoutMinimal({
                     href={`https://instagram.com/${dbProfile.instagram.replace(/^@/, "")}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-[#833AB4] via-[#E1306C] to-[#F77737] text-white minimal-body font-bold text-sm hover:opacity-90 transition-all hover:scale-105"
+                    className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-3 rounded-xl bg-gradient-to-r from-[#833AB4] via-[#E1306C] to-[#F77737] text-white minimal-body font-bold text-xs sm:text-sm hover:opacity-90 transition-all hover:scale-105 whitespace-nowrap"
                     style={{ boxShadow: "0 8px 24px rgba(225, 48, 108, 0.3)" }}
                   >
                     <Instagram size={16} /> Instagram
