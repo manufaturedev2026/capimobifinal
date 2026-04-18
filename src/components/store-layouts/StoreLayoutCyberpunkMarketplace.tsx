@@ -26,7 +26,11 @@ export default function StoreLayoutCyberpunkMarketplace(props: StoreLayoutProps)
     const onScroll = () => setScrolled(window.scrollY > 40);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    document.body.classList.add("cp-active");
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      document.body.classList.remove("cp-active");
+    };
   }, []);
 
   useEffect(() => {
@@ -82,6 +86,16 @@ export default function StoreLayoutCyberpunkMarketplace(props: StoreLayoutProps)
       .cp-wrapper p, .cp-wrapper span, .cp-wrapper div, .cp-wrapper a, .cp-wrapper button {
         letter-spacing: -0.005em;
       }
+
+      /* ============= HIDE MARKETPLACE EXTRAS ============= */
+      /* Painel/Entrar + Cinema buttons in hero */
+      .cp-wrapper .absolute.top-4.left-4,
+      .cp-wrapper .absolute.top-4.right-4 { display: none !important; }
+      /* Broker mobile card section (rendered outside wrapper, hidden globally when cyber active) */
+      body.cp-active [data-broker-card-section] { display: none !important; }
+      /* Force full bleed */
+      body.cp-active main,
+      body.cp-active [class*="max-w-"] { max-width: none !important; }
 
       /* ============= BACKGROUND ============= */
       .cp-bg-base {

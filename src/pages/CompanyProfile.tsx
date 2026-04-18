@@ -1952,7 +1952,7 @@ export default function CompanyProfile() {
         );
       })()}
       {/* Mobile "Sobre" section - unified card for all layouts */}
-      <section className={`${isMarketplace || isNetflix ? "" : "lg:hidden"} px-4 mt-6 mb-6`}>
+      <section data-broker-card-section className={`${isMarketplace || isNetflix ? "" : "lg:hidden"} px-4 mt-6 mb-6`}>
         <div className="max-w-[1800px] mx-auto grid lg:grid-cols-2 gap-4 items-start">
           {/* ── Bloco 1: Card do Corretor (estilo sidebar) ── */}
           <div
