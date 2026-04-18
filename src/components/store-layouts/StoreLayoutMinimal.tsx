@@ -296,8 +296,120 @@ export default function StoreLayoutMinimal({
               </div>
             )}
           </div>
+
+          {/* ═══ FLOATING SELLER CARD — Hero overlay (desktop) ═══ */}
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.8, duration: 0.6 }}
+            className="hidden md:block absolute right-6 lg:right-10 bottom-6 lg:bottom-10 z-20 w-[280px]"
+          >
+            <div
+              className="rounded-2xl p-5 backdrop-blur-xl"
+              style={{
+                background: "rgba(0,0,0,0.55)",
+                border: `1px solid ${storeTheme.primary}40`,
+                boxShadow: `0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05) inset`,
+              }}
+            >
+              <div className="flex items-center gap-3 mb-3">
+                {dbProfile?.logo_url ? (
+                  <img
+                    src={dbProfile.logo_url}
+                    alt={sellerDisplayName}
+                    className="w-12 h-12 rounded-xl object-cover"
+                    style={{ border: `2px solid ${storeTheme.primary}80` }}
+                  />
+                ) : (
+                  <div
+                    className="w-12 h-12 rounded-xl flex items-center justify-center minimal-display font-bold text-lg text-white"
+                    style={{ background: storeTheme.primary }}
+                  >
+                    {sellerDisplayName?.charAt(0)}
+                  </div>
+                )}
+                <div className="min-w-0 flex-1">
+                  <h4 className="minimal-display font-bold text-sm text-white truncate">{sellerDisplayName}</h4>
+                  <p className="minimal-mono text-[9px] uppercase tracking-[0.2em] text-white/60 mt-0.5">
+                    {dbProfile?.seller_category === "imobiliaria" ? "Imobiliária" :
+                     dbProfile?.seller_category === "construtora" ? "Construtora" :
+                     "Corretor(a) de Imóveis"}
+                  </p>
+                </div>
+              </div>
+              {dbProfile?.creci && (
+                <div
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg mb-3"
+                  style={{ background: `${storeTheme.primary}20`, border: `1px solid ${storeTheme.primary}40` }}
+                >
+                  <Shield size={11} style={{ color: storeTheme.primary }} />
+                  <span className="minimal-mono text-[10px] font-bold tracking-wider" style={{ color: storeTheme.primary }}>
+                    CRECI {dbProfile.creci}
+                  </span>
+                </div>
+              )}
+              <div className="flex gap-2">
+                {dbProfile?.phone && (
+                  <button
+                    onClick={() => handleWhatsApp(sellerDisplayName)}
+                    className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-[#25d366] text-white font-bold text-[11px] hover:bg-[#22c55e] transition-colors"
+                  >
+                    <MessageCircle size={13} /> WhatsApp
+                  </button>
+                )}
+                {dbProfile?.instagram && (
+                  <a
+                    href={`https://instagram.com/${dbProfile.instagram.replace(/^@/, "")}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center px-3 py-2.5 rounded-xl bg-gradient-to-r from-[#833AB4] via-[#E1306C] to-[#F77737] text-white font-bold text-[11px] hover:opacity-90 transition-opacity"
+                    aria-label="Instagram"
+                  >
+                    <Instagram size={13} />
+                  </a>
+                )}
+              </div>
+            </div>
+          </motion.div>
         </div>
       </motion.section>
+
+      {/* ═══ MOBILE SELLER CARD — Compact under hero ═══ */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.6 }}
+        className="md:hidden max-w-5xl mx-auto mt-4 mb-2"
+      >
+        <div
+          className="rounded-2xl p-4 flex items-center gap-3"
+          style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}
+        >
+          {dbProfile?.logo_url ? (
+            <img src={dbProfile.logo_url} alt={sellerDisplayName} className="w-12 h-12 rounded-xl object-cover flex-shrink-0" />
+          ) : (
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center minimal-display font-bold text-lg text-white flex-shrink-0" style={{ background: storeTheme.primary }}>
+              {sellerDisplayName?.charAt(0)}
+            </div>
+          )}
+          <div className="min-w-0 flex-1">
+            <h4 className="minimal-display font-bold text-sm truncate" style={{ color: storeTheme.text }}>{sellerDisplayName}</h4>
+            <p className="minimal-mono text-[9px] uppercase tracking-[0.18em] mt-0.5" style={{ color: storeTheme.textMuted }}>
+              {dbProfile?.seller_category === "imobiliaria" ? "Imobiliária" : dbProfile?.seller_category === "construtora" ? "Construtora" : "Corretor(a)"}
+              {dbProfile?.creci && ` · CRECI ${dbProfile.creci}`}
+            </p>
+          </div>
+          {dbProfile?.phone && (
+            <button
+              onClick={() => handleWhatsApp(sellerDisplayName)}
+              className="flex items-center justify-center w-10 h-10 rounded-xl bg-[#25d366] text-white flex-shrink-0"
+              aria-label="WhatsApp"
+            >
+              <MessageCircle size={16} />
+            </button>
+          )}
+        </div>
+      </motion.div>
 
       {/* ═══ SEARCH BAR — Minimal floating ═══ */}
       <motion.div
