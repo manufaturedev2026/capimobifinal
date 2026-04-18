@@ -2160,7 +2160,7 @@ export default function CompanyProfile() {
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => setGalleryLightbox(0)}
-          className="fixed right-6 bottom-44 z-50 w-14 h-14 rounded-full text-white shadow-2xl flex items-center justify-center transition-all group"
+          className="fixed right-4 md:right-6 bottom-40 md:bottom-44 z-50 w-11 h-11 md:w-14 md:h-14 rounded-full text-white shadow-2xl flex items-center justify-center transition-all group"
           style={{
             background: `linear-gradient(135deg, ${storeTheme.primary}, ${storeTheme.accent || storeTheme.primary})`,
             boxShadow: `0 10px 30px ${storeTheme.primary}60, 0 0 0 1px ${storeTheme.primary}40`,
