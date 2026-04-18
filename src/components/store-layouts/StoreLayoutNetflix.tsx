@@ -663,32 +663,41 @@ export default function StoreLayoutNetflix({
             const allImages = filteredProducts.filter((p: any) => p.image).slice(0, 4);
             const isActive = activeCategory === "todos";
             return (
-              <button
+              <motion.button
                 onClick={() => setActiveCategory("todos")}
-                className="flex-shrink-0 relative overflow-hidden rounded-md transition-all duration-300 group/cat"
+                whileHover={{ scale: 1.05, y: -6 }}
+                whileTap={{ scale: 0.96 }}
+                transition={{ type: "spring", stiffness: 300 }}
+                className="flex-shrink-0 relative overflow-hidden rounded-xl transition-all duration-300 group/cat"
                 style={{
-                  width: "clamp(120px, 18vw, 180px)",
-                  aspectRatio: "2/3",
-                   outline: isActive ? "2px solid #fff" : "2px solid transparent",
-                   outlineOffset: 2,
+                  width: "clamp(140px, 20vw, 210px)",
+                  aspectRatio: "3/4",
+                  outline: isActive ? "2px solid #fff" : "2px solid transparent",
+                  outlineOffset: 2,
+                  boxShadow: isActive
+                    ? "0 0 30px rgba(255,255,255,0.4), 0 20px 40px rgba(0,0,0,0.5)"
+                    : "0 8px 20px rgba(0,0,0,0.4)",
                 }}
               >
                 {allImages[0] ? (
-                  <img src={allImages[0].image} alt="Todos" className="w-full h-full object-cover transition-transform duration-500 group-hover/cat:scale-110" />
+                  <img src={allImages[0].image} alt="Todos" className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover/cat:scale-105" />
                 ) : (
                   <div className="w-full h-full bg-[#2a2a2a]" />
                 )}
                 <div className="absolute inset-0" style={{
-                   background: "linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 40%, transparent 70%)",
+                   background: "linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.35) 45%, transparent 75%)",
                 }} />
-                <div className="absolute bottom-0 left-0 right-0 p-2.5 text-center">
-                  <span className="text-white font-bold text-xs md:text-sm drop-shadow-lg block">Todos</span>
-                  <span className="text-white/60 text-[9px] md:text-[10px]">{categoryCounts.todos ?? products.length} imóveis</span>
+                <div className="absolute inset-0 opacity-0 group-hover/cat:opacity-100 transition-opacity duration-500 pointer-events-none" style={{
+                  background: "linear-gradient(135deg, transparent 30%, rgba(255,255,255,0.18) 50%, transparent 70%)",
+                }} />
+                <div className="absolute bottom-0 left-0 right-0 p-3 text-center">
+                  <span className="text-white font-black text-xs md:text-sm drop-shadow-lg block uppercase tracking-wider">Todos</span>
+                  <span className="text-white/70 text-[9px] md:text-[10px] font-bold">{categoryCounts.todos ?? products.length} imóveis</span>
                 </div>
                 {isActive && (
-                   <div className="absolute top-0 left-0 right-0 h-[3px] bg-white" />
+                   <div className="absolute top-0 left-0 right-0 h-[3px] bg-white" style={{ boxShadow: "0 0 12px rgba(255,255,255,0.8)" }} />
                 )}
-              </button>
+              </motion.button>
             );
           })()}
 
@@ -704,13 +713,13 @@ export default function StoreLayoutNetflix({
                 <motion.button
                   key={c.slug}
                   onClick={() => setActiveCategory(c.slug)}
-                  whileHover={{ scale: 1.06, y: -6 }}
+                  whileHover={{ scale: 1.05, y: -6 }}
                   whileTap={{ scale: 0.96 }}
                   transition={{ type: "spring", stiffness: 300 }}
-                  className="flex-shrink-0 relative overflow-hidden rounded-md transition-all duration-300 group/cat"
+                  className="flex-shrink-0 relative overflow-hidden rounded-xl transition-all duration-300 group/cat"
                   style={{
-                    width: "clamp(120px, 18vw, 180px)",
-                    aspectRatio: "2/3",
+                    width: "clamp(140px, 20vw, 210px)",
+                    aspectRatio: "3/4",
                     outline: isActive ? `2px solid ${storeTheme.primary}` : "2px solid transparent",
                     outlineOffset: 2,
                     boxShadow: isActive
@@ -719,12 +728,12 @@ export default function StoreLayoutNetflix({
                   }}
                 >
                   {coverImg ? (
-                    <img src={coverImg} alt={c.name} className="w-full h-full object-cover transition-transform duration-700 group-hover/cat:scale-125" />
+                    <img src={coverImg} alt={c.name} className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover/cat:scale-105" />
                   ) : (
                     <div className="w-full h-full bg-[#2a2a2a]" />
                   )}
                   <div className="absolute inset-0" style={{
-                     background: "linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.4) 40%, transparent 70%)",
+                     background: "linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.35) 45%, transparent 75%)",
                   }} />
                   {/* Shimmer on hover */}
                   <div className="absolute inset-0 opacity-0 group-hover/cat:opacity-100 transition-opacity duration-500 pointer-events-none" style={{
