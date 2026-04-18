@@ -66,7 +66,10 @@ export default function StoreLayoutAppleStore(props: StoreLayoutProps) {
   } = props;
 
   const [scrolled, setScrolled] = useState(false);
+  const [scrollY, setScrollY] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
+  const [count, setCount] = useState(0);
+  const totalCount = (filteredProducts || []).length;
 
   /* ── Inject Apple Pro Dark aesthetic + neutralize host chrome ───────────── */
   useEffect(() => {
