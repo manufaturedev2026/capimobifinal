@@ -10,6 +10,7 @@ import type { StoreLayoutProps } from "./types";
 import { useAuth } from "@/hooks/useAuth";
 import { isIOSStandaloneApp } from "@/lib/pwaInstall";
 import { useIsMobile } from "@/hooks/use-mobile";
+import MapEmbed from "@/components/MapEmbed";
 
 /* ── Color helpers ── */
 function hexToHsl(hex: string): [number, number, number] {
@@ -480,11 +481,11 @@ export default function StoreLayoutMinimal({
                     {/* Eyebrow location */}
                     {product.city && (
                       <p
-                        className="minimal-mono text-[8px] md:text-[9px] uppercase tracking-[0.28em] flex items-center gap-1 mb-2.5 font-medium"
+                        className="minimal-mono text-[7px] md:text-[8px] uppercase tracking-[0.18em] flex items-center gap-1 mb-2.5 font-medium"
                         style={{ color: storeTheme.textMuted }}
                       >
-                        <MapPin size={9} strokeWidth={2.4} />
-                        <span className="truncate">
+                        <MapPin size={8} strokeWidth={2.4} className="flex-shrink-0" />
+                        <span className="truncate min-w-0">
                           {product.neighborhood ? `${product.neighborhood} · ${product.city}` : product.city}
                         </span>
                       </p>
@@ -602,6 +603,43 @@ export default function StoreLayoutMinimal({
           </Link>
         </div>
       </motion.section>
+
+      {/* ═══ MAP — Localização at the end ═══ */}
+      {(dbProfile?.address || dbProfile?.city) && (
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7 }}
+          className="max-w-5xl mx-auto mb-12"
+        >
+          <div className="mb-4">
+            <p className="minimal-mono text-[10px] uppercase tracking-[0.32em] mb-2 font-semibold" style={{ color: storeTheme.primary }}>
+              <MapPin size={11} className="inline mr-1.5 -mt-0.5" />
+              Localização
+            </p>
+            <h2 className="minimal-display text-2xl md:text-3xl font-bold" style={{ color: storeTheme.text, letterSpacing: "-0.025em" }}>
+              Onde estamos
+            </h2>
+          </div>
+          <div
+            className="rounded-2xl overflow-hidden"
+            style={{
+              border: `1px solid ${storeTheme.border}`,
+              boxShadow: `0 10px 40px ${storeTheme.primary}15`,
+              minHeight: 360,
+            }}
+          >
+            <MapEmbed address={[dbProfile?.address, dbProfile?.city, dbProfile?.state].filter(Boolean).join(", ")} />
+          </div>
+          {(dbProfile?.address || dbProfile?.city) && (
+            <p className="minimal-body text-xs md:text-sm mt-4 flex items-start gap-2 font-light" style={{ color: storeTheme.textMuted }}>
+              <MapPin size={13} style={{ color: storeTheme.primary }} className="mt-0.5 flex-shrink-0" />
+              <span>{[dbProfile?.address, dbProfile?.city, dbProfile?.state].filter(Boolean).join(", ")}</span>
+            </p>
+          )}
+        </motion.section>
+      )}
     </div>
   );
 }
