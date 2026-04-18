@@ -2202,6 +2202,7 @@ export default function CompanyProfile() {
           >
             Instagram
           </span>
+          <span className="absolute inset-0 rounded-full animate-ping opacity-25" style={{ background: "#E1306C" }} />
         </motion.a>
       )}
 
