@@ -536,7 +536,7 @@ export default function StoreLayoutMinimal({
           <p className="text-[10px] uppercase tracking-[0.3em] mb-2" style={{ color: storeTheme.primary }}>
             Captação de imóveis
           </p>
-          <h2 className="font-display text-xl md:text-2xl font-light mb-2" style={{ color: storeTheme.text }}>
+          <h2 className="minimal-display text-3xl md:text-4xl font-light italic mb-2" style={{ color: storeTheme.text }}>
             Quer anunciar seu imóvel?
           </h2>
           <p className="text-xs mb-6 max-w-md mx-auto" style={{ color: storeTheme.textMuted }}>
