@@ -669,230 +669,276 @@ export default function StoreLayoutNetflix({
         </div>
       </div>
 
-      {/* ══════ CURATED NETFLIX ROWS (desktop only) ══════ */}
-      <div className="hidden lg:block pb-12">
-        {(() => {
-          // TOP 10 — first 10 with image
-          const top10 = filteredProducts.filter((p: any) => p.image && p.status !== "vendido").slice(0, 10);
-          // EM ALTA — items sorted by views_count desc
-          const trending = [...filteredProducts]
-            .filter((p: any) => p.image && p.status !== "vendido")
-            .sort((a: any, b: any) => (b.views_count || 0) - (a.views_count || 0))
-            .slice(0, 12);
-          // RECÉM-CHEGADOS — sorted by created_at desc
-          const newest = [...filteredProducts]
-            .filter((p: any) => p.image && p.status !== "vendido")
-            .sort((a: any, b: any) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime())
-            .slice(0, 12);
-          // PREMIUM — items with premium-ish tag or top price
-          const premiumTags = ["premium", "luxo", "alto-padrao", "exclusivo", "epico"];
-          let premium = filteredProducts.filter((p: any) => p.image && premiumTags.includes(p.tag));
-          if (premium.length < 6) {
-            const byPrice = [...filteredProducts]
-              .filter((p: any) => p.image && p.price > 0 && !premium.find((x: any) => x.id === p.id))
-              .sort((a: any, b: any) => (b.price || 0) - (a.price || 0))
-              .slice(0, 12 - premium.length);
-            premium = [...premium, ...byPrice];
-          }
-          // PARA VOCÊ — shuffle stable based on id length
-          const forYou = [...filteredProducts]
-            .filter((p: any) => p.image && p.status !== "vendido")
-            .sort((a: any, b: any) => ((a.id || "").length % 7) - ((b.id || "").length % 7))
-            .slice(0, 12);
+      {/* ══════ MARKETPLACE-STYLE GRID + SIDEBAR FILTERS ══════ */}
+      {(() => {
+        const visibleProducts = searchTerm
+          ? filteredProducts.filter((p: any) =>
+              p.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+              p.city?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+              p.neighborhood?.toLowerCase().includes(searchTerm.toLowerCase())
+            )
+          : filteredProducts;
 
-          return (
-            <>
-              {top10.length >= 3 && (
-                <NetflixRow
-                  title="🔥 Top 10 imóveis na sua região"
-                  subtitle="Os anúncios mais procurados agora"
-                  items={top10}
-                  corretorSlug={corretorSlug}
-                  getTagLabel={getTagLabel}
-                  getTagStyle={getTagStyle}
-                  accent={accent}
-                  icon={Trophy}
-                  ranked
-                  gradient="linear-gradient(135deg, #e50914, #ff6b6b)"
-                />
-              )}
-              {trending.length >= 3 && (
-                <NetflixRow
-                  title="Em Alta esta semana"
-                  subtitle="O que todo mundo está olhando"
-                  items={trending}
-                  corretorSlug={corretorSlug}
-                  getTagLabel={getTagLabel}
-                  getTagStyle={getTagStyle}
-                  accent={accent}
-                  icon={Flame}
-                  badge="top"
-                />
-              )}
-              {newest.length >= 3 && (
-                <NetflixRow
-                  title="Recém-chegados"
-                  subtitle="Acabaram de entrar no catálogo"
-                  items={newest}
-                  corretorSlug={corretorSlug}
-                  getTagLabel={getTagLabel}
-                  getTagStyle={getTagStyle}
-                  accent={accent}
-                  icon={Sparkles}
-                  badge="novo"
-                />
-              )}
-              {premium.length >= 3 && (
-                <NetflixRow
-                  title="Coleção Premium"
-                  subtitle="Imóveis exclusivos para clientes exigentes"
-                  items={premium}
-                  corretorSlug={corretorSlug}
-                  getTagLabel={getTagLabel}
-                  getTagStyle={getTagStyle}
-                  accent={accent}
-                  icon={Crown}
-                  badge="exclusivo"
-                  gradient="linear-gradient(135deg, #FFD700, #FFA500)"
-                />
-              )}
-              {forYou.length >= 3 && (
-                <NetflixRow
-                  title="Selecionados para você"
-                  subtitle="Curadoria personalizada"
-                  items={forYou}
-                  corretorSlug={corretorSlug}
-                  getTagLabel={getTagLabel}
-                  getTagStyle={getTagStyle}
-                  accent={accent}
-                  icon={Award}
-                />
-              )}
-              {/* Per-category rows (existing) */}
-              {rows.map(row => (
-                <NetflixRow
-                  key={row.name}
-                  title={row.name}
-                  items={row.items}
-                  corretorSlug={corretorSlug}
-                  getTagLabel={getTagLabel}
-                  getTagStyle={getTagStyle}
-                  accent={accent}
-                  icon={Home}
-                />
-              ))}
-            </>
-          );
-        })()}
-      </div>
+        const activeCats = subcategories.filter(c => c.slug === "todos" || (categoryCounts[c.slug] || 0) > 0);
 
-      {filteredProducts.length > 0 && (
-        <section id="products-grid" className="lg:hidden px-4 pb-10">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-bold text-base" style={{ color: storeTheme.text }}>
-              {activeCategory === "todos"
-                ? "Todos os Anúncios"
-                : subcategories.find((c) => c.slug === activeCategory)?.name || "Anúncios"}
-              <span className="font-medium ml-2" style={{ color: storeTheme.textMuted }}>({filteredProducts.length})</span>
-            </h3>
-            {availableCities && availableCities.length > 1 && setFilterCity && (
-              <div className="relative">
-                <select
-                  value={filterCity || ""}
-                  onChange={(e) => setFilterCity(e.target.value)}
-                  className="appearance-none px-3 py-1.5 pr-7 rounded-md text-[11px] font-medium text-white/90 cursor-pointer border border-white/15 outline-none"
-                  style={{ background: "rgba(255,255,255,0.08)" }}
-                >
-                  <option value="" style={{ background: "#141414", color: "#fff" }}>Todas as cidades</option>
-                  {availableCities.map(city => (
-                    <option key={city} value={city} style={{ background: "#141414", color: "#fff" }}>{city}</option>
-                  ))}
-                </select>
-                <MapPin size={10} className="absolute right-2 top-1/2 -translate-y-1/2 text-white/50 pointer-events-none" />
+        return (
+          <section id="netflix-grid" className="px-4 lg:px-12 py-8 scroll-mt-20" style={{ background: storeTheme.bg }}>
+            {/* Search bar */}
+            <div className="mb-6 max-w-3xl">
+              <div
+                className="flex items-center gap-2 rounded-2xl px-4 py-3 backdrop-blur-xl"
+                style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}
+              >
+                <Search size={18} style={{ color: storeTheme.textMuted }} />
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Buscar por título, bairro ou cidade..."
+                  className="flex-1 bg-transparent outline-none text-sm font-medium placeholder:opacity-50"
+                  style={{ color: storeTheme.text }}
+                />
+                {searchTerm && (
+                  <button onClick={() => setSearchTerm("")} className="p-1 rounded-full hover:opacity-70" style={{ color: storeTheme.textMuted }}>
+                    <X size={16} />
+                  </button>
+                )}
               </div>
-            )}
-          </div>
+            </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            {filteredProducts.map((product: any, index: number) => {
-              const productLink = `/imoveis/produto/${product.slug || product.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`;
+            {/* Mobile filter toggle */}
+            <div className="lg:hidden mb-4">
+              <button
+                onClick={() => setShowMobileFilters(!showMobileFilters)}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold"
+                style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}`, color: storeTheme.text }}
+              >
+                <Filter size={14} /> Filtros
+                {(filterCity || activeCategory !== "todos") && (
+                  <span className="px-1.5 py-0.5 rounded-full text-[9px] font-black" style={{ background: storeTheme.primary, color: "#fff" }}>
+                    {[filterCity, activeCategory !== "todos" ? activeCategory : null].filter(Boolean).length}
+                  </span>
+                )}
+              </button>
+            </div>
 
-              return (
-                <motion.div
-                  key={product.id}
-                  initial={{ opacity: 0, y: 16 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.03, duration: 0.35 }}
-                >
-                  <Link
-                    to={productLink}
-                    className="block overflow-hidden rounded-lg"
-                    style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}
-                  >
-                    <div className="relative aspect-[4/3] overflow-hidden">
-                      {product.image ? (
-                        <img
-                          src={product.image}
-                          alt={product.title}
-                          className="w-full h-full object-cover"
-                          loading="lazy"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center" style={{ background: storeTheme.card }}>
-                          <Image size={24} style={{ color: storeTheme.textMuted }} />
-                        </div>
-                      )}
+            <div className="flex gap-6">
+              {/* ─── SIDEBAR FILTERS (desktop) + drawer (mobile) ─── */}
+              <aside
+                className={`${showMobileFilters ? "fixed inset-0 z-50 p-4 overflow-y-auto" : "hidden"} lg:block lg:relative lg:inset-auto lg:p-0 lg:w-[260px] lg:flex-shrink-0`}
+                style={showMobileFilters ? { background: storeTheme.bg } : undefined}
+              >
+                {showMobileFilters && (
+                  <div className="flex items-center justify-between mb-4 lg:hidden">
+                    <h4 className="text-base font-bold" style={{ color: storeTheme.text }}>Filtros</h4>
+                    <button onClick={() => setShowMobileFilters(false)} style={{ color: storeTheme.text }}>
+                      <X size={20} />
+                    </button>
+                  </div>
+                )}
 
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
-
-                      {product.tag && (
-                        <span className={`absolute top-2 left-2 px-2 py-0.5 rounded text-[9px] font-bold ${getTagStyle(product.tag)}`}>
-                          {getTagLabel(product.tag)}
-                        </span>
-                      )}
-
-                      {product.status === "vendido" && (
-                        <div className="absolute inset-0 bg-black/70 flex items-center justify-center">
-                          <span className="text-red-400 font-bold text-[10px] uppercase tracking-[0.2em]">Vendido</span>
-                        </div>
-                      )}
+                <div className="lg:sticky lg:top-4 space-y-5">
+                  {/* City filter */}
+                  {availableCities && availableCities.length > 1 && setFilterCity && (
+                    <div className="rounded-2xl p-4" style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}>
+                      <h5 className="text-[11px] font-black uppercase tracking-widest mb-3 flex items-center gap-1.5" style={{ color: storeTheme.primary }}>
+                        <MapPin size={12} /> Cidade
+                      </h5>
+                      <div className="space-y-1 max-h-[240px] overflow-y-auto">
+                        <button
+                          onClick={() => setFilterCity("")}
+                          className="w-full text-left px-3 py-2 rounded-lg text-xs font-medium transition-colors"
+                          style={{
+                            background: !filterCity ? `${storeTheme.primary}22` : "transparent",
+                            color: !filterCity ? storeTheme.primary : storeTheme.text,
+                          }}
+                        >
+                          Todas as cidades
+                        </button>
+                        {availableCities.map((city) => (
+                          <button
+                            key={city}
+                            onClick={() => setFilterCity(city)}
+                            className="w-full text-left px-3 py-2 rounded-lg text-xs font-medium transition-colors"
+                            style={{
+                              background: filterCity === city ? `${storeTheme.primary}22` : "transparent",
+                              color: filterCity === city ? storeTheme.primary : storeTheme.text,
+                            }}
+                          >
+                            {city}
+                          </button>
+                        ))}
+                      </div>
                     </div>
+                  )}
 
-                    <div className="p-3">
-                      {product.price > 0 && (
-                        <p className="text-sm font-bold mb-1" style={{ color: storeTheme.primary }}>
-                          R$ {product.price.toLocaleString("pt-BR")}
-                        </p>
-                      )}
-
-                      <h4 className="text-[11px] font-semibold leading-tight line-clamp-2 mb-1.5" style={{ color: storeTheme.text }}>
-                        {product.title}
-                      </h4>
-
-                      {product.city && (
-                        <p className="text-[10px] flex items-center gap-1 line-clamp-1" style={{ color: storeTheme.textMuted }}>
-                          <MapPin size={10} />
-                          {product.neighborhood
-                            ? `${product.neighborhood}, ${product.city}`
-                            : product.city}
-                        </p>
-                      )}
+                  {/* Category filter */}
+                  {activeCats.length > 1 && (
+                    <div className="rounded-2xl p-4" style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}>
+                      <h5 className="text-[11px] font-black uppercase tracking-widest mb-3 flex items-center gap-1.5" style={{ color: storeTheme.primary }}>
+                        <Home size={12} /> Categoria
+                      </h5>
+                      <div className="space-y-1">
+                        {activeCats.map((cat) => {
+                          const count = categoryCounts[cat.slug] || 0;
+                          const isActive = activeCategory === cat.slug;
+                          return (
+                            <button
+                              key={cat.slug}
+                              onClick={() => setActiveCategory(cat.slug)}
+                              className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-colors"
+                              style={{
+                                background: isActive ? `${storeTheme.primary}22` : "transparent",
+                                color: isActive ? storeTheme.primary : storeTheme.text,
+                              }}
+                            >
+                              <span>{cat.name}</span>
+                              <span className="text-[10px] opacity-60">{count}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
-                  </Link>
-                </motion.div>
-              );
-            })}
-          </div>
-        </section>
-      )}
+                  )}
 
-      {filteredProducts.length === 0 && (
-        <div className="text-center py-20 px-4">
-          <Image size={48} className="mx-auto mb-3" style={{ color: storeTheme.textMuted }} />
-          <p className="text-lg font-medium" style={{ color: storeTheme.textMuted }}>Nenhum imóvel encontrado</p>
-          <button onClick={() => setActiveCategory("todos")} className="text-sm mt-2 hover:underline" style={{ color: storeTheme.primary }}>Ver todos</button>
-        </div>
-      )}
+                  {/* Reset */}
+                  {(filterCity || activeCategory !== "todos" || searchTerm) && (
+                    <button
+                      onClick={() => { setFilterCity?.(""); setActiveCategory("todos"); setSearchTerm(""); }}
+                      className="w-full px-3 py-2.5 rounded-xl text-xs font-bold transition-opacity hover:opacity-80"
+                      style={{ background: storeTheme.primary, color: "#fff" }}
+                    >
+                      Limpar filtros
+                    </button>
+                  )}
+                </div>
+              </aside>
+
+              {/* ─── PRODUCT GRID ─── */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-bold text-base lg:text-lg" style={{ color: storeTheme.text }}>
+                    {activeCategory === "todos"
+                      ? "Todos os Imóveis"
+                      : subcategories.find((c) => c.slug === activeCategory)?.name || "Imóveis"}
+                    <span className="font-medium ml-2 text-sm" style={{ color: storeTheme.textMuted }}>({visibleProducts.length})</span>
+                  </h3>
+                </div>
+
+                {visibleProducts.length > 0 ? (
+                  <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4">
+                    {visibleProducts.map((product: any, i: number) => {
+                      const productLink = `/imoveis/produto/${product.slug || product.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`;
+                      return (
+                        <motion.div
+                          key={product.id}
+                          initial={{ opacity: 0, y: 24 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: Math.min(i * 0.03, 0.5), duration: 0.4 }}
+                          whileHover={{ y: -6, transition: { duration: 0.25 } }}
+                        >
+                          <Link
+                            to={productLink}
+                            className="block rounded-2xl overflow-hidden group transition-all"
+                            style={{
+                              background: storeTheme.card,
+                              border: `1px solid ${storeTheme.border}`,
+                              boxShadow: `0 2px 8px rgba(0,0,0,0.2)`,
+                            }}
+                            onMouseEnter={(e) => {
+                              (e.currentTarget as HTMLElement).style.boxShadow = `0 12px 40px ${storeTheme.primary}30, 0 4px 12px rgba(0,0,0,0.3)`;
+                            }}
+                            onMouseLeave={(e) => {
+                              (e.currentTarget as HTMLElement).style.boxShadow = `0 2px 8px rgba(0,0,0,0.2)`;
+                            }}
+                          >
+                            <div className="relative aspect-[4/3] overflow-hidden">
+                              {product.image ? (
+                                <img src={product.image} alt={product.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy" />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center" style={{ background: storeTheme.border }}>
+                                  <Image size={28} style={{ color: storeTheme.textMuted }} />
+                                </div>
+                              )}
+                              <div
+                                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                                style={{ background: `linear-gradient(to top, ${storeTheme.primary}40, transparent 60%)` }}
+                              />
+                              {product.tag && (
+                                <span className={`absolute top-2.5 left-2.5 px-2.5 py-1 rounded-lg text-[9px] font-bold shadow-lg backdrop-blur-sm ${getTagStyle(product.tag)}`}>
+                                  {getTagLabel(product.tag)}
+                                </span>
+                              )}
+                              {product.isAluguel && (
+                                <span className="absolute bottom-2.5 left-2.5 px-2.5 py-1 rounded-lg text-[9px] font-bold shadow-lg backdrop-blur-sm" style={{ background: `${storeTheme.primary}dd`, color: "#fff" }}>
+                                  🏠 Aluguel
+                                </span>
+                              )}
+                              {product.status === "vendido" && (
+                                <div className="absolute inset-0 bg-black/70 flex items-center justify-center">
+                                  <span className="text-red-400 font-bold text-xs uppercase tracking-[0.2em]">Vendido</span>
+                                </div>
+                              )}
+                            </div>
+                            <div className="p-3 md:p-3.5">
+                              <h3 className="text-[11px] md:text-xs font-bold line-clamp-2 leading-snug mb-1.5" style={{ color: storeTheme.text }}>
+                                {product.title}
+                              </h3>
+                              {product.price > 0 && (
+                                <p className="text-sm md:text-lg font-black" style={{ color: storeTheme.primary }}>
+                                  R$ {product.price.toLocaleString("pt-BR")}
+                                  {product.isAluguel && <span className="text-[10px] font-normal ml-1" style={{ color: storeTheme.textMuted }}>/mês</span>}
+                                </p>
+                              )}
+                              {product.accepts_financing && (
+                                <p className="text-[9px] mt-1 font-semibold flex items-center gap-1" style={{ color: storeTheme.primary }}>
+                                  <ShieldCheck size={10} /> Aceita financiamento
+                                </p>
+                              )}
+                              <div className="flex items-center gap-2.5 mt-2.5 text-[10px]" style={{ color: storeTheme.textMuted }}>
+                                {product.bedrooms > 0 && <span className="flex items-center gap-0.5"><Bed size={10} /> {product.bedrooms}</span>}
+                                {product.bathrooms > 0 && <span className="flex items-center gap-0.5"><Bath size={10} /> {product.bathrooms}</span>}
+                                {product.area > 0 && <span className="flex items-center gap-0.5"><Ruler size={10} /> {product.area}m²</span>}
+                              </div>
+                              {product.city && (
+                                <p className="text-[10px] mt-2 flex items-center gap-1 truncate" style={{ color: storeTheme.textMuted }}>
+                                  <MapPin size={9} className="flex-shrink-0" />
+                                  {product.neighborhood ? `${product.neighborhood}, ${product.city}` : product.city}
+                                </p>
+                              )}
+                              <button
+                                onClick={(e) => { e.preventDefault(); handleWhatsApp(product.title, product.id); }}
+                                className="mt-3 w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-[11px] font-bold transition-opacity hover:opacity-90"
+                                style={{ background: storeTheme.primary, color: "#fff" }}
+                              >
+                                <MessageCircle size={12} /> WhatsApp
+                              </button>
+                            </div>
+                          </Link>
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="text-center py-20 rounded-2xl" style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}>
+                    <Search size={40} className="mx-auto mb-4 opacity-30" style={{ color: storeTheme.textMuted }} />
+                    <p className="text-sm font-medium" style={{ color: storeTheme.textMuted }}>
+                      {searchTerm ? "Nenhum resultado para essa busca" : "Nenhum imóvel encontrado"}
+                    </p>
+                    <button
+                      onClick={() => { setSearchTerm(""); setActiveCategory("todos"); setFilterCity?.(""); }}
+                      className="mt-3 text-xs font-semibold hover:underline"
+                      style={{ color: storeTheme.primary }}
+                    >
+                      Limpar filtros
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </section>
+        );
+      })()}
 
     </div>
   );
