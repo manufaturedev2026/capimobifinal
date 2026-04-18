@@ -684,7 +684,7 @@ export default function StoreLayoutNetflix({
             )}
           </div>
         </div>
-        <div className="flex gap-2 lg:gap-3 overflow-x-auto scrollbar-hide scroll-smooth px-4 lg:px-12 pb-6">
+        <div className="flex gap-2 lg:gap-3 overflow-x-auto scrollbar-hide scroll-smooth px-4 lg:px-12 pt-4 pb-6">
           {/* "Todos" card */}
           {(() => {
             const allImages = filteredProducts.filter((p: any) => p.image).slice(0, 4);
@@ -692,12 +692,12 @@ export default function StoreLayoutNetflix({
             return (
               <motion.button
                 onClick={() => setActiveCategory("todos")}
-                whileHover={{ scale: 1.05, y: -6 }}
+                whileHover={{ scale: 1.04, y: -3 }}
                 whileTap={{ scale: 0.96 }}
                 transition={{ type: "spring", stiffness: 300 }}
                 className="flex-shrink-0 relative overflow-hidden rounded-xl transition-all duration-300 group/cat isolate"
                 style={{
-                  width: "clamp(140px, 20vw, 210px)",
+                  width: "clamp(100px, 18vw, 200px)",
                   aspectRatio: "3/4",
                   outline: isActive ? "2px solid #fff" : "2px solid transparent",
                   outlineOffset: 2,
@@ -741,12 +741,12 @@ export default function StoreLayoutNetflix({
                 <motion.button
                   key={c.slug}
                   onClick={() => setActiveCategory(c.slug)}
-                  whileHover={{ scale: 1.05, y: -6 }}
+                  whileHover={{ scale: 1.04, y: -3 }}
                   whileTap={{ scale: 0.96 }}
                   transition={{ type: "spring", stiffness: 300 }}
                   className="flex-shrink-0 relative overflow-hidden rounded-xl transition-all duration-300 group/cat isolate"
                   style={{
-                    width: "clamp(140px, 20vw, 210px)",
+                    width: "clamp(100px, 18vw, 200px)",
                     aspectRatio: "3/4",
                     outline: isActive ? `2px solid ${storeTheme.primary}` : "2px solid transparent",
                     outlineOffset: 2,
