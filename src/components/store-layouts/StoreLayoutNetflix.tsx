@@ -466,13 +466,20 @@ export default function StoreLayoutNetflix({
               )}
             </motion.div>
 
-            {/* Title — big and bold */}
+            {/* Title — ÉPICO com gradient + glow */}
             <motion.h2
               key={`title-${currentBillboard.id}`}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.6 }}
-              className="font-black text-lg lg:text-4xl xl:text-5xl text-white leading-[1.05] drop-shadow-2xl mb-1 lg:mb-2"
+              className="font-black text-2xl lg:text-6xl xl:text-7xl leading-[1.0] mb-1 lg:mb-2 tracking-tight"
+              style={{
+                background: `linear-gradient(135deg, #ffffff 0%, #ffffff 40%, ${storeTheme.primary} 100%)`,
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+                filter: `drop-shadow(0 4px 20px ${storeTheme.primary}60) drop-shadow(0 2px 8px rgba(0,0,0,0.8))`,
+              }}
             >
               {currentBillboard.title}
             </motion.h2>
@@ -483,26 +490,46 @@ export default function StoreLayoutNetflix({
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.4 }}
-                className="text-white/50 text-[10px] lg:text-sm flex items-center gap-1 mb-1 lg:mb-2"
+                className="text-white/60 text-[11px] lg:text-sm flex items-center gap-1.5 mb-2 lg:mb-3 uppercase tracking-[0.15em] font-semibold"
               >
-                <MapPin size={10} />
+                <MapPin size={11} style={{ color: storeTheme.primary }} />
                 {currentBillboard.neighborhood
                   ? `${currentBillboard.neighborhood}, ${currentBillboard.city}`
                   : currentBillboard.city}
               </motion.p>
             )}
 
-            {/* Price */}
+            {/* Price — ÉPICO com glow + animação */}
             {currentBillboard.price > 0 && (
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.5 }}
-                className="font-black text-base lg:text-2xl mb-1 lg:mb-2"
-                style={{ color: storeTheme.primary }}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.5, type: "spring", stiffness: 200 }}
+                className="inline-flex items-baseline gap-1.5 mb-2 lg:mb-3 px-3 lg:px-5 py-1.5 lg:py-2 rounded-lg"
+                style={{
+                  background: `linear-gradient(135deg, ${storeTheme.primary}25, ${storeTheme.primary}10)`,
+                  border: `1px solid ${storeTheme.primary}50`,
+                  boxShadow: `0 0 30px ${storeTheme.primary}50, inset 0 1px 0 ${storeTheme.primary}40`,
+                  backdropFilter: "blur(10px)",
+                }}
               >
-                R$ {currentBillboard.price.toLocaleString("pt-BR")}
-              </motion.p>
+                <span className="text-[10px] lg:text-sm font-black uppercase tracking-widest" style={{ color: storeTheme.primary }}>R$</span>
+                <motion.span
+                  className="font-black text-2xl lg:text-5xl xl:text-6xl leading-none"
+                  style={{
+                    color: "#fff",
+                    textShadow: `0 0 20px ${storeTheme.primary}, 0 0 40px ${storeTheme.primary}80, 0 4px 8px rgba(0,0,0,0.6)`,
+                  }}
+                  animate={{ textShadow: [
+                    `0 0 20px ${storeTheme.primary}, 0 0 40px ${storeTheme.primary}80, 0 4px 8px rgba(0,0,0,0.6)`,
+                    `0 0 30px ${storeTheme.primary}, 0 0 60px ${storeTheme.primary}, 0 4px 8px rgba(0,0,0,0.6)`,
+                    `0 0 20px ${storeTheme.primary}, 0 0 40px ${storeTheme.primary}80, 0 4px 8px rgba(0,0,0,0.6)`,
+                  ]}}
+                  transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  {currentBillboard.price.toLocaleString("pt-BR")}
+                </motion.span>
+              </motion.div>
             )}
 
             {/* Description — Netflix synopsis style */}
