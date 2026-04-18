@@ -352,7 +352,14 @@ export default function StoreLayoutNetflix({
               transition={{ duration: 1.5, ease: "easeOut" }}
               className="absolute inset-0"
             >
-              <img src={currentBillboard.image} alt={currentBillboard.title} className="w-full h-full object-cover" />
+              <motion.img
+                src={currentBillboard.image}
+                alt={currentBillboard.title}
+                className="w-full h-full object-cover"
+                initial={{ scale: 1.15 }}
+                animate={{ scale: 1.05 }}
+                transition={{ duration: 8, ease: "easeOut" }}
+              />
               {/* Netflix-style gradients */}
               <div className="absolute inset-0" style={{
                 background: "linear-gradient(to right, #141414 0%, rgba(20,20,20,0.85) 25%, rgba(20,20,20,0.4) 50%, transparent 70%)",
@@ -360,6 +367,44 @@ export default function StoreLayoutNetflix({
               <div className="absolute inset-0" style={{
                 background: "linear-gradient(to top, #141414 0%, rgba(20,20,20,0.6) 30%, transparent 60%)",
               }} />
+              {/* Cinematic vignette */}
+              <div className="absolute inset-0 pointer-events-none" style={{
+                background: `radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.7) 100%)`,
+              }} />
+              {/* Color tint glow */}
+              <motion.div
+                className="absolute inset-0 pointer-events-none mix-blend-overlay"
+                style={{ background: `radial-gradient(circle at 30% 50%, ${storeTheme.primary}40, transparent 60%)` }}
+                animate={{ opacity: [0.4, 0.8, 0.4] }}
+                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+              />
+              {/* Floating particles */}
+              {[...Array(10)].map((_, i) => (
+                <motion.div
+                  key={`p-${currentBillboard.id}-${i}`}
+                  className="absolute w-1 h-1 rounded-full pointer-events-none"
+                  style={{
+                    background: storeTheme.primary,
+                    left: `${10 + (i * 9)}%`,
+                    top: `${20 + (i % 4) * 18}%`,
+                    boxShadow: `0 0 10px ${storeTheme.primary}`,
+                  }}
+                  animate={{
+                    y: [0, -30, 0],
+                    opacity: [0, 1, 0],
+                    scale: [0, 1.5, 0],
+                  }}
+                  transition={{ duration: 4 + (i % 3), repeat: Infinity, delay: i * 0.4, ease: "easeInOut" }}
+                />
+              ))}
+              {/* Scan line */}
+              <motion.div
+                className="absolute left-0 right-0 h-[2px] pointer-events-none"
+                style={{ background: `linear-gradient(90deg, transparent, ${storeTheme.primary}80, transparent)`, boxShadow: `0 0 20px ${storeTheme.primary}` }}
+                initial={{ top: "0%" }}
+                animate={{ top: "100%" }}
+                transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+              />
             </motion.div>
           </AnimatePresence>
 
