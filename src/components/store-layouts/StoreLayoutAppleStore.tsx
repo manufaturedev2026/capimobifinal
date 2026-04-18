@@ -304,48 +304,58 @@ export default function StoreLayoutAppleStore(props: StoreLayoutProps) {
             initial={{ opacity: 0, scale: 0.97, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ duration: 1.2, ease: [0.22, 0.61, 0.36, 1] }}
-            className="rounded-2xl sm:rounded-[32px] overflow-hidden relative grain aspect-[4/5] sm:aspect-[21/9]"
-            style={{
-              border: `1px solid ${C.hairline}`,
-              boxShadow: `0 60px 120px -40px rgba(0,0,0,0.9), 0 0 0 1px ${C.gold}15`,
-            }}
           >
-            <img
-              src={heroImage}
-              alt="Imóvel em destaque"
-              className="w-full h-full object-cover"
-              style={{ filter: "saturate(1.05) contrast(1.05)" }}
-              loading="eager"
-            />
-            <div
-              className="absolute inset-0"
-              style={{ background: "linear-gradient(180deg, transparent 30%, rgba(0,0,0,0.55) 75%, rgba(0,0,0,0.92) 100%)" }}
-            />
-            <div className="absolute bottom-5 sm:bottom-10 left-5 sm:left-10 right-5 sm:right-10 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 sm:gap-6">
-              <div className="min-w-0">
-                <p className="text-[10px] sm:text-[11px] font-medium uppercase tracking-[0.28em] sm:tracking-[0.32em]" style={{ color: C.gold }}>
-                  Em destaque
-                </p>
-                <h3 className="apple-serif italic mt-1.5 sm:mt-2 text-[22px] sm:text-[40px] lg:text-[52px] leading-[1.05] line-clamp-2" style={{ color: C.text }}>
-                  {products?.[0]?.title || "Sua próxima conquista."}
-                </h3>
-                {products?.[0]?.city && (
-                  <p className="mt-1.5 sm:mt-2 text-[12px] sm:text-[14px] flex items-center gap-1.5" style={{ color: `${C.text}aa` }}>
-                    <MapPin size={12} /> {[products[0].neighborhood, products[0].city].filter(Boolean).join(" • ")}
+            <Link
+              to={products?.[0] ? `/imovel/${products[0].slug || products[0].id}` : "#apple-grid"}
+              className="block rounded-2xl sm:rounded-[32px] overflow-hidden relative grain aspect-[4/5] sm:aspect-[21/9] group cursor-pointer"
+              style={{
+                border: `1px solid ${C.hairline}`,
+                boxShadow: `0 60px 120px -40px rgba(0,0,0,0.9), 0 0 0 1px ${C.gold}15`,
+              }}
+            >
+              <img
+                src={heroImage}
+                alt="Imóvel em destaque"
+                className="w-full h-full object-cover transition-transform duration-[1500ms] group-hover:scale-[1.04]"
+                style={{ filter: "saturate(1.05) contrast(1.05)" }}
+                loading="eager"
+              />
+              <div
+                className="absolute inset-0"
+                style={{ background: "linear-gradient(180deg, transparent 30%, rgba(0,0,0,0.55) 75%, rgba(0,0,0,0.92) 100%)" }}
+              />
+              <div className="absolute bottom-5 sm:bottom-10 left-5 sm:left-10 right-5 sm:right-10 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 sm:gap-6">
+                <div className="min-w-0">
+                  <p className="text-[10px] sm:text-[11px] font-medium uppercase tracking-[0.28em] sm:tracking-[0.32em]" style={{ color: C.gold }}>
+                    Em destaque
                   </p>
+                  <h3 className="apple-serif italic mt-1.5 sm:mt-2 text-[22px] sm:text-[40px] lg:text-[52px] leading-[1.05] line-clamp-2" style={{ color: C.text }}>
+                    {products?.[0]?.title || "Sua próxima conquista."}
+                  </h3>
+                  {products?.[0]?.city && (
+                    <p className="mt-1.5 sm:mt-2 text-[12px] sm:text-[14px] flex items-center gap-1.5" style={{ color: `${C.text}aa` }}>
+                      <MapPin size={12} /> {[products[0].neighborhood, products[0].city].filter(Boolean).join(" • ")}
+                    </p>
+                  )}
+                  <span
+                    className="mt-3 sm:mt-4 inline-flex items-center gap-1.5 text-[12px] sm:text-[13px] font-medium group-hover:gap-2.5 transition-all"
+                    style={{ color: C.gold }}
+                  >
+                    Ver imóvel <ArrowRight size={14} />
+                  </span>
+                </div>
+                {products?.[0]?.price && (
+                  <div className="sm:text-right">
+                    <p className="text-[10px] sm:text-[11px] uppercase tracking-[0.22em] sm:tracking-[0.24em]" style={{ color: `${C.text}80` }}>
+                      A partir de
+                    </p>
+                    <p className="apple-serif text-[24px] sm:text-[34px] gold-text mt-0.5 sm:mt-1">
+                      {formatPrice(products[0].price)}
+                    </p>
+                  </div>
                 )}
               </div>
-              {products?.[0]?.price && (
-                <div className="sm:text-right">
-                  <p className="text-[10px] sm:text-[11px] uppercase tracking-[0.22em] sm:tracking-[0.24em]" style={{ color: `${C.text}80` }}>
-                    A partir de
-                  </p>
-                  <p className="apple-serif text-[24px] sm:text-[34px] gold-text mt-0.5 sm:mt-1">
-                    {formatPrice(products[0].price)}
-                  </p>
-                </div>
-              )}
-            </div>
+            </Link>
           </motion.div>
         </div>
       </section>
