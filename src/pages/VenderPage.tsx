@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import MarketplaceNavbar from "@/components/MarketplaceNavbar";
+import ThemeParticles from "@/components/ThemeParticles";
 import { getMarketplaceTheme } from "@/lib/marketplaceThemes";
 import { getMarketplaceThemeCssVars } from "@/lib/marketplaceThemeCssVars";
 import { supabase } from "@/integrations/supabase/client";
@@ -274,6 +275,7 @@ export default function VenderPage() {
 
         {/* ═══ HERO ═══ */}
         <section className="relative overflow-hidden pt-14">
+          <ThemeParticles color={theme.primary} count={45} />
           {/* Background effects */}
           <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${theme.primary}18, transparent, ${theme.promoAccent || theme.primary}15)` }} />
           <div className="absolute top-20 left-1/4 w-64 md:w-96 h-64 md:h-96 rounded-full blur-[120px]" style={{ background: `${theme.primary}18` }} />
