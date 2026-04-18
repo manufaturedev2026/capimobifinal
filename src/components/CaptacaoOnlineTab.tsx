@@ -202,6 +202,16 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
   const [avalMsgSuccess, setAvalMsgSuccess] = useState("✅ Solicitação de avaliação enviada com sucesso!");
   const [avalMsgSuccessEnd, setAvalMsgSuccessEnd] = useState("Um especialista vai entrar em contato em até 24h para agendar a visita de avaliação. Obrigado! 🏡💎");
 
+  // CTA Buttons (texto + URL opcional) por fluxo
+  const [captacaoCtaLabel, setCaptacaoCtaLabel] = useState("💬 Falar no WhatsApp");
+  const [captacaoCtaUrl, setCaptacaoCtaUrl] = useState("");
+  const [grupoCtaLabel, setGrupoCtaLabel] = useState("🔗 Entrar no Grupo");
+  // grupoWhatsappLink já existe e funciona como CTA URL do fluxo Grupo
+  const [agendCtaLabel, setAgendCtaLabel] = useState("💬 Confirmar Agendamento");
+  const [agendCtaUrl, setAgendCtaUrl] = useState("");
+  const [avalCtaLabel, setAvalCtaLabel] = useState("💬 Falar com Especialista");
+  const [avalCtaUrl, setAvalCtaUrl] = useState("");
+
   const FLOW_HASH: Record<FlowType, string> = {
     captacao: "captacao",
     grupo_whatsapp: "grupo",
