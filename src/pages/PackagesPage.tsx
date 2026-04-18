@@ -138,10 +138,10 @@ export default function PackagesPage() {
                     <span className="text-white/70 text-sm">/mês</span>
                     {config.setupFee > 0 && (
                       <div className="mt-2 px-3 py-1.5 bg-white/15 rounded-xl text-center">
-                        <span className="text-white/90 text-xs font-semibold">
-                          Implementação: R$ {config.setupFee.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                        <span className="text-white text-xs font-bold">
+                          ✨ 7 dias grátis
                         </span>
-                        <span className="text-white/60 text-xs block">cobrado à vista no primeiro pagamento</span>
+                        <span className="text-white/70 text-xs block">teste sem compromisso</span>
                       </div>
                     )}
                   </div>
