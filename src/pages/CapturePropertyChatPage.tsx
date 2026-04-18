@@ -8,11 +8,17 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { SITE_URL } from "@/lib/siteUrl";
 
-const notifyNewCaptureLead = (targetUserId: string, leadName: string, summary?: string) => {
+const FLOW_PUSH_TITLE: Record<string, string> = {
+  captacao: "Novo lead de captação 🏠",
+  grupo_whatsapp: "Novo lead do grupo 👥",
+  agendamento: "Nova visita agendada 📅",
+  avaliacao: "Novo pedido de avaliação 💎",
+};
+const notifyNewCaptureLead = (targetUserId: string, leadName: string, summary?: string, flow?: string) => {
   supabase.functions.invoke("notify-new-lead", {
     body: {
       target_user_id: targetUserId,
-      title: "Novo lead de captação 🏠",
+      title: FLOW_PUSH_TITLE[flow || "captacao"] || FLOW_PUSH_TITLE.captacao,
       body: summary || `${leadName} entrou em contato.`,
       url: "/painel?tab=captacao",
     },
