@@ -1064,18 +1064,202 @@ export default function StoreLayoutNetflix({
         );
       })()}
 
-      {/* ══════ CTA Captação — depois do grid de imóveis ══════ */}
-      <section className="px-4 lg:px-12 py-8">
-        <div className="rounded-2xl p-6 md:p-10 text-center" style={{ background: `linear-gradient(135deg, ${storeTheme.primary}20, ${storeTheme.primary}08)`, border: `1px solid ${storeTheme.primary}30` }}>
-          <Home size={28} className="mx-auto mb-3" style={{ color: storeTheme.primary }} />
-          <h2 className="font-display font-bold text-lg md:text-2xl mb-2" style={{ color: storeTheme.text }}>Quer anunciar seu imóvel?</h2>
-          <p className="text-xs md:text-sm mb-5 max-w-md mx-auto" style={{ color: storeTheme.textMuted }}>
-            Cadastre seu imóvel gratuitamente com {sellerDisplayName} e alcance mais compradores.
-          </p>
-          <Link to={`/captar-imovel/${dbProfile?.slug || corretorSlug || ""}`} className="inline-flex items-center gap-2 px-6 md:px-8 py-3 rounded-xl font-bold text-xs md:text-sm text-white transition-all hover:scale-105" style={{ background: storeTheme.primary, boxShadow: `0 8px 24px ${storeTheme.primary}40` }}>
-            Anunciar meu imóvel <ArrowRight size={14} />
-          </Link>
-        </div>
+      {/* ══════ CTA Captação ÉPICA — depois do grid de imóveis ══════ */}
+      <section className="px-4 lg:px-12 py-12 lg:py-16">
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
+          className="relative overflow-hidden rounded-3xl"
+          style={{
+            background: `linear-gradient(135deg, #0a0a0a 0%, ${storeTheme.primary}25 50%, #0a0a0a 100%)`,
+            border: `1px solid ${storeTheme.primary}40`,
+            boxShadow: `0 30px 80px -20px ${storeTheme.primary}50, inset 0 1px 0 ${storeTheme.primary}30`,
+          }}
+        >
+          {/* Animated background grid */}
+          <div className="absolute inset-0 opacity-20" style={{
+            backgroundImage: `linear-gradient(${storeTheme.primary}40 1px, transparent 1px), linear-gradient(90deg, ${storeTheme.primary}40 1px, transparent 1px)`,
+            backgroundSize: "40px 40px",
+            maskImage: "radial-gradient(ellipse at center, black 30%, transparent 70%)",
+          }} />
+
+          {/* Glowing orbs */}
+          <motion.div
+            className="absolute -top-32 -left-32 w-96 h-96 rounded-full blur-3xl"
+            style={{ background: `${storeTheme.primary}40` }}
+            animate={{ x: [0, 50, 0], y: [0, 30, 0], scale: [1, 1.2, 1] }}
+            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+          />
+          <motion.div
+            className="absolute -bottom-32 -right-32 w-96 h-96 rounded-full blur-3xl"
+            style={{ background: `${storeTheme.primary}30` }}
+            animate={{ x: [0, -40, 0], y: [0, -20, 0], scale: [1, 1.3, 1] }}
+            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+          />
+
+          {/* Top accent line */}
+          <div className="absolute top-0 left-0 right-0 h-[2px]" style={{
+            background: `linear-gradient(90deg, transparent, ${storeTheme.primary}, transparent)`,
+          }} />
+
+          {/* Floating sparkles */}
+          {[...Array(6)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-1 h-1 rounded-full"
+              style={{
+                background: storeTheme.primary,
+                left: `${15 + i * 14}%`,
+                top: `${20 + (i % 3) * 25}%`,
+                boxShadow: `0 0 12px ${storeTheme.primary}`,
+              }}
+              animate={{ opacity: [0, 1, 0], scale: [0, 1.5, 0] }}
+              transition={{ duration: 3, repeat: Infinity, delay: i * 0.5, ease: "easeInOut" }}
+            />
+          ))}
+
+          {/* Content */}
+          <div className="relative z-10 px-6 py-12 md:px-16 md:py-20 text-center">
+            {/* Animated badge */}
+            <motion.div
+              initial={{ scale: 0, rotate: -180 }}
+              whileInView={{ scale: 1, rotate: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-6"
+              style={{
+                background: `${storeTheme.primary}20`,
+                border: `1px solid ${storeTheme.primary}50`,
+                backdropFilter: "blur(10px)",
+              }}
+            >
+              <Sparkles size={14} style={{ color: storeTheme.primary }} className="animate-pulse" />
+              <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.25em]" style={{ color: storeTheme.primary }}>
+                Oportunidade Exclusiva
+              </span>
+            </motion.div>
+
+            {/* Icon with glow */}
+            <motion.div
+              initial={{ scale: 0 }}
+              whileInView={{ scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3, type: "spring" }}
+              className="relative inline-flex items-center justify-center w-16 h-16 md:w-20 md:h-20 rounded-2xl mb-6"
+              style={{
+                background: `linear-gradient(135deg, ${storeTheme.primary}, ${storeTheme.primary}80)`,
+                boxShadow: `0 0 40px ${storeTheme.primary}80, inset 0 1px 0 rgba(255,255,255,0.3)`,
+              }}
+            >
+              <Home size={32} className="text-white drop-shadow-lg md:w-10 md:h-10" />
+              <motion.div
+                className="absolute inset-0 rounded-2xl"
+                style={{ border: `2px solid ${storeTheme.primary}` }}
+                animate={{ scale: [1, 1.3, 1], opacity: [0.6, 0, 0.6] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              />
+            </motion.div>
+
+            {/* Headline */}
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.4 }}
+              className="font-black text-2xl md:text-4xl lg:text-5xl mb-4 leading-tight tracking-tight"
+              style={{ color: "#fff", textShadow: `0 4px 20px ${storeTheme.primary}60` }}
+            >
+              Transforme seu imóvel em{" "}
+              <span style={{
+                background: `linear-gradient(135deg, ${storeTheme.primary}, #fff, ${storeTheme.primary})`,
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+              }}>
+                negócio
+              </span>
+            </motion.h2>
+
+            {/* Subtitle */}
+            <motion.p
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.5 }}
+              className="text-sm md:text-base mb-8 max-w-xl mx-auto leading-relaxed"
+              style={{ color: "rgba(255,255,255,0.7)" }}
+            >
+              Cadastre seu imóvel <span className="font-bold" style={{ color: storeTheme.primary }}>gratuitamente</span> com{" "}
+              <span className="font-bold text-white">{sellerDisplayName}</span> e alcance milhares de compradores qualificados.
+            </motion.p>
+
+            {/* Trust badges */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.6 }}
+              className="flex flex-wrap justify-center gap-3 md:gap-5 mb-8 text-[10px] md:text-xs"
+            >
+              {[
+                { icon: ShieldCheck, label: "100% Seguro" },
+                { icon: Sparkles, label: "Sem Taxas" },
+                { icon: TrendingUp, label: "Mais Visibilidade" },
+              ].map((item, i) => (
+                <div key={i} className="flex items-center gap-1.5 font-semibold" style={{ color: "rgba(255,255,255,0.85)" }}>
+                  <item.icon size={14} style={{ color: storeTheme.primary }} />
+                  {item.label}
+                </div>
+              ))}
+            </motion.div>
+
+            {/* CTA Button */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.7, type: "spring" }}
+            >
+              <Link
+                to={`/captar-imovel/${dbProfile?.slug || corretorSlug || ""}`}
+                className="group relative inline-flex items-center gap-3 px-8 md:px-12 py-4 md:py-5 rounded-2xl font-black text-sm md:text-base text-white overflow-hidden transition-all hover:scale-105 active:scale-95"
+                style={{
+                  background: `linear-gradient(135deg, ${storeTheme.primary}, ${storeTheme.primary}cc)`,
+                  boxShadow: `0 20px 50px -10px ${storeTheme.primary}80, inset 0 1px 0 rgba(255,255,255,0.4)`,
+                }}
+              >
+                {/* Shimmer effect */}
+                <motion.div
+                  className="absolute inset-0 -translate-x-full"
+                  style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)" }}
+                  animate={{ translateX: ["-100%", "200%"] }}
+                  transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", repeatDelay: 1 }}
+                />
+                <span className="relative uppercase tracking-wider">Anunciar meu imóvel</span>
+                <ArrowRight size={18} className="relative group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </motion.div>
+
+            {/* Bottom hint */}
+            <motion.p
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.9 }}
+              className="text-[10px] md:text-xs mt-5 uppercase tracking-widest"
+              style={{ color: "rgba(255,255,255,0.4)" }}
+            >
+              ⚡ Cadastro em menos de 2 minutos
+            </motion.p>
+          </div>
+
+          {/* Bottom accent line */}
+          <div className="absolute bottom-0 left-0 right-0 h-[2px]" style={{
+            background: `linear-gradient(90deg, transparent, ${storeTheme.primary}, transparent)`,
+          }} />
+        </motion.div>
       </section>
 
     </div>
