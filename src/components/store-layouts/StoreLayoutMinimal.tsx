@@ -115,6 +115,22 @@ export default function StoreLayoutMinimal({
         .cat-pill-active.cat-pill-shimmer::before {
           animation: catShimmer 3s ease-in-out infinite;
         }
+        @keyframes catSpin {
+          to { transform: rotate(360deg); }
+        }
+        .cat-spin-ring {
+          position: absolute;
+          inset: -2px;
+          border-radius: 9999px;
+          padding: 2px;
+          background: conic-gradient(from 0deg, transparent 0deg, var(--cat-ring) 90deg, transparent 180deg, var(--cat-ring) 270deg, transparent 360deg);
+          -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+          -webkit-mask-composite: xor;
+          mask-composite: exclude;
+          animation: catSpin 3s linear infinite;
+          pointer-events: none;
+          z-index: 1;
+        }
       `}</style>
 
       {/* ═══ HERO — Cinematic parallax with auto-rotating images ═══ */}
@@ -335,16 +351,18 @@ export default function StoreLayoutMinimal({
               <button
                 key={cat.slug}
                 onClick={() => { setActiveCategory(cat.slug); scrollToGrid(); }}
-                className={`group relative flex-shrink-0 inline-flex items-center gap-2.5 pl-2 pr-4 py-2 rounded-full overflow-hidden transition-all duration-500 cat-pill-shimmer ${isActive ? "cat-pill-active" : ""}`}
+                className={`group relative flex-shrink-0 inline-flex items-center gap-2.5 pl-2 pr-4 py-2 rounded-full transition-all duration-500 ${isActive ? "cat-pill-active" : ""}`}
                 style={{
                   background: isActive ? storeTheme.primary : storeTheme.card,
-                  border: `1px solid ${isActive ? storeTheme.primary : storeTheme.border}`,
+                  border: `1px solid ${isActive ? "transparent" : storeTheme.border}`,
                   color: isActive ? "#fff" : storeTheme.text,
                   ["--cat-glow" as any]: `${storeTheme.primary}55`,
+                  ["--cat-ring" as any]: storeTheme.primary,
                   transform: isActive ? "translateY(-1px)" : "translateY(0)",
                   boxShadow: isActive ? `0 8px 24px -8px ${storeTheme.primary}80` : "none",
                 }}
               >
+                {isActive && <span className="cat-spin-ring" aria-hidden />}
                 <span
                   className="relative z-10 flex items-center justify-center w-7 h-7 rounded-full transition-all duration-500"
                   style={{
