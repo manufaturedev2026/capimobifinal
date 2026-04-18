@@ -91,10 +91,14 @@ export default function StoreLayoutMinimal({
     }, 100);
 
   return (
-    <div style={{ background: storeTheme.bg, overflowX: "clip", maxWidth: "100%", fontFamily: "'Inter', sans-serif" }}>
+    <div style={{ background: storeTheme.bg, overflowX: "clip", maxWidth: "100%", fontFamily: "'Manrope', 'Inter', sans-serif" }}>
       <style>{`
-        .minimal-display { font-family: 'Playfair Display', serif; letter-spacing: -0.015em; }
-        .minimal-mono { font-family: 'Inter', sans-serif; font-feature-settings: 'tnum'; }
+        .minimal-display { font-family: 'Sora', 'Inter', sans-serif; letter-spacing: -0.028em; font-feature-settings: 'ss01'; }
+        .minimal-body { font-family: 'Manrope', 'Inter', sans-serif; letter-spacing: -0.005em; }
+        .minimal-mono { font-family: 'Space Grotesk', 'Inter', sans-serif; font-feature-settings: 'tnum'; }
+        .minimal-price { font-family: 'Space Grotesk', 'Sora', sans-serif; font-feature-settings: 'tnum', 'ss01'; letter-spacing: -0.04em; }
+        .minimal-card { transition: transform .5s cubic-bezier(.2,.8,.2,1), box-shadow .5s, border-color .5s; }
+        .minimal-card:hover { transform: translateY(-4px); }
         @keyframes minimalParticleUp {
           0% { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
           10% { opacity: var(--mp-opacity); }
@@ -197,17 +201,17 @@ export default function StoreLayoutMinimal({
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="minimal-display font-light text-3xl md:text-6xl leading-[1.05] text-white drop-shadow-lg"
+            transition={{ delay: 0.4, duration: 0.7 }}
+            className="minimal-display font-extrabold text-4xl md:text-7xl leading-[1.02] text-white drop-shadow-2xl"
           >
             Imóveis em{" "}
-            <span className="italic font-medium" style={{ color: storeTheme.primary }}>{currentHeroCity}</span>
+            <span className="font-light italic" style={{ color: storeTheme.primary }}>{currentHeroCity}</span>
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
-            className="text-xs md:text-sm mt-2 max-w-md text-white/70"
+            className="minimal-body text-sm md:text-base mt-3 max-w-md text-white/75 font-light"
           >
             {totalCount} {totalCount === 1 ? "imóvel selecionado" : "imóveis selecionados"} com cuidado
           </motion.p>
@@ -421,13 +425,13 @@ export default function StoreLayoutMinimal({
               >
                 <Link
                   to={productLink}
-                  className="block rounded-2xl overflow-hidden group transition-all duration-500"
+                  className="minimal-card block rounded-2xl overflow-hidden group"
                   style={{
                     background: storeTheme.card,
-                    border: `1px solid ${isHovered ? storeTheme.primary + "40" : storeTheme.border}`,
+                    border: `1px solid ${isHovered ? storeTheme.primary + "55" : storeTheme.border}`,
                     boxShadow: isHovered
-                      ? `0 16px 48px ${storeTheme.primary}12, 0 4px 12px rgba(0,0,0,0.08)`
-                      : `0 1px 3px rgba(0,0,0,0.04)`,
+                      ? `0 24px 60px ${storeTheme.primary}18, 0 6px 16px rgba(0,0,0,0.06)`
+                      : `0 1px 2px rgba(0,0,0,0.03)`,
                   }}
                 >
                   {/* Image */}
@@ -436,7 +440,7 @@ export default function StoreLayoutMinimal({
                       <img
                         src={product.image}
                         alt={product.title}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        className="w-full h-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.08]"
                         loading="lazy"
                       />
                     ) : (
@@ -454,7 +458,7 @@ export default function StoreLayoutMinimal({
                     {/* Tag */}
                     {product.tag && (
                       <span
-                        className={`absolute top-2 left-2 px-2 py-0.5 rounded-md text-[8px] font-bold backdrop-blur-sm ${getTagStyle(product.tag)}`}
+                        className={`absolute top-2.5 left-2.5 px-2.5 py-1 rounded-md text-[9px] font-bold backdrop-blur-md tracking-wider uppercase ${getTagStyle(product.tag)}`}
                       >
                         {getTagLabel(product.tag)}
                       </span>
@@ -463,7 +467,7 @@ export default function StoreLayoutMinimal({
                     {/* Aluguel badge */}
                     {product.isAluguel && (
                       <span
-                        className="absolute bottom-2 left-2 px-2 py-0.5 rounded-md text-[8px] font-bold backdrop-blur-sm text-white"
+                        className="absolute bottom-2.5 left-2.5 px-2.5 py-1 rounded-md text-[9px] font-bold backdrop-blur-md text-white tracking-wider uppercase"
                         style={{ background: `${storeTheme.primary}cc` }}
                       >
                         Aluguel
@@ -472,24 +476,24 @@ export default function StoreLayoutMinimal({
                   </div>
 
                   {/* Content */}
-                  <div className="p-3 md:p-5">
+                  <div className="p-4 md:p-6">
                     {/* Eyebrow location */}
                     {product.city && (
                       <p
-                        className="minimal-mono text-[8px] md:text-[9px] uppercase tracking-[0.25em] flex items-center gap-1 mb-2"
+                        className="minimal-mono text-[8px] md:text-[9px] uppercase tracking-[0.28em] flex items-center gap-1 mb-2.5 font-medium"
                         style={{ color: storeTheme.textMuted }}
                       >
-                        <MapPin size={8} strokeWidth={2.4} />
+                        <MapPin size={9} strokeWidth={2.4} />
                         <span className="truncate">
                           {product.neighborhood ? `${product.neighborhood} · ${product.city}` : product.city}
                         </span>
                       </p>
                     )}
 
-                    {/* Editorial title */}
+                    {/* Modern title — Sora semibold */}
                     <h3
-                      className="minimal-display font-medium text-base md:text-xl line-clamp-2 leading-[1.15] mb-3"
-                      style={{ color: storeTheme.text, letterSpacing: "-0.01em" }}
+                      className="minimal-display font-semibold text-[15px] md:text-[17px] line-clamp-2 leading-[1.25] mb-3.5"
+                      style={{ color: storeTheme.text }}
                     >
                       {product.title}
                     </h3>
@@ -497,29 +501,29 @@ export default function StoreLayoutMinimal({
                     {/* Hairline divider in primary */}
                     {product.price > 0 && (
                       <div
-                        className="h-px w-8 mb-2.5 transition-all duration-500 group-hover:w-16"
+                        className="h-px w-10 mb-3 transition-all duration-500 group-hover:w-20"
                         style={{ background: storeTheme.primary }}
                       />
                     )}
 
-                    {/* Epic price */}
+                    {/* Epic premium price — Space Grotesk */}
                     {product.price > 0 && (
-                      <div className="flex items-baseline gap-1">
+                      <div className="flex items-baseline gap-1.5">
                         <span
-                          className="minimal-mono text-[9px] md:text-[10px] uppercase tracking-[0.2em]"
+                          className="minimal-mono text-[10px] md:text-[11px] uppercase tracking-[0.2em] font-semibold"
                           style={{ color: storeTheme.textMuted }}
                         >
                           R$
                         </span>
                         <span
-                          className="minimal-display font-semibold text-xl md:text-2xl leading-none"
-                          style={{ color: storeTheme.primary, letterSpacing: "-0.02em" }}
+                          className="minimal-price font-bold text-[22px] md:text-[26px] leading-none"
+                          style={{ color: storeTheme.text }}
                         >
                           {product.price.toLocaleString("pt-BR")}
                         </span>
                         {product.isAluguel && (
                           <span
-                            className="minimal-mono text-[8px] md:text-[9px] uppercase tracking-[0.2em] ml-0.5"
+                            className="minimal-mono text-[9px] md:text-[10px] uppercase tracking-[0.18em] ml-0.5 font-medium"
                             style={{ color: storeTheme.textMuted }}
                           >
                             /mês
@@ -530,17 +534,17 @@ export default function StoreLayoutMinimal({
 
                     {/* Specs — revealed on hover (desktop) */}
                     <div
-                      className="flex items-center gap-3 mt-3 pt-3 border-t text-[9px] md:text-[10px] md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 minimal-mono uppercase tracking-[0.15em]"
+                      className="flex items-center gap-3.5 mt-4 pt-3.5 border-t text-[10px] md:text-[11px] md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 minimal-mono uppercase tracking-[0.15em] font-medium"
                       style={{ color: storeTheme.textMuted, borderColor: `${storeTheme.border}80` }}
                     >
                       {product.bedrooms > 0 && (
-                        <span className="flex items-center gap-1"><Bed size={10} /> {product.bedrooms}</span>
+                        <span className="flex items-center gap-1"><Bed size={11} /> {product.bedrooms}</span>
                       )}
                       {product.bathrooms > 0 && (
-                        <span className="flex items-center gap-1"><Bath size={10} /> {product.bathrooms}</span>
+                        <span className="flex items-center gap-1"><Bath size={11} /> {product.bathrooms}</span>
                       )}
                       {product.area > 0 && (
-                        <span className="flex items-center gap-1"><Ruler size={10} /> {product.area}m²</span>
+                        <span className="flex items-center gap-1"><Ruler size={11} /> {product.area}m²</span>
                       )}
                     </div>
                   </div>
@@ -577,13 +581,13 @@ export default function StoreLayoutMinimal({
             style={{ background: `linear-gradient(to right, transparent, ${storeTheme.primary}, transparent)` }}
           />
 
-          <p className="text-[10px] uppercase tracking-[0.3em] mb-2" style={{ color: storeTheme.primary }}>
+          <p className="minimal-mono text-[10px] uppercase tracking-[0.32em] mb-3 font-semibold" style={{ color: storeTheme.primary }}>
             Captação de imóveis
           </p>
-          <h2 className="minimal-display text-3xl md:text-4xl font-light italic mb-2" style={{ color: storeTheme.text }}>
+          <h2 className="minimal-display text-3xl md:text-5xl font-bold mb-3" style={{ color: storeTheme.text, letterSpacing: "-0.03em" }}>
             Quer anunciar seu imóvel?
           </h2>
-          <p className="text-xs mb-6 max-w-md mx-auto" style={{ color: storeTheme.textMuted }}>
+          <p className="minimal-body text-sm md:text-base mb-7 max-w-md mx-auto font-light" style={{ color: storeTheme.textMuted }}>
             Cadastre seu imóvel gratuitamente com {sellerDisplayName} e alcance mais compradores.
           </p>
           <Link
