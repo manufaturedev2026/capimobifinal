@@ -312,30 +312,38 @@ export default function StoreLayoutAppleStore(props: StoreLayoutProps) {
       <section className="pt-24 sm:pt-32 pb-12 sm:pb-20 relative overflow-hidden" style={{ background: C.bg }}>
         <div
           className="absolute -top-40 left-1/2 -translate-x-1/2 w-[600px] sm:w-[900px] h-[600px] sm:h-[900px] rounded-full pointer-events-none"
-          style={{ background: `radial-gradient(closest-side, ${C.gold}18, transparent 70%)` }}
+          style={{
+            background: `radial-gradient(closest-side, ${C.gold}18, transparent 70%)`,
+            transform: `translate(-50%, ${scrollY * 0.3}px)`,
+          }}
         />
-        <div className="max-w-[1100px] mx-auto px-5 sm:px-6 text-center apple-fade-up relative">
-          <p className="text-[10px] sm:text-[12px] font-medium uppercase tracking-[0.28em] sm:tracking-[0.32em] mb-4 sm:mb-5" style={{ color: C.gold }}>
-            Coleção Privada
+        <div
+          className="max-w-[1240px] mx-auto px-5 sm:px-6 text-center relative blur-in"
+          style={{ transform: `translateY(${scrollY * -0.15}px)`, opacity: Math.max(0, 1 - scrollY / 600) }}
+        >
+          <p className="text-[10px] sm:text-[12px] font-medium uppercase tracking-[0.32em] sm:tracking-[0.4em] mb-5 sm:mb-7 inline-flex items-center gap-3" style={{ color: C.gold }}>
+            <span style={{ width: 28, height: 1, background: C.gold }} />
+            Coleção Privada · {totalCount > 0 ? `${count} ${count === 1 ? "imóvel" : "imóveis"}` : "Acesso restrito"}
+            <span style={{ width: 28, height: 1, background: C.gold }} />
           </p>
-          <h1 className="text-[34px] sm:text-[64px] lg:text-[88px] leading-[1.05] font-semibold tracking-tight">
+          <h1 className="font-semibold tracking-tight" style={{ fontSize: "clamp(40px, 9vw, 132px)", lineHeight: 0.98 }}>
             <span style={{ color: C.text }}>O extraordinário,</span>
             <br />
             <span className="apple-serif italic gold-text">cuidadosamente selecionado.</span>
           </h1>
-          <p className="mt-5 sm:mt-7 text-[15px] sm:text-[20px] max-w-[680px] mx-auto leading-relaxed" style={{ color: C.textMuted }}>
+          <p className="mt-6 sm:mt-8 text-[15px] sm:text-[20px] max-w-[680px] mx-auto leading-relaxed" style={{ color: C.textMuted }}>
             Casas, apartamentos e residências exclusivas com a experiência de um atendimento prime.
           </p>
-          <div className="mt-7 sm:mt-10 flex flex-wrap items-center justify-center gap-3 sm:gap-4 text-[14px] sm:text-[15px]">
+          <div className="mt-8 sm:mt-10 flex flex-wrap items-center justify-center gap-3 sm:gap-4 text-[14px] sm:text-[15px]">
             <button
               onClick={() => document.getElementById("apple-grid")?.scrollIntoView({ behavior: "smooth" })}
-              className="gold-btn inline-flex items-center px-6 sm:px-7 h-11 sm:h-12 rounded-full font-semibold tracking-tight transition-all"
+              className="gold-btn pulse-gold inline-flex items-center px-7 sm:px-8 h-12 rounded-full font-semibold tracking-tight transition-all"
             >
               Explorar coleção
             </button>
             <button
               onClick={() => handleWhatsApp("Olá! Quero falar com um consultor.")}
-              className="inline-flex items-center gap-1.5 px-6 sm:px-7 h-11 sm:h-12 rounded-full font-medium border transition-colors"
+              className="inline-flex items-center gap-1.5 px-7 sm:px-8 h-12 rounded-full font-medium border transition-colors"
               style={{ borderColor: `${C.gold}50`, color: C.text }}
             >
               Falar com consultor <ChevronRight size={16} />
@@ -343,54 +351,85 @@ export default function StoreLayoutAppleStore(props: StoreLayoutProps) {
           </div>
         </div>
 
-        <div className="max-w-[1240px] mx-auto px-4 sm:px-6 mt-10 sm:mt-16">
+        <div className="max-w-[1240px] mx-auto px-4 sm:px-6 mt-12 sm:mt-20">
           <motion.div
             initial={{ opacity: 0, scale: 0.97, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ duration: 1.2, ease: [0.22, 0.61, 0.36, 1] }}
-            className="rounded-2xl sm:rounded-[32px] overflow-hidden relative grain aspect-[4/5] sm:aspect-[21/9]"
-            style={{
-              border: `1px solid ${C.hairline}`,
-              boxShadow: `0 60px 120px -40px rgba(0,0,0,0.9), 0 0 0 1px ${C.gold}15`,
-            }}
+            transition={{ duration: 1.4, ease: [0.22, 0.61, 0.36, 1] }}
           >
-            <img
-              src={heroImage}
-              alt="Imóvel em destaque"
-              className="w-full h-full object-cover"
-              style={{ filter: "saturate(1.05) contrast(1.05)" }}
-              loading="eager"
-            />
-            <div
-              className="absolute inset-0"
-              style={{ background: "linear-gradient(180deg, transparent 30%, rgba(0,0,0,0.55) 75%, rgba(0,0,0,0.92) 100%)" }}
-            />
-            <div className="absolute bottom-5 sm:bottom-10 left-5 sm:left-10 right-5 sm:right-10 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 sm:gap-6">
-              <div className="min-w-0">
-                <p className="text-[10px] sm:text-[11px] font-medium uppercase tracking-[0.28em] sm:tracking-[0.32em]" style={{ color: C.gold }}>
-                  Em destaque
-                </p>
-                <h3 className="apple-serif italic mt-1.5 sm:mt-2 text-[22px] sm:text-[40px] lg:text-[52px] leading-[1.05] line-clamp-2" style={{ color: C.text }}>
-                  {products?.[0]?.title || "Sua próxima conquista."}
-                </h3>
-                {products?.[0]?.city && (
-                  <p className="mt-1.5 sm:mt-2 text-[12px] sm:text-[14px] flex items-center gap-1.5" style={{ color: `${C.text}aa` }}>
-                    <MapPin size={12} /> {[products[0].neighborhood, products[0].city].filter(Boolean).join(" • ")}
+            <Link
+              to={products?.[0] ? `/imovel/${products[0].slug || products[0].id}` : "#apple-grid"}
+              className="block rounded-2xl sm:rounded-[32px] overflow-hidden relative grain aspect-[4/5] sm:aspect-[21/9] group cursor-pointer"
+              style={{
+                border: `1px solid ${C.hairline}`,
+                boxShadow: `0 60px 120px -40px rgba(0,0,0,0.9), 0 0 0 1px ${C.gold}15`,
+              }}
+            >
+              <div className="absolute inset-0 overflow-hidden">
+                <img
+                  src={heroImage}
+                  alt="Imóvel em destaque"
+                  className="w-full h-full object-cover transition-transform duration-[2000ms] group-hover:scale-[1.06]"
+                  style={{
+                    filter: "saturate(1.08) contrast(1.08)",
+                    transform: `scale(${1 + Math.min(scrollY / 4000, 0.08)}) translateY(${scrollY * 0.08}px)`,
+                  }}
+                  loading="eager"
+                />
+              </div>
+              <div
+                className="absolute inset-0"
+                style={{ background: "linear-gradient(180deg, transparent 30%, rgba(0,0,0,0.55) 75%, rgba(0,0,0,0.92) 100%)" }}
+              />
+              <div className="absolute bottom-5 sm:bottom-10 left-5 sm:left-10 right-5 sm:right-10 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 sm:gap-6">
+                <div className="min-w-0">
+                  <p className="text-[10px] sm:text-[11px] font-medium uppercase tracking-[0.28em] sm:tracking-[0.32em]" style={{ color: C.gold }}>
+                    Em destaque
                   </p>
+                  <h3 className="apple-serif italic mt-1.5 sm:mt-2 text-[22px] sm:text-[40px] lg:text-[52px] leading-[1.05] line-clamp-2" style={{ color: C.text }}>
+                    {products?.[0]?.title || "Sua próxima conquista."}
+                  </h3>
+                  {products?.[0]?.city && (
+                    <p className="mt-1.5 sm:mt-2 text-[12px] sm:text-[14px] flex items-center gap-1.5" style={{ color: `${C.text}aa` }}>
+                      <MapPin size={12} /> {[products[0].neighborhood, products[0].city].filter(Boolean).join(" • ")}
+                    </p>
+                  )}
+                  <span
+                    className="mt-3 sm:mt-4 inline-flex items-center gap-1.5 text-[12px] sm:text-[13px] font-medium group-hover:gap-2.5 transition-all"
+                    style={{ color: C.gold }}
+                  >
+                    Ver imóvel <ArrowRight size={14} />
+                  </span>
+                </div>
+                {products?.[0]?.price && (
+                  <div className="sm:text-right">
+                    <p className="text-[10px] sm:text-[11px] uppercase tracking-[0.22em] sm:tracking-[0.24em]" style={{ color: `${C.text}80` }}>
+                      A partir de
+                    </p>
+                    <p className="apple-serif text-[24px] sm:text-[34px] gold-text mt-0.5 sm:mt-1">
+                      {formatPrice(products[0].price)}
+                    </p>
+                  </div>
                 )}
               </div>
-              {products?.[0]?.price && (
-                <div className="sm:text-right">
-                  <p className="text-[10px] sm:text-[11px] uppercase tracking-[0.22em] sm:tracking-[0.24em]" style={{ color: `${C.text}80` }}>
-                    A partir de
-                  </p>
-                  <p className="apple-serif text-[24px] sm:text-[34px] gold-text mt-0.5 sm:mt-1">
-                    {formatPrice(products[0].price)}
-                  </p>
-                </div>
-              )}
-            </div>
+            </Link>
           </motion.div>
+        </div>
+      </section>
+
+      {/* ─────────────── 2.5 MARQUEE ─────────────── */}
+      <section className="py-6 sm:py-8 relative overflow-hidden" style={{ background: C.bg, borderTop: `1px solid ${C.hairline}`, borderBottom: `1px solid ${C.hairline}` }}>
+        <div className="flex marquee-track" style={{ width: "max-content" }}>
+          {Array.from({ length: 2 }).map((_, dup) => (
+            <div key={dup} className="flex items-center gap-12 px-6">
+              {["Exclusive Estates", "Private Collection", "Prime Selection", "Curated Properties", "Bespoke Service", "Exclusive Estates", "Private Collection", "Prime Selection"].map((t, i) => (
+                <span key={`${dup}-${i}`} className="apple-serif italic flex items-center gap-12 text-[28px] sm:text-[40px] whitespace-nowrap" style={{ color: i % 2 === 0 ? C.gold : `${C.text}30` }}>
+                  {t}
+                  <span style={{ color: C.gold, fontSize: 12 }}>✦</span>
+                </span>
+              ))}
+            </div>
+          ))}
         </div>
       </section>
 
