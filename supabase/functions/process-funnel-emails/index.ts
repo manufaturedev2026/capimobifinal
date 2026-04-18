@@ -70,8 +70,9 @@ Deno.serve(async (req) => {
     for (const profile of profiles) {
       const ageDays = Math.floor((now - new Date(profile.created_at).getTime()) / 86400000);
 
-      for (const step of steps) {
-        if (ageDays !== step.day_offset) continue;
+      for (const step of stepsFiltered) {
+        // When invoked directly with a profile_id, ignore age check (immediate send)
+        if (!onlyProfileId && ageDays !== step.day_offset) continue;
 
         const { data: existing } = await admin
           .from("funnel_sends")
