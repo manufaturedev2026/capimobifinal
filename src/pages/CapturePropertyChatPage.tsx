@@ -75,6 +75,8 @@ interface BotConfig {
   agendCtaUrl?: string;
   avalCtaLabel?: string;
   avalCtaUrl?: string;
+  aiCtaLabel?: string;
+  aiCtaUrl?: string;
 }
 
 const DEFAULT_CONFIG: BotConfig = {
