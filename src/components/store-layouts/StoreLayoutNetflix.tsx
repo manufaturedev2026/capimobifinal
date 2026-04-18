@@ -1210,12 +1210,17 @@ export default function StoreLayoutNetflix({
                                   </div>
                                 )}
                               </div>
-                            <div className="p-3 md:p-3.5">
-                              <h3 className="text-[11px] md:text-xs font-bold line-clamp-2 leading-snug mb-1.5" style={{ color: storeTheme.text }}>
+                            <div className="p-3 md:p-3.5 relative">
+                              {/* Top accent line on hover */}
+                              <div
+                                className="absolute top-0 left-3 right-3 h-[1px] opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                                style={{ background: `linear-gradient(90deg, transparent, ${storeTheme.primary}, transparent)` }}
+                              />
+                              <h3 className="text-[11px] md:text-xs font-bold line-clamp-2 leading-snug mb-1.5 group-hover:translate-x-0.5 transition-transform" style={{ color: storeTheme.text }}>
                                 {product.title}
                               </h3>
                               {product.price > 0 && (
-                                <p className="text-sm md:text-lg font-black" style={{ color: storeTheme.primary }}>
+                                <p className="text-sm md:text-lg font-black" style={{ color: storeTheme.primary, textShadow: `0 0 12px ${storeTheme.primary}40` }}>
                                   R$ {product.price.toLocaleString("pt-BR")}
                                   {product.isAluguel && <span className="text-[10px] font-normal ml-1" style={{ color: storeTheme.textMuted }}>/mês</span>}
                                 </p>
@@ -1238,10 +1243,19 @@ export default function StoreLayoutNetflix({
                               )}
                               <button
                                 onClick={(e) => { e.preventDefault(); handleWhatsApp(product.title, product.id); }}
-                                className="mt-3 w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-[11px] font-bold transition-opacity hover:opacity-90"
-                                style={{ background: storeTheme.primary, color: "#fff" }}
+                                className="relative mt-3 w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-[11px] font-bold overflow-hidden group/wpp transition-all hover:scale-[1.02] active:scale-95"
+                                style={{
+                                  background: `linear-gradient(135deg, ${storeTheme.primary}, ${storeTheme.primary}dd)`,
+                                  color: "#fff",
+                                  boxShadow: `0 6px 16px -4px ${storeTheme.primary}70, inset 0 1px 0 rgba(255,255,255,0.3)`,
+                                }}
                               >
-                                <MessageCircle size={12} /> WhatsApp
+                                <div
+                                  className="absolute inset-0 -translate-x-full group-hover/wpp:translate-x-full transition-transform duration-700"
+                                  style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)" }}
+                                />
+                                <MessageCircle size={12} className="relative z-10" />
+                                <span className="relative z-10">WhatsApp</span>
                               </button>
                             </div>
                           </Link>
