@@ -41,10 +41,17 @@ Deno.serve(async (req) => {
 
     if (!steps || steps.length === 0) return json({ ok: true, processed: 0, message: "Nenhuma etapa ativa" });
 
-    const { data: profiles } = await admin
+    const stepsFiltered = onlyDayOffset !== null
+      ? steps.filter((s: any) => s.day_offset === onlyDayOffset)
+      : steps;
+    if (stepsFiltered.length === 0) return json({ ok: true, processed: 0, message: "Nenhuma etapa para o filtro" });
+
+    let profilesQuery = admin
       .from("profiles")
       .select("id, user_id, full_name, email, created_at")
       .not("email", "is", null);
+    if (onlyProfileId) profilesQuery = profilesQuery.eq("id", onlyProfileId);
+    const { data: profiles } = await profilesQuery;
 
     if (!profiles) return json({ ok: true, processed: 0 });
 
