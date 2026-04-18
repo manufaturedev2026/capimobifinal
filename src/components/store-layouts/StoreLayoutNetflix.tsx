@@ -285,7 +285,7 @@ function NetflixCard({ product, index, corretorSlug, getTagLabel, getTagStyle, a
    ═══════════════════════════════════════════ */
 export default function StoreLayoutNetflix({
   filteredProducts, products, subcategories, activeCategory, setActiveCategory,
-  categoryCounts, categoryCardImages, storeTheme, corretorSlug,
+  categoryCounts, categoryCardImages, storeTheme, corretorSlug, sellerDisplayName,
   isDbProfile, dbProfile, handleWhatsApp, getTagStyle, getTagLabel,
   onCinemaMode, onShareLink, filterCity, setFilterCity, availableCities, storiesBar,
 }: StoreLayoutProps) {
