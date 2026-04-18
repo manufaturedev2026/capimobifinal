@@ -1162,76 +1162,79 @@ export default function CompanyProfile() {
         />
 
         <div className={`relative w-full ${isMarketplace ? "px-2 md:px-8" : "max-w-[1800px] mx-auto px-2 md:px-8"}`}>
-          <div className="flex items-center gap-2 sm:gap-4 md:gap-8 py-3 md:py-4 overflow-x-auto scrollbar-hide -mx-1 px-1">
-            <div className="group flex items-center gap-2 md:gap-2.5 flex-shrink-0 transition-transform hover:scale-105">
+          <div className="flex items-center justify-between md:justify-start gap-1 sm:gap-3 md:gap-8 py-2.5 md:py-4">
+            <div className="group flex items-center gap-1.5 md:gap-2.5 flex-shrink min-w-0 transition-transform hover:scale-105">
               <div
-                className="relative w-9 h-9 md:w-11 md:h-11 rounded-xl flex items-center justify-center"
+                className="relative w-8 h-8 md:w-11 md:h-11 rounded-lg md:rounded-xl flex items-center justify-center flex-shrink-0"
                 style={{
                   background: `linear-gradient(135deg, ${storeTheme.primary}25, ${storeTheme.primary}10)`,
                   border: `1px solid ${storeTheme.primary}40`,
                   boxShadow: `0 4px 16px ${storeTheme.primary}25, inset 0 1px 0 ${storeTheme.primary}20`,
                 }}
               >
-                <Store size={18} style={{ color: storeTheme.primary }} />
+                <Store size={14} style={{ color: storeTheme.primary }} className="md:hidden" />
+                <Store size={18} style={{ color: storeTheme.primary }} className="hidden md:block" />
               </div>
-              <div className="leading-tight">
+              <div className="leading-tight min-w-0">
                 <p
-                  className="font-display font-extrabold text-base md:text-xl bg-clip-text text-transparent"
+                  className="font-display font-extrabold text-sm md:text-xl bg-clip-text text-transparent"
                   style={{ backgroundImage: `linear-gradient(135deg, ${storeTheme.primary}, ${storeTheme.accent || storeTheme.primary})` }}
                 >
                   {products.length}
                 </p>
-                <p className="text-[9px] md:text-[10px] uppercase tracking-[0.18em] font-semibold" style={{ color: storeTheme.textMuted }}>
+                <p className="text-[8px] md:text-[10px] uppercase tracking-[0.1em] md:tracking-[0.18em] font-semibold truncate" style={{ color: storeTheme.textMuted }}>
                   Anúncios
                 </p>
               </div>
             </div>
 
-            <div className="w-px h-9 md:h-11 flex-shrink-0" style={{ background: `linear-gradient(180deg, transparent, ${storeTheme.border}, transparent)` }} />
+            <div className="w-px h-8 md:h-11 flex-shrink-0" style={{ background: `linear-gradient(180deg, transparent, ${storeTheme.border}, transparent)` }} />
 
-            <div className="group flex items-center gap-2 md:gap-2.5 flex-shrink-0 transition-transform hover:scale-105">
+            <div className="group flex items-center gap-1.5 md:gap-2.5 flex-shrink min-w-0 transition-transform hover:scale-105">
               <div
-                className="relative w-9 h-9 md:w-11 md:h-11 rounded-xl flex items-center justify-center"
+                className="relative w-8 h-8 md:w-11 md:h-11 rounded-lg md:rounded-xl flex items-center justify-center flex-shrink-0"
                 style={{
                   background: "linear-gradient(135deg, rgba(37,211,102,0.25), rgba(37,211,102,0.08))",
                   border: "1px solid rgba(37,211,102,0.45)",
                   boxShadow: "0 4px 16px rgba(37,211,102,0.3), inset 0 1px 0 rgba(255,255,255,0.1)",
                 }}
               >
-                <MessageCircle size={18} className="text-[#25d366]" />
-                <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-[#25d366] animate-pulse" />
+                <MessageCircle size={14} className="text-[#25d366] md:hidden" />
+                <MessageCircle size={18} className="text-[#25d366] hidden md:block" />
+                <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-[#25d366] animate-pulse" />
               </div>
-              <div className="leading-tight">
-                <p className="font-display font-extrabold text-base md:text-xl text-[#25d366]">
+              <div className="leading-tight min-w-0">
+                <p className="font-display font-extrabold text-sm md:text-xl text-[#25d366]">
                   Direto
                 </p>
-                <p className="text-[9px] md:text-[10px] uppercase tracking-[0.18em] font-semibold" style={{ color: storeTheme.textMuted }}>
+                <p className="text-[8px] md:text-[10px] uppercase tracking-[0.1em] md:tracking-[0.18em] font-semibold truncate" style={{ color: storeTheme.textMuted }}>
                   WhatsApp
                 </p>
               </div>
             </div>
 
-            <div className="w-px h-9 md:h-11 flex-shrink-0" style={{ background: `linear-gradient(180deg, transparent, ${storeTheme.border}, transparent)` }} />
+            <div className="w-px h-8 md:h-11 flex-shrink-0" style={{ background: `linear-gradient(180deg, transparent, ${storeTheme.border}, transparent)` }} />
 
-            <div className="group flex items-center gap-2 md:gap-2.5 flex-shrink-0 transition-transform hover:scale-105">
+            <div className="group flex items-center gap-1.5 md:gap-2.5 flex-shrink min-w-0 transition-transform hover:scale-105">
               <div
-                className="relative w-9 h-9 md:w-11 md:h-11 rounded-xl flex items-center justify-center"
+                className="relative w-8 h-8 md:w-11 md:h-11 rounded-lg md:rounded-xl flex items-center justify-center flex-shrink-0"
                 style={{
                   background: `linear-gradient(135deg, ${storeTheme.accent || storeTheme.primary}30, ${storeTheme.accent || storeTheme.primary}10)`,
                   border: `1px solid ${storeTheme.accent || storeTheme.primary}50`,
                   boxShadow: `0 4px 16px ${storeTheme.accent || storeTheme.primary}25, inset 0 1px 0 rgba(255,255,255,0.08)`,
                 }}
               >
-                <Shield size={18} style={{ color: storeTheme.accent || storeTheme.primary }} />
+                <Shield size={14} style={{ color: storeTheme.accent || storeTheme.primary }} className="md:hidden" />
+                <Shield size={18} style={{ color: storeTheme.accent || storeTheme.primary }} className="hidden md:block" />
               </div>
-              <div className="leading-tight">
+              <div className="leading-tight min-w-0">
                 <p
-                  className="font-display font-extrabold text-base md:text-xl bg-clip-text text-transparent"
+                  className="font-display font-extrabold text-sm md:text-xl bg-clip-text text-transparent truncate"
                   style={{ backgroundImage: `linear-gradient(135deg, ${storeTheme.accent || storeTheme.primary}, ${storeTheme.primary})` }}
                 >
                   {isPaid ? "Verificado" : "Ativo"}
                 </p>
-                <p className="text-[9px] md:text-[10px] uppercase tracking-[0.18em] font-semibold" style={{ color: storeTheme.textMuted }}>
+                <p className="text-[8px] md:text-[10px] uppercase tracking-[0.1em] md:tracking-[0.18em] font-semibold truncate" style={{ color: storeTheme.textMuted }}>
                   Vendedor
                 </p>
               </div>
@@ -1239,7 +1242,7 @@ export default function CompanyProfile() {
 
             {isPaid && (
               <>
-                <div className="w-px h-9 md:h-11 flex-shrink-0" style={{ background: `linear-gradient(180deg, transparent, ${storeTheme.border}, transparent)` }} />
+                <div className="w-px h-8 md:h-11 flex-shrink-0" style={{ background: `linear-gradient(180deg, transparent, ${storeTheme.border}, transparent)` }} />
                 <div className="flex items-center gap-1.5 md:gap-2 flex-shrink-0 transition-transform hover:scale-105">
                   <PackageBadge tier={sellerTier} size="sm" />
                 </div>
