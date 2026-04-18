@@ -26,7 +26,11 @@ export default function StoreLayoutCyberpunkMarketplace(props: StoreLayoutProps)
     const onScroll = () => setScrolled(window.scrollY > 40);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    document.body.classList.add("cp-active");
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      document.body.classList.remove("cp-active");
+    };
   }, []);
 
   useEffect(() => {
