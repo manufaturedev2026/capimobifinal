@@ -215,6 +215,28 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
   const [aiCtaLabel, setAiCtaLabel] = useState("💬 Falar no WhatsApp");
   const [aiCtaUrl, setAiCtaUrl] = useState("");
 
+  // Mensagens de abertura pré-prontas por tipo de fluxo
+  const FLOW_OPENING_MESSAGES: Record<FlowType, string> = {
+    captacao: "Olá! 👋 Vou te ajudar a cadastrar seu imóvel para venda ou aluguel de forma rápida e 100% gratuita. 🏡\n\nFazemos a divulgação profissional, encontramos compradores/inquilinos qualificados e cuidamos de toda a negociação para você. Vamos começar?",
+    grupo_whatsapp: "Olá! 👋 Que bom ter você por aqui!\n\nVou te adicionar ao nosso grupo VIP no WhatsApp 📲, onde compartilhamos em primeira mão as melhores oportunidades de imóveis: lançamentos, ofertas exclusivas e descontos especiais. 🏡🔥\n\nVamos garantir sua vaga?",
+    agendamento: "Olá! 👋 Vou te ajudar a agendar uma visita ao imóvel de seu interesse. 📅\n\nÉ rápido, sem compromisso e você escolhe o melhor dia e horário. Nosso corretor especializado te acompanha pessoalmente para tirar todas as dúvidas. Vamos marcar?",
+    avaliacao: "Olá! 👋 Vou te ajudar a solicitar uma avaliação 100% GRATUITA do seu imóvel. 💎\n\nNossa análise considera o mercado atual da sua região, características do imóvel e tendências de preço, para você saber exatamente quanto vale o seu patrimônio. Vamos começar?",
+  };
+
+  // Detecta se a mensagem atual é uma das pré-prontas (assim podemos substituir sem perder customização do usuário)
+  const isDefaultOpeningMessage = (msg: string) => {
+    const defaults = Object.values(FLOW_OPENING_MESSAGES);
+    return defaults.includes(msg.trim()) || msg.trim() === "Olá! 👋 Vou te ajudar a cadastrar seu imóvel para avaliação gratuita! É rápido e sem compromisso 🏡";
+  };
+
+  const handleFlowTypeChange = (newFlow: FlowType) => {
+    setBotFlowType(newFlow);
+    // Se a mensagem de abertura ainda é uma das pré-prontas, atualiza para a do novo fluxo
+    if (isDefaultOpeningMessage(botOpeningMessage)) {
+      setBotOpeningMessage(FLOW_OPENING_MESSAGES[newFlow]);
+    }
+  };
+
   const FLOW_HASH: Record<FlowType, string> = {
     captacao: "captacao",
     grupo_whatsapp: "grupo",
@@ -925,7 +947,7 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
                   {FLOW_TYPES.map(ft => (
                     <button
                       key={ft.value}
-                      onClick={() => setBotFlowType(ft.value)}
+                      onClick={() => handleFlowTypeChange(ft.value)}
                       className={`p-2.5 rounded-xl border transition-all text-center ${
                         botFlowType === ft.value
                           ? "bg-primary/10 border-primary/30 ring-1 ring-primary/20"
