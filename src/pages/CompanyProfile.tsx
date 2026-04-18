@@ -949,7 +949,7 @@ export default function CompanyProfile() {
         </div>
       )}
 
-      <section className={`hidden lg:block relative overflow-hidden ${isMinimal || isMarketplace || isNetflix || false ? "!hidden" : ""} ${hasVideoHero ? "h-[70vh]" : "h-[60vh]"}`}>
+      <section data-company-hero className={`hidden lg:block relative overflow-hidden ${isMinimal || isMarketplace || isNetflix || false ? "!hidden" : ""} ${hasVideoHero ? "h-[70vh]" : "h-[60vh]"}`}>
         {/* Video background or sliding images */}
         {hasVideoHero ? (
           <iframe
