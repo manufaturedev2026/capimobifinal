@@ -234,58 +234,82 @@ async function handleWebhook(req: Request): Promise<Response> {
     plainText: true,
   })
 
-  // Enqueue email for async processing by the dispatcher (process-email-queue).
-  const supabase = createClient(
+  const subject = EMAIL_SUBJECTS[emailType] || 'Notification'
+  const recipient = payload.data.email
+
+  const admin = createClient(
     Deno.env.get('SUPABASE_URL')!,
     Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
   )
 
-  const messageId = crypto.randomUUID()
+  // Send via custom SMTP configured in smtp_settings table
+  const { data: settings } = await admin.from('smtp_settings').select('*').limit(1).maybeSingle()
 
-  // Log pending BEFORE enqueue so we have a record even if enqueue crashes
-  await supabase.from('email_send_log').insert({
-    message_id: messageId,
-    template_name: emailType,
-    recipient_email: payload.data.email,
-    status: 'pending',
-  })
-
-  const { error: enqueueError } = await supabase.rpc('enqueue_email', {
-    queue_name: 'auth_emails',
-    payload: {
-      run_id,
-      message_id: messageId,
-      to: payload.data.email,
-      from: `${SITE_NAME} <noreply@${FROM_DOMAIN}>`,
-      sender_domain: SENDER_DOMAIN,
-      subject: EMAIL_SUBJECTS[emailType] || 'Notification',
-      html,
-      text,
-      purpose: 'transactional',
-      label: emailType,
-      queued_at: new Date().toISOString(),
-    },
-  })
-
-  if (enqueueError) {
-    console.error('Failed to enqueue auth email', { error: enqueueError, run_id, emailType })
-    await supabase.from('email_send_log').insert({
-      message_id: messageId,
-      template_name: emailType,
-      recipient_email: payload.data.email,
-      status: 'failed',
-      error_message: 'Failed to enqueue email',
+  if (!settings || !settings.enabled || !settings.password_encrypted) {
+    console.error('SMTP not configured or disabled', { run_id })
+    await admin.from('email_logs').insert({
+      to_email: recipient, subject, message: html, status: 'failed',
+      error_message: 'SMTP não configurado', context: `auth_${emailType}`,
     })
-    return new Response(JSON.stringify({ error: 'Failed to enqueue email' }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    return new Response(JSON.stringify({ error: 'SMTP not configured' }), {
+      status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
   }
 
-  console.log('Auth email enqueued', { emailType, email: payload.data.email, run_id })
+  const key = Deno.env.get('SMTP_ENCRYPTION_KEY') || 'default-dev-key-change-me'
+  const { data: pwd, error: decErr } = await admin.rpc('decrypt_smtp_password', {
+    p_encrypted: settings.password_encrypted, p_key: key,
+  })
+  if (decErr) {
+    console.error('Failed to decrypt SMTP password', { error: decErr, run_id })
+    return new Response(JSON.stringify({ error: 'SMTP decrypt failed' }), {
+      status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    })
+  }
+
+  const { SMTPClient } = await import('https://deno.land/x/denomailer@1.6.0/mod.ts')
+
+  let logStatus = 'sent'
+  let errorMessage: string | null = null
+
+  try {
+    const client = new SMTPClient({
+      connection: {
+        hostname: settings.host,
+        port: settings.port,
+        tls: settings.security === 'ssl',
+        auth: { username: settings.username, password: pwd as string },
+      },
+    })
+    await client.send({
+      from: `${settings.sender_name} <${settings.sender_email}>`,
+      to: recipient,
+      subject,
+      html,
+      content: text,
+      replyTo: settings.reply_to || undefined,
+    })
+    await client.close()
+    console.log('Auth email sent via SMTP', { emailType, recipient, run_id })
+  } catch (e) {
+    logStatus = 'failed'
+    errorMessage = (e as Error).message
+    console.error('SMTP send failed', { error: errorMessage, run_id, emailType })
+  }
+
+  await admin.from('email_logs').insert({
+    to_email: recipient, subject, message: html, status: logStatus,
+    error_message: errorMessage, context: `auth_${emailType}`,
+  })
+
+  if (logStatus === 'failed') {
+    return new Response(JSON.stringify({ error: errorMessage }), {
+      status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    })
+  }
 
   return new Response(
-    JSON.stringify({ success: true, queued: true }),
+    JSON.stringify({ success: true, sent: true }),
     { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
   )
 }
