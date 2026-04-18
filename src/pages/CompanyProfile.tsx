@@ -630,7 +630,7 @@ export default function CompanyProfile() {
       {isDbProfile && dbProfile?.id && <StoreEffects sellerId={dbProfile.id} />}
       {!isIOSStandalone && <ThemeParticles color={storeTheme.primary} sellerId={dbProfile?.id} />}
       {/* ═══════════ MOBILE PROFILE HERO ═══════════ */}
-      <section className={`lg:hidden relative overflow-hidden ${isMinimal || isMarketplace || isNetflix || false ? "hidden" : ""}`}>
+      <section data-company-hero-mobile className={`lg:hidden relative overflow-hidden ${isMinimal || isMarketplace || isNetflix || false ? "hidden" : ""}`}>
         {isMarketplace ? (
           /* ── Marketplace-style compact hero ── */
           <>
