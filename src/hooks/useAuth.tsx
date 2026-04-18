@@ -161,7 +161,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signUp = async (email: string, password: string, fullName: string, phone?: string, city?: string, state?: string) => {
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -169,6 +169,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         emailRedirectTo: window.location.origin,
       },
     });
+
+    if (!error && data.user) {
+      try {
+        await ensureProfile(data.user);
+        await checkBan(data.user.id);
+      } catch (profileError) {
+        console.warn("Falha ao garantir perfil após cadastro:", profileError);
+      }
+    }
 
     return { error };
   };

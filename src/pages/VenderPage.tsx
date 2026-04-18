@@ -164,7 +164,7 @@ const ENTERPRISE_PLANS = [
 
 export default function VenderPage() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, signUp } = useAuth();
   const { toast } = useToast();
   const [themeId, setThemeId] = useState("azul");
   const [fullName, setFullName] = useState("");
@@ -210,17 +210,21 @@ export default function VenderPage() {
      }
     setSubmitting(true);
     try {
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: email.trim(),
+      const { error } = await signUp(
+        email.trim(),
         password,
-        options: { data: { full_name: fullName.trim(), phone: phone.trim() || undefined, city: city.trim() || undefined, state: state || undefined } },
-      });
-      if (authError) throw authError;
+        fullName.trim(),
+        phone.trim() || undefined,
+        city.trim() || undefined,
+        state || undefined,
+      );
+      if (error) throw error;
 
-      // Save seller_category to profile (wait for trigger to create it)
-      if (authData.user?.id) {
+      const { data: { user: newUser } } = await supabase.auth.getUser();
+
+      if (newUser?.id) {
         for (let i = 0; i < 10; i++) {
-          const { data: prof } = await supabase.from("profiles").select("id").eq("user_id", authData.user.id).maybeSingle();
+          const { data: prof } = await supabase.from("profiles").select("id").eq("user_id", newUser.id).maybeSingle();
           if (prof) {
             await supabase.from("profiles").update({ seller_category: sellerCategory }).eq("id", prof.id);
             break;
@@ -229,19 +233,7 @@ export default function VenderPage() {
         }
       }
 
-      try {
-        await supabase.from("crm_contacts").insert({
-          full_name: fullName.trim(),
-          email: email.trim(),
-          phone: phone.trim() || null,
-          funnel_stage: "novo",
-          notes: `Lead via /anunciar — ${sellerCategory}`,
-          profile_id: authData.user?.id || "",
-          user_id: authData.user?.id || "",
-        } as any);
-      } catch { /* non-critical */ }
-
-      toast({ title: "Conta criada com sucesso!", description: "Verifique seu e-mail para confirmar o cadastro." });
+      toast({ title: "Conta criada com sucesso!", description: "Seu cadastro já entrou no CRM e vamos abrir seu painel." });
       navigate("/painel");
     } catch (err: any) {
       const msg = err?.message?.includes("already registered")
