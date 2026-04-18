@@ -310,6 +310,10 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
       agendMsgDate, agendMsgTime, agendMsgSuccess, agendMsgSuccessEnd,
       avalMsgName, avalMsgNameReply, avalMsgPhone, avalMsgType,
       avalMsgAddress, avalMsgDetails, avalMsgSuccess, avalMsgSuccessEnd,
+      captacaoCtaLabel, captacaoCtaUrl,
+      grupoCtaLabel,
+      agendCtaLabel, agendCtaUrl,
+      avalCtaLabel, avalCtaUrl,
     });
     const { error } = await supabase
       .from("platform_settings")
