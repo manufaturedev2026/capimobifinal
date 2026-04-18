@@ -47,7 +47,7 @@ const APPLE_CATEGORIES: { slug: string; name: string; tagline: string }[] = [
 ];
 
 const APPLE_BENEFITS = [
-  { icon: Zap, title: "Atendimento concierge", desc: "Resposta em minutos pelo WhatsApp." },
+  { icon: Zap, title: "Atendimento prime", desc: "Resposta em minutos pelo WhatsApp." },
   { icon: ShieldCheck, title: "Imóveis verificados", desc: "Cada anúncio é validado por um especialista." },
   { icon: Award, title: "Corretores especialistas", desc: "Profissionais com CRECI ativo na sua região." },
   { icon: Banknote, title: "Financiamento facilitado", desc: "Simulação e aprovação sem complicação." },
