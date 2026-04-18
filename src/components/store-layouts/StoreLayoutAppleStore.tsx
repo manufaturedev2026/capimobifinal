@@ -134,10 +134,14 @@ export default function StoreLayoutAppleStore(props: StoreLayoutProps) {
     return list;
   }, [filteredProducts, searchQuery]);
 
+  const getProductImage = (p: any) =>
+    p?.image || p?.images?.[0] || p?.photos?.[0] || "/placeholder.svg";
+
   const heroImage =
-    products?.[0]?.photos?.[0] ||
-    dbProfile?.logo_url ||
-    "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1800&q=85";
+    getProductImage(products?.[0]) !== "/placeholder.svg"
+      ? getProductImage(products?.[0])
+      : dbProfile?.logo_url ||
+        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1800&q=85";
 
   const phone = dbProfile?.phone || "";
 
@@ -419,7 +423,7 @@ export default function StoreLayoutAppleStore(props: StoreLayoutProps) {
                   <Link to={`/imovel/${p.slug || p.id}`} className="block">
                     <div className="aspect-[4/3] bg-[#f5f5f7] overflow-hidden">
                       <img
-                        src={p.photos?.[0] || "/placeholder.svg"}
+                        src={getProductImage(p)}
                         alt={p.title}
                         loading="lazy"
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
