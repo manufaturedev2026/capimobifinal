@@ -1064,7 +1064,7 @@ export default function StoreLayoutNetflix({
       })()}
 
       {/* ══════ MAP / LOCATION ══════ */}
-      {dbProfile && (dbProfile.address || dbProfile.city) && (
+      {(dbProfile?.address || dbProfile?.city || dbProfile?.state) && (
         <section className="px-4 lg:px-12 py-10 lg:py-14">
           <div className="max-w-5xl mx-auto">
             <div className="flex items-center gap-2 mb-4">
