@@ -346,19 +346,19 @@ export default function StoreLayoutNetflix({
           <AnimatePresence mode="wait">
             <motion.div
               key={currentBillboard.id}
-              initial={{ opacity: 0, scale: 1.05 }}
-              animate={{ opacity: 1, scale: 1 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 1.5, ease: "easeOut" }}
+              transition={{ duration: 1.2, ease: "easeInOut" }}
               className="absolute inset-0"
             >
               <motion.img
                 src={currentBillboard.image}
                 alt={currentBillboard.title}
                 className="w-full h-full object-cover"
-                initial={{ scale: 1.04 }}
-                animate={{ scale: 1.0 }}
-                transition={{ duration: 8, ease: "easeOut" }}
+                initial={{ filter: "brightness(0.6) blur(8px)" }}
+                animate={{ filter: "brightness(1) blur(0px)" }}
+                transition={{ duration: 1.6, ease: "easeOut" }}
               />
               {/* Netflix-style gradients */}
               <div className="absolute inset-0" style={{
