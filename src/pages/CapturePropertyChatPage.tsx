@@ -654,7 +654,7 @@ export default function CapturePropertyChatPage() {
       description: `Agendamento de visita\n📅 Data: ${date}\n⏰ Horário: ${time}\n🏠 Interesse: ${interestVal}`,
       status: "novo",
     });
-    notifyNewCaptureLead(sellerProfile.user_id, name, `${name} agendou visita: ${date} às ${time}.`);
+    notifyNewCaptureLead(sellerProfile.user_id, name, `${name} quer agendar uma visita: ${date} às ${time}.`, "agendamento");
     await addBotMsg(config.agendMsgSuccess);
     await addBotMsg(config.agendMsgSuccessEnd);
     setStep("done");
