@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { AI_PREGENERATED_ADS } from "@/data/aiPregeneratedAds";
 import {
   Link2, Copy, ExternalLink, User, Phone, MapPin, Home, DollarSign, Clock,
   Loader2, Inbox, Sparkles, Image as ImageIcon, Trash2, Video,
