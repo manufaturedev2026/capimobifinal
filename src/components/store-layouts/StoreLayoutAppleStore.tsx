@@ -164,6 +164,26 @@ export default function StoreLayoutAppleStore(props: StoreLayoutProps) {
         pointer-events: none;
         mix-blend-mode: overlay;
       }
+      @keyframes marquee-scroll {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-50%); }
+      }
+      .marquee-track { animation: marquee-scroll 40s linear infinite; }
+      @keyframes blur-in {
+        from { opacity: 0; filter: blur(20px); transform: translateY(40px); }
+        to   { opacity: 1; filter: blur(0); transform: translateY(0); }
+      }
+      .blur-in { animation: blur-in 1.4s cubic-bezier(.22,.61,.36,1) both; }
+      .tilt-card { transform-style: preserve-3d; perspective: 1200px; }
+      .tilt-inner { transition: transform 700ms cubic-bezier(.22,.61,.36,1); transform-style: preserve-3d; }
+      .tilt-card:hover .tilt-inner { transform: rotateX(4deg) rotateY(-6deg) translateZ(20px); }
+      .tilt-card:hover .tilt-img { transform: translateZ(40px) scale(1.08); }
+      .tilt-img { transition: transform 1200ms cubic-bezier(.22,.61,.36,1); }
+      @keyframes pulse-gold {
+        0%, 100% { box-shadow: 0 0 0 0 ${C.gold}40, 0 0 60px ${C.gold}20; }
+        50%      { box-shadow: 0 0 0 12px transparent, 0 0 100px ${C.gold}40; }
+      }
+      .pulse-gold { animation: pulse-gold 3s ease-in-out infinite; }
     `;
 
     document.body.classList.add("apple-store-active");
