@@ -1161,8 +1161,8 @@ export default function CompanyProfile() {
           style={{ background: storeTheme.primary }}
         />
 
-        <div className={`relative ${isMarketplace ? "px-3 md:px-8" : "max-w-[1800px] mx-auto px-3 md:px-8"}`}>
-          <div className="flex items-center gap-3 sm:gap-4 md:gap-8 py-3 md:py-4 overflow-x-auto scrollbar-hide">
+        <div className={`relative w-full ${isMarketplace ? "px-2 md:px-8" : "max-w-[1800px] mx-auto px-2 md:px-8"}`}>
+          <div className="flex items-center gap-2 sm:gap-4 md:gap-8 py-3 md:py-4 overflow-x-auto scrollbar-hide -mx-1 px-1">
             <div className="group flex items-center gap-2 md:gap-2.5 flex-shrink-0 transition-transform hover:scale-105">
               <div
                 className="relative w-9 h-9 md:w-11 md:h-11 rounded-xl flex items-center justify-center"
