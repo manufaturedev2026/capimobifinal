@@ -308,11 +308,18 @@ export default function CapturePropertyChatPage() {
         ].filter(Boolean).join("\n"),
         status: "novo",
       });
+      const FLOW_PUSH: Record<FlowType, { title: string; verb: string }> = {
+        captacao: { title: "Novo lead de captação 🏠", verb: "quer vender ou alugar um imóvel." },
+        grupo_whatsapp: { title: "Novo lead do grupo 👥", verb: "pediu para entrar no grupo de WhatsApp." },
+        agendamento: { title: "Nova visita agendada 📅", verb: "quer agendar uma visita." },
+        avaliacao: { title: "Novo pedido de avaliação 💎", verb: "solicitou uma avaliação gratuita." },
+      };
+      const pushCfg = FLOW_PUSH[flowType] || FLOW_PUSH.captacao;
       supabase.functions.invoke("notify-new-lead", {
         body: {
           target_user_id: sellerProfile.user_id,
-          title: "Novo lead de captação 🏠",
-          body: `${(extracted.full_name || "Visitante").slice(0, 60)} quer vender um imóvel.`,
+          title: pushCfg.title,
+          body: `${(extracted.full_name || "Visitante").slice(0, 60)} ${pushCfg.verb}`,
           url: "/painel?tab=captacao",
         },
       }).catch(() => {});
