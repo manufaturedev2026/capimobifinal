@@ -692,7 +692,32 @@ export default function StoreLayoutNetflix({
                 <div className="absolute inset-0 rounded-[inherit] opacity-0 group-hover/cat:opacity-100 transition-opacity duration-500 pointer-events-none" style={{
                   background: "linear-gradient(135deg, transparent 30%, rgba(255,255,255,0.18) 50%, transparent 70%)",
                 }} />
-...
+                <div className="absolute bottom-0 left-0 right-0 p-3 text-center">
+                  <span className="text-white font-black text-xs md:text-sm drop-shadow-lg block uppercase tracking-wider">Todos</span>
+                  <span className="text-white/70 text-[9px] md:text-[10px] font-bold">{categoryCounts.todos ?? products.length} imóveis</span>
+                </div>
+                {isActive && (
+                   <div className="absolute top-0 left-0 right-0 h-[3px] bg-white" style={{ boxShadow: "0 0 12px rgba(255,255,255,0.8)" }} />
+                )}
+              </motion.button>
+            );
+          })()}
+
+          {subcategories
+            .filter(c => c.slug !== "todos" && (categoryCounts[c.slug] || 0) > 0)
+            .map(c => {
+              const catItems = filteredProducts.filter((p: any) => (categoryMap[c.slug] || []).includes(p.category));
+              const coverImg = categoryCardImages?.[c.slug] || catItems.find((p: any) => p.image)?.image;
+              const isActive = activeCategory === c.slug;
+              const count = categoryCounts[c.slug] || 0;
+
+              return (
+                <motion.button
+                  key={c.slug}
+                  onClick={() => setActiveCategory(c.slug)}
+                  whileHover={{ scale: 1.05, y: -6 }}
+                  whileTap={{ scale: 0.96 }}
+                  transition={{ type: "spring", stiffness: 300 }}
                   className="flex-shrink-0 relative overflow-hidden rounded-xl transition-all duration-300 group/cat isolate"
                   style={{
                     width: "clamp(140px, 20vw, 210px)",
