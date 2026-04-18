@@ -845,13 +845,26 @@ export default function StoreLayoutNetflix({
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.5 }}
-                      className="relative rounded-2xl overflow-hidden"
+                      className="relative rounded-2xl overflow-hidden isolate"
                       style={{
                         background: `linear-gradient(160deg, ${storeTheme.card} 0%, ${storeTheme.primary}10 100%)`,
                         border: `1px solid ${storeTheme.primary}40`,
                         boxShadow: `0 20px 50px -10px ${storeTheme.primary}40, inset 0 1px 0 ${storeTheme.primary}30`,
                       }}
                     >
+                      {/* Aurora orbs flutuantes */}
+                      <motion.div
+                        className="absolute -top-20 -right-20 w-48 h-48 rounded-full pointer-events-none blur-3xl opacity-40"
+                        style={{ background: `radial-gradient(circle, ${storeTheme.primary}, transparent 70%)`, zIndex: 0 }}
+                        animate={{ x: [0, 30, 0], y: [0, 20, 0], scale: [1, 1.15, 1] }}
+                        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+                      />
+                      <motion.div
+                        className="absolute -bottom-24 -left-16 w-56 h-56 rounded-full pointer-events-none blur-3xl opacity-30"
+                        style={{ background: `radial-gradient(circle, ${storeTheme.primary}, transparent 70%)`, zIndex: 0 }}
+                        animate={{ x: [0, -20, 0], y: [0, -25, 0], scale: [1, 1.2, 1] }}
+                        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+                      />
                       {/* Animated grid background */}
                       <div className="absolute inset-0 opacity-[0.07] pointer-events-none" style={{
                         backgroundImage: `linear-gradient(${storeTheme.primary} 1px, transparent 1px), linear-gradient(90deg, ${storeTheme.primary} 1px, transparent 1px)`,
@@ -864,6 +877,25 @@ export default function StoreLayoutNetflix({
                         animate={{ opacity: [0.4, 1, 0.4] }}
                         transition={{ duration: 3, repeat: Infinity }}
                       />
+                      {/* Floating particles */}
+                      {[...Array(5)].map((_, i) => (
+                        <motion.div
+                          key={`p-${i}`}
+                          className="absolute w-1 h-1 rounded-full pointer-events-none z-10"
+                          style={{
+                            left: `${15 + i * 18}%`,
+                            top: `${60 + (i % 2) * 20}%`,
+                            background: storeTheme.primary,
+                            boxShadow: `0 0 8px ${storeTheme.primary}`,
+                          }}
+                          animate={{
+                            y: [0, -60, 0],
+                            opacity: [0, 1, 0],
+                            scale: [0, 1.2, 0],
+                          }}
+                          transition={{ duration: 4 + i * 0.5, repeat: Infinity, delay: i * 0.8, ease: "easeInOut" }}
+                        />
+                      ))}
 
                       <div
                         className="relative px-4 py-4 flex items-center gap-2.5 overflow-hidden"
@@ -1039,17 +1071,34 @@ export default function StoreLayoutNetflix({
                           )}
                         </div>
 
-                        <div className="relative pt-3">
-                          {/* Animated separator with glow */}
+                        <motion.div
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.4 }}
+                          className="relative mt-4 rounded-xl p-3 overflow-hidden"
+                          style={{
+                            background: `linear-gradient(135deg, ${storeTheme.primary}18 0%, ${storeTheme.primary}05 100%)`,
+                            border: `1px solid ${storeTheme.primary}40`,
+                            boxShadow: `0 8px 25px -8px ${storeTheme.primary}50, inset 0 1px 0 ${storeTheme.primary}30`,
+                          }}
+                        >
+                          {/* Aurora orb */}
                           <motion.div
-                            className="absolute top-0 left-0 right-0 h-[1px]"
+                            className="absolute -top-10 -right-10 w-32 h-32 rounded-full pointer-events-none blur-2xl opacity-40"
+                            style={{ background: `radial-gradient(circle, ${storeTheme.primary}, transparent 70%)` }}
+                            animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
+                            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                          />
+                          {/* Top shimmer line */}
+                          <motion.div
+                            className="absolute top-0 left-0 right-0 h-[1.5px] pointer-events-none"
                             style={{ background: `linear-gradient(90deg, transparent, ${storeTheme.primary}, transparent)` }}
-                            animate={{ opacity: [0.3, 1, 0.3] }}
+                            animate={{ opacity: [0.4, 1, 0.4] }}
                             transition={{ duration: 2.5, repeat: Infinity }}
                           />
 
                           {/* ÉPICO header */}
-                          <div className="relative flex items-center gap-2 mb-3 mt-1">
+                          <div className="relative flex items-center gap-2 mb-3">
                             <motion.div
                               animate={{ rotate: [0, 8, -8, 0], scale: [1, 1.15, 1] }}
                               transition={{ duration: 3, repeat: Infinity }}
@@ -1060,9 +1109,11 @@ export default function StoreLayoutNetflix({
                             <p className="text-[10px] font-black uppercase tracking-[0.2em]"
                               style={{
                                 background: `linear-gradient(90deg, ${storeTheme.primary}, #fff, ${storeTheme.primary})`,
+                                backgroundSize: "200% 100%",
                                 WebkitBackgroundClip: "text",
                                 WebkitTextFillColor: "transparent",
                                 backgroundClip: "text",
+                                animation: "shimmer 3s linear infinite",
                               }}
                             >
                               Por que escolher
@@ -1070,7 +1121,7 @@ export default function StoreLayoutNetflix({
                             <Sparkles size={10} style={{ color: storeTheme.primary }} className="ml-auto animate-pulse" />
                           </div>
 
-                          <div className="space-y-2">
+                          <div className="relative space-y-2">
                             {[
                               { txt: "Resposta rápida via WhatsApp", icon: MessageCircle },
                               { txt: "Vendedor premium verificado", icon: ShieldCheck },
@@ -1080,31 +1131,40 @@ export default function StoreLayoutNetflix({
                                 key={i}
                                 initial={{ opacity: 0, x: -12 }}
                                 animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: 0.3 + i * 0.12 }}
-                                whileHover={{ x: 3, scale: 1.02 }}
-                                className="relative flex items-center gap-2 px-2.5 py-2 rounded-lg overflow-hidden cursor-default"
+                                transition={{ delay: 0.5 + i * 0.12 }}
+                                whileHover={{ x: 4, scale: 1.03 }}
+                                className="relative flex items-center gap-2 px-2.5 py-2 rounded-lg overflow-hidden cursor-default group/item"
                                 style={{
-                                  background: `linear-gradient(90deg, ${storeTheme.primary}12, transparent)`,
-                                  border: `1px solid ${storeTheme.primary}20`,
+                                  background: `linear-gradient(90deg, ${storeTheme.primary}15, transparent)`,
+                                  border: `1px solid ${storeTheme.primary}25`,
                                   boxShadow: `inset 2px 0 0 ${storeTheme.primary}`,
                                 }}
                               >
-                                <div
-                                  className="flex-shrink-0 w-5 h-5 rounded-md flex items-center justify-center"
+                                {/* Hover sweep */}
+                                <motion.div
+                                  className="absolute inset-0 -translate-x-full opacity-0 group-hover/item:opacity-100 pointer-events-none"
+                                  style={{ background: `linear-gradient(90deg, transparent, ${storeTheme.primary}30, transparent)` }}
+                                  animate={{ translateX: ["-100%", "200%"] }}
+                                  transition={{ duration: 1.5, repeat: Infinity }}
+                                />
+                                <motion.div
+                                  whileHover={{ rotate: 360 }}
+                                  transition={{ duration: 0.6 }}
+                                  className="relative flex-shrink-0 w-6 h-6 rounded-md flex items-center justify-center"
                                   style={{
                                     background: `linear-gradient(135deg, ${storeTheme.primary}, ${storeTheme.primary}aa)`,
-                                    boxShadow: `0 0 10px ${storeTheme.primary}80`,
+                                    boxShadow: `0 0 12px ${storeTheme.primary}90, inset 0 1px 0 rgba(255,255,255,0.3)`,
                                   }}
                                 >
-                                  <item.icon size={10} className="text-white" />
-                                </div>
-                                <span className="text-[10px] font-semibold flex-1" style={{ color: storeTheme.text }}>
+                                  <item.icon size={11} className="text-white relative z-10" />
+                                </motion.div>
+                                <span className="text-[10px] font-semibold flex-1 relative z-10" style={{ color: storeTheme.text }}>
                                   {item.txt}
                                 </span>
                                 <motion.span
-                                  className="text-[10px] font-black"
-                                  style={{ color: storeTheme.primary, textShadow: `0 0 8px ${storeTheme.primary}` }}
-                                  animate={{ opacity: [0.6, 1, 0.6] }}
+                                  className="text-[11px] font-black relative z-10"
+                                  style={{ color: storeTheme.primary, textShadow: `0 0 10px ${storeTheme.primary}` }}
+                                  animate={{ opacity: [0.6, 1, 0.6], scale: [1, 1.15, 1] }}
                                   transition={{ duration: 2, repeat: Infinity, delay: i * 0.3 }}
                                 >
                                   ✓
@@ -1112,7 +1172,7 @@ export default function StoreLayoutNetflix({
                               </motion.div>
                             ))}
                           </div>
-                        </div>
+                        </motion.div>
                       </div>
                     </motion.div>
                   )}
