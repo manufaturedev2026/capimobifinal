@@ -184,7 +184,18 @@ export default function CapturePropertyChatPage() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const isAiMode = config.chatMode === "ai";
-  const flowType = config.flowType || "captacao";
+  // Hash da URL tem prioridade sobre o flowType salvo (ex: /chat#grupo, /chat#avaliacao, /chat#agendamento)
+  const HASH_TO_FLOW: Record<string, FlowType> = {
+    captacao: "captacao",
+    grupo: "grupo_whatsapp",
+    grupo_whatsapp: "grupo_whatsapp",
+    agendamento: "agendamento",
+    avaliacao: "avaliacao",
+  };
+  const hashFlow = typeof window !== "undefined"
+    ? HASH_TO_FLOW[window.location.hash.replace("#", "").toLowerCase()]
+    : undefined;
+  const flowType: FlowType = hashFlow || config.flowType || "captacao";
 
   // Load seller + bot config
   useEffect(() => {
