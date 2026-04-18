@@ -853,19 +853,56 @@ export default function StoreLayoutNetflix({
                       />
 
                       <div
-                        className="relative px-4 py-3 flex items-center gap-2 overflow-hidden"
-                        style={{ background: `linear-gradient(135deg, ${storeTheme.primary}, ${storeTheme.primary}cc)` }}
+                        className="relative px-4 py-4 flex items-center gap-2.5 overflow-hidden"
+                        style={{
+                          background: `linear-gradient(135deg, ${storeTheme.primary} 0%, ${storeTheme.primary}dd 50%, ${storeTheme.primary} 100%)`,
+                          boxShadow: `inset 0 -1px 0 rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.3)`,
+                        }}
                       >
+                        {/* Animated grid overlay */}
+                        <div className="absolute inset-0 opacity-20 pointer-events-none" style={{
+                          backgroundImage: `linear-gradient(rgba(255,255,255,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.4) 1px, transparent 1px)`,
+                          backgroundSize: "12px 12px",
+                          maskImage: "linear-gradient(90deg, transparent, black, transparent)",
+                        }} />
+                        {/* Shimmer sweep */}
                         <motion.div
                           className="absolute inset-0 -translate-x-full"
-                          style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)" }}
+                          style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent)" }}
                           animate={{ translateX: ["-100%", "200%"] }}
-                          transition={{ duration: 3, repeat: Infinity, repeatDelay: 2, ease: "easeInOut" }}
+                          transition={{ duration: 2.5, repeat: Infinity, repeatDelay: 1.5, ease: "easeInOut" }}
                         />
-                        <BadgeCheck size={16} className="text-white relative z-10 drop-shadow" />
-                        <span className="relative z-10 text-[11px] font-black uppercase tracking-widest text-white drop-shadow">
+                        {/* Floating sparkles */}
+                        {[...Array(3)].map((_, i) => (
+                          <motion.div
+                            key={i}
+                            className="absolute w-1 h-1 rounded-full bg-white pointer-events-none"
+                            style={{
+                              left: `${20 + i * 30}%`,
+                              top: `${30 + (i % 2) * 40}%`,
+                              boxShadow: "0 0 8px rgba(255,255,255,0.9)",
+                            }}
+                            animate={{ opacity: [0, 1, 0], scale: [0, 1.4, 0] }}
+                            transition={{ duration: 2, repeat: Infinity, delay: i * 0.6 }}
+                          />
+                        ))}
+                        {/* Pulsing badge ring */}
+                        <div className="relative">
+                          <motion.div
+                            className="absolute inset-0 rounded-full pointer-events-none"
+                            style={{ border: "2px solid rgba(255,255,255,0.9)" }}
+                            animate={{ scale: [1, 1.6, 1], opacity: [0.7, 0, 0.7] }}
+                            transition={{ duration: 2, repeat: Infinity }}
+                          />
+                          <BadgeCheck size={18} className="text-white relative z-10 drop-shadow-lg" fill="rgba(255,255,255,0.15)" />
+                        </div>
+                        <span className="relative z-10 text-[11px] font-black uppercase tracking-[0.2em] text-white"
+                          style={{ textShadow: "0 1px 8px rgba(0,0,0,0.4), 0 0 12px rgba(255,255,255,0.4)" }}
+                        >
                           Profissional Verificado
                         </span>
+                        {/* Crown corner accent */}
+                        <Crown size={12} className="ml-auto text-white/80 relative z-10" fill="rgba(255,255,255,0.3)" />
                       </div>
 
                       <div className="relative p-4 space-y-4">
