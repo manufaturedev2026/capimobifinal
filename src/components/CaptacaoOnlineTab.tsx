@@ -940,6 +940,23 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
                 </div>
               </div>
 
+              {/* AI Mode CTA Config */}
+              {botChatMode === "ai" && (
+                <div className="rounded-2xl border border-border bg-card p-4 space-y-3">
+                  <p className="text-sm font-bold text-foreground">🤖 Botão Final (Modo IA)</p>
+                  <p className="text-[11px] text-muted-foreground">
+                    Após a IA coletar os dados do lead, este botão é exibido para encerrar o atendimento. Personalize o texto e o destino conforme o objetivo do fluxo.
+                  </p>
+                  <CtaFields
+                    label={aiCtaLabel}
+                    url={aiCtaUrl}
+                    onLabel={setAiCtaLabel}
+                    onUrl={setAiCtaUrl}
+                    hint="Se preenchido, o botão abre essa URL (ex: Calendly, link de grupo, landing page). Vazio = abre WhatsApp do corretor com o resumo do lead."
+                  />
+                </div>
+              )}
+
               {/* Flow Config (only for flow mode) */}
               {botChatMode === "flow" && (
                 <>
