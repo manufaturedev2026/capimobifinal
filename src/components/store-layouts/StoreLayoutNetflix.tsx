@@ -15,13 +15,18 @@ import { useIsMobile } from "@/hooks/use-mobile";
 /* ═══════════════════════════════════════════
    Netflix-style horizontal content row
    ═══════════════════════════════════════════ */
-function NetflixRow({ title, items, corretorSlug, getTagLabel, getTagStyle, accent }: {
+function NetflixRow({ title, subtitle, items, corretorSlug, getTagLabel, getTagStyle, accent, icon: Icon, ranked, badge, gradient }: {
   title: string;
+  subtitle?: string;
   items: any[];
   corretorSlug: string | null;
   getTagLabel: (tag: string) => string;
   getTagStyle: (tag: string) => string;
   accent: string;
+  icon?: any;
+  ranked?: boolean;
+  badge?: "novo" | "top" | "exclusivo" | null;
+  gradient?: string;
 }) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [showLeft, setShowLeft] = useState(false);
@@ -46,10 +51,25 @@ function NetflixRow({ title, items, corretorSlug, getTagLabel, getTagStyle, acce
   return (
     <div className="mb-6 lg:mb-8 group/row relative">
       {title && (
-        <h3 className="font-bold text-sm lg:text-base text-white mb-2 lg:mb-3 px-4 lg:px-12 flex items-center gap-2 hover:text-[#e50914] transition-colors cursor-default">
-          {title}
-          <ChevronRight size={14} className="opacity-0 group-hover/row:opacity-100 transition-opacity text-[#e50914]" />
-        </h3>
+        <div className="px-4 lg:px-12 mb-2 lg:mb-3">
+          <h3 className="font-bold text-sm lg:text-lg text-white flex items-center gap-2 hover:text-[#e50914] transition-colors cursor-default">
+            {Icon && (
+              <span
+                className="inline-flex items-center justify-center w-6 h-6 lg:w-7 lg:h-7 rounded"
+                style={{ background: gradient || "rgba(229,9,20,0.15)" }}
+              >
+                <Icon size={14} className="text-white" />
+              </span>
+            )}
+            <span style={gradient ? { backgroundImage: gradient, WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent" } : undefined}>
+              {title}
+            </span>
+            <ChevronRight size={14} className="opacity-0 group-hover/row:opacity-100 transition-opacity text-[#e50914]" />
+          </h3>
+          {subtitle && (
+            <p className="text-[10px] lg:text-xs text-white/40 mt-0.5 ml-8 lg:ml-9">{subtitle}</p>
+          )}
+        </div>
       )}
 
       <div className="relative">
@@ -71,7 +91,17 @@ function NetflixRow({ title, items, corretorSlug, getTagLabel, getTagStyle, acce
         <div ref={scrollRef} onScroll={checkArrows}
           className="flex gap-1 lg:gap-1.5 overflow-x-auto overflow-y-visible scrollbar-hide scroll-smooth px-4 lg:px-12 py-8 -my-8">
           {items.map((product: any, i: number) => (
-            <NetflixCard key={product.id} product={product} index={i} corretorSlug={corretorSlug} getTagLabel={getTagLabel} getTagStyle={getTagStyle} accent={accent} />
+            <NetflixCard
+              key={product.id}
+              product={product}
+              index={i}
+              corretorSlug={corretorSlug}
+              getTagLabel={getTagLabel}
+              getTagStyle={getTagStyle}
+              accent={accent}
+              rank={ranked ? i + 1 : undefined}
+              badge={badge}
+            />
           ))}
         </div>
       </div>
