@@ -222,7 +222,7 @@ export default function AdminAdsCrmTab() {
       </div>
 
       {/* Kanban Pipeline */}
-      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3 pb-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6 gap-4 pb-4">
         {STAGES.map((stage) => {
           const stageRequests = filtered.filter((r) => r.status === stage.key);
           return (
