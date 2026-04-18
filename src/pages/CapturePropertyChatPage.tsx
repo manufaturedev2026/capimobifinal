@@ -127,7 +127,7 @@ const FLOW_OPENINGS: Record<FlowType, string> = {
   captacao: "Olá! 👋 Vou te ajudar a cadastrar seu imóvel para avaliação gratuita! É rápido e sem compromisso 🏡",
   grupo_whatsapp: "Olá! 👋 Entre no nosso grupo exclusivo de imóveis e receba as melhores oportunidades! 🏡🔥",
   agendamento: "Olá! 👋 Vou te ajudar a agendar uma visita a um imóvel! É rápido e fácil 🏠📅",
-  avaliacao: "Olá! 👋 Solicite uma avaliação GRATUITA do seu imóvel! Descubra quanto ele vale no mercado 💎🏡",
+  avaliacao: "Olá! 👋 Solicite uma avaliação profissional do seu imóvel! Descubra quanto ele vale no mercado 💎🏡",
 };
 
 type CaptacaoStep = "opening" | "name" | "phone" | "type" | "address" | "price" | "notes" | "done";
