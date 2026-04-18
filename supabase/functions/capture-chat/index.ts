@@ -389,7 +389,7 @@ REGRAS:
         captacao: `Olá 👋 Seja bem-vindo(a)${sellerTag ? " à" + sellerTag : ""}! Vou te ajudar a cadastrar seu imóvel para venda ou aluguel de forma rápida e gratuita. 🏡\n\nPara começar, qual tipo de imóvel você deseja anunciar? (Casa, Apartamento, Terreno, Sala Comercial, Galpão, Fazenda/Sítio ou Outro)`,
         grupo_whatsapp: `Olá 👋 Seja bem-vindo(a)${sellerTag ? " à" + sellerTag : ""}! Temos um grupo exclusivo de imóveis de aluguel e venda com novas oportunidades todos os dias. 🏡🔥\n\nPosso te colocar gratuitamente no grupo? 😊`,
         agendamento: `Olá 👋 Seja bem-vindo(a)${sellerTag ? " à" + sellerTag : ""}! Vou te ajudar a agendar sua visita ao imóvel de forma rápida e organizada. 📅 Para começar, qual imóvel você deseja visitar?`,
-        avaliacao: `Olá 👋 Seja bem-vindo(a)${sellerTag ? " à" + sellerTag : ""}! Vou te ajudar com a avaliação do seu imóvel de forma rápida e gratuita. Para começar, qual tipo de imóvel você deseja avaliar? (Casa, Apartamento, Terreno, Sala Comercial, Galpão ou Outro)`,
+        avaliacao: `Olá 👋 Seja bem-vindo(a)${sellerTag ? " à" + sellerTag : ""}! Vou te ajudar a solicitar uma avaliação profissional do seu imóvel de forma rápida e simples. Para começar, qual tipo de imóvel você deseja avaliar? (Casa, Apartamento, Terreno, Sala Comercial, Galpão ou Outro)`,
       };
       return new Response(JSON.stringify({ reply: greetings[flowKey], extractedData: null }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
