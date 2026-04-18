@@ -99,6 +99,7 @@ export default function StoreLayoutAppleStore(props: StoreLayoutProps) {
       }
       body.apple-store-active [data-broker-card-section],
       body.apple-store-active [data-company-hero],
+      body.apple-store-active [data-company-hero-mobile],
       body.apple-store-active [data-company-stats-bar],
       body.apple-store-active main aside,
       body.apple-store-active aside.hidden.lg\\:block,
