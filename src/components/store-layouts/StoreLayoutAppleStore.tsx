@@ -287,7 +287,7 @@ export default function StoreLayoutAppleStore(props: StoreLayoutProps) {
             <span className="apple-serif italic gold-text">cuidadosamente selecionado.</span>
           </h1>
           <p className="mt-5 sm:mt-7 text-[15px] sm:text-[20px] max-w-[680px] mx-auto leading-relaxed" style={{ color: C.textMuted }}>
-            Casas, apartamentos e residências exclusivas com a experiência de um atendimento concierge.
+            Casas, apartamentos e residências exclusivas com a experiência de um atendimento prime.
           </p>
           <div className="mt-7 sm:mt-10 flex flex-wrap items-center justify-center gap-3 sm:gap-4 text-[14px] sm:text-[15px]">
             <button
