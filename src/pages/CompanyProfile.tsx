@@ -2046,6 +2046,7 @@ export default function CompanyProfile() {
               ))}
             </div>
           </div>
+        </div>
       </section>
 
       {/* ═══ STICKY MOBILE BOTTOM BAR ═══ */}
