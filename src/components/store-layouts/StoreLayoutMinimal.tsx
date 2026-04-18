@@ -546,9 +546,16 @@ export default function StoreLayoutMinimal({
                       />
                     )}
 
-                    {/* Epic premium price — Space Grotesk */}
+                    {/* Epic premium price — Space Grotesk with gradient border */}
                     {product.price > 0 && (
-                      <div className="flex items-baseline gap-1.5">
+                      <div
+                        className="inline-flex items-baseline gap-1.5 px-3 py-1.5 rounded-lg transition-all duration-500 group-hover:scale-[1.02]"
+                        style={{
+                          background: `linear-gradient(${storeTheme.card}, ${storeTheme.card}) padding-box, linear-gradient(135deg, ${storeTheme.primary}, ${storeTheme.accent || storeTheme.primary}, ${storeTheme.primary}40) border-box`,
+                          border: "1px solid transparent",
+                          boxShadow: `0 2px 12px ${storeTheme.primary}15`,
+                        }}
+                      >
                         <span
                           className="minimal-mono text-[10px] md:text-[11px] uppercase tracking-[0.2em] font-semibold"
                           style={{ color: storeTheme.textMuted }}
@@ -556,8 +563,8 @@ export default function StoreLayoutMinimal({
                           R$
                         </span>
                         <span
-                          className="minimal-price font-bold text-[22px] md:text-[26px] leading-none"
-                          style={{ color: storeTheme.text }}
+                          className="minimal-price font-bold text-[22px] md:text-[26px] leading-none bg-clip-text text-transparent"
+                          style={{ backgroundImage: `linear-gradient(135deg, ${storeTheme.text}, ${storeTheme.primary})` }}
                         >
                           {product.price.toLocaleString("pt-BR")}
                         </span>
