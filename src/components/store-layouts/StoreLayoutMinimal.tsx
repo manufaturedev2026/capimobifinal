@@ -297,59 +297,6 @@ export default function StoreLayoutMinimal({
             )}
           </div>
 
-          {/* ═══ FLOATING SELLER CARD — Hero overlay (desktop) ═══ */}
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.8, duration: 0.6 }}
-            className="hidden md:block absolute right-6 lg:right-10 bottom-6 lg:bottom-10 z-20 w-[280px]"
-          >
-            <div
-              className="rounded-2xl p-5 backdrop-blur-xl"
-              style={{
-                background: "rgba(0,0,0,0.55)",
-                border: `1px solid ${storeTheme.primary}40`,
-                boxShadow: `0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05) inset`,
-              }}
-            >
-              <div className="flex items-center gap-3 mb-3">
-                {dbProfile?.logo_url ? (
-                  <img
-                    src={dbProfile.logo_url}
-                    alt={sellerDisplayName}
-                    className="w-12 h-12 rounded-xl object-cover"
-                    style={{ border: `2px solid ${storeTheme.primary}80` }}
-                  />
-                ) : (
-                  <div
-                    className="w-12 h-12 rounded-xl flex items-center justify-center minimal-display font-bold text-lg text-white"
-                    style={{ background: storeTheme.primary }}
-                  >
-                    {sellerDisplayName?.charAt(0)}
-                  </div>
-                )}
-                <div className="min-w-0 flex-1">
-                  <h4 className="minimal-display font-bold text-sm text-white truncate">{sellerDisplayName}</h4>
-                  <p className="minimal-mono text-[9px] uppercase tracking-[0.2em] text-white/60 mt-0.5">
-                    {dbProfile?.seller_category === "imobiliaria" ? "Imobiliária" :
-                     dbProfile?.seller_category === "construtora" ? "Construtora" :
-                     "Corretor(a) de Imóveis"}
-                  </p>
-                </div>
-              </div>
-              {dbProfile?.creci && (
-                <div
-                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg mb-3"
-                  style={{ background: `${storeTheme.primary}20`, border: `1px solid ${storeTheme.primary}40` }}
-                >
-                  <Shield size={11} style={{ color: storeTheme.primary }} />
-                  <span className="minimal-mono text-[10px] font-bold tracking-wider" style={{ color: storeTheme.primary }}>
-                    CRECI {dbProfile.creci}
-                  </span>
-                </div>
-              )}
-            </div>
-          </motion.div>
         </div>
       </motion.section>
 
