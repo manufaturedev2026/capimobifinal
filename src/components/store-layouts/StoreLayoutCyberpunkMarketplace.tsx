@@ -1,176 +1,398 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import StoreLayoutMarketplace from "./StoreLayoutMarketplace";
 import type { StoreLayoutProps } from "./types";
 
 /**
- * Cyberpunk Marketplace Layout
+ * Cyberpunk Premium Layout
  *
- * Wraps the Marketplace layout in a full-on Cyberpunk 2077 aesthetic:
- * Matrix green (#39ff14) + neon purple (#bf00ff) palette, scanlines,
- * glitch animations, neon borders, mono font, and a corner HUD.
- *
- * Forces the theme override via CSS variables on a scoped wrapper so
- * any color usage inside Marketplace inherits the cyber palette.
+ * Estética premium voltada à conversão de imóveis de alto padrão:
+ * - Paleta: #0A0A0F base, neon azul #00F5FF + roxo #8A2EFF, verde luxo #00FF9D
+ * - Glassmorphism nos cards, navbar com blur dinâmico ao rolar
+ * - Tipografia tech (Orbitron títulos / Rajdhani corpo)
+ * - Preços em verde neon, botões com gradiente azul→roxo + glow
+ * - Partículas, grid digital, animações suaves
  */
 export default function StoreLayoutCyberpunkMarketplace(props: StoreLayoutProps) {
-  // Force the cyberpunk theme regardless of user's saved theme
+  const [scrolled, setScrolled] = useState(false);
+
+  // Premium cyber theme
   const cyberTheme = {
     ...props.storeTheme,
-    bg: "#05080a",
-    card: "rgba(15, 25, 18, 0.6)",
-    text: "#d8ffd8",
-    textMuted: "#7faf7f",
-    primary: "#39ff14",
-    accent: "#bf00ff",
-    border: "#1a3a1a",
+    bg: "#0A0A0F",
+    card: "rgba(17, 17, 24, 0.55)",
+    text: "#F5F5F5",
+    textMuted: "#A0A0B8",
+    primary: "#00F5FF",
+    accent: "#8A2EFF",
+    border: "rgba(0, 245, 255, 0.18)",
   };
 
-  // Inject keyframes once
+  // Track scroll for navbar solidification
   useEffect(() => {
-    const id = "cyberpunk-mp-styles";
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Inject premium cyber styles
+  useEffect(() => {
+    const id = "cyberpunk-premium-styles";
+    const fontsId = "cyberpunk-premium-fonts";
+
+    if (!document.getElementById(fontsId)) {
+      const link = document.createElement("link");
+      link.id = fontsId;
+      link.rel = "stylesheet";
+      link.href = "https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap";
+      document.head.appendChild(link);
+    }
+
     if (document.getElementById(id)) return;
     const style = document.createElement("style");
     style.id = id;
     style.textContent = `
-      @keyframes cyber-scanline {
-        0% { transform: translateY(-100%); }
-        100% { transform: translateY(100vh); }
+      @keyframes cp-grid-drift {
+        0% { background-position: 0 0, 0 0; }
+        100% { background-position: 80px 80px, 80px 80px; }
       }
-      @keyframes cyber-glitch {
-        0%, 100% { transform: translate(0); filter: hue-rotate(0deg); }
-        20% { transform: translate(-2px, 1px); filter: hue-rotate(90deg); }
-        40% { transform: translate(2px, -1px); filter: hue-rotate(-90deg); }
-        60% { transform: translate(-1px, -1px); filter: hue-rotate(45deg); }
-        80% { transform: translate(1px, 1px); filter: hue-rotate(-45deg); }
+      @keyframes cp-particle-rise {
+        0% { transform: translateY(100vh) translateX(0); opacity: 0; }
+        10% { opacity: 0.8; }
+        90% { opacity: 0.6; }
+        100% { transform: translateY(-10vh) translateX(40px); opacity: 0; }
       }
-      @keyframes cyber-flicker {
-        0%, 100% { opacity: 1; }
-        45% { opacity: 1; }
-        50% { opacity: 0.4; }
-        55% { opacity: 1; }
-        70% { opacity: 0.7; }
-        72% { opacity: 1; }
+      @keyframes cp-pulse-glow {
+        0%, 100% { box-shadow: 0 0 20px rgba(0, 245, 255, 0.25), 0 0 40px rgba(138, 46, 255, 0.15); }
+        50% { box-shadow: 0 0 30px rgba(0, 245, 255, 0.4), 0 0 60px rgba(138, 46, 255, 0.25); }
       }
-      @keyframes cyber-pulse-border {
-        0%, 100% { box-shadow: inset 0 0 0 1px #39ff14, 0 0 12px #39ff1480, 0 0 24px #bf00ff40; }
-        50% { box-shadow: inset 0 0 0 1px #bf00ff, 0 0 20px #bf00ff80, 0 0 40px #39ff1440; }
+      @keyframes cp-scan {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
       }
-      .cyber-wrapper {
+      @keyframes cp-spin-slow {
+        to { transform: rotate(360deg); }
+      }
+
+      /* ============= ROOT WRAPPER ============= */
+      .cp-wrapper {
         position: relative;
-        background: #05080a;
-        font-family: 'JetBrains Mono', 'Courier New', ui-monospace, monospace;
+        background: #0A0A0F;
+        color: #F5F5F5;
+        font-family: 'Rajdhani', 'Space Grotesk', system-ui, sans-serif;
+        min-height: 100vh;
       }
-      .cyber-wrapper * {
-        font-family: inherit !important;
+      .cp-wrapper * {
+        font-family: inherit;
       }
-      .cyber-wrapper h1, .cyber-wrapper h2, .cyber-wrapper h3 {
-        text-transform: uppercase;
+      .cp-wrapper h1, .cp-wrapper h2, .cp-wrapper h3 {
+        font-family: 'Orbitron', 'Space Grotesk', sans-serif !important;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        color: #F5F5F5;
+      }
+      .cp-wrapper h1 { letter-spacing: 0.04em; }
+      .cp-wrapper p, .cp-wrapper span, .cp-wrapper div, .cp-wrapper a, .cp-wrapper button {
+        letter-spacing: 0.01em;
+      }
+
+      /* ============= BACKGROUND LAYERS ============= */
+      .cp-grid {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+        background-image:
+          linear-gradient(rgba(0, 245, 255, 0.04) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(138, 46, 255, 0.04) 1px, transparent 1px);
+        background-size: 80px 80px;
+        animation: cp-grid-drift 30s linear infinite;
+        mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+      }
+      .cp-glow-orb {
+        position: fixed;
+        pointer-events: none;
+        z-index: 0;
+        border-radius: 50%;
+        filter: blur(120px);
+        opacity: 0.35;
+      }
+      .cp-orb-1 {
+        top: -10%; left: -5%;
+        width: 500px; height: 500px;
+        background: radial-gradient(circle, #00F5FF 0%, transparent 70%);
+      }
+      .cp-orb-2 {
+        bottom: -15%; right: -10%;
+        width: 600px; height: 600px;
+        background: radial-gradient(circle, #8A2EFF 0%, transparent 70%);
+      }
+      .cp-vignette {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 1;
+        background: radial-gradient(ellipse at center, transparent 50%, rgba(10, 10, 15, 0.85) 100%);
+      }
+
+      /* ============= PARTICLES ============= */
+      .cp-particles {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 2;
+        overflow: hidden;
+      }
+      .cp-particle {
+        position: absolute;
+        bottom: -10px;
+        width: 2px;
+        height: 2px;
+        background: #00F5FF;
+        border-radius: 50%;
+        box-shadow: 0 0 6px #00F5FF, 0 0 12px #00F5FF;
+        animation: cp-particle-rise linear infinite;
+      }
+      .cp-particle:nth-child(odd) {
+        background: #8A2EFF;
+        box-shadow: 0 0 6px #8A2EFF, 0 0 12px #8A2EFF;
+      }
+
+      /* ============= MAIN CONTENT ABOVE BG ============= */
+      .cp-wrapper > .cp-content {
+        position: relative;
+        z-index: 10;
+      }
+
+      /* ============= NAVBAR / HEADER ============= */
+      .cp-wrapper header,
+      .cp-wrapper [class*="navbar"],
+      .cp-wrapper nav[class*="sticky"],
+      .cp-wrapper nav[class*="fixed"] {
+        background: ${scrolled ? "rgba(10, 10, 15, 0.92)" : "rgba(10, 10, 15, 0.4)"} !important;
+        backdrop-filter: blur(${scrolled ? "20px" : "12px"}) saturate(180%);
+        -webkit-backdrop-filter: blur(${scrolled ? "20px" : "12px"}) saturate(180%);
+        border-bottom: 1px solid ${scrolled ? "rgba(0, 245, 255, 0.25)" : "rgba(0, 245, 255, 0.1)"} !important;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        ${scrolled ? "box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 245, 255, 0.08);" : ""}
+      }
+
+      /* ============= CARDS / GLASSMORPHISM ============= */
+      .cp-wrapper [class*="card"],
+      .cp-wrapper article,
+      .cp-wrapper [data-property-card],
+      .cp-wrapper .group {
+        background: rgba(17, 17, 24, 0.55) !important;
+        backdrop-filter: blur(16px) saturate(160%);
+        -webkit-backdrop-filter: blur(16px) saturate(160%);
+        border: 1px solid rgba(0, 245, 255, 0.12) !important;
+        border-radius: 16px !important;
+        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                    box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                    border-color 0.4s ease !important;
+        position: relative;
+        overflow: hidden;
+      }
+      .cp-wrapper [class*="card"]:hover,
+      .cp-wrapper article:hover,
+      .cp-wrapper .group:hover {
+        transform: translateY(-6px);
+        border-color: rgba(0, 245, 255, 0.45) !important;
+        box-shadow:
+          0 20px 50px rgba(0, 0, 0, 0.6),
+          0 0 30px rgba(0, 245, 255, 0.25),
+          0 0 60px rgba(138, 46, 255, 0.15) !important;
+      }
+
+      /* ============= PRICES — GREEN NEON LUXURY ============= */
+      .cp-wrapper [class*="price"],
+      .cp-wrapper [data-price],
+      .cp-wrapper .text-primary {
+        color: #00FF9D !important;
+        font-family: 'Orbitron', 'Space Grotesk', sans-serif !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.02em;
+        text-shadow: 0 0 12px rgba(0, 255, 157, 0.5), 0 0 24px rgba(0, 255, 157, 0.2);
+      }
+
+      /* ============= BUTTONS ============= */
+      .cp-wrapper button,
+      .cp-wrapper a[role="button"],
+      .cp-wrapper [class*="btn"] {
+        font-family: 'Rajdhani', sans-serif !important;
+        font-weight: 600 !important;
         letter-spacing: 0.05em;
-      }
-      .cyber-scanlines {
-        position: fixed;
-        inset: 0;
-        pointer-events: none;
-        z-index: 50;
-        background: repeating-linear-gradient(
-          0deg,
-          transparent 0,
-          transparent 2px,
-          rgba(57, 255, 20, 0.04) 2px,
-          rgba(57, 255, 20, 0.04) 3px
-        );
-        mix-blend-mode: overlay;
-      }
-      .cyber-scan-beam {
-        position: fixed;
-        left: 0;
-        right: 0;
-        height: 80px;
-        pointer-events: none;
-        z-index: 51;
-        background: linear-gradient(180deg, transparent, rgba(57, 255, 20, 0.08), transparent);
-        animation: cyber-scanline 6s linear infinite;
-      }
-      .cyber-vignette {
-        position: fixed;
-        inset: 0;
-        pointer-events: none;
-        z-index: 49;
-        background: radial-gradient(ellipse at center, transparent 40%, rgba(0, 0, 0, 0.7) 100%);
-      }
-      .cyber-noise {
-        position: fixed;
-        inset: 0;
-        pointer-events: none;
-        z-index: 48;
-        opacity: 0.05;
-        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-      }
-      .cyber-hud {
-        position: fixed;
-        bottom: 12px;
-        right: 12px;
-        z-index: 52;
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 10px;
-        color: #39ff14;
-        background: rgba(0, 0, 0, 0.7);
-        border: 1px solid #39ff14;
-        padding: 6px 10px;
         text-transform: uppercase;
-        letter-spacing: 0.1em;
-        animation: cyber-flicker 4s infinite;
-        box-shadow: 0 0 12px #39ff1460;
-      }
-      .cyber-hud-tl {
-        position: fixed;
-        top: 80px;
-        left: 12px;
-        z-index: 52;
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 9px;
-        color: #bf00ff;
-        background: rgba(0, 0, 0, 0.7);
-        border: 1px solid #bf00ff;
-        padding: 4px 8px;
-        text-transform: uppercase;
-        letter-spacing: 0.15em;
-        box-shadow: 0 0 8px #bf00ff60;
-      }
-      .cyber-wrapper button:hover,
-      .cyber-wrapper a:hover {
-        text-shadow: 0 0 8px currentColor;
-      }
-      .cyber-wrapper [class*="rounded"] {
+        border-radius: 10px !important;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
         position: relative;
+        overflow: hidden;
       }
-      .cyber-glitch-text {
-        animation: cyber-glitch 3s infinite;
+
+      /* Primary buttons: gradient blue→purple with glow */
+      .cp-wrapper button[class*="bg-primary"],
+      .cp-wrapper button[class*="bg-green"],
+      .cp-wrapper a[class*="bg-primary"],
+      .cp-wrapper button[type="submit"] {
+        background: linear-gradient(135deg, #00F5FF 0%, #8A2EFF 100%) !important;
+        color: #0A0A0F !important;
+        border: none !important;
+        font-weight: 700 !important;
+        box-shadow: 0 4px 20px rgba(0, 245, 255, 0.35), 0 0 0 1px rgba(0, 245, 255, 0.4) inset;
       }
+      .cp-wrapper button[class*="bg-primary"]:hover,
+      .cp-wrapper button[class*="bg-green"]:hover,
+      .cp-wrapper a[class*="bg-primary"]:hover,
+      .cp-wrapper button[type="submit"]:hover {
+        transform: translateY(-2px);
+        box-shadow:
+          0 8px 30px rgba(0, 245, 255, 0.55),
+          0 0 40px rgba(138, 46, 255, 0.4),
+          0 0 0 1px rgba(255, 255, 255, 0.3) inset !important;
+        filter: brightness(1.1);
+      }
+
+      /* Secondary buttons: transparent + neon border */
+      .cp-wrapper button[class*="outline"],
+      .cp-wrapper button[class*="ghost"],
+      .cp-wrapper button[variant="outline"] {
+        background: rgba(0, 245, 255, 0.05) !important;
+        border: 1px solid rgba(0, 245, 255, 0.5) !important;
+        color: #00F5FF !important;
+        backdrop-filter: blur(8px);
+      }
+      .cp-wrapper button[class*="outline"]:hover,
+      .cp-wrapper button[class*="ghost"]:hover {
+        background: rgba(0, 245, 255, 0.12) !important;
+        border-color: #00F5FF !important;
+        box-shadow: 0 0 20px rgba(0, 245, 255, 0.4), inset 0 0 20px rgba(0, 245, 255, 0.1) !important;
+        text-shadow: 0 0 8px #00F5FF;
+      }
+
+      /* ============= INPUTS / SEARCH ============= */
+      .cp-wrapper input,
+      .cp-wrapper textarea,
+      .cp-wrapper select,
+      .cp-wrapper [class*="search"] input {
+        background: rgba(17, 17, 24, 0.7) !important;
+        border: 1px solid rgba(0, 245, 255, 0.25) !important;
+        border-radius: 10px !important;
+        color: #F5F5F5 !important;
+        backdrop-filter: blur(10px);
+        transition: all 0.3s ease !important;
+        font-family: 'Rajdhani', sans-serif !important;
+      }
+      .cp-wrapper input::placeholder,
+      .cp-wrapper textarea::placeholder {
+        color: #A0A0B8 !important;
+      }
+      .cp-wrapper input:focus,
+      .cp-wrapper textarea:focus,
+      .cp-wrapper select:focus {
+        border-color: #00F5FF !important;
+        box-shadow: 0 0 0 3px rgba(0, 245, 255, 0.15), 0 0 20px rgba(0, 245, 255, 0.25) !important;
+        outline: none !important;
+      }
+
+      /* ============= BADGES & TAGS ============= */
+      .cp-wrapper [class*="badge"] {
+        background: rgba(138, 46, 255, 0.15) !important;
+        border: 1px solid rgba(138, 46, 255, 0.4) !important;
+        color: #C8A8FF !important;
+        backdrop-filter: blur(8px);
+        font-family: 'Rajdhani', sans-serif !important;
+        font-weight: 600 !important;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+
+      /* ============= TEXT COLORS ============= */
+      .cp-wrapper .text-muted-foreground,
+      .cp-wrapper [class*="text-gray"],
+      .cp-wrapper [class*="text-muted"] {
+        color: #A0A0B8 !important;
+      }
+
+      /* ============= SCROLLBAR ============= */
+      .cp-wrapper ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      .cp-wrapper ::-webkit-scrollbar-track {
+        background: rgba(17, 17, 24, 0.5);
+      }
+      .cp-wrapper ::-webkit-scrollbar-thumb {
+        background: linear-gradient(180deg, #00F5FF, #8A2EFF);
+        border-radius: 4px;
+      }
+
+      /* ============= LOADING SPINNER ============= */
+      .cp-loader {
+        position: fixed;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 99;
+        width: 60px; height: 60px;
+        border: 2px solid transparent;
+        border-top: 2px solid #00F5FF;
+        border-right: 2px solid #8A2EFF;
+        border-radius: 50%;
+        animation: cp-spin-slow 1s linear infinite;
+        box-shadow: 0 0 30px rgba(0, 245, 255, 0.5);
+        pointer-events: none;
+        opacity: 0;
+      }
+
+      /* ============= IMAGE ENHANCEMENT ============= */
+      .cp-wrapper img {
+        filter: contrast(1.05) saturate(1.1);
+      }
+
+      /* ============= REMOVE OLD CHAOTIC EFFECTS ============= */
+      .cp-wrapper .cyber-scanlines,
+      .cp-wrapper .cyber-noise { display: none; }
     `;
     document.head.appendChild(style);
-  }, []);
+  }, [scrolled]);
+
+  // Generate particles (memoized count)
+  const particles = Array.from({ length: 20 }, (_, i) => ({
+    id: i,
+    left: `${Math.random() * 100}%`,
+    delay: `${Math.random() * 15}s`,
+    duration: `${15 + Math.random() * 15}s`,
+    size: `${1 + Math.random() * 2}px`,
+  }));
 
   return (
-    <div className="cyber-wrapper">
-      {/* Top-left HUD */}
-      <div className="cyber-hud-tl">
-        ◆ NETRUNNER://{props.sellerDisplayName?.slice(0, 12).toUpperCase().replace(/\s/g, "_") || "ANON"}
+    <div className="cp-wrapper">
+      {/* Background layers */}
+      <div className="cp-glow-orb cp-orb-1" />
+      <div className="cp-glow-orb cp-orb-2" />
+      <div className="cp-grid" />
+      <div className="cp-vignette" />
+
+      {/* Floating particles */}
+      <div className="cp-particles">
+        {particles.map((p) => (
+          <span
+            key={p.id}
+            className="cp-particle"
+            style={{
+              left: p.left,
+              animationDelay: p.delay,
+              animationDuration: p.duration,
+              width: p.size,
+              height: p.size,
+            }}
+          />
+        ))}
       </div>
 
-      {/* Bottom-right HUD */}
-      <div className="cyber-hud">
-        ▲ SYS.OK · {props.products.length} ASSETS · {new Date().getFullYear()}
+      {/* Marketplace with overridden premium cyber theme */}
+      <div className="cp-content">
+        <StoreLayoutMarketplace {...props} storeTheme={cyberTheme} />
       </div>
-
-      {/* Marketplace layout with overridden theme */}
-      <StoreLayoutMarketplace {...props} storeTheme={cyberTheme} />
-
-      {/* Overlays - rendered last so they sit on top */}
-      <div className="cyber-noise" />
-      <div className="cyber-vignette" />
-      <div className="cyber-scanlines" />
-      <div className="cyber-scan-beam" />
     </div>
   );
 }
