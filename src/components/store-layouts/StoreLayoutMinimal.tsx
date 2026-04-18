@@ -325,15 +325,6 @@ export default function StoreLayoutMinimal({
               {dbProfile?.creci && ` · CRECI ${dbProfile.creci}`}
             </p>
           </div>
-          {dbProfile?.phone && (
-            <button
-              onClick={() => handleWhatsApp(sellerDisplayName)}
-              className="flex items-center justify-center w-10 h-10 rounded-xl bg-[#25d366] text-white flex-shrink-0"
-              aria-label="WhatsApp"
-            >
-              <MessageCircle size={16} />
-            </button>
-          )}
         </div>
       </motion.div>
 
