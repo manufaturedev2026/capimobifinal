@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -66,7 +66,10 @@ export default function StoreLayoutAppleStore(props: StoreLayoutProps) {
   } = props;
 
   const [scrolled, setScrolled] = useState(false);
+  const [scrollY, setScrollY] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
+  const [count, setCount] = useState(0);
+  const totalCount = (filteredProducts || []).length;
 
   /* ── Inject Apple Pro Dark aesthetic + neutralize host chrome ───────────── */
   useEffect(() => {
@@ -161,6 +164,26 @@ export default function StoreLayoutAppleStore(props: StoreLayoutProps) {
         pointer-events: none;
         mix-blend-mode: overlay;
       }
+      @keyframes marquee-scroll {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-50%); }
+      }
+      .marquee-track { animation: marquee-scroll 40s linear infinite; }
+      @keyframes blur-in {
+        from { opacity: 0; filter: blur(20px); transform: translateY(40px); }
+        to   { opacity: 1; filter: blur(0); transform: translateY(0); }
+      }
+      .blur-in { animation: blur-in 1.4s cubic-bezier(.22,.61,.36,1) both; }
+      .tilt-card { transform-style: preserve-3d; perspective: 1200px; }
+      .tilt-inner { transition: transform 700ms cubic-bezier(.22,.61,.36,1); transform-style: preserve-3d; }
+      .tilt-card:hover .tilt-inner { transform: rotateX(4deg) rotateY(-6deg) translateZ(20px); }
+      .tilt-card:hover .tilt-img { transform: translateZ(40px) scale(1.08); }
+      .tilt-img { transition: transform 1200ms cubic-bezier(.22,.61,.36,1); }
+      @keyframes pulse-gold {
+        0%, 100% { box-shadow: 0 0 0 0 ${C.gold}40, 0 0 60px ${C.gold}20; }
+        50%      { box-shadow: 0 0 0 12px transparent, 0 0 100px ${C.gold}40; }
+      }
+      .pulse-gold { animation: pulse-gold 3s ease-in-out infinite; }
     `;
 
     document.body.classList.add("apple-store-active");
@@ -168,6 +191,27 @@ export default function StoreLayoutAppleStore(props: StoreLayoutProps) {
       document.body.classList.remove("apple-store-active");
     };
   }, []);
+
+  /* ── Scroll position for parallax ───────────────────────────────────────── */
+  useEffect(() => {
+    const onScroll = () => setScrollY(window.scrollY);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  /* ── Animated count-up ──────────────────────────────────────────────────── */
+  useEffect(() => {
+    if (!totalCount) { setCount(0); return; }
+    let raf: number; const start = performance.now(); const dur = 1600;
+    const tick = (t: number) => {
+      const p = Math.min((t - start) / dur, 1);
+      const eased = 1 - Math.pow(1 - p, 3);
+      setCount(Math.round(eased * totalCount));
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [totalCount]);
 
   /* ── Sticky header on scroll ───────────────────────────────────────────── */
   useEffect(() => {
@@ -268,30 +312,38 @@ export default function StoreLayoutAppleStore(props: StoreLayoutProps) {
       <section className="pt-24 sm:pt-32 pb-12 sm:pb-20 relative overflow-hidden" style={{ background: C.bg }}>
         <div
           className="absolute -top-40 left-1/2 -translate-x-1/2 w-[600px] sm:w-[900px] h-[600px] sm:h-[900px] rounded-full pointer-events-none"
-          style={{ background: `radial-gradient(closest-side, ${C.gold}18, transparent 70%)` }}
+          style={{
+            background: `radial-gradient(closest-side, ${C.gold}18, transparent 70%)`,
+            transform: `translate(-50%, ${scrollY * 0.3}px)`,
+          }}
         />
-        <div className="max-w-[1100px] mx-auto px-5 sm:px-6 text-center apple-fade-up relative">
-          <p className="text-[10px] sm:text-[12px] font-medium uppercase tracking-[0.28em] sm:tracking-[0.32em] mb-4 sm:mb-5" style={{ color: C.gold }}>
-            Coleção Privada
+        <div
+          className="max-w-[1240px] mx-auto px-5 sm:px-6 text-center relative blur-in"
+          style={{ transform: `translateY(${scrollY * -0.15}px)`, opacity: Math.max(0, 1 - scrollY / 600) }}
+        >
+          <p className="text-[10px] sm:text-[12px] font-medium uppercase tracking-[0.32em] sm:tracking-[0.4em] mb-5 sm:mb-7 inline-flex items-center gap-3" style={{ color: C.gold }}>
+            <span style={{ width: 28, height: 1, background: C.gold }} />
+            Coleção Privada · {totalCount > 0 ? `${count} ${count === 1 ? "imóvel" : "imóveis"}` : "Acesso restrito"}
+            <span style={{ width: 28, height: 1, background: C.gold }} />
           </p>
-          <h1 className="text-[34px] sm:text-[64px] lg:text-[88px] leading-[1.05] font-semibold tracking-tight">
+          <h1 className="font-semibold tracking-tight" style={{ fontSize: "clamp(40px, 9vw, 132px)", lineHeight: 0.98 }}>
             <span style={{ color: C.text }}>O extraordinário,</span>
             <br />
             <span className="apple-serif italic gold-text">cuidadosamente selecionado.</span>
           </h1>
-          <p className="mt-5 sm:mt-7 text-[15px] sm:text-[20px] max-w-[680px] mx-auto leading-relaxed" style={{ color: C.textMuted }}>
+          <p className="mt-6 sm:mt-8 text-[15px] sm:text-[20px] max-w-[680px] mx-auto leading-relaxed" style={{ color: C.textMuted }}>
             Casas, apartamentos e residências exclusivas com a experiência de um atendimento prime.
           </p>
-          <div className="mt-7 sm:mt-10 flex flex-wrap items-center justify-center gap-3 sm:gap-4 text-[14px] sm:text-[15px]">
+          <div className="mt-8 sm:mt-10 flex flex-wrap items-center justify-center gap-3 sm:gap-4 text-[14px] sm:text-[15px]">
             <button
               onClick={() => document.getElementById("apple-grid")?.scrollIntoView({ behavior: "smooth" })}
-              className="gold-btn inline-flex items-center px-6 sm:px-7 h-11 sm:h-12 rounded-full font-semibold tracking-tight transition-all"
+              className="gold-btn pulse-gold inline-flex items-center px-7 sm:px-8 h-12 rounded-full font-semibold tracking-tight transition-all"
             >
               Explorar coleção
             </button>
             <button
               onClick={() => handleWhatsApp("Olá! Quero falar com um consultor.")}
-              className="inline-flex items-center gap-1.5 px-6 sm:px-7 h-11 sm:h-12 rounded-full font-medium border transition-colors"
+              className="inline-flex items-center gap-1.5 px-7 sm:px-8 h-12 rounded-full font-medium border transition-colors"
               style={{ borderColor: `${C.gold}50`, color: C.text }}
             >
               Falar com consultor <ChevronRight size={16} />
@@ -299,11 +351,11 @@ export default function StoreLayoutAppleStore(props: StoreLayoutProps) {
           </div>
         </div>
 
-        <div className="max-w-[1240px] mx-auto px-4 sm:px-6 mt-10 sm:mt-16">
+        <div className="max-w-[1240px] mx-auto px-4 sm:px-6 mt-12 sm:mt-20">
           <motion.div
             initial={{ opacity: 0, scale: 0.97, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ duration: 1.2, ease: [0.22, 0.61, 0.36, 1] }}
+            transition={{ duration: 1.4, ease: [0.22, 0.61, 0.36, 1] }}
           >
             <Link
               to={products?.[0] ? `/imovel/${products[0].slug || products[0].id}` : "#apple-grid"}
@@ -313,13 +365,18 @@ export default function StoreLayoutAppleStore(props: StoreLayoutProps) {
                 boxShadow: `0 60px 120px -40px rgba(0,0,0,0.9), 0 0 0 1px ${C.gold}15`,
               }}
             >
-              <img
-                src={heroImage}
-                alt="Imóvel em destaque"
-                className="w-full h-full object-cover transition-transform duration-[1500ms] group-hover:scale-[1.04]"
-                style={{ filter: "saturate(1.05) contrast(1.05)" }}
-                loading="eager"
-              />
+              <div className="absolute inset-0 overflow-hidden">
+                <img
+                  src={heroImage}
+                  alt="Imóvel em destaque"
+                  className="w-full h-full object-cover transition-transform duration-[2000ms] group-hover:scale-[1.06]"
+                  style={{
+                    filter: "saturate(1.08) contrast(1.08)",
+                    transform: `scale(${1 + Math.min(scrollY / 4000, 0.08)}) translateY(${scrollY * 0.08}px)`,
+                  }}
+                  loading="eager"
+                />
+              </div>
               <div
                 className="absolute inset-0"
                 style={{ background: "linear-gradient(180deg, transparent 30%, rgba(0,0,0,0.55) 75%, rgba(0,0,0,0.92) 100%)" }}
@@ -357,6 +414,22 @@ export default function StoreLayoutAppleStore(props: StoreLayoutProps) {
               </div>
             </Link>
           </motion.div>
+        </div>
+      </section>
+
+      {/* ─────────────── 2.5 MARQUEE ─────────────── */}
+      <section className="py-6 sm:py-8 relative overflow-hidden" style={{ background: C.bg, borderTop: `1px solid ${C.hairline}`, borderBottom: `1px solid ${C.hairline}` }}>
+        <div className="flex marquee-track" style={{ width: "max-content" }}>
+          {Array.from({ length: 2 }).map((_, dup) => (
+            <div key={dup} className="flex items-center gap-12 px-6">
+              {["Exclusive Estates", "Private Collection", "Prime Selection", "Curated Properties", "Bespoke Service", "Exclusive Estates", "Private Collection", "Prime Selection"].map((t, i) => (
+                <span key={`${dup}-${i}`} className="apple-serif italic flex items-center gap-12 text-[28px] sm:text-[40px] whitespace-nowrap" style={{ color: i % 2 === 0 ? C.gold : `${C.text}30` }}>
+                  {t}
+                  <span style={{ color: C.gold, fontSize: 12 }}>✦</span>
+                </span>
+              ))}
+            </div>
+          ))}
         </div>
       </section>
 
@@ -533,15 +606,15 @@ export default function StoreLayoutAppleStore(props: StoreLayoutProps) {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "-50px" }}
                   transition={{ duration: 0.6, delay: Math.min(idx * 0.04, 0.3) }}
-                  className="group luxe-card rounded-3xl overflow-hidden transition-all duration-500"
+                  className="group luxe-card rounded-3xl overflow-hidden transition-all duration-500 tilt-card"
                 >
-                  <Link to={`/imovel/${p.slug || p.id}`} className="block">
+                  <Link to={`/imovel/${p.slug || p.id}`} className="block tilt-inner">
                     <div className="aspect-[4/3] overflow-hidden relative" style={{ background: C.bg }}>
                       <img
                         src={getProductImage(p)}
                         alt={p.title}
                         loading="lazy"
-                        className="w-full h-full object-cover transition-transform duration-[1200ms] group-hover:scale-[1.06]"
+                        className="w-full h-full object-cover tilt-img"
                       />
                       <div
                         className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
