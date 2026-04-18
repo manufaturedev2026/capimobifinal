@@ -30,6 +30,7 @@ import WhatsAppLeadCapture from "@/components/WhatsAppLeadCapture";
 import StoriesBar from "@/components/StoriesBar";
 import StoryUploadDialog from "@/components/StoryUploadDialog";
 import PushSubscribeButton from "@/components/PushSubscribeButton";
+import { PoolBallButton } from "@/components/PoolBallButton";
 import { isIOSStandaloneApp } from "@/lib/pwaInstall";
 
 const propertySubcategories = [
