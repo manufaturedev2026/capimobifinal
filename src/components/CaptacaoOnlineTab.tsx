@@ -966,6 +966,7 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
                           <Field label="Pedindo observações" value={flowMsgNotes} onChange={setFlowMsgNotes} multiline />
                           <Field label="Mensagem de sucesso" value={flowMsgSuccess} onChange={setFlowMsgSuccess} />
                           <Field label="Mensagem final" value={flowMsgSuccessEnd} onChange={setFlowMsgSuccessEnd} />
+                          <CtaFields label={captacaoCtaLabel} url={captacaoCtaUrl} onLabel={setCaptacaoCtaLabel} onUrl={setCaptacaoCtaUrl} hint="Se preenchido, o botão final abre essa URL. Vazio = abre WhatsApp do corretor." />
                         </>
                       )}
 
@@ -977,11 +978,7 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
                           <Field label="Pedindo telefone" value={grupoMsgPhone} onChange={setGrupoMsgPhone} />
                           <Field label="Mensagem de sucesso" value={grupoMsgSuccess} onChange={setGrupoMsgSuccess} />
                           <Field label="Mensagem final" value={grupoMsgSuccessEnd} onChange={setGrupoMsgSuccessEnd} />
-                          <div>
-                            <label className="text-xs text-muted-foreground font-semibold">🔗 Link do grupo WhatsApp</label>
-                            <Input value={grupoWhatsappLink} onChange={e => setGrupoWhatsappLink(e.target.value)} placeholder="https://chat.whatsapp.com/..." className="mt-1 text-sm" />
-                            <p className="text-[10px] text-muted-foreground mt-1">Se preenchido, o botão final redireciona direto para o grupo</p>
-                          </div>
+                          <CtaFields label={grupoCtaLabel} url={grupoWhatsappLink} onLabel={setGrupoCtaLabel} onUrl={setGrupoWhatsappLink} urlPlaceholder="https://chat.whatsapp.com/..." hint="Link do grupo (WhatsApp/Telegram). Se preenchido, o botão final leva direto para o grupo." />
                         </>
                       )}
 
@@ -996,6 +993,7 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
                           <Field label="Pedindo horário" value={agendMsgTime} onChange={setAgendMsgTime} multiline />
                           <Field label="Mensagem de sucesso" value={agendMsgSuccess} onChange={setAgendMsgSuccess} />
                           <Field label="Mensagem final" value={agendMsgSuccessEnd} onChange={setAgendMsgSuccessEnd} />
+                          <CtaFields label={agendCtaLabel} url={agendCtaUrl} onLabel={setAgendCtaLabel} onUrl={setAgendCtaUrl} hint="Se preenchido, o botão final abre essa URL (ex: link do Calendly). Vazio = abre WhatsApp." />
                         </>
                       )}
 
