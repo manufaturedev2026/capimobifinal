@@ -2204,6 +2204,8 @@ export default function CompanyProfile() {
           </span>
         </motion.a>
       )}
+
+      {company.whatsapp && (dbProfile as any)?.show_floating_whatsapp && (
         <motion.button
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
