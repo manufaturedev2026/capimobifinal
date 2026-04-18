@@ -1909,188 +1909,143 @@ export default function CompanyProfile() {
       {/* Mobile "Sobre" section - unified card for all layouts */}
       <section className={`${isMarketplace || isNetflix ? "" : "lg:hidden"} px-4 mt-6 mb-6`}>
         <div className="max-w-[1800px] mx-auto grid lg:grid-cols-2 gap-4 items-start">
-          {/* ── Bloco 1: Card do Corretor ── */}
-          <div className="rounded-2xl" style={{ border: `1px solid ${storeTheme.border}`, background: storeTheme.card }}>
-            {/* Header com cor primária */}
-            <div className="rounded-t-2xl px-5 pt-5 pb-5 md:pt-6 md:pb-6 lg:text-center" style={{ background: dbProfile?.cover_color || `linear-gradient(135deg, ${storeTheme.primary}, ${storeTheme.primary}dd)` }}>
-              <div className="flex items-center gap-2 lg:justify-center">
-                <BadgeCheck size={20} className="text-white/90 md:w-6 md:h-6" />
-                <span className="text-white/90 text-sm md:text-base lg:text-lg font-semibold uppercase tracking-wider">Profissional verificado</span>
-              </div>
-            </div>
-            {/* Foto + dados abaixo do header */}
-            <div className="px-5 pt-4 pb-5">
-              <div className="flex items-start gap-3.5 lg:flex-col lg:items-center lg:text-center">
-                {company.logo ? (
-                  <img src={company.logo} alt={company.name} className="w-16 h-16 rounded-xl object-cover shadow-lg ring-2 ring-white" style={{ borderColor: storeTheme.primary }} />
-                ) : (
-                  <div className="w-16 h-16 rounded-xl flex items-center justify-center shadow-lg ring-2 ring-white" style={{ background: storeTheme.primary }}>
-                    <span className="text-white font-bold text-xl">{company.name?.charAt(0)}</span>
-                  </div>
-                )}
-                <div className="flex-1 min-w-0 pt-2">
-                  <div className="flex items-center gap-1.5 lg:justify-center">
-                    <p className="font-display font-bold text-sm truncate" style={{ color: storeTheme.text }}>{company.name}</p>
-                    {isPaid && <BadgeCheck size={14} style={{ color: storeTheme.primary }} />}
-                  </div>
-                  <p className="text-[11px] mt-0.5" style={{ color: storeTheme.textMuted }}>
-                    {teamMember
-                      ? "Corretor(a) de Imóveis"
-                      : dbProfile?.seller_category
-                        ? ({ imobiliaria: "Imobiliária", corretor: "Corretor(a) de Imóveis", proprietario: "Proprietário", construtora: "Construtora", loja_veiculos: "Loja de Veículos", autonomo: "Vendedor Autônomo", concessionaria: "Concessionária" } as Record<string, string>)[dbProfile.seller_category] || "Especialista em imóveis"
-                        : "Especialista em imóveis"}
-                  </p>
-                  <div className="flex gap-2 mt-3 flex-wrap lg:justify-center">
-                    {company.whatsapp && (
-                      <button
-                        onClick={() => handleWhatsApp(heroProduct?.title || company.name, heroProduct?.id)}
-                        className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#25d366] text-white font-bold text-[11px] active:scale-95 transition-transform"
-                      >
-                        <MessageCircle size={13} /> WhatsApp
-                      </button>
-                    )}
-                    {(company as any).instagram && ["start", "vip", "premium", "essencial_empresa", "premium_empresa", "prime_empresa"].includes(sellerTier || "") && (
-                      <a
-                        href={`https://instagram.com/${(company as any).instagram.replace(/^@/, "")}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-gradient-to-r from-[#833AB4] via-[#E1306C] to-[#F77737] text-white font-bold text-[11px] active:scale-95 transition-transform"
-                      >
-                        <Instagram size={13} /> Instagram
-                      </a>
-                    )}
-                  </div>
-                  {/* Bio */}
-                  {(teamMember?.bio || dbProfile?.bio) && (
-                    <p className="text-[11px] leading-relaxed mt-2" style={{ color: storeTheme.textMuted }}>{teamMember?.bio || dbProfile.bio}</p>
-                  )}
-                  {/* Stats */}
-                  <div className="flex items-center gap-4 mt-3 text-xs lg:justify-center" style={{ color: storeTheme.text }}>
-                    <div className="text-center">
-                      <p className="font-bold text-sm">{products.length}</p>
-                      <p className="text-[9px]" style={{ color: storeTheme.textMuted }}>Imóveis</p>
-                    </div>
-                    <div className="w-px h-6" style={{ background: storeTheme.border }} />
-                    <div className="text-center">
-                      <p className="font-bold text-sm">{isPaid ? "✓" : "—"}</p>
-                      <p className="text-[9px]" style={{ color: storeTheme.textMuted }}>{isPaid ? "Verificado" : "Ativo"}</p>
-                    </div>
-                    {availableCities.length > 0 && (
-                      <>
-                        <div className="w-px h-6" style={{ background: storeTheme.border }} />
-                        <div className="text-center">
-                          <p className="font-bold text-sm">{availableCities.length}</p>
-                          <p className="text-[9px]" style={{ color: storeTheme.textMuted }}>Cidades</p>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                </div>
-              </div>
-              {/* Credenciais */}
-              <div className="mt-4 space-y-2">
-                {(teamMember?.creci || (["corretor", "imobiliaria", "construtora"].includes(dbProfile?.seller_category) && dbProfile?.creci)) && (
-                  <div className="flex items-center gap-2.5 px-3 py-2 rounded-xl" style={{ background: `${storeTheme.primary}12` }}>
-                    <Shield size={14} style={{ color: storeTheme.primary }} />
-                    <span className="text-xs font-bold" style={{ color: storeTheme.primary }}>CRECI {teamMember?.creci || dbProfile.creci}</span>
-                  </div>
-                )}
-                {dbProfile?.cnpj && (
-                  <div className="flex items-center gap-2.5 px-3 py-2 rounded-xl" style={{ background: `${storeTheme.primary}08` }}>
-                    <Store size={14} style={{ color: storeTheme.textMuted }} />
-                    <span className="text-xs" style={{ color: storeTheme.textMuted }}>CNPJ: {dbProfile.cnpj}</span>
-                  </div>
-                )}
-              </div>
-              {/* Team member - company info */}
-              {teamMember && dbProfile?.logo_url && (
-                <div className="flex items-center gap-3 mt-3 p-2.5 rounded-xl" style={{ background: `${storeTheme.primary}08` }}>
-                  <img src={dbProfile.logo_url} alt={dbProfile.company_name || dbProfile.full_name} className="w-10 h-10 rounded-lg object-cover" style={{ border: `1px solid ${storeTheme.border}` }} />
-                  <div>
-                    <p className="text-xs font-bold" style={{ color: storeTheme.text }}>{dbProfile.company_name || dbProfile.full_name}</p>
-                    {dbProfile.cnpj && <p className="text-[10px]" style={{ color: storeTheme.textMuted }}>CNPJ: {dbProfile.cnpj}</p>}
-                  </div>
+          {/* ── Bloco 1: Card do Corretor (estilo sidebar) ── */}
+          <div
+            className="rounded-2xl p-4"
+            style={{
+              background: `linear-gradient(160deg, ${storeTheme.card}, ${storeTheme.primary}08)`,
+              border: `1px solid ${storeTheme.primary}30`,
+              boxShadow: `0 10px 30px -10px ${storeTheme.primary}30`,
+            }}
+          >
+            <h5 className="text-[11px] font-black uppercase tracking-widest mb-3 flex items-center gap-1.5" style={{ color: storeTheme.primary }}>
+              <BadgeCheck size={12} /> Profissional Verificado
+            </h5>
+            <div className="flex items-start gap-3.5 lg:flex-col lg:items-center lg:text-center">
+              {company.logo ? (
+                <img src={company.logo} alt={company.name} className="w-16 h-16 rounded-xl object-cover shadow-lg" style={{ border: `2px solid ${storeTheme.primary}`, boxShadow: `0 0 20px ${storeTheme.primary}40` }} />
+              ) : (
+                <div className="w-16 h-16 rounded-xl flex items-center justify-center shadow-lg" style={{ background: storeTheme.primary, boxShadow: `0 0 20px ${storeTheme.primary}40` }}>
+                  <span className="text-white font-bold text-xl">{company.name?.charAt(0)}</span>
                 </div>
               )}
-              {/* Stats bar inline for Netflix */}
-              {isNetflix && (
-                <div className="flex items-center gap-4 flex-wrap mt-4 pt-3 lg:justify-center" style={{ borderTop: `1px solid ${storeTheme.border}` }}>
-                  <div className="flex items-center gap-2 text-sm">
-                    <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: `${storeTheme.primary}18` }}>
-                      <Store size={14} style={{ color: storeTheme.primary }} />
-                    </div>
-                    <div>
-                      <p className="font-bold text-xs" style={{ color: storeTheme.text }}>{products.length}</p>
-                      <p className="text-[9px]" style={{ color: storeTheme.textMuted }}>Anúncios</p>
-                    </div>
-                  </div>
-                  <div className="w-px h-6" style={{ background: storeTheme.border }} />
-                  <div className="flex items-center gap-2 text-sm">
-                    <div className="w-7 h-7 rounded-lg bg-[#25d366]/10 flex items-center justify-center">
-                      <MessageCircle size={14} className="text-[#25d366]" />
-                    </div>
-                    <div>
-                      <p className="font-bold text-xs" style={{ color: storeTheme.text }}>Direto</p>
-                      <p className="text-[9px]" style={{ color: storeTheme.textMuted }}>WhatsApp</p>
-                    </div>
-                  </div>
-                  <div className="w-px h-6" style={{ background: storeTheme.border }} />
-                  <div className="flex items-center gap-2 text-sm">
-                    <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: `${storeTheme.accent}30` }}>
-                      <Shield size={14} style={{ color: storeTheme.accent }} />
-                    </div>
-                    <div>
-                      <p className="font-bold text-xs" style={{ color: storeTheme.text }}>{isPaid ? "Verificado" : "Ativo"}</p>
-                      <p className="text-[9px]" style={{ color: storeTheme.textMuted }}>Vendedor</p>
-                    </div>
-                  </div>
-                  {isPaid && (
-                    <>
-                      <div className="w-px h-6" style={{ background: storeTheme.border }} />
-                      <PackageBadge tier={sellerTier} size="sm" />
-                    </>
+              <div className="flex-1 min-w-0 pt-1">
+                <div className="flex items-center gap-1.5 lg:justify-center">
+                  <p className="font-display font-bold text-sm truncate" style={{ color: storeTheme.text }}>{company.name}</p>
+                  {isPaid && <BadgeCheck size={14} style={{ color: storeTheme.primary }} />}
+                </div>
+                <p className="text-[11px] mt-0.5 flex items-center gap-1 lg:justify-center" style={{ color: storeTheme.textMuted }}>
+                  <Sparkles size={9} style={{ color: storeTheme.primary }} />
+                  {teamMember
+                    ? "Corretor(a) de Imóveis"
+                    : dbProfile?.seller_category
+                      ? ({ imobiliaria: "Imobiliária", corretor: "Corretor(a) de Imóveis", proprietario: "Proprietário", construtora: "Construtora", loja_veiculos: "Loja de Veículos", autonomo: "Vendedor Autônomo", concessionaria: "Concessionária" } as Record<string, string>)[dbProfile.seller_category] || "Especialista em imóveis"
+                      : "Especialista em imóveis"}
+                </p>
+                <div className="flex gap-2 mt-3 flex-wrap lg:justify-center">
+                  {company.whatsapp && (
+                    <button
+                      onClick={() => handleWhatsApp(heroProduct?.title || company.name, heroProduct?.id)}
+                      className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-white font-bold text-[11px] active:scale-95 transition-transform"
+                      style={{ background: `linear-gradient(135deg, ${storeTheme.primary}, ${storeTheme.primary}dd)`, boxShadow: `0 8px 20px -5px ${storeTheme.primary}80` }}
+                    >
+                      <MessageCircle size={13} /> WhatsApp
+                    </button>
                   )}
+                  {(company as any).instagram && ["start", "vip", "premium", "essencial_empresa", "premium_empresa", "prime_empresa"].includes(sellerTier || "") && (
+                    <a
+                      href={`https://instagram.com/${(company as any).instagram.replace(/^@/, "")}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1.5 px-3 py-2 rounded-lg font-bold text-[11px] active:scale-95 transition-transform"
+                      style={{ background: `${storeTheme.primary}15`, color: storeTheme.primary, border: `1px solid ${storeTheme.primary}40` }}
+                    >
+                      <Instagram size={13} /> Instagram
+                    </a>
+                  )}
+                </div>
+                {(teamMember?.bio || dbProfile?.bio) && (
+                  <p className="text-[11px] leading-relaxed mt-2" style={{ color: storeTheme.textMuted }}>{teamMember?.bio || dbProfile.bio}</p>
+                )}
+                <div className="grid grid-cols-3 gap-2 mt-3">
+                  <div className="text-center py-2 rounded-lg" style={{ background: `linear-gradient(135deg, ${storeTheme.primary}15, ${storeTheme.primary}05)`, border: `1px solid ${storeTheme.primary}30` }}>
+                    <p className="text-base font-black" style={{ color: storeTheme.primary, textShadow: `0 0 10px ${storeTheme.primary}60` }}>{products.length}</p>
+                    <p className="text-[8px] uppercase tracking-wider" style={{ color: storeTheme.textMuted }}>Imóveis</p>
+                  </div>
+                  <div className="text-center py-2 rounded-lg" style={{ background: `linear-gradient(135deg, ${storeTheme.primary}15, ${storeTheme.primary}05)`, border: `1px solid ${storeTheme.primary}30` }}>
+                    <p className="text-base font-black" style={{ color: storeTheme.primary, textShadow: `0 0 10px ${storeTheme.primary}60` }}>{isPaid ? "✓" : "—"}</p>
+                    <p className="text-[8px] uppercase tracking-wider" style={{ color: storeTheme.textMuted }}>{isPaid ? "Verificado" : "Ativo"}</p>
+                  </div>
+                  {availableCities.length > 0 && (
+                    <div className="text-center py-2 rounded-lg" style={{ background: `linear-gradient(135deg, ${storeTheme.primary}15, ${storeTheme.primary}05)`, border: `1px solid ${storeTheme.primary}30` }}>
+                      <p className="text-base font-black" style={{ color: storeTheme.primary, textShadow: `0 0 10px ${storeTheme.primary}60` }}>{availableCities.length}</p>
+                      <p className="text-[8px] uppercase tracking-wider" style={{ color: storeTheme.textMuted }}>{availableCities.length === 1 ? "Cidade" : "Cidades"}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+            <div className="mt-4 space-y-2">
+              {(teamMember?.creci || (["corretor", "imobiliaria", "construtora"].includes(dbProfile?.seller_category) && dbProfile?.creci)) && (
+                <div className="flex items-center justify-center gap-1.5 py-2 rounded-lg" style={{ background: `linear-gradient(135deg, ${storeTheme.primary}20, ${storeTheme.primary}10)`, border: `1px solid ${storeTheme.primary}50`, boxShadow: `0 0 15px ${storeTheme.primary}30` }}>
+                  <Shield size={12} style={{ color: storeTheme.primary }} />
+                  <span className="text-[10px] font-bold tracking-wider" style={{ color: storeTheme.primary }}>CRECI {teamMember?.creci || dbProfile.creci}</span>
+                </div>
+              )}
+              {dbProfile?.cnpj && (
+                <div className="flex items-center justify-center gap-2 px-3 py-2 rounded-lg" style={{ background: `${storeTheme.primary}08`, border: `1px solid ${storeTheme.primary}20` }}>
+                  <Store size={12} style={{ color: storeTheme.textMuted }} />
+                  <span className="text-[10px]" style={{ color: storeTheme.textMuted }}>CNPJ: {dbProfile.cnpj}</span>
                 </div>
               )}
             </div>
+            {teamMember && dbProfile?.logo_url && (
+              <div className="flex items-center gap-3 mt-3 p-2.5 rounded-lg" style={{ background: `${storeTheme.primary}08`, border: `1px solid ${storeTheme.primary}20` }}>
+                <img src={dbProfile.logo_url} alt={dbProfile.company_name || dbProfile.full_name} className="w-10 h-10 rounded-lg object-cover" style={{ border: `1px solid ${storeTheme.primary}40` }} />
+                <div>
+                  <p className="text-xs font-bold" style={{ color: storeTheme.text }}>{dbProfile.company_name || dbProfile.full_name}</p>
+                  {dbProfile.cnpj && <p className="text-[10px]" style={{ color: storeTheme.textMuted }}>CNPJ: {dbProfile.cnpj}</p>}
+                </div>
+              </div>
+            )}
+            {isPaid && isNetflix && (
+              <div className="flex justify-center mt-3 pt-3" style={{ borderTop: `1px solid ${storeTheme.primary}20` }}>
+                <PackageBadge tier={sellerTier} size="sm" />
+              </div>
+            )}
           </div>
 
-          {/* ── Bloco 2: Benefícios / Garantias ── */}
-          <div className="rounded-2xl lg:mt-0 h-full flex flex-col" style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}>
-            <div className="rounded-t-2xl px-5 pt-5 pb-5 md:pt-6 md:pb-6" style={{ background: `${storeTheme.primary}15` }}>
-              <div className="flex items-center gap-2">
-                <Shield size={20} className="md:w-6 md:h-6" style={{ color: storeTheme.primary }} />
-                <span className="text-sm md:text-base lg:text-lg font-semibold" style={{ color: storeTheme.text }}>Por que escolher</span>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-3 p-5 flex-1">
-              <div className="flex flex-col items-center text-center gap-2 p-4 rounded-xl" style={{ background: `${storeTheme.primary}10` }}>
-                <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: storeTheme.primary }}>
-                  <Zap size={18} className="text-white" />
+          {/* ── Bloco 2: Por que escolher (estilo sidebar) ── */}
+          <div
+            className="rounded-2xl p-4"
+            style={{
+              background: `linear-gradient(160deg, ${storeTheme.card}, ${storeTheme.primary}08)`,
+              border: `1px solid ${storeTheme.primary}30`,
+              boxShadow: `0 10px 30px -10px ${storeTheme.primary}30`,
+            }}
+          >
+            <h5 className="text-[11px] font-black uppercase tracking-widest mb-3 flex items-center gap-1.5" style={{ color: storeTheme.primary }}>
+              <Shield size={12} /> Por que escolher
+            </h5>
+            <div className="space-y-1">
+              {[
+                { txt: "Resposta rápida via WhatsApp", icon: Zap },
+                { txt: isPaid ? "Vendedor premium verificado" : "Vendedor ativo", icon: BadgeCheck },
+                { txt: `${products.length} imóveis disponíveis`, icon: Store },
+                { txt: dbProfile?.city || "Espírito Santo", icon: MapPin },
+              ].map((item, i) => (
+                <div
+                  key={i}
+                  className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all hover:translate-x-1"
+                  style={{ color: storeTheme.text }}
+                >
+                  <item.icon size={12} style={{ color: storeTheme.primary }} className="flex-shrink-0" />
+                  <span className="flex-1">{item.txt}</span>
+                  <span className="text-[10px] font-black" style={{ color: storeTheme.primary }}>✓</span>
                 </div>
-                <span className="text-xs md:text-sm font-semibold leading-tight" style={{ color: storeTheme.text }}>Resposta rápida via WhatsApp</span>
-              </div>
-              <div className="flex flex-col items-center text-center gap-2 p-4 rounded-xl" style={{ background: `${storeTheme.primary}10` }}>
-                <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: storeTheme.primary }}>
-                  <BadgeCheck size={18} className="text-white" />
-                </div>
-                <span className="text-xs md:text-sm font-semibold leading-tight" style={{ color: storeTheme.text }}>{isPaid ? "Vendedor premium verificado" : "Vendedor ativo"}</span>
-              </div>
-              <div className="flex flex-col items-center text-center gap-2 p-4 rounded-xl" style={{ background: `${storeTheme.primary}10` }}>
-                <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: storeTheme.primary }}>
-                  <Store size={18} className="text-white" />
-                </div>
-                <span className="text-xs md:text-sm font-semibold leading-tight" style={{ color: storeTheme.text }}>{products.length} imóveis disponíveis</span>
-              </div>
-              <div className="flex flex-col items-center text-center gap-2 p-4 rounded-xl" style={{ background: `${storeTheme.primary}10` }}>
-                <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: storeTheme.primary }}>
-                  <MapPin size={18} className="text-white" />
-                </div>
-                <span className="text-xs md:text-sm font-semibold leading-tight" style={{ color: storeTheme.text }}>{dbProfile?.city || "Espírito Santo"}</span>
-              </div>
+              ))}
             </div>
           </div>
-        </div>
       </section>
 
       {/* ═══ STICKY MOBILE BOTTOM BAR ═══ */}
