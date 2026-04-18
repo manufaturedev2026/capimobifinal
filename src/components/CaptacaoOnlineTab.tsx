@@ -286,6 +286,13 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
         if (cfg.avalMsgDetails) setAvalMsgDetails(cfg.avalMsgDetails);
         if (cfg.avalMsgSuccess) setAvalMsgSuccess(cfg.avalMsgSuccess);
         if (cfg.avalMsgSuccessEnd) setAvalMsgSuccessEnd(cfg.avalMsgSuccessEnd);
+        if (cfg.captacaoCtaLabel) setCaptacaoCtaLabel(cfg.captacaoCtaLabel);
+        if (cfg.captacaoCtaUrl) setCaptacaoCtaUrl(cfg.captacaoCtaUrl);
+        if (cfg.grupoCtaLabel) setGrupoCtaLabel(cfg.grupoCtaLabel);
+        if (cfg.agendCtaLabel) setAgendCtaLabel(cfg.agendCtaLabel);
+        if (cfg.agendCtaUrl) setAgendCtaUrl(cfg.agendCtaUrl);
+        if (cfg.avalCtaLabel) setAvalCtaLabel(cfg.avalCtaLabel);
+        if (cfg.avalCtaUrl) setAvalCtaUrl(cfg.avalCtaUrl);
       } catch {}
     }
   };
