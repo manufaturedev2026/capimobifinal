@@ -39,8 +39,8 @@ export type StoreLayoutId = typeof STORE_LAYOUTS[number]["id"];
 
 /** Layouts allowed per subscription tier */
 export const LAYOUTS_BY_TIER: Record<string, string[]> = {
-  basico: ["marketplace"],
-  start: ["marketplace"],
+  basico: ["marketplace", "cyberpunk_marketplace"],
+  start: ["marketplace", "cyberpunk_marketplace"],
   vip: ["marketplace", "netflix", "minimal", "cyberpunk_marketplace"],
   premium: ["marketplace", "netflix", "minimal", "magazine", "gallery", "elegant", "cyberpunk_marketplace"],
   essencial_empresa: ["marketplace", "netflix", "minimal", "cyberpunk_marketplace"],
