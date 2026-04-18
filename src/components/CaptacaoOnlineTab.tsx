@@ -1044,3 +1044,24 @@ function Field({ label, value, onChange, multiline }: {
     </div>
   );
 }
+
+/* ── CTA Button Editor (label + URL) ── */
+function CtaFields({ label, url, onLabel, onUrl, hint, urlPlaceholder }: {
+  label: string; url: string; onLabel: (v: string) => void; onUrl: (v: string) => void;
+  hint?: string; urlPlaceholder?: string;
+}) {
+  return (
+    <div className="rounded-xl border border-primary/20 bg-primary/5 p-3 space-y-2">
+      <p className="text-xs font-bold text-foreground">🎯 Botão de Ação Final (CTA)</p>
+      <div>
+        <label className="text-xs text-muted-foreground">Texto do botão</label>
+        <Input value={label} onChange={e => onLabel(e.target.value)} placeholder="Ex: Falar no WhatsApp" className="mt-1 text-sm" />
+      </div>
+      <div>
+        <label className="text-xs text-muted-foreground">Link do botão (opcional)</label>
+        <Input value={url} onChange={e => onUrl(e.target.value)} placeholder={urlPlaceholder || "https://..."} className="mt-1 text-sm" />
+        {hint && <p className="text-[10px] text-muted-foreground mt-1">{hint}</p>}
+      </div>
+    </div>
+  );
+}
