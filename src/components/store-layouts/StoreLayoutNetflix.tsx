@@ -1022,56 +1022,80 @@ export default function StoreLayoutNetflix({
                     {visibleProducts.map((product: any, i: number) => {
                       const productLink = `/imoveis/produto/${product.slug || product.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`;
                       return (
-                        <motion.div
-                          key={product.id}
-                          initial={{ opacity: 0, y: 24 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: Math.min(i * 0.03, 0.5), duration: 0.4 }}
-                          whileHover={{ y: -6, transition: { duration: 0.25 } }}
-                        >
-                          <Link
-                            to={productLink}
-                            className="block rounded-2xl overflow-hidden group transition-all"
-                            style={{
-                              background: storeTheme.card,
-                              border: `1px solid ${storeTheme.border}`,
-                              boxShadow: `0 2px 8px rgba(0,0,0,0.2)`,
-                            }}
-                            onMouseEnter={(e) => {
-                              (e.currentTarget as HTMLElement).style.boxShadow = `0 12px 40px ${storeTheme.primary}30, 0 4px 12px rgba(0,0,0,0.3)`;
-                            }}
-                            onMouseLeave={(e) => {
-                              (e.currentTarget as HTMLElement).style.boxShadow = `0 2px 8px rgba(0,0,0,0.2)`;
-                            }}
+                          <motion.div
+                            key={product.id}
+                            initial={{ opacity: 0, y: 24 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: Math.min(i * 0.03, 0.5), duration: 0.4 }}
+                            whileHover={{ y: -10, scale: 1.02, transition: { duration: 0.25, type: "spring", stiffness: 300 } }}
+                            className="relative"
                           >
-                            <div className="relative aspect-[4/3] overflow-hidden">
-                              {product.image ? (
-                                <img src={product.image} alt={product.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy" />
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center" style={{ background: storeTheme.border }}>
-                                  <Image size={28} style={{ color: storeTheme.textMuted }} />
-                                </div>
-                              )}
-                              <div
-                                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                                style={{ background: `linear-gradient(to top, ${storeTheme.primary}40, transparent 60%)` }}
-                              />
-                              {product.tag && (
-                                <span className={`absolute top-2.5 left-2.5 px-2.5 py-1 rounded-lg text-[9px] font-bold shadow-lg backdrop-blur-sm ${getTagStyle(product.tag)}`}>
-                                  {getTagLabel(product.tag)}
+                            {/* Animated glow border on hover */}
+                            <div
+                              className="absolute -inset-[1px] rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                              style={{
+                                background: `linear-gradient(135deg, ${storeTheme.primary}, transparent, ${storeTheme.primary})`,
+                                filter: "blur(8px)",
+                              }}
+                            />
+                            <Link
+                              to={productLink}
+                              className="relative block rounded-2xl overflow-hidden group transition-all"
+                              style={{
+                                background: storeTheme.card,
+                                border: `1px solid ${storeTheme.border}`,
+                                boxShadow: `0 4px 12px rgba(0,0,0,0.3)`,
+                              }}
+                              onMouseEnter={(e) => {
+                                (e.currentTarget as HTMLElement).style.boxShadow = `0 20px 60px ${storeTheme.primary}50, 0 8px 20px rgba(0,0,0,0.4), inset 0 1px 0 ${storeTheme.primary}40`;
+                                (e.currentTarget as HTMLElement).style.borderColor = storeTheme.primary;
+                              }}
+                              onMouseLeave={(e) => {
+                                (e.currentTarget as HTMLElement).style.boxShadow = `0 4px 12px rgba(0,0,0,0.3)`;
+                                (e.currentTarget as HTMLElement).style.borderColor = storeTheme.border;
+                              }}
+                            >
+                              <div className="relative aspect-[4/3] overflow-hidden">
+                                {product.image ? (
+                                  <img src={product.image} alt={product.title} className="w-full h-full object-cover group-hover:scale-125 transition-transform duration-1000 ease-out" loading="lazy" />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center" style={{ background: storeTheme.border }}>
+                                    <Image size={28} style={{ color: storeTheme.textMuted }} />
+                                  </div>
+                                )}
+                                {/* Bottom gradient */}
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                                {/* Shimmer sweep on hover */}
+                                <div
+                                  className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out pointer-events-none"
+                                  style={{ background: `linear-gradient(90deg, transparent, ${storeTheme.primary}40, transparent)` }}
+                                />
+                                {/* Color glow on hover */}
+                                <div
+                                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                                  style={{ background: `linear-gradient(to top, ${storeTheme.primary}50, transparent 60%)` }}
+                                />
+                                {product.tag && (
+                                  <span className={`absolute top-2.5 left-2.5 px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider shadow-lg backdrop-blur-md ${getTagStyle(product.tag)}`}
+                                    style={{ boxShadow: `0 4px 12px rgba(0,0,0,0.4)` }}>
+                                    {getTagLabel(product.tag)}
+                                  </span>
+                                )}
+                                {product.isAluguel && (
+                                  <span className="absolute bottom-2.5 left-2.5 px-2.5 py-1 rounded-lg text-[9px] font-bold shadow-lg backdrop-blur-sm" style={{ background: `${storeTheme.primary}dd`, color: "#fff" }}>
+                                    🏠 Aluguel
+                                  </span>
+                                )}
+                                {/* HD badge */}
+                                <span className="absolute top-2.5 right-2.5 px-1.5 py-0.5 border border-white/40 text-white/90 text-[8px] font-black tracking-wider backdrop-blur-md bg-black/30 rounded">
+                                  HD
                                 </span>
-                              )}
-                              {product.isAluguel && (
-                                <span className="absolute bottom-2.5 left-2.5 px-2.5 py-1 rounded-lg text-[9px] font-bold shadow-lg backdrop-blur-sm" style={{ background: `${storeTheme.primary}dd`, color: "#fff" }}>
-                                  🏠 Aluguel
-                                </span>
-                              )}
-                              {product.status === "vendido" && (
-                                <div className="absolute inset-0 bg-black/70 flex items-center justify-center">
-                                  <span className="text-red-400 font-bold text-xs uppercase tracking-[0.2em]">Vendido</span>
-                                </div>
-                              )}
-                            </div>
+                                {product.status === "vendido" && (
+                                  <div className="absolute inset-0 bg-black/70 flex items-center justify-center">
+                                    <span className="text-red-400 font-bold text-xs uppercase tracking-[0.2em]">Vendido</span>
+                                  </div>
+                                )}
+                              </div>
                             <div className="p-3 md:p-3.5">
                               <h3 className="text-[11px] md:text-xs font-bold line-clamp-2 leading-snug mb-1.5" style={{ color: storeTheme.text }}>
                                 {product.title}
