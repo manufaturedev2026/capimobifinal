@@ -1007,7 +1007,9 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
                           <Field label="Pedindo endereço" value={avalMsgAddress} onChange={setAvalMsgAddress} multiline />
                           <Field label="Pedindo detalhes" value={avalMsgDetails} onChange={setAvalMsgDetails} multiline />
                           <Field label="Mensagem de sucesso" value={avalMsgSuccess} onChange={setAvalMsgSuccess} />
+                          <Field label="Mensagem de sucesso" value={avalMsgSuccess} onChange={setAvalMsgSuccess} />
                           <Field label="Mensagem final" value={avalMsgSuccessEnd} onChange={setAvalMsgSuccessEnd} />
+                          <CtaFields label={avalCtaLabel} url={avalCtaUrl} onLabel={setAvalCtaLabel} onUrl={setAvalCtaUrl} hint="Se preenchido, o botão final abre essa URL. Vazio = abre WhatsApp do especialista." />
                         </>
                       )}
                     </div>
