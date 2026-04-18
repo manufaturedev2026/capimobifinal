@@ -807,44 +807,79 @@ export default function StoreLayoutNetflix({
                 )}
 
                 <div className="lg:sticky lg:top-4 space-y-5">
-                  {/* ─── Verified Professional Card ─── */}
+                  {/* ─── Verified Professional Card ÉPICO ─── */}
                   {dbProfile && (
-                    <div
-                      className="rounded-2xl overflow-hidden"
-                      style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}
+                    <motion.div
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.5 }}
+                      className="relative rounded-2xl overflow-hidden"
+                      style={{
+                        background: `linear-gradient(160deg, ${storeTheme.card} 0%, ${storeTheme.primary}10 100%)`,
+                        border: `1px solid ${storeTheme.primary}40`,
+                        boxShadow: `0 20px 50px -10px ${storeTheme.primary}40, inset 0 1px 0 ${storeTheme.primary}30`,
+                      }}
                     >
+                      {/* Animated grid background */}
+                      <div className="absolute inset-0 opacity-[0.07] pointer-events-none" style={{
+                        backgroundImage: `linear-gradient(${storeTheme.primary} 1px, transparent 1px), linear-gradient(90deg, ${storeTheme.primary} 1px, transparent 1px)`,
+                        backgroundSize: "20px 20px",
+                      }} />
+                      {/* Top glow line */}
+                      <motion.div
+                        className="absolute top-0 left-0 right-0 h-[2px] pointer-events-none z-20"
+                        style={{ background: `linear-gradient(90deg, transparent, ${storeTheme.primary}, transparent)` }}
+                        animate={{ opacity: [0.4, 1, 0.4] }}
+                        transition={{ duration: 3, repeat: Infinity }}
+                      />
+
                       <div
-                        className="px-4 py-3 flex items-center gap-2"
+                        className="relative px-4 py-3 flex items-center gap-2 overflow-hidden"
                         style={{ background: `linear-gradient(135deg, ${storeTheme.primary}, ${storeTheme.primary}cc)` }}
                       >
-                        <BadgeCheck size={16} className="text-white" />
-                        <span className="text-[11px] font-black uppercase tracking-widest text-white">
+                        <motion.div
+                          className="absolute inset-0 -translate-x-full"
+                          style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)" }}
+                          animate={{ translateX: ["-100%", "200%"] }}
+                          transition={{ duration: 3, repeat: Infinity, repeatDelay: 2, ease: "easeInOut" }}
+                        />
+                        <BadgeCheck size={16} className="text-white relative z-10 drop-shadow" />
+                        <span className="relative z-10 text-[11px] font-black uppercase tracking-widest text-white drop-shadow">
                           Profissional Verificado
                         </span>
                       </div>
 
-                      <div className="p-4 space-y-4">
+                      <div className="relative p-4 space-y-4">
                         <div className="flex items-center gap-3">
-                          {dbProfile.logo_url ? (
-                            <img
-                              src={dbProfile.logo_url}
-                              alt={dbProfile.full_name || dbProfile.company_name}
-                              className="w-12 h-12 rounded-full object-cover flex-shrink-0"
+                          <div className="relative">
+                            <motion.div
+                              className="absolute inset-0 rounded-full pointer-events-none"
                               style={{ border: `2px solid ${storeTheme.primary}` }}
+                              animate={{ scale: [1, 1.4, 1], opacity: [0.8, 0, 0.8] }}
+                              transition={{ duration: 2.5, repeat: Infinity }}
                             />
-                          ) : (
-                            <div
-                              className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0"
-                              style={{ background: `${storeTheme.primary}22`, border: `2px solid ${storeTheme.primary}` }}
-                            >
-                              <Building2 size={20} style={{ color: storeTheme.primary }} />
-                            </div>
-                          )}
+                            {dbProfile.logo_url ? (
+                              <img
+                                src={dbProfile.logo_url}
+                                alt={dbProfile.full_name || dbProfile.company_name}
+                                className="relative w-12 h-12 rounded-full object-cover flex-shrink-0"
+                                style={{ border: `2px solid ${storeTheme.primary}`, boxShadow: `0 0 20px ${storeTheme.primary}60` }}
+                              />
+                            ) : (
+                              <div
+                                className="relative w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0"
+                                style={{ background: `${storeTheme.primary}22`, border: `2px solid ${storeTheme.primary}`, boxShadow: `0 0 20px ${storeTheme.primary}60` }}
+                              >
+                                <Building2 size={20} style={{ color: storeTheme.primary }} />
+                              </div>
+                            )}
+                          </div>
                           <div className="min-w-0 flex-1">
                             <p className="text-sm font-bold truncate" style={{ color: storeTheme.text }}>
                               {dbProfile.full_name || dbProfile.company_name}
                             </p>
-                            <p className="text-[10px]" style={{ color: storeTheme.textMuted }}>
+                            <p className="text-[10px] flex items-center gap-1" style={{ color: storeTheme.textMuted }}>
+                              <Sparkles size={9} style={{ color: storeTheme.primary }} />
                               {dbProfile.seller_category === "imobiliaria"
                                 ? "Imobiliária"
                                 : dbProfile.seller_category === "construtora"
@@ -861,112 +896,169 @@ export default function StoreLayoutNetflix({
                         )}
 
                         <div className="grid grid-cols-3 gap-2">
-                          <div className="text-center py-2 rounded-lg" style={{ background: `${storeTheme.primary}10` }}>
-                            <p className="text-base font-black" style={{ color: storeTheme.primary }}>{allProducts.length}</p>
-                            <p className="text-[8px] uppercase tracking-wider" style={{ color: storeTheme.textMuted }}>Imóveis</p>
-                          </div>
-                          <div className="text-center py-2 rounded-lg" style={{ background: `${storeTheme.primary}10` }}>
-                            <p className="text-base font-black" style={{ color: storeTheme.primary }}>✓</p>
-                            <p className="text-[8px] uppercase tracking-wider" style={{ color: storeTheme.textMuted }}>Verificado</p>
-                          </div>
-                          {availableCities && availableCities.length > 0 && (
-                            <div className="text-center py-2 rounded-lg" style={{ background: `${storeTheme.primary}10` }}>
-                              <p className="text-base font-black" style={{ color: storeTheme.primary }}>{availableCities.length}</p>
-                              <p className="text-[8px] uppercase tracking-wider" style={{ color: storeTheme.textMuted }}>
-                                {availableCities.length === 1 ? "Cidade" : "Cidades"}
-                              </p>
-                            </div>
-                          )}
+                          {[
+                            { val: allProducts.length as any, label: "Imóveis" },
+                            { val: "✓" as any, label: "Verificado" },
+                            ...(availableCities && availableCities.length > 0 ? [{ val: availableCities.length as any, label: availableCities.length === 1 ? "Cidade" : "Cidades" }] : []),
+                          ].map((stat, i) => (
+                            <motion.div
+                              key={i}
+                              whileHover={{ scale: 1.08, y: -2 }}
+                              className="text-center py-2 rounded-lg cursor-default"
+                              style={{
+                                background: `linear-gradient(135deg, ${storeTheme.primary}15, ${storeTheme.primary}05)`,
+                                border: `1px solid ${storeTheme.primary}30`,
+                                boxShadow: `inset 0 1px 0 ${storeTheme.primary}20`,
+                              }}
+                            >
+                              <p className="text-base font-black" style={{ color: storeTheme.primary, textShadow: `0 0 10px ${storeTheme.primary}60` }}>{stat.val}</p>
+                              <p className="text-[8px] uppercase tracking-wider" style={{ color: storeTheme.textMuted }}>{stat.label}</p>
+                            </motion.div>
+                          ))}
                         </div>
 
                         {dbProfile.creci && (
-                          <div
+                          <motion.div
+                            whileHover={{ scale: 1.02 }}
                             className="flex items-center justify-center gap-1.5 py-2 rounded-lg"
-                            style={{ background: `${storeTheme.primary}15`, border: `1px solid ${storeTheme.primary}30` }}
+                            style={{
+                              background: `linear-gradient(135deg, ${storeTheme.primary}20, ${storeTheme.primary}10)`,
+                              border: `1px solid ${storeTheme.primary}50`,
+                              boxShadow: `0 0 15px ${storeTheme.primary}30`,
+                            }}
                           >
                             <ShieldCheck size={12} style={{ color: storeTheme.primary }} />
                             <span className="text-[10px] font-bold tracking-wider" style={{ color: storeTheme.primary }}>
                               CRECI {dbProfile.creci}
                             </span>
-                          </div>
+                          </motion.div>
                         )}
 
                         <div className="space-y-2">
-                          <button
+                          <motion.button
+                            whileHover={{ scale: 1.02, y: -1 }}
+                            whileTap={{ scale: 0.98 }}
                             onClick={() => handleWhatsApp(`Olá ${dbProfile.full_name || dbProfile.company_name}!`)}
-                            className="w-full flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-xs font-bold transition-opacity hover:opacity-90"
-                            style={{ background: storeTheme.primary, color: "#fff" }}
+                            className="relative w-full flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-xs font-bold overflow-hidden"
+                            style={{
+                              background: `linear-gradient(135deg, ${storeTheme.primary}, ${storeTheme.primary}dd)`,
+                              color: "#fff",
+                              boxShadow: `0 8px 20px -5px ${storeTheme.primary}80, inset 0 1px 0 rgba(255,255,255,0.3)`,
+                            }}
                           >
-                            <MessageCircle size={13} /> WhatsApp Direto
-                          </button>
+                            <motion.div
+                              className="absolute inset-0 -translate-x-full"
+                              style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)" }}
+                              animate={{ translateX: ["-100%", "200%"] }}
+                              transition={{ duration: 2, repeat: Infinity, repeatDelay: 1.5 }}
+                            />
+                            <MessageCircle size={13} className="relative z-10" />
+                            <span className="relative z-10">WhatsApp Direto</span>
+                          </motion.button>
                           {dbProfile.instagram && (
-                            <a
+                            <motion.a
+                              whileHover={{ scale: 1.02 }}
+                              whileTap={{ scale: 0.98 }}
                               href={`https://instagram.com/${String(dbProfile.instagram).replace("@", "")}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="w-full flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-xs font-bold transition-opacity hover:opacity-90"
+                              className="w-full flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-xs font-bold transition-all"
                               style={{ background: `${storeTheme.primary}15`, color: storeTheme.primary, border: `1px solid ${storeTheme.primary}40` }}
                             >
                               <Instagram size={13} /> Instagram
-                            </a>
+                            </motion.a>
                           )}
                         </div>
 
-                        <div className="pt-2 space-y-1.5" style={{ borderTop: `1px solid ${storeTheme.border}` }}>
-                          <p className="text-[10px] font-black uppercase tracking-widest pt-2" style={{ color: storeTheme.primary }}>
-                            Por que escolher
+                        <div className="pt-2 space-y-1.5" style={{ borderTop: `1px solid ${storeTheme.primary}25` }}>
+                          <p className="text-[10px] font-black uppercase tracking-widest pt-2 flex items-center gap-1" style={{ color: storeTheme.primary }}>
+                            <Crown size={10} /> Por que escolher
                           </p>
-                          <div className="flex items-center gap-1.5 text-[10px]" style={{ color: storeTheme.textMuted }}>
-                            <span style={{ color: storeTheme.primary }}>✓</span> Resposta rápida via WhatsApp
-                          </div>
-                          <div className="flex items-center gap-1.5 text-[10px]" style={{ color: storeTheme.textMuted }}>
-                            <span style={{ color: storeTheme.primary }}>✓</span> Vendedor premium verificado
-                          </div>
-                          <div className="flex items-center gap-1.5 text-[10px]" style={{ color: storeTheme.textMuted }}>
-                            <span style={{ color: storeTheme.primary }}>✓</span> {allProducts.length} imóveis disponíveis
-                          </div>
+                          {[
+                            "Resposta rápida via WhatsApp",
+                            "Vendedor premium verificado",
+                            `${allProducts.length} imóveis disponíveis`,
+                          ].map((txt, i) => (
+                            <motion.div
+                              key={i}
+                              initial={{ opacity: 0, x: -10 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: 0.3 + i * 0.1 }}
+                              className="flex items-center gap-1.5 text-[10px]"
+                              style={{ color: storeTheme.textMuted }}
+                            >
+                              <span style={{ color: storeTheme.primary, textShadow: `0 0 8px ${storeTheme.primary}` }}>✓</span> {txt}
+                            </motion.div>
+                          ))}
                         </div>
                       </div>
-                    </div>
+                    </motion.div>
                   )}
 
-                  {/* City filter */}
+                  {/* City filter ÉPICO */}
                   {availableCities && availableCities.length > 1 && setFilterCity && (
-                    <div className="rounded-2xl p-4" style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}>
+                    <motion.div
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.1 }}
+                      className="rounded-2xl p-4"
+                      style={{
+                        background: `linear-gradient(160deg, ${storeTheme.card}, ${storeTheme.primary}08)`,
+                        border: `1px solid ${storeTheme.primary}30`,
+                        boxShadow: `0 10px 30px -10px ${storeTheme.primary}30`,
+                      }}
+                    >
                       <h5 className="text-[11px] font-black uppercase tracking-widest mb-3 flex items-center gap-1.5" style={{ color: storeTheme.primary }}>
                         <MapPin size={12} /> Cidade
                       </h5>
                       <div className="space-y-1 max-h-[240px] overflow-y-auto">
-                        <button
+                        <motion.button
+                          whileHover={{ x: 4 }}
                           onClick={() => setFilterCity("")}
-                          className="w-full text-left px-3 py-2 rounded-lg text-xs font-medium transition-colors"
+                          className="w-full text-left px-3 py-2 rounded-lg text-xs font-medium transition-all"
                           style={{
                             background: !filterCity ? `${storeTheme.primary}22` : "transparent",
                             color: !filterCity ? storeTheme.primary : storeTheme.text,
+                            boxShadow: !filterCity ? `inset 2px 0 0 ${storeTheme.primary}, 0 0 12px ${storeTheme.primary}30` : undefined,
                           }}
                         >
                           Todas as cidades
-                        </button>
-                        {availableCities.map((city) => (
-                          <button
-                            key={city}
-                            onClick={() => setFilterCity(city)}
-                            className="w-full text-left px-3 py-2 rounded-lg text-xs font-medium transition-colors"
-                            style={{
-                              background: filterCity === city ? `${storeTheme.primary}22` : "transparent",
-                              color: filterCity === city ? storeTheme.primary : storeTheme.text,
-                            }}
-                          >
-                            {city}
-                          </button>
-                        ))}
+                        </motion.button>
+                        {availableCities.map((city) => {
+                          const active = filterCity === city;
+                          return (
+                            <motion.button
+                              key={city}
+                              whileHover={{ x: 4 }}
+                              onClick={() => setFilterCity(city)}
+                              className="w-full text-left px-3 py-2 rounded-lg text-xs font-medium transition-all"
+                              style={{
+                                background: active ? `${storeTheme.primary}22` : "transparent",
+                                color: active ? storeTheme.primary : storeTheme.text,
+                                boxShadow: active ? `inset 2px 0 0 ${storeTheme.primary}, 0 0 12px ${storeTheme.primary}30` : undefined,
+                              }}
+                            >
+                              {city}
+                            </motion.button>
+                          );
+                        })}
                       </div>
-                    </div>
+                    </motion.div>
                   )}
 
-                  {/* Category filter */}
+                  {/* Category filter ÉPICO */}
                   {activeCats.length > 1 && (
-                    <div className="rounded-2xl p-4" style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}>
+                    <motion.div
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.2 }}
+                      className="rounded-2xl p-4"
+                      style={{
+                        background: `linear-gradient(160deg, ${storeTheme.card}, ${storeTheme.primary}08)`,
+                        border: `1px solid ${storeTheme.primary}30`,
+                        boxShadow: `0 10px 30px -10px ${storeTheme.primary}30`,
+                      }}
+                    >
                       <h5 className="text-[11px] font-black uppercase tracking-widest mb-3 flex items-center gap-1.5" style={{ color: storeTheme.primary }}>
                         <Home size={12} /> Categoria
                       </h5>
@@ -975,33 +1067,55 @@ export default function StoreLayoutNetflix({
                           const count = categoryCounts[cat.slug] || 0;
                           const isActive = activeCategory === cat.slug;
                           return (
-                            <button
+                            <motion.button
                               key={cat.slug}
+                              whileHover={{ x: 4, scale: 1.01 }}
+                              whileTap={{ scale: 0.98 }}
                               onClick={() => setActiveCategory(cat.slug)}
-                              className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-colors"
+                              className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-all"
                               style={{
                                 background: isActive ? `${storeTheme.primary}22` : "transparent",
                                 color: isActive ? storeTheme.primary : storeTheme.text,
+                                boxShadow: isActive ? `inset 2px 0 0 ${storeTheme.primary}, 0 0 12px ${storeTheme.primary}30` : undefined,
                               }}
                             >
                               <span>{cat.name}</span>
-                              <span className="text-[10px] opacity-60">{count}</span>
-                            </button>
+                              <span className="text-[10px] font-black px-1.5 py-0.5 rounded"
+                                style={{
+                                  background: isActive ? storeTheme.primary : `${storeTheme.primary}15`,
+                                  color: isActive ? "#fff" : storeTheme.primary,
+                                }}
+                              >{count}</span>
+                            </motion.button>
                           );
                         })}
                       </div>
-                    </div>
+                    </motion.div>
                   )}
 
-                  {/* Reset */}
+                  {/* Reset ÉPICO */}
                   {(filterCity || activeCategory !== "todos" || searchTerm) && (
-                    <button
+                    <motion.button
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      whileHover={{ scale: 1.03, y: -2 }}
+                      whileTap={{ scale: 0.97 }}
                       onClick={() => { setFilterCity?.(""); setActiveCategory("todos"); setSearchTerm(""); }}
-                      className="w-full px-3 py-2.5 rounded-xl text-xs font-bold transition-opacity hover:opacity-80"
-                      style={{ background: storeTheme.primary, color: "#fff" }}
+                      className="relative w-full px-3 py-2.5 rounded-xl text-xs font-bold overflow-hidden"
+                      style={{
+                        background: `linear-gradient(135deg, ${storeTheme.primary}, ${storeTheme.primary}cc)`,
+                        color: "#fff",
+                        boxShadow: `0 8px 20px -5px ${storeTheme.primary}80, inset 0 1px 0 rgba(255,255,255,0.3)`,
+                      }}
                     >
-                      Limpar filtros
-                    </button>
+                      <motion.div
+                        className="absolute inset-0 -translate-x-full"
+                        style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)" }}
+                        animate={{ translateX: ["-100%", "200%"] }}
+                        transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
+                      />
+                      <span className="relative z-10">✨ Limpar filtros</span>
+                    </motion.button>
                   )}
                 </div>
               </aside>
