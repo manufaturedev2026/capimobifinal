@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { AI_PREGENERATED_ADS } from "@/data/aiPregeneratedAds";
 import {
   Link2, Copy, ExternalLink, User, Phone, MapPin, Home, DollarSign, Clock,
   Loader2, Inbox, Sparkles, Image as ImageIcon, Trash2, Video,
@@ -341,7 +342,18 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
   };
 
   const generateAdText = (templateId?: string) => {
-    const tpl = AD_TEMPLATES.find(t => t.id === (templateId || selectedTemplate));
+    const id = templateId || selectedTemplate;
+    // Prefer the AI-pregenerated premium version (higher quality)
+    const aiText = AI_PREGENERATED_ADS[id];
+    if (aiText) {
+      const filled = aiText
+        .replace(/\{url\}/g, captureUrl || "")
+        .replace(/\{name\}/g, sellerName || "Corretor");
+      setGeneratedAd(filled);
+      return;
+    }
+    // Fallback to the legacy template generator
+    const tpl = AD_TEMPLATES.find(t => t.id === id);
     if (tpl) setGeneratedAd(tpl.generate(captureUrl, sellerName));
   };
 
