@@ -93,7 +93,7 @@ export default function StoreLayoutMinimal({
   return (
     <div style={{ background: storeTheme.bg, overflowX: "clip", maxWidth: "100%", fontFamily: "'Inter', sans-serif" }}>
       <style>{`
-        .minimal-display { font-family: 'Cormorant Garamond', serif; letter-spacing: -0.02em; }
+        .minimal-display { font-family: 'Playfair Display', serif; letter-spacing: -0.015em; }
         .minimal-mono { font-family: 'Inter', sans-serif; font-feature-settings: 'tnum'; }
         @keyframes minimalParticleUp {
           0% { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
