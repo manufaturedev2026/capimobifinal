@@ -190,26 +190,6 @@ export default function StoreLayoutMinimal({
 
         {/* Hero text */}
         <div className="relative z-10 h-full flex flex-col justify-end p-5 md:p-10 max-w-5xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.25 }}
-            className="hidden md:block mb-3"
-          >
-            <p className="minimal-display font-bold text-lg md:text-xl text-white drop-shadow-lg leading-tight">
-              {sellerDisplayName}
-            </p>
-            <p className="minimal-mono text-[10px] uppercase tracking-[0.28em] text-white/70 mt-1 font-medium">
-              {dbProfile?.seller_category === "imobiliaria" ? "Imobiliária" :
-               dbProfile?.seller_category === "construtora" ? "Construtora" :
-               "Corretor(a) de Imóveis"}
-            </p>
-            {dbProfile?.creci && (
-              <p className="minimal-mono text-[10px] uppercase tracking-[0.28em] mt-1 font-bold inline-flex items-center gap-1.5" style={{ color: storeTheme.primary }}>
-                <Shield size={10} /> CRECI {dbProfile.creci}
-              </p>
-            )}
-          </motion.div>
           <motion.p
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
