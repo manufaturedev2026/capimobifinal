@@ -202,8 +202,14 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
   const [avalMsgSuccess, setAvalMsgSuccess] = useState("✅ Solicitação de avaliação enviada com sucesso!");
   const [avalMsgSuccessEnd, setAvalMsgSuccessEnd] = useState("Um especialista vai entrar em contato em até 24h para agendar a visita de avaliação. Obrigado! 🏡💎");
 
+  const FLOW_HASH: Record<FlowType, string> = {
+    captacao: "captacao",
+    grupo_whatsapp: "grupo",
+    agendamento: "agendamento",
+    avaliacao: "avaliacao",
+  };
   const captureUrl = `${window.location.origin}/captar-imovel/${sellerSlug || sellerId}`;
-  const chatBotUrl = `${window.location.origin}/captar-imovel/${sellerSlug || sellerId}/chat`;
+  const chatBotUrl = `${window.location.origin}/captar-imovel/${sellerSlug || sellerId}/chat#${FLOW_HASH[botFlowType] || "captacao"}`;
 
   useEffect(() => {
     fetchLeads();
