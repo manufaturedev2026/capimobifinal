@@ -201,17 +201,17 @@ export default function StoreLayoutMinimal({
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="minimal-display font-light text-3xl md:text-6xl leading-[1.05] text-white drop-shadow-lg"
+            transition={{ delay: 0.4, duration: 0.7 }}
+            className="minimal-display font-extrabold text-4xl md:text-7xl leading-[1.02] text-white drop-shadow-2xl"
           >
             Imóveis em{" "}
-            <span className="italic font-medium" style={{ color: storeTheme.primary }}>{currentHeroCity}</span>
+            <span className="font-light italic" style={{ color: storeTheme.primary }}>{currentHeroCity}</span>
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
-            className="text-xs md:text-sm mt-2 max-w-md text-white/70"
+            className="minimal-body text-sm md:text-base mt-3 max-w-md text-white/75 font-light"
           >
             {totalCount} {totalCount === 1 ? "imóvel selecionado" : "imóveis selecionados"} com cuidado
           </motion.p>
