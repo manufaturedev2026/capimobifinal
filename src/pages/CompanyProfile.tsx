@@ -2154,6 +2154,35 @@ export default function CompanyProfile() {
       {/* ═══ STICKY MOBILE BOTTOM BAR ═══ */}
 
 
+      {isMinimal && products.length > 0 && (
+        <motion.button
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: 0.5, type: "spring", stiffness: 200 }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => setGalleryLightbox(0)}
+          className="fixed right-6 bottom-24 lg:bottom-44 z-50 w-14 h-14 rounded-full text-white shadow-2xl flex items-center justify-center transition-all group"
+          style={{
+            background: `linear-gradient(135deg, ${storeTheme.primary}, ${storeTheme.accent || storeTheme.primary})`,
+            boxShadow: `0 10px 30px ${storeTheme.primary}60, 0 0 0 1px ${storeTheme.primary}40`,
+          }}
+          aria-label="Modo Cinema"
+        >
+          <Clapperboard size={24} />
+          <span
+            className="absolute right-full mr-3 px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
+            style={{ background: storeTheme.card, color: storeTheme.text, border: `1px solid ${storeTheme.border}` }}
+          >
+            Modo Cinema
+          </span>
+          <span
+            className="absolute inset-0 rounded-full animate-ping opacity-30"
+            style={{ background: storeTheme.primary }}
+          />
+        </motion.button>
+      )}
+
       {company.whatsapp && (dbProfile as any)?.show_floating_whatsapp && (
         <motion.button
           initial={{ scale: 0 }}
