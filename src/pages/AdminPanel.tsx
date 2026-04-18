@@ -1391,7 +1391,9 @@ export default function AdminPanel() {
 
       {/* ADS CRM Tab */}
       {tab === "ads" && (
-        <AdminAdsCrmTab />
+        <div className="px-4 lg:px-8 py-6">
+          <AdminAdsCrmTab />
+        </div>
       )}
 
         </main>
