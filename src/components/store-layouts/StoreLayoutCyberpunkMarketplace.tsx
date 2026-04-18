@@ -154,15 +154,21 @@ export default function StoreLayoutCyberpunkMarketplace(props: StoreLayoutProps)
       .cp-content { position: relative; z-index: 10; }
 
       /* ============= NAVBAR ============= */
-      .cp-wrapper header,
+      .cp-wrapper header.sticky,
+      .cp-wrapper header[class*="sticky"],
+      .cp-wrapper header[class*="fixed"],
       .cp-wrapper nav[class*="sticky"],
-      .cp-wrapper nav[class*="fixed"],
-      .cp-wrapper [class*="navbar"] {
-        background: ${scrolled ? "rgba(5, 5, 5, 0.85)" : "rgba(5, 5, 5, 0.4)"} !important;
+      .cp-wrapper nav[class*="fixed"] {
+        background: ${scrolled ? "rgba(5, 5, 5, 0.92)" : "rgba(13, 13, 18, 0.75)"} !important;
         backdrop-filter: blur(${scrolled ? "24px" : "16px"}) saturate(180%);
         -webkit-backdrop-filter: blur(${scrolled ? "24px" : "16px"}) saturate(180%);
-        border-bottom: 1px solid ${scrolled ? "rgba(255, 255, 255, 0.08)" : "rgba(255, 255, 255, 0.04)"} !important;
+        border-bottom: 1px solid ${scrolled ? "rgba(0, 217, 255, 0.18)" : "rgba(255, 255, 255, 0.08)"} !important;
         transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .cp-wrapper header.sticky *,
+      .cp-wrapper header[class*="sticky"] *,
+      .cp-wrapper nav[class*="sticky"] * {
+        color: #FFFFFF;
       }
 
       /* ============= CARDS — GLASSMORPHISM PREMIUM ============= */
