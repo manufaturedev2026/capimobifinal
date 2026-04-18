@@ -313,14 +313,20 @@ export default function StoreLayoutMinimal({
       {/* Stories Bar */}
       {storiesBar && <div className="max-w-5xl mx-auto mb-6">{storiesBar}</div>}
 
-      {/* ═══ CATEGORY TABS — Elegant underline style ═══ */}
+      {/* ═══ CATEGORY PILLS — Unique editorial design with theme colors ═══ */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.7 }}
         className="max-w-5xl mx-auto mb-8"
       >
-        <div className="flex gap-1 overflow-x-auto scrollbar-hide pb-1">
+        <p
+          className="text-[9px] uppercase tracking-[0.35em] mb-3 minimal-mono"
+          style={{ color: storeTheme.textMuted }}
+        >
+          ─ Categorias
+        </p>
+        <div className="flex gap-2.5 overflow-x-auto scrollbar-hide pb-2">
           {activeCats.map((cat) => {
             const isActive = activeCategory === cat.slug;
             const count = categoryCounts[cat.slug] || 0;
@@ -329,19 +335,46 @@ export default function StoreLayoutMinimal({
               <button
                 key={cat.slug}
                 onClick={() => { setActiveCategory(cat.slug); scrollToGrid(); }}
-                className="relative flex-shrink-0 flex items-center gap-1.5 px-4 py-2.5 text-xs font-medium transition-all"
-                style={{ color: isActive ? storeTheme.primary : storeTheme.textMuted }}
+                className={`group relative flex-shrink-0 inline-flex items-center gap-2.5 pl-2 pr-4 py-2 rounded-full overflow-hidden transition-all duration-500 cat-pill-shimmer ${isActive ? "cat-pill-active" : ""}`}
+                style={{
+                  background: isActive ? storeTheme.primary : storeTheme.card,
+                  border: `1px solid ${isActive ? storeTheme.primary : storeTheme.border}`,
+                  color: isActive ? "#fff" : storeTheme.text,
+                  ["--cat-glow" as any]: `${storeTheme.primary}55`,
+                  transform: isActive ? "translateY(-1px)" : "translateY(0)",
+                  boxShadow: isActive ? `0 8px 24px -8px ${storeTheme.primary}80` : "none",
+                }}
               >
-                {Icon && <Icon size={13} />}
-                <span>{cat.name}</span>
+                <span
+                  className="relative z-10 flex items-center justify-center w-7 h-7 rounded-full transition-all duration-500"
+                  style={{
+                    background: isActive ? "rgba(255,255,255,0.18)" : `${storeTheme.primary}12`,
+                    color: isActive ? "#fff" : storeTheme.primary,
+                  }}
+                >
+                  {Icon && <Icon size={13} strokeWidth={2.2} />}
+                </span>
+                <span className="relative z-10 text-[11px] font-semibold uppercase tracking-[0.12em] whitespace-nowrap">
+                  {cat.name}
+                </span>
                 {count > 0 && cat.slug !== "todos" && (
-                  <span className="text-[9px] opacity-50">{count}</span>
+                  <span
+                    className="relative z-10 minimal-mono text-[9px] font-bold px-1.5 py-0.5 rounded-full transition-all"
+                    style={{
+                      background: isActive ? "rgba(255,255,255,0.22)" : `${storeTheme.primary}18`,
+                      color: isActive ? "#fff" : storeTheme.primary,
+                      minWidth: 18,
+                      textAlign: "center",
+                    }}
+                  >
+                    {count}
+                  </span>
                 )}
                 {isActive && (
-                  <motion.div
-                    layoutId="minimalTabIndicator"
-                    className="absolute bottom-0 left-2 right-2 h-[2px] rounded-full"
-                    style={{ background: storeTheme.primary }}
+                  <motion.span
+                    layoutId="minimalCatDot"
+                    className="absolute -top-0.5 left-1/2 w-1 h-1 rounded-full"
+                    style={{ background: "#fff", transform: "translateX(-50%)" }}
                     transition={{ type: "spring", stiffness: 400, damping: 30 }}
                   />
                 )}
@@ -349,7 +382,6 @@ export default function StoreLayoutMinimal({
             );
           })}
         </div>
-        <div className="h-[1px] -mt-[1px]" style={{ background: storeTheme.border }} />
       </motion.div>
 
       {/* ═══ RESULTS LABEL ═══ */}
