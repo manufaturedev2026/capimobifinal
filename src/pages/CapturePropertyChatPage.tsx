@@ -112,14 +112,14 @@ const DEFAULT_CONFIG: BotConfig = {
   agendMsgSuccess: "✅ Visita agendada com sucesso!",
   agendMsgSuccessEnd: "Um corretor vai confirmar o agendamento pelo WhatsApp. Até breve! 📋🎉",
   // Avaliação
-  avalMsgName: "Olá! 👋 Vou te ajudar a solicitar uma avaliação GRATUITA do seu imóvel! Me diz seu nome:",
+  avalMsgName: "Olá! 👋 Vou te ajudar a solicitar uma avaliação profissional do seu imóvel! Me diz seu nome:",
   avalMsgNameReply: "Prazer, {nome}! 🤝 Vamos avaliar seu imóvel!",
   avalMsgPhone: "Qual seu telefone ou WhatsApp? 📱",
   avalMsgType: "Qual o tipo do seu imóvel? 🏠",
   avalMsgAddress: "Qual o endereço completo do imóvel? 📍\n\n(Rua, número, bairro e cidade)",
   avalMsgDetails: "Conte mais sobre o imóvel! 📝\n\n(Ex: quantidade de quartos, tamanho, estado de conservação, reformas...)",
   avalMsgSuccess: "✅ Solicitação de avaliação enviada com sucesso!",
-  avalMsgSuccessEnd: "Um especialista vai entrar em contato em até 24h para agendar a visita de avaliação. Obrigado! 🏡💎",
+  avalMsgSuccessEnd: "Nosso avaliador profissional vai entrar em contato pelo WhatsApp em breve para alinhar a avaliação. Obrigado! 🏡💎",
 };
 
 // Opening messages per flow type
