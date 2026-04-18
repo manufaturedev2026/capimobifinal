@@ -2178,6 +2178,33 @@ export default function CompanyProfile() {
         </motion.button>
       )}
 
+      {isMinimal && (company as any).instagram && (
+        <motion.a
+          href={`https://instagram.com/${(company as any).instagram.replace(/^@/, "")}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: 0.7, type: "spring", stiffness: 200 }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
+          className="fixed right-6 bottom-44 lg:bottom-64 z-50 w-14 h-14 rounded-full text-white shadow-2xl flex items-center justify-center transition-all group"
+          style={{
+            background: "linear-gradient(135deg, #833AB4, #E1306C, #F77737)",
+            boxShadow: "0 10px 30px rgba(225,48,108,0.5), 0 0 0 1px rgba(225,48,108,0.4)",
+          }}
+          aria-label="Instagram"
+        >
+          <Instagram size={24} />
+          <span
+            className="absolute right-full mr-3 px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
+            style={{ background: storeTheme.card, color: storeTheme.text, border: `1px solid ${storeTheme.border}` }}
+          >
+            Instagram
+          </span>
+        </motion.a>
+      )}
+
       {company.whatsapp && (dbProfile as any)?.show_floating_whatsapp && (
         <motion.button
           initial={{ scale: 0 }}
