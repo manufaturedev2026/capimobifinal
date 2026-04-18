@@ -338,7 +338,7 @@ REGRAS:
       const sellerTag = sellerName ? ` ${sellerName}` : "";
       const greetings: Record<string, string> = {
         captacao: `Olá! 👋 Sou o assistente${sellerTag ? " de" + sellerTag : ""}. Vou te ajudar a anunciar seu imóvel para venda ou aluguel. Para começar, qual é o seu nome? 😊`,
-        grupo_whatsapp: `Olá! 👋 Sou o assistente${sellerTag ? " de" + sellerTag : ""}. Vou te liberar o acesso ao nosso grupo exclusivo de imóveis no WhatsApp! 🏡🔥 Para começar, qual é o seu nome?`,
+        grupo_whatsapp: `Olá 👋 Seja bem-vindo(a)${sellerTag ? " à" + sellerTag : ""}! Temos um grupo exclusivo de imóveis de aluguel e venda com novas oportunidades todos os dias. 🏡🔥\n\nPosso te colocar gratuitamente no grupo? 😊\n\n• Sim, quero entrar\n• Quero saber mais\n• Depois vejo`,
         agendamento: `Olá 👋 Seja bem-vindo(a)${sellerTag ? " à" + sellerTag : ""}! Vou te ajudar a agendar sua visita ao imóvel de forma rápida e organizada. 📅 Para começar, qual imóvel você deseja visitar?`,
         avaliacao: `Olá 👋 Seja bem-vindo(a)${sellerTag ? " à" + sellerTag : ""}! Vou te ajudar com a avaliação do seu imóvel de forma rápida e gratuita. Para começar, qual tipo de imóvel você deseja avaliar? (Casa, Apartamento, Terreno, Sala Comercial, Galpão ou Outro)`,
       };
