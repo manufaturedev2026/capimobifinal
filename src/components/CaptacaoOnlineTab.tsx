@@ -70,12 +70,12 @@ const AD_TEMPLATES: AdTemplate[] = [
       `⏰ ATENÇÃO proprietários!\n\nEstou selecionando apenas 5 imóveis esta semana para um trabalho exclusivo de divulgação.\n\n🔥 Se você quer vender ou alugar RÁPIDO, essa é sua chance!\n\n✅ Fotos profissionais\n✅ Divulgação em +10 portais\n✅ Atendimento VIP\n\n📋 Cadastre seu imóvel agora (é grátis):\n${url}\n\n⚠️ Restam poucas vagas!\n\n— ${name}`,
   },
   {
-    id: "avaliacao_gratuita",
-    label: "Avaliação Gratuita",
+    id: "avaliacao_profissional",
+    label: "Avaliação Profissional",
     emoji: "💎",
     category: "Avaliação",
     generate: (url, name) =>
-      `💎 Você sabe quanto vale o seu imóvel HOJE?\n\n🏠 Ofereço avaliação GRATUITA e sem compromisso!\n\nDescubra o valor real do seu patrimônio com quem entende do mercado.\n\n📊 O que está incluso:\n• Análise comparativa da região\n• Avaliação de mercado atualizada\n• Orientação sobre o melhor momento para vender\n\n👉 Cadastre agora para receber sua avaliação:\n${url}\n\n📲 Ou me chame no WhatsApp!\n\n— ${name} | Corretor(a) de Imóveis`,
+      `💎 Você sabe quanto vale o seu imóvel HOJE?\n\n🏠 Sou avaliador profissional e posso te ajudar a entender o valor real do seu patrimônio.\n\n📊 Como funciona:\n• Análise comparativa da região\n• Avaliação de mercado atualizada\n• Critérios técnicos profissionais\n• Orientação sobre o melhor momento para vender\n\n👉 Cadastre os dados do imóvel:\n${url}\n\n📲 Em seguida entro em contato pelo WhatsApp para alinhar tudo com você.\n\n— ${name} | Avaliador(a) de Imóveis`,
   },
   {
     id: "stories_instagram",
