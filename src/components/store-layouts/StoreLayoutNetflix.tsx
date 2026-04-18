@@ -545,7 +545,7 @@ export default function StoreLayoutNetflix({
               )}
             </motion.div>
 
-            {/* Action buttons — Netflix CTA style */}
+            {/* Action buttons — Netflix CTA style ÉPICO com cor do tema */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -554,16 +554,33 @@ export default function StoreLayoutNetflix({
             >
               <Link
                 to={`/imoveis/produto/${currentBillboard.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`}
-                className="inline-flex items-center gap-1.5 px-4 lg:px-8 py-2 lg:py-3 rounded-md font-bold text-xs lg:text-base bg-white text-black hover:bg-white/90 transition-all shadow-lg"
+                className="group relative inline-flex items-center gap-1.5 px-4 lg:px-8 py-2 lg:py-3 rounded-md font-bold text-xs lg:text-base overflow-hidden transition-all hover:scale-105 active:scale-95"
+                style={{
+                  background: `linear-gradient(135deg, ${storeTheme.primary}, ${storeTheme.primary}dd)`,
+                  color: "#fff",
+                  boxShadow: `0 10px 30px -8px ${storeTheme.primary}80, inset 0 1px 0 rgba(255,255,255,0.35)`,
+                }}
               >
-                <Info size={14} /> Saiba Mais
+                <motion.span
+                  className="absolute inset-0 -translate-x-full"
+                  style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)" }}
+                  animate={{ translateX: ["-100%", "200%"] }}
+                  transition={{ duration: 2.5, repeat: Infinity, repeatDelay: 1.5, ease: "easeInOut" }}
+                />
+                <Info size={14} className="relative z-10" />
+                <span className="relative z-10">Saiba Mais</span>
               </Link>
               <button
                 onClick={() => handleWhatsApp(currentBillboard.title, currentBillboard.id)}
-                className="inline-flex items-center gap-1.5 px-4 lg:px-8 py-2 lg:py-3 rounded-md font-bold text-xs lg:text-base text-white transition-all"
-                style={{ background: "rgba(109,109,110,0.7)" }}
+                className="inline-flex items-center gap-1.5 px-4 lg:px-8 py-2 lg:py-3 rounded-md font-bold text-xs lg:text-base text-white transition-all hover:scale-105 active:scale-95"
+                style={{
+                  background: "rgba(20,20,20,0.55)",
+                  border: `1px solid ${storeTheme.primary}55`,
+                  backdropFilter: "blur(10px)",
+                  boxShadow: `inset 0 1px 0 rgba(255,255,255,0.1), 0 0 20px ${storeTheme.primary}25`,
+                }}
               >
-                <MessageCircle size={14} /> WhatsApp
+                <MessageCircle size={14} style={{ color: storeTheme.primary }} /> WhatsApp
               </button>
             </motion.div>
           </div>
