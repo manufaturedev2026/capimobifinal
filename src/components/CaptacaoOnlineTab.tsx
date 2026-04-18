@@ -211,6 +211,9 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
   const [agendCtaUrl, setAgendCtaUrl] = useState("");
   const [avalCtaLabel, setAvalCtaLabel] = useState("💬 Falar com Especialista");
   const [avalCtaUrl, setAvalCtaUrl] = useState("");
+  // CTA do modo IA (usado quando chatMode === "ai")
+  const [aiCtaLabel, setAiCtaLabel] = useState("💬 Falar no WhatsApp");
+  const [aiCtaUrl, setAiCtaUrl] = useState("");
 
   const FLOW_HASH: Record<FlowType, string> = {
     captacao: "captacao",
@@ -293,6 +296,8 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
         if (cfg.agendCtaUrl) setAgendCtaUrl(cfg.agendCtaUrl);
         if (cfg.avalCtaLabel) setAvalCtaLabel(cfg.avalCtaLabel);
         if (cfg.avalCtaUrl) setAvalCtaUrl(cfg.avalCtaUrl);
+        if (cfg.aiCtaLabel) setAiCtaLabel(cfg.aiCtaLabel);
+        if (cfg.aiCtaUrl) setAiCtaUrl(cfg.aiCtaUrl);
       } catch {}
     }
   };
@@ -314,6 +319,7 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
       grupoCtaLabel,
       agendCtaLabel, agendCtaUrl,
       avalCtaLabel, avalCtaUrl,
+      aiCtaLabel, aiCtaUrl,
     });
     const { error } = await supabase
       .from("platform_settings")
