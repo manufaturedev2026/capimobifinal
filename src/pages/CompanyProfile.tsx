@@ -2096,7 +2096,7 @@ export default function CompanyProfile() {
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => handleWhatsApp(heroProduct?.title || company.name)}
-          className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-[#25d366] text-white shadow-2xl flex items-center justify-center hover:bg-[#22c55e] transition-colors"
+          className="fixed bottom-6 right-6 lg:bottom-24 z-50 w-14 h-14 rounded-full bg-[#25d366] text-white shadow-2xl flex items-center justify-center hover:bg-[#22c55e] transition-colors"
           aria-label="Falar no WhatsApp"
         >
           <MessageCircle size={26} fill="white" />
