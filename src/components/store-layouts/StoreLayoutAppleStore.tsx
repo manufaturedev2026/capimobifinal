@@ -8,14 +8,25 @@ import {
 import type { StoreLayoutProps } from "./types";
 
 /**
- * Apple Store — layout 100% próprio, inspirado na Apple.com.
- * Estética: branco, espaço, tipografia SF, foto grande, conversão silenciosa.
- *
- * NÃO reutiliza nenhum layout existente.
+ * Apple Pro Dark — luxo cinematográfico inspirado em Apple Pro / Vision Pro.
+ * Paleta: grafite profundo + dourado champagne. Tipografia grande, fotos amplas.
  */
 
 const APPLE_FONTS_HREF =
-  "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap";
+  "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Cormorant+Garamond:wght@400;500;600&display=swap";
+
+// Luxe palette
+const C = {
+  bg: "#08080A",
+  surface: "#0F0F12",
+  surface2: "#16161A",
+  hairline: "rgba(255,255,255,0.08)",
+  text: "#F5F5F7",
+  textMuted: "#A1A1A8",
+  gold: "#C9A66B",
+  goldSoft: "#E6C988",
+  goldDeep: "#8E6F3E",
+};
 
 const APPLE_NAV = [
   { id: "comprar", label: "Comprar" },
@@ -26,17 +37,17 @@ const APPLE_NAV = [
   { id: "contato", label: "Contato" },
 ];
 
-const APPLE_CATEGORIES: { slug: string; name: string; tagline: string; tone: "light" | "dark" }[] = [
-  { slug: "casa", name: "Casas", tagline: "Espaço para viver bem.", tone: "light" },
-  { slug: "apartamento", name: "Apartamentos", tagline: "Cidade na sua janela.", tone: "dark" },
-  { slug: "alto-padrao", name: "Alto Padrão", tagline: "O extraordinário, todos os dias.", tone: "dark" },
-  { slug: "lancamento", name: "Lançamentos", tagline: "Acabou de chegar.", tone: "light" },
-  { slug: "comercial", name: "Comerciais", tagline: "Onde o trabalho acontece.", tone: "light" },
-  { slug: "aluguel", name: "Temporada", tagline: "Sinta-se em casa, em qualquer lugar.", tone: "dark" },
+const APPLE_CATEGORIES: { slug: string; name: string; tagline: string }[] = [
+  { slug: "casa", name: "Casas", tagline: "Espaço para viver bem." },
+  { slug: "apartamento", name: "Apartamentos", tagline: "Cidade na sua janela." },
+  { slug: "alto-padrao", name: "Alto Padrão", tagline: "O extraordinário, todos os dias." },
+  { slug: "lancamento", name: "Lançamentos", tagline: "Acabou de chegar." },
+  { slug: "comercial", name: "Comerciais", tagline: "Onde o trabalho acontece." },
+  { slug: "aluguel", name: "Temporada", tagline: "Sinta-se em casa, em qualquer lugar." },
 ];
 
 const APPLE_BENEFITS = [
-  { icon: Zap, title: "Atendimento rápido", desc: "Resposta em minutos pelo WhatsApp." },
+  { icon: Zap, title: "Atendimento concierge", desc: "Resposta em minutos pelo WhatsApp." },
   { icon: ShieldCheck, title: "Imóveis verificados", desc: "Cada anúncio é validado por um especialista." },
   { icon: Award, title: "Corretores especialistas", desc: "Profissionais com CRECI ativo na sua região." },
   { icon: Banknote, title: "Financiamento facilitado", desc: "Simulação e aprovação sem complicação." },
@@ -45,7 +56,7 @@ const APPLE_BENEFITS = [
 const APPLE_TESTIMONIALS = [
   { name: "Marina A.", role: "Compradora", quote: "Encontrei o apartamento dos sonhos em uma semana. Atendimento impecável." },
   { name: "Rafael S.", role: "Investidor", quote: "Plataforma rápida, fotos honestas e corretor sempre disponível." },
-  { name: "Letícia P.", role: "Locatária", quote: "Parecia comprar um produto Apple, só que o produto era a minha nova casa." },
+  { name: "Letícia P.", role: "Locatária", quote: "Parecia comprar um produto de luxo, só que o produto era a minha nova casa." },
 ];
 
 export default function StoreLayoutAppleStore(props: StoreLayoutProps) {
@@ -58,7 +69,7 @@ export default function StoreLayoutAppleStore(props: StoreLayoutProps) {
   const [scrolled, setScrolled] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
-  /* ── Inject Apple aesthetic + neutralize host chrome ───────────────────── */
+  /* ── Inject Apple Pro Dark aesthetic + neutralize host chrome ───────────── */
   useEffect(() => {
     if (!document.querySelector(`link[href="${APPLE_FONTS_HREF}"]`)) {
       const link = document.createElement("link");
@@ -75,13 +86,17 @@ export default function StoreLayoutAppleStore(props: StoreLayoutProps) {
       document.head.appendChild(style);
     }
     style.innerHTML = `
-      body.apple-store-active { background: #ffffff !important; }
+      body.apple-store-active { background: ${C.bg} !important; color: ${C.text}; }
       body.apple-store-active .apple-font {
         font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
           "SF Pro Text", "Helvetica Neue", Inter, system-ui, sans-serif;
         -webkit-font-smoothing: antialiased;
       }
-      /* Hide every host wrapper that competes with the Apple layout */
+      body.apple-store-active .apple-serif {
+        font-family: "Cormorant Garamond", "Times New Roman", serif;
+        font-weight: 500;
+        letter-spacing: -0.01em;
+      }
       body.apple-store-active [data-broker-card-section],
       body.apple-store-active [data-company-hero],
       body.apple-store-active [data-company-stats-bar],
@@ -100,10 +115,52 @@ export default function StoreLayoutAppleStore(props: StoreLayoutProps) {
         margin: 0 !important;
       }
       @keyframes apple-fade-up {
-        from { opacity: 0; transform: translateY(24px); }
+        from { opacity: 0; transform: translateY(28px); }
         to   { opacity: 1; transform: translateY(0); }
       }
-      .apple-fade-up { animation: apple-fade-up .9s cubic-bezier(.22,.61,.36,1) both; }
+      .apple-fade-up { animation: apple-fade-up 1.1s cubic-bezier(.22,.61,.36,1) both; }
+      @keyframes gold-shimmer {
+        0%   { background-position: -200% 0; }
+        100% { background-position: 200% 0; }
+      }
+      .gold-text {
+        background: linear-gradient(90deg, ${C.goldDeep} 0%, ${C.goldSoft} 35%, #FFF1C6 50%, ${C.goldSoft} 65%, ${C.goldDeep} 100%);
+        background-size: 200% 100%;
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        animation: gold-shimmer 8s linear infinite;
+      }
+      .gold-hairline {
+        height: 1px;
+        background: linear-gradient(90deg, transparent, ${C.gold}80, transparent);
+      }
+      .gold-btn {
+        background: linear-gradient(180deg, ${C.goldSoft} 0%, ${C.gold} 50%, ${C.goldDeep} 100%);
+        color: #1a1408;
+        box-shadow:
+          inset 0 1px 0 rgba(255,255,255,0.4),
+          inset 0 -1px 0 rgba(0,0,0,0.25),
+          0 8px 24px -8px ${C.gold}55;
+      }
+      .gold-btn:hover { filter: brightness(1.08); }
+      .luxe-card {
+        background: linear-gradient(180deg, ${C.surface} 0%, ${C.surface2} 100%);
+        border: 1px solid ${C.hairline};
+      }
+      .luxe-card:hover {
+        border-color: ${C.gold}40;
+        box-shadow: 0 30px 80px -30px rgba(0,0,0,0.8), 0 0 0 1px ${C.gold}20;
+      }
+      .grain::before {
+        content: "";
+        position: absolute; inset: 0;
+        background-image: radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px);
+        background-size: 3px 3px;
+        opacity: 0.5;
+        pointer-events: none;
+        mix-blend-mode: overlay;
+      }
     `;
 
     document.body.classList.add("apple-store-active");
@@ -147,46 +204,46 @@ export default function StoreLayoutAppleStore(props: StoreLayoutProps) {
   const phone = dbProfile?.phone || "";
 
   return (
-    <div className="apple-font min-h-screen bg-white text-[#1d1d1f]">
+    <div className="apple-font min-h-screen" style={{ background: C.bg, color: C.text }}>
       {/* ─────────────── 1. HEADER ─────────────── */}
       <header
-        className={`fixed top-0 inset-x-0 z-50 transition-all duration-500 ${
-          scrolled
-            ? "bg-white/85 backdrop-blur-xl border-b border-black/5"
-            : "bg-white/60 backdrop-blur-md"
-        }`}
+        className="fixed top-0 inset-x-0 z-50 transition-all duration-500"
+        style={{
+          background: scrolled ? "rgba(8,8,10,0.78)" : "rgba(8,8,10,0.45)",
+          backdropFilter: "saturate(180%) blur(24px)",
+          WebkitBackdropFilter: "saturate(180%) blur(24px)",
+          borderBottom: scrolled ? `1px solid ${C.hairline}` : "1px solid transparent",
+        }}
       >
-        <div className="max-w-[1180px] mx-auto h-12 px-6 flex items-center justify-between text-[13px]">
-          <Link to="/" className="font-semibold tracking-tight text-[#1d1d1f]">
-            {sellerDisplayName || dbProfile?.company_name || "Imóveis"}
+        <div className="max-w-[1240px] mx-auto h-14 px-6 flex items-center justify-between text-[13px]">
+          <Link to="/" className="flex items-center gap-2">
+            <span className="apple-serif text-[22px] gold-text leading-none">
+              {(sellerDisplayName || dbProfile?.company_name || "Imóveis").slice(0, 1)}
+            </span>
+            <span className="font-medium tracking-tight" style={{ color: C.text }}>
+              {sellerDisplayName || dbProfile?.company_name || "Imóveis"}
+            </span>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-7 text-[#1d1d1f]/85">
+          <nav className="hidden md:flex items-center gap-8" style={{ color: `${C.text}d0` }}>
             {APPLE_NAV.map((item) =>
               item.to ? (
-                <Link
-                  key={item.id}
-                  to={item.to}
-                  className="hover:text-[#1d1d1f] transition-colors"
-                >
+                <Link key={item.id} to={item.to} className="hover:text-white transition-colors">
                   {item.label}
                 </Link>
               ) : (
                 <button
                   key={item.id}
                   onClick={() => {
-                    if (item.id === "corretores") {
-                      document.getElementById("apple-broker")?.scrollIntoView({ behavior: "smooth" });
-                    } else if (item.id === "contato") {
-                      handleWhatsApp("Olá! Tenho interesse nos seus imóveis.");
-                    } else if (item.id === "lancamentos") {
-                      document.getElementById("apple-grid")?.scrollIntoView({ behavior: "smooth" });
-                    } else {
+                    if (item.id === "corretores") document.getElementById("apple-broker")?.scrollIntoView({ behavior: "smooth" });
+                    else if (item.id === "contato") handleWhatsApp("Olá! Tenho interesse nos seus imóveis.");
+                    else if (item.id === "lancamentos") document.getElementById("apple-grid")?.scrollIntoView({ behavior: "smooth" });
+                    else {
                       setActiveCategory(item.id === "alugar" ? "aluguel" : "todos");
                       document.getElementById("apple-grid")?.scrollIntoView({ behavior: "smooth" });
                     }
                   }}
-                  className="hover:text-[#1d1d1f] transition-colors"
+                  className="hover:text-white transition-colors"
                 >
                   {item.label}
                 </button>
@@ -197,14 +254,15 @@ export default function StoreLayoutAppleStore(props: StoreLayoutProps) {
           <div className="flex items-center gap-3">
             <button
               onClick={() => document.getElementById("apple-search")?.scrollIntoView({ behavior: "smooth" })}
-              className="text-[#1d1d1f]/85 hover:text-[#1d1d1f]"
+              className="hover:text-white transition-colors"
+              style={{ color: `${C.text}c0` }}
               aria-label="Buscar"
             >
               <Search size={16} />
             </button>
             <button
               onClick={() => handleWhatsApp("Olá! Quero falar com um consultor.")}
-              className="hidden sm:inline-flex items-center px-3.5 h-7 rounded-full bg-[#0071E3] text-white text-[12px] font-medium hover:bg-[#0077ED] transition-colors"
+              className="gold-btn hidden sm:inline-flex items-center px-4 h-8 rounded-full text-[12px] font-semibold tracking-tight transition-all"
             >
               Falar com consultor
             </button>
@@ -213,126 +271,180 @@ export default function StoreLayoutAppleStore(props: StoreLayoutProps) {
       </header>
 
       {/* ─────────────── 2. HERO ─────────────── */}
-      <section className="pt-24 pb-16 bg-white">
-        <div className="max-w-[980px] mx-auto px-6 text-center apple-fade-up">
-          <h1 className="text-[44px] sm:text-[64px] leading-[1.05] font-semibold tracking-tight text-[#1d1d1f]">
-            Encontre seu próximo imóvel.
-          </h1>
-          <p className="mt-4 text-[20px] sm:text-[24px] text-[#6e6e73] max-w-[720px] mx-auto leading-snug">
-            Casas, apartamentos e oportunidades selecionadas com experiência premium.
+      <section className="pt-32 pb-20 relative overflow-hidden" style={{ background: C.bg }}>
+        {/* Ambient gold glow */}
+        <div
+          className="absolute -top-40 left-1/2 -translate-x-1/2 w-[900px] h-[900px] rounded-full pointer-events-none"
+          style={{
+            background: `radial-gradient(closest-side, ${C.gold}18, transparent 70%)`,
+          }}
+        />
+        <div className="max-w-[1100px] mx-auto px-6 text-center apple-fade-up relative">
+          <p className="text-[12px] font-medium uppercase tracking-[0.32em] mb-5" style={{ color: C.gold }}>
+            Coleção Privada
           </p>
-          <div className="mt-7 flex flex-wrap items-center justify-center gap-x-5 gap-y-3 text-[17px]">
+          <h1 className="text-[52px] sm:text-[88px] leading-[1.02] font-semibold tracking-tight">
+            <span style={{ color: C.text }}>O extraordinário,</span>
+            <br />
+            <span className="apple-serif italic gold-text">cuidadosamente selecionado.</span>
+          </h1>
+          <p className="mt-7 text-[19px] sm:text-[22px] max-w-[680px] mx-auto leading-relaxed" style={{ color: C.textMuted }}>
+            Casas, apartamentos e residências exclusivas com a experiência de um atendimento concierge.
+          </p>
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-4 text-[15px]">
             <button
               onClick={() => document.getElementById("apple-grid")?.scrollIntoView({ behavior: "smooth" })}
-              className="inline-flex items-center px-6 h-11 rounded-full bg-[#0071E3] text-white font-medium hover:bg-[#0077ED] transition-colors"
+              className="gold-btn inline-flex items-center px-7 h-12 rounded-full font-semibold tracking-tight transition-all"
             >
-              Ver imóveis
+              Explorar coleção
             </button>
             <button
               onClick={() => handleWhatsApp("Olá! Quero falar com um consultor.")}
-              className="inline-flex items-center gap-1 text-[#0071E3] font-medium hover:underline"
+              className="inline-flex items-center gap-1.5 px-7 h-12 rounded-full font-medium border transition-colors"
+              style={{ borderColor: `${C.gold}50`, color: C.text }}
             >
               Falar com consultor <ChevronRight size={16} />
             </button>
           </div>
         </div>
 
-        <div className="max-w-[1180px] mx-auto px-6 mt-12">
+        <div className="max-w-[1240px] mx-auto px-6 mt-16">
           <motion.div
-            initial={{ opacity: 0, scale: 0.98 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1, ease: [0.22, 0.61, 0.36, 1] }}
-            className="rounded-[28px] overflow-hidden bg-[#f5f5f7] aspect-[16/9] relative"
+            initial={{ opacity: 0, scale: 0.97, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 1.2, ease: [0.22, 0.61, 0.36, 1] }}
+            className="rounded-[32px] overflow-hidden relative grain"
+            style={{
+              aspectRatio: "21/9",
+              border: `1px solid ${C.hairline}`,
+              boxShadow: `0 60px 120px -40px rgba(0,0,0,0.9), 0 0 0 1px ${C.gold}15`,
+            }}
           >
             <img
               src={heroImage}
               alt="Imóvel em destaque"
               className="w-full h-full object-cover"
+              style={{ filter: "saturate(1.05) contrast(1.05)" }}
               loading="eager"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-            <div className="absolute bottom-8 left-8 right-8 text-white">
-              <p className="text-[13px] font-medium uppercase tracking-[0.18em] opacity-80">
-                Em destaque
-              </p>
-              <h3 className="mt-1 text-[28px] sm:text-[36px] font-semibold tracking-tight">
-                {products?.[0]?.title || "Sua próxima conquista."}
-              </h3>
+            <div
+              className="absolute inset-0"
+              style={{
+                background:
+                  "linear-gradient(180deg, transparent 30%, rgba(0,0,0,0.55) 75%, rgba(0,0,0,0.85) 100%)",
+              }}
+            />
+            <div className="absolute bottom-10 left-10 right-10 flex items-end justify-between gap-6">
+              <div>
+                <p className="text-[11px] font-medium uppercase tracking-[0.32em]" style={{ color: C.gold }}>
+                  Em destaque
+                </p>
+                <h3 className="apple-serif italic mt-2 text-[34px] sm:text-[52px] leading-[1.05]" style={{ color: C.text }}>
+                  {products?.[0]?.title || "Sua próxima conquista."}
+                </h3>
+                {products?.[0]?.city && (
+                  <p className="mt-2 text-[14px] flex items-center gap-1.5" style={{ color: `${C.text}aa` }}>
+                    <MapPin size={13} /> {[products[0].neighborhood, products[0].city].filter(Boolean).join(" • ")}
+                  </p>
+                )}
+              </div>
+              {products?.[0]?.price && (
+                <div className="text-right hidden sm:block">
+                  <p className="text-[11px] uppercase tracking-[0.24em]" style={{ color: `${C.text}80` }}>
+                    A partir de
+                  </p>
+                  <p className="apple-serif text-[34px] gold-text mt-1">
+                    {formatPrice(products[0].price)}
+                  </p>
+                </div>
+              )}
             </div>
           </motion.div>
         </div>
       </section>
 
       {/* ─────────────── 3. SEARCH ─────────────── */}
-      <section id="apple-search" className="py-14 bg-[#f5f5f7]">
-        <div className="max-w-[1180px] mx-auto px-6">
-          <h2 className="text-[28px] sm:text-[34px] font-semibold tracking-tight text-center text-[#1d1d1f]">
-            Encontre o que importa para você.
-          </h2>
-          <div className="mt-8 bg-white rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.06)] p-3 sm:p-4">
+      <section id="apple-search" className="py-20" style={{ background: C.surface }}>
+        <div className="max-w-[1100px] mx-auto px-6">
+          <div className="text-center max-w-[680px] mx-auto">
+            <p className="text-[11px] font-medium uppercase tracking-[0.32em]" style={{ color: C.gold }}>
+              Curadoria personalizada
+            </p>
+            <h2 className="apple-serif italic mt-3 text-[36px] sm:text-[44px] leading-tight" style={{ color: C.text }}>
+              Encontre o que importa para você.
+            </h2>
+          </div>
+
+          <div
+            className="mt-10 rounded-3xl p-3 sm:p-4 luxe-card"
+            style={{
+              boxShadow: `0 30px 80px -30px rgba(0,0,0,0.7)`,
+            }}
+          >
             <div className="grid grid-cols-1 md:grid-cols-12 gap-2">
-              {/* Cidade */}
-              <div className="md:col-span-3 flex items-center gap-2 px-4 h-12 rounded-xl bg-[#f5f5f7]">
-                <MapPin size={16} className="text-[#6e6e73]" />
+              <div className="md:col-span-3 flex items-center gap-2 px-4 h-12 rounded-xl" style={{ background: C.bg, border: `1px solid ${C.hairline}` }}>
+                <MapPin size={16} style={{ color: C.gold }} />
                 <select
                   value={filterCity || ""}
                   onChange={(e) => setFilterCity?.(e.target.value)}
-                  className="flex-1 bg-transparent text-[14px] outline-none text-[#1d1d1f]"
+                  className="flex-1 bg-transparent text-[14px] outline-none"
+                  style={{ color: C.text }}
                 >
-                  <option value="">Todas as cidades</option>
+                  <option value="" style={{ background: C.surface }}>Todas as cidades</option>
                   {availableCities.map((c) => (
-                    <option key={c} value={c}>{c}</option>
+                    <option key={c} value={c} style={{ background: C.surface }}>{c}</option>
                   ))}
                 </select>
               </div>
-              {/* Tipo */}
-              <div className="md:col-span-3 flex items-center px-4 h-12 rounded-xl bg-[#f5f5f7]">
+              <div className="md:col-span-3 flex items-center px-4 h-12 rounded-xl" style={{ background: C.bg, border: `1px solid ${C.hairline}` }}>
                 <select
                   value={activeCategory}
                   onChange={(e) => setActiveCategory(e.target.value)}
-                  className="w-full bg-transparent text-[14px] outline-none text-[#1d1d1f]"
+                  className="w-full bg-transparent text-[14px] outline-none"
+                  style={{ color: C.text }}
                 >
-                  <option value="todos">Qualquer tipo</option>
-                  <option value="casa">Casa</option>
-                  <option value="apartamento">Apartamento</option>
-                  <option value="comercial">Comercial</option>
-                  <option value="terreno">Terreno</option>
-                  <option value="aluguel">Aluguel</option>
+                  <option value="todos" style={{ background: C.surface }}>Qualquer tipo</option>
+                  <option value="casa" style={{ background: C.surface }}>Casa</option>
+                  <option value="apartamento" style={{ background: C.surface }}>Apartamento</option>
+                  <option value="comercial" style={{ background: C.surface }}>Comercial</option>
+                  <option value="terreno" style={{ background: C.surface }}>Terreno</option>
+                  <option value="aluguel" style={{ background: C.surface }}>Aluguel</option>
                 </select>
               </div>
-              {/* Faixa de preço (visual) */}
-              <div className="md:col-span-3 flex items-center px-4 h-12 rounded-xl bg-[#f5f5f7]">
-                <select className="w-full bg-transparent text-[14px] outline-none text-[#1d1d1f]" defaultValue="">
-                  <option value="">Faixa de preço</option>
-                  <option>Até R$ 300.000</option>
-                  <option>R$ 300.000 – R$ 700.000</option>
-                  <option>R$ 700.000 – R$ 1.500.000</option>
-                  <option>Acima de R$ 1.500.000</option>
+              <div className="md:col-span-3 flex items-center px-4 h-12 rounded-xl" style={{ background: C.bg, border: `1px solid ${C.hairline}` }}>
+                <select className="w-full bg-transparent text-[14px] outline-none" style={{ color: C.text }} defaultValue="">
+                  <option value="" style={{ background: C.surface }}>Faixa de preço</option>
+                  <option style={{ background: C.surface }}>Até R$ 300.000</option>
+                  <option style={{ background: C.surface }}>R$ 300.000 – R$ 700.000</option>
+                  <option style={{ background: C.surface }}>R$ 700.000 – R$ 1.500.000</option>
+                  <option style={{ background: C.surface }}>Acima de R$ 1.500.000</option>
                 </select>
               </div>
-              {/* Quartos (visual) */}
-              <div className="md:col-span-1 flex items-center px-4 h-12 rounded-xl bg-[#f5f5f7]">
-                <select className="w-full bg-transparent text-[14px] outline-none text-[#1d1d1f]" defaultValue="">
-                  <option value="">Quartos</option>
-                  <option>1+</option><option>2+</option><option>3+</option><option>4+</option>
+              <div className="md:col-span-1 flex items-center px-4 h-12 rounded-xl" style={{ background: C.bg, border: `1px solid ${C.hairline}` }}>
+                <select className="w-full bg-transparent text-[14px] outline-none" style={{ color: C.text }} defaultValue="">
+                  <option value="" style={{ background: C.surface }}>Quartos</option>
+                  <option style={{ background: C.surface }}>1+</option>
+                  <option style={{ background: C.surface }}>2+</option>
+                  <option style={{ background: C.surface }}>3+</option>
+                  <option style={{ background: C.surface }}>4+</option>
                 </select>
               </div>
-              {/* Buscar */}
               <button
                 onClick={() => document.getElementById("apple-grid")?.scrollIntoView({ behavior: "smooth" })}
-                className="md:col-span-2 inline-flex items-center justify-center gap-2 h-12 rounded-xl bg-[#0071E3] text-white text-[14px] font-medium hover:bg-[#0077ED] transition-colors"
+                className="gold-btn md:col-span-2 inline-flex items-center justify-center gap-2 h-12 rounded-xl text-[14px] font-semibold tracking-tight transition-all"
               >
                 <Search size={16} /> Buscar
               </button>
             </div>
 
-            <div className="mt-3 px-2 flex items-center gap-2 text-[#6e6e73]">
+            <div className="mt-3 px-2 flex items-center gap-2" style={{ color: C.textMuted }}>
               <Search size={14} />
               <input
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Pesquisar por título, bairro ou cidade…"
-                className="flex-1 bg-transparent text-[13px] outline-none placeholder:text-[#86868b] py-2"
+                className="flex-1 bg-transparent text-[13px] outline-none py-2 placeholder:opacity-60"
+                style={{ color: C.text }}
               />
             </div>
           </div>
@@ -340,124 +452,140 @@ export default function StoreLayoutAppleStore(props: StoreLayoutProps) {
       </section>
 
       {/* ─────────────── 4. CATEGORIES ─────────────── */}
-      <section className="py-16 bg-white">
-        <div className="max-w-[1180px] mx-auto px-6">
-          <div className="flex items-end justify-between mb-8">
-            <h2 className="text-[28px] sm:text-[34px] font-semibold tracking-tight">
-              Explore por categoria.
-            </h2>
+      <section className="py-24" style={{ background: C.bg }}>
+        <div className="max-w-[1240px] mx-auto px-6">
+          <div className="flex items-end justify-between mb-12">
+            <div>
+              <p className="text-[11px] font-medium uppercase tracking-[0.32em]" style={{ color: C.gold }}>
+                Coleções
+              </p>
+              <h2 className="apple-serif italic mt-3 text-[36px] sm:text-[44px] leading-tight" style={{ color: C.text }}>
+                Explore por categoria.
+              </h2>
+            </div>
             <button
               onClick={() => document.getElementById("apple-grid")?.scrollIntoView({ behavior: "smooth" })}
-              className="hidden sm:inline-flex items-center gap-1 text-[#0071E3] text-[15px] font-medium hover:underline"
+              className="hidden sm:inline-flex items-center gap-1 text-[14px] font-medium hover:underline"
+              style={{ color: C.gold }}
             >
               Ver tudo <ChevronRight size={16} />
             </button>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {APPLE_CATEGORIES.map((cat) => {
-              const isDark = cat.tone === "dark";
-              return (
-                <button
-                  key={cat.slug}
-                  onClick={() => {
-                    setActiveCategory(cat.slug);
-                    document.getElementById("apple-grid")?.scrollIntoView({ behavior: "smooth" });
-                  }}
-                  className={`text-left rounded-3xl p-7 h-[260px] flex flex-col justify-between transition-transform duration-500 hover:-translate-y-1 ${
-                    isDark ? "bg-[#1d1d1f] text-white" : "bg-[#f5f5f7] text-[#1d1d1f]"
-                  }`}
-                >
-                  <div>
-                    <p className={`text-[12px] font-medium uppercase tracking-[0.18em] ${isDark ? "text-white/70" : "text-[#6e6e73]"}`}>
-                      Categoria
-                    </p>
-                    <h3 className="mt-2 text-[26px] font-semibold tracking-tight">
-                      {cat.name}
-                    </h3>
-                    <p className={`mt-2 text-[15px] ${isDark ? "text-white/75" : "text-[#6e6e73]"}`}>
-                      {cat.tagline}
-                    </p>
-                  </div>
-                  <div className={`inline-flex items-center gap-1 text-[14px] font-medium ${isDark ? "text-white" : "text-[#0071E3]"}`}>
-                    Saiba mais <ChevronRight size={16} />
-                  </div>
-                </button>
-              );
-            })}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {APPLE_CATEGORIES.map((cat) => (
+              <button
+                key={cat.slug}
+                onClick={() => {
+                  setActiveCategory(cat.slug);
+                  document.getElementById("apple-grid")?.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="luxe-card text-left rounded-3xl p-8 h-[280px] flex flex-col justify-between transition-all duration-500 hover:-translate-y-1 relative overflow-hidden grain"
+              >
+                <div
+                  className="absolute -top-20 -right-20 w-56 h-56 rounded-full pointer-events-none"
+                  style={{ background: `radial-gradient(closest-side, ${C.gold}25, transparent 70%)` }}
+                />
+                <div className="relative">
+                  <p className="text-[11px] font-medium uppercase tracking-[0.32em]" style={{ color: C.gold }}>
+                    Coleção
+                  </p>
+                  <h3 className="apple-serif italic mt-3 text-[30px] leading-tight" style={{ color: C.text }}>
+                    {cat.name}
+                  </h3>
+                  <p className="mt-3 text-[15px] leading-relaxed" style={{ color: C.textMuted }}>
+                    {cat.tagline}
+                  </p>
+                </div>
+                <div className="relative inline-flex items-center gap-1 text-[13px] font-medium" style={{ color: C.gold }}>
+                  Saiba mais <ChevronRight size={15} />
+                </div>
+              </button>
+            ))}
           </div>
         </div>
       </section>
 
       {/* ─────────────── 5. FEATURED GRID ─────────────── */}
-      <section id="apple-grid" className="py-16 bg-[#fbfbfd]">
-        <div className="max-w-[1180px] mx-auto px-6">
-          <div className="flex items-end justify-between mb-8">
+      <section id="apple-grid" className="py-24" style={{ background: C.surface }}>
+        <div className="max-w-[1240px] mx-auto px-6">
+          <div className="flex items-end justify-between mb-12">
             <div>
-              <p className="text-[13px] font-medium uppercase tracking-[0.18em] text-[#6e6e73]">
+              <p className="text-[11px] font-medium uppercase tracking-[0.32em]" style={{ color: C.gold }}>
                 Em destaque
               </p>
-              <h2 className="mt-1 text-[28px] sm:text-[34px] font-semibold tracking-tight">
-                Imóveis selecionados para você.
+              <h2 className="apple-serif italic mt-3 text-[36px] sm:text-[44px] leading-tight" style={{ color: C.text }}>
+                Residências selecionadas.
               </h2>
             </div>
-            <p className="text-[14px] text-[#6e6e73]">
+            <p className="text-[13px]" style={{ color: C.textMuted }}>
               {visibleProducts.length} {visibleProducts.length === 1 ? "imóvel" : "imóveis"}
             </p>
           </div>
 
           {visibleProducts.length === 0 ? (
-            <div className="rounded-3xl bg-white p-16 text-center text-[#6e6e73]">
+            <div className="luxe-card rounded-3xl p-20 text-center" style={{ color: C.textMuted }}>
               Nenhum imóvel encontrado com os filtros atuais.
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7">
               {visibleProducts.map((p, idx) => (
                 <motion.div
                   key={p.id}
-                  initial={{ opacity: 0, y: 16 }}
+                  initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "-50px" }}
-                  transition={{ duration: 0.5, delay: Math.min(idx * 0.04, 0.3) }}
-                  className="group rounded-3xl bg-white overflow-hidden shadow-[0_1px_2px_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.05)] hover:shadow-[0_2px_4px_rgba(0,0,0,0.05),0_18px_40px_rgba(0,0,0,0.08)] transition-shadow duration-500"
+                  transition={{ duration: 0.6, delay: Math.min(idx * 0.04, 0.3) }}
+                  className="group luxe-card rounded-3xl overflow-hidden transition-all duration-500"
                 >
                   <Link to={`/imovel/${p.slug || p.id}`} className="block">
-                    <div className="aspect-[4/3] bg-[#f5f5f7] overflow-hidden">
+                    <div className="aspect-[4/3] overflow-hidden relative" style={{ background: C.bg }}>
                       <img
                         src={getProductImage(p)}
                         alt={p.title}
                         loading="lazy"
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
+                        className="w-full h-full object-cover transition-transform duration-[1200ms] group-hover:scale-[1.06]"
+                      />
+                      <div
+                        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                        style={{
+                          background: `linear-gradient(180deg, transparent 60%, rgba(0,0,0,0.6) 100%)`,
+                        }}
                       />
                     </div>
-                    <div className="p-6">
-                      <p className="text-[12px] font-medium uppercase tracking-[0.16em] text-[#6e6e73]">
+                    <div className="p-7">
+                      <p className="text-[10px] font-medium uppercase tracking-[0.28em]" style={{ color: C.gold }}>
                         {p.category || "Imóvel"}
                       </p>
-                      <h3 className="mt-1 text-[19px] font-semibold tracking-tight text-[#1d1d1f] line-clamp-1">
+                      <h3 className="apple-serif italic mt-2 text-[22px] leading-tight line-clamp-1" style={{ color: C.text }}>
                         {p.title}
                       </h3>
                       {(p.neighborhood || p.city) && (
-                        <p className="mt-1 text-[13px] text-[#6e6e73] flex items-center gap-1">
+                        <p className="mt-2 text-[13px] flex items-center gap-1" style={{ color: C.textMuted }}>
                           <MapPin size={12} />
                           {[p.neighborhood, p.city].filter(Boolean).join(" • ")}
                         </p>
                       )}
 
-                      <div className="mt-4 flex items-center gap-4 text-[13px] text-[#6e6e73]">
-                        {p.bedrooms ? <span className="inline-flex items-center gap-1"><Bed size={13} />{p.bedrooms}</span> : null}
-                        {p.bathrooms ? <span className="inline-flex items-center gap-1"><Bath size={13} />{p.bathrooms}</span> : null}
-                        {p.area ? <span className="inline-flex items-center gap-1"><Ruler size={13} />{p.area}m²</span> : null}
+                      <div className="mt-5 flex items-center gap-5 text-[13px]" style={{ color: C.textMuted }}>
+                        {p.bedrooms ? <span className="inline-flex items-center gap-1.5"><Bed size={13} />{p.bedrooms}</span> : null}
+                        {p.bathrooms ? <span className="inline-flex items-center gap-1.5"><Bath size={13} />{p.bathrooms}</span> : null}
+                        {p.area ? <span className="inline-flex items-center gap-1.5"><Ruler size={13} />{p.area}m²</span> : null}
                       </div>
 
-                      <div className="mt-5 flex items-end justify-between">
+                      <div className="mt-6 pt-6 flex items-end justify-between" style={{ borderTop: `1px solid ${C.hairline}` }}>
                         <div>
-                          <p className="text-[12px] text-[#6e6e73]">A partir de</p>
-                          <p className="text-[22px] font-semibold tracking-tight text-[#1d1d1f]">
+                          <p className="text-[11px] uppercase tracking-[0.2em]" style={{ color: C.textMuted }}>
+                            A partir de
+                          </p>
+                          <p className="apple-serif text-[26px] gold-text mt-1">
                             {p.price ? formatPrice(p.price) : "Sob consulta"}
                           </p>
                         </div>
-                        <span className="inline-flex items-center gap-1 text-[#0071E3] text-[14px] font-medium group-hover:gap-2 transition-all">
+                        <span
+                          className="inline-flex items-center gap-1 text-[13px] font-medium group-hover:gap-2 transition-all"
+                          style={{ color: C.gold }}
+                        >
                           Ver <ArrowRight size={14} />
                         </span>
                       </div>
@@ -471,32 +599,43 @@ export default function StoreLayoutAppleStore(props: StoreLayoutProps) {
       </section>
 
       {/* ─────────────── 6. EXPERIENCE / BENEFITS ─────────────── */}
-      <section className="py-20 bg-white">
-        <div className="max-w-[1180px] mx-auto px-6">
-          <div className="text-center max-w-[720px] mx-auto">
-            <p className="text-[13px] font-medium uppercase tracking-[0.18em] text-[#6e6e73]">
+      <section className="py-28 relative overflow-hidden" style={{ background: C.bg }}>
+        <div
+          className="absolute top-0 left-0 right-0 mx-auto w-[700px] gold-hairline"
+          style={{ maxWidth: "60%" }}
+        />
+        <div className="max-w-[1240px] mx-auto px-6">
+          <div className="text-center max-w-[760px] mx-auto">
+            <p className="text-[11px] font-medium uppercase tracking-[0.32em]" style={{ color: C.gold }}>
               Experiência diferenciada
             </p>
-            <h2 className="mt-2 text-[32px] sm:text-[40px] font-semibold tracking-tight text-[#1d1d1f]">
-              Comprar um imóvel devia ser assim.
+            <h2 className="apple-serif italic mt-4 text-[40px] sm:text-[56px] leading-[1.05]" style={{ color: C.text }}>
+              Comprar um imóvel <span className="gold-text">devia ser assim.</span>
             </h2>
-            <p className="mt-3 text-[18px] text-[#6e6e73]">
+            <p className="mt-5 text-[18px]" style={{ color: C.textMuted }}>
               Tecnologia, transparência e atendimento humano em cada etapa.
             </p>
           </div>
 
-          <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="mt-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {APPLE_BENEFITS.map((b) => {
               const Icon = b.icon;
               return (
-                <div key={b.title} className="rounded-3xl bg-[#f5f5f7] p-7 h-full">
-                  <div className="w-11 h-11 rounded-2xl bg-white flex items-center justify-center text-[#0071E3] shadow-sm">
+                <div key={b.title} className="luxe-card rounded-3xl p-7 h-full transition-all duration-500">
+                  <div
+                    className="w-12 h-12 rounded-2xl flex items-center justify-center"
+                    style={{
+                      background: `linear-gradient(180deg, ${C.surface2}, ${C.bg})`,
+                      border: `1px solid ${C.gold}40`,
+                      color: C.gold,
+                    }}
+                  >
                     <Icon size={20} />
                   </div>
-                  <h3 className="mt-5 text-[18px] font-semibold tracking-tight text-[#1d1d1f]">
+                  <h3 className="apple-serif italic mt-6 text-[22px] leading-tight" style={{ color: C.text }}>
                     {b.title}
                   </h3>
-                  <p className="mt-1.5 text-[14px] text-[#6e6e73] leading-relaxed">
+                  <p className="mt-2 text-[14px] leading-relaxed" style={{ color: C.textMuted }}>
                     {b.desc}
                   </p>
                 </div>
@@ -507,50 +646,65 @@ export default function StoreLayoutAppleStore(props: StoreLayoutProps) {
       </section>
 
       {/* ─────────────── 7. BROKER ─────────────── */}
-      <section id="apple-broker" className="py-20 bg-[#f5f5f7]">
-        <div className="max-w-[1180px] mx-auto px-6">
-          <div className="text-center mb-12">
-            <p className="text-[13px] font-medium uppercase tracking-[0.18em] text-[#6e6e73]">
+      <section id="apple-broker" className="py-28" style={{ background: C.surface }}>
+        <div className="max-w-[1240px] mx-auto px-6">
+          <div className="text-center mb-14">
+            <p className="text-[11px] font-medium uppercase tracking-[0.32em]" style={{ color: C.gold }}>
               Corretor responsável
             </p>
-            <h2 className="mt-2 text-[32px] sm:text-[40px] font-semibold tracking-tight text-[#1d1d1f]">
+            <h2 className="apple-serif italic mt-3 text-[40px] sm:text-[52px] leading-[1.05]" style={{ color: C.text }}>
               Atendimento que faz diferença.
             </h2>
           </div>
 
-          <div className="max-w-[680px] mx-auto rounded-3xl bg-white p-8 sm:p-10 flex flex-col sm:flex-row items-center gap-7 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.06)]">
-            <div className="w-28 h-28 rounded-full bg-[#f5f5f7] overflow-hidden flex-shrink-0">
+          <div
+            className="max-w-[760px] mx-auto luxe-card rounded-3xl p-10 sm:p-12 flex flex-col sm:flex-row items-center gap-8 relative overflow-hidden grain"
+          >
+            <div
+              className="absolute -top-20 -left-20 w-72 h-72 rounded-full pointer-events-none"
+              style={{ background: `radial-gradient(closest-side, ${C.gold}20, transparent 70%)` }}
+            />
+            <div
+              className="w-32 h-32 rounded-full overflow-hidden flex-shrink-0 relative"
+              style={{ border: `2px solid ${C.gold}80`, boxShadow: `0 0 30px ${C.gold}30` }}
+            >
               {dbProfile?.logo_url ? (
                 <img src={dbProfile.logo_url} alt={sellerDisplayName} className="w-full h-full object-cover" />
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-[28px] font-semibold text-[#6e6e73]">
+                <div
+                  className="w-full h-full flex items-center justify-center text-[32px] apple-serif gold-text"
+                  style={{ background: C.bg }}
+                >
                   {(sellerDisplayName || "I").slice(0, 1)}
                 </div>
               )}
             </div>
-            <div className="flex-1 text-center sm:text-left">
-              <h3 className="text-[22px] font-semibold tracking-tight text-[#1d1d1f]">
+            <div className="flex-1 text-center sm:text-left relative">
+              <h3 className="apple-serif italic text-[28px] leading-tight" style={{ color: C.text }}>
                 {sellerDisplayName || dbProfile?.full_name || "Especialista em imóveis"}
               </h3>
               {dbProfile?.creci && (
-                <p className="mt-1 text-[14px] text-[#6e6e73]">CRECI {dbProfile.creci}</p>
+                <p className="mt-1 text-[13px] uppercase tracking-[0.24em]" style={{ color: C.gold }}>
+                  CRECI {dbProfile.creci}
+                </p>
               )}
               {dbProfile?.bio && (
-                <p className="mt-3 text-[15px] text-[#6e6e73] leading-relaxed line-clamp-3">
+                <p className="mt-4 text-[15px] leading-relaxed line-clamp-3" style={{ color: C.textMuted }}>
                   {dbProfile.bio}
                 </p>
               )}
-              <div className="mt-5 flex flex-wrap justify-center sm:justify-start gap-3">
+              <div className="mt-6 flex flex-wrap justify-center sm:justify-start gap-3">
                 <button
                   onClick={() => handleWhatsApp("Olá! Vim pelo seu site, gostaria de mais informações.")}
-                  className="inline-flex items-center gap-2 px-5 h-10 rounded-full bg-[#0071E3] text-white text-[14px] font-medium hover:bg-[#0077ED] transition-colors"
+                  className="gold-btn inline-flex items-center gap-2 px-5 h-11 rounded-full text-[14px] font-semibold tracking-tight transition-all"
                 >
                   <MessageCircle size={15} /> WhatsApp
                 </button>
                 {phone && (
                   <a
                     href={`tel:${phone}`}
-                    className="inline-flex items-center gap-2 px-5 h-10 rounded-full bg-[#f5f5f7] text-[#1d1d1f] text-[14px] font-medium hover:bg-[#ececf0] transition-colors"
+                    className="inline-flex items-center gap-2 px-5 h-11 rounded-full text-[14px] font-medium border transition-colors hover:bg-white/5"
+                    style={{ borderColor: `${C.gold}50`, color: C.text }}
                   >
                     <Phone size={15} /> Ligar
                   </a>
@@ -562,31 +716,31 @@ export default function StoreLayoutAppleStore(props: StoreLayoutProps) {
       </section>
 
       {/* ─────────────── 8. TESTIMONIALS ─────────────── */}
-      <section className="py-20 bg-white">
-        <div className="max-w-[1180px] mx-auto px-6">
-          <div className="text-center max-w-[640px] mx-auto">
-            <p className="text-[13px] font-medium uppercase tracking-[0.18em] text-[#6e6e73]">
+      <section className="py-28" style={{ background: C.bg }}>
+        <div className="max-w-[1240px] mx-auto px-6">
+          <div className="text-center max-w-[680px] mx-auto">
+            <p className="text-[11px] font-medium uppercase tracking-[0.32em]" style={{ color: C.gold }}>
               Quem já viveu essa experiência
             </p>
-            <h2 className="mt-2 text-[32px] sm:text-[40px] font-semibold tracking-tight text-[#1d1d1f]">
-              Histórias reais de clientes reais.
+            <h2 className="apple-serif italic mt-3 text-[40px] sm:text-[52px] leading-[1.05]" style={{ color: C.text }}>
+              Histórias reais.
             </h2>
           </div>
 
-          <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="mt-14 grid grid-cols-1 md:grid-cols-3 gap-5">
             {APPLE_TESTIMONIALS.map((t) => (
-              <div key={t.name} className="rounded-3xl bg-[#f5f5f7] p-7">
-                <div className="flex gap-0.5 text-[#0071E3]">
+              <div key={t.name} className="luxe-card rounded-3xl p-8 transition-all duration-500">
+                <div className="flex gap-0.5" style={{ color: C.gold }}>
                   {Array.from({ length: 5 }).map((_, i) => (
                     <Star key={i} size={14} fill="currentColor" />
                   ))}
                 </div>
-                <p className="mt-4 text-[16px] leading-relaxed text-[#1d1d1f]">
+                <p className="apple-serif italic mt-5 text-[20px] leading-relaxed" style={{ color: C.text }}>
                   “{t.quote}”
                 </p>
-                <div className="mt-5">
-                  <p className="text-[14px] font-semibold text-[#1d1d1f]">{t.name}</p>
-                  <p className="text-[13px] text-[#6e6e73]">{t.role}</p>
+                <div className="mt-6 pt-5" style={{ borderTop: `1px solid ${C.hairline}` }}>
+                  <p className="text-[14px] font-semibold" style={{ color: C.text }}>{t.name}</p>
+                  <p className="text-[12px] uppercase tracking-[0.2em] mt-0.5" style={{ color: C.gold }}>{t.role}</p>
                 </div>
               </div>
             ))}
@@ -595,24 +749,36 @@ export default function StoreLayoutAppleStore(props: StoreLayoutProps) {
       </section>
 
       {/* ─────────────── 9. CTA ─────────────── */}
-      <section className="py-24 bg-[#1d1d1f] text-white">
-        <div className="max-w-[760px] mx-auto px-6 text-center">
-          <h2 className="text-[34px] sm:text-[46px] font-semibold tracking-tight">
-            Pronto para encontrar seu imóvel ideal?
+      <section className="py-32 relative overflow-hidden" style={{ background: C.surface }}>
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: `radial-gradient(ellipse at center, ${C.gold}18, transparent 60%)`,
+          }}
+        />
+        <div className="max-w-[820px] mx-auto px-6 text-center relative">
+          <p className="text-[11px] font-medium uppercase tracking-[0.32em] mb-4" style={{ color: C.gold }}>
+            Próximo passo
+          </p>
+          <h2 className="apple-serif italic text-[44px] sm:text-[64px] leading-[1.05]" style={{ color: C.text }}>
+            Pronto para encontrar
+            <br />
+            <span className="gold-text">seu imóvel ideal?</span>
           </h2>
-          <p className="mt-4 text-[18px] text-white/70">
+          <p className="mt-6 text-[18px]" style={{ color: C.textMuted }}>
             Converse agora com um consultor e receba indicações personalizadas em minutos.
           </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-3">
+          <div className="mt-10 flex flex-wrap justify-center gap-4">
             <button
               onClick={() => handleWhatsApp("Olá! Estou pronto para encontrar meu imóvel ideal.")}
-              className="inline-flex items-center px-6 h-11 rounded-full bg-[#0071E3] text-white text-[15px] font-medium hover:bg-[#0077ED] transition-colors"
+              className="gold-btn inline-flex items-center px-7 h-12 rounded-full text-[15px] font-semibold tracking-tight transition-all"
             >
               Falar com consultor
             </button>
             <button
               onClick={() => document.getElementById("apple-grid")?.scrollIntoView({ behavior: "smooth" })}
-              className="inline-flex items-center px-6 h-11 rounded-full bg-white/10 text-white text-[15px] font-medium hover:bg-white/15 transition-colors"
+              className="inline-flex items-center px-7 h-12 rounded-full text-[15px] font-medium border transition-colors hover:bg-white/5"
+              style={{ borderColor: `${C.gold}50`, color: C.text }}
             >
               Ver imóveis
             </button>
@@ -621,43 +787,43 @@ export default function StoreLayoutAppleStore(props: StoreLayoutProps) {
       </section>
 
       {/* ─────────────── 10. FOOTER ─────────────── */}
-      <footer className="bg-[#f5f5f7] text-[#6e6e73]">
-        <div className="max-w-[1180px] mx-auto px-6 py-10">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-[13px]">
+      <footer style={{ background: C.bg, color: C.textMuted, borderTop: `1px solid ${C.hairline}` }}>
+        <div className="max-w-[1240px] mx-auto px-6 py-14">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-10 text-[13px]">
             <div>
-              <p className="font-semibold text-[#1d1d1f] mb-3">Comprar</p>
-              <ul className="space-y-2">
-                <li><button onClick={() => setActiveCategory("casa")} className="hover:text-[#1d1d1f]">Casas</button></li>
-                <li><button onClick={() => setActiveCategory("apartamento")} className="hover:text-[#1d1d1f]">Apartamentos</button></li>
-                <li><button onClick={() => setActiveCategory("comercial")} className="hover:text-[#1d1d1f]">Comerciais</button></li>
+              <p className="apple-serif italic text-[18px] mb-4 gold-text">Comprar</p>
+              <ul className="space-y-2.5">
+                <li><button onClick={() => setActiveCategory("casa")} className="hover:text-white transition-colors">Casas</button></li>
+                <li><button onClick={() => setActiveCategory("apartamento")} className="hover:text-white transition-colors">Apartamentos</button></li>
+                <li><button onClick={() => setActiveCategory("comercial")} className="hover:text-white transition-colors">Comerciais</button></li>
               </ul>
             </div>
             <div>
-              <p className="font-semibold text-[#1d1d1f] mb-3">Alugar</p>
-              <ul className="space-y-2">
-                <li><button onClick={() => setActiveCategory("aluguel")} className="hover:text-[#1d1d1f]">Mensal</button></li>
-                <li><button onClick={() => setActiveCategory("aluguel")} className="hover:text-[#1d1d1f]">Temporada</button></li>
+              <p className="apple-serif italic text-[18px] mb-4 gold-text">Alugar</p>
+              <ul className="space-y-2.5">
+                <li><button onClick={() => setActiveCategory("aluguel")} className="hover:text-white transition-colors">Mensal</button></li>
+                <li><button onClick={() => setActiveCategory("aluguel")} className="hover:text-white transition-colors">Temporada</button></li>
               </ul>
             </div>
             <div>
-              <p className="font-semibold text-[#1d1d1f] mb-3">Para você</p>
-              <ul className="space-y-2">
-                <li><Link to="/anunciar" className="hover:text-[#1d1d1f]">Anunciar imóvel</Link></li>
-                <li><button onClick={() => handleWhatsApp("Olá! Quero falar com um consultor.")} className="hover:text-[#1d1d1f]">Falar com consultor</button></li>
+              <p className="apple-serif italic text-[18px] mb-4 gold-text">Para você</p>
+              <ul className="space-y-2.5">
+                <li><Link to="/anunciar" className="hover:text-white transition-colors">Anunciar imóvel</Link></li>
+                <li><button onClick={() => handleWhatsApp("Olá! Quero falar com um consultor.")} className="hover:text-white transition-colors">Falar com consultor</button></li>
               </ul>
             </div>
             <div>
-              <p className="font-semibold text-[#1d1d1f] mb-3">Sobre</p>
-              <ul className="space-y-2">
-                <li><Link to="/privacidade" className="hover:text-[#1d1d1f]">Privacidade</Link></li>
-                <li><Link to="/termos" className="hover:text-[#1d1d1f]">Termos</Link></li>
+              <p className="apple-serif italic text-[18px] mb-4 gold-text">Sobre</p>
+              <ul className="space-y-2.5">
+                <li><Link to="/privacidade" className="hover:text-white transition-colors">Privacidade</Link></li>
+                <li><Link to="/termos" className="hover:text-white transition-colors">Termos</Link></li>
               </ul>
             </div>
           </div>
 
-          <div className="mt-10 pt-6 border-t border-black/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-[12px]">
+          <div className="mt-12 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-[12px]" style={{ borderTop: `1px solid ${C.hairline}` }}>
             <p>© {new Date().getFullYear()} {sellerDisplayName || "Imóveis"}. Todos os direitos reservados.</p>
-            <p>Feito com cuidado para encontrar o seu lar.</p>
+            <p className="apple-serif italic" style={{ color: C.gold }}>Feito com cuidado para encontrar o seu lar.</p>
           </div>
         </div>
       </footer>
