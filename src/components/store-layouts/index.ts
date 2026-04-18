@@ -5,5 +5,6 @@ export { default as StoreLayoutGallery } from "./StoreLayoutGallery";
 export { default as StoreLayoutElegant } from "./StoreLayoutElegant";
 export { default as StoreLayoutMarketplace } from "./StoreLayoutMarketplace";
 export { default as StoreLayoutCyberpunkMarketplace } from "./StoreLayoutCyberpunkMarketplace";
+export { default as StoreLayoutAppleStore } from "./StoreLayoutAppleStore";
 export { STORE_LAYOUTS, LAYOUTS_BY_TIER, isLayoutAllowed, getMinTierForLayout } from "./types";
 export type { StoreLayoutProps, StoreLayoutId } from "./types";
