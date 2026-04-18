@@ -2213,7 +2213,7 @@ export default function CompanyProfile() {
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => handleWhatsApp(heroProduct?.title || company.name)}
-          className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full text-white shadow-2xl flex items-center justify-center transition-all group"
+          className="fixed bottom-24 right-6 z-50 w-14 h-14 rounded-full text-white shadow-2xl flex items-center justify-center transition-all group"
           style={{
             background: "linear-gradient(135deg, #25D366, #128C7E)",
             boxShadow: "0 10px 30px rgba(37,211,102,0.55), 0 0 0 1px rgba(37,211,102,0.4)",
