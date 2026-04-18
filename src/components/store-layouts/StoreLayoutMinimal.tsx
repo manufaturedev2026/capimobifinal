@@ -115,6 +115,22 @@ export default function StoreLayoutMinimal({
         .cat-pill-active.cat-pill-shimmer::before {
           animation: catShimmer 3s ease-in-out infinite;
         }
+        @keyframes catSpin {
+          to { transform: rotate(360deg); }
+        }
+        .cat-spin-ring {
+          position: absolute;
+          inset: -2px;
+          border-radius: 9999px;
+          padding: 2px;
+          background: conic-gradient(from 0deg, transparent 0deg, var(--cat-ring) 90deg, transparent 180deg, var(--cat-ring) 270deg, transparent 360deg);
+          -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+          -webkit-mask-composite: xor;
+          mask-composite: exclude;
+          animation: catSpin 3s linear infinite;
+          pointer-events: none;
+          z-index: 1;
+        }
       `}</style>
 
       {/* ═══ HERO — Cinematic parallax with auto-rotating images ═══ */}
