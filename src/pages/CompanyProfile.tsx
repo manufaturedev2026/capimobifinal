@@ -2188,7 +2188,7 @@ export default function CompanyProfile() {
           transition={{ delay: 0.7, type: "spring", stiffness: 200 }}
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
-          className="fixed right-6 bottom-44 lg:bottom-64 z-50 w-14 h-14 rounded-full text-white shadow-2xl flex items-center justify-center transition-all group"
+          className="fixed right-6 bottom-64 z-50 w-14 h-14 rounded-full text-white shadow-2xl flex items-center justify-center transition-all group"
           style={{
             background: "linear-gradient(135deg, #833AB4, #E1306C, #F77737)",
             boxShadow: "0 10px 30px rgba(225,48,108,0.5), 0 0 0 1px rgba(225,48,108,0.4)",
