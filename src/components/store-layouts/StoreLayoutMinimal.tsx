@@ -481,11 +481,11 @@ export default function StoreLayoutMinimal({
                     {/* Eyebrow location */}
                     {product.city && (
                       <p
-                        className="minimal-mono text-[8px] md:text-[9px] uppercase tracking-[0.28em] flex items-center gap-1 mb-2.5 font-medium"
+                        className="minimal-mono text-[7px] md:text-[8px] uppercase tracking-[0.18em] flex items-center gap-1 mb-2.5 font-medium"
                         style={{ color: storeTheme.textMuted }}
                       >
-                        <MapPin size={9} strokeWidth={2.4} />
-                        <span className="truncate">
+                        <MapPin size={8} strokeWidth={2.4} className="flex-shrink-0" />
+                        <span className="truncate min-w-0">
                           {product.neighborhood ? `${product.neighborhood} · ${product.city}` : product.city}
                         </span>
                       </p>
