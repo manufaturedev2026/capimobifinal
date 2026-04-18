@@ -285,7 +285,7 @@ function NetflixCard({ product, index, corretorSlug, getTagLabel, getTagStyle, a
    ═══════════════════════════════════════════ */
 export default function StoreLayoutNetflix({
   filteredProducts, products, subcategories, activeCategory, setActiveCategory,
-  categoryCounts, categoryCardImages, storeTheme, corretorSlug,
+  categoryCounts, categoryCardImages, storeTheme, corretorSlug, sellerDisplayName,
   isDbProfile, dbProfile, handleWhatsApp, getTagStyle, getTagLabel,
   onCinemaMode, onShareLink, filterCity, setFilterCity, availableCities, storiesBar,
 }: StoreLayoutProps) {
@@ -668,6 +668,20 @@ export default function StoreLayoutNetflix({
             })}
         </div>
       </div>
+
+      {/* ══════ CTA Captação — entre categorias e grid ══════ */}
+      <section className="px-4 lg:px-12 py-6">
+        <div className="rounded-2xl p-6 md:p-10 text-center" style={{ background: `linear-gradient(135deg, ${storeTheme.primary}20, ${storeTheme.primary}08)`, border: `1px solid ${storeTheme.primary}30` }}>
+          <Home size={28} className="mx-auto mb-3" style={{ color: storeTheme.primary }} />
+          <h2 className="font-display font-bold text-lg md:text-2xl mb-2" style={{ color: storeTheme.text }}>Quer anunciar seu imóvel?</h2>
+          <p className="text-xs md:text-sm mb-5 max-w-md mx-auto" style={{ color: storeTheme.textMuted }}>
+            Cadastre seu imóvel gratuitamente com {sellerDisplayName} e alcance mais compradores.
+          </p>
+          <Link to={`/captar-imovel/${dbProfile?.slug || corretorSlug || ""}`} className="inline-flex items-center gap-2 px-6 md:px-8 py-3 rounded-xl font-bold text-xs md:text-sm text-white transition-all hover:scale-105" style={{ background: storeTheme.primary, boxShadow: `0 8px 24px ${storeTheme.primary}40` }}>
+            Anunciar meu imóvel <ArrowRight size={14} />
+          </Link>
+        </div>
+      </section>
 
       {/* ══════ MARKETPLACE-STYLE GRID + SIDEBAR FILTERS ══════ */}
       {(() => {
