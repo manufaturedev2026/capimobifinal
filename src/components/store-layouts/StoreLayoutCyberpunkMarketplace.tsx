@@ -363,7 +363,9 @@ export default function StoreLayoutCyberpunkMarketplace(props: StoreLayoutProps)
       /* Smooth scroll */
       html { scroll-behavior: smooth; }
     `;
-    document.head.appendChild(style);
+    if (!existingStyle) {
+      document.head.appendChild(style);
+    }
   }, [scrolled]);
 
   // Subtle particles
