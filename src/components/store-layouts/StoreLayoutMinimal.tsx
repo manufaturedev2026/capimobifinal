@@ -95,7 +95,42 @@ export default function StoreLayoutMinimal({
       <style>{`
         .minimal-display { font-family: 'Cormorant Garamond', serif; letter-spacing: -0.02em; }
         .minimal-mono { font-family: 'Inter', sans-serif; font-feature-settings: 'tnum'; }
+        @keyframes minimalParticleUp {
+          0% { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
+          10% { opacity: var(--mp-opacity); }
+          90% { opacity: calc(var(--mp-opacity) * 0.4); }
+          100% { transform: translateY(-110vh) translateX(var(--mp-drift)) scale(0.3); opacity: 0; }
+        }
       `}</style>
+
+      {/* Floating particles — uses theme primary color */}
+      <div className="fixed inset-0 pointer-events-none z-[1] overflow-hidden">
+        {Array.from({ length: 28 }).map((_, i) => {
+          const left = (i * 37) % 100;
+          const delay = (i * 0.7) % 9;
+          const duration = 9 + ((i * 1.3) % 8);
+          const size = 2 + ((i * 1.7) % 4);
+          const opacity = 0.2 + ((i * 0.13) % 0.5);
+          const drift = -40 + ((i * 11) % 80);
+          return (
+            <div
+              key={i}
+              className="absolute rounded-full"
+              style={{
+                left: `${left}%`,
+                bottom: "-6px",
+                width: size,
+                height: size,
+                background: storeTheme.primary,
+                boxShadow: `0 0 ${size + 3}px ${storeTheme.primary}80`,
+                ["--mp-opacity" as any]: opacity,
+                ["--mp-drift" as any]: `${drift}px`,
+                animation: `minimalParticleUp ${duration}s ${delay}s ease-in infinite`,
+              }}
+            />
+          );
+        })}
+      </div>
 
       {/* ═══ HERO — Cinematic parallax with auto-rotating images ═══ */}
       <motion.section
