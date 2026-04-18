@@ -6,7 +6,7 @@ import {
   MessageCircle, Bed, Bath, Maximize, Car, Info, ChevronDown,
   Volume2, VolumeX, Share2, Clapperboard, LayoutDashboard, ArrowRight, Home,
   Star, Flame, Sparkles, TrendingUp, Award, Crown, Trophy,
-  Search, Ruler, ShieldCheck, Filter, X,
+  Search, Ruler, ShieldCheck, Filter, X, BadgeCheck, Instagram, Phone, Building2,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import type { StoreLayoutProps } from "./types";
@@ -738,6 +738,129 @@ export default function StoreLayoutNetflix({
                 )}
 
                 <div className="lg:sticky lg:top-4 space-y-5">
+                  {/* ─── Verified Professional Card ─── */}
+                  {dbProfile && (
+                    <div
+                      className="rounded-2xl overflow-hidden"
+                      style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}
+                    >
+                      <div
+                        className="px-4 py-3 flex items-center gap-2"
+                        style={{ background: `linear-gradient(135deg, ${storeTheme.primary}, ${storeTheme.primary}cc)` }}
+                      >
+                        <BadgeCheck size={16} className="text-white" />
+                        <span className="text-[11px] font-black uppercase tracking-widest text-white">
+                          Profissional Verificado
+                        </span>
+                      </div>
+
+                      <div className="p-4 space-y-4">
+                        <div className="flex items-center gap-3">
+                          {dbProfile.logo_url ? (
+                            <img
+                              src={dbProfile.logo_url}
+                              alt={dbProfile.full_name || dbProfile.company_name}
+                              className="w-12 h-12 rounded-full object-cover flex-shrink-0"
+                              style={{ border: `2px solid ${storeTheme.primary}` }}
+                            />
+                          ) : (
+                            <div
+                              className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0"
+                              style={{ background: `${storeTheme.primary}22`, border: `2px solid ${storeTheme.primary}` }}
+                            >
+                              <Building2 size={20} style={{ color: storeTheme.primary }} />
+                            </div>
+                          )}
+                          <div className="min-w-0 flex-1">
+                            <p className="text-sm font-bold truncate" style={{ color: storeTheme.text }}>
+                              {dbProfile.full_name || dbProfile.company_name}
+                            </p>
+                            <p className="text-[10px]" style={{ color: storeTheme.textMuted }}>
+                              {dbProfile.seller_category === "imobiliaria"
+                                ? "Imobiliária"
+                                : dbProfile.seller_category === "construtora"
+                                ? "Construtora"
+                                : "Corretor(a) de Imóveis"}
+                            </p>
+                          </div>
+                        </div>
+
+                        {dbProfile.bio && (
+                          <p className="text-[11px] leading-relaxed line-clamp-3" style={{ color: storeTheme.textMuted }}>
+                            {dbProfile.bio}
+                          </p>
+                        )}
+
+                        <div className="grid grid-cols-3 gap-2">
+                          <div className="text-center py-2 rounded-lg" style={{ background: `${storeTheme.primary}10` }}>
+                            <p className="text-base font-black" style={{ color: storeTheme.primary }}>{allProducts.length}</p>
+                            <p className="text-[8px] uppercase tracking-wider" style={{ color: storeTheme.textMuted }}>Imóveis</p>
+                          </div>
+                          <div className="text-center py-2 rounded-lg" style={{ background: `${storeTheme.primary}10` }}>
+                            <p className="text-base font-black" style={{ color: storeTheme.primary }}>✓</p>
+                            <p className="text-[8px] uppercase tracking-wider" style={{ color: storeTheme.textMuted }}>Verificado</p>
+                          </div>
+                          {availableCities && availableCities.length > 0 && (
+                            <div className="text-center py-2 rounded-lg" style={{ background: `${storeTheme.primary}10` }}>
+                              <p className="text-base font-black" style={{ color: storeTheme.primary }}>{availableCities.length}</p>
+                              <p className="text-[8px] uppercase tracking-wider" style={{ color: storeTheme.textMuted }}>
+                                {availableCities.length === 1 ? "Cidade" : "Cidades"}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+
+                        {dbProfile.creci && (
+                          <div
+                            className="flex items-center justify-center gap-1.5 py-2 rounded-lg"
+                            style={{ background: `${storeTheme.primary}15`, border: `1px solid ${storeTheme.primary}30` }}
+                          >
+                            <ShieldCheck size={12} style={{ color: storeTheme.primary }} />
+                            <span className="text-[10px] font-bold tracking-wider" style={{ color: storeTheme.primary }}>
+                              CRECI {dbProfile.creci}
+                            </span>
+                          </div>
+                        )}
+
+                        <div className="space-y-2">
+                          <button
+                            onClick={() => handleWhatsApp(`Olá ${dbProfile.full_name || dbProfile.company_name}!`)}
+                            className="w-full flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-xs font-bold transition-opacity hover:opacity-90"
+                            style={{ background: storeTheme.primary, color: "#fff" }}
+                          >
+                            <MessageCircle size={13} /> WhatsApp Direto
+                          </button>
+                          {dbProfile.instagram && (
+                            <a
+                              href={`https://instagram.com/${String(dbProfile.instagram).replace("@", "")}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="w-full flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-xs font-bold transition-opacity hover:opacity-90"
+                              style={{ background: `${storeTheme.primary}15`, color: storeTheme.primary, border: `1px solid ${storeTheme.primary}40` }}
+                            >
+                              <Instagram size={13} /> Instagram
+                            </a>
+                          )}
+                        </div>
+
+                        <div className="pt-2 space-y-1.5" style={{ borderTop: `1px solid ${storeTheme.border}` }}>
+                          <p className="text-[10px] font-black uppercase tracking-widest pt-2" style={{ color: storeTheme.primary }}>
+                            Por que escolher
+                          </p>
+                          <div className="flex items-center gap-1.5 text-[10px]" style={{ color: storeTheme.textMuted }}>
+                            <span style={{ color: storeTheme.primary }}>✓</span> Resposta rápida via WhatsApp
+                          </div>
+                          <div className="flex items-center gap-1.5 text-[10px]" style={{ color: storeTheme.textMuted }}>
+                            <span style={{ color: storeTheme.primary }}>✓</span> Vendedor premium verificado
+                          </div>
+                          <div className="flex items-center gap-1.5 text-[10px]" style={{ color: storeTheme.textMuted }}>
+                            <span style={{ color: storeTheme.primary }}>✓</span> {allProducts.length} imóveis disponíveis
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   {/* City filter */}
                   {availableCities && availableCities.length > 1 && setFilterCity && (
                     <div className="rounded-2xl p-4" style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}>
