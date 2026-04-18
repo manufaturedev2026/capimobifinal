@@ -4,7 +4,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { toast } from "@/hooks/use-toast";
 import { useParams, Link, useLocation, Navigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight, Star, MapPin, MessageCircle, Share2, Key, Home, Building2, Landmark, Store, Warehouse, MoreHorizontal, Image, Eye, Instagram, Phone, ExternalLink, Clock, Shield, Zap, ChevronLeft, ChevronRight, Heart, BadgeCheck, Clapperboard, Play, X, Volume2, VolumeX, LayoutDashboard, Bed, Bath, Car, Maximize, Sword, Trophy, Sparkles, Calendar } from "lucide-react";
+import { ArrowLeft, ArrowRight, Star, MapPin, MessageCircle, Share2, Key, Home, Building2, Landmark, Store, Warehouse, MoreHorizontal, Image, Eye, Instagram, Phone, ExternalLink, Clock, Shield, Zap, ChevronLeft, ChevronRight, Heart, BadgeCheck, Clapperboard, Play, X, Volume2, VolumeX, LayoutDashboard, Bed, Bath, Car, Maximize, Sword, Trophy, Sparkles, Calendar, Info, Ruler } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import StoreEffects from "@/components/StoreEffects";
 import ThemeParticles from "@/components/ThemeParticles";
@@ -1538,18 +1538,24 @@ export default function CompanyProfile() {
                 <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-5">
                   {filteredProducts.map((product: any, i: number) => {
                     const productLink = `/imoveis/produto/${product.slug || product.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`;
+                    const isAluguel = isDbProfile && ((product.tags || []).includes("aluguel_flex") || product.category === "aluguel");
                     return (
                       <motion.div
                         key={product.id}
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.03 + i * 0.03 }}
+                        whileHover={{ y: -4 }}
                       >
-                        <Link to={productLink} className={`group block rounded-2xl overflow-hidden hover:shadow-lg transition-all duration-300 ${
+                        <Link to={productLink} className={`group block rounded-2xl overflow-hidden transition-all duration-500 relative isolate ${
                           isDbProfile && ((dbProfile as any)?.destaque_item_ids || []).includes(product.id)
                             ? "ring-2 ring-amber-400/60 shadow-[0_0_20px_rgba(251,191,36,0.15)] border-amber-400/40"
                             : ""
-                        }`} style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}>
+                        }`} style={{
+                          background: storeTheme.card,
+                          border: `1px solid ${storeTheme.border}`,
+                          boxShadow: `0 10px 30px -12px ${storeTheme.primary}30`,
+                        }}>
                           <div className="relative aspect-[4/3] overflow-hidden bg-muted">
                             {product.image ? (
                               <img src={product.image} alt={product.title} className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 ${product.status === "vendido" ? "brightness-50 blur-[1px]" : ""}`} loading="lazy" />
@@ -1563,37 +1569,75 @@ export default function CompanyProfile() {
                                 <span className="px-4 py-2 rounded-xl bg-red-600/90 text-white font-bold text-sm shadow-lg">❌ Vendido</span>
                               </div>
                             )}
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                            {/* Cinematic gradient overlay */}
+                            <div className="absolute inset-0 pointer-events-none" style={{
+                              background: `linear-gradient(to top, ${storeTheme.bg}cc 0%, transparent 50%)`,
+                            }} />
+                            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" style={{
+                              background: `linear-gradient(135deg, transparent 30%, ${storeTheme.primary}25 50%, transparent 70%)`,
+                            }} />
                             {product.tag && (
-                              <span className={`absolute top-2 left-2 px-2.5 py-1 rounded-lg text-[10px] font-bold shadow-md ${getTagStyle(product.tag)}`}>
+                              <span className={`absolute top-2.5 left-2.5 px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider shadow-lg backdrop-blur-md ${getTagStyle(product.tag)}`}
+                                style={{ boxShadow: `0 4px 12px rgba(0,0,0,0.4)` }}>
                                 {getTagLabel(product.tag)}
                               </span>
                             )}
-                            {isDbProfile && ((product.tags || []).includes("aluguel_flex") || product.category === "aluguel") && (
-                              <span className="absolute top-2 right-2 px-2 py-0.5 rounded-lg text-[10px] font-bold shadow-md bg-primary text-primary-foreground">
+                            {isAluguel && (
+                              <span className="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-lg text-[10px] font-bold shadow-lg backdrop-blur-sm" style={{ background: `${storeTheme.primary}dd`, color: "#fff" }}>
                                 🏠 Aluguel
                               </span>
                             )}
                           </div>
-                          <div className="p-3 md:p-4">
-                            <h3 className="font-display font-semibold text-sm leading-tight line-clamp-2 transition-colors" style={{ color: storeTheme.text }}>
+                          <div className="p-3 md:p-4 relative">
+                            <div
+                              className="absolute top-0 left-3 right-3 h-[1px] opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                              style={{ background: `linear-gradient(90deg, transparent, ${storeTheme.primary}, transparent)` }}
+                            />
+                            <h3 className="font-display font-black text-sm leading-snug line-clamp-2 mb-2 uppercase tracking-tight" style={{ color: storeTheme.text, letterSpacing: "-0.01em" }}>
                               {product.title}
                             </h3>
                             {product.price > 0 && (
-                              <div className="flex items-center gap-2 mt-1.5">
-                                <p className="font-display font-bold text-base md:text-lg" style={{ color: storeTheme.primary }}>
-                                  R$ {product.price.toLocaleString("pt-BR")}
-                                  {isDbProfile && ((product.tags || []).includes("aluguel_flex") || product.category === "aluguel") && (
-                                    <span className="text-sm font-normal text-muted-foreground"> /mês</span>
-                                  )}
-                                </p>
+                              <div className="inline-flex items-baseline gap-1 px-2.5 py-1.5 rounded-lg" style={{
+                                background: `linear-gradient(135deg, ${storeTheme.primary}20, ${storeTheme.primary}08)`,
+                                border: `1px solid ${storeTheme.primary}40`,
+                                boxShadow: `0 0 16px ${storeTheme.primary}30, inset 0 1px 0 ${storeTheme.primary}30`,
+                              }}>
+                                <span className="text-[10px] font-black uppercase tracking-widest" style={{ color: storeTheme.primary }}>R$</span>
+                                <span className="text-base md:text-xl font-black leading-none" style={{
+                                  color: storeTheme.text,
+                                  textShadow: `0 0 12px ${storeTheme.primary}80, 0 0 24px ${storeTheme.primary}40`,
+                                }}>
+                                  {product.price.toLocaleString("pt-BR")}
+                                </span>
+                                {isAluguel && <span className="text-[9px] font-bold ml-0.5" style={{ color: storeTheme.textMuted }}>/mês</span>}
                               </div>
                             )}
+                            <div className="flex items-center gap-2.5 mt-2.5 text-[10px]" style={{ color: storeTheme.textMuted }}>
+                              {product.bedrooms > 0 && <span className="flex items-center gap-0.5"><Bed size={10} /> {product.bedrooms}</span>}
+                              {product.bathrooms > 0 && <span className="flex items-center gap-0.5"><Bath size={10} /> {product.bathrooms}</span>}
+                              {product.area > 0 && <span className="flex items-center gap-0.5"><Ruler size={10} /> {product.area}m²</span>}
+                            </div>
                             {product.city && (
-                              <p className="text-[11px] mt-1.5 flex items-center gap-1" style={{ color: storeTheme.textMuted }}>
+                              <p className="text-[11px] mt-2 flex items-center gap-1" style={{ color: storeTheme.textMuted }}>
                                 <MapPin size={10} /> {product.city}
                               </p>
                             )}
+                            <div
+                              className="relative mt-3 w-full flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-[11px] font-black uppercase tracking-widest overflow-hidden group/info transition-all group-hover:scale-[1.02]"
+                              style={{
+                                background: `linear-gradient(135deg, ${storeTheme.primary}, ${storeTheme.primary}dd)`,
+                                color: "#fff",
+                                boxShadow: `0 8px 24px -4px ${storeTheme.primary}90, 0 0 0 1px ${storeTheme.primary}, inset 0 1px 0 rgba(255,255,255,0.4)`,
+                                textShadow: "0 1px 2px rgba(0,0,0,0.3)",
+                              }}
+                            >
+                              <div
+                                className="absolute inset-0 -translate-x-full group-hover/info:translate-x-full transition-transform duration-700"
+                                style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent)" }}
+                              />
+                              <Info size={13} className="relative z-10" />
+                              <span className="relative z-10">Informações</span>
+                            </div>
                           </div>
                         </Link>
                       </motion.div>
