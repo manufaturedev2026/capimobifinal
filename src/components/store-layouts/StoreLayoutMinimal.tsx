@@ -581,13 +581,13 @@ export default function StoreLayoutMinimal({
             style={{ background: `linear-gradient(to right, transparent, ${storeTheme.primary}, transparent)` }}
           />
 
-          <p className="text-[10px] uppercase tracking-[0.3em] mb-2" style={{ color: storeTheme.primary }}>
+          <p className="minimal-mono text-[10px] uppercase tracking-[0.32em] mb-3 font-semibold" style={{ color: storeTheme.primary }}>
             Captação de imóveis
           </p>
-          <h2 className="minimal-display text-3xl md:text-4xl font-light italic mb-2" style={{ color: storeTheme.text }}>
+          <h2 className="minimal-display text-3xl md:text-5xl font-bold mb-3" style={{ color: storeTheme.text, letterSpacing: "-0.03em" }}>
             Quer anunciar seu imóvel?
           </h2>
-          <p className="text-xs mb-6 max-w-md mx-auto" style={{ color: storeTheme.textMuted }}>
+          <p className="minimal-body text-sm md:text-base mb-7 max-w-md mx-auto font-light" style={{ color: storeTheme.textMuted }}>
             Cadastre seu imóvel gratuitamente com {sellerDisplayName} e alcance mais compradores.
           </p>
           <Link
