@@ -356,8 +356,8 @@ export default function StoreLayoutNetflix({
                 src={currentBillboard.image}
                 alt={currentBillboard.title}
                 className="w-full h-full object-cover"
-                initial={{ scale: 1.15 }}
-                animate={{ scale: 1.05 }}
+                initial={{ scale: 1.04 }}
+                animate={{ scale: 1.0 }}
                 transition={{ duration: 8, ease: "easeOut" }}
               />
               {/* Netflix-style gradients */}
