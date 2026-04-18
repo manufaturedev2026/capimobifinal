@@ -33,7 +33,6 @@ const APPLE_NAV = [
   { id: "alugar", label: "Alugar" },
   { id: "lancamentos", label: "Lançamentos" },
   { id: "corretores", label: "Corretores" },
-  { id: "anunciar", label: "Anunciar", to: "/anunciar" },
   { id: "contato", label: "Contato" },
 ];
 
