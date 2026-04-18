@@ -2160,14 +2160,14 @@ export default function CompanyProfile() {
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => setGalleryLightbox(0)}
-          className="fixed right-6 bottom-44 z-50 w-14 h-14 rounded-full text-white shadow-2xl flex items-center justify-center transition-all group"
+          className="fixed right-4 md:right-6 bottom-40 md:bottom-44 z-50 w-11 h-11 md:w-14 md:h-14 rounded-full text-white shadow-2xl flex items-center justify-center transition-all group"
           style={{
             background: `linear-gradient(135deg, ${storeTheme.primary}, ${storeTheme.accent || storeTheme.primary})`,
             boxShadow: `0 10px 30px ${storeTheme.primary}60, 0 0 0 1px ${storeTheme.primary}40`,
           }}
           aria-label="Modo Cinema"
         >
-          <Clapperboard size={24} />
+          <Clapperboard className="w-5 h-5 md:w-6 md:h-6" />
           <span
             className="absolute right-full mr-3 px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
             style={{ background: storeTheme.card, color: storeTheme.text, border: `1px solid ${storeTheme.border}` }}
@@ -2191,14 +2191,14 @@ export default function CompanyProfile() {
           transition={{ delay: 0.7, type: "spring", stiffness: 200 }}
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
-          className="fixed right-6 bottom-64 z-50 w-14 h-14 rounded-full text-white shadow-2xl flex items-center justify-center transition-all group"
+          className="fixed right-4 md:right-6 bottom-[14.5rem] md:bottom-64 z-50 w-11 h-11 md:w-14 md:h-14 rounded-full text-white shadow-2xl flex items-center justify-center transition-all group"
           style={{
             background: "linear-gradient(135deg, #833AB4, #E1306C, #F77737)",
             boxShadow: "0 10px 30px rgba(225,48,108,0.5), 0 0 0 1px rgba(225,48,108,0.4)",
           }}
           aria-label="Instagram"
         >
-          <Instagram size={24} />
+          <Instagram className="w-5 h-5 md:w-6 md:h-6" />
           <span
             className="absolute right-full mr-3 px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
             style={{ background: storeTheme.card, color: storeTheme.text, border: `1px solid ${storeTheme.border}` }}
@@ -2217,14 +2217,14 @@ export default function CompanyProfile() {
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => handleWhatsApp(heroProduct?.title || company.name)}
-          className="fixed bottom-24 right-6 z-50 w-14 h-14 rounded-full text-white shadow-2xl flex items-center justify-center transition-all group"
+          className="fixed bottom-20 md:bottom-24 right-4 md:right-6 z-50 w-11 h-11 md:w-14 md:h-14 rounded-full text-white shadow-2xl flex items-center justify-center transition-all group"
           style={{
             background: "linear-gradient(135deg, #25D366, #128C7E)",
             boxShadow: "0 10px 30px rgba(37,211,102,0.55), 0 0 0 1px rgba(37,211,102,0.4)",
           }}
           aria-label="Falar no WhatsApp"
         >
-          <svg viewBox="0 0 32 32" width="26" height="26" fill="currentColor" aria-hidden="true">
+          <svg viewBox="0 0 32 32" className="w-5 h-5 md:w-[26px] md:h-[26px]" fill="currentColor" aria-hidden="true">
             <path d="M19.11 17.205c-.372 0-1.088 1.39-1.518 1.39a.63.63 0 0 1-.315-.1c-.802-.402-1.504-.817-2.163-1.447-.545-.516-1.146-1.29-1.46-1.963a.426.426 0 0 1-.073-.215c0-.33.99-.945.99-1.49 0-.143-.73-2.09-.832-2.335-.143-.372-.214-.487-.6-.487-.187 0-.36-.043-.53-.043-.302 0-.53.115-.746.315-.688.645-1.032 1.318-1.06 2.264v.114c-.015.99.472 1.977 1.017 2.78 1.23 1.82 2.506 3.41 4.554 4.34.616.287 2.035.888 2.722.888.817 0 2.15-.515 2.394-1.404a3.84 3.84 0 0 0 .085-.546c0-.214-.072-.286-.214-.358-.16-.071-1.948-.946-2.165-.946zM16.066 7.001A8.945 8.945 0 0 0 7.13 15.93a8.78 8.78 0 0 0 1.244 4.515L7 24.602l4.302-1.366a8.94 8.94 0 0 0 4.762 1.376h.003a8.945 8.945 0 0 0 8.939-8.93 8.93 8.93 0 0 0-8.94-8.681zm5.292 14.225a7.402 7.402 0 0 1-5.288 2.196h-.001a7.401 7.401 0 0 1-3.778-1.034l-.272-.16-2.804.732.747-2.732-.176-.282a7.399 7.399 0 0 1-1.135-3.939 7.42 7.42 0 0 1 7.422-7.422c1.987 0 3.85.774 5.252 2.18a7.39 7.39 0 0 1 2.18 5.252c0 1.989-.776 3.85-2.184 5.253z"/>
           </svg>
           <span
