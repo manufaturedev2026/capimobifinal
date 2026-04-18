@@ -472,43 +472,75 @@ export default function StoreLayoutMinimal({
                   </div>
 
                   {/* Content */}
-                  <div className="p-3 md:p-4">
+                  <div className="p-3 md:p-5">
+                    {/* Eyebrow location */}
+                    {product.city && (
+                      <p
+                        className="minimal-mono text-[8px] md:text-[9px] uppercase tracking-[0.25em] flex items-center gap-1 mb-2"
+                        style={{ color: storeTheme.textMuted }}
+                      >
+                        <MapPin size={8} strokeWidth={2.4} />
+                        <span className="truncate">
+                          {product.neighborhood ? `${product.neighborhood} · ${product.city}` : product.city}
+                        </span>
+                      </p>
+                    )}
+
+                    {/* Editorial title */}
                     <h3
-                      className="text-[11px] md:text-xs font-semibold line-clamp-2 leading-snug mb-1.5"
-                      style={{ color: storeTheme.text }}
+                      className="minimal-display font-medium text-base md:text-xl line-clamp-2 leading-[1.15] mb-3"
+                      style={{ color: storeTheme.text, letterSpacing: "-0.01em" }}
                     >
                       {product.title}
                     </h3>
 
-                    {product.city && (
-                      <p className="text-[9px] md:text-[10px] flex items-center gap-1 mb-2" style={{ color: storeTheme.textMuted }}>
-                        <MapPin size={9} />
-                        {product.neighborhood ? `${product.neighborhood}, ${product.city}` : product.city}
-                      </p>
+                    {/* Hairline divider in primary */}
+                    {product.price > 0 && (
+                      <div
+                        className="h-px w-8 mb-2.5 transition-all duration-500 group-hover:w-16"
+                        style={{ background: storeTheme.primary }}
+                      />
                     )}
 
+                    {/* Epic price */}
                     {product.price > 0 && (
-                      <p className="text-sm md:text-base font-bold" style={{ color: storeTheme.primary }}>
-                        R$ {product.price.toLocaleString("pt-BR")}
+                      <div className="flex items-baseline gap-1">
+                        <span
+                          className="minimal-mono text-[9px] md:text-[10px] uppercase tracking-[0.2em]"
+                          style={{ color: storeTheme.textMuted }}
+                        >
+                          R$
+                        </span>
+                        <span
+                          className="minimal-display font-semibold text-xl md:text-2xl leading-none"
+                          style={{ color: storeTheme.primary, letterSpacing: "-0.02em" }}
+                        >
+                          {product.price.toLocaleString("pt-BR")}
+                        </span>
                         {product.isAluguel && (
-                          <span className="text-[9px] font-normal ml-1" style={{ color: storeTheme.textMuted }}>/mês</span>
+                          <span
+                            className="minimal-mono text-[8px] md:text-[9px] uppercase tracking-[0.2em] ml-0.5"
+                            style={{ color: storeTheme.textMuted }}
+                          >
+                            /mês
+                          </span>
                         )}
-                      </p>
+                      </div>
                     )}
 
                     {/* Specs — revealed on hover (desktop) */}
                     <div
-                      className="flex items-center gap-2.5 mt-2 text-[9px] md:text-[10px] md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300"
-                      style={{ color: storeTheme.textMuted }}
+                      className="flex items-center gap-3 mt-3 pt-3 border-t text-[9px] md:text-[10px] md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 minimal-mono uppercase tracking-[0.15em]"
+                      style={{ color: storeTheme.textMuted, borderColor: `${storeTheme.border}80` }}
                     >
                       {product.bedrooms > 0 && (
-                        <span className="flex items-center gap-0.5"><Bed size={10} /> {product.bedrooms}</span>
+                        <span className="flex items-center gap-1"><Bed size={10} /> {product.bedrooms}</span>
                       )}
                       {product.bathrooms > 0 && (
-                        <span className="flex items-center gap-0.5"><Bath size={10} /> {product.bathrooms}</span>
+                        <span className="flex items-center gap-1"><Bath size={10} /> {product.bathrooms}</span>
                       )}
                       {product.area > 0 && (
-                        <span className="flex items-center gap-0.5"><Ruler size={10} /> {product.area}m²</span>
+                        <span className="flex items-center gap-1"><Ruler size={10} /> {product.area}m²</span>
                       )}
                     </div>
                   </div>
