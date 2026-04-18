@@ -263,13 +263,47 @@ export default function VenderPage() {
 
       <div className="min-h-screen text-white overflow-x-hidden relative" style={{ ...themeVars, background: theme.darkBase }}>
 
-        <ThemeParticles color={theme.primary} count={60} />
-
         <MarketplaceNavbar theme={theme} user={user} showImoveisScroll={false} />
 
         {/* ═══ HERO ═══ */}
         <section className="relative overflow-hidden pt-14">
-          <ThemeParticles color={theme.primary} count={45} />
+          {/* Particles confined to hero */}
+          <div className="absolute inset-0 pointer-events-none overflow-hidden z-[1]">
+            <style>{`
+              @keyframes heroParticleUp {
+                0% { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
+                10% { opacity: var(--hp-opacity); }
+                90% { opacity: 0.3; }
+                100% { transform: translateY(-100%) translateX(var(--hp-drift)) scale(0.2); opacity: 0; }
+              }
+            `}</style>
+            {Array.from({ length: 50 }).map((_, i) => {
+              const left = Math.random() * 100;
+              const delay = Math.random() * 8;
+              const duration = 6 + Math.random() * 8;
+              const size = 2 + Math.random() * 3;
+              const opacity = 0.2 + Math.random() * 0.5;
+              const drift = -30 + Math.random() * 60;
+              return (
+                <div
+                  key={i}
+                  className="absolute rounded-full"
+                  style={{
+                    left: `${left}%`,
+                    bottom: "-4px",
+                    width: size,
+                    height: size,
+                    background: `radial-gradient(circle, ${theme.primary} 0%, ${theme.primary}99 60%, transparent 100%)`,
+                    boxShadow: `0 0 ${size + 2}px ${theme.primary}80`,
+                    ["--hp-opacity" as any]: opacity,
+                    ["--hp-drift" as any]: `${drift}px`,
+                    animation: `heroParticleUp ${duration}s ${delay}s ease-in infinite`,
+                  }}
+                />
+              );
+            })}
+          </div>
+
           {/* Background effects */}
           <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${theme.primary}18, transparent, ${theme.promoAccent || theme.primary}15)` }} />
           <div className="absolute top-20 left-1/4 w-64 md:w-96 h-64 md:h-96 rounded-full blur-[120px]" style={{ background: `${theme.primary}18` }} />
