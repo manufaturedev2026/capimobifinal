@@ -585,30 +585,32 @@ export default function StoreLayoutNetflix({
             </motion.div>
           </div>
 
-          {/* Episode indicators */}
+          {/* Episode indicators (cor do tema) */}
           {billboard.length > 1 && (
-            <div className="absolute right-4 lg:right-12 bottom-[15%] z-10 flex flex-col gap-1">
+            <div className="absolute right-4 lg:right-12 bottom-[15%] z-10 flex flex-col gap-1.5">
               {billboard.map((_, idx) => (
                 <button
                   key={idx}
                   onClick={() => setBillboardIdx(idx)}
                   className="w-1 transition-all rounded-full"
                   style={{
-                    height: idx === billboardIdx ? 24 : 8,
-                    background: idx === billboardIdx ? "#e50914" : "rgba(255,255,255,0.3)",
+                    height: idx === billboardIdx ? 28 : 8,
+                    background: idx === billboardIdx ? storeTheme.primary : "rgba(255,255,255,0.3)",
+                    boxShadow: idx === billboardIdx ? `0 0 12px ${storeTheme.primary}` : undefined,
                   }}
                 />
               ))}
             </div>
           )}
 
-          {/* Progress bar at bottom */}
-          <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-white/5 z-20">
+          {/* Progress bar at bottom (cor do tema, com glow) */}
+          <div className="absolute bottom-0 left-0 right-0 h-[3px] z-20" style={{ background: "rgba(255,255,255,0.06)" }}>
             <div
               className="h-full transition-all duration-100 ease-linear"
               style={{
                 width: `${progress}%`,
-                background: "linear-gradient(to right, #e50914, #ff4d4d)",
+                background: `linear-gradient(to right, ${storeTheme.primary}, ${storeTheme.primary}aa)`,
+                boxShadow: `0 0 12px ${storeTheme.primary}, 0 0 4px ${storeTheme.primary}`,
               }}
             />
           </div>
