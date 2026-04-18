@@ -593,7 +593,7 @@ export default function AdminPanel() {
         </div>
 
         {/* Main content */}
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 max-w-5xl">
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 w-full min-w-0">
 
 
         {tab === "clientes" && (
