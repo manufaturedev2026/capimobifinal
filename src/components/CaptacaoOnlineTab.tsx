@@ -193,14 +193,14 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
   const [agendMsgSuccessEnd, setAgendMsgSuccessEnd] = useState("Um corretor vai confirmar o agendamento pelo WhatsApp. Até breve! 📋🎉");
 
   // Avaliação messages
-  const [avalMsgName, setAvalMsgName] = useState("Olá! 👋 Vou te ajudar a solicitar uma avaliação GRATUITA do seu imóvel! Me diz seu nome:");
+  const [avalMsgName, setAvalMsgName] = useState("Olá! 👋 Vou te ajudar a solicitar uma avaliação profissional do seu imóvel! Me diz seu nome:");
   const [avalMsgNameReply, setAvalMsgNameReply] = useState("Prazer, {nome}! 🤝 Vamos avaliar seu imóvel!");
   const [avalMsgPhone, setAvalMsgPhone] = useState("Qual seu telefone ou WhatsApp? 📱");
   const [avalMsgType, setAvalMsgType] = useState("Qual o tipo do seu imóvel? 🏠");
   const [avalMsgAddress, setAvalMsgAddress] = useState("Qual o endereço completo do imóvel? 📍\n\n(Rua, número, bairro e cidade)");
   const [avalMsgDetails, setAvalMsgDetails] = useState("Conte mais sobre o imóvel! 📝\n\n(Ex: quantidade de quartos, tamanho, estado de conservação, reformas...)");
   const [avalMsgSuccess, setAvalMsgSuccess] = useState("✅ Solicitação de avaliação enviada com sucesso!");
-  const [avalMsgSuccessEnd, setAvalMsgSuccessEnd] = useState("Um especialista vai entrar em contato em até 24h para agendar a visita de avaliação. Obrigado! 🏡💎");
+  const [avalMsgSuccessEnd, setAvalMsgSuccessEnd] = useState("Nosso avaliador profissional vai entrar em contato pelo WhatsApp em breve para alinhar a avaliação. Obrigado! 🏡💎");
 
   // CTA Buttons (texto + URL opcional) por fluxo
   const [captacaoCtaLabel, setCaptacaoCtaLabel] = useState("💬 Falar no WhatsApp");
