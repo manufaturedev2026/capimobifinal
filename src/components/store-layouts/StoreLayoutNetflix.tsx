@@ -668,12 +668,14 @@ export default function StoreLayoutNetflix({
                 whileHover={{ scale: 1.05, y: -6 }}
                 whileTap={{ scale: 0.96 }}
                 transition={{ type: "spring", stiffness: 300 }}
-                className="flex-shrink-0 relative overflow-hidden rounded-xl transition-all duration-300 group/cat"
+                className="flex-shrink-0 relative overflow-hidden rounded-xl transition-all duration-300 group/cat isolate"
                 style={{
                   width: "clamp(140px, 20vw, 210px)",
                   aspectRatio: "3/4",
                   outline: isActive ? "2px solid #fff" : "2px solid transparent",
                   outlineOffset: 2,
+                  transform: "translateZ(0)",
+                  WebkitMaskImage: "-webkit-radial-gradient(white, black)",
                   boxShadow: isActive
                     ? "0 0 30px rgba(255,255,255,0.4), 0 20px 40px rgba(0,0,0,0.5)"
                     : "0 8px 20px rgba(0,0,0,0.4)",
@@ -716,12 +718,14 @@ export default function StoreLayoutNetflix({
                   whileHover={{ scale: 1.05, y: -6 }}
                   whileTap={{ scale: 0.96 }}
                   transition={{ type: "spring", stiffness: 300 }}
-                  className="flex-shrink-0 relative overflow-hidden rounded-xl transition-all duration-300 group/cat"
+                  className="flex-shrink-0 relative overflow-hidden rounded-xl transition-all duration-300 group/cat isolate"
                   style={{
                     width: "clamp(140px, 20vw, 210px)",
                     aspectRatio: "3/4",
                     outline: isActive ? `2px solid ${storeTheme.primary}` : "2px solid transparent",
                     outlineOffset: 2,
+                    transform: "translateZ(0)",
+                    WebkitMaskImage: "-webkit-radial-gradient(white, black)",
                     boxShadow: isActive
                       ? `0 0 30px ${storeTheme.primary}80, 0 0 60px ${storeTheme.primary}40, 0 20px 40px rgba(0,0,0,0.5)`
                       : "0 8px 20px rgba(0,0,0,0.4)",
