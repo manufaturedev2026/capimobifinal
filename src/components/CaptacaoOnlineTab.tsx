@@ -356,12 +356,44 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
           templateHint: AD_TEMPLATES.find(t => t.id === selectedTemplate)?.label || "Captação",
         },
       });
-      if (error) throw error;
-      setGeneratedAd(data?.text || "Erro ao gerar texto.");
-    } catch {
-      toast({ title: "Erro ao gerar com IA", variant: "destructive" });
+      console.log("[generateAdWithAI] response:", { data, error });
+      if (error) {
+        // supabase.functions.invoke trata status != 2xx como error e não expõe o body diretamente
+        const ctx: any = (error as any)?.context;
+        let serverMsg = "";
+        try {
+          if (ctx && typeof ctx.json === "function") {
+            const j = await ctx.json();
+            serverMsg = j?.error || "";
+          } else if (ctx && typeof ctx.text === "function") {
+            serverMsg = await ctx.text();
+          }
+        } catch {}
+        toast({
+          title: "Erro ao gerar com IA",
+          description: serverMsg || error.message || "Tente novamente.",
+          variant: "destructive",
+        });
+        return;
+      }
+      if (data?.error) {
+        toast({ title: "Erro", description: data.error, variant: "destructive" });
+        return;
+      }
+      if (data?.text) {
+        setGeneratedAd(data.text);
+        if (typeof data.remaining === "number") {
+          toast({ title: "Texto gerado!", description: `Restam ${data.remaining} gerações hoje.` });
+        }
+      } else {
+        toast({ title: "Resposta vazia da IA", variant: "destructive" });
+      }
+    } catch (e: any) {
+      console.error("[generateAdWithAI] exception:", e);
+      toast({ title: "Erro ao gerar com IA", description: e?.message || "Falha de rede.", variant: "destructive" });
+    } finally {
+      setGeneratingAI(false);
     }
-    setGeneratingAI(false);
   };
 
   const copyAd = () => {
