@@ -682,33 +682,56 @@ export default function StoreLayoutNetflix({
               const count = categoryCounts[c.slug] || 0;
 
               return (
-                <button
+                <motion.button
                   key={c.slug}
                   onClick={() => setActiveCategory(c.slug)}
+                  whileHover={{ scale: 1.06, y: -6 }}
+                  whileTap={{ scale: 0.96 }}
+                  transition={{ type: "spring", stiffness: 300 }}
                   className="flex-shrink-0 relative overflow-hidden rounded-md transition-all duration-300 group/cat"
                   style={{
                     width: "clamp(120px, 18vw, 180px)",
                     aspectRatio: "2/3",
-                     outline: isActive ? "2px solid #fff" : "2px solid transparent",
-                     outlineOffset: 2,
+                    outline: isActive ? `2px solid ${storeTheme.primary}` : "2px solid transparent",
+                    outlineOffset: 2,
+                    boxShadow: isActive
+                      ? `0 0 30px ${storeTheme.primary}80, 0 0 60px ${storeTheme.primary}40, 0 20px 40px rgba(0,0,0,0.5)`
+                      : "0 8px 20px rgba(0,0,0,0.4)",
                   }}
                 >
                   {coverImg ? (
-                    <img src={coverImg} alt={c.name} className="w-full h-full object-cover transition-transform duration-500 group-hover/cat:scale-110" />
+                    <img src={coverImg} alt={c.name} className="w-full h-full object-cover transition-transform duration-700 group-hover/cat:scale-125" />
                   ) : (
                     <div className="w-full h-full bg-[#2a2a2a]" />
                   )}
                   <div className="absolute inset-0" style={{
-                     background: "linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 40%, transparent 70%)",
+                     background: "linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.4) 40%, transparent 70%)",
                   }} />
+                  {/* Shimmer on hover */}
+                  <div className="absolute inset-0 opacity-0 group-hover/cat:opacity-100 transition-opacity duration-500 pointer-events-none" style={{
+                    background: `linear-gradient(135deg, transparent 30%, ${storeTheme.primary}30 50%, transparent 70%)`,
+                  }} />
+                  {/* Active glow pulse */}
+                  {isActive && (
+                    <motion.div
+                      className="absolute inset-0 pointer-events-none"
+                      animate={{ opacity: [0.3, 0.7, 0.3] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                      style={{ background: `linear-gradient(180deg, ${storeTheme.primary}40 0%, transparent 50%)` }}
+                    />
+                  )}
                   <div className="absolute bottom-0 left-0 right-0 p-2.5 text-center">
-                    <span className="text-white font-bold text-xs md:text-sm drop-shadow-lg block">{c.name}</span>
-                    <span className="text-white/60 text-[9px] md:text-[10px]">{count} imóveis</span>
+                    <span className="text-white font-black text-xs md:text-sm drop-shadow-lg block uppercase tracking-wider">{c.name}</span>
+                    <span className="text-[9px] md:text-[10px] font-bold" style={{ color: isActive ? storeTheme.primary : "rgba(255,255,255,0.6)" }}>{count} imóveis</span>
                   </div>
                   {isActive && (
-                    <div className="absolute top-0 left-0 right-0 h-[3px] bg-white" />
+                    <motion.div
+                      layoutId="netflix-cat-active"
+                      className="absolute top-0 left-0 right-0 h-[3px]"
+                      style={{ background: storeTheme.primary, boxShadow: `0 0 12px ${storeTheme.primary}` }}
+                    />
                   )}
-                </button>
+                </motion.button>
               );
             })}
         </div>
