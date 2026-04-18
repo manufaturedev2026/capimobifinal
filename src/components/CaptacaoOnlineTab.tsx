@@ -481,7 +481,7 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
     { value: "captacao" as const, label: "Captação", icon: Home, color: "text-primary", desc: "Coleta dados do imóvel" },
     { value: "grupo_whatsapp" as const, label: "Grupo", icon: Users, color: "text-[#25d366]", desc: "Convida para grupo" },
     { value: "agendamento" as const, label: "Agendamento", icon: Calendar, color: "text-blue-500", desc: "Agenda visita" },
-    { value: "avaliacao" as const, label: "Avaliação", icon: Gem, color: "text-amber-500", desc: "Avaliação gratuita" },
+    { value: "avaliacao" as const, label: "Avaliação", icon: Gem, color: "text-amber-500", desc: "Agendar Avaliação" },
   ];
 
   const TAB_CONFIG: { key: MainTab; label: string; icon: any; count?: number }[] = [
