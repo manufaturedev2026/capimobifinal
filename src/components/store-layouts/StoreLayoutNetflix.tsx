@@ -853,19 +853,56 @@ export default function StoreLayoutNetflix({
                       />
 
                       <div
-                        className="relative px-4 py-3 flex items-center gap-2 overflow-hidden"
-                        style={{ background: `linear-gradient(135deg, ${storeTheme.primary}, ${storeTheme.primary}cc)` }}
+                        className="relative px-4 py-4 flex items-center gap-2.5 overflow-hidden"
+                        style={{
+                          background: `linear-gradient(135deg, ${storeTheme.primary} 0%, ${storeTheme.primary}dd 50%, ${storeTheme.primary} 100%)`,
+                          boxShadow: `inset 0 -1px 0 rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.3)`,
+                        }}
                       >
+                        {/* Animated grid overlay */}
+                        <div className="absolute inset-0 opacity-20 pointer-events-none" style={{
+                          backgroundImage: `linear-gradient(rgba(255,255,255,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.4) 1px, transparent 1px)`,
+                          backgroundSize: "12px 12px",
+                          maskImage: "linear-gradient(90deg, transparent, black, transparent)",
+                        }} />
+                        {/* Shimmer sweep */}
                         <motion.div
                           className="absolute inset-0 -translate-x-full"
-                          style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)" }}
+                          style={{ background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent)" }}
                           animate={{ translateX: ["-100%", "200%"] }}
-                          transition={{ duration: 3, repeat: Infinity, repeatDelay: 2, ease: "easeInOut" }}
+                          transition={{ duration: 2.5, repeat: Infinity, repeatDelay: 1.5, ease: "easeInOut" }}
                         />
-                        <BadgeCheck size={16} className="text-white relative z-10 drop-shadow" />
-                        <span className="relative z-10 text-[11px] font-black uppercase tracking-widest text-white drop-shadow">
+                        {/* Floating sparkles */}
+                        {[...Array(3)].map((_, i) => (
+                          <motion.div
+                            key={i}
+                            className="absolute w-1 h-1 rounded-full bg-white pointer-events-none"
+                            style={{
+                              left: `${20 + i * 30}%`,
+                              top: `${30 + (i % 2) * 40}%`,
+                              boxShadow: "0 0 8px rgba(255,255,255,0.9)",
+                            }}
+                            animate={{ opacity: [0, 1, 0], scale: [0, 1.4, 0] }}
+                            transition={{ duration: 2, repeat: Infinity, delay: i * 0.6 }}
+                          />
+                        ))}
+                        {/* Pulsing badge ring */}
+                        <div className="relative">
+                          <motion.div
+                            className="absolute inset-0 rounded-full pointer-events-none"
+                            style={{ border: "2px solid rgba(255,255,255,0.9)" }}
+                            animate={{ scale: [1, 1.6, 1], opacity: [0.7, 0, 0.7] }}
+                            transition={{ duration: 2, repeat: Infinity }}
+                          />
+                          <BadgeCheck size={18} className="text-white relative z-10 drop-shadow-lg" fill="rgba(255,255,255,0.15)" />
+                        </div>
+                        <span className="relative z-10 text-[11px] font-black uppercase tracking-[0.2em] text-white"
+                          style={{ textShadow: "0 1px 8px rgba(0,0,0,0.4), 0 0 12px rgba(255,255,255,0.4)" }}
+                        >
                           Profissional Verificado
                         </span>
+                        {/* Crown corner accent */}
+                        <Crown size={12} className="ml-auto text-white/80 relative z-10" fill="rgba(255,255,255,0.3)" />
                       </div>
 
                       <div className="relative p-4 space-y-4">
@@ -989,26 +1026,79 @@ export default function StoreLayoutNetflix({
                           )}
                         </div>
 
-                        <div className="pt-2 space-y-1.5" style={{ borderTop: `1px solid ${storeTheme.primary}25` }}>
-                          <p className="text-[10px] font-black uppercase tracking-widest pt-2 flex items-center gap-1" style={{ color: storeTheme.primary }}>
-                            <Crown size={10} /> Por que escolher
-                          </p>
-                          {[
-                            "Resposta rápida via WhatsApp",
-                            "Vendedor premium verificado",
-                            `${allProducts.length} imóveis disponíveis`,
-                          ].map((txt, i) => (
+                        <div className="relative pt-3">
+                          {/* Animated separator with glow */}
+                          <motion.div
+                            className="absolute top-0 left-0 right-0 h-[1px]"
+                            style={{ background: `linear-gradient(90deg, transparent, ${storeTheme.primary}, transparent)` }}
+                            animate={{ opacity: [0.3, 1, 0.3] }}
+                            transition={{ duration: 2.5, repeat: Infinity }}
+                          />
+
+                          {/* ÉPICO header */}
+                          <div className="relative flex items-center gap-2 mb-3 mt-1">
                             <motion.div
-                              key={i}
-                              initial={{ opacity: 0, x: -10 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ delay: 0.3 + i * 0.1 }}
-                              className="flex items-center gap-1.5 text-[10px]"
-                              style={{ color: storeTheme.textMuted }}
+                              animate={{ rotate: [0, 8, -8, 0], scale: [1, 1.15, 1] }}
+                              transition={{ duration: 3, repeat: Infinity }}
+                              className="relative"
                             >
-                              <span style={{ color: storeTheme.primary, textShadow: `0 0 8px ${storeTheme.primary}` }}>✓</span> {txt}
+                              <Crown size={14} style={{ color: storeTheme.primary, filter: `drop-shadow(0 0 6px ${storeTheme.primary})` }} fill={`${storeTheme.primary}40`} />
                             </motion.div>
-                          ))}
+                            <p className="text-[10px] font-black uppercase tracking-[0.2em]"
+                              style={{
+                                background: `linear-gradient(90deg, ${storeTheme.primary}, #fff, ${storeTheme.primary})`,
+                                WebkitBackgroundClip: "text",
+                                WebkitTextFillColor: "transparent",
+                                backgroundClip: "text",
+                              }}
+                            >
+                              Por que escolher
+                            </p>
+                            <Sparkles size={10} style={{ color: storeTheme.primary }} className="ml-auto animate-pulse" />
+                          </div>
+
+                          <div className="space-y-2">
+                            {[
+                              { txt: "Resposta rápida via WhatsApp", icon: MessageCircle },
+                              { txt: "Vendedor premium verificado", icon: ShieldCheck },
+                              { txt: `${allProducts.length} imóveis disponíveis`, icon: Home },
+                            ].map((item, i) => (
+                              <motion.div
+                                key={i}
+                                initial={{ opacity: 0, x: -12 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: 0.3 + i * 0.12 }}
+                                whileHover={{ x: 3, scale: 1.02 }}
+                                className="relative flex items-center gap-2 px-2.5 py-2 rounded-lg overflow-hidden cursor-default"
+                                style={{
+                                  background: `linear-gradient(90deg, ${storeTheme.primary}12, transparent)`,
+                                  border: `1px solid ${storeTheme.primary}20`,
+                                  boxShadow: `inset 2px 0 0 ${storeTheme.primary}`,
+                                }}
+                              >
+                                <div
+                                  className="flex-shrink-0 w-5 h-5 rounded-md flex items-center justify-center"
+                                  style={{
+                                    background: `linear-gradient(135deg, ${storeTheme.primary}, ${storeTheme.primary}aa)`,
+                                    boxShadow: `0 0 10px ${storeTheme.primary}80`,
+                                  }}
+                                >
+                                  <item.icon size={10} className="text-white" />
+                                </div>
+                                <span className="text-[10px] font-semibold flex-1" style={{ color: storeTheme.text }}>
+                                  {item.txt}
+                                </span>
+                                <motion.span
+                                  className="text-[10px] font-black"
+                                  style={{ color: storeTheme.primary, textShadow: `0 0 8px ${storeTheme.primary}` }}
+                                  animate={{ opacity: [0.6, 1, 0.6] }}
+                                  transition={{ duration: 2, repeat: Infinity, delay: i * 0.3 }}
+                                >
+                                  ✓
+                                </motion.span>
+                              </motion.div>
+                            ))}
+                          </div>
                         </div>
                       </div>
                     </motion.div>
