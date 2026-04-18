@@ -91,7 +91,31 @@ export default function StoreLayoutMinimal({
     }, 100);
 
   return (
-    <div style={{ background: storeTheme.bg, overflowX: "clip", maxWidth: "100%" }}>
+    <div style={{ background: storeTheme.bg, overflowX: "clip", maxWidth: "100%", fontFamily: "'Inter', sans-serif" }}>
+      <style>{`
+        .minimal-display { font-family: 'Cormorant Garamond', serif; letter-spacing: -0.02em; }
+        .minimal-mono { font-family: 'Inter', sans-serif; font-feature-settings: 'tnum'; }
+        @keyframes catGlow {
+          0%, 100% { box-shadow: 0 0 0 0 var(--cat-glow); }
+          50% { box-shadow: 0 0 0 6px transparent; }
+        }
+        .cat-pill-active { animation: catGlow 2.4s ease-in-out infinite; }
+        @keyframes catShimmer {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(200%); }
+        }
+        .cat-pill-shimmer::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+          transform: translateX(-100%);
+          pointer-events: none;
+        }
+        .cat-pill-active.cat-pill-shimmer::before {
+          animation: catShimmer 3s ease-in-out infinite;
+        }
+      `}</style>
 
       {/* ═══ HERO — Cinematic parallax with auto-rotating images ═══ */}
       <motion.section
