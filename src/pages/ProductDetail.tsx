@@ -10,6 +10,7 @@ import {
   Snowflake, Eye, Landmark, Mountain, ChevronDown, ChevronUp
 } from "lucide-react";
 import { generateProposalPdf } from "@/lib/generateProposalPdf";
+import { buildProductLink } from "@/lib/productUrl";
 import QRCodeDisplay from "@/components/QRCodeDisplay";
 import FinancingSimulator from "@/components/FinancingSimulator";
 import PackageBadge from "@/components/PackageBadge";
