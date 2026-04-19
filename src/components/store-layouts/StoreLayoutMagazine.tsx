@@ -29,8 +29,9 @@ function getSpecs(product: any) {
 
 /** Full-width hero card */
 function HeroCard({ product, corretorSlug, storeTheme, getTagStyle, getTagLabel, delay = 0 }: any) {
-  const _qs = [corretorSlug ? `corretor=${corretorSlug}` : "", product._isPartnerImport && product._partnerStoreSlug ? `loja=${product._partnerStoreSlug}` : ""].filter(Boolean).join("&");
-  const link = `/imoveis/produto/${product.slug || product.id}${_qs ? `?${_qs}` : ""}`;
+  const _partner = product._isPartnerImport && product._partnerStoreSlug ? `/loja/${product._partnerStoreSlug}` : "";
+              const _qs = corretorSlug ? `?corretor=${corretorSlug}` : "";
+              const link = `/imoveis/produto/${product.slug || product.id}${_partner}${_qs}`;
   const specs = getSpecs(product);
   return (
     <Link to={link} className="block group">
@@ -104,8 +105,9 @@ function HeroCard({ product, corretorSlug, storeTheme, getTagStyle, getTagLabel,
 
 /** Compact card for 2-col grid */
 function CompactCard({ product, corretorSlug, storeTheme, getTagStyle, getTagLabel, delay = 0 }: any) {
-  const _qs = [corretorSlug ? `corretor=${corretorSlug}` : "", product._isPartnerImport && product._partnerStoreSlug ? `loja=${product._partnerStoreSlug}` : ""].filter(Boolean).join("&");
-  const link = `/imoveis/produto/${product.slug || product.id}${_qs ? `?${_qs}` : ""}`;
+  const _partner = product._isPartnerImport && product._partnerStoreSlug ? `/loja/${product._partnerStoreSlug}` : "";
+              const _qs = corretorSlug ? `?corretor=${corretorSlug}` : "";
+              const link = `/imoveis/produto/${product.slug || product.id}${_partner}${_qs}`;
   const specs = getSpecs(product);
   return (
     <motion.div
@@ -165,8 +167,9 @@ function CompactCard({ product, corretorSlug, storeTheme, getTagStyle, getTagLab
 
 /** Medium card for single-col within alternating pattern */
 function MediumCard({ product, corretorSlug, storeTheme, getTagStyle, getTagLabel, delay = 0 }: any) {
-  const _qs = [corretorSlug ? `corretor=${corretorSlug}` : "", product._isPartnerImport && product._partnerStoreSlug ? `loja=${product._partnerStoreSlug}` : ""].filter(Boolean).join("&");
-  const link = `/imoveis/produto/${product.slug || product.id}${_qs ? `?${_qs}` : ""}`;
+  const _partner = product._isPartnerImport && product._partnerStoreSlug ? `/loja/${product._partnerStoreSlug}` : "";
+              const _qs = corretorSlug ? `?corretor=${corretorSlug}` : "";
+              const link = `/imoveis/produto/${product.slug || product.id}${_partner}${_qs}`;
   const specs = getSpecs(product);
   return (
     <motion.div

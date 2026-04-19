@@ -108,10 +108,10 @@ function AmenitiesGrid({ product }: { product: any }) {
 }
 
 export default function ProductDetail() {
-  const { productId } = useParams();
+  const { productId, lojaSlug: lojaSlugParam } = useParams();
   const [searchParams] = useSearchParams();
   const corretorSlug = searchParams.get("corretor");
-  const lojaSlug = searchParams.get("loja");
+  const lojaSlug = lojaSlugParam || searchParams.get("loja");
   const { toast } = useToast();
   const { openWhatsApp } = useWhatsAppPicker();
   const { profile } = useAuth();

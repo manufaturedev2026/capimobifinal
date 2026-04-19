@@ -581,7 +581,7 @@ export default function StoreLayoutNetflix({
               className="flex items-center gap-2 lg:gap-3"
             >
               <Link
-                to={`/imoveis/produto/${currentBillboard.slug || currentBillboard.id}${[corretorSlug ? `corretor=${corretorSlug}` : "", (currentBillboard as any)._isPartnerImport && (currentBillboard as any)._partnerStoreSlug ? `loja=${(currentBillboard as any)._partnerStoreSlug}` : ""].filter(Boolean).join("&") ? `?${[corretorSlug ? `corretor=${corretorSlug}` : "", (currentBillboard as any)._isPartnerImport && (currentBillboard as any)._partnerStoreSlug ? `loja=${(currentBillboard as any)._partnerStoreSlug}` : ""].filter(Boolean).join("&")}` : ""}`}
+                to={`/imoveis/produto/${currentBillboard.slug || currentBillboard.id}${(currentBillboard as any)._isPartnerImport && (currentBillboard as any)._partnerStoreSlug ? `/loja/${(currentBillboard as any)._partnerStoreSlug}` : ""}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`}
                 className="group relative inline-flex items-center gap-1.5 px-4 lg:px-8 py-2 lg:py-3 rounded-md font-bold text-xs lg:text-base overflow-hidden transition-all hover:scale-105 active:scale-95"
                 style={{
                   background: `linear-gradient(135deg, ${storeTheme.primary}, ${storeTheme.primary}dd)`,
@@ -1180,8 +1180,9 @@ export default function StoreLayoutNetflix({
                 {visibleProducts.length > 0 ? (
                   <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4">
                     {visibleProducts.map((product: any, i: number) => {
-                      const _qs = [corretorSlug ? `corretor=${corretorSlug}` : "", product._isPartnerImport && product._partnerStoreSlug ? `loja=${product._partnerStoreSlug}` : ""].filter(Boolean).join("&");
-                      const productLink = `/imoveis/produto/${product.slug || product.id}${_qs ? `?${_qs}` : ""}`;
+                      const _partner = product._isPartnerImport && product._partnerStoreSlug ? `/loja/${product._partnerStoreSlug}` : "";
+              const _qs = corretorSlug ? `?corretor=${corretorSlug}` : "";
+              const productLink = `/imoveis/produto/${product.slug || product.id}${_partner}${_qs}`;
                       return (
                           <motion.div
                             key={product.id}

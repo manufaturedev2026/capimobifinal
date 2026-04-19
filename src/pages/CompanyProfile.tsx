@@ -931,8 +931,9 @@ export default function CompanyProfile() {
             transition={{ duration: products.length * 4, repeat: Infinity, ease: "linear" }}
           >
             {[...products, ...products].filter((p: any) => p.image).slice(0, 20).map((product: any, i: number) => {
-              const _qs = [corretorSlug ? `corretor=${corretorSlug}` : "", product._isPartnerImport && dbProfile?.slug ? `loja=${dbProfile.slug}` : ""].filter(Boolean).join("&");
-              const productLink = `/imoveis/produto/${product.slug || product.id}${_qs ? `?${_qs}` : ""}`;
+              const _partner = product._isPartnerImport && dbProfile.slug ? `/loja/${dbProfile.slug}` : "";
+              const _qs = corretorSlug ? `?corretor=${corretorSlug}` : "";
+              const productLink = `/imoveis/produto/${product.slug || product.id}${_partner}${_qs}`;
               return (
                 <Link
                   key={`scroll-${product.id}-${i}`}
@@ -1513,8 +1514,9 @@ export default function CompanyProfile() {
                 /* ── RPG-style grid ── */
                 <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
                   {filteredProducts.map((product: any, i: number) => {
-                    const _qs = [corretorSlug ? `corretor=${corretorSlug}` : "", product._isPartnerImport && dbProfile?.slug ? `loja=${dbProfile.slug}` : ""].filter(Boolean).join("&");
-                    const productLink = `/imoveis/produto/${product.slug || product.id}${_qs ? `?${_qs}` : ""}`;
+                    const _partner = product._isPartnerImport && dbProfile.slug ? `/loja/${dbProfile.slug}` : "";
+              const _qs = corretorSlug ? `?corretor=${corretorSlug}` : "";
+              const productLink = `/imoveis/produto/${product.slug || product.id}${_partner}${_qs}`;
                     const accentColor = storeTheme.primary;
                     return (
                       <motion.div
@@ -1618,8 +1620,9 @@ export default function CompanyProfile() {
                 /* ── Standard grid ── */
                 <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-5">
                   {filteredProducts.map((product: any, i: number) => {
-                    const _qs = [corretorSlug ? `corretor=${corretorSlug}` : "", product._isPartnerImport && dbProfile?.slug ? `loja=${dbProfile.slug}` : ""].filter(Boolean).join("&");
-                    const productLink = `/imoveis/produto/${product.slug || product.id}${_qs ? `?${_qs}` : ""}`;
+                    const _partner = product._isPartnerImport && dbProfile.slug ? `/loja/${dbProfile.slug}` : "";
+              const _qs = corretorSlug ? `?corretor=${corretorSlug}` : "";
+              const productLink = `/imoveis/produto/${product.slug || product.id}${_partner}${_qs}`;
                     const isAluguel = isDbProfile && ((product.tags || []).includes("aluguel_flex") || product.category === "aluguel");
                     return (
                       <motion.div
