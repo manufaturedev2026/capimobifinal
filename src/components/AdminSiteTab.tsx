@@ -41,9 +41,9 @@ const DEFAULTS: SiteSettings = {
   site_footer_text: DEFAULT_FOOTER,
   site_terms_html: DEFAULT_TERMS,
   site_privacy_html: DEFAULT_PRIVACY,
-  site_splash_image_url: "",
+  site_splash_image_url: "/pwa-icon-512.png",
   site_splash_enabled: "true",
-  site_splash_bg_color: "#000000",
+  site_splash_bg_color: "#FFFFFF",
 };
 
 export default function AdminSiteTab() {
@@ -231,18 +231,18 @@ export default function AdminSiteTab() {
               <div className="flex items-center gap-3">
                 <input
                   type="color"
-                  value={settings.site_splash_bg_color || "#000000"}
+                  value={settings.site_splash_bg_color || "#FFFFFF"}
                   onChange={(e) => setSettings((p) => ({ ...p, site_splash_bg_color: e.target.value }))}
                   className="h-10 w-16 rounded-lg border border-border cursor-pointer bg-transparent"
                 />
                 <input
-                  value={settings.site_splash_bg_color || "#000000"}
+                  value={settings.site_splash_bg_color || "#FFFFFF"}
                   onChange={(e) => setSettings((p) => ({ ...p, site_splash_bg_color: e.target.value }))}
                   className="flex-1 rounded-xl border border-input bg-background px-4 py-2 text-sm text-foreground font-mono focus:ring-2 focus:ring-ring focus:outline-none"
-                  placeholder="#000000"
+                  placeholder="#FFFFFF"
                 />
                 <button
-                  onClick={() => setSettings((p) => ({ ...p, site_splash_bg_color: "#000000" }))}
+                  onClick={() => setSettings((p) => ({ ...p, site_splash_bg_color: "#FFFFFF" }))}
                   className="text-xs text-muted-foreground hover:underline"
                 >
                   Padrão
