@@ -494,7 +494,7 @@ export default function SellerAdsTab({ profileId, userId }: SellerAdsTabProps) {
                       {new Date(req.created_at).toLocaleDateString("pt-BR")}
                     </span>
                   </div>
-                  <p className="text-sm text-foreground font-semibold">{req.platform === "google" ? "Google Ads" : req.platform}</p>
+                  <p className="text-sm text-foreground font-semibold">{req.platform === "google" ? "Google Ads" : req.platform === "facebook" ? "Facebook Ads" : req.platform}</p>
                   <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{req.details}</p>
                   <div className="flex gap-4 mt-2 text-xs text-muted-foreground">
                     <span>R${req.daily_budget}/dia</span>
