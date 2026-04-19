@@ -115,11 +115,15 @@ export default function SellerAdsTab({ profileId, userId }: SellerAdsTabProps) {
   }, [userId]);
 
   const subtotal = dailyBudget * durationDays;
-  const serviceFee = Math.max(30, Math.round(subtotal * 0.15));
+  const feeRate = platform === "facebook" ? 0.10 : 0.15;
+  const serviceFee = Math.max(30, Math.round(subtotal * feeRate));
   const taxAmount = subtotal * 0;
   const total = subtotal + serviceFee;
 
-  const metrics = useMemo(() => simulateMetrics(dailyBudget, durationDays), [dailyBudget, durationDays]);
+  const metrics = useMemo(
+    () => simulateMetrics(dailyBudget, durationDays, platform as "google" | "facebook"),
+    [dailyBudget, durationDays, platform]
+  );
 
   const selectedItem = items.find((i) => i.id === selectedItemId);
 
