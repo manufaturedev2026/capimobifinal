@@ -284,6 +284,7 @@ export default function AdminPanel() {
       seller_type: p.seller_type,
       seller_category: p.seller_category || null,
       city: p.city,
+      slug: p.slug || null,
       account_manager: p.account_manager || null,
       manager_phone: p.manager_phone || null,
       manager_photo: p.manager_photo || null,
