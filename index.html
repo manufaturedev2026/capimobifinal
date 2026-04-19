@@ -85,8 +85,33 @@
   <meta name="twitter:title" content="Capimobi — Crie Seu Próprio App de Imóveis">
   <meta property="og:description" content="Monte seu próprio app de imóveis em minutos. Perfeito para corretores, imobiliárias e construtoras. PWA instalável, link na bio e CRM integrado.">
   <meta name="twitter:description" content="Monte seu próprio app de imóveis em minutos. Perfeito para corretores, imobiliárias e construtoras. PWA instalável, link na bio e CRM integrado.">
+  <link rel="preload" as="image" href="/pwa-icon-512.png" fetchpriority="high">
+  <style>
+    #initial-splash {
+      position: fixed; inset: 0; z-index: 99999;
+      display: flex; align-items: center; justify-content: center;
+      background: #FFFFFF;
+      transition: opacity .4s ease;
+    }
+    #initial-splash.hide { opacity: 0; pointer-events: none; }
+    #initial-splash .ring {
+      position: absolute; width: 13rem; height: 13rem; border-radius: 9999px;
+      border: 4px solid transparent; border-top-color: #00AEEF; border-right-color: rgba(0,174,239,.4);
+      animation: spin 1s linear infinite;
+    }
+    #initial-splash img {
+      width: 9rem; height: 9rem; object-fit: contain;
+      animation: pulse 1.4s ease-in-out infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .6; } }
+  </style>
 </head>
   <body>
+    <div id="initial-splash">
+      <div class="ring"></div>
+      <img src="/pwa-icon-512.png" alt="Capimobi" />
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
