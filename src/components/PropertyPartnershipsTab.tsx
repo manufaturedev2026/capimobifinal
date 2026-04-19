@@ -896,7 +896,7 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
                       : "bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/20"
                   }`}
                 >
-                  <Handshake size={16} /> {requested ? "Já Solicitado" : "Solicitar Parceria"}
+                  <Handshake size={16} /> {requested ? (detailRequestStatus === "aprovado" ? "Parceria Ativa ✅" : "Aguardando aprovação") : "Solicitar Parceria"}
                 </button>
               </>
             );
