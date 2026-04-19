@@ -194,9 +194,36 @@ export default function SellerAdsTab({ profileId, userId }: SellerAdsTabProps) {
             <Megaphone className="text-primary" size={22} />
           </div>
           <div>
-            <h2 className="font-display font-bold text-lg text-foreground">Google ADS para Imóveis</h2>
-            <p className="text-xs text-muted-foreground">Coloque seus imóveis nas primeiras posições do Google</p>
+            <h2 className="font-display font-bold text-lg text-foreground">
+              {platform === "facebook" ? "Facebook ADS para Imóveis" : "Google ADS para Imóveis"}
+            </h2>
+            <p className="text-xs text-muted-foreground">
+              {platform === "facebook"
+                ? "Campanha de tráfego: alcance e descoberta no feed do Facebook e Instagram"
+                : "Coloque seus imóveis nas primeiras posições do Google"}
+            </p>
           </div>
+        </div>
+
+        {/* Platform tabs */}
+        <div className="flex gap-2 mt-4">
+          {[
+            { value: "google", label: "Google ADS" },
+            { value: "facebook", label: "Facebook ADS" },
+          ].map((p) => (
+            <button
+              key={p.value}
+              type="button"
+              onClick={() => setPlatform(p.value)}
+              className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                platform === p.value
+                  ? "bg-primary text-primary-foreground shadow-md"
+                  : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+              }`}
+            >
+              {p.label}
+            </button>
+          ))}
         </div>
       </div>
 
