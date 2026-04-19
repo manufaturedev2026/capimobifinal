@@ -580,8 +580,13 @@ export default function StoreLayoutNetflix({
               transition={{ delay: 0.8 }}
               className="flex items-center gap-2 lg:gap-3"
             >
+              {(() => {
+                const _partner = (currentBillboard as any)._isPartnerImport && (currentBillboard as any)._partnerStoreSlug ? `/loja/${(currentBillboard as any)._partnerStoreSlug}` : "";
+                const _qs = corretorSlug ? `?corretor=${corretorSlug}` : "";
+                const billboardLink = `/imoveis/produto/${currentBillboard.slug || currentBillboard.id}${_partner}${_qs}`;
+                return (
               <Link
-                to={`/imoveis/produto/${currentBillboard.slug || currentBillboard.id}${[corretorSlug ? `corretor=${corretorSlug}` : "", (currentBillboard as any)._isPartnerImport && (currentBillboard as any)._partnerStoreSlug ? `loja=${(currentBillboard as any)._partnerStoreSlug}` : ""].filter(Boolean).join("&") ? `?${[corretorSlug ? `corretor=${corretorSlug}` : "", (currentBillboard as any)._isPartnerImport && (currentBillboard as any)._partnerStoreSlug ? `loja=${(currentBillboard as any)._partnerStoreSlug}` : ""].filter(Boolean).join("&")}` : ""}`}
+                to={billboardLink}
                 className="group relative inline-flex items-center gap-1.5 px-4 lg:px-8 py-2 lg:py-3 rounded-md font-bold text-xs lg:text-base overflow-hidden transition-all hover:scale-105 active:scale-95"
                 style={{
                   background: `linear-gradient(135deg, ${storeTheme.primary}, ${storeTheme.primary}dd)`,
