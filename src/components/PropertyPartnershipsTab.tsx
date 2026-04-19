@@ -796,7 +796,8 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           {detailItem && (() => {
             const gains = calcPartnerGain(detailItem.price, detailItem.commission_percent, detailItem.partner_percent);
-            const requested = alreadyRequested.has(detailItem.id);
+            const detailRequestStatus = requestStatusByItem.get(detailItem.id);
+            const requested = !!detailRequestStatus;
             const publicUrl = productUrl(detailItem, detailItem.seller?.slug);
             return (
               <>
