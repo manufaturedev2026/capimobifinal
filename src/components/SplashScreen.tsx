@@ -29,7 +29,7 @@ export default function SplashScreen() {
         fadeOut ? "opacity-0 pointer-events-none" : "opacity-100"
       }`}
       style={{
-        background: "#000000",
+        background: site_splash_bg_color || "#FFFFFF",
       }}
       aria-hidden="true"
     >
