@@ -138,10 +138,9 @@ export default function SellerAdsTab({ profileId, userId }: SellerAdsTabProps) {
   }, [userId]);
 
   const subtotal = dailyBudget * durationDays;
-  const feeRate = platform === "facebook" ? 0.10 : 0.15;
-  const serviceFee = Math.max(30, Math.round(subtotal * feeRate));
-  const taxAmount = subtotal * 0;
-  const total = subtotal + serviceFee;
+  const serviceFee = Math.max(30, Math.round(subtotal * 0.15));
+  const taxAmount = platform === "facebook" ? Math.round(subtotal * 0.10) : 0;
+  const total = subtotal + serviceFee + taxAmount;
 
   const metrics = useMemo(
     () => simulateMetrics(dailyBudget, durationDays, platform as "google" | "facebook"),
