@@ -760,8 +760,8 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
                         </div>
                       )}
                       {requested && (
-                        <div className="absolute top-2 left-2 px-2 py-1 rounded-lg bg-amber-500 text-white text-[10px] font-bold shadow-lg">
-                          Solicitado
+                        <div className={`absolute top-2 left-2 px-2 py-1 rounded-lg text-white text-[10px] font-bold shadow-lg ${requestStatus === "aprovado" ? "bg-green-600" : "bg-amber-500"}`}>
+                          {requestStatus === "aprovado" ? "Parceria Ativa" : "Aguardando"}
                         </div>
                       )}
                     </div>
