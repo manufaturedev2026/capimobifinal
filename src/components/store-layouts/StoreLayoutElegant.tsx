@@ -370,7 +370,8 @@ export default function StoreLayoutElegant({
             </div>
           </motion.div>
         </Link>
-      )}
+      );
+      })()}
 
       {/* ─── Property Grid ─── */}
       {gridProducts.length > 0 ? (
