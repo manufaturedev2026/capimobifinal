@@ -25,6 +25,7 @@ import StoreEffects from "@/components/StoreEffects";
 import ThemeParticles from "@/components/ThemeParticles";
 import { getStoreTheme } from "@/components/StoreThemePicker";
 import { getStoreThemeCssVars } from "@/lib/marketplaceThemeCssVars";
+import { useAuth } from "@/hooks/useAuth";
 
 function buildThemeCSSVars(themeId: string | null | undefined): React.CSSProperties {
   const t = getStoreTheme(themeId);
@@ -74,7 +75,6 @@ function AmenitiesGrid({ product }: { product: any }) {
   if (product.service_area) amenities.push({ icon: <UtensilsCrossed size={16} />, label: "Área de Serviço" });
   if (product.backyard) amenities.push({ icon: <TreePine size={16} />, label: "Quintal" });
   if (product.accepts_financing) amenities.push({ icon: <Landmark size={16} />, label: "Aceita Financiamento" });
-  // Leisure amenities
   const leisureLabels: Record<string, string> = { piscina: "Piscina", academia: "Academia", salao_festas: "Salão de Festas", playground: "Playground", churrasqueira: "Churrasqueira", sauna: "Sauna", quadra: "Quadra" };
   if (product.leisure_amenities?.length) {
     product.leisure_amenities.forEach((a: string) => {
@@ -84,7 +84,6 @@ function AmenitiesGrid({ product }: { product: any }) {
       }
     });
   }
-  // Infrastructure
   const infraLabels: Record<string, string> = { agua: "Água", luz: "Luz", esgoto: "Esgoto", asfalto: "Asfalto", internet: "Internet" };
   if (product.infrastructure?.length) {
     product.infrastructure.forEach((a: string) => {
@@ -107,7 +106,6 @@ function AmenitiesGrid({ product }: { product: any }) {
   );
 }
 
-
 export default function ProductDetail() {
   const { productId } = useParams();
   const [searchParams] = useSearchParams();
@@ -115,6 +113,7 @@ export default function ProductDetail() {
   const lojaSlug = searchParams.get("loja");
   const { toast } = useToast();
   const { openWhatsApp } = useWhatsAppPicker();
+  const { profile } = useAuth();
   const isMobile = useIsMobile();
   const [activeImage, setActiveImage] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -132,32 +131,31 @@ export default function ProductDetail() {
 
   useEffect(() => {
     if (productId) {
+      setLoading(true);
       setIsDb(true);
       if (isUUID(productId)) {
         fetchDbItem(productId);
       } else {
-        // Slug-based lookup
         fetchDbItemBySlug(productId);
       }
     } else {
       setIsDb(false);
       setLoading(false);
     }
-  }, [productId]);
+  }, [productId, lojaSlug, profile?.id]);
 
   const loadItemData = async (item: any) => {
     setDbItem(item);
     let effectiveSellerId = item.seller_id;
     let sellerProfile: any = null;
 
-    // If ?loja=<slug> is present and there's an active partnership for this item,
-    // render the partner store as the seller instead of the original owner.
     if (lojaSlug) {
       const { data: partnerProfile } = await supabase
         .from("profiles")
         .select("*")
         .eq("slug", lojaSlug)
         .maybeSingle();
+
       if (partnerProfile) {
         const { data: listing } = await supabase
           .from("partner_store_listings")
@@ -166,17 +164,39 @@ export default function ProductDetail() {
           .eq("partner_profile_id", partnerProfile.id)
           .eq("is_visible", true)
           .maybeSingle();
+
         if (listing) {
-          // Confirm the partnership is still approved
           const { data: partnership } = await supabase
             .from("property_partnerships")
             .select("status")
             .eq("id", listing.partnership_id)
             .maybeSingle();
+
           if (partnership?.status === "aprovado") {
             sellerProfile = partnerProfile;
             effectiveSellerId = partnerProfile.id;
           }
+        }
+      }
+    } else if (profile?.id && profile.id !== item.seller_id) {
+      const { data: listing } = await supabase
+        .from("partner_store_listings")
+        .select("id, partnership_id")
+        .eq("item_id", item.id)
+        .eq("partner_profile_id", profile.id)
+        .eq("is_visible", true)
+        .maybeSingle();
+
+      if (listing) {
+        const { data: partnership } = await supabase
+          .from("property_partnerships")
+          .select("status")
+          .eq("id", listing.partnership_id)
+          .maybeSingle();
+
+        if (partnership?.status === "aprovado") {
+          sellerProfile = profile;
+          effectiveSellerId = profile.id;
         }
       }
     }
@@ -185,14 +205,15 @@ export default function ProductDetail() {
       const { data: seller } = await supabase.from("profiles").select("*").eq("id", item.seller_id).maybeSingle();
       sellerProfile = seller;
     }
+
     setDbSeller(sellerProfile);
+    setTeamMember(null);
 
     if (corretorSlug) {
       const { data: member } = await supabase
         .from("team_members").select("*")
         .eq("company_id", effectiveSellerId).eq("slug", corretorSlug).eq("is_active", true).maybeSingle();
       if (member) {
-        // For partnership brokers, fetch their linked profile's user_id
         if (member.origin === "partnership" && member.linked_profile_id) {
           const { data: linkedProfile } = await supabase
             .from("profiles").select("user_id").eq("id", member.linked_profile_id).maybeSingle();
@@ -201,12 +222,15 @@ export default function ProductDetail() {
         setTeamMember(member);
       }
     }
+
     const { data: subData } = await supabase
       .from("seller_subscriptions").select("tier")
       .eq("seller_id", item.seller_id).eq("is_active", true)
       .order("created_at", { ascending: false }).limit(1);
     if (subData && subData.length > 0) setSellerTier(subData[0].tier);
+
     trackSellerEvent(item.seller_id, "view", item.id, undefined);
+
     const { data: related } = await supabase
       .from("seller_items").select("id, title, price, photos, city, neighborhood, category, finality, slug")
       .eq("seller_id", item.seller_id).eq("status", "ativo").neq("id", item.id)
