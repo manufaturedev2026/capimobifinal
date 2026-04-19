@@ -1,8 +1,8 @@
 /**
  * Build a SEO-friendly product URL using slug when available, falling back to ID.
- * - corretorSlug: team-member mirror store
+ * - corretorSlug: team-member mirror store (?corretor=slug)
  * - lojaSlug: when item is shown on a partner's store (imported via partnership),
- *   forces ProductDetail to render the partner profile as the seller.
+ *   uses path-style /loja/{slug} so each partner has their own shareable URL.
  */
 export function productUrl(
   product: { id: string; slug?: string | null; _isPartnerImport?: boolean },
@@ -10,11 +10,12 @@ export function productUrl(
   lojaSlug?: string | null,
 ): string {
   const identifier = product.slug || product.id;
+  const partnerSegment = product._isPartnerImport && lojaSlug ? `/loja/${lojaSlug}` : "";
+  const base = `/imoveis/produto/${identifier}${partnerSegment}`;
   const params = new URLSearchParams();
   if (corretorSlug) params.set("corretor", corretorSlug);
-  if (product._isPartnerImport && lojaSlug) params.set("loja", lojaSlug);
   const qs = params.toString();
-  return qs ? `/imoveis/produto/${identifier}?${qs}` : `/imoveis/produto/${identifier}`;
+  return qs ? `${base}?${qs}` : base;
 }
 
 /** Build product link with optional partner store slug suffix appended to existing template. */
