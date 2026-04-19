@@ -338,11 +338,16 @@ export default function ProductDetail() {
   const tags: string[] = isDb ? (product.tags || []).filter((t: string) => t !== "aluguel_flex") : (product.tag ? [product.tag] : []);
   const companyUrl = teamMember
     ? `/empresa/${dbSeller?.slug || dbSeller?.id}?corretor=${teamMember.slug}`
-    : `/empresa/${company.id}`;
+    : `/empresa/${dbSeller?.slug || dbSeller?.id || company.id}`;
   const formattedPrice = isDb
     ? price ? `R$ ${Number(price).toLocaleString("pt-BR")}` : ""
     : formatPrice(price);
-  const productUrl = window.location.href;
+  const canonicalProductPath = buildProductLink(
+    { id: product.id, slug: product.slug, _isPartnerImport: dbSeller?.id !== product.seller_id },
+    corretorSlug,
+    dbSeller?.slug || null,
+  );
+  const productUrl = `${window.location.origin}${canonicalProductPath}`;
 
   const doWhatsAppRedirect = (e?: React.MouseEvent) => {
     if (e) e.preventDefault();
