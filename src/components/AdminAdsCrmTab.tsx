@@ -285,8 +285,11 @@ function AdCard({
         draggedId === req.id ? "opacity-50" : ""
       }`}
     >
-      {/* Seller */}
-      <p className="text-sm font-semibold text-foreground truncate">{req.sellerName}</p>
+      {/* Seller + Platform badge */}
+      <div className="flex items-center justify-between gap-2">
+        <p className="text-sm font-semibold text-foreground truncate">{req.sellerName}</p>
+        <PlatformBadge platform={req.platform} />
+      </div>
 
       {/* Item thumbnail + title */}
       {req.itemTitle && (
@@ -410,5 +413,20 @@ function StatCard({ label, value, icon: Icon, color }: { label: string; value: s
       <p className="font-bold text-lg text-foreground leading-none">{value}</p>
       <p className="text-[10px] text-muted-foreground mt-0.5">{label}</p>
     </div>
+  );
+}
+
+/* ── Platform Badge ──────────────────────────── */
+
+function PlatformBadge({ platform }: { platform: string }) {
+  const isFb = platform === "facebook";
+  const label = isFb ? "Facebook ADS" : "Google ADS";
+  const cls = isFb
+    ? "bg-blue-600/20 text-blue-400 border-blue-600/40"
+    : "bg-amber-500/20 text-amber-400 border-amber-500/40";
+  return (
+    <span className={`shrink-0 px-1.5 py-0.5 rounded-md border text-[9px] font-bold uppercase tracking-wide ${cls}`}>
+      {label}
+    </span>
   );
 }
