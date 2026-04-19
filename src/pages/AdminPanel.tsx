@@ -34,6 +34,7 @@ interface SellerWithSub {
   seller_type: string;
   seller_category: string | null;
   city: string | null;
+  slug: string | null;
   account_manager: string | null;
   manager_phone: string | null;
   manager_photo: string | null;
