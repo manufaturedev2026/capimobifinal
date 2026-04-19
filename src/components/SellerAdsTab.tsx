@@ -13,14 +13,29 @@ const MIN_BUDGET = 10;
 const MIN_DURATION = 7;
 const SERVICE_FEE_PER_40 = 20;
 
-// Simulated Google Ads metrics based on real estate industry averages
-function simulateMetrics(dailyBudget: number, days: number) {
+// Simulated metrics by platform.
+// Google Ads = busca/intenção (CPC alto, leads qualificados)
+// Facebook Ads = tráfego/descoberta (CPC baixo, mais cliques, menos leads diretos)
+function simulateMetrics(dailyBudget: number, days: number, platform: "google" | "facebook") {
   const totalBudget = dailyBudget * days;
-  const avgCPC = 1.8 + Math.random() * 0.4; // R$1.80-2.20 CPC for real estate
+  const isFb = platform === "facebook";
+
+  const avgCPC = isFb
+    ? 0.6 + Math.random() * 0.4   // R$0,60-1,00 CPC tráfego Facebook
+    : 1.8 + Math.random() * 0.4;  // R$1,80-2,20 CPC Google
+
   const totalClicks = Math.round(totalBudget / avgCPC);
-  const avgCTR = 0.035 + Math.random() * 0.015; // 3.5-5% CTR
+
+  const avgCTR = isFb
+    ? 0.012 + Math.random() * 0.008 // 1,2-2% CTR Facebook (feed)
+    : 0.035 + Math.random() * 0.015; // 3,5-5% CTR Google
+
   const impressions = Math.round(totalClicks / avgCTR);
-  const conversionRate = 0.025 + Math.random() * 0.015; // 2.5-4% conversion
+
+  const conversionRate = isFb
+    ? 0.008 + Math.random() * 0.007 // 0,8-1,5% (tráfego, menos qualificado)
+    : 0.025 + Math.random() * 0.015; // 2,5-4% Google
+
   const leads = Math.round(totalClicks * conversionRate);
   const costPerLead = leads > 0 ? totalBudget / leads : 0;
 
@@ -100,11 +115,15 @@ export default function SellerAdsTab({ profileId, userId }: SellerAdsTabProps) {
   }, [userId]);
 
   const subtotal = dailyBudget * durationDays;
-  const serviceFee = Math.max(30, Math.round(subtotal * 0.15));
+  const feeRate = platform === "facebook" ? 0.10 : 0.15;
+  const serviceFee = Math.max(30, Math.round(subtotal * feeRate));
   const taxAmount = subtotal * 0;
   const total = subtotal + serviceFee;
 
-  const metrics = useMemo(() => simulateMetrics(dailyBudget, durationDays), [dailyBudget, durationDays]);
+  const metrics = useMemo(
+    () => simulateMetrics(dailyBudget, durationDays, platform as "google" | "facebook"),
+    [dailyBudget, durationDays, platform]
+  );
 
   const selectedItem = items.find((i) => i.id === selectedItemId);
 
@@ -175,9 +194,36 @@ export default function SellerAdsTab({ profileId, userId }: SellerAdsTabProps) {
             <Megaphone className="text-primary" size={22} />
           </div>
           <div>
-            <h2 className="font-display font-bold text-lg text-foreground">Google ADS para Imóveis</h2>
-            <p className="text-xs text-muted-foreground">Coloque seus imóveis nas primeiras posições do Google</p>
+            <h2 className="font-display font-bold text-lg text-foreground">
+              {platform === "facebook" ? "Facebook ADS para Imóveis" : "Google ADS para Imóveis"}
+            </h2>
+            <p className="text-xs text-muted-foreground">
+              {platform === "facebook"
+                ? "Campanha de tráfego: alcance e descoberta no feed do Facebook e Instagram"
+                : "Coloque seus imóveis nas primeiras posições do Google"}
+            </p>
           </div>
+        </div>
+
+        {/* Platform tabs */}
+        <div className="flex gap-2 mt-4">
+          {[
+            { value: "google", label: "Google ADS" },
+            { value: "facebook", label: "Facebook ADS" },
+          ].map((p) => (
+            <button
+              key={p.value}
+              type="button"
+              onClick={() => setPlatform(p.value)}
+              className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                platform === p.value
+                  ? "bg-primary text-primary-foreground shadow-md"
+                  : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+              }`}
+            >
+              {p.label}
+            </button>
+          ))}
         </div>
       </div>
 
@@ -301,8 +347,9 @@ export default function SellerAdsTab({ profileId, userId }: SellerAdsTabProps) {
         <div className="flex items-start gap-2 bg-amber-500/10 border border-amber-500/20 rounded-xl p-3">
           <AlertCircle size={16} className="text-amber-400 shrink-0 mt-0.5" />
           <p className="text-xs text-muted-foreground">
-            Os valores são estimativas baseadas em médias do mercado imobiliário no Google Ads. 
-            Resultados reais podem variar conforme localização, concorrência e qualidade do anúncio.
+            {platform === "facebook"
+              ? "Estimativas baseadas em campanhas de tráfego no Facebook/Instagram para o setor imobiliário. O foco é alcance e cliques no feed; resultados podem variar conforme criativo, segmentação e concorrência."
+              : "Os valores são estimativas baseadas em médias do mercado imobiliário no Google Ads. Resultados reais podem variar conforme localização, concorrência e qualidade do anúncio."}
           </p>
         </div>
 
@@ -399,7 +446,9 @@ export default function SellerAdsTab({ profileId, userId }: SellerAdsTabProps) {
             <span className="text-foreground font-semibold">R${subtotal.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
           </div>
           <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Taxa de serviço (15%)</span>
+            <span className="text-muted-foreground">
+              Taxa de serviço ({Math.round(feeRate * 100)}% · mín. R$30)
+            </span>
             <span className="text-foreground font-semibold">R${serviceFee.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
           </div>
           <div className="border-t border-border pt-2 flex justify-between">
@@ -445,7 +494,7 @@ export default function SellerAdsTab({ profileId, userId }: SellerAdsTabProps) {
                       {new Date(req.created_at).toLocaleDateString("pt-BR")}
                     </span>
                   </div>
-                  <p className="text-sm text-foreground font-semibold">{req.platform === "google" ? "Google Ads" : req.platform}</p>
+                  <p className="text-sm text-foreground font-semibold">{req.platform === "google" ? "Google Ads" : req.platform === "facebook" ? "Facebook Ads" : req.platform}</p>
                   <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{req.details}</p>
                   <div className="flex gap-4 mt-2 text-xs text-muted-foreground">
                     <span>R${req.daily_budget}/dia</span>
