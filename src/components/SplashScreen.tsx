@@ -39,7 +39,7 @@ export default function SplashScreen() {
         {/* Logo central */}
         <div
           className="relative h-36 w-36 rounded-full shadow-xl flex items-center justify-center overflow-hidden px-4"
-          style={{ backgroundColor: site_splash_bg_color || "#000000" }}
+          style={{ backgroundColor: site_splash_bg_color || "#FFFFFF" }}
         >
           {splashImage ? (
             <img
