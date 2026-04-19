@@ -858,6 +858,8 @@ export default function AdminPanel() {
               </div>
               <div className="space-y-2 max-h-[500px] overflow-y-auto">
                 {sellers.filter((s) => {
+                  // Apenas corretores com slug entram no sitemap global
+                  if (!s.slug) return false;
                   if (!search.trim()) return true;
                   const q = search.toLowerCase();
                   return (s.full_name?.toLowerCase().includes(q) || s.company_name?.toLowerCase().includes(q) || s.email?.toLowerCase().includes(q) || s.city?.toLowerCase().includes(q));
