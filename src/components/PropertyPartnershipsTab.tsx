@@ -426,7 +426,11 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
     return match(i.title) || match(i.city) || match(i.state) || match(i.neighborhood) || match(i.category);
   });
 
-  const alreadyRequested = new Set(myRequests.filter(r => r.status !== "recusado").map(r => r.item_id));
+  const requestStatusByItem = new Map(
+    myRequests
+      .filter(r => r.status !== "recusado" && r.status !== "cancelado" && r.status !== "finalizado")
+      .map(r => [r.item_id, r.status])
+  );
 
   // Stats for hero
   const totalActivePartnerships = activePartnerships.length;
