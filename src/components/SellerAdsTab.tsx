@@ -13,36 +13,59 @@ const MIN_BUDGET = 10;
 const MIN_DURATION = 7;
 const SERVICE_FEE_PER_40 = 20;
 
+// Deterministic PRNG (mulberry32) so the same inputs always produce the same metrics
+function makeRng(seed: number) {
+  let s = seed >>> 0;
+  return () => {
+    s = (s + 0x6D2B79F5) >>> 0;
+    let t = s;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function hashSeed(...parts: (string | number)[]) {
+  const str = parts.join("|");
+  let h = 2166136261 >>> 0;
+  for (let i = 0; i < str.length; i++) {
+    h ^= str.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+}
+
 // Simulated metrics by platform.
 // Google Ads = busca/intenção (CPC alto, leads qualificados)
 // Facebook Ads = tráfego/descoberta (CPC baixo, mais cliques, menos leads diretos)
 function simulateMetrics(dailyBudget: number, days: number, platform: "google" | "facebook") {
   const totalBudget = dailyBudget * days;
   const isFb = platform === "facebook";
+  const rand = makeRng(hashSeed(platform, dailyBudget, days));
 
   const avgCPC = isFb
-    ? 0.6 + Math.random() * 0.4   // R$0,60-1,00 CPC tráfego Facebook
-    : 1.8 + Math.random() * 0.4;  // R$1,80-2,20 CPC Google
+    ? 0.6 + rand() * 0.4   // R$0,60-1,00 CPC tráfego Facebook
+    : 1.8 + rand() * 0.4;  // R$1,80-2,20 CPC Google
 
   const totalClicks = Math.round(totalBudget / avgCPC);
 
   const avgCTR = isFb
-    ? 0.012 + Math.random() * 0.008 // 1,2-2% CTR Facebook (feed)
-    : 0.035 + Math.random() * 0.015; // 3,5-5% CTR Google
+    ? 0.012 + rand() * 0.008 // 1,2-2% CTR Facebook (feed)
+    : 0.035 + rand() * 0.015; // 3,5-5% CTR Google
 
   const impressions = Math.round(totalClicks / avgCTR);
 
   const conversionRate = isFb
-    ? 0.008 + Math.random() * 0.007 // 0,8-1,5% (tráfego, menos qualificado)
-    : 0.025 + Math.random() * 0.015; // 2,5-4% Google
+    ? 0.008 + rand() * 0.007 // 0,8-1,5% (tráfego, menos qualificado)
+    : 0.025 + rand() * 0.015; // 2,5-4% Google
 
   const leads = Math.round(totalClicks * conversionRate);
   const costPerLead = leads > 0 ? totalBudget / leads : 0;
 
   const dailyData = Array.from({ length: Math.min(days, 30) }, (_, i) => {
-    const dayClicks = Math.round((totalClicks / days) * (0.7 + Math.random() * 0.6));
-    const dayImpressions = Math.round(dayClicks / (avgCTR * (0.8 + Math.random() * 0.4)));
-    const dayLeads = Math.round(dayClicks * conversionRate * (0.5 + Math.random()));
+    const dayClicks = Math.round((totalClicks / days) * (0.7 + rand() * 0.6));
+    const dayImpressions = Math.round(dayClicks / (avgCTR * (0.8 + rand() * 0.4)));
+    const dayLeads = Math.round(dayClicks * conversionRate * (0.5 + rand()));
     return {
       day: `Dia ${i + 1}`,
       cliques: dayClicks,
