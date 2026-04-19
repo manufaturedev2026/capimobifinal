@@ -347,8 +347,9 @@ export default function SellerAdsTab({ profileId, userId }: SellerAdsTabProps) {
         <div className="flex items-start gap-2 bg-amber-500/10 border border-amber-500/20 rounded-xl p-3">
           <AlertCircle size={16} className="text-amber-400 shrink-0 mt-0.5" />
           <p className="text-xs text-muted-foreground">
-            Os valores são estimativas baseadas em médias do mercado imobiliário no Google Ads. 
-            Resultados reais podem variar conforme localização, concorrência e qualidade do anúncio.
+            {platform === "facebook"
+              ? "Estimativas baseadas em campanhas de tráfego no Facebook/Instagram para o setor imobiliário. O foco é alcance e cliques no feed; resultados podem variar conforme criativo, segmentação e concorrência."
+              : "Os valores são estimativas baseadas em médias do mercado imobiliário no Google Ads. Resultados reais podem variar conforme localização, concorrência e qualidade do anúncio."}
           </p>
         </div>
 
