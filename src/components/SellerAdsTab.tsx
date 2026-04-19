@@ -13,14 +13,29 @@ const MIN_BUDGET = 10;
 const MIN_DURATION = 7;
 const SERVICE_FEE_PER_40 = 20;
 
-// Simulated Google Ads metrics based on real estate industry averages
-function simulateMetrics(dailyBudget: number, days: number) {
+// Simulated metrics by platform.
+// Google Ads = busca/intenção (CPC alto, leads qualificados)
+// Facebook Ads = tráfego/descoberta (CPC baixo, mais cliques, menos leads diretos)
+function simulateMetrics(dailyBudget: number, days: number, platform: "google" | "facebook") {
   const totalBudget = dailyBudget * days;
-  const avgCPC = 1.8 + Math.random() * 0.4; // R$1.80-2.20 CPC for real estate
+  const isFb = platform === "facebook";
+
+  const avgCPC = isFb
+    ? 0.6 + Math.random() * 0.4   // R$0,60-1,00 CPC tráfego Facebook
+    : 1.8 + Math.random() * 0.4;  // R$1,80-2,20 CPC Google
+
   const totalClicks = Math.round(totalBudget / avgCPC);
-  const avgCTR = 0.035 + Math.random() * 0.015; // 3.5-5% CTR
+
+  const avgCTR = isFb
+    ? 0.012 + Math.random() * 0.008 // 1,2-2% CTR Facebook (feed)
+    : 0.035 + Math.random() * 0.015; // 3,5-5% CTR Google
+
   const impressions = Math.round(totalClicks / avgCTR);
-  const conversionRate = 0.025 + Math.random() * 0.015; // 2.5-4% conversion
+
+  const conversionRate = isFb
+    ? 0.008 + Math.random() * 0.007 // 0,8-1,5% (tráfego, menos qualificado)
+    : 0.025 + Math.random() * 0.015; // 2,5-4% Google
+
   const leads = Math.round(totalClicks * conversionRate);
   const costPerLead = leads > 0 ? totalBudget / leads : 0;
 
