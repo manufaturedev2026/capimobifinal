@@ -203,7 +203,32 @@ export default function CompanyProfile() {
           }
         }
       }
-      
+
+      // Also fetch partnership properties imported into this partner's store
+      const { data: partnerListings } = await supabase
+        .from("partner_store_listings")
+        .select("item_id, is_visible")
+        .eq("partner_profile_id", pid)
+        .eq("is_visible", true);
+
+      if (partnerListings && partnerListings.length > 0) {
+        const partnerItemIds = partnerListings.map((p: any) => p.item_id);
+        const { data: partnerItems } = await supabase
+          .from("seller_items")
+          .select("*")
+          .in("id", partnerItemIds)
+          .in("status", ["ativo", "vendido"] as any);
+
+        if (partnerItems) {
+          const existingIds = new Set(items.map((i: any) => i.id));
+          for (const pi of partnerItems) {
+            if (!existingIds.has(pi.id)) {
+              items.push(pi);
+            }
+          }
+        }
+      }
+
       // Filter out sold items older than 24h
       const cutoff = Date.now() - 24 * 60 * 60 * 1000;
       const filteredItems = (items || []).filter((item: any) => {
