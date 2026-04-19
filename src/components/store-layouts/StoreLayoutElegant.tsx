@@ -307,9 +307,13 @@ export default function StoreLayoutElegant({
       </div>
 
       {/* ─── Featured (Hero) Card ─── */}
-      {featuredProduct && (
+      {featuredProduct && (() => {
+        const _partner = featuredProduct._isPartnerImport && featuredProduct._partnerStoreSlug ? `/loja/${featuredProduct._partnerStoreSlug}` : "";
+        const _qs = corretorSlug ? `?corretor=${corretorSlug}` : "";
+        const featuredLink = `/imoveis/produto/${featuredProduct.slug || featuredProduct.id}${_partner}${_qs}`;
+        return (
         <Link
-          to={`/imoveis/produto/${featuredProduct.slug || featuredProduct.id}${[corretorSlug ? `corretor=${corretorSlug}` : "", featuredProduct._isPartnerImport && featuredProduct._partnerStoreSlug ? `loja=${featuredProduct._partnerStoreSlug}` : ""].filter(Boolean).join("&") ? `?${[corretorSlug ? `corretor=${corretorSlug}` : "", featuredProduct._isPartnerImport && featuredProduct._partnerStoreSlug ? `loja=${featuredProduct._partnerStoreSlug}` : ""].filter(Boolean).join("&")}` : ""}`}
+          to={featuredLink}
           className="block group"
         >
           <motion.div
