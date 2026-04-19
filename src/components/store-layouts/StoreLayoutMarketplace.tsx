@@ -561,7 +561,8 @@ export default function StoreLayoutMarketplace({
               </div>
               <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2 -mx-2 px-2 md:mx-0 md:px-0">
                 {sorted.map((product: any, i: number) => {
-                  const productLink = `/imoveis/produto/${product.slug || product.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`;
+                  const _qs = [corretorSlug ? `corretor=${corretorSlug}` : "", product._isPartnerImport && product._partnerStoreSlug ? `loja=${product._partnerStoreSlug}` : ""].filter(Boolean).join("&");
+                  const productLink = `/imoveis/produto/${product.slug || product.id}${_qs ? `?${_qs}` : ""}`;
                   return (
                     <motion.div
                       key={product.id}
@@ -814,7 +815,8 @@ export default function StoreLayoutMarketplace({
         {visibleProducts.length > 0 ? (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 mb-12">
             {visibleProducts.map((product: any, i: number) => {
-              const productLink = `/imoveis/produto/${product.slug || product.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`;
+              const _qs = [corretorSlug ? `corretor=${corretorSlug}` : "", product._isPartnerImport && product._partnerStoreSlug ? `loja=${product._partnerStoreSlug}` : ""].filter(Boolean).join("&");
+              const productLink = `/imoveis/produto/${product.slug || product.id}${_qs ? `?${_qs}` : ""}`;
               return (
                 <motion.div
                   key={product.id}

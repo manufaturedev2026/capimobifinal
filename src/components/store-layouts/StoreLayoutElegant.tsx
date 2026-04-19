@@ -309,7 +309,7 @@ export default function StoreLayoutElegant({
       {/* ─── Featured (Hero) Card ─── */}
       {featuredProduct && (
         <Link
-          to={`/imoveis/produto/${featuredProduct.slug || featuredProduct.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`}
+          to={`/imoveis/produto/${featuredProduct.slug || featuredProduct.id}${[corretorSlug ? `corretor=${corretorSlug}` : "", featuredProduct._isPartnerImport && featuredProduct._partnerStoreSlug ? `loja=${featuredProduct._partnerStoreSlug}` : ""].filter(Boolean).join("&") ? `?${[corretorSlug ? `corretor=${corretorSlug}` : "", featuredProduct._isPartnerImport && featuredProduct._partnerStoreSlug ? `loja=${featuredProduct._partnerStoreSlug}` : ""].filter(Boolean).join("&")}` : ""}`}
           className="block group"
         >
           <motion.div
@@ -372,7 +372,8 @@ export default function StoreLayoutElegant({
       {gridProducts.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {gridProducts.map((product: any, i: number) => {
-            const productLink = `/imoveis/produto/${product.slug || product.id}${corretorSlug ? `?corretor=${corretorSlug}` : ""}`;
+            const _qs = [corretorSlug ? `corretor=${corretorSlug}` : "", product._isPartnerImport && product._partnerStoreSlug ? `loja=${product._partnerStoreSlug}` : ""].filter(Boolean).join("&");
+            const productLink = `/imoveis/produto/${product.slug || product.id}${_qs ? `?${_qs}` : ""}`;
             const specs = getSpecIcons(product);
             const hasPrice = product.price > 0;
 
