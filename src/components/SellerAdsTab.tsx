@@ -468,11 +468,15 @@ export default function SellerAdsTab({ profileId, userId }: SellerAdsTabProps) {
             <span className="text-foreground font-semibold">R${subtotal.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
           </div>
           <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">
-              Taxa de serviço ({Math.round(feeRate * 100)}% · mín. R$30)
-            </span>
+            <span className="text-muted-foreground">Taxa de serviço (15% · mín. R$30)</span>
             <span className="text-foreground font-semibold">R${serviceFee.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
           </div>
+          {platform === "facebook" && (
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">Imposto Facebook (10%)</span>
+              <span className="text-foreground font-semibold">R${taxAmount.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
+            </div>
+          )}
           <div className="border-t border-border pt-2 flex justify-between">
             <span className="font-bold text-foreground">Total</span>
             <span className="font-black text-lg text-primary">R${total.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
