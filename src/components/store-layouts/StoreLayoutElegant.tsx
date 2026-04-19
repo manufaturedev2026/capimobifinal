@@ -372,8 +372,9 @@ export default function StoreLayoutElegant({
       {gridProducts.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {gridProducts.map((product: any, i: number) => {
-            const _qs = [corretorSlug ? `corretor=${corretorSlug}` : "", product._isPartnerImport && product._partnerStoreSlug ? `loja=${product._partnerStoreSlug}` : ""].filter(Boolean).join("&");
-            const productLink = `/imoveis/produto/${product.slug || product.id}${_qs ? `?${_qs}` : ""}`;
+            const _partner = product._isPartnerImport && product._partnerStoreSlug ? `/loja/${product._partnerStoreSlug}` : "";
+              const _qs = corretorSlug ? `?corretor=${corretorSlug}` : "";
+              const productLink = `/imoveis/produto/${product.slug || product.id}${_partner}${_qs}`;
             const specs = getSpecIcons(product);
             const hasPrice = product.price > 0;
 

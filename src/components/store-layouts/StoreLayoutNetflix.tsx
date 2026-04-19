@@ -1180,8 +1180,9 @@ export default function StoreLayoutNetflix({
                 {visibleProducts.length > 0 ? (
                   <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4">
                     {visibleProducts.map((product: any, i: number) => {
-                      const _qs = [corretorSlug ? `corretor=${corretorSlug}` : "", product._isPartnerImport && product._partnerStoreSlug ? `loja=${product._partnerStoreSlug}` : ""].filter(Boolean).join("&");
-                      const productLink = `/imoveis/produto/${product.slug || product.id}${_qs ? `?${_qs}` : ""}`;
+                      const _partner = product._isPartnerImport && product._partnerStoreSlug ? `/loja/${product._partnerStoreSlug}` : "";
+              const _qs = corretorSlug ? `?corretor=${corretorSlug}` : "";
+              const productLink = `/imoveis/produto/${product.slug || product.id}${_partner}${_qs}`;
                       return (
                           <motion.div
                             key={product.id}
