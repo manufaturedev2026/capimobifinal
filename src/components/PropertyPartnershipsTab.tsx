@@ -426,7 +426,11 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
     return match(i.title) || match(i.city) || match(i.state) || match(i.neighborhood) || match(i.category);
   });
 
-  const alreadyRequested = new Set(myRequests.filter(r => r.status !== "recusado").map(r => r.item_id));
+  const requestStatusByItem = new Map(
+    myRequests
+      .filter(r => r.status !== "recusado" && r.status !== "cancelado" && r.status !== "finalizado")
+      .map(r => [r.item_id, r.status])
+  );
 
   // Stats for hero
   const totalActivePartnerships = activePartnerships.length;
@@ -728,7 +732,8 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {filteredItems.map(item => {
                 const gains = calcPartnerGain(item.price, item.commission_percent, item.partner_percent);
-                const requested = alreadyRequested.has(item.id);
+                const requestStatus = requestStatusByItem.get(item.id);
+                const requested = !!requestStatus;
                 return (
                   <motion.div
                     key={item.id}
@@ -755,8 +760,8 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
                         </div>
                       )}
                       {requested && (
-                        <div className="absolute top-2 left-2 px-2 py-1 rounded-lg bg-amber-500 text-white text-[10px] font-bold shadow-lg">
-                          Solicitado
+                        <div className={`absolute top-2 left-2 px-2 py-1 rounded-lg text-white text-[10px] font-bold shadow-lg ${requestStatus === "aprovado" ? "bg-green-600" : "bg-amber-500"}`}>
+                          {requestStatus === "aprovado" ? "Parceria Ativa" : "Aguardando"}
                         </div>
                       )}
                     </div>
@@ -791,7 +796,8 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           {detailItem && (() => {
             const gains = calcPartnerGain(detailItem.price, detailItem.commission_percent, detailItem.partner_percent);
-            const requested = alreadyRequested.has(detailItem.id);
+            const detailRequestStatus = requestStatusByItem.get(detailItem.id);
+            const requested = !!detailRequestStatus;
             const publicUrl = productUrl(detailItem, detailItem.seller?.slug);
             return (
               <>
@@ -890,7 +896,7 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
                       : "bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/20"
                   }`}
                 >
-                  <Handshake size={16} /> {requested ? "Já Solicitado" : "Solicitar Parceria"}
+                  <Handshake size={16} /> {requested ? (detailRequestStatus === "aprovado" ? "Parceria Ativa ✅" : "Aguardando aprovação") : "Solicitar Parceria"}
                 </button>
               </>
             );
