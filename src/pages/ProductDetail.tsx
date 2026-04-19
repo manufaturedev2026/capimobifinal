@@ -1001,7 +1001,15 @@ export default function ProductDetail() {
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
               {relatedProducts.map((rp: any) => (
-                <Link key={rp.id} to={`/imoveis/produto/${rp.id}`} className="bg-card border border-border rounded-2xl overflow-hidden group hover:shadow-lg hover:border-primary/30 transition-all duration-300">
+                <Link
+                  key={rp.id}
+                  to={buildProductLink(
+                    { id: rp.id, slug: rp.slug, _isPartnerImport: dbSeller?.id !== product.seller_id },
+                    corretorSlug,
+                    dbSeller?.slug || null,
+                  )}
+                  className="bg-card border border-border rounded-2xl overflow-hidden group hover:shadow-lg hover:border-primary/30 transition-all duration-300"
+                >
                   <div className="relative aspect-[4/3] overflow-hidden">
                     <img src={rp.image} alt={rp.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
                     {rp.isAluguel && (
