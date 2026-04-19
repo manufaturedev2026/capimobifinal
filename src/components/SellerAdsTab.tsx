@@ -139,7 +139,7 @@ export default function SellerAdsTab({ profileId, userId }: SellerAdsTabProps) {
       unique.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
       setItems(unique);
     })();
-  }, [profileId]);
+  }, [profileId, userId]);
 
   useEffect(() => {
     (async () => {
