@@ -34,6 +34,7 @@ interface SellerWithSub {
   seller_type: string;
   seller_category: string | null;
   city: string | null;
+  slug: string | null;
   account_manager: string | null;
   manager_phone: string | null;
   manager_photo: string | null;
@@ -283,6 +284,7 @@ export default function AdminPanel() {
       seller_type: p.seller_type,
       seller_category: p.seller_category || null,
       city: p.city,
+      slug: p.slug || null,
       account_manager: p.account_manager || null,
       manager_phone: p.manager_phone || null,
       manager_photo: p.manager_photo || null,
@@ -858,6 +860,8 @@ export default function AdminPanel() {
               </div>
               <div className="space-y-2 max-h-[500px] overflow-y-auto">
                 {sellers.filter((s) => {
+                  // Apenas corretores com slug entram no sitemap global
+                  if (!s.slug) return false;
                   if (!search.trim()) return true;
                   const q = search.toLowerCase();
                   return (s.full_name?.toLowerCase().includes(q) || s.company_name?.toLowerCase().includes(q) || s.email?.toLowerCase().includes(q) || s.city?.toLowerCase().includes(q));
