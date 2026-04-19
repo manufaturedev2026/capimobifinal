@@ -20,7 +20,7 @@ const DEFAULTS: SiteSettings = {
   site_footer_text: "",
   site_terms_html: "",
   site_privacy_html: "",
-  site_splash_image_url: "",
+  site_splash_image_url: "/pwa-icon-512.png",
   site_splash_enabled: "true",
   site_splash_bg_color: "#FFFFFF",
 };

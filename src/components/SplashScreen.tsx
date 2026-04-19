@@ -21,7 +21,7 @@ export default function SplashScreen() {
   if (hidden) return null;
 
   const displayName = site_name || "Capimobi";
-  const splashImage = site_splash_image_url || site_logo_url;
+  const splashImage = site_splash_image_url || site_logo_url || "/pwa-icon-512.png";
 
   return (
     <div
