@@ -285,8 +285,11 @@ function AdCard({
         draggedId === req.id ? "opacity-50" : ""
       }`}
     >
-      {/* Seller */}
-      <p className="text-sm font-semibold text-foreground truncate">{req.sellerName}</p>
+      {/* Seller + Platform badge */}
+      <div className="flex items-center justify-between gap-2">
+        <p className="text-sm font-semibold text-foreground truncate">{req.sellerName}</p>
+        <PlatformBadge platform={req.platform} />
+      </div>
 
       {/* Item thumbnail + title */}
       {req.itemTitle && (
