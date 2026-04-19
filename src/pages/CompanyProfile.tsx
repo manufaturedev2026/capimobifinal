@@ -223,7 +223,7 @@ export default function CompanyProfile() {
           const existingIds = new Set(items.map((i: any) => i.id));
           for (const pi of partnerItems) {
             if (!existingIds.has(pi.id)) {
-              items.push(pi);
+              items.push({ ...pi, _isPartnerImport: true });
             }
           }
         }
