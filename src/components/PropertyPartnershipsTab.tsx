@@ -732,7 +732,8 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {filteredItems.map(item => {
                 const gains = calcPartnerGain(item.price, item.commission_percent, item.partner_percent);
-                const requested = alreadyRequested.has(item.id);
+                const requestStatus = requestStatusByItem.get(item.id);
+                const requested = !!requestStatus;
                 return (
                   <motion.div
                     key={item.id}
