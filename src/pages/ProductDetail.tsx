@@ -10,6 +10,7 @@ import {
   Snowflake, Eye, Landmark, Mountain, ChevronDown, ChevronUp
 } from "lucide-react";
 import { generateProposalPdf } from "@/lib/generateProposalPdf";
+import { buildProductLink } from "@/lib/productUrl";
 import QRCodeDisplay from "@/components/QRCodeDisplay";
 import FinancingSimulator from "@/components/FinancingSimulator";
 import PackageBadge from "@/components/PackageBadge";
@@ -337,11 +338,16 @@ export default function ProductDetail() {
   const tags: string[] = isDb ? (product.tags || []).filter((t: string) => t !== "aluguel_flex") : (product.tag ? [product.tag] : []);
   const companyUrl = teamMember
     ? `/empresa/${dbSeller?.slug || dbSeller?.id}?corretor=${teamMember.slug}`
-    : `/empresa/${company.id}`;
+    : `/empresa/${dbSeller?.slug || dbSeller?.id || company.id}`;
   const formattedPrice = isDb
     ? price ? `R$ ${Number(price).toLocaleString("pt-BR")}` : ""
     : formatPrice(price);
-  const productUrl = window.location.href;
+  const canonicalProductPath = buildProductLink(
+    { id: product.id, slug: product.slug, _isPartnerImport: dbSeller?.id !== product.seller_id },
+    corretorSlug,
+    dbSeller?.slug || null,
+  );
+  const productUrl = `${window.location.origin}${canonicalProductPath}`;
 
   const doWhatsAppRedirect = (e?: React.MouseEvent) => {
     if (e) e.preventDefault();
@@ -593,7 +599,7 @@ export default function ProductDetail() {
     `— ${company.name}`,
   ].filter(Boolean).join(" ").slice(0, 160);
   const seoImage = product.photos?.[0] || company.logo || "";
-  const seoUrl = `https://capimobi.lovable.app/imoveis/produto/${product.slug || product.id}`;
+  const seoUrl = `${window.location.origin}${canonicalProductPath}`;
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -995,7 +1001,15 @@ export default function ProductDetail() {
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
               {relatedProducts.map((rp: any) => (
-                <Link key={rp.id} to={`/imoveis/produto/${rp.id}`} className="bg-card border border-border rounded-2xl overflow-hidden group hover:shadow-lg hover:border-primary/30 transition-all duration-300">
+                <Link
+                  key={rp.id}
+                  to={buildProductLink(
+                    { id: rp.id, slug: rp.slug, _isPartnerImport: dbSeller?.id !== product.seller_id },
+                    corretorSlug,
+                    dbSeller?.slug || null,
+                  )}
+                  className="bg-card border border-border rounded-2xl overflow-hidden group hover:shadow-lg hover:border-primary/30 transition-all duration-300"
+                >
                   <div className="relative aspect-[4/3] overflow-hidden">
                     <img src={rp.image} alt={rp.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
                     {rp.isAluguel && (
