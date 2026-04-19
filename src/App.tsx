@@ -47,7 +47,21 @@ const ResetPasswordPage = lazyPage(() => import("@/pages/ResetPasswordPage"));
 
 const queryClient = new QueryClient();
 
-const RouteLoader = () => <div className="min-h-[50vh]" />;
+const RouteLoader = () => (
+  <div
+    className="fixed inset-0 z-[9998] flex items-center justify-center"
+    style={{ backgroundColor: "#FFFFFF" }}
+  >
+    <div className="relative flex items-center justify-center">
+      <div className="absolute h-52 w-52 rounded-full border-4 border-transparent border-t-primary border-r-primary/40 animate-spin" />
+      <img
+        src="/pwa-icon-512.png"
+        alt="Capimobi"
+        className="h-36 w-36 object-contain animate-pulse"
+      />
+    </div>
+  </div>
+);
 
 // No fixed BROKER_ID — the logged-in user IS the broker
 const HomeRedirect = () => {
@@ -106,14 +120,14 @@ const HomeRedirect = () => {
       });
   }, [user, profile, loading, homepageMode]);
 
-  if (loading || checking) return null;
+  if (loading || checking) return <RouteLoader />;
   if (target === "__marketplace__") return <MarketplaceHome />;
   return <Navigate to={target!} replace />;
 };
 
 const RequireAuth = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
-  if (loading) return null;
+  if (loading) return <RouteLoader />;
   if (!user) return <Navigate to="/login" replace />;
   return <>{children}</>;
 };
