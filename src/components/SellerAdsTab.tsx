@@ -100,7 +100,7 @@ export default function SellerAdsTab({ profileId, userId }: SellerAdsTabProps) {
   }, [userId]);
 
   const subtotal = dailyBudget * durationDays;
-  const serviceFee = Math.round(subtotal * 0.15);
+  const serviceFee = Math.max(30, Math.round(subtotal * 0.15));
   const taxAmount = subtotal * 0;
   const total = subtotal + serviceFee;
 
