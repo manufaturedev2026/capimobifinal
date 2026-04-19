@@ -102,28 +102,44 @@ export default function SellerAdsTab({ profileId, userId }: SellerAdsTabProps) {
         .eq("seller_id", profileId)
         .eq("status", "ativo");
 
-      // Imóveis importados via parceria (visíveis na minha loja)
+      // Imóveis importados via parceria (partner_store_listings - sistema antigo)
       const partnerPromise = supabase
         .from("partner_store_listings")
         .select("item_id, seller_items!inner(id, title, city, photos, status)")
         .eq("partner_profile_id", profileId)
         .eq("is_visible", true);
 
-      const [{ data: own }, { data: partner }] = await Promise.all([ownPromise, partnerPromise]);
+      // Imóveis com parceria aprovada (property_partnerships - sistema novo)
+      const approvedPartnershipsPromise = supabase
+        .from("property_partnerships")
+        .select("item_id, seller_items!inner(id, title, city, photos, status)")
+        .eq("requester_user_id", userId)
+        .eq("status", "aprovado");
+
+      const [{ data: own }, { data: partner }, { data: approved }] = await Promise.all([
+        ownPromise,
+        partnerPromise,
+        approvedPartnershipsPromise,
+      ]);
 
       const partnerItems = (partner || [])
         .map((p: any) => p.seller_items)
         .filter((it: any) => it && it.status === "ativo")
         .map((it: any) => ({ id: it.id, title: `${it.title} (Parceria)`, city: it.city, photos: it.photos }));
 
-      const merged = [...(own || []), ...partnerItems];
+      const approvedItems = (approved || [])
+        .map((p: any) => p.seller_items)
+        .filter((it: any) => it && it.status === "ativo")
+        .map((it: any) => ({ id: it.id, title: `${it.title} (Parceria)`, city: it.city, photos: it.photos }));
+
+      const merged = [...(own || []), ...partnerItems, ...approvedItems];
       // Dedup por id
       const seen = new Set<string>();
       const unique = merged.filter((it) => (seen.has(it.id) ? false : (seen.add(it.id), true)));
       unique.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
       setItems(unique);
     })();
-  }, [profileId]);
+  }, [profileId, userId]);
 
   useEffect(() => {
     (async () => {
