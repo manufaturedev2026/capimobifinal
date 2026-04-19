@@ -22,7 +22,7 @@ const DEFAULTS: SiteSettings = {
   site_privacy_html: "",
   site_splash_image_url: "",
   site_splash_enabled: "true",
-  site_splash_bg_color: "#000000",
+  site_splash_bg_color: "#FFFFFF",
 };
 
 let cachedSettings: SiteSettings | null = null;
