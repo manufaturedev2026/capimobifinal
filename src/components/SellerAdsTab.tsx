@@ -446,7 +446,9 @@ export default function SellerAdsTab({ profileId, userId }: SellerAdsTabProps) {
             <span className="text-foreground font-semibold">R${subtotal.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
           </div>
           <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Taxa de serviço (15%)</span>
+            <span className="text-muted-foreground">
+              Taxa de serviço ({Math.round(feeRate * 100)}% · mín. R$30)
+            </span>
             <span className="text-foreground font-semibold">R${serviceFee.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}</span>
           </div>
           <div className="border-t border-border pt-2 flex justify-between">
