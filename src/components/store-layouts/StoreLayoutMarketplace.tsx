@@ -11,6 +11,7 @@ import type { StoreLayoutProps } from "./types";
 import { isIOSStandaloneApp } from "@/lib/pwaInstall";
 import { BRAZIL_STATES } from "@/data/brazilStates";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { getSellerProfessionalTitle } from "@/lib/sellerTitle";
 
 const QUICK_ACTIONS = [
   { slug: "casa", name: "Casas", desc: "Residenciais", icon: Home },
