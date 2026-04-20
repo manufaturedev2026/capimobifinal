@@ -10,7 +10,9 @@ export default function MapEmbed({ address, className = "", showStreetView = tru
   const encodedAddress = encodeURIComponent(address);
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`;
   const streetViewUrl = `https://www.google.com/maps/@?api=1&map_action=pano&query=${encodedAddress}`;
-  const mapSrc = `https://maps.google.com/maps?q=${encodedAddress}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+  // Using "q=" with output=embed forces a pin/marker on the searched address.
+  // Adding "&hl=pt-BR" sets language and ensures consistent behavior.
+  const mapSrc = `https://www.google.com/maps?q=${encodedAddress}&hl=pt-BR&z=16&output=embed`;
 
   return (
     <div className={`rounded-2xl overflow-hidden border border-border ${className}`}>
