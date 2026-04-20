@@ -54,10 +54,11 @@ export default function MapEmbed({ address, className = "", showStreetView = tru
   const encodedAddress = encodeURIComponent(address);
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`;
   const fallbackStreetViewUrl = `https://www.google.com/maps/@?api=1&map_action=pano&query=${encodedAddress}`;
-  const mapSrc = `https://www.google.com/maps?q=${encodedAddress}&hl=pt-BR&z=16&output=embed`;
+  const fallbackMapSrc = `https://www.google.com/maps?q=${encodedAddress}&hl=pt-BR&z=16&output=embed`;
 
   const geocodingCandidates = useMemo(() => buildGeocodingCandidates(address), [address]);
   const [streetViewUrl, setStreetViewUrl] = useState(fallbackStreetViewUrl);
+  const [mapSrc, setMapSrc] = useState(fallbackMapSrc);
   const [resolvingStreetView, setResolvingStreetView] = useState(showStreetView);
 
   useEffect(() => {
