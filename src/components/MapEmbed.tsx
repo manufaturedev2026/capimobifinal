@@ -1,80 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
-import { MapPin, Eye, Loader2 } from "lucide-react";
+import { MapPin, Eye } from "lucide-react";
 
 interface MapEmbedProps {
   address: string;
   className?: string;
   showStreetView?: boolean;
-}
-
-interface NominatimResult {
-  lat: string;
-  lon: string;
-  display_name?: string;
-  address?: {
-    city?: string;
-    town?: string;
-    village?: string;
-    municipality?: string;
-    state?: string;
-    state_code?: string;
-  };
-}
-
-const BR_STATE_NAMES: Record<string, string> = {
-  AC: "Acre", AL: "Alagoas", AP: "Amapá", AM: "Amazonas", BA: "Bahia",
-  CE: "Ceará", DF: "Distrito Federal", ES: "Espírito Santo", GO: "Goiás",
-  MA: "Maranhão", MT: "Mato Grosso", MS: "Mato Grosso do Sul", MG: "Minas Gerais",
-  PA: "Pará", PB: "Paraíba", PR: "Paraná", PE: "Pernambuco", PI: "Piauí",
-  RJ: "Rio de Janeiro", RN: "Rio Grande do Norte", RS: "Rio Grande do Sul",
-  RO: "Rondônia", RR: "Roraima", SC: "Santa Catarina", SP: "São Paulo",
-  SE: "Sergipe", TO: "Tocantins",
-};
-
-function normalizeText(value: string) {
-  return value
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .trim();
-}
-
-function normalizeAddressForGeocoding(address: string) {
-  return address
-    .replace(/\bAv\.?\b/gi, "Avenida")
-    .replace(/\bR\.?\b/gi, "Rua")
-    .replace(/\bRod\.?\b/gi, "Rodovia")
-    .replace(/\bES\b/gi, "Espírito Santo")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-function buildGeocodingCandidates(address: string) {
-  const normalized = normalizeAddressForGeocoding(address);
-  const parts = normalized
-    .split(",")
-    .map((part) => part.trim())
-    .filter(Boolean);
-
-  const [street, number, neighborhood, city, state] = parts;
-  const withCountry = (value: string) => (value.toLowerCase().includes("brasil") ? value : `${value}, Brasil`);
-
-  return Array.from(
-    new Set(
-      [
-        normalized,
-        withCountry(normalized),
-        [street, number, neighborhood, city, state].filter(Boolean).join(", "),
-        withCountry([street, number, neighborhood, city, state].filter(Boolean).join(", ")),
-        [street, number, city, state].filter(Boolean).join(", "),
-        withCountry([street, number, city, state].filter(Boolean).join(", ")),
-        [street, city, state].filter(Boolean).join(", "),
-        withCountry([street, city, state].filter(Boolean).join(", ")),
-        [neighborhood, city, state].filter(Boolean).join(", "),
-        withCountry([neighborhood, city, state].filter(Boolean).join(", ")),
-      ].filter(Boolean),
-    ),
-  );
 }
 
 export default function MapEmbed({ address, className = "", showStreetView = true }: MapEmbedProps) {
