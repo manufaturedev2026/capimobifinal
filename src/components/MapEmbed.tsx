@@ -31,6 +31,8 @@ interface AddressOverride {
   lat: string;
   lon: string;
   streetViewUrl: string;
+  mapsUrl?: string;
+  embedUrl?: string;
 }
 
 const BR_STATE_NAMES: Record<string, string> = {
@@ -115,10 +117,14 @@ function buildGeocodingCandidates(address: string) {
 
 const ADDRESS_OVERRIDES: Record<string, AddressOverride> = {
   [normalizeText("Av. Beira Rio, 120, Centro, Colatina, ES")]: {
-    lat: "-19.5349498",
-    lon: "-40.6336249",
+    lat: "-19.5350114",
+    lon: "-40.6336901",
+    mapsUrl:
+      "https://www.google.com/maps/place/Av.+Beira+Rio,+120+-+Centro,+Colatina+-+ES,+29700-193/@-19.5350063,-40.636265,17z/data=!3m1!4b1!4m5!3m4!1s0xb7a8280e021691:0x5ba443623bb754bd!8m2!3d-19.5350114!4d-40.6336901",
+    embedUrl:
+      "https://www.google.com/maps?q=Av.+Beira+Rio,+120+-+Centro,+Colatina+-+ES,+29700-193&hl=pt-BR&z=17&output=embed",
     streetViewUrl:
-      "https://www.google.com/maps/@-19.5349498,-40.6336249,3a,75y,252.33h,90t/data=!3m7!1e1!3m5!1s5Ul2zyyrn98mD-foBY4ABg!2e0!6shttps:%2F%2Fstreetviewpixels-pa.googleapis.com%2Fv1%2Fthumbnail%3Fcb_client%3Dmaps_sv.tactile%26w%3D900%26h%3D600%26pitch%3D0%26panoid%3D5Ul2zyyrn98mD-foBY4ABg%26yaw%3D252.32602!7i16384!8i8192?entry=ttu&g_ep=EgoyMDI2MDQxNS4wIKXMDSoASAFQAw%3D%3D",
+      "https://www.google.com/maps/@-19.5349498,-40.6336249,3a,75y,252.33h,90t/data=!3m7!1e1!3m5!1s5Ul2zyyrn98mD-foBY4ABg!2e0!6shttps:%2F%2Fstreetviewpixels-pa.googleapis.com%2Fv1%2Fthumbnail%3Fcb_client%3Dmaps_sv.tactile%26w%3D900%26h%3D600%26pitch%3D0%26panoid%3D5Ul2zyyrn98mD-foBY4ABg%26yaw%3D252.32602!7i16384!8i8192",
   },
 };
 
@@ -132,13 +138,13 @@ export default function MapEmbed({ address, className = "", showStreetView = tru
   const addressOverride = useMemo(() => getAddressOverride(address), [address]);
 
   const mapsUrl = addressOverride
-    ? `https://www.google.com/maps/search/?api=1&query=${addressOverride.lat},${addressOverride.lon}`
+    ? addressOverride.mapsUrl || `https://www.google.com/maps/search/?api=1&query=${addressOverride.lat},${addressOverride.lon}`
     : `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`;
   const fallbackStreetViewUrl = addressOverride
     ? addressOverride.streetViewUrl
     : `https://www.google.com/maps/@?api=1&map_action=pano&query=${encodedAddress}`;
   const mapSrc = addressOverride
-    ? `https://www.google.com/maps?q=${addressOverride.lat},${addressOverride.lon}&hl=pt-BR&z=17&output=embed`
+    ? addressOverride.embedUrl || `https://www.google.com/maps?q=${addressOverride.lat},${addressOverride.lon}&hl=pt-BR&z=17&output=embed`
     : `https://www.google.com/maps?q=${encodedAddress}&hl=pt-BR&z=16&output=embed`;
 
   const geocodingCandidates = useMemo(() => buildGeocodingCandidates(address), [address]);
