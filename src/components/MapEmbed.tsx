@@ -213,7 +213,7 @@ export default function MapEmbed({ address, className = "", showStreetView = tru
           if (match?.lat && match?.lon) {
             if (!cancelled) {
               setStreetViewUrl(
-                `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${match.lat},${match.lon}&heading=0&pitch=0&fov=90`,
+                `https://www.google.com/maps/@${match.lat},${match.lon},3a,75y,0h,90t/data=!3m1!1e1`,
               );
             }
             break;
