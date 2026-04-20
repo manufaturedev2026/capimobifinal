@@ -292,7 +292,7 @@ export default function StoreLayoutMarketplace({
             <div className="flex items-center gap-2">
               <Sparkles size={14} style={{ color: storeTheme.primary }} />
               <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest" style={{ color: storeTheme.primary }}>
-                {dbProfile?.full_name || "Corretor"} — Corretor Imobiliário
+                {dbProfile?.full_name || "Corretor"} — {getSellerProfessionalTitle(dbProfile)}
               </span>
             </div>
             {dbProfile?.creci && (
