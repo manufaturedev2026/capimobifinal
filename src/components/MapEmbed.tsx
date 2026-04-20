@@ -90,7 +90,10 @@ export default function MapEmbed({ address, className = "", showStreetView = tru
           const first = results?.[0];
 
           if (first?.lat && first?.lon) {
-            const forcedStreetViewUrl = `https://www.google.com/maps?layer=c&cbll=${first.lat},${first.lon}&cbp=12,0,0,0,0&ie=UTF8&oe=UTF8&hl=pt-BR&z=17&data=!3m1!1e3`;
+            const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+            const forcedStreetViewUrl = isMobile
+              ? `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${first.lat},${first.lon}&heading=0&pitch=0&fov=90`
+              : `https://www.google.com/maps?layer=c&cbll=${first.lat},${first.lon}&cbp=12,0,0,0,0&ie=UTF8&oe=UTF8&hl=pt-BR&z=17&data=!3m1!1e3`;
             if (!cancelled) setStreetViewUrl(forcedStreetViewUrl);
             break;
           }
