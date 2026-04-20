@@ -27,6 +27,12 @@ interface NominatimResult {
   };
 }
 
+interface AddressOverride {
+  lat: string;
+  lon: string;
+  streetViewUrl: string;
+}
+
 const BR_STATE_NAMES: Record<string, string> = {
   AC: "Acre",
   AL: "Alagoas",
@@ -67,7 +73,10 @@ function normalizeText(value: string) {
 }
 
 function normalizeStreet(value: string) {
-  return normalizeText(value).replace(/\b(avenida|av|rua|rodovia|rod|travessa|tv|alameda|estrada)\b/g, "").replace(/\s+/g, " ").trim();
+  return normalizeText(value)
+    .replace(/\b(avenida|av|rua|rodovia|rod|travessa|tv|alameda|estrada)\b/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function normalizeAddressForGeocoding(address: string) {
@@ -104,18 +113,45 @@ function buildGeocodingCandidates(address: string) {
   );
 }
 
+const ADDRESS_OVERRIDES: Record<string, AddressOverride> = {
+  [normalizeText("Av. Beira Rio, 120, Centro, Colatina, ES")]: {
+    lat: "-19.5349498",
+    lon: "-40.6336249",
+    streetViewUrl:
+      "https://www.google.com/maps/@-19.5349498,-40.6336249,3a,75y,252.33h,90t/data=!3m7!1e1!3m5!1s5Ul2zyyrn98mD-foBY4ABg!2e0!6shttps:%2F%2Fstreetviewpixels-pa.googleapis.com%2Fv1%2Fthumbnail%3Fcb_client%3Dmaps_sv.tactile%26w%3D900%26h%3D600%26pitch%3D0%26panoid%3D5Ul2zyyrn98mD-foBY4ABg%26yaw%3D252.32602!7i16384!8i8192?entry=ttu&g_ep=EgoyMDI2MDQxNS4wIKXMDSoASAFQAw%3D%3D",
+  },
+};
+
+function getAddressOverride(address: string) {
+  const normalizedAddress = normalizeText(address);
+  return Object.entries(ADDRESS_OVERRIDES).find(([key]) => normalizedAddress.includes(key) || key.includes(normalizedAddress))?.[1];
+}
+
 export default function MapEmbed({ address, className = "", showStreetView = true }: MapEmbedProps) {
   const encodedAddress = encodeURIComponent(address);
-  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`;
-  const fallbackStreetViewUrl = `https://www.google.com/maps/@?api=1&map_action=pano&query=${encodedAddress}`;
-  const mapSrc = `https://www.google.com/maps?q=${encodedAddress}&hl=pt-BR&z=16&output=embed`;
+  const addressOverride = useMemo(() => getAddressOverride(address), [address]);
+
+  const mapsUrl = addressOverride
+    ? `https://www.google.com/maps/search/?api=1&query=${addressOverride.lat},${addressOverride.lon}`
+    : `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`;
+  const fallbackStreetViewUrl = addressOverride
+    ? addressOverride.streetViewUrl
+    : `https://www.google.com/maps/@?api=1&map_action=pano&query=${encodedAddress}`;
+  const mapSrc = addressOverride
+    ? `https://www.google.com/maps?q=${addressOverride.lat},${addressOverride.lon}&hl=pt-BR&z=17&output=embed`
+    : `https://www.google.com/maps?q=${encodedAddress}&hl=pt-BR&z=16&output=embed`;
 
   const geocodingCandidates = useMemo(() => buildGeocodingCandidates(address), [address]);
   const [streetViewUrl, setStreetViewUrl] = useState(fallbackStreetViewUrl);
-  const [resolvingStreetView, setResolvingStreetView] = useState(showStreetView);
+  const [resolvingStreetView, setResolvingStreetView] = useState(showStreetView && !addressOverride);
 
   useEffect(() => {
     setStreetViewUrl(fallbackStreetViewUrl);
+
+    if (addressOverride) {
+      setResolvingStreetView(false);
+      return;
+    }
 
     if (!showStreetView || !address.trim()) {
       setResolvingStreetView(false);
@@ -176,8 +212,7 @@ export default function MapEmbed({ address, className = "", showStreetView = tru
           "",
       );
 
-    const getNumber = (result: NominatimResult) =>
-      normalizeText(result.address?.house_number || result.display_name || "");
+    const getNumber = (result: NominatimResult) => normalizeText(result.address?.house_number || result.display_name || "");
 
     const matchesLocation = (result: NominatimResult) => {
       const resultCity = getCity(result);
@@ -212,9 +247,7 @@ export default function MapEmbed({ address, className = "", showStreetView = tru
 
           if (match?.lat && match?.lon) {
             if (!cancelled) {
-              setStreetViewUrl(
-                `https://www.google.com/maps/@${match.lat},${match.lon},3a,75y,0h,90t/data=!3m1!1e1`,
-              );
+              setStreetViewUrl(`https://www.google.com/maps/@${match.lat},${match.lon},3a,75y,0h,90t/data=!3m1!1e1`);
             }
             break;
           }
@@ -231,7 +264,7 @@ export default function MapEmbed({ address, className = "", showStreetView = tru
     return () => {
       cancelled = true;
     };
-  }, [address, fallbackStreetViewUrl, geocodingCandidates, showStreetView]);
+  }, [address, addressOverride, fallbackStreetViewUrl, geocodingCandidates, showStreetView]);
 
   const handleOpenStreetView = () => {
     window.open(streetViewUrl, "_blank", "noopener,noreferrer");
