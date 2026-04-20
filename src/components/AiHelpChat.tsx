@@ -24,7 +24,11 @@ export default function AiHelpChat({ themeVars }: AiHelpChatProps) {
   }, [messages, open]);
 
   useEffect(() => {
-    if (open) inputRef.current?.focus();
+    if (!open) return;
+    // Only auto-focus on desktop to avoid opening the keyboard on mobile
+    if (window.matchMedia("(min-width: 1024px)").matches) {
+      inputRef.current?.focus();
+    }
   }, [open]);
 
   const send = useCallback(async () => {
@@ -157,11 +161,11 @@ export default function AiHelpChat({ themeVars }: AiHelpChatProps) {
                     }`}
                   >
                     {m.role === "assistant" ? (
-                      <div className="prose prose-sm dark:prose-invert max-w-none [&>p]:m-0 [&>ul]:my-1 [&>ol]:my-1">
+                      <div className="prose prose-sm dark:prose-invert max-w-none text-foreground [&_*]:!text-foreground [&_a]:!text-primary [&_code]:!text-foreground [&>p]:m-0 [&>ul]:my-1 [&>ol]:my-1">
                         <ReactMarkdown>{m.content}</ReactMarkdown>
                       </div>
                     ) : (
-                      m.content
+                      <span className="text-primary-foreground">{m.content}</span>
                     )}
                   </div>
                 </div>
@@ -184,7 +188,7 @@ export default function AiHelpChat({ themeVars }: AiHelpChatProps) {
                 onChange={e => setInput(e.target.value)}
                 onKeyDown={e => e.key === "Enter" && send()}
                 placeholder="Digite sua dúvida..."
-                className="flex-1 bg-muted rounded-full px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/30"
+                className="flex-1 bg-muted text-foreground placeholder:text-muted-foreground rounded-full px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/30"
                 disabled={loading}
               />
               <button
