@@ -1,0 +1,1 @@
+ALTER TABLE public.seller_items ADD COLUMN IF NOT EXISTS show_street_view boolean NOT NULL DEFAULT true;
