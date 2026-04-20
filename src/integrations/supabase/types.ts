@@ -2436,6 +2436,10 @@ export type Database = {
         Args: { p_item_id: string; p_title: string }
         Returns: string
       }
+      generate_seller_slug: {
+        Args: { p_name: string; p_profile_id: string }
+        Returns: string
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
