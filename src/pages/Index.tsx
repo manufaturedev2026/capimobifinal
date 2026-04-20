@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import HomePwaActions from "@/components/HomePwaActions";
 
 import storePreviewApartment from "@/assets/store-preview-apartment.jpg";
 import storePreviewHouse from "@/assets/store-preview-house.jpg";
@@ -905,6 +906,8 @@ export default function Index() {
           );
         })()}
       </AnimatePresence>
+
+      <HomePwaActions />
     </div>
   );
 }

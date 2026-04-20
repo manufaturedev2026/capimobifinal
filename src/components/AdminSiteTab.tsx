@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Globe, Image, FileText, Save, Upload, Loader2, Type, Shield, Sparkles } from "lucide-react";
+import { Globe, Image, FileText, Save, Upload, Loader2, Type, Shield, Sparkles, BellRing } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { invalidateSiteSettings } from "@/hooks/useSiteSettings";
@@ -14,6 +14,7 @@ const SITE_KEYS = [
   "site_splash_image_url",
   "site_splash_enabled",
   "site_splash_bg_color",
+  "admin_push_seller_id",
 ] as const;
 
 type SiteSettings = Record<(typeof SITE_KEYS)[number], string>;
@@ -44,6 +45,7 @@ const DEFAULTS: SiteSettings = {
   site_splash_image_url: "/pwa-icon-512.png",
   site_splash_enabled: "true",
   site_splash_bg_color: "#FFFFFF",
+  admin_push_seller_id: "",
 };
 
 export default function AdminSiteTab() {
