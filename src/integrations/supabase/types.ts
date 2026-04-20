@@ -1021,6 +1021,7 @@ export type Database = {
           must_change_password: boolean
           open_for_partnerships: boolean
           phone: string | null
+          professional_title: string | null
           referral_balance: number
           referral_code: string | null
           referral_total_earned: number
@@ -1072,6 +1073,7 @@ export type Database = {
           must_change_password?: boolean
           open_for_partnerships?: boolean
           phone?: string | null
+          professional_title?: string | null
           referral_balance?: number
           referral_code?: string | null
           referral_total_earned?: number
@@ -1125,6 +1127,7 @@ export type Database = {
           must_change_password?: boolean
           open_for_partnerships?: boolean
           phone?: string | null
+          professional_title?: string | null
           referral_balance?: number
           referral_code?: string | null
           referral_total_earned?: number
