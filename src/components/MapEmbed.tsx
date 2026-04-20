@@ -9,7 +9,8 @@ interface MapEmbedProps {
 export default function MapEmbed({ address, className = "", showStreetView = true }: MapEmbedProps) {
   const encodedAddress = encodeURIComponent(address);
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`;
-  const streetViewUrl = `https://www.google.com/maps/@?api=1&map_action=pano&query=${encodedAddress}`;
+  // Force Street View panorama on both desktop and mobile (Google Maps app respects this format).
+  const streetViewUrl = `https://www.google.com/maps/place/${encodedAddress}/data=!3m1!1e3`;
   // Using "q=" with output=embed forces a pin/marker on the searched address.
   // Adding "&hl=pt-BR" sets language and ensures consistent behavior.
   const mapSrc = `https://www.google.com/maps?q=${encodedAddress}&hl=pt-BR&z=16&output=embed`;
