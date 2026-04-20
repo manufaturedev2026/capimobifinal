@@ -12,12 +12,8 @@ export default function MapEmbed({ address, className = "", showStreetView = tru
   const fallbackStreetViewUrl = `https://www.google.com/maps/@?api=1&map_action=pano&query=${encodedAddress}`;
   const fallbackMapSrc = `https://www.google.com/maps?q=${encodedAddress}&hl=pt-BR&z=16&output=embed`;
 
-  const streetViewUrl = fallbackStreetViewUrl;
-  const mapSrc = fallbackMapSrc;
-  const resolvingStreetView = false;
-
   const handleOpenStreetView = () => {
-    window.open(streetViewUrl, "_blank", "noopener,noreferrer");
+    window.open(fallbackStreetViewUrl, "_blank", "noopener,noreferrer");
   };
 
   return (
