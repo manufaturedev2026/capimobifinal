@@ -63,7 +63,8 @@ export default function MapEmbed({ address, className = "", showStreetView = tru
 
   useEffect(() => {
     setStreetViewUrl(fallbackStreetViewUrl);
-    if (!showStreetView || !address.trim()) {
+    setMapSrc(fallbackMapSrc);
+    if (!address.trim()) {
       setResolvingStreetView(false);
       return;
     }
