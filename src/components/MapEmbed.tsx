@@ -212,11 +212,8 @@ export default function MapEmbed({ address, className = "", showStreetView = tru
 
           if (match?.lat && match?.lon) {
             if (!cancelled) {
-              const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
               setStreetViewUrl(
-                isMobile
-                  ? `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${match.lat},${match.lon}&heading=0&pitch=0&fov=90`
-                  : `https://www.google.com/maps?layer=c&cbll=${match.lat},${match.lon}&cbp=12,0,0,0,0&ie=UTF8&oe=UTF8&hl=pt-BR&z=17&data=!3m1!1e3`,
+                `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${match.lat},${match.lon}&heading=0&pitch=0&fov=90`,
               );
             }
             break;
