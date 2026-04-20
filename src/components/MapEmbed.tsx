@@ -83,93 +83,9 @@ export default function MapEmbed({ address, className = "", showStreetView = tru
   const fallbackStreetViewUrl = `https://www.google.com/maps/@?api=1&map_action=pano&query=${encodedAddress}`;
   const fallbackMapSrc = `https://www.google.com/maps?q=${encodedAddress}&hl=pt-BR&z=16&output=embed`;
 
-  const geocodingCandidates = useMemo(() => buildGeocodingCandidates(address), [address]);
-  const [streetViewUrl, setStreetViewUrl] = useState(fallbackStreetViewUrl);
-  const [mapSrc, setMapSrc] = useState(fallbackMapSrc);
-  const [resolvingStreetView, setResolvingStreetView] = useState(showStreetView);
-
-  useEffect(() => {
-    setStreetViewUrl(fallbackStreetViewUrl);
-    setMapSrc(fallbackMapSrc);
-    if (!address.trim()) {
-      setResolvingStreetView(false);
-      return;
-    }
-
-    let cancelled = false;
-
-    const parts = normalizeAddressForGeocoding(address)
-      .split(",")
-      .map((part) => part.trim())
-      .filter(Boolean);
-    const [streetName, numberPart, neighborhoodPart, cityPart, statePart] = parts;
-    const stateFull = statePart ? BR_STATE_NAMES[statePart.toUpperCase()] || statePart : "";
-    const expectedCity = cityPart ? normalizeText(cityPart) : "";
-    const expectedState = stateFull ? normalizeText(stateFull) : "";
-
-    const structuredUrl = (() => {
-      const params = new URLSearchParams({
-        format: "jsonv2",
-        addressdetails: "1",
-        limit: "1",
-        countrycodes: "br",
-      });
-      if (streetName) params.set("street", numberPart ? `${numberPart} ${streetName}` : streetName);
-      if (cityPart) params.set("city", cityPart);
-      if (stateFull) params.set("state", stateFull);
-      params.set("country", "Brasil");
-      return `https://nominatim.openstreetmap.org/search?${params.toString()}`;
-    })();
-
-    const queries = [structuredUrl, ...geocodingCandidates.map(
-      (c) => `https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=5&countrycodes=br&q=${encodeURIComponent(c)}`,
-    )];
-
-    const isCityMatch = (result: NominatimResult) => {
-      if (!expectedCity) return true;
-      const addr = result.address || {};
-      const resultCity = normalizeText(addr.city || addr.town || addr.village || addr.municipality || "");
-      const resultState = normalizeText(addr.state || "");
-      const cityOk = resultCity.includes(expectedCity) || expectedCity.includes(resultCity);
-      const stateOk = !expectedState || resultState.includes(expectedState) || expectedState.includes(resultState);
-      return cityOk && stateOk;
-    };
-
-    const resolveStreetView = async () => {
-      setResolvingStreetView(true);
-
-      for (const url of queries) {
-        try {
-          const response = await fetch(url, {
-            headers: { Accept: "application/json", "Accept-Language": "pt-BR" },
-          });
-          if (!response.ok) continue;
-          const results = (await response.json()) as NominatimResult[];
-          const match = results.find(isCityMatch) || (expectedCity ? null : results[0]);
-          if (match?.lat && match?.lon) {
-            if (!cancelled && showStreetView) {
-              const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-              const forcedStreetViewUrl = isMobile
-                ? `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${match.lat},${match.lon}&heading=0&pitch=0&fov=90`
-                : `https://www.google.com/maps?layer=c&cbll=${match.lat},${match.lon}&cbp=12,0,0,0,0&ie=UTF8&oe=UTF8&hl=pt-BR&z=17&data=!3m1!1e3`;
-              setStreetViewUrl(forcedStreetViewUrl);
-            }
-            break;
-          }
-        } catch {
-          continue;
-        }
-      }
-
-      if (!cancelled) setResolvingStreetView(false);
-    };
-
-    void resolveStreetView();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [address, fallbackStreetViewUrl, fallbackMapSrc, geocodingCandidates, showStreetView]);
+  const streetViewUrl = fallbackStreetViewUrl;
+  const mapSrc = fallbackMapSrc;
+  const resolvingStreetView = false;
 
   const handleOpenStreetView = () => {
     window.open(streetViewUrl, "_blank", "noopener,noreferrer");
