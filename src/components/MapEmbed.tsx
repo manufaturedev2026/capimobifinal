@@ -117,7 +117,7 @@ export default function MapEmbed({ address, className = "", showStreetView = tru
     return () => {
       cancelled = true;
     };
-  }, [address, fallbackStreetViewUrl, geocodingCandidates, showStreetView]);
+  }, [address, fallbackStreetViewUrl, fallbackMapSrc, geocodingCandidates, showStreetView]);
 
   const handleOpenStreetView = () => {
     window.open(streetViewUrl, "_blank", "noopener,noreferrer");
