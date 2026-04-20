@@ -288,19 +288,16 @@ export default function AdminSiteTab() {
         />
       </Section>
 
-      {/* Admin Push Seller ID */}
+      {/* Admin Push (automatic) */}
       <Section
         icon={BellRing}
         title="Push da Página Inicial (ADM)"
-        desc="ID do perfil (seller_id) que receberá os inscritos do botão de notificações da home. Visitantes que não vêm de uma loja de corretor recebem os pushes enviados por este ADM."
+        desc="O botão de notificações da home vincula automaticamente os inscritos ao primeiro admin cadastrado. Qualquer admin pode enviar pushes em massa pela aba 'Push' do painel — não é preciso configurar nada aqui."
       >
-        <input
-          value={settings.admin_push_seller_id}
-          onChange={(e) => setSettings((p) => ({ ...p, admin_push_seller_id: e.target.value }))}
-          className="w-full rounded-xl border border-input bg-background px-4 py-3 text-sm text-foreground font-mono focus:ring-2 focus:ring-ring focus:outline-none"
-          placeholder="UUID do perfil ADM (ex: 0123abcd-...)"
-        />
-        <p className="text-xs text-muted-foreground mt-2">Deixe em branco para ocultar o botão de notificações na página inicial.</p>
+        <div className="rounded-xl border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-foreground flex items-center gap-2">
+          <span className="inline-flex h-2 w-2 rounded-full bg-primary animate-pulse" />
+          <span><strong>Modo automático ativo:</strong> visitantes da home se inscrevem no canal global do ADM.</span>
+        </div>
       </Section>
 
       {/* Save */}
