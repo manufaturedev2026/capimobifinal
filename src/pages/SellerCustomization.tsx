@@ -34,6 +34,7 @@ export default function SellerCustomization({ embedded }: { embedded?: boolean }
     cover_color: "",
     store_theme: "dark",
     store_layout: "marketplace",
+    professional_title: "",
     video_url: "",
     video_title: "",
     video_description: "",
@@ -55,6 +56,7 @@ export default function SellerCustomization({ embedded }: { embedded?: boolean }
         cover_color: (profile as any).cover_color || "",
         store_theme: (profile as any).store_theme || "dark",
         store_layout: (profile as any).store_layout || "marketplace",
+        professional_title: (profile as any).professional_title || "",
         video_url: (profile as any).video_url || "",
         video_title: (profile as any).video_title || "",
         video_description: (profile as any).video_description || "",
@@ -147,7 +149,21 @@ export default function SellerCustomization({ embedded }: { embedded?: boolean }
           )}
         </div>
 
-        {/* Store Theme Picker */}
+        {/* Professional Title — how the seller is presented on the storefront */}
+        <div className="bg-card border border-border rounded-2xl p-5 space-y-3">
+          <h2 className="font-display font-bold text-foreground">Título Profissional</h2>
+          <p className="text-xs text-muted-foreground">
+            Como você quer ser apresentado(a) na sua loja. Ex: <em>Corretora de Imóveis</em>, <em>Imobiliária Premium</em>, <em>Construtora XYZ</em>. Deixe em branco para usar o padrão da sua categoria.
+          </p>
+          <input
+            value={form.professional_title}
+            onChange={(e) => setForm((f) => ({ ...f, professional_title: e.target.value }))}
+            className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+            placeholder="Ex: Corretora de Imóveis"
+            maxLength={60}
+          />
+        </div>
+
         <div className="bg-card border border-border rounded-2xl p-5">
           <StoreThemePicker
             selected={form.store_theme}

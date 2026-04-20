@@ -15,3 +15,4 @@ Homepage mode controlado pelo admin (marketplace ou single).
 - [Branding pivot](mem://project/branding-pivot) — Rebrand de Brokers Bio → Brokers App, foco em prospectar profissionais imobiliários
 - [Auto Stories](mem://features/auto-stories) — Stories automáticos no marketplace para VIP+, 24h expiry, limites por tier
 - [Push daily limits](mem://features/notifications/push-daily-limits) — Limite diário de envios push por plano (1 a 6/dia), validado no edge function send-push
+- [Professional title](mem://features/store/professional-title) — Campo professional_title em profiles + fallback por categoria via getSellerProfessionalTitle() em src/lib/sellerTitle.ts
