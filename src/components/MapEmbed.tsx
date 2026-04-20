@@ -21,53 +21,31 @@ export default function MapEmbed({ address, className = "", showStreetView = tru
 
   const handleOpenStreetView = async () => {
     if (openingStreetView) return;
-
-    const popup = window.open("", "_blank", "noopener,noreferrer");
-    if (!popup) return;
-
-    popup.document.title = "Abrindo Street View...";
-    popup.document.body.style.margin = "0";
-    popup.document.body.style.fontFamily = "system-ui, sans-serif";
-    popup.document.body.style.display = "grid";
-    popup.document.body.style.placeItems = "center";
-    popup.document.body.style.minHeight = "100vh";
-    popup.document.body.style.background = "#111827";
-    popup.document.body.style.color = "#f9fafb";
-    popup.document.body.innerHTML = '<div style="padding:24px;text-align:center;font-size:14px;">Abrindo Street View…</div>';
-
     setOpeningStreetView(true);
+
+    let targetUrl = fallbackStreetViewUrl;
 
     try {
       const response = await fetch(
         `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=${encodedAddress}`,
-        {
-          headers: {
-            "Accept": "application/json",
-            "Accept-Language": "pt-BR",
-          },
-        },
+        { headers: { Accept: "application/json", "Accept-Language": "pt-BR" } },
       );
-
-      if (!response.ok) {
-        popup.location.href = fallbackStreetViewUrl;
-        return;
+      if (response.ok) {
+        const results = (await response.json()) as NominatimResult[];
+        const first = results?.[0];
+        if (first?.lat && first?.lon) {
+          // Force Street View panorama with coordinates (cbll) — works on desktop AND mobile.
+          targetUrl = `https://www.google.com/maps?layer=c&cbll=${first.lat},${first.lon}&cbp=12,0,0,0,0&z=17`;
+        }
       }
-
-      const results = (await response.json()) as NominatimResult[];
-      const firstResult = results?.[0];
-
-      if (!firstResult?.lat || !firstResult?.lon) {
-        popup.location.href = fallbackStreetViewUrl;
-        return;
-      }
-
-      const streetViewUrl = `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${firstResult.lat},${firstResult.lon}`;
-      popup.location.href = streetViewUrl;
     } catch {
-      popup.location.href = fallbackStreetViewUrl;
+      // keep fallback
     } finally {
       setOpeningStreetView(false);
     }
+
+    // Open AFTER we know the URL — single user-gesture chain, no blank tab.
+    window.open(targetUrl, "_blank", "noopener,noreferrer");
   };
 
   return (
