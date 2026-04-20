@@ -965,7 +965,7 @@ export default function ProductDetail() {
                 <h2 className="font-display font-semibold text-lg text-foreground mb-3 flex items-center gap-2">
                   <MapPin size={18} className="text-primary" /> Localização
                 </h2>
-                <MapEmbed address={mapAddress} />
+                <MapEmbed address={mapAddress} showStreetView={(dbItem as any)?.show_street_view ?? true} />
               </motion.div>
             )}
 

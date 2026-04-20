@@ -99,6 +99,7 @@ const INITIAL_FORM = {
   foot_traffic: "",
   ideal_for: "",
   show_financing: false,
+  show_street_view: true,
   partnership_enabled: false,
   commission_percent: "",
   partner_percent: "",
@@ -175,6 +176,7 @@ export default function SellerItemForm() {
               furnished: !!d.furnished,
               accepts_financing: !!d.accepts_financing,
               show_financing: !!d.show_financing,
+              show_street_view: d.show_street_view ?? true,
               documentation: d.documentation || "",
               condo_fee: d.condo_fee?.toString() || "",
               iptu: d.iptu?.toString() || "",
@@ -346,6 +348,7 @@ export default function SellerItemForm() {
       foot_traffic: strOrNull(form.foot_traffic),
       ideal_for: strOrNull(form.ideal_for),
       show_financing: form.show_financing || false,
+      show_street_view: form.show_street_view ?? true,
       partnership_enabled: form.partnership_enabled || false,
       commission_percent: numOrNull(form.commission_percent),
       partner_percent: numOrNull(form.partner_percent),
@@ -635,6 +638,28 @@ export default function SellerItemForm() {
             </label>
           </div>
         )}
+
+        {/* Street View Toggle */}
+        <div className="bg-card border border-border rounded-2xl p-5">
+          <label className="flex items-start gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={form.show_street_view}
+              onChange={(e) => setForm((f) => ({ ...f, show_street_view: e.target.checked }))}
+              className="w-5 h-5 mt-0.5 rounded border-border text-primary focus:ring-primary"
+            />
+            <div className="flex-1">
+              <p className="font-display font-bold text-foreground text-sm">👁️ Mostrar botão de Street View 360°</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Exibe um botão sobre o mapa do imóvel que abre o <strong>Google Street View</strong> em uma nova aba, posicionado no endereço cadastrado.
+                O visitante pode "andar" virtualmente pela rua e ver a fachada e o entorno do imóvel em 360°.
+              </p>
+              <p className="text-xs text-muted-foreground mt-2">
+                💡 <strong>Dica:</strong> Desative se o imóvel estiver em uma rua sem cobertura do Street View, em condomínio fechado ou se preferir não revelar o entorno.
+              </p>
+            </div>
+          </label>
+        </div>
 
         {/* Partnership */}
         <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
