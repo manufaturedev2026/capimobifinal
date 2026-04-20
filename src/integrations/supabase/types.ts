@@ -1786,6 +1786,7 @@ export type Database = {
           seller_type: Database["public"]["Enums"]["seller_type"]
           service_area: boolean | null
           show_financing: boolean | null
+          show_street_view: boolean
           slug: string | null
           sold_at: string | null
           state: string | null
@@ -1863,6 +1864,7 @@ export type Database = {
           seller_type: Database["public"]["Enums"]["seller_type"]
           service_area?: boolean | null
           show_financing?: boolean | null
+          show_street_view?: boolean
           slug?: string | null
           sold_at?: string | null
           state?: string | null
@@ -1940,6 +1942,7 @@ export type Database = {
           seller_type?: Database["public"]["Enums"]["seller_type"]
           service_area?: boolean | null
           show_financing?: boolean | null
+          show_street_view?: boolean
           slug?: string | null
           sold_at?: string | null
           state?: string | null
