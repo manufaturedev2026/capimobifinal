@@ -295,7 +295,7 @@ export default function AdminSiteTab() {
         desc="O botão de notificações da home vincula automaticamente os inscritos ao primeiro admin cadastrado. Qualquer admin pode enviar pushes em massa pela aba 'Push' do painel — não é preciso configurar nada aqui."
       >
         <div className="rounded-xl border border-primary/20 bg-primary/5 px-4 py-3 text-sm text-foreground flex items-center gap-2">
-          <span className="inline-flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+          <span className="inline-flex h-2 w-2 rounded-full bg-primary animate-pulse" />
           <span><strong>Modo automático ativo:</strong> visitantes da home se inscrevem no canal global do ADM.</span>
         </div>
       </Section>
