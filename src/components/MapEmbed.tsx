@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { MapPin, Eye, Loader2 } from "lucide-react";
 
 interface MapEmbedProps {
@@ -12,40 +12,105 @@ interface NominatimResult {
   lon: string;
 }
 
+function normalizeAddressForGeocoding(address: string) {
+  return address
+    .replace(/\bAv\.?\b/gi, "Avenida")
+    .replace(/\bR\.?\b/gi, "Rua")
+    .replace(/\bRod\.?\b/gi, "Rodovia")
+    .replace(/\bES\b/gi, "Espírito Santo")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function buildGeocodingCandidates(address: string) {
+  const normalized = normalizeAddressForGeocoding(address);
+  const parts = normalized
+    .split(",")
+    .map((part) => part.trim())
+    .filter(Boolean);
+
+  const [street, number, neighborhood, city, state] = parts;
+  const withCountry = (value: string) => (value.toLowerCase().includes("brasil") ? value : `${value}, Brasil`);
+
+  return Array.from(
+    new Set(
+      [
+        normalized,
+        withCountry(normalized),
+        [street, number, neighborhood, city, state].filter(Boolean).join(", "),
+        withCountry([street, number, neighborhood, city, state].filter(Boolean).join(", ")),
+        [street, number, city, state].filter(Boolean).join(", "),
+        withCountry([street, number, city, state].filter(Boolean).join(", ")),
+        [street, city, state].filter(Boolean).join(", "),
+        withCountry([street, city, state].filter(Boolean).join(", ")),
+        [neighborhood, city, state].filter(Boolean).join(", "),
+        withCountry([neighborhood, city, state].filter(Boolean).join(", ")),
+      ].filter(Boolean),
+    ),
+  );
+}
+
 export default function MapEmbed({ address, className = "", showStreetView = true }: MapEmbedProps) {
-  const [openingStreetView, setOpeningStreetView] = useState(false);
   const encodedAddress = encodeURIComponent(address);
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`;
   const fallbackStreetViewUrl = `https://www.google.com/maps/@?api=1&map_action=pano&query=${encodedAddress}`;
   const mapSrc = `https://www.google.com/maps?q=${encodedAddress}&hl=pt-BR&z=16&output=embed`;
 
-  const handleOpenStreetView = async () => {
-    if (openingStreetView) return;
-    setOpeningStreetView(true);
+  const geocodingCandidates = useMemo(() => buildGeocodingCandidates(address), [address]);
+  const [streetViewUrl, setStreetViewUrl] = useState(fallbackStreetViewUrl);
+  const [resolvingStreetView, setResolvingStreetView] = useState(showStreetView);
 
-    let targetUrl = fallbackStreetViewUrl;
-
-    try {
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=${encodedAddress}`,
-        { headers: { Accept: "application/json", "Accept-Language": "pt-BR" } },
-      );
-      if (response.ok) {
-        const results = (await response.json()) as NominatimResult[];
-        const first = results?.[0];
-        if (first?.lat && first?.lon) {
-          // Force Street View panorama with coordinates (cbll) — works on desktop AND mobile.
-          targetUrl = `https://www.google.com/maps?layer=c&cbll=${first.lat},${first.lon}&cbp=12,0,0,0,0&z=17`;
-        }
-      }
-    } catch {
-      // keep fallback
-    } finally {
-      setOpeningStreetView(false);
+  useEffect(() => {
+    setStreetViewUrl(fallbackStreetViewUrl);
+    if (!showStreetView || !address.trim()) {
+      setResolvingStreetView(false);
+      return;
     }
 
-    // Open AFTER we know the URL — single user-gesture chain, no blank tab.
-    window.open(targetUrl, "_blank", "noopener,noreferrer");
+    let cancelled = false;
+
+    const resolveStreetView = async () => {
+      setResolvingStreetView(true);
+
+      for (const candidate of geocodingCandidates) {
+        try {
+          const response = await fetch(
+            `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=br&q=${encodeURIComponent(candidate)}`,
+            {
+              headers: {
+                Accept: "application/json",
+                "Accept-Language": "pt-BR",
+              },
+            },
+          );
+
+          if (!response.ok) continue;
+
+          const results = (await response.json()) as NominatimResult[];
+          const first = results?.[0];
+
+          if (first?.lat && first?.lon) {
+            const forcedStreetViewUrl = `https://www.google.com/maps?layer=c&cbll=${first.lat},${first.lon}&cbp=12,0,0,0,0&ie=UTF8&oe=UTF8&hl=pt-BR&z=17&data=!3m1!1e3`;
+            if (!cancelled) setStreetViewUrl(forcedStreetViewUrl);
+            break;
+          }
+        } catch {
+          continue;
+        }
+      }
+
+      if (!cancelled) setResolvingStreetView(false);
+    };
+
+    void resolveStreetView();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [address, fallbackStreetViewUrl, geocodingCandidates, showStreetView]);
+
+  const handleOpenStreetView = () => {
+    window.open(streetViewUrl, "_blank", "noopener,noreferrer");
   };
 
   return (
@@ -63,11 +128,11 @@ export default function MapEmbed({ address, className = "", showStreetView = tru
           <button
             type="button"
             onClick={handleOpenStreetView}
-            disabled={openingStreetView}
+            disabled={resolvingStreetView}
             className="absolute bottom-3 right-3 flex items-center gap-2 px-3.5 py-2 bg-primary text-primary-foreground text-xs font-semibold rounded-full shadow-lg hover:scale-105 transition-transform disabled:opacity-80 disabled:hover:scale-100"
           >
-            {openingStreetView ? <Loader2 size={14} className="animate-spin" /> : <Eye size={14} />}
-            {openingStreetView ? "Abrindo..." : "Ver Street View 360°"}
+            {resolvingStreetView ? <Loader2 size={14} className="animate-spin" /> : <Eye size={14} />}
+            {resolvingStreetView ? "Localizando rua..." : "Ver Street View 360°"}
           </button>
         )}
       </div>
