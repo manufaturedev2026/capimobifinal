@@ -147,15 +147,12 @@ export default function MapEmbed({ address, className = "", showStreetView = tru
           const results = (await response.json()) as NominatimResult[];
           const match = results.find(isCityMatch) || (expectedCity ? null : results[0]);
           if (match?.lat && match?.lon) {
-            if (!cancelled) {
-              setMapSrc(`https://www.google.com/maps?q=${match.lat},${match.lon}&hl=pt-BR&z=17&output=embed`);
-              if (showStreetView) {
-                const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-                const forcedStreetViewUrl = isMobile
-                  ? `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${match.lat},${match.lon}&heading=0&pitch=0&fov=90`
-                  : `https://www.google.com/maps?layer=c&cbll=${match.lat},${match.lon}&cbp=12,0,0,0,0&ie=UTF8&oe=UTF8&hl=pt-BR&z=17&data=!3m1!1e3`;
-                setStreetViewUrl(forcedStreetViewUrl);
-              }
+            if (!cancelled && showStreetView) {
+              const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+              const forcedStreetViewUrl = isMobile
+                ? `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${match.lat},${match.lon}&heading=0&pitch=0&fov=90`
+                : `https://www.google.com/maps?layer=c&cbll=${match.lat},${match.lon}&cbp=12,0,0,0,0&ie=UTF8&oe=UTF8&hl=pt-BR&z=17&data=!3m1!1e3`;
+              setStreetViewUrl(forcedStreetViewUrl);
             }
             break;
           }
