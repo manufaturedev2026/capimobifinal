@@ -2221,11 +2221,11 @@ export default function CompanyProfile() {
 
       {company.whatsapp && (dbProfile as any)?.show_floating_whatsapp && (
         <PoolBallButton
-          initialBottom={80}
+          initialBottom={144}
           initialRight={16}
           delay={0.3}
           onClick={() => handleWhatsApp(heroProduct?.title || company.name)}
-          className="fixed bottom-20 md:bottom-24 right-4 md:right-6 z-50 w-11 h-11 md:w-14 md:h-14 rounded-full text-white shadow-2xl flex items-center justify-center group cursor-grab active:cursor-grabbing"
+          className="fixed bottom-36 md:bottom-24 right-4 md:right-6 z-50 w-11 h-11 md:w-14 md:h-14 rounded-full text-white shadow-2xl flex items-center justify-center group cursor-grab active:cursor-grabbing"
           style={{
             background: "linear-gradient(135deg, #25D366, #128C7E)",
             boxShadow: "0 10px 30px rgba(37,211,102,0.55), 0 0 0 1px rgba(37,211,102,0.4)",
