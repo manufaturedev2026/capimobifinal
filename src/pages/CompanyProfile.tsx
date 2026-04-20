@@ -30,6 +30,7 @@ import WhatsAppLeadCapture from "@/components/WhatsAppLeadCapture";
 import StoriesBar from "@/components/StoriesBar";
 import StoryUploadDialog from "@/components/StoryUploadDialog";
 import PushSubscribeButton from "@/components/PushSubscribeButton";
+import InstallAppFloatingButton from "@/components/InstallAppFloatingButton";
 import { PoolBallButton } from "@/components/PoolBallButton";
 import { isIOSStandaloneApp } from "@/lib/pwaInstall";
 
@@ -2352,7 +2353,10 @@ export default function CompanyProfile() {
       )}
 
       {dbProfile?.id && (
-        <PushSubscribeButton sellerId={dbProfile.id} primaryColor={storeTheme.primary} />
+        <>
+          <InstallAppFloatingButton primaryColor={storeTheme.primary} />
+          <PushSubscribeButton sellerId={dbProfile.id} primaryColor={storeTheme.primary} />
+        </>
       )}
     </div>
   );

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Globe, Image, FileText, Save, Upload, Loader2, Type, Shield, Sparkles } from "lucide-react";
+import { Globe, Image, FileText, Save, Upload, Loader2, Type, Shield, Sparkles, BellRing } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { invalidateSiteSettings } from "@/hooks/useSiteSettings";
@@ -14,6 +14,7 @@ const SITE_KEYS = [
   "site_splash_image_url",
   "site_splash_enabled",
   "site_splash_bg_color",
+  "admin_push_seller_id",
 ] as const;
 
 type SiteSettings = Record<(typeof SITE_KEYS)[number], string>;
@@ -44,6 +45,7 @@ const DEFAULTS: SiteSettings = {
   site_splash_image_url: "/pwa-icon-512.png",
   site_splash_enabled: "true",
   site_splash_bg_color: "#FFFFFF",
+  admin_push_seller_id: "",
 };
 
 export default function AdminSiteTab() {
@@ -284,6 +286,21 @@ export default function AdminSiteTab() {
           className="w-full rounded-xl border border-input bg-background px-4 py-3 text-sm text-foreground font-mono focus:ring-2 focus:ring-ring focus:outline-none resize-y"
           placeholder="Cole aqui o conteúdo HTML da Política de Privacidade..."
         />
+      </Section>
+
+      {/* Admin Push Seller ID */}
+      <Section
+        icon={BellRing}
+        title="Push da Página Inicial (ADM)"
+        desc="ID do perfil (seller_id) que receberá os inscritos do botão de notificações da home. Visitantes que não vêm de uma loja de corretor recebem os pushes enviados por este ADM."
+      >
+        <input
+          value={settings.admin_push_seller_id}
+          onChange={(e) => setSettings((p) => ({ ...p, admin_push_seller_id: e.target.value }))}
+          className="w-full rounded-xl border border-input bg-background px-4 py-3 text-sm text-foreground font-mono focus:ring-2 focus:ring-ring focus:outline-none"
+          placeholder="UUID do perfil ADM (ex: 0123abcd-...)"
+        />
+        <p className="text-xs text-muted-foreground mt-2">Deixe em branco para ocultar o botão de notificações na página inicial.</p>
       </Section>
 
       {/* Save */}

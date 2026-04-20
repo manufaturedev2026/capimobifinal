@@ -1,18 +1,24 @@
 import { BellRing } from "lucide-react";
 import { detectIOS, isStandaloneDisplayMode } from "@/lib/pwaInstall";
 import { usePushSubscription } from "@/hooks/usePushSubscription";
+import { usePwaInstall } from "@/hooks/usePwaInstall";
 
 interface PushSubscribeButtonProps {
   sellerId: string;
   primaryColor?: string;
+  /** When true, only show after the PWA is installed (gives priority to the Install button) */
+  requireInstalled?: boolean;
 }
 
-export default function PushSubscribeButton({ sellerId, primaryColor }: PushSubscribeButtonProps) {
+export default function PushSubscribeButton({ sellerId, primaryColor, requireInstalled = true }: PushSubscribeButtonProps) {
   const { isSubscribed, isSupported, subscribe, loading } = usePushSubscription(sellerId);
+  const { installed, isPreview } = usePwaInstall();
 
   const isIOSBrowser = detectIOS() && !isStandaloneDisplayMode();
 
   if (!isSupported || isSubscribed || isIOSBrowser) return null;
+  // Wait for the user to install the app first
+  if (requireInstalled && !installed && !isPreview) return null;
 
   return (
     <div className="fixed bottom-20 right-4 z-40 md:bottom-6">
