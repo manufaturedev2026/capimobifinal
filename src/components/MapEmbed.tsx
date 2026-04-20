@@ -10,6 +10,33 @@ interface MapEmbedProps {
 interface NominatimResult {
   lat: string;
   lon: string;
+  display_name?: string;
+  address?: {
+    city?: string;
+    town?: string;
+    village?: string;
+    municipality?: string;
+    state?: string;
+    state_code?: string;
+  };
+}
+
+const BR_STATE_NAMES: Record<string, string> = {
+  AC: "Acre", AL: "Alagoas", AP: "Amapá", AM: "Amazonas", BA: "Bahia",
+  CE: "Ceará", DF: "Distrito Federal", ES: "Espírito Santo", GO: "Goiás",
+  MA: "Maranhão", MT: "Mato Grosso", MS: "Mato Grosso do Sul", MG: "Minas Gerais",
+  PA: "Pará", PB: "Paraíba", PR: "Paraná", PE: "Pernambuco", PI: "Piauí",
+  RJ: "Rio de Janeiro", RN: "Rio Grande do Norte", RS: "Rio Grande do Sul",
+  RO: "Rondônia", RR: "Roraima", SC: "Santa Catarina", SP: "São Paulo",
+  SE: "Sergipe", TO: "Tocantins",
+};
+
+function normalizeText(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
 }
 
 function normalizeAddressForGeocoding(address: string) {
@@ -71,34 +98,62 @@ export default function MapEmbed({ address, className = "", showStreetView = tru
 
     let cancelled = false;
 
+    const parts = normalizeAddressForGeocoding(address)
+      .split(",")
+      .map((part) => part.trim())
+      .filter(Boolean);
+    const [streetName, numberPart, neighborhoodPart, cityPart, statePart] = parts;
+    const stateFull = statePart ? BR_STATE_NAMES[statePart.toUpperCase()] || statePart : "";
+    const expectedCity = cityPart ? normalizeText(cityPart) : "";
+    const expectedState = stateFull ? normalizeText(stateFull) : "";
+
+    const structuredUrl = (() => {
+      const params = new URLSearchParams({
+        format: "jsonv2",
+        addressdetails: "1",
+        limit: "1",
+        countrycodes: "br",
+      });
+      if (streetName) params.set("street", numberPart ? `${numberPart} ${streetName}` : streetName);
+      if (cityPart) params.set("city", cityPart);
+      if (stateFull) params.set("state", stateFull);
+      params.set("country", "Brasil");
+      return `https://nominatim.openstreetmap.org/search?${params.toString()}`;
+    })();
+
+    const queries = [structuredUrl, ...geocodingCandidates.map(
+      (c) => `https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=5&countrycodes=br&q=${encodeURIComponent(c)}`,
+    )];
+
+    const isCityMatch = (result: NominatimResult) => {
+      if (!expectedCity) return true;
+      const addr = result.address || {};
+      const resultCity = normalizeText(addr.city || addr.town || addr.village || addr.municipality || "");
+      const resultState = normalizeText(addr.state || "");
+      const cityOk = resultCity.includes(expectedCity) || expectedCity.includes(resultCity);
+      const stateOk = !expectedState || resultState.includes(expectedState) || expectedState.includes(resultState);
+      return cityOk && stateOk;
+    };
+
     const resolveStreetView = async () => {
       setResolvingStreetView(true);
 
-      for (const candidate of geocodingCandidates) {
+      for (const url of queries) {
         try {
-          const response = await fetch(
-            `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=br&q=${encodeURIComponent(candidate)}`,
-            {
-              headers: {
-                Accept: "application/json",
-                "Accept-Language": "pt-BR",
-              },
-            },
-          );
-
+          const response = await fetch(url, {
+            headers: { Accept: "application/json", "Accept-Language": "pt-BR" },
+          });
           if (!response.ok) continue;
-
           const results = (await response.json()) as NominatimResult[];
-          const first = results?.[0];
-
-          if (first?.lat && first?.lon) {
+          const match = results.find(isCityMatch) || (expectedCity ? null : results[0]);
+          if (match?.lat && match?.lon) {
             if (!cancelled) {
-              setMapSrc(`https://www.google.com/maps?q=${first.lat},${first.lon}&hl=pt-BR&z=17&output=embed`);
+              setMapSrc(`https://www.google.com/maps?q=${match.lat},${match.lon}&hl=pt-BR&z=17&output=embed`);
               if (showStreetView) {
                 const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
                 const forcedStreetViewUrl = isMobile
-                  ? `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${first.lat},${first.lon}&heading=0&pitch=0&fov=90`
-                  : `https://www.google.com/maps?layer=c&cbll=${first.lat},${first.lon}&cbp=12,0,0,0,0&ie=UTF8&oe=UTF8&hl=pt-BR&z=17&data=!3m1!1e3`;
+                  ? `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${match.lat},${match.lon}&heading=0&pitch=0&fov=90`
+                  : `https://www.google.com/maps?layer=c&cbll=${match.lat},${match.lon}&cbp=12,0,0,0,0&ie=UTF8&oe=UTF8&hl=pt-BR&z=17&data=!3m1!1e3`;
                 setStreetViewUrl(forcedStreetViewUrl);
               }
             }
