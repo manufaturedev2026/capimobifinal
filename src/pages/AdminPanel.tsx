@@ -847,6 +847,36 @@ export default function AdminPanel() {
                 </div>
               </div>
 
+              {/* Facebook / Meta Catalog Feed */}
+              <div className="rounded-xl border border-border p-4 mb-4 bg-gradient-to-br from-[#1877F2]/5 to-transparent">
+                <h4 className="font-bold text-sm text-foreground mb-2">📘 Catálogo Facebook / Instagram (Meta)</h4>
+                <p className="text-xs text-muted-foreground mb-2">
+                  Feed RSS 2.0 no padrão Meta Catalog. Cole esta URL em <strong>Meta Business → Comércio → Catálogos → Fonte de Dados → Feed Programado</strong> para alimentar Anúncios Dinâmicos no Facebook e Instagram.
+                </p>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <code className="text-xs bg-secondary px-3 py-1.5 rounded-lg text-foreground break-all">
+                    {`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/facebook-catalog-feed`}
+                  </code>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/facebook-catalog-feed`);
+                      toast({ title: "Link copiado!" });
+                    }}
+                    className="px-3 py-1.5 rounded-lg text-xs font-bold bg-primary text-primary-foreground hover:opacity-90"
+                  >
+                    <Copy size={12} className="inline mr-1" /> Copiar
+                  </button>
+                  <a
+                    href={`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/facebook-catalog-feed`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-3 py-1.5 rounded-lg text-xs font-bold bg-secondary text-foreground hover:bg-secondary/80"
+                  >
+                    <ExternalLink size={12} className="inline mr-1" /> Abrir
+                  </a>
+                </div>
+              </div>
+
               {/* Per-seller sitemaps */}
               <h4 className="font-bold text-sm text-foreground mb-3">📋 Sitemaps por Corretor</h4>
               <div className="relative mb-3">
