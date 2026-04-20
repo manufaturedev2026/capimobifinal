@@ -54,15 +54,17 @@ export default function MapEmbed({ address, className = "", showStreetView = tru
   const encodedAddress = encodeURIComponent(address);
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`;
   const fallbackStreetViewUrl = `https://www.google.com/maps/@?api=1&map_action=pano&query=${encodedAddress}`;
-  const mapSrc = `https://www.google.com/maps?q=${encodedAddress}&hl=pt-BR&z=16&output=embed`;
+  const fallbackMapSrc = `https://www.google.com/maps?q=${encodedAddress}&hl=pt-BR&z=16&output=embed`;
 
   const geocodingCandidates = useMemo(() => buildGeocodingCandidates(address), [address]);
   const [streetViewUrl, setStreetViewUrl] = useState(fallbackStreetViewUrl);
+  const [mapSrc, setMapSrc] = useState(fallbackMapSrc);
   const [resolvingStreetView, setResolvingStreetView] = useState(showStreetView);
 
   useEffect(() => {
     setStreetViewUrl(fallbackStreetViewUrl);
-    if (!showStreetView || !address.trim()) {
+    setMapSrc(fallbackMapSrc);
+    if (!address.trim()) {
       setResolvingStreetView(false);
       return;
     }
@@ -90,11 +92,16 @@ export default function MapEmbed({ address, className = "", showStreetView = tru
           const first = results?.[0];
 
           if (first?.lat && first?.lon) {
-            const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-            const forcedStreetViewUrl = isMobile
-              ? `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${first.lat},${first.lon}&heading=0&pitch=0&fov=90`
-              : `https://www.google.com/maps?layer=c&cbll=${first.lat},${first.lon}&cbp=12,0,0,0,0&ie=UTF8&oe=UTF8&hl=pt-BR&z=17&data=!3m1!1e3`;
-            if (!cancelled) setStreetViewUrl(forcedStreetViewUrl);
+            if (!cancelled) {
+              setMapSrc(`https://www.google.com/maps?q=${first.lat},${first.lon}&hl=pt-BR&z=17&output=embed`);
+              if (showStreetView) {
+                const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+                const forcedStreetViewUrl = isMobile
+                  ? `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${first.lat},${first.lon}&heading=0&pitch=0&fov=90`
+                  : `https://www.google.com/maps?layer=c&cbll=${first.lat},${first.lon}&cbp=12,0,0,0,0&ie=UTF8&oe=UTF8&hl=pt-BR&z=17&data=!3m1!1e3`;
+                setStreetViewUrl(forcedStreetViewUrl);
+              }
+            }
             break;
           }
         } catch {
@@ -110,7 +117,7 @@ export default function MapEmbed({ address, className = "", showStreetView = tru
     return () => {
       cancelled = true;
     };
-  }, [address, fallbackStreetViewUrl, geocodingCandidates, showStreetView]);
+  }, [address, fallbackStreetViewUrl, fallbackMapSrc, geocodingCandidates, showStreetView]);
 
   const handleOpenStreetView = () => {
     window.open(streetViewUrl, "_blank", "noopener,noreferrer");
