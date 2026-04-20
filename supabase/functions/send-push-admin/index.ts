@@ -176,6 +176,40 @@ Deno.serve(async (req) => {
       }
       const { data: filteredProfiles } = await profilesQuery;
       sellerIdsFilter = (filteredProfiles || []).map((p: any) => p.id);
+
+      // Special case: "clients" audience also includes anonymous homepage subscribers.
+      // They are stored under the admin's seller_id (the "mailbox" of the homepage button)
+      // regardless of whether the admin profile itself matches the clients filter.
+      if (audienceFilter === "clients" && !hasRegionFilter) {
+        const { data: setting } = await adminClient
+          .from("platform_settings")
+          .select("value")
+          .eq("key", "admin_push_seller_id")
+          .maybeSingle();
+
+        let homepageSellerId: string | null = setting?.value ?? null;
+        if (!homepageSellerId) {
+          // Fallback: oldest admin's profile id (mirrors HomePwaActions logic)
+          const { data: adminRole } = await adminClient
+            .from("user_roles")
+            .select("user_id")
+            .eq("role", "admin")
+            .limit(1)
+            .maybeSingle();
+          if (adminRole?.user_id) {
+            const { data: adminProf } = await adminClient
+              .from("profiles")
+              .select("id")
+              .eq("user_id", adminRole.user_id)
+              .maybeSingle();
+            homepageSellerId = adminProf?.id ?? null;
+          }
+        }
+        if (homepageSellerId && !sellerIdsFilter.includes(homepageSellerId)) {
+          sellerIdsFilter.push(homepageSellerId);
+        }
+      }
+
       if (sellerIdsFilter.length === 0) {
         return new Response(JSON.stringify({ sent: 0, failed: 0, total: 0, message: "No matching sellers" }), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
