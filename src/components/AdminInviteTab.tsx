@@ -325,7 +325,8 @@ export default function AdminInviteTab() {
         </div>
       </div>
 
-      {/* Flow editor */}
+      {/* Flow editor — hidden in AI mode */}
+      {config.chatMode !== "ai" && (
       <div className="bg-card border border-border rounded-xl p-4 space-y-3">
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-semibold text-foreground">🔀 Fluxo da Conversa — {
@@ -429,6 +430,7 @@ export default function AdminInviteTab() {
           })}
         </div>
       </div>
+      )}
 
       <Button onClick={handleSave} disabled={saving} className="w-full sm:w-auto">
         <Save size={16} /> {saving ? "Salvando..." : "Salvar Convite"}
