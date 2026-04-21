@@ -158,7 +158,7 @@ interface ChatMsg {
 }
 
 export default function CapturePropertyChatPage() {
-  const { slug } = useParams<{ slug: string }>();
+  const { slug, botSlug } = useParams<{ slug: string; botSlug?: string }>();
   const navigate = useNavigate();
   const chatRef = useRef<HTMLDivElement>(null);
 

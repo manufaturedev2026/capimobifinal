@@ -315,6 +315,60 @@ export type Database = {
         }
         Relationships: []
       }
+      capture_bots: {
+        Row: {
+          attendant_avatar: string | null
+          attendant_name: string
+          bot_type: string
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          opening_message: string | null
+          seller_id: string
+          slug: string
+          success_cta_label: string
+          success_cta_url: string | null
+          updated_at: string
+          user_id: string
+          whatsapp_group_url: string | null
+        }
+        Insert: {
+          attendant_avatar?: string | null
+          attendant_name?: string
+          bot_type?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          opening_message?: string | null
+          seller_id: string
+          slug: string
+          success_cta_label?: string
+          success_cta_url?: string | null
+          updated_at?: string
+          user_id: string
+          whatsapp_group_url?: string | null
+        }
+        Update: {
+          attendant_avatar?: string | null
+          attendant_name?: string
+          bot_type?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          opening_message?: string | null
+          seller_id?: string
+          slug?: string
+          success_cta_label?: string
+          success_cta_url?: string | null
+          updated_at?: string
+          user_id?: string
+          whatsapp_group_url?: string | null
+        }
+        Relationships: []
+      }
       commissions: {
         Row: {
           amount: number
