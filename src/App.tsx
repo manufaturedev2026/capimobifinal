@@ -188,6 +188,7 @@ const AppLayout = () => {
               <Route path="/vender" element={<Navigate to="/anunciar" replace />} />
               <Route path="/captar-imovel/:slug" element={<CapturePropertyPage />} />
               <Route path="/captar-imovel/:slug/chat" element={<CapturePropertyChatPage />} />
+              <Route path="/captar-imovel/:slug/:botSlug" element={<CapturePropertyChatPage />} />
               <Route path="/privacidade" element={<PrivacyPage />} />
               <Route path="/termos" element={<TermsPage />} />
               <Route path="*" element={<HomeRedirect />} />
