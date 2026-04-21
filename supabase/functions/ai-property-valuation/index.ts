@@ -466,7 +466,7 @@ async function fetchExternalMarket(
   let searchResults: Array<{ url: string; title?: string; description?: string; markdown?: string }> = [];
   try {
     const ctrl = new AbortController();
-    const timeoutId = setTimeout(() => ctrl.abort(), 45000);
+    const timeoutId = setTimeout(() => ctrl.abort(), 22000);
     const fcResp = await fetch("https://api.firecrawl.dev/v2/search", {
       method: "POST",
       headers: {
