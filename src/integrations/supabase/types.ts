@@ -109,6 +109,65 @@ export type Database = {
           },
         ]
       }
+      agenda_bots: {
+        Row: {
+          attendant_avatar: string | null
+          attendant_name: string
+          created_at: string
+          id: string
+          is_active: boolean
+          item_id: string | null
+          name: string
+          opening_message: string | null
+          seller_id: string
+          slug: string
+          success_cta_label: string
+          success_cta_url: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          attendant_avatar?: string | null
+          attendant_name?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          item_id?: string | null
+          name?: string
+          opening_message?: string | null
+          seller_id: string
+          slug: string
+          success_cta_label?: string
+          success_cta_url?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          attendant_avatar?: string | null
+          attendant_name?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          item_id?: string | null
+          name?: string
+          opening_message?: string | null
+          seller_id?: string
+          slug?: string
+          success_cta_label?: string
+          success_cta_url?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agenda_bots_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "seller_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ai_text_generations_log: {
         Row: {
           action: string

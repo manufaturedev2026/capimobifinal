@@ -7,37 +7,39 @@ import { supabase } from "@/integrations/supabase/client";
 import { useParams, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 
-interface ChatMsg {
-  id: string;
-  text: string;
-  sender: "bot" | "user";
-}
+interface ChatMsg { id: string; text: string; sender: "bot" | "user"; }
 
 interface BotConfig {
-  attendantName: string;
-  attendantAvatar: string;
-  openingMessage: string;
-  successCtaLabel: string;
-  successCtaUrl: string;
+  id: string | null;
+  attendant_name: string;
+  attendant_avatar: string | null;
+  opening_message: string | null;
+  success_cta_label: string;
+  success_cta_url: string | null;
+  item_id: string | null;
 }
 
-const DEFAULT_CONFIG: BotConfig = {
-  attendantName: "Assistente de Agendamento",
-  attendantAvatar: "",
-  openingMessage: "Olá! 👋 Vou te ajudar a agendar uma visita ao imóvel. É rápido e você escolhe o melhor dia e horário. 📅",
-  successCtaLabel: "💬 Falar no WhatsApp",
-  successCtaUrl: "",
+const FALLBACK: BotConfig = {
+  id: null,
+  attendant_name: "Assistente de Agendamento",
+  attendant_avatar: null,
+  opening_message: null,
+  success_cta_label: "💬 Falar no WhatsApp",
+  success_cta_url: null,
+  item_id: null,
 };
 
 export default function AgendaBotChatPage() {
-  const { slug } = useParams<{ slug: string }>();
+  const { slug, botSlug } = useParams<{ slug: string; botSlug?: string }>();
   const navigate = useNavigate();
   const chatRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const [config, setConfig] = useState<BotConfig>(DEFAULT_CONFIG);
+  const [config, setConfig] = useState<BotConfig>(FALLBACK);
   const [sellerProfile, setSellerProfile] = useState<any>(null);
+  const [prelinkedItem, setPrelinkedItem] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
 
   const [messages, setMessages] = useState<ChatMsg[]>([]);
   const [aiMessages, setAiMessages] = useState<{ role: "user" | "assistant"; content: string }[]>([]);
@@ -46,7 +48,6 @@ export default function AgendaBotChatPage() {
   const [aiLoading, setAiLoading] = useState(false);
   const [savedVisit, setSavedVisit] = useState<any>(null);
 
-  // Load seller + bot config
   useEffect(() => {
     const load = async () => {
       if (!slug) return;
@@ -57,37 +58,51 @@ export default function AgendaBotChatPage() {
         const { data: byId } = await supabase.from("profiles").select("*").eq("id", slug).maybeSingle();
         profile = byId;
       }
-      if (profile) {
-        setSellerProfile(profile);
-        const { data: cfgData } = await supabase
-          .from("platform_settings")
-          .select("value")
-          .eq("key", `agenda_bot_config_${profile.id}`)
+      if (!profile) { setNotFound(true); setLoading(false); return; }
+      setSellerProfile(profile);
+
+      // Carrega bot específico se botSlug fornecido
+      if (botSlug) {
+        const { data: bot } = await supabase
+          .from("agenda_bots")
+          .select("*")
+          .eq("seller_id", profile.id)
+          .eq("slug", botSlug)
+          .eq("is_active", true)
           .maybeSingle();
-        if (cfgData?.value) {
-          try {
-            const parsed = JSON.parse(cfgData.value);
-            setConfig({ ...DEFAULT_CONFIG, ...parsed });
-          } catch {}
+        if (!bot) { setNotFound(true); setLoading(false); return; }
+        setConfig({
+          id: bot.id,
+          attendant_name: bot.attendant_name,
+          attendant_avatar: bot.attendant_avatar,
+          opening_message: bot.opening_message,
+          success_cta_label: bot.success_cta_label,
+          success_cta_url: bot.success_cta_url,
+          item_id: bot.item_id,
+        });
+        if (bot.item_id) {
+          const { data: itm } = await supabase
+            .from("seller_items")
+            .select("id, title, category, neighborhood, address, city, bedrooms, price, photos")
+            .eq("id", bot.item_id).maybeSingle();
+          if (itm) setPrelinkedItem(itm);
         }
       }
       setLoading(false);
     };
     load();
-  }, [slug]);
+  }, [slug, botSlug]);
 
   const addBotMsg = useCallback((text: string) => {
-    setMessages((prev) => [...prev, { id: `bot-${Date.now()}-${Math.random()}`, text, sender: "bot" }]);
+    setMessages((p) => [...p, { id: `bot-${Date.now()}-${Math.random()}`, text, sender: "bot" }]);
   }, []);
-
   const addUserMsg = useCallback((text: string) => {
-    setMessages((prev) => [...prev, { id: `user-${Date.now()}`, text, sender: "user" }]);
+    setMessages((p) => [...p, { id: `user-${Date.now()}`, text, sender: "user" }]);
   }, []);
 
-  // Start chat
   const started = useRef(false);
   useEffect(() => {
-    if (started.current || loading || !sellerProfile) return;
+    if (started.current || loading || !sellerProfile || notFound) return;
     started.current = true;
     setTyping(true);
     (async () => {
@@ -97,21 +112,26 @@ export default function AgendaBotChatPage() {
             messages: [],
             sellerId: sellerProfile.id,
             sellerName: sellerProfile.company_name || sellerProfile.full_name || "",
+            prelinkedItem: prelinkedItem ? {
+              id: prelinkedItem.id, title: prelinkedItem.title, category: prelinkedItem.category,
+              neighborhood: prelinkedItem.neighborhood, address: prelinkedItem.address,
+              city: prelinkedItem.city, bedrooms: prelinkedItem.bedrooms, price: prelinkedItem.price,
+            } : undefined,
+            botId: config.id,
           },
         });
         if (error) throw error;
-        const reply = data?.reply || config.openingMessage;
+        const reply = data?.reply || config.opening_message || "Olá! Vou te ajudar a agendar uma visita. 👋";
         setAiMessages([{ role: "assistant", content: reply }]);
         addBotMsg(reply);
       } catch (e) {
         console.error("Bot start error:", e);
-        addBotMsg(config.openingMessage);
+        addBotMsg(config.opening_message || "Olá! Vou te ajudar a agendar uma visita. 👋");
       }
       setTyping(false);
     })();
-  }, [loading, sellerProfile]);
+  }, [loading, sellerProfile, notFound, prelinkedItem, config.id]);
 
-  // Auto-scroll
   useEffect(() => {
     if (chatRef.current) chatRef.current.scrollTop = chatRef.current.scrollHeight;
   }, [messages, typing]);
@@ -133,15 +153,19 @@ export default function AgendaBotChatPage() {
           messages: updated,
           sellerId: sellerProfile.id,
           sellerName: sellerProfile.company_name || sellerProfile.full_name || "",
+          prelinkedItem: prelinkedItem ? {
+            id: prelinkedItem.id, title: prelinkedItem.title, category: prelinkedItem.category,
+            neighborhood: prelinkedItem.neighborhood, address: prelinkedItem.address,
+            city: prelinkedItem.city, bedrooms: prelinkedItem.bedrooms, price: prelinkedItem.price,
+          } : undefined,
+          botId: config.id,
         },
       });
       if (error) throw error;
       const reply = data?.reply || "Desculpe, tente novamente.";
       setAiMessages((p) => [...p, { role: "assistant", content: reply }]);
       addBotMsg(reply);
-      if (data?.savedVisit) {
-        setSavedVisit(data.savedVisit);
-      }
+      if (data?.savedVisit) setSavedVisit(data.savedVisit);
     } catch (e) {
       console.error("AI error:", e);
       addBotMsg("Ops! Algo deu errado. Tente novamente 😊");
@@ -151,10 +175,7 @@ export default function AgendaBotChatPage() {
   };
 
   const openWhatsApp = () => {
-    if (config.successCtaUrl?.trim()) {
-      window.open(config.successCtaUrl, "_blank");
-      return;
-    }
+    if (config.success_cta_url?.trim()) { window.open(config.success_cta_url, "_blank"); return; }
     const phone = (sellerProfile?.phone || "").replace(/\D/g, "");
     if (!phone) return;
     const lines = [
@@ -169,9 +190,8 @@ export default function AgendaBotChatPage() {
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center bg-background"><div className="animate-pulse text-muted-foreground">Carregando...</div></div>;
   }
-
-  if (!sellerProfile) {
-    return <div className="min-h-screen flex items-center justify-center bg-background text-muted-foreground">Loja não encontrada</div>;
+  if (notFound || !sellerProfile) {
+    return <div className="min-h-screen flex items-center justify-center bg-background text-muted-foreground p-6 text-center">Bot ou loja não encontrado.</div>;
   }
 
   return (
@@ -180,25 +200,37 @@ export default function AgendaBotChatPage() {
         <title>Agendar Visita — {sellerProfile.company_name || sellerProfile.full_name}</title>
       </Helmet>
 
-      {/* WhatsApp-like header */}
       <div className="bg-[#075e54] text-white p-3 flex items-center gap-3 shadow-md">
         <button onClick={() => navigate(-1)} className="p-1 hover:bg-white/10 rounded">
           <ArrowLeft className="w-5 h-5" />
         </button>
         <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center overflow-hidden shrink-0">
-          {config.attendantAvatar ? (
-            <img src={config.attendantAvatar} alt="" className="w-full h-full object-cover" />
+          {config.attendant_avatar ? (
+            <img src={config.attendant_avatar} alt="" className="w-full h-full object-cover" />
           ) : (
             <CalendarIcon className="w-5 h-5" />
           )}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="font-semibold truncate">{config.attendantName}</p>
+          <p className="font-semibold truncate">{config.attendant_name}</p>
           <p className="text-xs opacity-80">online agora</p>
         </div>
       </div>
 
-      {/* Chat */}
+      {prelinkedItem && (
+        <div className="bg-white border-b px-3 py-2 flex items-center gap-2 text-xs">
+          {prelinkedItem.photos?.[0] && (
+            <img src={prelinkedItem.photos[0]} alt="" className="w-10 h-10 rounded object-cover" />
+          )}
+          <div className="flex-1 min-w-0">
+            <p className="font-semibold truncate">🏡 {prelinkedItem.title}</p>
+            <p className="text-muted-foreground truncate">
+              {[prelinkedItem.neighborhood, prelinkedItem.city].filter(Boolean).join(", ")}
+            </p>
+          </div>
+        </div>
+      )}
+
       <div ref={chatRef} className="flex-1 overflow-y-auto p-3 space-y-2">
         <AnimatePresence>
           {messages.map((m) => (
@@ -229,13 +261,12 @@ export default function AgendaBotChatPage() {
         {savedVisit && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-center pt-2">
             <Button onClick={openWhatsApp} className="bg-[#25d366] hover:bg-[#20b858] text-white shadow-lg">
-              {config.successCtaLabel}
+              {config.success_cta_label}
             </Button>
           </motion.div>
         )}
       </div>
 
-      {/* Input */}
       {!savedVisit && (
         <div className="bg-[#f0f0f0] p-2 flex gap-2 items-center">
           <Input
