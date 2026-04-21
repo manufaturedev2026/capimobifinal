@@ -1004,9 +1004,10 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
             <div className="grid gap-4 lg:grid-cols-2">
               {visiblePartnerships.map(p => {
                 const gains = p.item ? calcPartnerGain(p.item.price, p.item.commission_percent, p.item.partner_percent) : null;
+                const partnerStoreIdentifier = currentProfile?.slug || currentProfile?.id || null;
                 const publicUrl = p.item
-                  ? p.role === "requester" && currentProfile?.slug
-                    ? productUrl({ ...p.item, _isPartnerImport: true }, null, currentProfile.slug)
+                  ? p.role === "requester" && partnerStoreIdentifier
+                    ? productUrl({ ...p.item, _isPartnerImport: true }, null, partnerStoreIdentifier)
                     : productUrl(p.item)
                   : "#";
                 const ownerStoreUrl = p.item && p.partner?.slug && p.role === "requester" ? `/empresa/${p.partner.slug}` : null;
