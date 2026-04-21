@@ -190,7 +190,7 @@ export default function CaptureBotsManagerTab({ sellerId, sellerSlug }: Props) {
             <Icon className="w-5 h-5 text-primary" />
             <span>{editing.id ? "Editar bot" : "Novo bot"} — <span className="text-primary">{meta.label}</span></span>
           </h3>
-          <Button variant="ghost" size="sm" onClick={() => setEditing(null)}>Cancelar</Button>
+          <Button variant="outline" size="sm" onClick={() => setEditing(null)} className="bg-card text-foreground hover:bg-accent hover:text-accent-foreground border-border">Cancelar</Button>
         </div>
 
         <div className="rounded-2xl border border-border bg-background p-4 space-y-3 shadow-sm">
