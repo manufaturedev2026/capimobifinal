@@ -436,12 +436,40 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
     cancelado: { label: "Cancelado", color: "text-muted-foreground bg-muted", icon: XCircle },
   };
 
-  const filteredItems = availableItems.filter(i => {
-    if (!searchTerm) return true;
-    const q = searchTerm.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-    const match = (v: string | null) => v?.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(q);
-    return match(i.title) || match(i.city) || match(i.state) || match(i.neighborhood) || match(i.category);
-  });
+  const normalizeText = (v?: string | null) => (v || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  const nearbyCity = normalizeText(currentProfile?.city);
+  const nearbyState = normalizeText(currentProfile?.state);
+  const stateOptions = [...new Set(availableItems.map(i => i.state).filter(Boolean) as string[])].sort();
+  const cityOptions = [...new Set(
+    availableItems
+      .filter(i => !selectedState || normalizeText(i.state) === normalizeText(selectedState))
+      .map(i => i.city)
+      .filter(Boolean) as string[]
+  )].sort();
+
+  const filteredItems = availableItems
+    .filter(i => {
+      const itemCity = normalizeText(i.city);
+      const itemState = normalizeText(i.state);
+      const scopeMatch =
+        locationScope === "todos" ||
+        (locationScope === "proximos" && ((nearbyCity && itemCity === nearbyCity) || (nearbyState && itemState === nearbyState))) ||
+        (locationScope === "estado" && (!selectedState || itemState === normalizeText(selectedState))) ||
+        (locationScope === "cidade" && (!selectedCity || itemCity === normalizeText(selectedCity)) && (!selectedState || itemState === normalizeText(selectedState)));
+      if (!scopeMatch) return false;
+      if (!searchTerm) return true;
+      const q = normalizeText(searchTerm);
+      const match = (v: string | null) => normalizeText(v).includes(q);
+      return match(i.title) || match(i.city) || match(i.state) || match(i.neighborhood) || match(i.category) || match(i.seller?.full_name || null) || match(i.seller?.company_name || null);
+    })
+    .sort((a, b) => {
+      const score = (i: PartnershipItem) => {
+        if (nearbyCity && normalizeText(i.city) === nearbyCity) return 0;
+        if (nearbyState && normalizeText(i.state) === nearbyState) return 1;
+        return 2;
+      };
+      return score(a) - score(b);
+    });
 
   const requestStatusByItem = new Map(
     myRequests
