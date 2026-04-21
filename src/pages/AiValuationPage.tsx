@@ -499,7 +499,7 @@ export default function AiValuationPage() {
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-semibold mb-4">
             <Sparkles className="h-3.5 w-3.5" /> AVALIAÇÃO PROFISSIONAL
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-3">
+          <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-3 text-foreground">
             Quanto vale seu imóvel?
           </h1>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
