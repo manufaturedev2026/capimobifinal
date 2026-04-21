@@ -327,7 +327,7 @@ export default function CapturePropertyChatPage() {
       setAiMessages([{ role: "assistant", content: fallback }]);
     }
     setTyping(false);
-  }, [sellerProfile, addBotMsgInstant]);
+  }, [sellerProfile, addBotMsgInstant, flowType]);
 
   useEffect(() => {
     if (isAiMode && !loading && sellerProfile && messages.length === 0) {
