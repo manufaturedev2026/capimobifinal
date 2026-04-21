@@ -366,6 +366,7 @@ export default function CaptureBotsManagerTab({ sellerId, sellerSlug }: Props) {
           </div>
         )}
 
+        <Button onClick={save} disabled={saving} className="w-full sm:w-auto" size="lg">
           <Save className="w-4 h-4 mr-2" />
           {saving ? "Salvando..." : "Salvar bot"}
         </Button>
