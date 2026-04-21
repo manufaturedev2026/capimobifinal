@@ -39,6 +39,17 @@ const CONSERVACAO = ["Novo", "Reformado", "Bom estado", "Antigo", "Precisa refor
 const DOCUMENTACAO = ["Escritura ok", "Registro ok", "Averbação ok", "Financiável", "Pendências"];
 
 type Comparavel = { titulo: string; bairro: string; area: number; quartos: number | null; preco: number };
+type ComparavelExterno = { titulo: string; bairro?: string; cidade?: string; area?: number; quartos?: number; preco?: number; preco_m2?: number; fonte?: string; url?: string };
+type MercadoExterno = {
+  total: number;
+  preco_medio: number;
+  preco_mediano: number;
+  preco_m2_medio: number;
+  preco_m2_mediano: number;
+  preco_provavel_fechamento: number;
+  fontes_consultadas: string[];
+  resumo: string;
+};
 type Scores = { localizacao: number; estrutura: number; acabamento: number; diferenciais?: number; liquidez: number; documentacao: number };
 
 type Valuation = {
@@ -59,6 +70,8 @@ type Valuation = {
   comparaveis: Comparavel[];
   comparaveis_origem?: string;
   comparaveis_aviso?: string | null;
+  comparaveis_externos?: ComparavelExterno[];
+  mercado_externo?: MercadoExterno | null;
   meta?: {
     preco_m2: number;
     source: string;
@@ -77,6 +90,7 @@ type Valuation = {
       media_area_m2: number;
       media_preco: number;
     };
+    externo?: { total: number; fontes: string[]; preco_m2_mediano: number } | null;
   };
 };
 
