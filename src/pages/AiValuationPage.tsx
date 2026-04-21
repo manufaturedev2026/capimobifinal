@@ -1114,7 +1114,11 @@ export default function AiValuationPage() {
               </Card>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <Button variant="outline" size="lg" onClick={generateAd}>
+                <Button 
+                  size="lg" 
+                  onClick={generateAd}
+                  className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground border-0"
+                >
                   <Wand2 className="h-4 w-4 mr-2" /> Gerar anúncio IA
                 </Button>
                 <Button size="lg" onClick={handleCalculate} disabled={loading}>
