@@ -380,7 +380,7 @@ export function generateValuationReport(d: ValuationReportData): jsPDF {
   doc.text("AVALIADOR RESPONSÁVEL", W - 26, blockY + 8, { align: "right" });
   doc.setFont("helvetica", "bold");
   doc.setFontSize(11);
-  doc.text(d.avaliadorNome ?? "Sistema IA Capimobi", W - 26, blockY + 14, { align: "right" });
+  doc.text(d.avaliadorNome ?? "Especialista responsável", W - 26, blockY + 14, { align: "right" });
   let avalLineY = blockY + 22;
   if (d.avaliadorCreci && d.avaliadorCreci.trim().length > 0) {
     doc.setFont("helvetica", "normal");
@@ -1074,7 +1074,7 @@ export function generateValuationReport(d: ValuationReportData): jsPDF {
       yg += 20;
     } else {
       yg = para(
-        `${d.fotos.length} foto(s) enviada(s) e analisada(s) pela IA. As imagens foram utilizadas como base complementar para classificação visual e ajuste do valor.`,
+        `${d.fotos.length} foto(s) enviada(s) e analisada(s). As imagens foram utilizadas como base complementar para classificação visual e ajuste do valor.`,
         yg, { size: 9.5, color: GRAY }
       );
     }
@@ -1283,8 +1283,8 @@ export function generateValuationReport(d: ValuationReportData): jsPDF {
   renderList("Limitações da Avaliação", limitacoes, GRAY, "-");
 
   // ===== ASSINATURA DO RESPONSÁVEL TÉCNICO =====
-  if (y > H - 70) { footer("Página 6 de 6"); doc.addPage(); headerStrip("Responsável Técnico"); y = 38; }
-  y += 6;
+  if (y > H - 95) { footer("Página 6 de 6"); doc.addPage(); headerStrip("Responsável Técnico"); y = 38; }
+  y += 18;
   setColor(NAVY);
   doc.setFont("helvetica", "bold"); doc.setFontSize(10.5);
   doc.text("RESPONSÁVEL TÉCNICO", 14, y);
@@ -1327,9 +1327,7 @@ export function generateValuationReport(d: ValuationReportData): jsPDF {
   doc.text(codigo, 18, y + 14);
   setColor(GRAY);
   doc.setFont("helvetica", "normal"); doc.setFontSize(7);
-  doc.text("Documento autenticado", 18, y + 21);
-  doc.text("digitalmente pelo sistema", 18, y + 25);
-  doc.text("Capimobi IA.", 18, y + 29);
+  doc.text(`Emitido em ${dataEmissao}`, 18, y + 21);
 
   footer("Página 6 de 6");
 
