@@ -163,12 +163,16 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
   const [streetViewUrl, setStreetViewUrl] = useState(fallbackStreetViewUrl);
   const [mapSrc, setMapSrc] = useState(fallbackMapSrc);
   const [mapsUrl, setMapsUrl] = useState(fallbackMapsUrl);
+  const [streetViewEmbed, setStreetViewEmbed] = useState<string | null>(null);
   const [resolvingStreetView, setResolvingStreetView] = useState(false);
+  const [view, setView] = useState<"map" | "street">("map");
 
   useEffect(() => {
     setStreetViewUrl(fallbackStreetViewUrl);
     setMapSrc(fallbackMapSrc);
     setMapsUrl(fallbackMapsUrl);
+    setStreetViewEmbed(null);
+    setView("map");
 
     if (addressOverride) {
       setResolvingStreetView(false);
@@ -189,6 +193,8 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
         ? `https://www.google.com/maps/@?api=1&map_action=pano&query=${encodeURIComponent(label)}`
         : `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lon}&heading=0&pitch=0&fov=90`;
       setStreetViewUrl(panoUrl);
+      // Embeddable Street View iframe (no API key required via /maps?layer=c)
+      setStreetViewEmbed(`https://www.google.com/maps?layer=c&cbll=${lat},${lon}&cbp=11,0,0,0,0&output=embed`);
       setMapSrc(`https://www.google.com/maps?q=${lat},${lon}&hl=pt-BR&z=18&output=embed`);
       setMapsUrl(`https://www.google.com/maps/search/?api=1&query=${lat},${lon}`);
     };
