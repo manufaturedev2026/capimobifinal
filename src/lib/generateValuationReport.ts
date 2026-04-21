@@ -74,6 +74,8 @@ export type ValuationReportData = {
   avaliadorCreci?: string;
   avaliadorEmail?: string;
   empresaNome?: string;
+  /** Optional valuation row id used to derive a stable laudo code */
+  valuationId?: string;
   analiseVisual?: {
     scores: {
       visual_externo: number;
