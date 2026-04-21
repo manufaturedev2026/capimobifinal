@@ -155,6 +155,8 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
   const [savingVideo, setSavingVideo] = useState(false);
   const [mainTab, setMainTab] = useState<MainTab>("leads");
   const [expandedLeadId, setExpandedLeadId] = useState<string | null>(null);
+  const [leadsView, setLeadsView] = useState<"kanban" | "lista">("kanban");
+  const [draggingLeadId, setDraggingLeadId] = useState<string | null>(null);
 
   // Bot config
   const [botAttendantName, setBotAttendantName] = useState("Assistente Imobiliário");
