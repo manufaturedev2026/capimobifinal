@@ -1100,7 +1100,7 @@ export default function SellerDashboard() {
                     target="_blank" rel="noopener noreferrer"
                     className="mt-5 w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-green-500 text-white font-bold text-sm hover:bg-green-600 transition-colors"
                   >
-                    <Headphones size={16} /> Já comprei! Falar com {profile?.account_manager || "meu Gerente"}
+                    <Headphones size={16} /> Já comprei! Falar com {managerName}
                   </a>
 
                   <p className="text-center text-[11px] text-muted-foreground mt-2">
