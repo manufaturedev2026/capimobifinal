@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { generateValuationReport } from "@/lib/generateValuationReport";
 import AdvancedValuationFields, { ADVANCED_INITIAL, type AdvancedState } from "@/components/AdvancedValuationFields";
+import ApartmentValuationFields, { APARTMENT_INITIAL, type ApartmentState } from "@/components/ApartmentValuationFields";
 
 const TIPOS = ["Casa", "Apartamento", "Terreno", "Comercial", "Rural"];
 const TIPOS_ESTRUTURA = [
@@ -122,6 +123,11 @@ export default function AiValuationPage() {
   const updateAdv = <K extends keyof AdvancedState>(key: K, value: AdvancedState[K]) =>
     setAdv((s) => ({ ...s, [key]: value }));
 
+  // Módulo Apartamento
+  const [apt, setApt] = useState<ApartmentState>(APARTMENT_INITIAL);
+  const updateApt = <K extends keyof ApartmentState>(key: K, value: ApartmentState[K]) =>
+    setApt((s) => ({ ...s, [key]: value }));
+
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Valuation | null>(null);
 
@@ -193,6 +199,27 @@ export default function AiValuationPage() {
           extras, acabamento, conservacao, documentacao,
           modoAvaliacao: modoAvancado ? "avancado" : "simples",
           ...advancedPayload,
+          ...(tipo === "Apartamento" ? {
+            andarUnidade: Number(apt.andarUnidade) || null,
+            totalAndaresPredio: Number(apt.totalAndaresPredio) || null,
+            possuiElevador: apt.possuiElevador,
+            qtdElevadores: Number(apt.qtdElevadores) || null,
+            elevadorModerno: apt.elevadorModerno,
+            condominioGrande: apt.condominioGrande,
+            escadasLargas: apt.escadasLargas,
+            vagasGaragem: Number(apt.vagasGaragem) || 0,
+            portaria24h: apt.portaria24h,
+            lazerCompleto: apt.lazerCompleto,
+            taxaCondominio: Number(apt.taxaCondominio) || null,
+            vistaLivre: apt.vistaLivre,
+            solManha: apt.solManha,
+            solTarde: apt.solTarde,
+            barulhoExterno: apt.barulhoExterno,
+            acessibilidade: apt.acessibilidade,
+            publicoIdoso: apt.publicoIdoso,
+            ultimoAndar: apt.ultimoAndar,
+            garden: apt.garden,
+          } : {}),
         },
       });
       if (error) throw error;
