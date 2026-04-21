@@ -282,13 +282,13 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
               if (match?.lat && match?.lon) {
                 applyCoords(match.lat, match.lon, fullLabel);
               } else {
-                // Sem coords: ainda assim usa o endereço completo do CEP no embed por query
-                const encoded = encodeURIComponent(fullLabel);
-                if (!cancelled) {
-                  setStreetViewUrl(`https://www.google.com/maps/@?api=1&map_action=pano&query=${encoded}`);
-                  setStreetViewEmbed(`https://maps.google.com/maps?q=${encoded}&layer=c&cbp=11,0,0,0,0&output=svembed`);
-                  setMapSrc(`https://www.google.com/maps?q=${encoded}&hl=pt-BR&z=18&output=embed`);
-                  setMapsUrl(`https://www.google.com/maps/search/?api=1&query=${encoded}`);
+                const queryResults = await fetchNominatim(
+                  `https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=5&countrycodes=br&q=${encodeURIComponent(fullLabel)}`,
+                );
+                const queryMatch = queryResults?.find((r) => getCity(r).includes(normalizeText(city))) || queryResults?.[0];
+
+                if (queryMatch?.lat && queryMatch?.lon) {
+                  applyCoords(queryMatch.lat, queryMatch.lon, fullLabel);
                 }
               }
               if (!cancelled) setResolvingStreetView(false);
