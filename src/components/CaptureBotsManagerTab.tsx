@@ -86,15 +86,15 @@ export default function CaptureBotsManagerTab({ sellerId, sellerSlug }: Props) {
 
   useEffect(() => { load(); }, [sellerId]);
 
-  const startNew = (type: BotType) => {
+  const startNew = (type: BotType, useAi: boolean) => {
     const meta = TYPE_META[type];
     setEditing({
       id: "",
       seller_id: sellerId,
       user_id: "",
       bot_type: type,
-      slug: type,
-      name: meta.defaultName,
+      slug: useAi ? type : `${type}-form`,
+      name: `${meta.defaultName}${useAi ? " (IA)" : " (Formulário)"}`,
       attendant_name: "Assistente Imobiliário",
       attendant_avatar: null,
       opening_message: meta.defaultOpening,
@@ -102,6 +102,7 @@ export default function CaptureBotsManagerTab({ sellerId, sellerSlug }: Props) {
       success_cta_url: null,
       whatsapp_group_url: null,
       is_active: true,
+      use_ai: useAi,
     });
   };
 
