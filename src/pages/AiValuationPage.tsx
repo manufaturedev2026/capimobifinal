@@ -468,7 +468,6 @@ export default function AiValuationPage() {
         "Especialista responsável",
       avaliadorCreci: avaliadorCreci.trim() || undefined,
       avaliadorEmail: avaliadorEmail.trim() || user?.email,
-      empresaNome: "CAPIMOBI",
       valuationId: currentValuationId ?? undefined,
       finalidade: finalidade.trim() || undefined,
       proprietario:
@@ -526,14 +525,14 @@ export default function AiValuationPage() {
 
   const shareWhatsapp = () => {
     if (!result) return;
-    const msg = `📋 *Avaliação Imobiliária*\n\n🏠 ${tipo} em ${bairro}, ${cidade}/${estado}\n📐 ${areaConstruidaTotal || areaTotalCompat}m²\n\n💰 *Valor estimado:* ${fmtBRL(result.valor_estimado)}\n📊 Faixa: ${fmtBRL(result.faixa_min)} – ${fmtBRL(result.faixa_max)}\n⚡ Venda rápida: ${fmtBRL(result.venda_rapida)}\n👑 Venda premium: ${fmtBRL(result.venda_premium)}\n🏷 Aluguel estimado: ${fmtBRL(result.aluguel_estimado)}/mês\n⏱ Tempo médio: ${result.tempo_medio_venda_dias} dias\n⭐ Score geral: ${result.score_geral}/10\n\n_Capimobi IA_`;
+    const msg = `📋 *Avaliação Imobiliária*\n\n🏠 ${tipo} em ${bairro}, ${cidade}/${estado}\n📐 ${areaConstruidaTotal || areaTotalCompat}m²\n\n💰 *Valor estimado:* ${fmtBRL(result.valor_estimado)}\n📊 Faixa: ${fmtBRL(result.faixa_min)} – ${fmtBRL(result.faixa_max)}\n⚡ Venda rápida: ${fmtBRL(result.venda_rapida)}\n👑 Venda premium: ${fmtBRL(result.venda_premium)}\n🏷 Aluguel estimado: ${fmtBRL(result.aluguel_estimado)}/mês\n⏱ Tempo médio: ${result.tempo_medio_venda_dias} dias\n⭐ Score geral: ${result.score_geral}/10`;
     window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, "_blank");
   };
 
   const shareEmail = () => {
     if (!result) return;
     const subject = `Avaliação - ${tipo} em ${bairro}, ${cidade}`;
-    const body = `${tipo} em ${bairro}, ${cidade}/${estado}\n\nValor estimado: ${fmtBRL(result.valor_estimado)}\nFaixa: ${fmtBRL(result.faixa_min)} – ${fmtBRL(result.faixa_max)}\nVenda rápida: ${fmtBRL(result.venda_rapida)}\nVenda premium: ${fmtBRL(result.venda_premium)}\nAluguel estimado: ${fmtBRL(result.aluguel_estimado)}/mês\nTempo médio: ${result.tempo_medio_venda_dias} dias\nScore: ${result.score_geral}/10\n\n${result.justificativa}\n\n— Capimobi IA`;
+    const body = `${tipo} em ${bairro}, ${cidade}/${estado}\n\nValor estimado: ${fmtBRL(result.valor_estimado)}\nFaixa: ${fmtBRL(result.faixa_min)} – ${fmtBRL(result.faixa_max)}\nVenda rápida: ${fmtBRL(result.venda_rapida)}\nVenda premium: ${fmtBRL(result.venda_premium)}\nAluguel estimado: ${fmtBRL(result.aluguel_estimado)}/mês\nTempo médio: ${result.tempo_medio_venda_dias} dias\nScore: ${result.score_geral}/10\n\n${result.justificativa}`;
     window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
 
