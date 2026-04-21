@@ -172,25 +172,17 @@ export default function ProductDetail() {
         }
       }
     } else if (profile?.id && profile.id !== item.seller_id) {
-      const { data: listing } = await supabase
-        .from("partner_store_listings")
-        .select("id, partnership_id")
+      const { data: partnership } = await supabase
+        .from("property_partnerships")
+        .select("status")
         .eq("item_id", item.id)
-        .eq("partner_profile_id", profile.id)
-        .eq("is_visible", true)
+        .eq("requester_profile_id", profile.id)
+        .eq("status", "aprovado")
         .maybeSingle();
 
-      if (listing) {
-        const { data: partnership } = await supabase
-          .from("property_partnerships")
-          .select("status")
-          .eq("id", listing.partnership_id)
-          .maybeSingle();
-
-        if (partnership?.status === "aprovado") {
-          sellerProfile = profile;
-          effectiveSellerId = profile.id;
-        }
+      if (partnership?.status === "aprovado") {
+        sellerProfile = profile;
+        effectiveSellerId = profile.id;
       }
     }
 
