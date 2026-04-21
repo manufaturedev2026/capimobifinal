@@ -395,8 +395,184 @@ async function fetchMarketContext(
   };
 }
 
+// =================== BUSCA EXTERNA (Gemini + Google Search Grounding) ===================
+type ExternalComp = {
+  titulo: string;
+  bairro?: string;
+  cidade?: string;
+  area?: number;
+  quartos?: number;
+  preco?: number;
+  preco_m2?: number;
+  fonte?: string; // OLX, Zap, Viva Real, Imovelweb, imobiliária local
+  url?: string;
+};
+type ExternalMarket = {
+  total: number;
+  comparaveis: ExternalComp[];
+  preco_medio: number;
+  preco_mediano: number;
+  preco_m2_medio: number;
+  preco_m2_mediano: number;
+  preco_provavel_fechamento: number; // após desconto de negociação
+  fontes_consultadas: string[];
+  resumo: string;
+  aviso?: string;
+};
+
+function median(nums: number[]): number {
+  if (!nums.length) return 0;
+  const s = [...nums].sort((a, b) => a - b);
+  const m = Math.floor(s.length / 2);
+  return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
+}
+
+// Remove outliers usando IQR
+function removeOutliers(nums: number[]): number[] {
+  if (nums.length < 4) return nums;
+  const s = [...nums].sort((a, b) => a - b);
+  const q1 = s[Math.floor(s.length * 0.25)];
+  const q3 = s[Math.floor(s.length * 0.75)];
+  const iqr = q3 - q1;
+  const lo = q1 - 1.5 * iqr;
+  const hi = q3 + 1.5 * iqr;
+  return nums.filter(n => n >= lo && n <= hi);
+}
+
+async function fetchExternalMarket(
+  p: Payload, areaRef: number, finalidade: "venda" | "aluguel"
+): Promise<ExternalMarket | null> {
+  const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+  if (!LOVABLE_API_KEY) return null;
+
+  const quartos = Number(p.quartos) || 0;
+  const areaMin = Math.round(areaRef * 0.7);
+  const areaMax = Math.round(areaRef * 1.3);
+  const qMin = Math.max(1, quartos - 1);
+  const qMax = quartos + 1;
+  const finalidadeLabel = finalidade === "aluguel" ? "para alugar" : "à venda";
+
+  const prompt = `Você é um analista imobiliário. Pesquise na internet anúncios reais ATIVOS de ${p.tipo.toLowerCase()} ${finalidadeLabel} em ${p.bairro}, ${p.cidade}/${p.estado}.
+
+CRITÉRIOS DE BUSCA:
+- Tipo: ${p.tipo}${p.tipoEstrutura ? ` (${p.tipoEstrutura})` : ""}
+- Bairro prioritário: ${p.bairro} (depois bairros próximos da mesma cidade)
+- Metragem entre ${areaMin}m² e ${areaMax}m²
+- Quartos entre ${qMin} e ${qMax}
+- ${finalidade === "aluguel" ? "ALUGUEL apenas (ignorar venda)" : "VENDA apenas (ignorar aluguel)"}
+
+FONTES PERMITIDAS (priorize nesta ordem): OLX, Zap Imóveis, Viva Real, Imovelweb, ChavesNaMão, sites de imobiliárias locais de ${p.cidade}/${p.estado}.
+
+REGRAS:
+1. Use Google Search para encontrar anúncios públicos REAIS e ATIVOS.
+2. Extraia entre 5 e 12 anúncios distintos. Não invente. Se não achar, retorne menos.
+3. Remova duplicados (mesmo imóvel em portais diferentes).
+4. Descarte preços absurdos (ex: casa 200m² por R$ 5 mil; casa simples por R$ 10 milhões).
+5. Descarte anúncios sem preço claro.
+6. Para CADA anúncio extraído, retorne JSON com: titulo, bairro, area (m², número), quartos (número), preco (R$, número sem pontuação), fonte (nome do portal), url (link real).
+7. Calcule também: preco_medio, preco_mediano, preco_m2_medio, preco_m2_mediano (use mediana para reduzir efeito de outlier).
+8. Aplique desconto provável de negociação de 7% sobre a mediana → preco_provavel_fechamento.
+9. Liste as fontes_consultadas (apenas portais cujos resultados você usou).
+10. Escreva um resumo de 2-3 linhas sobre o mercado encontrado.
+
+RETORNE APENAS UM JSON VÁLIDO, sem texto antes/depois, neste formato exato:
+{
+  "comparaveis": [{"titulo":"...","bairro":"...","area":150,"quartos":3,"preco":450000,"fonte":"OLX","url":"https://..."}],
+  "preco_medio": 0,
+  "preco_mediano": 0,
+  "preco_m2_medio": 0,
+  "preco_m2_mediano": 0,
+  "preco_provavel_fechamento": 0,
+  "fontes_consultadas": ["OLX","Zap"],
+  "resumo": "..."
+}
+Se não houver dados confiáveis, retorne: {"comparaveis":[],"resumo":"Sem anúncios externos encontrados"}.`;
+
+  try {
+    const ctrl = new AbortController();
+    const timeoutId = setTimeout(() => ctrl.abort(), 45000);
+    const resp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
+      signal: ctrl.signal,
+      body: JSON.stringify({
+        model: "google/gemini-2.5-flash",
+        messages: [{ role: "user", content: prompt }],
+        tools: [{ type: "google_search" }],
+      }),
+    });
+    clearTimeout(timeoutId);
+
+    if (!resp.ok) {
+      const errTxt = await resp.text().catch(() => "");
+      console.error("external market gateway error", resp.status, errTxt);
+      return null;
+    }
+    const data = await resp.json();
+    let content: string = data.choices?.[0]?.message?.content ?? "";
+    // Tirar code fences se houver
+    content = content.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/i, "").trim();
+    // Recortar do primeiro { ao último }
+    const i = content.indexOf("{");
+    const j = content.lastIndexOf("}");
+    if (i < 0 || j < 0) return null;
+    const parsed = JSON.parse(content.slice(i, j + 1));
+
+    const compsRaw: ExternalComp[] = Array.isArray(parsed.comparaveis) ? parsed.comparaveis : [];
+    // Filtragem anti-outlier server-side (defesa em profundidade)
+    const [pmin, pmax] = PRECO_M2_RANGE[p.tipo] ?? [100, 50000];
+    const refMin = finalidade === "aluguel" ? pmin / 200 : pmin;
+    const refMax = finalidade === "aluguel" ? pmax / 50 : pmax;
+
+    const enriched = compsRaw
+      .map(c => {
+        const area = Number(c.area) || 0;
+        const preco = Number(c.preco) || 0;
+        const ppm2 = area > 0 ? preco / area : 0;
+        return { ...c, area, preco, preco_m2: Math.round(ppm2) };
+      })
+      .filter(c => c.preco > 0 && c.area > 0 && c.preco_m2! >= refMin && c.preco_m2! <= refMax);
+
+    // Remove duplicados por url ou (titulo+preco)
+    const seen = new Set<string>();
+    const unique = enriched.filter(c => {
+      const key = c.url || `${c.titulo}|${c.preco}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+
+    const precos = unique.map(c => c.preco!).filter(n => n > 0);
+    const ppm2s = unique.map(c => c.preco_m2!).filter(n => n > 0);
+    const precosClean = removeOutliers(precos);
+    const ppm2sClean = removeOutliers(ppm2s);
+
+    const preco_medio = precosClean.length ? Math.round(precosClean.reduce((a, b) => a + b, 0) / precosClean.length) : 0;
+    const preco_mediano = Math.round(median(precosClean));
+    const preco_m2_medio = ppm2sClean.length ? Math.round(ppm2sClean.reduce((a, b) => a + b, 0) / ppm2sClean.length) : 0;
+    const preco_m2_mediano = Math.round(median(ppm2sClean));
+    const preco_provavel_fechamento = preco_mediano ? Math.round(preco_mediano * 0.93) : 0;
+
+    return {
+      total: unique.length,
+      comparaveis: unique.slice(0, 10),
+      preco_medio,
+      preco_mediano,
+      preco_m2_medio,
+      preco_m2_mediano,
+      preco_provavel_fechamento,
+      fontes_consultadas: Array.isArray(parsed.fontes_consultadas) ? parsed.fontes_consultadas : [],
+      resumo: typeof parsed.resumo === "string" ? parsed.resumo : "",
+      aviso: unique.length === 0 ? "Sem anúncios externos confiáveis encontrados — usando apenas base interna." : undefined,
+    };
+  } catch (e) {
+    console.error("fetchExternalMarket failed:", e);
+    return null;
+  }
+}
+
 async function resolvePrecoM2(
-  supabase: any, p: Payload, market: MarketContext
+  supabase: any, p: Payload, market: MarketContext, external: ExternalMarket | null
 ): Promise<{ precoM2: number; source: string }> {
   const { data, error } = await supabase.rpc("resolve_price_per_sqm", {
     p_estado: p.estado, p_cidade: p.cidade, p_bairro: p.bairro, p_tipo: p.tipo,
