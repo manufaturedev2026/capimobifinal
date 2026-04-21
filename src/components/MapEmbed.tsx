@@ -327,27 +327,66 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
     window.open(streetViewUrl, "_blank", "noopener,noreferrer");
   };
 
+  const streetEmbedSrc = streetViewEmbed || addressOverride?.embedUrl || null;
+
   return (
     <div className={`rounded-2xl overflow-hidden border border-border ${className}`}>
-      <div className="relative aspect-[16/9] bg-muted">
-        <iframe
-          src={mapSrc}
-          className="w-full h-full border-0"
-          allowFullScreen
-          loading="lazy"
-          referrerPolicy="no-referrer-when-downgrade"
-          title={`Mapa - ${address}`}
-        />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-border">
+        {/* Mapa */}
+        <div className="relative aspect-[16/9] bg-muted">
+          <iframe
+            src={mapSrc}
+            className="w-full h-full border-0"
+            allowFullScreen
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            title={`Mapa - ${address}`}
+          />
+          <span className="absolute top-3 left-3 z-10 flex items-center gap-1.5 rounded-full bg-background/90 backdrop-blur px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-foreground shadow-md border border-border">
+            <MapIcon size={11} className="text-primary" /> Mapa
+          </span>
+        </div>
+
+        {/* Street View 360° */}
         {showStreetView && (
-          <button
-            type="button"
-            onClick={handleOpenStreetView}
-            aria-busy={resolvingStreetView}
-            className="absolute bottom-3 right-3 z-10 flex items-center gap-2 rounded-full bg-primary px-3.5 py-2 text-xs font-semibold text-primary-foreground shadow-lg transition-transform hover:scale-105"
-          >
-            {resolvingStreetView ? <Loader2 size={14} className="animate-spin" /> : <Eye size={14} />}
-            Ver Street View 360°
-          </button>
+          <div className="relative aspect-[16/9] bg-muted">
+            {streetEmbedSrc ? (
+              <iframe
+                src={streetEmbedSrc}
+                className="w-full h-full border-0"
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title={`Street View - ${address}`}
+              />
+            ) : (
+              <div className="w-full h-full flex flex-col items-center justify-center gap-2 text-muted-foreground text-xs">
+                {resolvingStreetView ? (
+                  <>
+                    <Loader2 size={20} className="animate-spin text-primary" />
+                    <span>Carregando Street View...</span>
+                  </>
+                ) : (
+                  <>
+                    <Eye size={20} className="text-primary" />
+                    <span>Street View indisponível</span>
+                  </>
+                )}
+              </div>
+            )}
+            <span className="absolute top-3 left-3 z-10 flex items-center gap-1.5 rounded-full bg-background/90 backdrop-blur px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-foreground shadow-md border border-border">
+              <Eye size={11} className="text-primary" /> Street View 360°
+            </span>
+            <button
+              type="button"
+              onClick={handleOpenStreetView}
+              aria-busy={resolvingStreetView}
+              className="absolute bottom-3 right-3 z-10 flex items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-[11px] font-semibold text-primary-foreground shadow-lg transition-transform hover:scale-105"
+            >
+              <ExternalLink size={12} />
+              Abrir
+            </button>
+          </div>
         )}
       </div>
       <a
