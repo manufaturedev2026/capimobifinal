@@ -182,6 +182,7 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
   const [mapSrc, setMapSrc] = useState(fallbackMapSrc);
   const [mapsUrl, setMapsUrl] = useState(fallbackMapsUrl);
   const [streetViewEmbed, setStreetViewEmbed] = useState<string | null>(null);
+  const [streetViewQuery, setStreetViewQuery] = useState<string | null>(null);
   const [resolvingStreetView, setResolvingStreetView] = useState(false);
   const [view, setView] = useState<"map" | "street">("map");
 
@@ -190,6 +191,7 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
     setMapSrc(fallbackMapSrc);
     setMapsUrl(fallbackMapsUrl);
     setStreetViewEmbed(null);
+    setStreetViewQuery(null);
     setView("map");
 
     if (addressOverride) {
