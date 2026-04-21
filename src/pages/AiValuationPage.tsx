@@ -103,6 +103,16 @@ export default function AiValuationPage() {
   const [numero, setNumero] = useState("");
   const [cep, setCep] = useState("");
 
+  // Avaliador (persistido localmente para reuso)
+  const [avaliadorNome, setAvaliadorNome] = useState<string>(() => {
+    if (typeof window === "undefined") return "";
+    return localStorage.getItem("valuation_avaliador_nome") || "";
+  });
+  const [avaliadorCreci, setAvaliadorCreci] = useState<string>(() => {
+    if (typeof window === "undefined") return "";
+    return localStorage.getItem("valuation_avaliador_creci") || "";
+  });
+
   // Imóvel — taxonomia em cascata Categoria → Subtipo → Estrutura
   const [categoria, setCategoria] = useState<CategoriaImovel>("Residencial");
   const [subtipo, setSubtipo] = useState<string>("Casa");
@@ -372,7 +382,12 @@ export default function AiValuationPage() {
         mercado_externo: result.mercado_externo,
       },
       analiseVisual: analiseVisual ?? undefined,
-      avaliadorNome: user?.user_metadata?.full_name || user?.email?.split("@")[0] || "Sistema IA Capimobi",
+      avaliadorNome:
+        avaliadorNome.trim() ||
+        user?.user_metadata?.full_name ||
+        user?.email?.split("@")[0] ||
+        "Sistema IA Capimobi",
+      avaliadorCreci: avaliadorCreci.trim() || undefined,
       avaliadorEmail: user?.email,
       empresaNome: "CAPIMOBI",
     });
@@ -858,6 +873,45 @@ export default function AiValuationPage() {
                 <p className="text-xs text-muted-foreground mb-4">
                   Gere um laudo de 6 páginas pronto para impressão, envio ao cliente ou anexo em propostas.
                 </p>
+
+                {/* Identificação do avaliador */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4 p-3 rounded-lg bg-background/60 border border-border/40">
+                  <div className="space-y-1">
+                    <Label htmlFor="avaliador-nome" className="text-xs flex items-center gap-1.5">
+                      <Award className="h-3 w-3 text-primary" /> Nome do avaliador
+                    </Label>
+                    <Input
+                      id="avaliador-nome"
+                      value={avaliadorNome}
+                      onChange={(e) => {
+                        const v = e.target.value.slice(0, 100);
+                        setAvaliadorNome(v);
+                        if (typeof window !== "undefined") localStorage.setItem("valuation_avaliador_nome", v);
+                      }}
+                      placeholder="Ex: João Silva"
+                      maxLength={100}
+                      className="h-9 text-sm"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor="avaliador-creci" className="text-xs flex items-center gap-1.5">
+                      <KeyRound className="h-3 w-3 text-primary" /> CRECI
+                    </Label>
+                    <Input
+                      id="avaliador-creci"
+                      value={avaliadorCreci}
+                      onChange={(e) => {
+                        const v = e.target.value.slice(0, 30);
+                        setAvaliadorCreci(v);
+                        if (typeof window !== "undefined") localStorage.setItem("valuation_avaliador_creci", v);
+                      }}
+                      placeholder="Ex: CRECI 12345-F"
+                      maxLength={30}
+                      className="h-9 text-sm"
+                    />
+                  </div>
+                </div>
+
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                   <Button onClick={downloadLaudo} className="bg-primary hover:bg-primary/90">
                     <FileBadge className="h-4 w-4 mr-1.5" /> Gerar Laudo
