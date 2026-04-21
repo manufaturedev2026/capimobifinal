@@ -1,5 +1,24 @@
 import { useEffect, useMemo, useState } from "react";
 import { MapPin, Eye, Loader2, Map as MapIcon, ExternalLink } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+
+let cachedMapsKey: string | null = null;
+let mapsKeyPromise: Promise<string> | null = null;
+async function getMapsKey(): Promise<string> {
+  if (cachedMapsKey) return cachedMapsKey;
+  if (mapsKeyPromise) return mapsKeyPromise;
+  mapsKeyPromise = (async () => {
+    try {
+      const { data } = await supabase.functions.invoke("get-maps-key");
+      cachedMapsKey = (data as { key?: string })?.key || "";
+      return cachedMapsKey;
+    } catch {
+      cachedMapsKey = "";
+      return "";
+    }
+  })();
+  return mapsKeyPromise;
+}
 
 interface MapEmbedProps {
   address: string;
@@ -185,6 +204,17 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
   const [streetViewQuery, setStreetViewQuery] = useState<string | null>(null);
   const [resolvingStreetView, setResolvingStreetView] = useState(false);
   const [view, setView] = useState<"map" | "street">("map");
+  const [mapsApiKey, setMapsApiKey] = useState<string>("");
+
+  useEffect(() => {
+    let active = true;
+    getMapsKey().then((k) => {
+      if (active) setMapsApiKey(k);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   useEffect(() => {
     setStreetViewUrl(fallbackStreetViewUrl);
@@ -364,19 +394,33 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
     };
   }, [address, cleanCep, addressOverride, fallbackStreetViewUrl, fallbackMapSrc, fallbackMapsUrl, geocodingCandidates, showStreetView]);
 
-  const addressOverrideStreetEmbed = addressOverride
-    ? `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${addressOverride.lat},${addressOverride.lon}&heading=0&pitch=0&fov=90`
+  // Official Google Maps Embed API — works inside iframe and shows real 360° Street View
+  const officialStreetEmbed = (() => {
+    if (!mapsApiKey) return null;
+    const base = `https://www.google.com/maps/embed/v1/streetview?key=${mapsApiKey}`;
+    if (addressOverride) {
+      return `${base}&location=${addressOverride.lat},${addressOverride.lon}&heading=0&pitch=0&fov=90`;
+    }
+    if (streetViewEmbed) {
+      // streetViewEmbed contains lat,lon coords from Photon
+      const match = streetViewEmbed.match(/viewpoint=([-\d.]+),([-\d.]+)/);
+      if (match) return `${base}&location=${match[1]},${match[2]}&heading=0&pitch=0&fov=90`;
+    }
+    const query = streetViewQuery || address;
+    if (query) return `${base}&location=${encodeURIComponent(query)}&heading=0&pitch=0&fov=90`;
+    return null;
+  })();
+
+  // Official Maps Embed (2D) for the map view when key is available
+  const officialMapEmbed = mapsApiKey
+    ? `https://www.google.com/maps/embed/v1/place?key=${mapsApiKey}&q=${addressOverride ? `${addressOverride.lat},${addressOverride.lon}` : encodedAddress}&zoom=17`
     : null;
-  const viaCepStreetEmbed = streetViewQuery
-    ? `https://www.google.com/maps/@?api=1&map_action=pano&query=${encodeURIComponent(streetViewQuery)}`
-    : null;
-  const addressStreetEmbed = address.trim()
-    ? `https://www.google.com/maps/@?api=1&map_action=pano&query=${encodedAddress}`
-    : null;
-  const streetEmbedSrc = streetViewEmbed || addressOverrideStreetEmbed || viaCepStreetEmbed || addressStreetEmbed;
+
+  const finalMapSrc = officialMapEmbed || mapSrc;
+  const streetEmbedSrc = officialStreetEmbed;
   const hasEmbeddedStreetView = Boolean(streetEmbedSrc);
   const isStreet = view === "street" && !!streetEmbedSrc;
-  const currentSrc = isStreet ? streetEmbedSrc : mapSrc;
+  const currentSrc = isStreet ? streetEmbedSrc : finalMapSrc;
 
   return (
     <div className={`rounded-2xl overflow-hidden border border-border ${className}`}>
