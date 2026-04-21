@@ -365,15 +365,6 @@ async function fetchMarketContext(
     };
   }
 
-  if (total === 0) {
-    return {
-      total: 0, avgBedrooms: 3, avgBathrooms: 2, avgArea: areaRef, avgPrice: 0,
-      pricePerM2Market: 0,
-      garagePenaltyWeight: 0.6, modernizationPenaltyWeight: 0.6,
-      bedroomExpectation: 3, topComparables: [],
-    };
-  }
-
   const avg = (arr: number[]) => arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
   const beds = list.map(c => Number(c.bedrooms) || 0).filter(n => n > 0);
   const baths = list.map(c => Number(c.bathrooms) || 0).filter(n => n > 0);
@@ -391,7 +382,6 @@ async function fetchMarketContext(
   const modernizationPenaltyWeight = pricePerM2Market > 4000 ? 0.9 : pricePerM2Market > 2500 ? 0.7 : 0.4;
 
   const topComparables = [...list]
-    .filter(c => (c.built_area || c.area) && c.price)
     .sort((a, b) => Math.abs((Number(a.built_area || a.area) || 0) - areaRef) - Math.abs((Number(b.built_area || b.area) || 0) - areaRef))
     .slice(0, 3);
 
@@ -400,6 +390,8 @@ async function fetchMarketContext(
     garagePenaltyWeight, modernizationPenaltyWeight,
     bedroomExpectation: Math.round(avgBedrooms),
     topComparables,
+    comparaveis_origem: origem,
+    comparaveis_aviso: aviso,
   };
 }
 
