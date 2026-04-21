@@ -401,14 +401,26 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
 
   // Official Google Maps Embed API — works inside iframe and shows real 360° Street View
   const officialStreetEmbed = (() => {
-    if (!mapsApiKey || !streetViewCoords) return null;
+    if (!mapsApiKey) return null;
     const base = `https://www.google.com/maps/embed/v1/streetview?key=${mapsApiKey}`;
-    const lat = Number(streetViewCoords.lat);
-    const lon = Number(streetViewCoords.lon);
 
-    if (!Number.isFinite(lat) || !Number.isFinite(lon)) return null;
+    if (streetViewCoords) {
+      const lat = Number(streetViewCoords.lat);
+      const lon = Number(streetViewCoords.lon);
 
-    return `${base}&location=${encodeURIComponent(`${lat},${lon}`)}&heading=0&pitch=0&fov=90`;
+      if (Number.isFinite(lat) && Number.isFinite(lon)) {
+        return `${base}&location=${lat},${lon}&heading=0&pitch=0&fov=90`;
+      }
+    }
+
+    const fallbackLocation = normalizeAddressForGeocoding(streetViewQuery || geocodingCandidates[0] || address)
+      .replace(/\s+-\s+/g, ", ")
+      .replace(/\s+/g, " ")
+      .trim();
+
+    if (!fallbackLocation) return null;
+
+    return `${base}&location=${encodeURIComponent(fallbackLocation)}&heading=0&pitch=0&fov=90`;
   })();
 
   // Official Maps Embed (2D) for the map view when key is available
