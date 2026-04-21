@@ -297,13 +297,22 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
             // DESCARTA: postcode com prefixo diferente (região errada).
             if (featurePostcode && !featurePostcode.startsWith(cepPrefix)) return null;
 
+            // Match de nome: completo (todos tokens) ou parcial (tokens em comum).
+            const normalizedFeatureStreet = normalizeStreet(featureName);
+            const streetTokens = normalizedStreet ? normalizedStreet.split(/\s+/).filter((t) => t.length > 2) : [];
+            const featureTokens = normalizedFeatureStreet ? normalizedFeatureStreet.split(/\s+/) : [];
+            const sharedTokens = streetTokens.filter((t) => featureTokens.includes(t)).length;
+            const fullNameMatch = normalizedStreet && normalizedFeatureStreet === normalizedStreet;
+            const partialRatio = streetTokens.length > 0 ? sharedTokens / streetTokens.length : 0;
+
             let score = 0;
 
             // Bairro exato = sinal mais forte (ViaCEP confirmou o bairro).
             if (normalizedDistrict && normalizeText(featureDistrict) === normalizedDistrict) score += 500;
 
-            // Rua exata dentro do bairro correto = match ideal.
-            if (normalizedStreet && normalizeStreet(featureName) === normalizedStreet) score += 400;
+            // Nome da rua: match completo > match parcial proporcional.
+            if (fullNameMatch) score += 400;
+            else if (partialRatio > 0) score += Math.round(partialRatio * 250);
 
             // CEP exato confirma; CEP próximo dá pontos proporcionais.
             if (featurePostcode === cleanCep) score += 300;
