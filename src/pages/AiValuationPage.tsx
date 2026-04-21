@@ -41,6 +41,7 @@ type Valuation = {
   justificativa: string;
   pontos_fortes: string[];
   pontos_atencao: string[];
+  sugestoes_valorizacao?: string[];
   meta?: {
     preco_m2: number;
     source: string;
@@ -49,6 +50,13 @@ type Valuation = {
     bonus_total_pct: number;
     desconto_total_pct: number;
     breakdown: Array<{ label: string; pct: number }>;
+    market?: {
+      comparaveis: number;
+      media_dormitorios: number;
+      media_banheiros: number;
+      media_area_m2: number;
+      media_preco: number;
+    };
   };
 };
 
