@@ -76,6 +76,8 @@ Deno.serve(async (req) => {
     });
 
     for (const profile of profiles) {
+      // Pula e-mails excluídos do funil
+      if (excludedSet.has(String(profile.email).toLowerCase().trim())) { skipped++; continue; }
       const ageDays = Math.floor((now - new Date(profile.created_at).getTime()) / 86400000);
 
       for (const step of stepsFiltered) {
