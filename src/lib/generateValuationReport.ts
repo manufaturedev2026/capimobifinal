@@ -906,6 +906,80 @@ export function generateValuationReport(d: ValuationReportData): jsPDF {
     y += 20;
   }
 
+  // ========== TABELA CONTÁBIL DE COMPOSIÇÃO ==========
+  if (precoM2Base > 0 && areaUsada > 0 && d.result.meta?.breakdown?.length) {
+    if (y > H - 80) { footer("Página 5 de 6"); doc.addPage(); headerStrip("Página 5 — Parecer (cont.)"); y = 38; }
+    setColor(NAVY);
+    doc.setFont("helvetica", "bold"); doc.setFontSize(10.5);
+    doc.text("COMPOSIÇÃO DETALHADA DO VALOR (R$)", 14, y);
+    setFill(GOLD);
+    doc.rect(14, y + 1.5, 8, 0.5, "F");
+    y += 8;
+
+    // Cabeçalho da tabela
+    setFill(NAVY);
+    doc.rect(14, y - 4, W - 28, 7, "F");
+    setColor([255, 255, 255]);
+    doc.setFont("helvetica", "bold"); doc.setFontSize(8.5);
+    doc.text("DESCRIÇÃO", 18, y);
+    doc.text("%", W - 78, y, { align: "right" });
+    doc.text("VALOR (R$)", W - 18, y, { align: "right" });
+    y += 6;
+
+    // Linha base
+    setFill([245, 247, 252]);
+    doc.rect(14, y - 4, W - 28, 7, "F");
+    setColor([20, 20, 30]);
+    doc.setFont("helvetica", "bold"); doc.setFontSize(9);
+    doc.text(`Valor base (${fmtBRL(precoM2Base)}/m² × ${areaUsada}m²)`, 18, y);
+    doc.setFont("helvetica", "normal");
+    doc.text("—", W - 78, y, { align: "right" });
+    doc.setFont("helvetica", "bold");
+    doc.text(fmtBRL(valorBase), W - 18, y, { align: "right" });
+    y += 7;
+
+    // Linhas de ajustes
+    let acumulado = valorBase;
+    let zebra = false;
+    d.result.meta.breakdown.forEach((b) => {
+      if (y > H - 30) { footer("Página 5 de 6"); doc.addPage(); headerStrip("Página 5 — Parecer (cont.)"); y = 38; }
+      const valorAjuste = Math.round(valorBase * (b.pct / 100));
+      acumulado += valorAjuste;
+      if (zebra) { setFill([250, 250, 252]); doc.rect(14, y - 4, W - 28, 6.5, "F"); }
+      zebra = !zebra;
+      const safeLabel = String(b.label ?? "")
+        .replace(/[•●▪◦◆◇▶▷›»]/g, "-")
+        .replace(/[^\x20-\xFF]/g, "")
+        .trim();
+      setColor([40, 40, 50]);
+      doc.setFont("helvetica", "normal"); doc.setFontSize(8.8);
+      const labelLine = doc.splitTextToSize(safeLabel, W - 100)[0] || safeLabel;
+      doc.text(labelLine, 18, y);
+      setColor(b.pct > 0 ? GREEN : AMBER);
+      doc.setFont("helvetica", "bold");
+      doc.text(`${b.pct > 0 ? "+" : ""}${b.pct}%`, W - 78, y, { align: "right" });
+      doc.text(`${valorAjuste >= 0 ? "+" : ""}${fmtBRL(valorAjuste)}`, W - 18, y, { align: "right" });
+      y += 6;
+    });
+
+    // Linha total
+    y += 1;
+    setFill(NAVY);
+    doc.rect(14, y - 4, W - 28, 8, "F");
+    setColor([255, 255, 255]);
+    doc.setFont("helvetica", "bold"); doc.setFontSize(10);
+    doc.text("VALOR FINAL ESTIMADO", 18, y + 0.5);
+    setColor(GOLD);
+    doc.setFontSize(11);
+    doc.text(fmtBRL(d.result.valor_estimado), W - 18, y + 0.5, { align: "right" });
+    y += 11;
+
+    setColor(GRAY);
+    doc.setFont("helvetica", "italic"); doc.setFontSize(7.5);
+    doc.text("Os valores em R$ são derivados pela aplicação de cada percentual sobre o valor base.", 14, y);
+    y += 6;
+  }
+
   if (y > H - 60) { footer("Página 5 de 6"); doc.addPage(); headerStrip("Página 5 — Parecer (cont.)"); y = 38; }
   setColor(NAVY);
   doc.setFont("helvetica", "bold");
@@ -1194,6 +1268,19 @@ export function generateValuationReport(d: ValuationReportData): jsPDF {
   }
   if (riscos.length === 0) riscos.push("Não foram identificados riscos documentais relevantes nas informações fornecidas.");
   renderList("Riscos Documentais", riscos, AMBER, "!");
+
+  // ===== LIMITAÇÕES DA AVALIAÇÃO (seção técnica formal) =====
+  const limitacoes: string[] = [
+    "Avaliação realizada com base em informações declaradas pelo solicitante e em análise visual de fotos enviadas, sem vistoria presencial no imóvel.",
+    "Não foi realizada inspeção estrutural, hidráulica, elétrica ou de fundações — eventuais patologias ocultas não puderam ser identificadas.",
+    "Os valores apresentados refletem condições de mercado vigentes na data de emissão; oscilações econômicas posteriores podem alterar o valor justo.",
+    "A análise documental se limita ao que foi declarado; recomenda-se conferência cartorial completa (matrícula, ônus, IPTU, débitos condominiais) antes de qualquer transação.",
+    d.result.mercado_externo && d.result.mercado_externo.total > 0
+      ? `Comparativos externos foram coletados de portais públicos (${(d.result.mercado_externo.fontes_consultadas || []).join(", ")}); preços anunciados podem diferir do efetivamente fechado.`
+      : "Quando comparativos externos não estão disponíveis, a avaliação utiliza tabela administrativa regional como referência de R$/m².",
+    "Este laudo possui caráter técnico-estimativo e não substitui avaliação judicial ou bancária formal exigida para finalidades específicas (penhora, garantia, inventário litigioso).",
+  ];
+  renderList("Limitações da Avaliação", limitacoes, GRAY, "-");
 
   // ===== ASSINATURA DO RESPONSÁVEL TÉCNICO =====
   if (y > H - 70) { footer("Página 6 de 6"); doc.addPage(); headerStrip("Responsável Técnico"); y = 38; }
