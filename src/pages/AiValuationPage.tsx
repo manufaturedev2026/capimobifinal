@@ -72,6 +72,7 @@ export default function AiValuationPage() {
   const [cidade, setCidade] = useState("");
   const [bairro, setBairro] = useState("");
   const [rua, setRua] = useState("");
+  const [numero, setNumero] = useState("");
   const [cep, setCep] = useState("");
   const [tipo, setTipo] = useState("Casa");
   const [areaTotal, setAreaTotal] = useState("");
@@ -112,7 +113,7 @@ export default function AiValuationPage() {
     try {
       const { data, error } = await supabase.functions.invoke("ai-property-valuation", {
         body: {
-          estado, cidade, bairro, rua, cep, tipo,
+          estado, cidade, bairro, rua, numero, cep, tipo,
           areaTotal: Number(areaTotal),
           areaConstruida: Number(areaConstruida) || null,
           quartos: Number(quartos), banheiros: Number(banheiros),
@@ -170,7 +171,7 @@ export default function AiValuationPage() {
     doc.setFont("helvetica", "normal");
     doc.setFontSize(10);
     doc.text(`${tipo} — ${bairro}, ${cidade}/${estado}`, 14, y); y += 5;
-    if (rua) { doc.text(`Rua: ${rua}`, 14, y); y += 5; }
+    if (rua) { doc.text(`Rua: ${rua}${numero ? `, ${numero}` : ""}`, 14, y); y += 5; }
     doc.text(`Área: ${areaTotal}m²${areaConstruida ? ` (constr. ${areaConstruida}m²)` : ""}`, 14, y); y += 5;
     doc.text(`${quartos}q (${suites}s) | ${banheiros} banheiros | ${garagem} vagas`, 14, y); y += 5;
     doc.text(`Acabamento: ${acabamento} | Conservação: ${conservacao}`, 14, y); y += 5;
@@ -244,7 +245,7 @@ export default function AiValuationPage() {
   const buildLaudo = () => {
     if (!result) return null;
     return generateValuationReport({
-      estado, cidade, bairro, rua, cep, tipo,
+      estado, cidade, bairro, rua: rua ? `${rua}${numero ? `, ${numero}` : ""}` : rua, cep, tipo,
       areaTotal, areaConstruida, quartos, banheiros, suites, garagem,
       extras, acabamento, conservacao, documentacao,
       result,
@@ -369,6 +370,9 @@ export default function AiValuationPage() {
               </Field>
               <Field label="Rua (opcional)">
                 <Input value={rua} onChange={(e) => setRua(e.target.value)} placeholder="Nome da rua" />
+              </Field>
+              <Field label="Número (opcional)">
+                <Input value={numero} onChange={(e) => setNumero(e.target.value)} placeholder="Ex: 123" />
               </Field>
               <Field label="CEP (opcional)">
                 <Input value={cep} onChange={(e) => setCep(e.target.value)} placeholder="00000-000" />
