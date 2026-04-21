@@ -906,6 +906,8 @@ Deno.serve(async (req) => {
       scores: calc.scores, score_geral: calc.scoreGeral,
       macro_percents: calc.macroPercents,
       comparaveis: comparaveisOut,
+      comparaveis_origem: origemLabel,
+      comparaveis_aviso: market.comparaveis_aviso,
       meta: {
         preco_m2: precoM2, source,
         valor_base: calc.valorBase, area_calc: calc.areaCalc,
