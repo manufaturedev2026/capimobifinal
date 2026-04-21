@@ -52,6 +52,8 @@ type SellerProfile = {
   logo_url: string | null;
   company_name: string | null;
   creci: string | null;
+  city?: string | null;
+  state?: string | null;
   slug?: string | null;
 };
 
@@ -68,7 +70,7 @@ const ITEM_FIELDS = "id, title, slug, price, photos, city, state, neighborhood, 
 
 export default function PropertyPartnershipsTab({ profileId, userId }: { profileId: string; userId: string }) {
   const { toast } = useToast();
-  const [subTab, setSubTab] = useState<SubTab>("meus");
+  const [subTab, setSubTab] = useState<SubTab>("disponivel");
   const [availableItems, setAvailableItems] = useState<(PartnershipItem & { seller: SellerProfile | null })[]>([]);
   const [myRequests, setMyRequests] = useState<(PartnershipRequest & { item: PartnershipItem | null; owner: SellerProfile | null })[]>([]);
   const [myItems, setMyItems] = useState<PartnershipItem[]>([]);
@@ -78,6 +80,10 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
   const [loading, setLoading] = useState(true);
   const [savingId, setSavingId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [locationScope, setLocationScope] = useState<"proximos" | "estado" | "cidade" | "todos">("proximos");
+  const [selectedState, setSelectedState] = useState("");
+  const [selectedCity, setSelectedCity] = useState("");
+  const [currentProfile, setCurrentProfile] = useState<SellerProfile | null>(null);
 
   // Dialog states
   const [configItem, setConfigItem] = useState<PartnershipItem | null>(null);
