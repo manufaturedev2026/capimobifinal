@@ -2491,6 +2491,9 @@ export type Database = {
           outcome: string | null
           property_code: string | null
           property_type: string | null
+          push_created_sent_at: string | null
+          push_hour_before_sent_at: string | null
+          push_morning_sent_at: string | null
           responsible_name: string | null
           seller_id: string
           status: Database["public"]["Enums"]["visit_status"]
@@ -2513,6 +2516,9 @@ export type Database = {
           outcome?: string | null
           property_code?: string | null
           property_type?: string | null
+          push_created_sent_at?: string | null
+          push_hour_before_sent_at?: string | null
+          push_morning_sent_at?: string | null
           responsible_name?: string | null
           seller_id: string
           status?: Database["public"]["Enums"]["visit_status"]
@@ -2535,6 +2541,9 @@ export type Database = {
           outcome?: string | null
           property_code?: string | null
           property_type?: string | null
+          push_created_sent_at?: string | null
+          push_hour_before_sent_at?: string | null
+          push_morning_sent_at?: string | null
           responsible_name?: string | null
           seller_id?: string
           status?: Database["public"]["Enums"]["visit_status"]
