@@ -22,15 +22,14 @@ import {
 import { generateValuationReport } from "@/lib/generateValuationReport";
 import AdvancedValuationFields, { ADVANCED_INITIAL, type AdvancedState } from "@/components/AdvancedValuationFields";
 import ApartmentValuationFields, { APARTMENT_INITIAL, type ApartmentState } from "@/components/ApartmentValuationFields";
+import {
+  ESTRUTURAS_POR_TIPO, ESTRUTURA_PADRAO,
+  TerrenoExtraFields, TERRENO_INITIAL, type TerrenoState,
+  ComercialExtraFields, COMERCIAL_INITIAL, type ComercialState,
+  RuralExtraFields, RURAL_INITIAL, type RuralState,
+} from "@/components/DynamicStructureFields";
 
 const TIPOS = ["Casa", "Apartamento", "Terreno", "Comercial", "Rural"];
-const TIPOS_ESTRUTURA = [
-  "Casa térrea",
-  "Sobrado integrado",
-  "Casa com pavimento superior",
-  "Duas moradias no lote",
-  "Uso misto residencial/comercial",
-];
 const EXTRAS = [
   "Quintal", "Piscina", "Área gourmet", "Varanda",
   "Vista", "Mobiliado", "Portaria", "Elevador", "Energia solar",
@@ -128,6 +127,21 @@ export default function AiValuationPage() {
   const updateApt = <K extends keyof ApartmentState>(key: K, value: ApartmentState[K]) =>
     setApt((s) => ({ ...s, [key]: value }));
 
+  // Campos contextuais por tipo
+  const [terrenoExtra, setTerrenoExtra] = useState<TerrenoState>(TERRENO_INITIAL);
+  const [comercialExtra, setComercialExtra] = useState<ComercialState>(COMERCIAL_INITIAL);
+  const [ruralExtra, setRuralExtra] = useState<RuralState>(RURAL_INITIAL);
+  const updTerreno = <K extends keyof TerrenoState>(k: K, v: TerrenoState[K]) => setTerrenoExtra((s) => ({ ...s, [k]: v }));
+  const updComercial = <K extends keyof ComercialState>(k: K, v: ComercialState[K]) => setComercialExtra((s) => ({ ...s, [k]: v }));
+  const updRural = <K extends keyof RuralState>(k: K, v: RuralState[K]) => setRuralExtra((s) => ({ ...s, [k]: v }));
+
+  const estruturasDisponiveis = ESTRUTURAS_POR_TIPO[tipo] || [];
+
+  const handleTipoChange = (novoTipo: string) => {
+    setTipo(novoTipo);
+    setTipoEstrutura(ESTRUTURA_PADRAO[novoTipo] || "");
+  };
+
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Valuation | null>(null);
 
@@ -198,6 +212,27 @@ export default function AiValuationPage() {
           salas: Number(salas), cozinhas: Number(cozinhas), escritorios: Number(escritorios),
           extras, acabamento, conservacao, documentacao,
           modoAvaliacao: modoAvancado ? "avancado" : "simples",
+          ...(tipo === "Terreno" ? {
+            terrenoFrente: Number(terrenoExtra.frente) || null,
+            terrenoLaterais: Number(terrenoExtra.laterais) || null,
+            terrenoTopografia: terrenoExtra.topografia || null,
+            terrenoZoneamento: terrenoExtra.zoneamento || null,
+          } : {}),
+          ...(tipo === "Comercial" ? {
+            fluxoPessoas: comercialExtra.fluxoPessoas || null,
+            vitrine: comercialExtra.vitrine,
+            peDireito: Number(comercialExtra.peDireito) || null,
+            docas: comercialExtra.docas,
+            estacionamento: comercialExtra.estacionamento,
+          } : {}),
+          ...(tipo === "Rural" ? {
+            hectares: Number(ruralExtra.hectares) || null,
+            aguaAbundante: ruralExtra.aguaAbundante,
+            energia: ruralExtra.energia,
+            curral: ruralExtra.curral,
+            soloProdutivo: ruralExtra.soloProdutivo,
+            acessoAsfalto: ruralExtra.acessoAsfalto,
+          } : {}),
           ...advancedPayload,
           ...(tipo === "Apartamento" ? {
             andarUnidade: Number(apt.andarUnidade) || null,
@@ -387,7 +422,7 @@ export default function AiValuationPage() {
           </Section>
 
           <Section icon={<Home className="h-4 w-4" />} title="Tipo de imóvel">
-            <ChipGroup options={TIPOS} value={tipo} onChange={setTipo} />
+            <ChipGroup options={TIPOS} value={tipo} onChange={handleTipoChange} />
           </Section>
 
           {tipo === "Apartamento" && (
@@ -396,9 +431,27 @@ export default function AiValuationPage() {
             </Section>
           )}
 
-          {!isTerreno && (
+          {estruturasDisponiveis.length > 0 && (
             <Section icon={<Building2 className="h-4 w-4" />} title="Tipo de estrutura">
-              <ChipGroup options={TIPOS_ESTRUTURA} value={tipoEstrutura} onChange={setTipoEstrutura} />
+              <ChipGroup options={estruturasDisponiveis} value={tipoEstrutura} onChange={setTipoEstrutura} />
+            </Section>
+          )}
+
+          {tipo === "Terreno" && (
+            <Section icon={<Maximize2 className="h-4 w-4" />} title="Dados específicos do terreno">
+              <TerrenoExtraFields state={terrenoExtra} onChange={updTerreno} />
+            </Section>
+          )}
+
+          {tipo === "Comercial" && (
+            <Section icon={<Building2 className="h-4 w-4" />} title="Dados específicos comerciais">
+              <ComercialExtraFields state={comercialExtra} onChange={updComercial} />
+            </Section>
+          )}
+
+          {tipo === "Rural" && (
+            <Section icon={<Sparkles className="h-4 w-4" />} title="Dados específicos rurais">
+              <RuralExtraFields state={ruralExtra} onChange={updRural} />
             </Section>
           )}
 
