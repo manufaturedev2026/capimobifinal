@@ -250,10 +250,15 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
         const city = viaCep.localidade as string;
         const stateUf = viaCep.uf as string;
 
+        // Prioriza buscas pelo CEP (puro), depois CEP+cidade — só usa nome de rua como último recurso.
+        const cepFormatted = `${cleanCep.slice(0, 5)}-${cleanCep.slice(5)}`;
         const photonQueries = [
-          [street, numberPart, district, city, stateUf, cleanCep, "Brasil"].filter(Boolean).join(", "),
+          cleanCep,
+          cepFormatted,
+          `${cepFormatted}, Brasil`,
+          [cleanCep, city, stateUf, "Brasil"].filter(Boolean).join(", "),
+          [cepFormatted, district, city, stateUf, "Brasil"].filter(Boolean).join(", "),
           [street, numberPart, city, stateUf, cleanCep, "Brasil"].filter(Boolean).join(", "),
-          [cleanCep, district, city, stateUf, "Brasil"].filter(Boolean).join(", "),
         ];
 
         const allResults = (
@@ -263,6 +268,8 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
         const normalizedStreet = normalizeStreet(street);
         const normalizedDistrict = normalizeText(district);
         const normalizedCity = normalizeText(city);
+        const cepPrefix = cleanCep.slice(0, 5);
+        const cepNumeric = Number(cleanCep);
 
         const rankedResults = allResults
           .map((feature) => {
@@ -272,22 +279,28 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
             const name = feature.properties?.street || feature.properties?.name || "";
             const featureDistrict = feature.properties?.district || "";
             const featureCity = feature.properties?.city || "";
-            const featurePostcode = feature.properties?.postcode || "";
+            const featurePostcode = (feature.properties?.postcode || "").replace(/\D/g, "");
 
             let score = 0;
-            if (normalizeStreet(name) === normalizedStreet) score += 6;
-            else if (normalizeStreet(name).includes(normalizedStreet) || normalizedStreet.includes(normalizeStreet(name))) score += 3;
-            if (normalizedDistrict && normalizeText(featureDistrict) === normalizedDistrict) score += 3;
-            if (normalizeText(featureCity) === normalizedCity) score += 2;
-            if (featurePostcode.replace(/\D/g, "") === cleanCep) score += 4;
 
-            return { lat, lon, score };
+            // CEP é o critério dominante — vence qualquer match de nome.
+            if (featurePostcode === cleanCep) score += 100;
+            else if (featurePostcode && featurePostcode.startsWith(cepPrefix)) {
+              const distance = Math.abs(Number(featurePostcode) - cepNumeric);
+              score += Math.max(20, 60 - distance / 10);
+            }
+
+            if (normalizeText(featureCity) === normalizedCity) score += 5;
+            if (normalizedDistrict && normalizeText(featureDistrict) === normalizedDistrict) score += 4;
+            if (normalizeStreet(name) && normalizeStreet(name) === normalizedStreet) score += 3;
+
+            return { lat, lon, score, postcode: featurePostcode };
           })
-          .filter((item): item is { lat: number; lon: number; score: number } => Boolean(item))
+          .filter((item): item is { lat: number; lon: number; score: number; postcode: string } => Boolean(item))
           .sort((a, b) => b.score - a.score);
 
         const bestMatch = rankedResults[0];
-        if (bestMatch) {
+        if (bestMatch && bestMatch.score > 0) {
           applyStreetViewCoords(String(bestMatch.lat), String(bestMatch.lon));
         }
       } catch {
