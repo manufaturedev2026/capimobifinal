@@ -2477,6 +2477,90 @@ export type Database = {
         }
         Relationships: []
       }
+      visit_appointments: {
+        Row: {
+          address: string | null
+          city: string | null
+          client_email: string | null
+          client_name: string
+          client_phone: string | null
+          created_at: string
+          id: string
+          item_id: string | null
+          notes: string | null
+          outcome: string | null
+          property_code: string | null
+          property_type: string | null
+          responsible_name: string | null
+          seller_id: string
+          status: Database["public"]["Enums"]["visit_status"]
+          team_member_id: string | null
+          updated_at: string
+          user_id: string
+          visit_date: string
+          visit_time: string
+        }
+        Insert: {
+          address?: string | null
+          city?: string | null
+          client_email?: string | null
+          client_name: string
+          client_phone?: string | null
+          created_at?: string
+          id?: string
+          item_id?: string | null
+          notes?: string | null
+          outcome?: string | null
+          property_code?: string | null
+          property_type?: string | null
+          responsible_name?: string | null
+          seller_id: string
+          status?: Database["public"]["Enums"]["visit_status"]
+          team_member_id?: string | null
+          updated_at?: string
+          user_id: string
+          visit_date: string
+          visit_time: string
+        }
+        Update: {
+          address?: string | null
+          city?: string | null
+          client_email?: string | null
+          client_name?: string
+          client_phone?: string | null
+          created_at?: string
+          id?: string
+          item_id?: string | null
+          notes?: string | null
+          outcome?: string | null
+          property_code?: string | null
+          property_type?: string | null
+          responsible_name?: string | null
+          seller_id?: string
+          status?: Database["public"]["Enums"]["visit_status"]
+          team_member_id?: string | null
+          updated_at?: string
+          user_id?: string
+          visit_date?: string
+          visit_time?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "visit_appointments_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "seller_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "visit_appointments_team_member_id_fkey"
+            columns: ["team_member_id"]
+            isOneToOne: false
+            referencedRelation: "team_members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       withdrawals: {
         Row: {
           amount: number
@@ -2619,6 +2703,12 @@ export type Database = {
         | "concessionaria"
         | "construtora"
       seller_type: "imoveis" | "automoveis"
+      visit_status:
+        | "confirmada"
+        | "pendente"
+        | "reagendada"
+        | "cancelada"
+        | "fechada"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -2809,6 +2899,13 @@ export const Constants = {
         "construtora",
       ],
       seller_type: ["imoveis", "automoveis"],
+      visit_status: [
+        "confirmada",
+        "pendente",
+        "reagendada",
+        "cancelada",
+        "fechada",
+      ],
     },
   },
 } as const
