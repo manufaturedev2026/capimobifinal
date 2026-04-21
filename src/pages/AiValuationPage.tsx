@@ -373,6 +373,7 @@ export default function AiValuationPage() {
       }
 
       setResult(finalResult);
+      setCurrentValuationId((data as any)?.id ?? null);
       setTimeout(() => document.getElementById("result-section")?.scrollIntoView({ behavior: "smooth" }), 100);
     } catch (e: any) {
       toast({ title: "Erro ao calcular", description: e.message, variant: "destructive" });
