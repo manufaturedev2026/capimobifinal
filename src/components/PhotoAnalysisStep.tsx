@@ -59,7 +59,8 @@ export type AnaliseVisual = {
   total_fotos_analisadas: number;
 };
 
-const MAX_FOTOS = 12;
+const MIN_FOTOS = 4;
+const MAX_FOTOS = 10;
 const MAX_SIZE_MB = 8;
 
 interface Props {
