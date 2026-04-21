@@ -122,9 +122,22 @@ function analiseTecnicaParagrafo(d: ValuationReportData): string {
       ? "ajuste para baixo justificado por características específicas do imóvel"
       : "alinhamento técnico com a média comparável da região";
 
+  // Contar fatores reais analisados (não só os com ajuste != 0)
+  const fatoresAnalisados: string[] = [];
+  if (d.areaTotal) fatoresAnalisados.push("metragem");
+  if (d.acabamento) fatoresAnalisados.push("padrão de acabamento");
+  if (d.conservacao) fatoresAnalisados.push("estado de conservação");
+  if (d.extras?.length) fatoresAnalisados.push(`${d.extras.length} diferencial(is)`);
+  if (d.documentacao?.length) fatoresAnalisados.push("situação documental");
+  if ((Number(d.quartos) || 0) + (Number(d.suites) || 0) + (Number(d.banheiros) || 0) + (Number(d.garagem) || 0) > 0) {
+    fatoresAnalisados.push("estrutura interna");
+  }
+  const totalFatores = fatoresAnalisados.length || 5;
+  const ajustesAplicados = r.meta?.breakdown.length ?? 0;
+
   return [
     `O imóvel apresenta ${tendencia}, considerando metragem útil, padrão construtivo e atributos diferenciais.`,
-    `A análise considerou ${r.meta?.breakdown.length ?? 0} fatores objetivos de ajuste, ponderando estrutura, conservação, acabamento e situação documental.`,
+    `A análise considerou ${totalFatores} fatores objetivos (${fatoresAnalisados.join(", ")}), dos quais ${ajustesAplicados} resultaram em ajuste percentual sobre o preço base regional.`,
     `O resultado de ${fmtBRL(r.valor_estimado)} reflete o equilíbrio entre o preço base regional e os atributos específicos da propriedade.`,
   ].join(" ");
 }
