@@ -158,15 +158,15 @@ export default function ProductDetail() {
         .maybeSingle();
 
       if (partnerProfile) {
-        const { data: partnership } = await supabase
-          .from("property_partnerships")
-          .select("status")
+        const { data: listing } = await supabase
+          .from("partner_store_listings")
+          .select("id")
           .eq("item_id", item.id)
-          .eq("requester_profile_id", partnerProfile.id)
-          .eq("status", "aprovado")
+          .eq("partner_profile_id", partnerProfile.id)
+          .eq("is_visible", true)
           .maybeSingle();
 
-        if (partnership?.status === "aprovado") {
+        if (listing) {
           sellerProfile = partnerProfile;
           effectiveSellerId = partnerProfile.id;
         }
