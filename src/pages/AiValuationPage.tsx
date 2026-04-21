@@ -998,7 +998,7 @@ export default function AiValuationPage() {
       </Dialog>
 
       <Dialog open={adOpen} onOpenChange={setAdOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl" style={themeVars}>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Megaphone className="h-5 w-5 text-primary" /> Anúncio gerado por IA
