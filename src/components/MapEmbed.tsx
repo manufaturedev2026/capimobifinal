@@ -462,9 +462,6 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
           referrerPolicy="no-referrer-when-downgrade"
           title={isStreet ? `Street View - ${address}` : `Mapa - ${address}`}
         />
-        <span className="absolute top-3 left-3 z-10 flex items-center gap-1.5 rounded-full bg-background/90 backdrop-blur px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-foreground shadow-md border border-border">
-          {isStreet ? <><Eye size={11} className="text-primary" /> Street View 360°</> : <><MapIcon size={11} className="text-primary" /> Mapa</>}
-        </span>
         {showStreetView && (
           <button
             type="button"
