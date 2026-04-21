@@ -92,8 +92,24 @@ export type ValuationReportData = {
     resumo_geral: string;
     sugestoes_melhorias: string[];
     total_fotos_analisadas: number;
+    ambientes_identificados?: Array<{ foto_index: number; ambiente_detectado: string; observacao: string }>;
   };
+  /** Fotos enviadas pelo usuário (para incluir galeria no PDF) */
+  fotos?: Array<{ dataUrl: string; categoria: string }>;
 };
+
+/** Classificação de padrão construtivo (Baixo/Médio/Alto) */
+function classificarPadrao(d: ValuationReportData): { label: string; cor: [number, number, number]; descricao: string } {
+  const acabPct: Record<string, number> = { "Simples": 1, "Médio": 2, "Bom": 3, "Alto padrão": 4, "Luxo": 5 };
+  const baseAcab = acabPct[d.acabamento] ?? 2;
+  const visual = d.analiseVisual?.scores.acabamento_visual ?? d.analiseVisual?.score_visual_geral ?? 0;
+  // Combina declarado + visual (se houver) — escala 0-10
+  const visualNorm = visual > 0 ? visual : baseAcab * 2;
+  const score = (baseAcab * 2 + visualNorm) / 2;
+  if (score >= 8) return { label: "ALTO PADRÃO", cor: [110, 60, 160], descricao: "Imóvel com materiais nobres, acabamento refinado e atributos diferenciados." };
+  if (score >= 5.5) return { label: "MÉDIO PADRÃO", cor: [20, 30, 70], descricao: "Imóvel dentro da média comercial regional, com acabamentos funcionais e bom estado." };
+  return { label: "BAIXO PADRÃO", cor: [200, 130, 20], descricao: "Imóvel com acabamentos simples e econômicos, voltado a perfil popular." };
+}
 
 const fmtBRL = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
