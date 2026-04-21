@@ -396,8 +396,38 @@ export default function AiValuationPage() {
     setHistory(data || []);
   };
 
-  const buildLaudo = () => {
+  // Normaliza qualquer dataUrl (png/webp/jpeg) -> JPEG redimensionado p/ jsPDF
+  const normalizePhoto = (dataUrl: string, maxSide = 1200): Promise<string> =>
+    new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        const ratio = Math.min(1, maxSide / Math.max(img.width, img.height));
+        const w = Math.round(img.width * ratio);
+        const h = Math.round(img.height * ratio);
+        const canvas = document.createElement("canvas");
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return resolve(dataUrl);
+        ctx.fillStyle = "#fff";
+        ctx.fillRect(0, 0, w, h);
+        ctx.drawImage(img, 0, 0, w, h);
+        try { resolve(canvas.toDataURL("image/jpeg", 0.82)); }
+        catch { resolve(dataUrl); }
+      };
+      img.onerror = () => resolve(dataUrl);
+      img.src = dataUrl;
+    });
+
+  const buildLaudo = async () => {
     if (!result) return null;
+    const fotosNorm = fotos.length > 0
+      ? await Promise.all(
+          fotos.map(async (f) => ({
+            dataUrl: await normalizePhoto(f.dataUrl),
+            categoria: f.categoria,
+          }))
+        )
+      : undefined;
     return generateValuationReport({
       estado, cidade, bairro,
       rua: rua ? `${rua}${numero ? `, ${numero}` : ""}` : rua,
@@ -413,7 +443,7 @@ export default function AiValuationPage() {
         mercado_externo: result.mercado_externo,
       },
       analiseVisual: analiseVisual ?? undefined,
-      fotos: fotos.length > 0 ? fotos.map((f) => ({ dataUrl: f.dataUrl, categoria: f.categoria })) : undefined,
+      fotos: fotosNorm,
       avaliadorNome:
         avaliadorNome.trim() ||
         user?.user_metadata?.full_name ||
@@ -444,15 +474,15 @@ export default function AiValuationPage() {
     toast({ title: "Avaliação excluída" });
   };
 
-  const downloadLaudo = () => {
-    const doc = buildLaudo();
+  const downloadLaudo = async () => {
+    const doc = await buildLaudo();
     if (!doc) return;
     doc.save(`laudo-avaliacao-${bairro.replace(/\s+/g, "-").toLowerCase()}-${Date.now()}.pdf`);
     toast({ title: "Laudo PDF gerado!" });
   };
 
-  const printLaudo = () => {
-    const doc = buildLaudo();
+  const printLaudo = async () => {
+    const doc = await buildLaudo();
     if (!doc) return;
     const url = doc.output("bloburl");
     const win = window.open(url, "_blank");
