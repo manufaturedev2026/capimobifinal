@@ -494,6 +494,7 @@ Deno.serve(async (req) => {
       justificativa: ai.justificativa,
       pontos_fortes: ai.pontos_fortes,
       pontos_atencao: ai.pontos_atencao,
+      sugestoes_valorizacao: (ai as any).sugestoes_valorizacao ?? [],
       meta: {
         preco_m2: precoM2,
         source,
@@ -502,6 +503,13 @@ Deno.serve(async (req) => {
         bonus_total_pct: calc.bonusTotal,
         desconto_total_pct: calc.descontoTotal,
         breakdown: calc.breakdown,
+        market: {
+          comparaveis: market.total,
+          media_dormitorios: Number(market.avgBedrooms.toFixed(1)),
+          media_banheiros: Number(market.avgBathrooms.toFixed(1)),
+          media_area_m2: Math.round(market.avgArea),
+          media_preco: Math.round(market.avgPrice),
+        },
       },
     }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
   } catch (e) {
