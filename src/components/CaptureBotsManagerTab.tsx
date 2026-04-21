@@ -332,9 +332,9 @@ export default function CaptureBotsManagerTab({ sellerId, sellerSlug }: Props) {
               const m = TYPE_META[t];
               const Icon = m.icon;
               return (
-                <Button key={`ai-${t}`} onClick={() => startNew(t, true)} variant="outline" size="lg" className="h-auto py-3 flex-col gap-1 bg-card hover:bg-primary/10 hover:border-primary/40">
-                  <div className="flex items-center gap-2"><Icon className="w-4 h-4 text-primary" /> <Plus className="w-3 h-3" /></div>
-                  <span className="text-xs font-bold">{m.label}</span>
+                <Button key={`ai-${t}`} onClick={() => startNew(t, true)} variant="outline" size="lg" className="h-auto py-3 flex-col gap-1 bg-card text-foreground hover:bg-primary/10 hover:border-primary/40 hover:text-foreground border-border">
+                  <div className="flex items-center gap-2"><Icon className="w-4 h-4 text-primary" /> <Plus className="w-3 h-3 text-foreground" /></div>
+                  <span className="text-xs font-bold text-foreground">{m.label}</span>
                 </Button>
               );
             })}
@@ -348,9 +348,9 @@ export default function CaptureBotsManagerTab({ sellerId, sellerSlug }: Props) {
               const m = TYPE_META[t];
               const Icon = m.icon;
               return (
-                <Button key={`form-${t}`} onClick={() => startNew(t, false)} variant="outline" size="lg" className="h-auto py-3 flex-col gap-1 bg-card hover:bg-accent">
-                  <div className="flex items-center gap-2"><Icon className="w-4 h-4" /> <Plus className="w-3 h-3" /></div>
-                  <span className="text-xs font-bold">{m.label}</span>
+                <Button key={`form-${t}`} onClick={() => startNew(t, false)} variant="outline" size="lg" className="h-auto py-3 flex-col gap-1 bg-card text-foreground hover:bg-accent hover:text-accent-foreground border-border">
+                  <div className="flex items-center gap-2"><Icon className="w-4 h-4 text-foreground" /> <Plus className="w-3 h-3 text-foreground" /></div>
+                  <span className="text-xs font-bold text-foreground">{m.label}</span>
                 </Button>
               );
             })}
@@ -377,7 +377,7 @@ export default function CaptureBotsManagerTab({ sellerId, sellerSlug }: Props) {
                   </div>
                   <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
-                      <p className="font-bold truncate">{bot.name}</p>
+                      <p className="font-bold truncate text-foreground">{bot.name}</p>
                       <span className={`text-[10px] px-2 py-0.5 rounded-full border ${meta.color}`}>{meta.label}</span>
                       <span className={`text-[10px] px-2 py-0.5 rounded-full border flex items-center gap-1 ${bot.use_ai ? "bg-primary/10 text-primary border-primary/30" : "bg-muted text-muted-foreground border-border"}`}>
                         {bot.use_ai ? <><Zap className="w-2.5 h-2.5" /> IA</> : <><FileText className="w-2.5 h-2.5" /> Formulário</>}
