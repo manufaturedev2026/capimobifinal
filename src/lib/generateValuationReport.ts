@@ -653,12 +653,120 @@ export function generateValuationReport(d: ValuationReportData): jsPDF {
   y = para(d.result.justificativa, y);
   y += 2;
 
+  // ========== METODOLOGIA DE CÁLCULO ==========
+  if (y > H - 90) { footer("Página 5 de 6"); doc.addPage(); headerStrip("Página 5 — Parecer (cont.)"); y = 38; }
+  setColor(NAVY);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(10.5);
+  doc.text("METODOLOGIA DE CÁLCULO", 14, y);
+  setFill(GOLD);
+  doc.rect(14, y + 1.5, 8, 0.5, "F");
+  y += 7;
+
+  const precoM2Base = Number(d.result.meta?.preco_m2) || 0;
+  const areaUsada = Number(d.areaConstruidaTotal) || Number(d.areaTerreno) || 0;
+  const ajustePct = Number(d.result.meta?.ajuste_total_pct) || 0;
+  const valorBase = precoM2Base && areaUsada ? precoM2Base * areaUsada : 0;
+
+  let fontePrecoM2 = "Base comparativa regional";
+  let fonteDetalhe = "";
+  if (d.result.mercado_externo && d.result.mercado_externo.total > 0 && d.result.mercado_externo.preco_m2_mediano > 0) {
+    fontePrecoM2 = "Mediana de anúncios reais da internet";
+    fonteDetalhe = `${d.result.mercado_externo.total} anúncios analisados em ${(d.result.mercado_externo.fontes_consultadas || []).join(", ")}`;
+  } else if (d.result.comparaveis && d.result.comparaveis.length > 0) {
+    fontePrecoM2 = "Mediana do banco de dados validado";
+    fonteDetalhe = `${d.result.comparaveis.length} imóveis comparáveis na região`;
+  } else {
+    fontePrecoM2 = "Tabela administrativa por bairro/cidade";
+    fonteDetalhe = "Preço de referência regional cadastrado pela curadoria";
+  }
+
+  y = para(
+    `A avaliação utiliza o Método Comparativo Direto de Dados de Mercado (NBR 14653-2), partindo de um R$/m² de referência e aplicando ajustes percentuais ponderados conforme as características objetivas do imóvel.`,
+    y, { size: 9.5 }
+  );
+
+  setFill(LIGHT);
+  doc.roundedRect(14, y, W - 28, 26, 2, 2, "F");
+  setFill(GOLD);
+  doc.rect(14, y, 2, 26, "F");
+  setColor(GRAY);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(7.5);
+  doc.text("FONTE DO R$/M² BASE", 19, y + 6);
+  setColor(NAVY);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(10);
+  doc.text(fontePrecoM2, 19, y + 12);
+  setColor([60, 60, 70]);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(8.5);
+  doc.text(doc.splitTextToSize(fonteDetalhe, W - 70), 19, y + 18);
+  setColor(NAVY);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(11);
+  doc.text(precoM2Base > 0 ? `${fmtBRL(precoM2Base)}/m²` : "—", W - 18, y + 14, { align: "right" });
+  y += 30;
+
+  setColor(NAVY);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(9.5);
+  doc.text("FÓRMULA APLICADA", 14, y);
+  y += 5;
+  y = para(
+    `Valor Final = (R$/m² base × Área) × (1 + Σ ajustes ponderados)`,
+    y, { size: 9.5, bold: true }
+  );
+
+  if (precoM2Base > 0 && areaUsada > 0) {
+    setFill([245, 247, 252]);
+    doc.roundedRect(14, y - 2, W - 28, 16, 2, 2, "F");
+    setColor([40, 40, 50]);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9);
+    doc.text(`Valor base: ${fmtBRL(precoM2Base)} × ${areaUsada}m² = ${fmtBRL(valorBase)}`, 18, y + 3);
+    doc.text(`Ajuste técnico total: ${ajustePct > 0 ? "+" : ""}${ajustePct.toFixed(1)}%`, 18, y + 9);
+    setColor(NAVY);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+    doc.text(`= ${fmtBRL(d.result.valor_estimado)}`, W - 18, y + 7, { align: "right" });
+    y += 20;
+  }
+
+  if (y > H - 60) { footer("Página 5 de 6"); doc.addPage(); headerStrip("Página 5 — Parecer (cont.)"); y = 38; }
+  setColor(NAVY);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(9.5);
+  doc.text("PESOS DOS CRITÉRIOS DE AJUSTE", 14, y);
+  y += 5;
+  const pesos: Array<[string, string]> = [
+    ["Localização (bairro, vias, comércio próximo)", "até ±15%"],
+    ["Estrutura e tipo construtivo", "até ±10%"],
+    ["Padrão de acabamento", "até ±12%"],
+    ["Estado de conservação", "até ±10%"],
+    ["Documentação e regularidade", "até ±8%"],
+    ["Diferenciais (piscina, garagem extra, vista)", "até ±10%"],
+    ["Liquidez de mercado / tempo médio de venda", "até ±5%"],
+  ];
+  pesos.forEach(([crit, peso]) => {
+    if (y > H - 24) { footer("Página 5 de 6"); doc.addPage(); headerStrip("Página 5 — Parecer (cont.)"); y = 38; }
+    setColor([60, 60, 70]);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8.8);
+    doc.text(`• ${crit}`, 18, y);
+    setColor(GOLD);
+    doc.setFont("helvetica", "bold");
+    doc.text(peso, W - 18, y, { align: "right" });
+    y += 4.8;
+  });
+  y += 3;
+
   if (d.result.meta?.breakdown.length) {
     if (y > H - 60) { footer("Página 5 de 6"); doc.addPage(); headerStrip("Página 5 — Parecer (cont.)"); y = 38; }
     setColor(NAVY);
     doc.setFont("helvetica", "bold");
     doc.setFontSize(10.5);
-    doc.text("AJUSTES APLICADOS", 14, y);
+    doc.text("AJUSTES APLICADOS A ESTE IMÓVEL", 14, y);
     setFill(GOLD);
     doc.rect(14, y + 1.5, 8, 0.5, "F");
     y += 7;
@@ -674,6 +782,17 @@ export function generateValuationReport(d: ValuationReportData): jsPDF {
       doc.text(`${b.pct > 0 ? "+" : ""}${b.pct}%`, W - 18, y, { align: "right" });
       y += 5.5;
     });
+    y += 2;
+
+    setFill(LIGHT);
+    doc.roundedRect(14, y - 3, W - 28, 9, 1.5, 1.5, "F");
+    setColor(NAVY);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+    doc.text("AJUSTE TÉCNICO TOTAL", 18, y + 3);
+    setColor(ajustePct >= 0 ? GREEN : AMBER);
+    doc.text(`${ajustePct > 0 ? "+" : ""}${ajustePct.toFixed(1)}%`, W - 18, y + 3, { align: "right" });
+    y += 12;
   }
 
   footer("Página 5 de 6");
