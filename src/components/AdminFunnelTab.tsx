@@ -239,6 +239,71 @@ export default function AdminFunnelTab() {
 
   const renderPreview = (html: string, name = "João Silva") => html.replace(/\{\{nome\}\}/g, name);
 
+  const excludedSet = useMemo(
+    () => new Set(excluded.map((e) => e.email.toLowerCase().trim())),
+    [excluded]
+  );
+
+  const excludeEmail = async (email: string, reason?: string) => {
+    const clean = email.trim().toLowerCase();
+    if (!clean) return;
+    setBusyEmail(clean);
+    const { error } = await supabase
+      .from("funnel_excluded_emails")
+      .insert({ email: clean, reason: reason || "Removido manualmente pelo admin" });
+    setBusyEmail(null);
+    if (error) {
+      toast({ title: "Erro", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "E-mail removido do funil", description: clean });
+      load();
+    }
+  };
+
+  const reincludeEmail = async (email: string) => {
+    const clean = email.trim().toLowerCase();
+    setBusyEmail(clean);
+    const { error } = await supabase.from("funnel_excluded_emails").delete().eq("email", clean);
+    setBusyEmail(null);
+    if (error) toast({ title: "Erro", description: error.message, variant: "destructive" });
+    else { toast({ title: "E-mail reincluído no funil", description: clean }); load(); }
+  };
+
+  const addManualExclusion = async () => {
+    const emails = newExcludeEmail
+      .split(/[\s,;]+/)
+      .map((e) => e.trim().toLowerCase())
+      .filter((e) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e));
+    if (emails.length === 0) {
+      toast({ title: "Nenhum e-mail válido", variant: "destructive" });
+      return;
+    }
+    const rows = emails.map((email) => ({ email, reason: "Adicionado manualmente" }));
+    const { error } = await supabase.from("funnel_excluded_emails").upsert(rows, { onConflict: "email" });
+    if (error) toast({ title: "Erro", description: error.message, variant: "destructive" });
+    else {
+      toast({ title: `${emails.length} e-mail(s) excluído(s) do funil` });
+      setNewExcludeEmail("");
+      load();
+    }
+  };
+
+  const filteredRecipients = useMemo(() => {
+    let list = recipients;
+    if (recipientFilter === "active") list = list.filter((r) => !excludedSet.has(r.email.toLowerCase()));
+    if (recipientFilter === "excluded") list = list.filter((r) => excludedSet.has(r.email.toLowerCase()));
+    const q = recipientSearch.trim().toLowerCase();
+    if (q) list = list.filter((r) => r.email.toLowerCase().includes(q) || r.full_name.toLowerCase().includes(q));
+    return list;
+  }, [recipients, recipientFilter, excludedSet, recipientSearch]);
+
+  // E-mails excluídos manualmente que NÃO são perfis cadastrados
+  const orphanExclusions = useMemo(() => {
+    const profileEmails = new Set(recipients.map((r) => r.email.toLowerCase()));
+    return excluded.filter((e) => !profileEmails.has(e.email.toLowerCase()));
+  }, [excluded, recipients]);
+
+
   return (
     <div className="space-y-6 text-foreground">
       {/* Header */}
