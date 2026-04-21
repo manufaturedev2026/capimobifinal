@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,15 +8,26 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 import { BRAZIL_STATES } from "@/data/brazilStates";
 import { useCitiesByState } from "@/hooks/useCitiesByState";
-import { Sparkles, ArrowLeft, TrendingUp, Clock, Crown, Zap, Target, CheckCircle2, AlertCircle, Loader2, Brain, MapPin, Home, Maximize2, Bed } from "lucide-react";
+import {
+  Sparkles, ArrowLeft, TrendingUp, Clock, Crown, Zap, Target, CheckCircle2,
+  AlertCircle, Loader2, Brain, MapPin, Home, Maximize2, Bed, FileText, Save,
+  Megaphone, Download, History, Wand2,
+} from "lucide-react";
+import jsPDF from "jspdf";
 
 const TIPOS = ["Casa", "Apartamento", "Terreno", "Comercial", "Rural"];
-const EXTRAS = ["Quintal", "Piscina", "Área gourmet", "Varanda", "Vista privilegiada", "Portaria"];
+const EXTRAS = [
+  "Quintal", "Piscina", "Área gourmet", "Varanda",
+  "Vista privilegiada", "Mobiliado", "Portaria", "Elevador", "Energia solar",
+];
 const ACABAMENTOS = ["Simples", "Médio", "Alto padrão", "Luxo"];
-const ESTADOS_CONS = ["Novo", "Reformado", "Bom", "Antigo", "Precisa reforma"];
+const CONSERVACAO = ["Novo", "Reformado", "Bom", "Antigo", "Precisa reforma"];
+const DOCUMENTACAO = ["Financiável", "Escritura OK", "Averbação OK", "Pendente"];
 
 type Valuation = {
   valor_estimado: number;
@@ -29,6 +40,15 @@ type Valuation = {
   justificativa: string;
   pontos_fortes: string[];
   pontos_atencao: string[];
+  meta?: {
+    preco_m2: number;
+    source: string;
+    valor_base: number;
+    ajuste_total_pct: number;
+    bonus_total_pct: number;
+    desconto_total_pct: number;
+    breakdown: Array<{ label: string; pct: number }>;
+  };
 };
 
 const fmtBRL = (v: number) =>
@@ -36,10 +56,14 @@ const fmtBRL = (v: number) =>
 
 export default function AiValuationPage() {
   const { toast } = useToast();
+  const { user } = useAuth();
+
+  // Form state
   const [estado, setEstado] = useState("");
   const [cidade, setCidade] = useState("");
   const [bairro, setBairro] = useState("");
   const [rua, setRua] = useState("");
+  const [cep, setCep] = useState("");
   const [tipo, setTipo] = useState("Casa");
   const [areaTotal, setAreaTotal] = useState("");
   const [areaConstruida, setAreaConstruida] = useState("");
@@ -49,14 +73,25 @@ export default function AiValuationPage() {
   const [garagem, setGaragem] = useState("2");
   const [extras, setExtras] = useState<string[]>([]);
   const [acabamento, setAcabamento] = useState("Médio");
-  const [estadoCons, setEstadoCons] = useState("Bom");
+  const [conservacao, setConservacao] = useState("Bom");
+  const [documentacao, setDocumentacao] = useState<string[]>(["Escritura OK"]);
+
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Valuation | null>(null);
 
+  // History
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [history, setHistory] = useState<any[]>([]);
+
+  // Ad generation
+  const [adOpen, setAdOpen] = useState(false);
+  const [adLoading, setAdLoading] = useState(false);
+  const [adContent, setAdContent] = useState<{ titulo: string; descricao: string } | null>(null);
+
   const { cities } = useCitiesByState(estado);
 
-  const toggleExtra = (e: string) =>
-    setExtras((prev) => (prev.includes(e) ? prev.filter((x) => x !== e) : [...prev, e]));
+  const toggleArr = (val: string, arr: string[], setter: (v: string[]) => void) =>
+    setter(arr.includes(val) ? arr.filter((x) => x !== val) : [...arr, val]);
 
   const handleCalculate = async () => {
     if (!estado || !cidade || !bairro || !areaTotal) {
@@ -68,12 +103,12 @@ export default function AiValuationPage() {
     try {
       const { data, error } = await supabase.functions.invoke("ai-property-valuation", {
         body: {
-          estado, cidade, bairro, rua, tipo,
+          estado, cidade, bairro, rua, cep, tipo,
           areaTotal: Number(areaTotal),
           areaConstruida: Number(areaConstruida) || null,
           quartos: Number(quartos), banheiros: Number(banheiros),
           suites: Number(suites), garagem: Number(garagem),
-          extras, acabamento, estado_conservacao: estadoCons,
+          extras, acabamento, conservacao, documentacao,
         },
       });
       if (error) throw error;
@@ -87,6 +122,143 @@ export default function AiValuationPage() {
     }
   };
 
+  const loadHistory = async () => {
+    if (!user) {
+      toast({ title: "Faça login para ver seu histórico", variant: "destructive" });
+      return;
+    }
+    setHistoryOpen(true);
+    const { data } = await supabase
+      .from("property_valuations")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(50);
+    setHistory(data || []);
+  };
+
+  const exportPdf = () => {
+    if (!result) return;
+    const doc = new jsPDF();
+    const pageW = doc.internal.pageSize.getWidth();
+    let y = 20;
+
+    doc.setFillColor(20, 30, 70);
+    doc.rect(0, 0, pageW, 35, "F");
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(20);
+    doc.setFont("helvetica", "bold");
+    doc.text("Avaliação Imobiliária IA", 14, 18);
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    doc.text(`Emitido em ${new Date().toLocaleString("pt-BR")}`, 14, 27);
+
+    y = 50;
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(11);
+    doc.setFont("helvetica", "bold");
+    doc.text("Imóvel avaliado", 14, y); y += 7;
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+    doc.text(`${tipo} — ${bairro}, ${cidade}/${estado}`, 14, y); y += 5;
+    if (rua) { doc.text(`Rua: ${rua}`, 14, y); y += 5; }
+    doc.text(`Área: ${areaTotal}m²${areaConstruida ? ` (constr. ${areaConstruida}m²)` : ""}`, 14, y); y += 5;
+    doc.text(`${quartos}q (${suites}s) | ${banheiros} banheiros | ${garagem} vagas`, 14, y); y += 5;
+    doc.text(`Acabamento: ${acabamento} | Conservação: ${conservacao}`, 14, y); y += 5;
+    if (extras.length) { doc.text(`Extras: ${extras.join(", ")}`, 14, y); y += 5; }
+
+    y += 8;
+    doc.setFillColor(245, 247, 255);
+    doc.rect(10, y - 4, pageW - 20, 28, "F");
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9);
+    doc.setTextColor(80, 80, 80);
+    doc.text("VALOR ESTIMADO DE MERCADO", 14, y + 2);
+    doc.setFontSize(22);
+    doc.setTextColor(20, 30, 70);
+    doc.text(fmtBRL(result.valor_estimado), 14, y + 14);
+    doc.setFontSize(9);
+    doc.setTextColor(80, 80, 80);
+    doc.setFont("helvetica", "normal");
+    doc.text(`Faixa ideal: ${fmtBRL(result.faixa_min)} – ${fmtBRL(result.faixa_max)}`, 14, y + 21);
+    y += 35;
+
+    doc.setTextColor(0, 0, 0);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(11);
+    doc.text("Estratégias de venda", 14, y); y += 7;
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+    doc.text(`• Venda rápida (até 30 dias): ${fmtBRL(result.venda_rapida)}`, 14, y); y += 5;
+    doc.text(`• Venda premium (paciente): ${fmtBRL(result.venda_premium)}`, 14, y); y += 5;
+    doc.text(`• Tempo médio estimado: ${result.tempo_medio_venda_dias} dias`, 14, y); y += 5;
+    doc.text(`• Potencial valorização: +${result.potencial_valorizacao_pct}% a.a.`, 14, y); y += 10;
+
+    doc.setFont("helvetica", "bold");
+    doc.text("Análise técnica", 14, y); y += 6;
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9);
+    const lines = doc.splitTextToSize(result.justificativa, pageW - 28);
+    lines.forEach((line: string) => {
+      if (y > 270) { doc.addPage(); y = 20; }
+      doc.text(line, 14, y); y += 4;
+    });
+
+    y += 4;
+    if (y > 250) { doc.addPage(); y = 20; }
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+    doc.setTextColor(0, 120, 60);
+    doc.text("Pontos fortes", 14, y); y += 5;
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9);
+    doc.setTextColor(0, 0, 0);
+    result.pontos_fortes.forEach((p) => {
+      const ll = doc.splitTextToSize(`✓ ${p}`, pageW - 28);
+      ll.forEach((l: string) => { if (y > 275) { doc.addPage(); y = 20; } doc.text(l, 14, y); y += 4; });
+    });
+    y += 4;
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(180, 100, 0);
+    doc.text("Pontos de atenção", 14, y); y += 5;
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(0, 0, 0);
+    result.pontos_atencao.forEach((p) => {
+      const ll = doc.splitTextToSize(`! ${p}`, pageW - 28);
+      ll.forEach((l: string) => { if (y > 275) { doc.addPage(); y = 20; } doc.text(l, 14, y); y += 4; });
+    });
+
+    doc.save(`avaliacao-${bairro}-${Date.now()}.pdf`);
+    toast({ title: "PDF exportado!" });
+  };
+
+  const generateAd = async () => {
+    if (!result) return;
+    setAdOpen(true);
+    setAdLoading(true);
+    setAdContent(null);
+    try {
+      const { data, error } = await supabase.functions.invoke("ai-valuation-ad", {
+        body: {
+          estado, cidade, bairro, tipo, areaTotal: Number(areaTotal),
+          areaConstruida: Number(areaConstruida) || null,
+          quartos: Number(quartos), banheiros: Number(banheiros),
+          suites: Number(suites), garagem: Number(garagem),
+          extras, acabamento, conservacao,
+          valor_estimado: result.valor_estimado,
+        },
+      });
+      if (error) throw error;
+      if ((data as any)?.error) throw new Error((data as any).error);
+      setAdContent(data as any);
+    } catch (e: any) {
+      toast({ title: "Erro ao gerar anúncio", description: e.message, variant: "destructive" });
+      setAdOpen(false);
+    } finally {
+      setAdLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
       {/* Header */}
@@ -95,32 +267,35 @@ export default function AiValuationPage() {
           <Link to="/painel" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition">
             <ArrowLeft className="h-4 w-4" /> Voltar ao painel
           </Link>
-          <div className="flex items-center gap-2 text-xs font-medium text-primary">
-            <Brain className="h-4 w-4" /> Powered by IA
+          <div className="flex items-center gap-3">
+            {user && (
+              <Button variant="ghost" size="sm" onClick={loadHistory}>
+                <History className="h-4 w-4 mr-1" /> Histórico
+              </Button>
+            )}
+            <div className="hidden md:flex items-center gap-2 text-xs font-medium text-primary">
+              <Brain className="h-4 w-4" /> IA + Cálculo Real
+            </div>
           </div>
         </div>
       </div>
 
       <div className="max-w-5xl mx-auto px-4 py-8 md:py-12">
         {/* Hero */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-10"
-        >
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-10">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-semibold mb-4">
-            <Sparkles className="h-3.5 w-3.5" /> AVALIAÇÃO INTELIGENTE
+            <Sparkles className="h-3.5 w-3.5" /> AVALIAÇÃO PROFISSIONAL
           </div>
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-3">
             Quanto vale seu imóvel?
           </h1>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Nossa IA analisa mercado, localização e características para entregar uma avaliação profissional em segundos.
+            Cálculo determinístico baseado em preço de mercado por m² da sua região, com 30+ ajustes profissionais.
           </p>
         </motion.div>
 
         {/* Form */}
         <Card className="p-6 md:p-8 shadow-xl border-border/50 backdrop-blur-sm bg-card/95">
-          {/* Localização */}
           <Section icon={<MapPin className="h-4 w-4" />} title="Localização">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Field label="Estado *">
@@ -145,66 +320,62 @@ export default function AiValuationPage() {
               <Field label="Rua (opcional)">
                 <Input value={rua} onChange={(e) => setRua(e.target.value)} placeholder="Nome da rua" />
               </Field>
+              <Field label="CEP (opcional)">
+                <Input value={cep} onChange={(e) => setCep(e.target.value)} placeholder="00000-000" />
+              </Field>
             </div>
           </Section>
 
-          {/* Tipo */}
           <Section icon={<Home className="h-4 w-4" />} title="Tipo de imóvel">
             <ChipGroup options={TIPOS} value={tipo} onChange={setTipo} />
           </Section>
 
-          {/* Tamanho */}
-          <Section icon={<Maximize2 className="h-4 w-4" />} title="Tamanho">
+          <Section icon={<Maximize2 className="h-4 w-4" />} title="Metragem">
             <div className="grid grid-cols-2 gap-4">
               <Field label="Área total (m²) *">
                 <Input type="number" value={areaTotal} onChange={(e) => setAreaTotal(e.target.value)} placeholder="250" />
               </Field>
-              <Field label="Área construída (m²)">
-                <Input type="number" value={areaConstruida} onChange={(e) => setAreaConstruida(e.target.value)} placeholder="180" />
+              <Field label={tipo === "Terreno" ? "(não aplicável)" : "Área construída (m²)"}>
+                <Input type="number" value={areaConstruida} onChange={(e) => setAreaConstruida(e.target.value)} placeholder="180" disabled={tipo === "Terreno"} />
               </Field>
             </div>
           </Section>
 
-          {/* Estrutura */}
-          <Section icon={<Bed className="h-4 w-4" />} title="Estrutura">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <Field label="Quartos"><Input type="number" value={quartos} onChange={(e) => setQuartos(e.target.value)} /></Field>
-              <Field label="Banheiros"><Input type="number" value={banheiros} onChange={(e) => setBanheiros(e.target.value)} /></Field>
-              <Field label="Suítes"><Input type="number" value={suites} onChange={(e) => setSuites(e.target.value)} /></Field>
-              <Field label="Garagem"><Input type="number" value={garagem} onChange={(e) => setGaragem(e.target.value)} /></Field>
-            </div>
-          </Section>
+          {tipo !== "Terreno" && (
+            <Section icon={<Bed className="h-4 w-4" />} title="Estrutura">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <Field label="Quartos"><Input type="number" value={quartos} onChange={(e) => setQuartos(e.target.value)} /></Field>
+                <Field label="Banheiros"><Input type="number" value={banheiros} onChange={(e) => setBanheiros(e.target.value)} /></Field>
+                <Field label="Suítes"><Input type="number" value={suites} onChange={(e) => setSuites(e.target.value)} /></Field>
+                <Field label="Vagas garagem"><Input type="number" value={garagem} onChange={(e) => setGaragem(e.target.value)} /></Field>
+              </div>
+            </Section>
+          )}
 
-          {/* Extras */}
-          <Section icon={<Sparkles className="h-4 w-4" />} title="Extras">
+          <Section icon={<Sparkles className="h-4 w-4" />} title="Diferenciais">
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               {EXTRAS.map((ex) => (
-                <label
-                  key={ex}
-                  className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border cursor-pointer transition-all ${
-                    extras.includes(ex)
-                      ? "border-primary bg-primary/5 ring-1 ring-primary/30"
-                      : "border-border hover:border-primary/50"
-                  }`}
-                >
-                  <Checkbox checked={extras.includes(ex)} onCheckedChange={() => toggleExtra(ex)} />
-                  <span className="text-sm font-medium">{ex}</span>
-                </label>
+                <CheckBox key={ex} label={ex} checked={extras.includes(ex)} onChange={() => toggleArr(ex, extras, setExtras)} />
               ))}
             </div>
           </Section>
 
-          {/* Acabamento */}
           <Section icon={<Crown className="h-4 w-4" />} title="Padrão de acabamento">
             <ChipGroup options={ACABAMENTOS} value={acabamento} onChange={setAcabamento} />
           </Section>
 
-          {/* Estado */}
-          <Section icon={<CheckCircle2 className="h-4 w-4" />} title="Estado de conservação" last>
-            <ChipGroup options={ESTADOS_CONS} value={estadoCons} onChange={setEstadoCons} />
+          <Section icon={<CheckCircle2 className="h-4 w-4" />} title="Conservação">
+            <ChipGroup options={CONSERVACAO} value={conservacao} onChange={setConservacao} />
           </Section>
 
-          {/* CTA */}
+          <Section icon={<FileText className="h-4 w-4" />} title="Documentação" last>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {DOCUMENTACAO.map((d) => (
+                <CheckBox key={d} label={d} checked={documentacao.includes(d)} onChange={() => toggleArr(d, documentacao, setDocumentacao)} />
+              ))}
+            </div>
+          </Section>
+
           <Button
             onClick={handleCalculate}
             disabled={loading}
@@ -212,9 +383,9 @@ export default function AiValuationPage() {
             className="w-full mt-8 h-14 text-base font-semibold bg-gradient-to-r from-primary to-primary/80 hover:opacity-90 shadow-lg shadow-primary/20"
           >
             {loading ? (
-              <><Loader2 className="h-5 w-5 animate-spin" /> Analisando dados de mercado...</>
+              <><Loader2 className="h-5 w-5 animate-spin mr-2" /> Calculando avaliação...</>
             ) : (
-              <><Sparkles className="h-5 w-5" /> Calcular Valor com IA</>
+              <><Sparkles className="h-5 w-5 mr-2" /> Calcular Avaliação IA</>
             )}
           </Button>
         </Card>
@@ -228,7 +399,6 @@ export default function AiValuationPage() {
               transition={{ duration: 0.5 }}
               className="mt-8 space-y-6"
             >
-              {/* Valor estimado hero */}
               <Card className="p-8 md:p-10 bg-gradient-to-br from-primary to-primary/70 text-primary-foreground shadow-2xl shadow-primary/30 border-0 overflow-hidden relative">
                 <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_30%_20%,white_0%,transparent_50%)]" />
                 <div className="relative">
@@ -239,10 +409,14 @@ export default function AiValuationPage() {
                   <div className="text-sm opacity-90">
                     Faixa ideal: <span className="font-semibold">{fmtBRL(result.faixa_min)} – {fmtBRL(result.faixa_max)}</span>
                   </div>
+                  {result.meta && (
+                    <div className="mt-3 text-xs opacity-80">
+                      Base: {fmtBRL(result.meta.preco_m2)}/m² · Ajuste líquido: {result.meta.ajuste_total_pct >= 0 ? "+" : ""}{result.meta.ajuste_total_pct}%
+                    </div>
+                  )}
                 </div>
               </Card>
 
-              {/* Strategy cards */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <ResultCard icon={<Zap className="h-5 w-5" />} label="Venda rápida" value={fmtBRL(result.venda_rapida)} desc="Para vender em até 30 dias" color="amber" />
                 <ResultCard icon={<Crown className="h-5 w-5" />} label="Venda premium" value={fmtBRL(result.venda_premium)} desc="Para vendedor paciente" color="violet" />
@@ -250,7 +424,25 @@ export default function AiValuationPage() {
                 <ResultCard icon={<Clock className="h-5 w-5" />} label="Tempo médio de venda" value={`${result.tempo_medio_venda_dias} dias`} desc="No preço de mercado" color="blue" />
               </div>
 
-              {/* Strengths & Attention */}
+              {/* Breakdown */}
+              {result.meta && result.meta.breakdown.length > 0 && (
+                <Card className="p-6">
+                  <div className="flex items-center gap-2 mb-4 font-semibold">
+                    <Target className="h-5 w-5 text-primary" /> Detalhamento dos ajustes aplicados
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    {result.meta.breakdown.map((b, i) => (
+                      <div key={i} className="flex justify-between text-sm py-1.5 px-3 rounded-lg bg-muted/50">
+                        <span>{b.label}</span>
+                        <span className={`font-semibold ${b.pct > 0 ? "text-emerald-600" : "text-rose-600"}`}>
+                          {b.pct > 0 ? "+" : ""}{b.pct}%
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+              )}
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Card className="p-6 border-emerald-500/20 bg-emerald-500/5">
                   <div className="flex items-center gap-2 mb-4 text-emerald-600 dark:text-emerald-400 font-semibold">
@@ -274,23 +466,95 @@ export default function AiValuationPage() {
                 </Card>
               </div>
 
-              {/* Justificativa */}
               <Card className="p-6 md:p-8">
                 <div className="flex items-center gap-2 mb-4 font-semibold">
-                  <Target className="h-5 w-5 text-primary" /> Análise técnica da IA
+                  <Brain className="h-5 w-5 text-primary" /> Análise técnica IA
                 </div>
                 <div className="prose prose-sm max-w-none text-muted-foreground whitespace-pre-line leading-relaxed">
                   {result.justificativa}
                 </div>
               </Card>
 
+              {/* Action buttons */}
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                <Button variant="outline" size="lg" onClick={exportPdf}>
+                  <Download className="h-4 w-4 mr-2" /> Exportar PDF
+                </Button>
+                <Button variant="outline" size="lg" onClick={generateAd}>
+                  <Wand2 className="h-4 w-4 mr-2" /> Gerar anúncio IA
+                </Button>
+                <Button size="lg" onClick={handleCalculate} disabled={loading}>
+                  <Sparkles className="h-4 w-4 mr-2" /> Recalcular
+                </Button>
+              </div>
+
               <div className="text-xs text-muted-foreground text-center pt-4 pb-8">
-                ⚠️ Avaliação automatizada baseada em IA. Para fins de transação, consulte um avaliador credenciado.
+                ⚠️ Avaliação automatizada. Para fins de transação, consulte um avaliador credenciado.
               </div>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
+
+      {/* History dialog */}
+      <Dialog open={historyOpen} onOpenChange={setHistoryOpen}>
+        <DialogContent className="max-w-3xl">
+          <DialogHeader><DialogTitle>Suas avaliações anteriores</DialogTitle></DialogHeader>
+          <div className="max-h-[500px] overflow-y-auto space-y-2">
+            {history.length === 0 ? (
+              <p className="text-muted-foreground text-center py-8">Nenhuma avaliação ainda.</p>
+            ) : history.map((h) => (
+              <Card key={h.id} className="p-4 hover:bg-muted/50">
+                <div className="flex justify-between items-start gap-4">
+                  <div className="flex-1">
+                    <div className="font-semibold">{h.tipo} — {h.bairro}, {h.cidade}/{h.estado}</div>
+                    <div className="text-xs text-muted-foreground mt-1">
+                      {h.area_total}m² · {new Date(h.created_at).toLocaleString("pt-BR")}
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-lg font-bold text-primary">{fmtBRL(Number(h.valor_estimado))}</div>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Ad dialog */}
+      <Dialog open={adOpen} onOpenChange={setAdOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Megaphone className="h-5 w-5 text-primary" /> Anúncio gerado por IA
+            </DialogTitle>
+          </DialogHeader>
+          {adLoading ? (
+            <div className="py-12 text-center"><Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" /></div>
+          ) : adContent ? (
+            <div className="space-y-4">
+              <div>
+                <Label className="text-xs">Título</Label>
+                <div className="p-3 bg-muted rounded-lg font-semibold">{adContent.titulo}</div>
+              </div>
+              <div>
+                <Label className="text-xs">Descrição</Label>
+                <div className="p-3 bg-muted rounded-lg whitespace-pre-line text-sm">{adContent.descricao}</div>
+              </div>
+              <Button
+                className="w-full"
+                onClick={() => {
+                  navigator.clipboard.writeText(`${adContent.titulo}\n\n${adContent.descricao}`);
+                  toast({ title: "Copiado!" });
+                }}
+              >
+                Copiar tudo
+              </Button>
+            </div>
+          ) : null}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
@@ -316,19 +580,26 @@ const ChipGroup = ({ options, value, onChange }: { options: string[]; value: str
   <div className="flex flex-wrap gap-2">
     {options.map((opt) => (
       <button
-        key={opt}
-        type="button"
-        onClick={() => onChange(opt)}
+        key={opt} type="button" onClick={() => onChange(opt)}
         className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
           value === opt
             ? "bg-primary text-primary-foreground shadow-md shadow-primary/30 scale-105"
             : "bg-muted hover:bg-muted/70 text-foreground"
         }`}
-      >
-        {opt}
-      </button>
+      >{opt}</button>
     ))}
   </div>
+);
+
+const CheckBox = ({ label, checked, onChange }: { label: string; checked: boolean; onChange: () => void }) => (
+  <label
+    className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border cursor-pointer transition-all ${
+      checked ? "border-primary bg-primary/5 ring-1 ring-primary/30" : "border-border hover:border-primary/50"
+    }`}
+  >
+    <Checkbox checked={checked} onCheckedChange={onChange} />
+    <span className="text-sm font-medium">{label}</span>
+  </label>
 );
 
 const colorMap: Record<string, string> = {
