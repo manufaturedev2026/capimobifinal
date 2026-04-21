@@ -50,6 +50,7 @@ type MercadoExterno = {
   preco_provavel_fechamento: number;
   fontes_consultadas: string[];
   resumo: string;
+  aviso?: string;
 };
 type Scores = { localizacao: number; estrutura: number; acabamento: number; diferenciais?: number; liquidez: number; documentacao: number };
 
@@ -662,14 +663,14 @@ export default function AiValuationPage() {
               </div>
 
               {/* Mercado externo: anúncios reais da internet */}
-              {result.mercado_externo && result.mercado_externo.total > 0 && (
+              {result.mercado_externo && (
                 <Card className="p-6 border-emerald-500/20 bg-gradient-to-br from-emerald-500/5 to-transparent">
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-400 font-semibold">
                       <Target className="h-5 w-5" /> Anúncios reais da internet
                     </div>
                     <div className="text-xs px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 font-medium">
-                      {result.mercado_externo.total} anúncio(s)
+                      {result.mercado_externo.total > 0 ? `${result.mercado_externo.total} anúncio(s)` : "sem anúncios válidos"}
                     </div>
                   </div>
 
@@ -686,60 +687,69 @@ export default function AiValuationPage() {
                     <p className="text-sm text-muted-foreground italic mb-4">"{result.mercado_externo.resumo}"</p>
                   )}
 
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-                    <Stat label="Preço médio" value={fmtBRL(result.mercado_externo.preco_medio)} />
-                    <Stat label="Preço mediano" value={fmtBRL(result.mercado_externo.preco_mediano)} />
-                    <Stat label="R$/m² mediano" value={fmtBRL(result.mercado_externo.preco_m2_mediano)} />
-                    <Stat label="Provável fechamento" value={fmtBRL(result.mercado_externo.preco_provavel_fechamento)} />
-                  </div>
-
-                  {result.comparaveis_externos && result.comparaveis_externos.length > 0 && (
+                  {result.mercado_externo.total > 0 ? (
                     <>
-                      <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
-                        Anúncios encontrados
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+                        <Stat label="Preço médio" value={fmtBRL(result.mercado_externo.preco_medio)} />
+                        <Stat label="Preço mediano" value={fmtBRL(result.mercado_externo.preco_mediano)} />
+                        <Stat label="R$/m² mediano" value={fmtBRL(result.mercado_externo.preco_m2_mediano)} />
+                        <Stat label="Provável fechamento" value={fmtBRL(result.mercado_externo.preco_provavel_fechamento)} />
                       </div>
-                      <div className="space-y-2">
-                        {result.comparaveis_externos.map((c, i) => (
-                          <div key={i} className="flex justify-between items-center gap-3 p-3 rounded-lg bg-background/60 text-sm">
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2 mb-0.5">
-                                {c.fonte && (
-                                  <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-700 dark:text-emerald-300">
-                                    {c.fonte}
-                                  </span>
-                                )}
-                                {c.url ? (
-                                  <a
-                                    href={c.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="font-medium truncate hover:underline text-emerald-700 dark:text-emerald-300"
-                                  >
-                                    {c.titulo}
-                                  </a>
-                                ) : (
-                                  <span className="font-medium truncate">{c.titulo}</span>
-                                )}
-                              </div>
-                              <div className="text-xs text-muted-foreground">
-                                {c.area ? `${c.area}m²` : ""}
-                                {c.quartos ? ` · ${c.quartos} dorm.` : ""}
-                                {c.bairro ? ` · ${c.bairro}` : ""}
-                                {c.preco_m2 ? ` · ${fmtBRL(c.preco_m2)}/m²` : ""}
-                              </div>
-                            </div>
-                            {c.preco ? (
-                              <div className="font-bold text-emerald-700 dark:text-emerald-400 whitespace-nowrap">
-                                {fmtBRL(c.preco)}
-                              </div>
-                            ) : null}
+
+                      {result.comparaveis_externos && result.comparaveis_externos.length > 0 && (
+                        <>
+                          <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+                            Anúncios encontrados
                           </div>
-                        ))}
-                      </div>
+                          <div className="space-y-2">
+                            {result.comparaveis_externos.map((c, i) => (
+                              <div key={i} className="flex justify-between items-center gap-3 p-3 rounded-lg bg-background/60 text-sm">
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-2 mb-0.5">
+                                    {c.fonte && (
+                                      <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-700 dark:text-emerald-300">
+                                        {c.fonte}
+                                      </span>
+                                    )}
+                                    {c.url ? (
+                                      <a
+                                        href={c.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="font-medium truncate hover:underline text-emerald-700 dark:text-emerald-300"
+                                      >
+                                        {c.titulo}
+                                      </a>
+                                    ) : (
+                                      <span className="font-medium truncate">{c.titulo}</span>
+                                    )}
+                                  </div>
+                                  <div className="text-xs text-muted-foreground">
+                                    {c.area ? `${c.area}m²` : ""}
+                                    {c.quartos ? ` · ${c.quartos} dorm.` : ""}
+                                    {c.bairro ? ` · ${c.bairro}` : ""}
+                                    {c.preco_m2 ? ` · ${fmtBRL(c.preco_m2)}/m²` : ""}
+                                  </div>
+                                </div>
+                                {c.preco ? (
+                                  <div className="font-bold text-emerald-700 dark:text-emerald-400 whitespace-nowrap">
+                                    {fmtBRL(c.preco)}
+                                  </div>
+                                ) : null}
+                              </div>
+                            ))}
+                          </div>
+                        </>
+                      )}
+
                       <p className="text-[10px] text-muted-foreground mt-3 italic">
                         Fontes: dados públicos extraídos via busca web. Preços podem variar — sempre confirme no anúncio original.
                       </p>
                     </>
+                  ) : (
+                    <div className="rounded-lg border border-amber-500/20 bg-amber-500/10 px-3 py-3 text-sm text-amber-700 dark:text-amber-300">
+                      {result.mercado_externo.aviso || "Não foram encontrados anúncios externos confiáveis para este subtipo com os filtros atuais."}
+                    </div>
                   )}
                 </Card>
               )}
