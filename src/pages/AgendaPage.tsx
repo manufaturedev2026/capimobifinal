@@ -145,38 +145,39 @@ export default function AgendaPage() {
       </Helmet>
 
       {/* Header */}
-      <div className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground py-6">
-        <div className="container max-w-7xl mx-auto px-4">
-          <div className="flex items-center justify-between flex-wrap gap-3">
-            <div className="flex items-center gap-3">
-              <button onClick={() => navigate("/painel")} className="p-2 rounded-lg hover:bg-white/10">
+      <div className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground py-4 sm:py-6">
+        <div className="container max-w-7xl mx-auto px-3 sm:px-4">
+          <div className="flex items-start sm:items-center justify-between flex-wrap gap-3">
+            <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+              <button onClick={() => navigate("/painel")} className="p-2 rounded-lg hover:bg-white/10 shrink-0">
                 <ArrowLeft className="w-5 h-5" />
               </button>
-              <div>
-                <h1 className="text-2xl font-bold flex items-center gap-2">
-                  <CalendarIcon className="w-6 h-6" /> Agenda de Visitas
+              <div className="min-w-0">
+                <h1 className="text-lg sm:text-2xl font-bold flex items-center gap-2">
+                  <CalendarIcon className="w-5 h-5 sm:w-6 sm:h-6 shrink-0" />
+                  <span className="truncate">Agenda de Visitas</span>
                 </h1>
-                <p className="text-sm text-primary-foreground/80">Organize visitas, leads e compromissos imobiliários.</p>
+                <p className="text-xs sm:text-sm text-primary-foreground/80 hidden sm:block">Organize visitas, leads e compromissos imobiliários.</p>
               </div>
             </div>
-            <div className="flex flex-wrap gap-2">
-              <Button onClick={() => { setEditing(null); setOpenForm(true); }} className="bg-white text-primary hover:bg-white/90">
+            <div className="flex flex-wrap gap-1.5 sm:gap-2 w-full sm:w-auto">
+              <Button onClick={() => { setEditing(null); setOpenForm(true); }} className="bg-white text-primary hover:bg-white/90 flex-1 sm:flex-none" size="sm">
                 <Plus className="w-4 h-4 mr-1" /> Nova Visita
               </Button>
-              <Button variant="secondary" size="sm" onClick={() => setQuick("hoje")}>Hoje</Button>
-              <Button variant="secondary" size="sm" onClick={() => setQuick("semana")}>Semana</Button>
-              <Button variant="secondary" size="sm" onClick={() => setQuick("mes")}>Mês</Button>
-              <Button variant="secondary" size="sm" onClick={exportCsv}>
-                <Download className="w-4 h-4 mr-1" /> Exportar
+              <Button variant="secondary" size="sm" onClick={() => setQuick("hoje")} className="flex-1 sm:flex-none">Hoje</Button>
+              <Button variant="secondary" size="sm" onClick={() => setQuick("semana")} className="flex-1 sm:flex-none">Semana</Button>
+              <Button variant="secondary" size="sm" onClick={() => setQuick("mes")} className="flex-1 sm:flex-none">Mês</Button>
+              <Button variant="secondary" size="sm" onClick={exportCsv} className="flex-1 sm:flex-none">
+                <Download className="w-4 h-4 sm:mr-1" /> <span className="hidden sm:inline">Exportar</span>
               </Button>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="container max-w-7xl mx-auto px-4 py-6 space-y-6">
+      <div className="container max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 sm:gap-3">
           <StatCard icon={<CalendarIcon className="w-5 h-5" />} label="Visitas Hoje" value={stats.hoje} color="bg-blue-500" />
           <StatCard icon={<TrendingUp className="w-5 h-5" />} label="Semana" value={stats.semana} color="bg-emerald-500" />
           <StatCard icon={<Flame className="w-5 h-5" />} label="Leads Quentes" value={stats.quentes} color="bg-orange-500" />
@@ -185,9 +186,9 @@ export default function AgendaPage() {
         </div>
 
         {/* Filters */}
-        <div className="bg-card border border-border rounded-xl p-3 flex flex-wrap gap-2 items-center shadow-sm">
+        <div className="bg-card border border-border rounded-xl p-2.5 sm:p-3 grid grid-cols-2 sm:flex sm:flex-wrap gap-2 items-center shadow-sm">
           <Select value={quick} onValueChange={(v) => setQuick(v as Quick)}>
-            <SelectTrigger className="w-[140px]"><SelectValue /></SelectTrigger>
+            <SelectTrigger className="w-full sm:w-[140px]"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="todas">Todas</SelectItem>
               <SelectItem value="hoje">Hoje</SelectItem>
@@ -197,7 +198,7 @@ export default function AgendaPage() {
             </SelectContent>
           </Select>
           <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as any)}>
-            <SelectTrigger className="w-[160px]"><SelectValue placeholder="Status" /></SelectTrigger>
+            <SelectTrigger className="w-full sm:w-[160px]"><SelectValue placeholder="Status" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="todos">Todos status</SelectItem>
               {(Object.keys(STATUS_META) as VisitStatus[]).map((s) => (
@@ -205,27 +206,27 @@ export default function AgendaPage() {
               ))}
             </SelectContent>
           </Select>
-          <Input placeholder="Cidade" className="w-[160px]" value={cityFilter} onChange={(e) => setCityFilter(e.target.value)} />
-          <Input placeholder="Corretor responsável" className="w-[200px]" value={responsibleFilter} onChange={(e) => setResponsibleFilter(e.target.value)} />
+          <Input placeholder="Cidade" className="w-full sm:w-[160px]" value={cityFilter} onChange={(e) => setCityFilter(e.target.value)} />
+          <Input placeholder="Responsável" className="w-full sm:w-[200px] col-span-2 sm:col-span-1" value={responsibleFilter} onChange={(e) => setResponsibleFilter(e.target.value)} />
         </div>
 
         {/* Two columns */}
-        <div className="grid grid-cols-1 lg:grid-cols-[420px_1fr] gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-[420px_1fr] gap-4 lg:gap-6">
           {/* Calendar */}
-          <div className="bg-card border border-border rounded-xl p-4 shadow-sm h-fit">
-            <h3 className="font-semibold mb-3 flex items-center gap-2"><CalendarIcon className="w-4 h-4 text-primary" /> Calendário</h3>
+          <div className="bg-card border border-border rounded-xl p-3 sm:p-4 shadow-sm h-fit">
+            <h3 className="font-semibold mb-3 flex items-center gap-2 text-sm sm:text-base"><CalendarIcon className="w-4 h-4 text-primary" /> Calendário</h3>
             <Calendar
               mode="single"
               selected={selectedDate}
               onSelect={(d) => { setSelectedDate(d); setQuick("todas"); }}
               modifiers={{ withVisit: datesWithVisits }}
               modifiersClassNames={{ withVisit: "bg-primary/15 text-primary font-bold" }}
-              className="p-0 pointer-events-auto"
+              className="p-0 pointer-events-auto mx-auto"
             />
-            <div className="mt-4 space-y-1.5 text-xs">
-              <p className="font-semibold text-muted-foreground mb-2">Legenda</p>
+            <div className="mt-4 grid grid-cols-2 sm:block gap-1.5 text-xs">
+              <p className="font-semibold text-muted-foreground mb-1 sm:mb-2 col-span-2">Legenda</p>
               {(Object.keys(STATUS_META) as VisitStatus[]).map((s) => (
-                <div key={s} className="flex items-center gap-2">
+                <div key={s} className="flex items-center gap-2 sm:mb-1.5">
                   <span className={`w-2.5 h-2.5 rounded-full ${STATUS_META[s].dot}`} />
                   <span className="text-foreground">{STATUS_META[s].label}</span>
                 </div>
@@ -255,10 +256,10 @@ export default function AgendaPage() {
               filtered.map((v) => {
                 const meta = STATUS_META[v.status];
                 return (
-                  <div key={v.id} className="bg-card border border-border rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
-                    <div className="flex items-start justify-between gap-3 flex-wrap">
+                  <div key={v.id} className="bg-card border border-border rounded-xl p-3 sm:p-4 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
+                        <div className="flex items-center gap-2 mb-1 flex-wrap">
                           <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${meta.bg} ${meta.color}`}>
                             <span className={`w-1.5 h-1.5 rounded-full ${meta.dot}`} />
                             {meta.label}
@@ -268,35 +269,35 @@ export default function AgendaPage() {
                             {new Date(v.visit_date + "T00:00:00").toLocaleDateString("pt-BR")} às {v.visit_time?.slice(0, 5)}
                           </span>
                         </div>
-                        <h4 className="font-bold text-foreground">{v.client_name}</h4>
-                        {v.client_phone && <p className="text-sm text-muted-foreground flex items-center gap-1"><Phone className="w-3 h-3" /> {v.client_phone}</p>}
+                        <h4 className="font-bold text-foreground break-words">{v.client_name}</h4>
+                        {v.client_phone && <p className="text-sm text-muted-foreground flex items-center gap-1 break-all"><Phone className="w-3 h-3 shrink-0" /> {v.client_phone}</p>}
                         {(v.property_type || v.address) && (
-                          <p className="text-sm text-foreground mt-1">
+                          <p className="text-sm text-foreground mt-1 break-words">
                             {v.property_type && <span className="font-medium">{v.property_type}</span>}
                             {v.property_type && v.address && " • "}
                             {v.address}{v.city ? `, ${v.city}` : ""}
                           </p>
                         )}
                         {v.responsible_name && <p className="text-xs text-muted-foreground mt-1">Responsável: {v.responsible_name}</p>}
-                        {v.notes && <p className="text-xs text-muted-foreground mt-1 italic">"{v.notes}"</p>}
+                        {v.notes && <p className="text-xs text-muted-foreground mt-1 italic break-words">"{v.notes}"</p>}
                       </div>
 
-                      <div className="flex flex-wrap gap-1.5">
-                        <Button size="sm" variant="outline" onClick={() => openWhatsApp(v.client_phone, v.client_name)} title="WhatsApp">
+                      <div className="grid grid-cols-5 sm:flex sm:flex-wrap gap-1.5 sm:shrink-0">
+                        <Button size="sm" variant="outline" onClick={() => openWhatsApp(v.client_phone, v.client_name)} title="WhatsApp" className="px-0 sm:px-3">
                           <MessageCircle className="w-4 h-4" />
                         </Button>
-                        <Button size="sm" variant="outline" onClick={() => openMaps(v.address)} title="Maps">
+                        <Button size="sm" variant="outline" onClick={() => openMaps(v.address)} title="Maps" className="px-0 sm:px-3">
                           <MapPin className="w-4 h-4" />
                         </Button>
-                        <Button size="sm" variant="outline" onClick={() => { setEditing(v); setOpenForm(true); }} title="Editar">
+                        <Button size="sm" variant="outline" onClick={() => { setEditing(v); setOpenForm(true); }} title="Editar" className="px-0 sm:px-3">
                           <Edit3 className="w-4 h-4" />
                         </Button>
-                        {v.status !== "fechada" && (
-                          <Button size="sm" onClick={() => finalize(v)} title="Finalizar">
+                        {v.status !== "fechada" ? (
+                          <Button size="sm" onClick={() => finalize(v)} title="Finalizar" className="px-0 sm:px-3">
                             <CheckCircle2 className="w-4 h-4" />
                           </Button>
-                        )}
-                        <Button size="sm" variant="outline" onClick={() => remove(v)} title="Excluir" className="text-destructive hover:bg-destructive/10">
+                        ) : <span className="hidden sm:inline" />}
+                        <Button size="sm" variant="outline" onClick={() => remove(v)} title="Excluir" className="text-destructive hover:bg-destructive/10 px-0 sm:px-3">
                           <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
@@ -327,12 +328,12 @@ export default function AgendaPage() {
 
 function StatCard({ icon, label, value, color }: { icon: React.ReactNode; label: string; value: number; color: string }) {
   return (
-    <div className="bg-card border border-border rounded-xl p-4 shadow-sm">
-      <div className="flex items-center gap-3">
-        <div className={`w-10 h-10 rounded-lg ${color} text-white flex items-center justify-center`}>{icon}</div>
-        <div>
-          <p className="text-xs text-muted-foreground">{label}</p>
-          <p className="text-2xl font-bold text-foreground">{value}</p>
+    <div className="bg-card border border-border rounded-xl p-3 sm:p-4 shadow-sm">
+      <div className="flex items-center gap-2 sm:gap-3">
+        <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg ${color} text-white flex items-center justify-center shrink-0`}>{icon}</div>
+        <div className="min-w-0">
+          <p className="text-[10px] sm:text-xs text-muted-foreground truncate">{label}</p>
+          <p className="text-lg sm:text-2xl font-bold text-foreground">{value}</p>
         </div>
       </div>
     </div>
