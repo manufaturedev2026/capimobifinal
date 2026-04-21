@@ -249,6 +249,7 @@ type Comparable = {
   bedrooms: number | null; bathrooms: number | null; suites: number | null;
   area: number | null; built_area: number | null; price: number | null;
   title?: string | null; city?: string | null; neighborhood?: string | null;
+  listing_status?: string | null; finality?: string | null;
 };
 
 type MarketContext = {
@@ -259,10 +260,43 @@ type MarketContext = {
   modernizationPenaltyWeight: number;
   bedroomExpectation: number;
   topComparables: Comparable[];
+  comparaveis_origem: string;
+  comparaveis_aviso: string | null;
 };
 
+// Faixas mínimas/máximas plausíveis de R$/m² por tipo (filtro anti-anúncio incoerente)
+const PRECO_M2_RANGE: Record<string, [number, number]> = {
+  "Casa":        [800, 25000],
+  "Apartamento": [1500, 35000],
+  "Comercial":   [1000, 30000],
+  "Terreno":     [50, 8000],
+  "Rural":       [5, 2000],
+};
+
+function isComparavelValido(c: Comparable, tipo: string, areaRef: number, finalidade: "venda"|"aluguel"): boolean {
+  const price = Number(c.price) || 0;
+  const area = Number(c.built_area || c.area) || 0;
+  if (price <= 0 || area <= 0) return false;
+  // Finalidade (no banco interno usamos seller_items.finality quando disponível)
+  if (c.finality && c.finality !== finalidade) return false;
+  // Faixa de área ±30%
+  if (areaRef > 0) {
+    const ratio = area / areaRef;
+    if (ratio < 0.7 || ratio > 1.3) return false;
+  }
+  // Preço/m² dentro da faixa plausível do tipo
+  const ppm2 = price / area;
+  const [pmin, pmax] = PRECO_M2_RANGE[tipo] ?? [100, 50000];
+  // Para aluguel, divide por ~120 (proxy) — descartamos se ainda assim absurdo
+  const refMin = finalidade === "aluguel" ? pmin / 200 : pmin;
+  const refMax = finalidade === "aluguel" ? pmax / 50  : pmax;
+  if (ppm2 < refMin || ppm2 > refMax) return false;
+  return true;
+}
+
 async function fetchMarketContext(
-  supabase: any, estado: string, cidade: string, bairro: string, tipo: string, areaRef: number
+  supabase: any, estado: string, cidade: string, bairro: string, tipo: string, areaRef: number,
+  finalidade: "venda" | "aluguel" = "venda",
 ): Promise<MarketContext> {
   const categoryMap: Record<string, string> = {
     "Casa": "casa", "Apartamento": "apartamento", "Terreno": "terreno",
@@ -270,21 +304,54 @@ async function fetchMarketContext(
   };
   const category = categoryMap[tipo] ?? tipo.toLowerCase();
 
+  // Apenas comparáveis VÁLIDOS: publicado, vendido (venda) ou alugado (aluguel)
+  // NUNCA: demo, teste, rascunho, oculto
+  const validStatuses = finalidade === "aluguel"
+    ? ["publicado", "alugado"]
+    : ["publicado", "vendido"];
+
+  const baseSelect = "title,city,neighborhood,bedrooms,bathrooms,suites,area,built_area,price,listing_status,finality";
+
+  // 1) Bairro exato
   let { data: items } = await supabase
     .from("seller_items")
-    .select("title,city,neighborhood,bedrooms,bathrooms,suites,area,built_area,price")
+    .select(baseSelect)
     .eq("state", estado).ilike("city", cidade).ilike("neighborhood", bairro)
-    .eq("category", category).eq("status", "ativo").limit(50);
+    .eq("category", category)
+    .in("listing_status", validStatuses)
+    .limit(80);
 
+  let origem = "bairro";
+  let aviso: string | null = null;
+
+  // 2) Fallback: cidade
   if (!items || items.length < 3) {
     const fb = await supabase.from("seller_items")
-      .select("title,city,neighborhood,bedrooms,bathrooms,suites,area,built_area,price")
+      .select(baseSelect)
       .eq("state", estado).ilike("city", cidade)
-      .eq("category", category).eq("status", "ativo").limit(80);
+      .eq("category", category)
+      .in("listing_status", validStatuses)
+      .limit(120);
     items = fb.data ?? [];
+    origem = "cidade";
   }
 
-  const list: Comparable[] = items ?? [];
+  // 3) Fallback: estado (base regional ampliada)
+  if (!items || items.length < 3) {
+    const fb2 = await supabase.from("seller_items")
+      .select(baseSelect)
+      .eq("state", estado)
+      .eq("category", category)
+      .in("listing_status", validStatuses)
+      .limit(150);
+    items = fb2.data ?? [];
+    origem = "regional_ampliado";
+    aviso = "Comparativos locais insuficientes. Usando base regional ampliada.";
+  }
+
+  // Filtro anti-incoerência (preço, área, tipo, finalidade)
+  const raw: Comparable[] = items ?? [];
+  const list = raw.filter(c => isComparavelValido(c, tipo, areaRef, finalidade));
   const total = list.length;
 
   if (total === 0) {
@@ -293,6 +360,8 @@ async function fetchMarketContext(
       pricePerM2Market: 0,
       garagePenaltyWeight: 0.6, modernizationPenaltyWeight: 0.6,
       bedroomExpectation: 3, topComparables: [],
+      comparaveis_origem: "indisponivel",
+      comparaveis_aviso: "Sem comparativos locais confiáveis. Avaliação baseada em tabela regional de preços.",
     };
   }
 
@@ -313,7 +382,6 @@ async function fetchMarketContext(
   const modernizationPenaltyWeight = pricePerM2Market > 4000 ? 0.9 : pricePerM2Market > 2500 ? 0.7 : 0.4;
 
   const topComparables = [...list]
-    .filter(c => (c.built_area || c.area) && c.price)
     .sort((a, b) => Math.abs((Number(a.built_area || a.area) || 0) - areaRef) - Math.abs((Number(b.built_area || b.area) || 0) - areaRef))
     .slice(0, 3);
 
@@ -322,6 +390,8 @@ async function fetchMarketContext(
     garagePenaltyWeight, modernizationPenaltyWeight,
     bedroomExpectation: Math.round(avgBedrooms),
     topComparables,
+    comparaveis_origem: origem,
+    comparaveis_aviso: aviso,
   };
 }
 
@@ -742,7 +812,8 @@ Deno.serve(async (req) => {
     const areaRefForMarket =
       (Number(data.areaConstruidaTerreo) || 0) + (Number(data.areaConstruidaSuperior) || 0) ||
       (Number(data.areaConstruida) || 0) || data.areaTotal;
-    const market = await fetchMarketContext(supabase, data.estado, data.cidade, data.bairro, data.tipo, areaRefForMarket);
+    const finalidade: "venda" | "aluguel" = ((data as any).finalidade === "aluguel") ? "aluguel" : "venda";
+    const market = await fetchMarketContext(supabase, data.estado, data.cidade, data.bairro, data.tipo, areaRefForMarket, finalidade);
     const { precoM2, source } = await resolvePrecoM2(supabase, data, market);
     const calc = calcular(data, precoM2, market);
     const ai = await aiEnrich(data, calc, precoM2, source, market) ?? fallbackAnalysis(data, calc, market);
@@ -763,7 +834,16 @@ Deno.serve(async (req) => {
       area: Number(c.built_area || c.area) || 0,
       quartos: Number(c.bedrooms) || null,
       preco: Number(c.price) || 0,
+      status: c.listing_status ?? "publicado",
     }));
+
+    const origemLabel = market.comparaveis_origem === "bairro"
+      ? "Banco interno validado — mesmo bairro"
+      : market.comparaveis_origem === "cidade"
+      ? "Banco interno validado — mesma cidade"
+      : market.comparaveis_origem === "regional_ampliado"
+      ? "Base regional ampliada (estado)"
+      : "Tabela regional de preços";
 
     await supabase.from("property_valuations").insert({
       user_id: userId,
@@ -826,6 +906,8 @@ Deno.serve(async (req) => {
       scores: calc.scores, score_geral: calc.scoreGeral,
       macro_percents: calc.macroPercents,
       comparaveis: comparaveisOut,
+      comparaveis_origem: origemLabel,
+      comparaveis_aviso: market.comparaveis_aviso,
       meta: {
         preco_m2: precoM2, source,
         valor_base: calc.valorBase, area_calc: calc.areaCalc,

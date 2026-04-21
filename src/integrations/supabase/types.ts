@@ -2166,6 +2166,7 @@ export type Database = {
           is_owner_listing: boolean | null
           kitchen_type: string | null
           leisure_amenities: string[] | null
+          listing_status: Database["public"]["Enums"]["listing_status"]
           living_rooms: number | null
           lot_depth: number | null
           lot_front: number | null
@@ -2245,6 +2246,7 @@ export type Database = {
           is_owner_listing?: boolean | null
           kitchen_type?: string | null
           leisure_amenities?: string[] | null
+          listing_status?: Database["public"]["Enums"]["listing_status"]
           living_rooms?: number | null
           lot_depth?: number | null
           lot_front?: number | null
@@ -2324,6 +2326,7 @@ export type Database = {
           is_owner_listing?: boolean | null
           kitchen_type?: string | null
           leisure_amenities?: string[] | null
+          listing_status?: Database["public"]["Enums"]["listing_status"]
           living_rooms?: number | null
           lot_depth?: number | null
           lot_front?: number | null
@@ -3122,6 +3125,14 @@ export type Database = {
         | "area_lazer"
         | "piscina_tag"
         | "aceita_financiamento_tag"
+      listing_status:
+        | "publicado"
+        | "vendido"
+        | "alugado"
+        | "demo"
+        | "teste"
+        | "rascunho"
+        | "oculto"
       package_tier:
         | "start"
         | "basico"
@@ -3316,6 +3327,15 @@ export const Constants = {
         "area_lazer",
         "piscina_tag",
         "aceita_financiamento_tag",
+      ],
+      listing_status: [
+        "publicado",
+        "vendido",
+        "alugado",
+        "demo",
+        "teste",
+        "rascunho",
+        "oculto",
       ],
       package_tier: [
         "start",
