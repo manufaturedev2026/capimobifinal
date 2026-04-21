@@ -235,7 +235,7 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
     const applyStreetViewCoords = (lat: string, lon: string) => {
       if (cancelled) return;
       setStreetViewEmbed(
-        `https://maps.google.com/maps?q=&layer=c&cbll=${lat},${lon}&cbp=11,0,0,0,0&z=17&output=svembed`,
+        `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lon}&heading=0&pitch=0&fov=90`,
       );
       setStreetViewUrl(
         `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lon}&heading=0&pitch=0&fov=90`,
@@ -369,17 +369,16 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
   };
 
   const addressOverrideStreetEmbed = addressOverride
-    ? `https://www.google.com/maps?layer=c&cbll=${addressOverride.lat},${addressOverride.lon}&cbp=11,0,0,0,0&z=17&output=svembed`
+    ? `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${addressOverride.lat},${addressOverride.lon}&heading=0&pitch=0&fov=90`
     : null;
   const viaCepStreetEmbed = streetViewQuery
-    ? `https://www.google.com/maps?q=${encodeURIComponent(streetViewQuery)}&layer=c&cbp=11,0,0,0,0&output=svembed`
+    ? `https://www.google.com/maps/@?api=1&map_action=pano&query=${encodeURIComponent(streetViewQuery)}`
     : null;
   const addressStreetEmbed = address.trim()
-    ? `https://www.google.com/maps?q=${encodedAddress}&layer=c&cbp=11,0,0,0,0&output=svembed`
+    ? `https://www.google.com/maps/@?api=1&map_action=pano&query=${encodedAddress}`
     : null;
   const streetEmbedSrc = streetViewEmbed || addressOverrideStreetEmbed || viaCepStreetEmbed || addressStreetEmbed;
   const hasEmbeddedStreetView = Boolean(streetEmbedSrc);
-  const canOpenStreetView = Boolean(streetViewUrl);
   const isStreet = view === "street" && !!streetEmbedSrc;
   const currentSrc = isStreet ? streetEmbedSrc : mapSrc;
 
@@ -406,15 +405,11 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
                  setView("map");
                  return;
                }
-               if (hasEmbeddedStreetView) {
-                 setView("street");
-                 return;
-               }
-               handleOpenStreetView();
+               if (hasEmbeddedStreetView) setView("street");
             }}
             aria-busy={resolvingStreetView}
             className="absolute bottom-3 right-3 z-10 flex items-center gap-2 rounded-full bg-primary px-3.5 py-2 text-xs font-semibold text-primary-foreground shadow-lg transition-transform hover:scale-105 disabled:cursor-not-allowed disabled:opacity-70"
-             disabled={!isStreet && !canOpenStreetView}
+             disabled={!isStreet && !hasEmbeddedStreetView}
           >
             {resolvingStreetView ? <Loader2 size={14} className="animate-spin" /> : (isStreet ? <MapIcon size={14} /> : <Eye size={14} />)}
             {isStreet ? "Ver Mapa" : "Ver Street View 360°"}
