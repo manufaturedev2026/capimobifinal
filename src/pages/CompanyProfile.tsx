@@ -33,6 +33,7 @@ import PushSubscribeButton from "@/components/PushSubscribeButton";
 import InstallAppFloatingButton from "@/components/InstallAppFloatingButton";
 import { PoolBallButton } from "@/components/PoolBallButton";
 import { isIOSStandaloneApp } from "@/lib/pwaInstall";
+import { getSellerProfessionalTitle } from "@/lib/sellerTitle";
 
 const propertySubcategories = [
   { slug: "todos", name: "Todos", icon: Store, img: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=300&h=200&fit=crop" },
@@ -269,26 +270,32 @@ export default function CompanyProfile() {
           if (memberAny.origin === "partnership" && memberAny.linked_profile_id) {
             const { data: brokerProfile } = await supabase
               .from("profiles")
-              .select("logo_url, id, user_id")
+              .select("id, user_id, full_name, company_name, phone, instagram, bio, creci, seller_category, professional_title, logo_url")
               .eq("id", memberAny.linked_profile_id)
               .maybeSingle();
             if (brokerProfile?.logo_url) {
               member.photo_url = brokerProfile.logo_url;
             }
-            // Store broker's own profile info for CRM routing
+            // Store broker's own profile info for CRM routing + storefront display
             if (brokerProfile) {
               (member as any)._partnerSellerId = brokerProfile.id;
               (member as any)._partnerUserId = brokerProfile.user_id;
+              (member as any)._linkedProfile = brokerProfile;
             }
           } else if (!member.photo_url && member.email) {
             // Fallback for legacy members without origin field
             const { data: brokerProfile } = await supabase
               .from("profiles")
-              .select("logo_url")
+              .select("id, user_id, full_name, company_name, phone, instagram, bio, creci, seller_category, professional_title, logo_url")
               .eq("email", member.email)
               .maybeSingle();
             if (brokerProfile?.logo_url) {
               member.photo_url = brokerProfile.logo_url;
+            }
+            if (brokerProfile) {
+              (member as any)._linkedProfile = brokerProfile;
+              (member as any)._partnerSellerId = brokerProfile.id;
+              (member as any)._partnerUserId = brokerProfile.user_id;
             }
           }
         }
@@ -316,17 +323,32 @@ export default function CompanyProfile() {
     }
   };
 
+  const activeBrokerProfile = (teamMember as any)?._linkedProfile || null;
+  const activeSellerCategory = activeBrokerProfile?.seller_category || (teamMember ? "corretor" : dbProfile?.seller_category);
+  const activeCategoryLabel = activeSellerCategory
+    ? ({ imobiliaria: "🏢 Imobiliária", corretor: "📋 Corretor(a)", proprietario: "🏠 Proprietário", construtora: "🏗️ Construtora" } as Record<string, string>)[activeSellerCategory] || activeSellerCategory
+    : "";
+  const activeProfessionalTitle = activeBrokerProfile
+    ? getSellerProfessionalTitle(activeBrokerProfile)
+    : teamMember
+      ? "Corretor(a) de Imóveis"
+      : getSellerProfessionalTitle(dbProfile);
+  const activeBio = activeBrokerProfile?.bio || teamMember?.bio || dbProfile?.bio || "";
+  const activeCreci = activeBrokerProfile?.creci || teamMember?.creci || "";
+
   const company = isDbProfile
     ? dbProfile
       ? {
           id: dbProfile.id,
-          name: teamMember ? teamMember.full_name : (dbProfile.company_name || dbProfile.full_name),
-          logo: teamMember?.photo_url || dbProfile.logo_url || "",
+          name: activeBrokerProfile
+            ? (activeBrokerProfile.company_name || activeBrokerProfile.full_name || teamMember?.full_name)
+            : (teamMember ? teamMember.full_name : (dbProfile.company_name || dbProfile.full_name)),
+          logo: teamMember?.photo_url || activeBrokerProfile?.logo_url || dbProfile.logo_url || "",
           address: [dbProfile.address, dbProfile.city, dbProfile.state].filter(Boolean).join(", "),
           rating: "5.0",
           reviewCount: 0,
-          whatsapp: teamMember?.phone || dbProfile.phone || "",
-          instagram: (teamMember?.instagram || dbProfile.instagram) || "",
+          whatsapp: activeBrokerProfile?.phone || teamMember?.phone || dbProfile.phone || "",
+          instagram: (activeBrokerProfile?.instagram || teamMember?.instagram || dbProfile.instagram) || "",
           segment: dbProfile.seller_type,
           show_location: dbProfile.show_location ?? true,
         }
