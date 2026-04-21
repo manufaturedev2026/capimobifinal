@@ -536,7 +536,7 @@ export function generateValuationReport(d: ValuationReportData): jsPDF {
     y += 4;
   }
 
-  // Comparáveis
+  // Comparáveis internos
   if (d.result.comparaveis && d.result.comparaveis.length > 0) {
     if (y > H - 50) { footer("Página 4 de 6"); doc.addPage(); headerStrip("Página 4 — Resultado (cont.)"); y = 38; }
     setColor(NAVY);
@@ -567,6 +567,68 @@ export function generateValuationReport(d: ValuationReportData): jsPDF {
       doc.text(fmtBRL(c.preco), W - 18, y + 1, { align: "right" });
       y += 13;
     });
+  }
+
+  // Anúncios reais da internet
+  if (d.result.mercado_externo) {
+    if (y > H - 75) { footer("Página 4 de 6"); doc.addPage(); headerStrip("Página 4 — Resultado (cont.)"); y = 38; }
+    setColor(GREEN);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10.5);
+    doc.text("ANÚNCIOS REAIS DA INTERNET", 14, y);
+    setFill(GREEN);
+    doc.rect(14, y + 1.5, 8, 0.5, "F");
+    y += 7;
+
+    if (d.result.mercado_externo.fontes_consultadas?.length) {
+      y = para(`Fontes consultadas: ${d.result.mercado_externo.fontes_consultadas.join(" · ")}.`, y, { size: 8.5, color: GRAY });
+    }
+    if (d.result.mercado_externo.resumo) {
+      y = para(`Resumo: ${d.result.mercado_externo.resumo}`, y, { size: 8.8 });
+    }
+
+    if (d.result.mercado_externo.total > 0) {
+      const stats = [
+        `Preço médio: ${fmtBRL(d.result.mercado_externo.preco_medio)}`,
+        `Preço mediano: ${fmtBRL(d.result.mercado_externo.preco_mediano)}`,
+        `R$/m² mediano: ${fmtBRL(d.result.mercado_externo.preco_m2_mediano)}`,
+        `Provável fechamento: ${fmtBRL(d.result.mercado_externo.preco_provavel_fechamento)}`,
+      ];
+      stats.forEach((line) => {
+        if (y > H - 24) { footer("Página 4 de 6"); doc.addPage(); headerStrip("Página 4 — Resultado (cont.)"); y = 38; }
+        setColor([40, 40, 50]);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(9);
+        doc.text(`• ${line}`, 18, y);
+        y += 5.2;
+      });
+
+      if (d.result.comparaveis_externos?.length) {
+        y += 2;
+        d.result.comparaveis_externos.slice(0, 6).forEach((c) => {
+          if (y > H - 24) { footer("Página 4 de 6"); doc.addPage(); headerStrip("Página 4 — Resultado (cont.)"); y = 38; }
+          setFill([240, 248, 242]);
+          doc.roundedRect(14, y - 4, W - 28, 12, 1.5, 1.5, "F");
+          setColor([20, 20, 30]);
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(8.8);
+          const titulo = doc.splitTextToSize(`${c.fonte ? `[${c.fonte}] ` : ""}${c.titulo}`, W - 82)[0];
+          doc.text(titulo, 18, y);
+          setColor(GRAY);
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(7.8);
+          const meta = `${c.area ? `${c.area}m²` : ""}${c.quartos ? ` · ${c.quartos} dorm.` : ""}${c.bairro ? ` · ${c.bairro}` : ""}${c.preco_m2 ? ` · ${fmtBRL(c.preco_m2)}/m²` : ""}`;
+          doc.text(doc.splitTextToSize(meta, W - 82), 18, y + 4);
+          setColor(GREEN);
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(9.5);
+          if (c.preco) doc.text(fmtBRL(c.preco), W - 18, y + 1, { align: "right" });
+          y += 14;
+        });
+      }
+    } else {
+      y = para(d.result.mercado_externo.aviso || "Não foram encontrados anúncios externos confiáveis para este subtipo com os filtros atuais.", y, { size: 9, color: AMBER, bold: true });
+    }
   }
 
   footer("Página 4 de 6");

@@ -317,7 +317,11 @@ export default function AiValuationPage() {
       quartos, banheiros, suites, garagem,
       salas, cozinhas, escritorios,
       extras, acabamento, conservacao, documentacao,
-      result,
+      result: {
+        ...result,
+        comparaveis_externos: result.comparaveis_externos,
+        mercado_externo: result.mercado_externo,
+      },
       avaliadorNome: user?.user_metadata?.full_name || user?.email?.split("@")[0] || "Sistema IA Capimobi",
       avaliadorEmail: user?.email,
       empresaNome: "CAPIMOBI",
