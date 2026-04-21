@@ -634,42 +634,60 @@ export default function AiValuationPage() {
               </div>
 
               {/* Comparativo mercado */}
-              {result.meta?.market && result.meta.market.comparaveis > 0 && (
-                <Card className="p-6 border-blue-500/20 bg-blue-500/5">
-                  <div className="flex items-center gap-2 mb-3 text-blue-600 dark:text-blue-400 font-semibold">
-                    <Target className="h-5 w-5" /> Comparativo com o mercado local
+              <Card className="p-6 border-blue-500/20 bg-blue-500/5">
+                <div className="flex items-center gap-2 mb-3 text-blue-600 dark:text-blue-400 font-semibold">
+                  <Target className="h-5 w-5" /> Comparativo com o mercado local
+                </div>
+                {result.comparaveis_origem && (
+                  <div className="text-xs mb-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-500/10 text-blue-700 dark:text-blue-300 font-medium">
+                    Origem: {result.comparaveis_origem}
                   </div>
-                  <div className="text-sm text-muted-foreground mb-3">
-                    Análise baseada em <span className="font-semibold text-foreground">{result.meta.market.comparaveis}</span> imóvel(is) similares cadastrados na região.
+                )}
+                {result.comparaveis_aviso && (
+                  <div className="text-xs mb-3 px-3 py-2 rounded-lg bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20">
+                    ⚠ {result.comparaveis_aviso}
                   </div>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-                    <Stat label="Dormitórios (média)" value={String(result.meta.market.media_dormitorios)} />
-                    <Stat label="Banheiros (média)" value={String(result.meta.market.media_banheiros)} />
-                    <Stat label="Área média" value={`${result.meta.market.media_area_m2} m²`} />
-                    <Stat label="Preço médio" value={fmtBRL(result.meta.market.media_preco)} />
-                  </div>
-                  {result.comparaveis && result.comparaveis.length > 0 && (
-                    <>
-                      <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
-                        3 imóveis mais próximos da sua metragem
-                      </div>
-                      <div className="space-y-2">
-                        {result.comparaveis.map((c, i) => (
-                          <div key={i} className="flex justify-between items-center p-3 rounded-lg bg-background/60 text-sm">
-                            <div className="flex-1 min-w-0">
-                              <div className="font-medium truncate">{c.titulo}</div>
-                              <div className="text-xs text-muted-foreground">
-                                {c.area}m² {c.quartos ? `· ${c.quartos} dorm.` : ""} {c.bairro ? `· ${c.bairro}` : ""}
+                )}
+                {result.meta?.market && result.meta.market.comparaveis > 0 ? (
+                  <>
+                    <div className="text-sm text-muted-foreground mb-3">
+                      Análise baseada em <span className="font-semibold text-foreground">{result.meta.market.comparaveis}</span> imóvel(is) reais validados (publicados, vendidos ou alugados — sem dados demo/teste).
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+                      <Stat label="Dormitórios (média)" value={String(result.meta.market.media_dormitorios)} />
+                      <Stat label="Banheiros (média)" value={String(result.meta.market.media_banheiros)} />
+                      <Stat label="Área média" value={`${result.meta.market.media_area_m2} m²`} />
+                      <Stat label="Preço médio" value={fmtBRL(result.meta.market.media_preco)} />
+                    </div>
+                    {result.comparaveis && result.comparaveis.length > 0 && (
+                      <>
+                        <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+                          3 imóveis mais próximos da sua metragem
+                        </div>
+                        <div className="space-y-2">
+                          {result.comparaveis.map((c, i) => (
+                            <div key={i} className="flex justify-between items-center p-3 rounded-lg bg-background/60 text-sm">
+                              <div className="flex-1 min-w-0">
+                                <div className="font-medium truncate">{c.titulo}</div>
+                                <div className="text-xs text-muted-foreground">
+                                  {c.area}m² {c.quartos ? `· ${c.quartos} dorm.` : ""} {c.bairro ? `· ${c.bairro}` : ""}
+                                </div>
                               </div>
+                              <div className="font-bold text-blue-600 dark:text-blue-400">{fmtBRL(c.preco)}</div>
                             </div>
-                            <div className="font-bold text-blue-600 dark:text-blue-400">{fmtBRL(c.preco)}</div>
-                          </div>
-                        ))}
-                      </div>
-                    </>
-                  )}
-                </Card>
-              )}
+                          ))}
+                        </div>
+                      </>
+                    )}
+                  </>
+                ) : (
+                  <div className="text-sm text-muted-foreground">
+                    Nenhum comparativo local válido encontrado. Avaliação calculada exclusivamente pela tabela regional de preços por m².
+                  </div>
+                )}
+              </Card>
+
+
 
               {/* Sugestões */}
               {result.sugestoes_valorizacao && result.sugestoes_valorizacao.length > 0 && (
