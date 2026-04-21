@@ -1024,12 +1024,20 @@ Deno.serve(async (req) => {
       status: c.listing_status ?? "publicado",
     }));
 
-    const origemLabel = market.comparaveis_origem === "bairro"
-      ? "Banco interno validado — mesmo bairro"
+    const internoLabel = market.comparaveis_origem === "bairro"
+      ? "banco interno (mesmo bairro)"
       : market.comparaveis_origem === "cidade"
-      ? "Banco interno validado — mesma cidade"
+      ? "banco interno (mesma cidade)"
       : market.comparaveis_origem === "regional_ampliado"
-      ? "Base regional ampliada (estado)"
+      ? "banco interno (estado)"
+      : "tabela regional";
+    const externoCount = external?.total ?? 0;
+    const origemLabel = externoCount > 0 && market.total > 0
+      ? `Análise baseada em ${externoCount} anúncios externos + ${market.total} comparativos do ${internoLabel}`
+      : externoCount > 0
+      ? `Análise baseada em ${externoCount} anúncios externos ativos da região`
+      : market.total > 0
+      ? `Análise baseada em ${market.total} comparativos do ${internoLabel}`
       : "Tabela regional de preços";
 
     await supabase.from("property_valuations").insert({
