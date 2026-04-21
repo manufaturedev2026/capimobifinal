@@ -76,6 +76,24 @@ export type ValuationReportData = {
   empresaNome?: string;
   /** Optional valuation row id used to derive a stable laudo code */
   valuationId?: string;
+  /** Dados opcionais do proprietário */
+  proprietario?: {
+    nome?: string;
+    cpf?: string;
+    telefone?: string;
+    email?: string;
+  };
+  /** Finalidade opcional da avaliação */
+  finalidade?: string;
+  /** Infraestrutura próxima (booleans opcionais) */
+  infraestrutura?: {
+    escola?: boolean;
+    hospital?: boolean;
+    comercio?: boolean;
+    transporte?: boolean;
+    parque?: boolean;
+    bancos?: boolean;
+  };
   analiseVisual?: {
     scores: {
       visual_externo: number;
