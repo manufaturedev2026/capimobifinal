@@ -233,6 +233,47 @@ export default function AiValuationPage() {
     toast({ title: "PDF exportado!" });
   };
 
+  const buildLaudo = () => {
+    if (!result) return null;
+    return generateValuationReport({
+      estado, cidade, bairro, rua, cep, tipo,
+      areaTotal, areaConstruida, quartos, banheiros, suites, garagem,
+      extras, acabamento, conservacao, documentacao,
+      result,
+      avaliadorNome: user?.user_metadata?.full_name || user?.email?.split("@")[0] || "Sistema IA Capimobi",
+      avaliadorEmail: user?.email,
+      empresaNome: "CAPIMOBI",
+    });
+  };
+
+  const downloadLaudo = () => {
+    const doc = buildLaudo();
+    if (!doc) return;
+    doc.save(`laudo-avaliacao-${bairro.replace(/\s+/g, "-").toLowerCase()}-${Date.now()}.pdf`);
+    toast({ title: "Laudo PDF gerado!", description: "Pronto para impressão e envio." });
+  };
+
+  const printLaudo = () => {
+    const doc = buildLaudo();
+    if (!doc) return;
+    const url = doc.output("bloburl");
+    const win = window.open(url, "_blank");
+    if (win) setTimeout(() => win.print(), 800);
+  };
+
+  const shareWhatsapp = () => {
+    if (!result) return;
+    const msg = `📋 *Laudo de Avaliação Imobiliária*\n\n🏠 ${tipo} em ${bairro}, ${cidade}/${estado}\n📐 ${areaTotal}m²${areaConstruida ? ` (constr. ${areaConstruida}m²)` : ""}\n\n💰 *Valor estimado:* ${fmtBRL(result.valor_estimado)}\n📊 Faixa: ${fmtBRL(result.faixa_min)} – ${fmtBRL(result.faixa_max)}\n⚡ Venda rápida: ${fmtBRL(result.venda_rapida)}\n👑 Venda premium: ${fmtBRL(result.venda_premium)}\n⏱ Tempo médio: ${result.tempo_medio_venda_dias} dias\n\n_Avaliação gerada por Capimobi IA_`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, "_blank");
+  };
+
+  const shareEmail = () => {
+    if (!result) return;
+    const subject = `Laudo de Avaliação - ${tipo} em ${bairro}, ${cidade}`;
+    const body = `Segue avaliação imobiliária:\n\n${tipo} em ${bairro}, ${cidade}/${estado}\nÁrea: ${areaTotal}m²\n\nValor estimado: ${fmtBRL(result.valor_estimado)}\nFaixa ideal: ${fmtBRL(result.faixa_min)} – ${fmtBRL(result.faixa_max)}\nVenda rápida: ${fmtBRL(result.venda_rapida)}\nVenda premium: ${fmtBRL(result.venda_premium)}\nTempo médio: ${result.tempo_medio_venda_dias} dias\n\n${result.justificativa}\n\n— Avaliação gerada por Capimobi IA`;
+    window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  };
+
   const generateAd = async () => {
     if (!result) return;
     setAdOpen(true);
