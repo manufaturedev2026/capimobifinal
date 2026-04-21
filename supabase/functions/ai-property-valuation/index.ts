@@ -495,6 +495,8 @@ RETORNE APENAS UM JSON VÁLIDO, sem texto antes/depois, neste formato exato:
 }
 Se não houver dados confiáveis, retorne: {"comparaveis":[],"resumo":"Sem anúncios externos encontrados"}.`;
 
+  console.log("[external] start", { termo: termoBusca, bairro: p.bairro, cidade: p.cidade, areaRef, finalidade });
+
   try {
     const ctrl = new AbortController();
     const timeoutId = setTimeout(() => ctrl.abort(), 45000);
@@ -512,20 +514,32 @@ Se não houver dados confiáveis, retorne: {"comparaveis":[],"resumo":"Sem anún
 
     if (!resp.ok) {
       const errTxt = await resp.text().catch(() => "");
-      console.error("external market gateway error", resp.status, errTxt);
+      console.error("[external] gateway error", resp.status, errTxt.slice(0, 500));
       return null;
     }
     const data = await resp.json();
     let content: string = data.choices?.[0]?.message?.content ?? "";
+    console.log("[external] raw content length", content.length);
     // Tirar code fences se houver
     content = content.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/i, "").trim();
     // Recortar do primeiro { ao último }
     const i = content.indexOf("{");
     const j = content.lastIndexOf("}");
-    if (i < 0 || j < 0) return null;
-    const parsed = JSON.parse(content.slice(i, j + 1));
+    if (i < 0 || j < 0) {
+      console.warn("[external] no JSON braces in content. Preview:", content.slice(0, 300));
+      return null;
+    }
+    let parsed: any;
+    try {
+      parsed = JSON.parse(content.slice(i, j + 1));
+    } catch (e) {
+      console.error("[external] JSON parse failed", String(e), "preview:", content.slice(i, i + 300));
+      return null;
+    }
 
     const compsRaw: ExternalComp[] = Array.isArray(parsed.comparaveis) ? parsed.comparaveis : [];
+    console.log("[external] comparaveis brutos:", compsRaw.length);
+
     // Filtragem anti-outlier server-side (defesa em profundidade)
     const [pmin, pmax] = PRECO_M2_RANGE[p.tipo] ?? [100, 50000];
     const refMin = finalidade === "aluguel" ? pmin / 200 : pmin;
@@ -538,7 +552,11 @@ Se não houver dados confiáveis, retorne: {"comparaveis":[],"resumo":"Sem anún
         const ppm2 = area > 0 ? preco / area : 0;
         return { ...c, area, preco, preco_m2: Math.round(ppm2) };
       })
-      .filter(c => c.preco > 0 && c.area > 0 && c.preco_m2! >= refMin && c.preco_m2! <= refMax);
+      .filter(c => {
+        const ok = c.preco > 0 && c.area > 0 && c.preco_m2! >= refMin && c.preco_m2! <= refMax;
+        if (!ok) console.log("[external] descartado", { titulo: c.titulo, area: c.area, preco: c.preco, ppm2: c.preco_m2, refMin, refMax });
+        return ok;
+      });
 
     // Remove duplicados por url ou (titulo+preco)
     const seen = new Set<string>();
@@ -548,6 +566,7 @@ Se não houver dados confiáveis, retorne: {"comparaveis":[],"resumo":"Sem anún
       seen.add(key);
       return true;
     });
+    console.log("[external] após filtros e dedupe:", unique.length);
 
     const precos = unique.map(c => c.preco!).filter(n => n > 0);
     const ppm2s = unique.map(c => c.preco_m2!).filter(n => n > 0);
@@ -573,7 +592,7 @@ Se não houver dados confiáveis, retorne: {"comparaveis":[],"resumo":"Sem anún
       aviso: unique.length === 0 ? "Sem anúncios externos confiáveis encontrados — usando apenas base interna." : undefined,
     };
   } catch (e) {
-    console.error("fetchExternalMarket failed:", e);
+    console.error("[external] fetchExternalMarket failed:", String(e));
     return null;
   }
 }
