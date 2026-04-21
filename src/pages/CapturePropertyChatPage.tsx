@@ -379,7 +379,7 @@ export default function CapturePropertyChatPage() {
         captacao: { title: "Novo lead de captação 🏠", verb: "quer vender ou alugar um imóvel." },
         grupo_whatsapp: { title: "Novo lead do grupo 👥", verb: "pediu para entrar no grupo de WhatsApp." },
         agendamento: { title: "Nova visita agendada 📅", verb: "quer agendar uma visita." },
-        avaliacao: { title: "Novo pedido de avaliação 💎", verb: "solicitou uma avaliação profissional do imóvel." },
+        avaliacao: { title: "Novo pedido de avaliação 💎", verb: "solicitou uma avaliação." },
       };
       const pushCfg = FLOW_PUSH[flowType] || FLOW_PUSH.captacao;
       supabase.functions.invoke("notify-new-lead", {
