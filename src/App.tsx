@@ -45,6 +45,7 @@ const SeoLandingPage = lazyPage(() => import("@/pages/SeoLandingPage"));
 const SeoBrokersPage = lazyPage(() => import("@/pages/SeoBrokersPage"));
 const InvitePage = lazyPage(() => import("@/pages/InvitePage"));
 const ResetPasswordPage = lazyPage(() => import("@/pages/ResetPasswordPage"));
+const AgendaPage = lazyPage(() => import("@/pages/AgendaPage"));
 
 const queryClient = new QueryClient();
 
@@ -177,6 +178,7 @@ const AppLayout = () => {
               <Route path="/painel/editar/:id" element={<RequireAuth><SellerItemForm /></RequireAuth>} />
               <Route path="/painel/perfil" element={<RequireAuth><SellerProfile /></RequireAuth>} />
               <Route path="/painel/personalizacao" element={<RequireAuth><SellerCustomization /></RequireAuth>} />
+              <Route path="/agenda" element={<RequireAuth><AgendaPage /></RequireAuth>} />
               <Route path="/pacotes" element={<RequireAuth><PackagesPage /></RequireAuth>} />
               <Route path="/admin" element={<RequireAuth><AdminPanel /></RequireAuth>} />
               <Route path="/criar-anuncio" element={<RequireAuth><CreateListing /></RequireAuth>} />

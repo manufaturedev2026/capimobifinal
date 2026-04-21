@@ -506,6 +506,10 @@ export default function SellerDashboard() {
                 className={`sidebar-nav-item ${activeTab === "customization" ? "active" : "text-muted-foreground hover:text-foreground hover:bg-secondary"}`}>
                 <Palette size={18} /> Personalização
               </button>
+              <Link to="/agenda"
+                className="sidebar-nav-item text-blue-500 hover:bg-blue-500/10">
+                <CalendarIcon size={18} /> Agenda
+              </Link>
               <Link to="/pacotes"
                 className="sidebar-nav-item text-muted-foreground hover:text-foreground hover:bg-secondary">
                 <Package size={18} /> Pacotes
