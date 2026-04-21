@@ -507,7 +507,12 @@ export default function AiValuationPage() {
           </Link>
           <div className="flex items-center gap-3">
             {user && (
-              <Button variant="ghost" size="sm" onClick={loadHistory} className="text-foreground hover:text-foreground hover:bg-foreground/10">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={loadHistory}
+                className="bg-card text-foreground border-border hover:bg-muted hover:text-foreground"
+              >
                 <History className="h-4 w-4 mr-1" /> Histórico
               </Button>
             )}
