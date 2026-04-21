@@ -1,7 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
+import { getMarketplaceTheme } from "@/lib/marketplaceThemes";
+import { getMarketplaceThemeCssVars, getStoreThemeCssVars } from "@/lib/marketplaceThemeCssVars";
+import { getStoreTheme } from "@/components/StoreThemePicker";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -93,7 +96,30 @@ const fmtBRL = (v: number) =>
 
 export default function AiValuationPage() {
   const { toast } = useToast();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
+
+  // Tema visual (segue o tema da loja do usuário ou o tema do marketplace)
+  const [marketplaceThemeId, setMarketplaceThemeId] = useState(
+    () => localStorage.getItem("marketplace_theme") || "azul"
+  );
+  useEffect(() => {
+    supabase
+      .from("platform_settings")
+      .select("value")
+      .eq("key", "homepage_theme")
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.value) {
+          setMarketplaceThemeId(data.value);
+          localStorage.setItem("marketplace_theme", data.value);
+        }
+      });
+  }, []);
+  const brokerStoreThemeId = (profile as any)?.store_theme as string | undefined;
+  const hasBrokerTheme = !!brokerStoreThemeId && brokerStoreThemeId !== "default";
+  const themeVars = hasBrokerTheme
+    ? getStoreThemeCssVars(getStoreTheme(brokerStoreThemeId!))
+    : getMarketplaceThemeCssVars(getMarketplaceTheme(marketplaceThemeId));
 
   // Localização
   const [estado, setEstado] = useState("");
@@ -449,7 +475,7 @@ export default function AiValuationPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5" style={themeVars}>
       <div className="sticky top-0 z-30 backdrop-blur-xl bg-background/80 border-b">
         <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
           <Link to="/painel" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition">
