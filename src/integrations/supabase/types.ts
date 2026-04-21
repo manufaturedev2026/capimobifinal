@@ -1461,6 +1461,105 @@ export type Database = {
           },
         ]
       }
+      property_valuations: {
+        Row: {
+          acabamento: string | null
+          ajuste_total_pct: number | null
+          area_construida: number | null
+          area_total: number | null
+          bairro: string
+          banheiros: number | null
+          breakdown: Json | null
+          cep: string | null
+          cidade: string
+          conservacao: string | null
+          created_at: string
+          documentacao: string[] | null
+          estado: string
+          extras: string[] | null
+          faixa_max: number | null
+          faixa_min: number | null
+          garagem: number | null
+          id: string
+          justificativa: string | null
+          preco_m2_usado: number | null
+          quartos: number | null
+          rua: string | null
+          suites: number | null
+          tempo_medio_venda_dias: number | null
+          tipo: string
+          user_id: string | null
+          valor_base: number | null
+          valor_estimado: number
+          venda_premium: number | null
+          venda_rapida: number | null
+        }
+        Insert: {
+          acabamento?: string | null
+          ajuste_total_pct?: number | null
+          area_construida?: number | null
+          area_total?: number | null
+          bairro: string
+          banheiros?: number | null
+          breakdown?: Json | null
+          cep?: string | null
+          cidade: string
+          conservacao?: string | null
+          created_at?: string
+          documentacao?: string[] | null
+          estado: string
+          extras?: string[] | null
+          faixa_max?: number | null
+          faixa_min?: number | null
+          garagem?: number | null
+          id?: string
+          justificativa?: string | null
+          preco_m2_usado?: number | null
+          quartos?: number | null
+          rua?: string | null
+          suites?: number | null
+          tempo_medio_venda_dias?: number | null
+          tipo: string
+          user_id?: string | null
+          valor_base?: number | null
+          valor_estimado: number
+          venda_premium?: number | null
+          venda_rapida?: number | null
+        }
+        Update: {
+          acabamento?: string | null
+          ajuste_total_pct?: number | null
+          area_construida?: number | null
+          area_total?: number | null
+          bairro?: string
+          banheiros?: number | null
+          breakdown?: Json | null
+          cep?: string | null
+          cidade?: string
+          conservacao?: string | null
+          created_at?: string
+          documentacao?: string[] | null
+          estado?: string
+          extras?: string[] | null
+          faixa_max?: number | null
+          faixa_min?: number | null
+          garagem?: number | null
+          id?: string
+          justificativa?: string | null
+          preco_m2_usado?: number | null
+          quartos?: number | null
+          rua?: string | null
+          suites?: number | null
+          tempo_medio_venda_dias?: number | null
+          tipo?: string
+          user_id?: string | null
+          valor_base?: number | null
+          valor_estimado?: number
+          venda_premium?: number | null
+          venda_rapida?: number | null
+        }
+        Relationships: []
+      }
       push_notifications_log: {
         Row: {
           body: string
@@ -2596,6 +2695,42 @@ export type Database = {
         }
         Relationships: []
       }
+      valuation_price_table: {
+        Row: {
+          bairro: string | null
+          cidade: string | null
+          created_at: string
+          estado: string
+          id: string
+          notes: string | null
+          preco_m2: number
+          tipo: string
+          updated_at: string
+        }
+        Insert: {
+          bairro?: string | null
+          cidade?: string | null
+          created_at?: string
+          estado: string
+          id?: string
+          notes?: string | null
+          preco_m2: number
+          tipo: string
+          updated_at?: string
+        }
+        Update: {
+          bairro?: string | null
+          cidade?: string | null
+          created_at?: string
+          estado?: string
+          id?: string
+          notes?: string | null
+          preco_m2?: number
+          tipo?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       visit_appointments: {
         Row: {
           address: string | null
@@ -2776,6 +2911,18 @@ export type Database = {
           message: Json
           msg_id: number
           read_ct: number
+        }[]
+      }
+      resolve_price_per_sqm: {
+        Args: {
+          p_bairro: string
+          p_cidade: string
+          p_estado: string
+          p_tipo: string
+        }
+        Returns: {
+          preco_m2: number
+          source: string
         }[]
       }
       unaccent: { Args: { "": string }; Returns: string }
