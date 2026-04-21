@@ -870,6 +870,9 @@ async function aiEnrich(
 - Mercado exige acabamento moderno: ${market.modernizationPenaltyWeight > 0.6 ? "SIM" : "NÃO"}`
     : `Sem comparáveis cadastrados no bairro.`;
 
+  // Bloco opcional do mercado externo (Gemini Search)
+  const externalBlock = (calc as any)._external && (calc as any)._external.total > 0 ? "" : "";
+
   const userPrompt = `Você é avaliador imobiliário sênior. Análise comparativa REAL ao mercado local. Nunca frases genéricas.
 
 📍 ${p.bairro}, ${p.cidade}/${p.estado}${p.rua ? ` — ${p.rua}${p.numero ? `, ${p.numero}` : ""}` : ""}
