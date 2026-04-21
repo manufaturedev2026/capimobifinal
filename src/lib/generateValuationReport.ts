@@ -344,9 +344,6 @@ export async function generateValuationReport(d: ValuationReportData): Promise<j
 
   setColor([255, 255, 255]);
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(10);
-  doc.text((d.empresaNome ?? "AVALIAÇÃO IMOBILIÁRIA").toUpperCase(), W / 2, 30, { align: "center" });
-
   doc.setFontSize(28);
   doc.text("Laudo de Avaliação", W / 2, H / 2 - 25, { align: "center" });
   doc.text("Imobiliária", W / 2, H / 2 - 12, { align: "center" });
