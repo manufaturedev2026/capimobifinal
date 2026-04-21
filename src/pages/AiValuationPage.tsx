@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { generateValuationReport } from "@/lib/generateValuationReport";
 import AdvancedValuationFields, { ADVANCED_INITIAL, type AdvancedState } from "@/components/AdvancedValuationFields";
+import PhotoAnalysisStep, { type FotoItem, type AnaliseVisual } from "@/components/PhotoAnalysisStep";
 import ApartmentValuationFields, { APARTMENT_INITIAL, type ApartmentState } from "@/components/ApartmentValuationFields";
 import {
   TerrenoExtraFields, TERRENO_INITIAL, type TerrenoState,
@@ -169,6 +170,10 @@ export default function AiValuationPage() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Valuation | null>(null);
 
+  // Análise visual por fotos
+  const [fotos, setFotos] = useState<FotoItem[]>([]);
+  const [analiseVisual, setAnaliseVisual] = useState<AnaliseVisual | null>(null);
+
   const [historyOpen, setHistoryOpen] = useState(false);
   const [history, setHistory] = useState<any[]>([]);
 
@@ -284,7 +289,33 @@ export default function AiValuationPage() {
       });
       if (error) throw error;
       if ((data as any)?.error) throw new Error((data as any).error);
-      setResult(data as Valuation);
+
+      // Aplicar ajuste da análise visual (se houver)
+      let finalResult = data as Valuation;
+      if (analiseVisual) {
+        const ajustePct = analiseVisual.ajuste_total_pct;
+        const fator = 1 + ajustePct / 100;
+        const round = (n: number) => Math.round(n);
+        finalResult = {
+          ...finalResult,
+          valor_estimado: round(finalResult.valor_estimado * fator),
+          faixa_min: round(finalResult.faixa_min * fator),
+          faixa_max: round(finalResult.faixa_max * fator),
+          venda_rapida: round(finalResult.venda_rapida * fator),
+          venda_premium: round(finalResult.venda_premium * fator),
+          aluguel_estimado: round(finalResult.aluguel_estimado * fator),
+          meta: finalResult.meta ? {
+            ...finalResult.meta,
+            ajuste_total_pct: (finalResult.meta.ajuste_total_pct || 0) + ajustePct,
+            breakdown: [
+              ...(finalResult.meta.breakdown || []),
+              { label: `📸 Análise visual por fotos (${analiseVisual.total_fotos_analisadas} foto${analiseVisual.total_fotos_analisadas > 1 ? "s" : ""})`, pct: Number(ajustePct.toFixed(1)) },
+            ],
+          } : finalResult.meta,
+        };
+      }
+
+      setResult(finalResult);
       setTimeout(() => document.getElementById("result-section")?.scrollIntoView({ behavior: "smooth" }), 100);
     } catch (e: any) {
       toast({ title: "Erro ao calcular", description: e.message, variant: "destructive" });
@@ -322,6 +353,7 @@ export default function AiValuationPage() {
         comparaveis_externos: result.comparaveis_externos,
         mercado_externo: result.mercado_externo,
       },
+      analiseVisual: analiseVisual ?? undefined,
       avaliadorNome: user?.user_metadata?.full_name || user?.email?.split("@")[0] || "Sistema IA Capimobi",
       avaliadorEmail: user?.email,
       empresaNome: "CAPIMOBI",
@@ -551,6 +583,20 @@ export default function AiValuationPage() {
             </div>
           </Section>
 
+          <div className="mt-6">
+            <PhotoAnalysisStep
+              contexto={{
+                tipo, cidade, bairro,
+                acabamentoDeclarado: acabamento,
+                conservacaoDeclarada: conservacao,
+              }}
+              fotos={fotos}
+              onFotosChange={setFotos}
+              analise={analiseVisual}
+              onAnaliseChange={setAnaliseVisual}
+            />
+          </div>
+
           <Button
             onClick={handleCalculate}
             disabled={loading}
@@ -560,7 +606,7 @@ export default function AiValuationPage() {
             {loading ? (
               <><Loader2 className="h-5 w-5 animate-spin mr-2" /> Calculando avaliação...</>
             ) : (
-              <><Sparkles className="h-5 w-5 mr-2" /> Calcular Avaliação Profissional</>
+              <><Sparkles className="h-5 w-5 mr-2" /> Calcular Avaliação Profissional{analiseVisual ? " + Visual" : ""}</>
             )}
           </Button>
         </Card>
