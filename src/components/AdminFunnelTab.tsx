@@ -97,19 +97,55 @@ export default function AdminFunnelTab() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<string | null>(null);
   const [running, setRunning] = useState(false);
-  const [tab, setTab] = useState<"steps" | "history">("steps");
+  const [tab, setTab] = useState<"steps" | "history" | "recipients">("steps");
   const [previewStep, setPreviewStep] = useState<Step | null>(null);
   const [showTemplates, setShowTemplates] = useState<string | null>(null); // step id
   const [historyFilter, setHistoryFilter] = useState<"all" | "enviado" | "falhou">("all");
+  const [recipients, setRecipients] = useState<Recipient[]>([]);
+  const [excluded, setExcluded] = useState<Excluded[]>([]);
+  const [recipientFilter, setRecipientFilter] = useState<"all" | "active" | "excluded">("all");
+  const [recipientSearch, setRecipientSearch] = useState("");
+  const [newExcludeEmail, setNewExcludeEmail] = useState("");
+  const [busyEmail, setBusyEmail] = useState<string | null>(null);
 
   const load = async () => {
     setLoading(true);
-    const [{ data: s }, { data: h }] = await Promise.all([
+    const [{ data: s }, { data: h }, { data: profilesData }, { data: exData }] = await Promise.all([
       supabase.from("funnel_steps").select("*").order("day_offset"),
-      supabase.from("funnel_sends").select("*").order("sent_at", { ascending: false }).limit(500),
+      supabase.from("funnel_sends").select("*").order("sent_at", { ascending: false }).limit(2000),
+      supabase.from("profiles").select("id, user_id, full_name, email, created_at").not("email", "is", null).order("created_at", { ascending: false }),
+      supabase.from("funnel_excluded_emails").select("*").order("created_at", { ascending: false }),
     ]);
     setSteps((s as Step[]) || []);
-    setSends((h as SendRow[]) || []);
+    const sendRows = (h as SendRow[]) || [];
+    setSends(sendRows);
+    setExcluded((exData as Excluded[]) || []);
+
+    // Build recipients with stats
+    const sendsByEmail: Record<string, { count: number; last: string | null }> = {};
+    sendRows.forEach((row) => {
+      const k = row.to_email.toLowerCase();
+      if (!sendsByEmail[k]) sendsByEmail[k] = { count: 0, last: null };
+      if (row.status === "enviado") {
+        sendsByEmail[k].count++;
+        if (!sendsByEmail[k].last || new Date(row.sent_at) > new Date(sendsByEmail[k].last!)) {
+          sendsByEmail[k].last = row.sent_at;
+        }
+      }
+    });
+    const recs: Recipient[] = ((profilesData as any[]) || []).map((p) => {
+      const stats = sendsByEmail[(p.email || "").toLowerCase()] || { count: 0, last: null };
+      return {
+        profile_id: p.id,
+        user_id: p.user_id,
+        full_name: p.full_name || "—",
+        email: p.email,
+        created_at: p.created_at,
+        sent_count: stats.count,
+        last_sent_at: stats.last,
+      };
+    });
+    setRecipients(recs);
     setLoading(false);
   };
 
