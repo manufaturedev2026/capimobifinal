@@ -351,9 +351,12 @@ export default function AdminFunnelTab() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-2 border-b border-border">
+      <div className="flex gap-2 border-b border-border flex-wrap">
         <button onClick={() => setTab("steps")} className={`px-4 py-2 font-medium ${tab === "steps" ? "border-b-2 border-primary text-primary" : "text-muted-foreground"}`}>
           Etapas ({steps.length})
+        </button>
+        <button onClick={() => setTab("recipients")} className={`px-4 py-2 font-medium flex items-center gap-1.5 ${tab === "recipients" ? "border-b-2 border-primary text-primary" : "text-muted-foreground"}`}>
+          <Users className="w-4 h-4" /> Destinatários ({recipients.length})
         </button>
         <button onClick={() => setTab("history")} className={`px-4 py-2 font-medium ${tab === "history" ? "border-b-2 border-primary text-primary" : "text-muted-foreground"}`}>
           Histórico ({sends.length})
