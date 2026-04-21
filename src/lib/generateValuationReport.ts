@@ -220,7 +220,7 @@ export function generateValuationReport(d: ValuationReportData): jsPDF {
   const doc = new jsPDF({ unit: "mm", format: "a4" });
   const W = doc.internal.pageSize.getWidth();
   const H = doc.internal.pageSize.getHeight();
-  const codigo = shortCode();
+  const codigo = shortCode(d.valuationId);
   const dataEmissao = new Date().toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" });
 
   const setColor = (c: [number, number, number]) => doc.setTextColor(c[0], c[1], c[2]);
