@@ -9,7 +9,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { Package, Eye, Plus, Settings, Edit, Trash2, Copy, ToggleLeft, ToggleRight, Search, Image, LogOut, BarChart3, Star, Crown, Zap, AlertTriangle, Shield, MessageCircle, Home, UserCircle, Headphones, Globe, ExternalLink, CheckCircle2, ClipboardCopy, Lock, Clapperboard, Menu, X, Building2, Users, BadgeCheck, GripVertical, ChevronRight, Sparkles, FileText, Magnet, Camera, Bell, Download, Calculator, Palette, Handshake, Megaphone, Calendar as CalendarIcon } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import SoldCountdown from "@/components/SoldCountdown";
-import TeamMembersTab from "@/components/TeamMembersTab";
 import StoreEffectsPicker from "@/components/StoreEffectsPicker";
 import BrokerAnalytics from "@/components/BrokerAnalytics";
 
