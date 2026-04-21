@@ -818,12 +818,12 @@ export function generateValuationReport(d: ValuationReportData): jsPDF {
 
   footer("Página 5 de 6");
 
-  // ========== ANÁLISE VISUAL POR IA (se houver) ==========
+  // ========== ANÁLISE VISUAL (se houver) ==========
   if (d.analiseVisual) {
     const av = d.analiseVisual;
     doc.addPage();
-    headerStrip("Análise Visual por IA");
-    y = sectionTitle("Análise Visual por IA", 38);
+    headerStrip("Análise Visual");
+    y = sectionTitle("Análise Visual", 38);
 
     y = para(
       `Avaliação complementar baseada em ${av.total_fotos_analisadas} foto(s) reais. Observa apenas características visuais aparentes — não substitui laudo de engenharia.`,
@@ -898,7 +898,7 @@ export function generateValuationReport(d: ValuationReportData): jsPDF {
       });
     }
 
-    footer("Análise Visual por IA");
+    footer("Análise Visual");
   }
 
   // =========================================
