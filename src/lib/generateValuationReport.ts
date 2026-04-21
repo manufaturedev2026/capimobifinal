@@ -71,6 +71,7 @@ export type ValuationReportData = {
     };
   };
   avaliadorNome?: string;
+  avaliadorCreci?: string;
   avaliadorEmail?: string;
   empresaNome?: string;
   analiseVisual?: {
@@ -332,10 +333,19 @@ export function generateValuationReport(d: ValuationReportData): jsPDF {
   doc.setFont("helvetica", "bold");
   doc.setFontSize(11);
   doc.text(d.avaliadorNome ?? "Sistema IA Capimobi", W - 26, blockY + 14, { align: "right" });
+  let avalLineY = blockY + 22;
+  if (d.avaliadorCreci) {
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8);
+    setColor(GOLD);
+    doc.text(d.avaliadorCreci, W - 26, avalLineY, { align: "right" });
+    setColor([255, 255, 255]);
+    avalLineY += 5;
+  }
   if (d.avaliadorEmail) {
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8);
-    doc.text(d.avaliadorEmail, W - 26, blockY + 22, { align: "right" });
+    doc.text(d.avaliadorEmail, W - 26, avalLineY, { align: "right" });
   }
 
   // =========================================
