@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { MapPin, Eye, Loader2 } from "lucide-react";
+import { MapPin, Eye, Loader2, Map as MapIcon, ExternalLink } from "lucide-react";
 
 interface MapEmbedProps {
   address: string;
@@ -163,12 +163,16 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
   const [streetViewUrl, setStreetViewUrl] = useState(fallbackStreetViewUrl);
   const [mapSrc, setMapSrc] = useState(fallbackMapSrc);
   const [mapsUrl, setMapsUrl] = useState(fallbackMapsUrl);
+  const [streetViewEmbed, setStreetViewEmbed] = useState<string | null>(null);
   const [resolvingStreetView, setResolvingStreetView] = useState(false);
+  const [view, setView] = useState<"map" | "street">("map");
 
   useEffect(() => {
     setStreetViewUrl(fallbackStreetViewUrl);
     setMapSrc(fallbackMapSrc);
     setMapsUrl(fallbackMapsUrl);
+    setStreetViewEmbed(null);
+    setView("map");
 
     if (addressOverride) {
       setResolvingStreetView(false);
@@ -189,6 +193,8 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
         ? `https://www.google.com/maps/@?api=1&map_action=pano&query=${encodeURIComponent(label)}`
         : `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lon}&heading=0&pitch=0&fov=90`;
       setStreetViewUrl(panoUrl);
+      // Embeddable Street View iframe (no API key required via /maps?layer=c)
+      setStreetViewEmbed(`https://www.google.com/maps?layer=c&cbll=${lat},${lon}&cbp=11,0,0,0,0&output=embed`);
       setMapSrc(`https://www.google.com/maps?q=${lat},${lon}&hl=pt-BR&z=18&output=embed`);
       setMapsUrl(`https://www.google.com/maps/search/?api=1&query=${lat},${lon}`);
     };
@@ -321,27 +327,47 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
     window.open(streetViewUrl, "_blank", "noopener,noreferrer");
   };
 
+  const canEmbedStreetView = !!streetViewEmbed || !!addressOverride;
+  const isStreetView = view === "street" && canEmbedStreetView;
+  const currentSrc = isStreetView
+    ? (streetViewEmbed || addressOverride?.embedUrl || mapSrc)
+    : mapSrc;
+
   return (
     <div className={`rounded-2xl overflow-hidden border border-border ${className}`}>
       <div className="relative aspect-[16/9] bg-muted">
         <iframe
-          src={mapSrc}
+          key={currentSrc}
+          src={currentSrc}
           className="w-full h-full border-0"
           allowFullScreen
           loading="lazy"
           referrerPolicy="no-referrer-when-downgrade"
-          title={`Mapa - ${address}`}
+          title={isStreetView ? `Street View - ${address}` : `Mapa - ${address}`}
         />
         {showStreetView && (
-          <button
-            type="button"
-            onClick={handleOpenStreetView}
-            aria-busy={resolvingStreetView}
-            className="absolute bottom-3 right-3 z-10 flex items-center gap-2 rounded-full bg-primary px-3.5 py-2 text-xs font-semibold text-primary-foreground shadow-lg transition-transform hover:scale-105"
-          >
-            {resolvingStreetView ? <Loader2 size={14} className="animate-spin" /> : <Eye size={14} />}
-            Ver Street View 360°
-          </button>
+          <div className="absolute bottom-3 right-3 z-10 flex items-center gap-2">
+            {canEmbedStreetView && (
+              <button
+                type="button"
+                onClick={() => setView(isStreetView ? "map" : "street")}
+                aria-busy={resolvingStreetView}
+                className="flex items-center gap-2 rounded-full bg-primary px-3.5 py-2 text-xs font-semibold text-primary-foreground shadow-lg transition-transform hover:scale-105"
+              >
+                {resolvingStreetView ? <Loader2 size={14} className="animate-spin" /> : (isStreetView ? <MapIcon size={14} /> : <Eye size={14} />)}
+                {isStreetView ? "Ver Mapa" : "Street View 360°"}
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={handleOpenStreetView}
+              title="Abrir em nova aba"
+              className="flex items-center gap-1 rounded-full bg-background/90 backdrop-blur px-3 py-2 text-xs font-semibold text-foreground shadow-lg border border-border transition-transform hover:scale-105"
+            >
+              <ExternalLink size={13} />
+              Nova aba
+            </button>
+          </div>
         )}
       </div>
       <a
