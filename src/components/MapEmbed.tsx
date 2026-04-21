@@ -193,8 +193,8 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
         ? `https://www.google.com/maps/@?api=1&map_action=pano&query=${encodeURIComponent(label)}`
         : `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lon}&heading=0&pitch=0&fov=90`;
       setStreetViewUrl(panoUrl);
-      // Embeddable Street View iframe (no API key required via /maps?layer=c)
-      setStreetViewEmbed(`https://www.google.com/maps?layer=c&cbll=${lat},${lon}&cbp=11,0,0,0,0&output=embed`);
+      // Embeddable Street View iframe (svembed renders panorama without API key)
+      setStreetViewEmbed(`https://maps.google.com/maps?q=&layer=c&cbll=${lat},${lon}&cbp=11,0,0,0,0&z=17&output=svembed`);
       setMapSrc(`https://www.google.com/maps?q=${lat},${lon}&hl=pt-BR&z=18&output=embed`);
       setMapsUrl(`https://www.google.com/maps/search/?api=1&query=${lat},${lon}`);
     };
