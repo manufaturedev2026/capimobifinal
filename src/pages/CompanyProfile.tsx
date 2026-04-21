@@ -1306,10 +1306,10 @@ export default function CompanyProfile() {
                   <h3 className="font-display font-bold text-sm" style={{ color: storeTheme.text }}>{company.name}</h3>
                   {teamMember ? (
                     <>
-                      <p className="text-xs mt-0.5" style={{ color: storeTheme.textMuted }}>Corretor(a) de Imóveis</p>
-                      {teamMember.creci && (
+                      <p className="text-xs mt-0.5" style={{ color: storeTheme.textMuted }}>{activeProfessionalTitle}</p>
+                      {activeCreci && (
                         <p className="text-xs font-semibold mt-1 flex items-center gap-1" style={{ color: storeTheme.primary }}>
-                          <Shield size={12} /> {teamMember.creci}
+                          <Shield size={12} /> {activeCreci}
                         </p>
                       )}
                       <p className="text-[10px] mt-1" style={{ color: storeTheme.textMuted }}>
@@ -1318,14 +1318,10 @@ export default function CompanyProfile() {
                     </>
                   ) : (
                     <>
-                      <p className="text-xs mt-0.5" style={{ color: storeTheme.textMuted }}>
-                        {dbProfile?.seller_category
-                          ? ({ imobiliaria: "Imobiliária", corretor: "Corretor(a) de Imóveis", proprietario: "Proprietário", construtora: "Construtora" } as Record<string, string>)[dbProfile.seller_category] || "Imobiliária"
-                          : "Imobiliária"}
-                      </p>
-                      {["corretor", "imobiliaria", "construtora"].includes(dbProfile?.seller_category) && dbProfile?.creci && (
+                      <p className="text-xs mt-0.5" style={{ color: storeTheme.textMuted }}>{activeProfessionalTitle}</p>
+                      {activeCreci && (
                         <p className="text-xs font-semibold mt-1 flex items-center gap-1" style={{ color: storeTheme.primary }}>
-                          <Shield size={12} /> {dbProfile.creci}
+                          <Shield size={12} /> {activeCreci}
                         </p>
                       )}
                     </>
@@ -1382,24 +1378,18 @@ export default function CompanyProfile() {
                     <span>CNPJ: {dbProfile.cnpj}</span>
                   </div>
                 )}
-                {(teamMember?.bio || dbProfile?.bio) && (
-                  <p className="text-sm mb-3 whitespace-pre-line" style={{ color: storeTheme.text }}>{teamMember?.bio || dbProfile.bio}</p>
+                {activeBio && (
+                  <p className="text-sm mb-3 whitespace-pre-line" style={{ color: storeTheme.text }}>{activeBio}</p>
                 )}
                 <div className="space-y-3 text-xs" style={{ color: storeTheme.textMuted }}>
                   <div className="flex items-center gap-2">
                     <Store size={13} className="flex-shrink-0" />
-                    <span>
-                      {teamMember
-                        ? "Corretor(a) de Imóveis"
-                        : dbProfile?.seller_category
-                          ? ({ imobiliaria: "Imobiliária", corretor: "Corretor(a) de Imóveis", proprietario: "Proprietário", construtora: "Construtora" } as Record<string, string>)[dbProfile.seller_category] || "Especialista em imóveis"
-                          : "Especialista em imóveis"}
-                    </span>
+                    <span>{activeProfessionalTitle}</span>
                   </div>
-                  {(teamMember?.creci || (["corretor", "imobiliaria", "construtora"].includes(dbProfile?.seller_category) && dbProfile?.creci)) && !teamMember && (
+                  {activeCreci && (
                     <div className="flex items-center gap-2">
                       <Shield size={13} className="flex-shrink-0" style={{ color: storeTheme.primary }} />
-                      <span className="font-semibold" style={{ color: storeTheme.primary }}>{dbProfile.creci}</span>
+                      <span className="font-semibold" style={{ color: storeTheme.primary }}>{activeCreci}</span>
                     </div>
                   )}
                   <div className="flex items-center gap-2">
