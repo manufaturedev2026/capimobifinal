@@ -184,52 +184,20 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
       return;
     }
 
-    let cancelled = false;
-
-    const applyCoords = (lat: string, lon: string, label?: string) => {
-      if (cancelled) return;
-      // Prefer query-based pano (Google finds nearest panorama); fallback to viewpoint coords
-      const panoUrl = label
-        ? `https://www.google.com/maps/@?api=1&map_action=pano&query=${encodeURIComponent(label)}`
-        : `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lon}&heading=0&pitch=0&fov=90`;
-      setStreetViewUrl(panoUrl);
-      // Embeddable Street View iframe (svembed renders panorama without API key)
-      setStreetViewEmbed(`https://maps.google.com/maps?q=&layer=c&cbll=${lat},${lon}&cbp=11,0,0,0,0&z=17&output=svembed`);
-      setMapSrc(`https://www.google.com/maps?q=${lat},${lon}&hl=pt-BR&z=18&output=embed`);
-      setMapsUrl(`https://www.google.com/maps/search/?api=1&query=${lat},${lon}`);
-    };
-
     const parts = normalizeAddressForGeocoding(address)
       .split(",")
       .map((part) => part.trim())
       .filter(Boolean);
 
-    const [streetName, numberPart, , cityPart, statePart] = parts;
-    const stateFull = statePart ? BR_STATE_NAMES[statePart.toUpperCase()] || statePart : "";
-    const expectedStreet = normalizeStreet(streetName || "");
-    const expectedNumber = normalizeText(numberPart || "");
-    const expectedCity = normalizeText(cityPart || "");
-    const expectedState = normalizeText(stateFull || statePart || "");
+    const [, numberPart] = parts;
 
-    const getCity = (result: NominatimResult) =>
-      normalizeText(
-        result.address?.city || result.address?.town || result.address?.village || result.address?.municipality || "",
-      );
-    const getStreet = (result: NominatimResult) =>
-      normalizeStreet(result.address?.road || result.address?.pedestrian || result.address?.residential || result.display_name || "");
-    const getNumber = (result: NominatimResult) => normalizeText(result.address?.house_number || "");
+    // Street View depende SOMENTE de CEP + número (do imóvel mais próximo possível)
+    if (cleanCep.length !== 8) {
+      setResolvingStreetView(false);
+      return;
+    }
 
-    const matchesLocation = (result: NominatimResult) => {
-      const resultCity = getCity(result);
-      const resultState = normalizeText(result.address?.state || "");
-      const resultStreet = getStreet(result);
-      const resultNumber = getNumber(result);
-      const cityOk = !expectedCity || resultCity.includes(expectedCity) || expectedCity.includes(resultCity);
-      const stateOk = !expectedState || resultState.includes(expectedState) || expectedState.includes(resultState);
-      const streetOk = !expectedStreet || resultStreet.includes(expectedStreet) || expectedStreet.includes(resultStreet);
-      const numberOk = !expectedNumber || !result.address?.house_number || resultNumber.includes(expectedNumber);
-      return cityOk && stateOk && streetOk && numberOk;
-    };
+    let cancelled = false;
 
     const fetchNominatim = async (url: string) => {
       try {
@@ -241,135 +209,71 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
       }
     };
 
+    const applyStreetViewCoords = (lat: string, lon: string) => {
+      if (cancelled) return;
+      // svembed com cbll renderiza panorama 360° real no iframe
+      setStreetViewEmbed(
+        `https://maps.google.com/maps?q=&layer=c&cbll=${lat},${lon}&cbp=11,0,0,0,0&z=17&output=svembed`,
+      );
+      setStreetViewUrl(
+        `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lon}&heading=0&pitch=0&fov=90`,
+      );
+    };
+
     const resolve = async () => {
       setResolvingStreetView(true);
 
-      // Strategy 0 (PRIORITY): CEP + número -> resolve direto pelo endereço do ViaCEP
-      if (cleanCep.length === 8) {
-        try {
-          const viaCepRes = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
-          if (viaCepRes.ok) {
-            const viaCep = await viaCepRes.json();
-            if (!viaCep.erro && viaCep.logradouro) {
-              const street = viaCep.logradouro as string;
-              const bairro = viaCep.bairro as string;
-              const city = viaCep.localidade as string;
-              const stateUf = viaCep.uf as string;
-              const fullLabel = [
-                numberPart ? `${street}, ${numberPart}` : street,
-                bairro,
-                city,
-                stateUf,
-                cleanCep,
-              ].filter(Boolean).join(", ");
+      try {
+        const viaCepRes = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
+        if (!viaCepRes.ok) return;
 
-              // Tenta geocodar para coords precisas (melhor pano)
-              const stateName = BR_STATE_NAMES[stateUf?.toUpperCase()] || stateUf;
-              const params = new URLSearchParams({
-                format: "jsonv2",
-                addressdetails: "1",
-                limit: "5",
-                countrycodes: "br",
-                street: numberPart ? `${numberPart} ${street}` : street,
-                city,
-                state: stateName,
-                postalcode: cleanCep,
-                country: "Brasil",
-              });
-              const results = await fetchNominatim(`https://nominatim.openstreetmap.org/search?${params.toString()}`);
-              const match = results?.find((r) => !numberPart || r.address?.house_number === numberPart) || results?.[0];
+        const viaCep = await viaCepRes.json();
+        if (viaCep.erro || !viaCep.logradouro) return;
 
-              if (match?.lat && match?.lon) {
-                applyCoords(match.lat, match.lon, fullLabel);
-              } else {
-                const queryResults = await fetchNominatim(
-                  `https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=5&countrycodes=br&q=${encodeURIComponent(fullLabel)}`,
-                );
-                const queryMatch = queryResults?.find((r) => getCity(r).includes(normalizeText(city))) || queryResults?.[0];
+        const street = viaCep.logradouro as string;
+        const city = viaCep.localidade as string;
+        const stateUf = viaCep.uf as string;
+        const stateName = BR_STATE_NAMES[stateUf?.toUpperCase()] || stateUf;
 
-                if (queryMatch?.lat && queryMatch?.lon) {
-                  applyCoords(queryMatch.lat, queryMatch.lon, fullLabel);
-                }
-              }
-              if (!cancelled) setResolvingStreetView(false);
-              return;
-            }
-          }
-        } catch {
-          /* fall through */
-        }
-      }
-
-      // Strategy 1 (legacy): CEP via ViaCEP -> structured Nominatim with house number
-      if (cleanCep.length === 8) {
-        try {
-          const viaCepRes = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
-          if (viaCepRes.ok) {
-            const viaCep = await viaCepRes.json();
-            if (!viaCep.erro && viaCep.logradouro) {
-              const street = viaCep.logradouro as string;
-              const city = viaCep.localidade as string;
-              const stateUf = viaCep.uf as string;
-              const stateName = BR_STATE_NAMES[stateUf?.toUpperCase()] || stateUf;
-              const streetWithNum = numberPart ? `${numberPart} ${street}` : street;
-              const params = new URLSearchParams({
-                format: "jsonv2",
-                addressdetails: "1",
-                limit: "5",
-                countrycodes: "br",
-                street: streetWithNum,
-                city,
-                state: stateName,
-                country: "Brasil",
-              });
-              const results = await fetchNominatim(`https://nominatim.openstreetmap.org/search?${params.toString()}`);
-              const match = results?.find((r) => !numberPart || r.address?.house_number === numberPart) || results?.[0];
-              if (match?.lat && match?.lon) {
-                const label = [numberPart ? `${street}, ${numberPart}` : street, viaCep.bairro, city, stateUf].filter(Boolean).join(", ");
-                applyCoords(match.lat, match.lon, label);
-                if (!cancelled) setResolvingStreetView(false);
-                return;
-              }
-            }
-          }
-        } catch {
-          /* fall through */
-        }
-      }
-
-      // Strategy 2: structured search by parsed address
-      const structuredUrl = (() => {
+        // Busca estruturada: CEP + número + rua (mais próximo possível do imóvel)
         const params = new URLSearchParams({
           format: "jsonv2",
           addressdetails: "1",
           limit: "5",
           countrycodes: "br",
+          street: numberPart ? `${numberPart} ${street}` : street,
+          city,
+          state: stateName,
+          postalcode: cleanCep,
+          country: "Brasil",
         });
-        if (streetName) params.set("street", numberPart ? `${numberPart} ${streetName}` : streetName);
-        if (cityPart) params.set("city", cityPart);
-        if (stateFull) params.set("state", stateFull);
-        params.set("country", "Brasil");
-        return `https://nominatim.openstreetmap.org/search?${params.toString()}`;
-      })();
 
-      const urls = [
-        structuredUrl,
-        ...geocodingCandidates.map(
-          (candidate) =>
-            `https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=5&countrycodes=br&q=${encodeURIComponent(candidate)}`,
-        ),
-      ];
+        const results = await fetchNominatim(`https://nominatim.openstreetmap.org/search?${params.toString()}`);
+        const exactNumber = results?.find((r) => numberPart && r.address?.house_number === numberPart);
+        const fallbackOnStreet = results?.[0];
+        const match = exactNumber || fallbackOnStreet;
 
-      for (const url of urls) {
-        const results = await fetchNominatim(url);
-        const match = results?.find(matchesLocation);
         if (match?.lat && match?.lon) {
-          applyCoords(match.lat, match.lon);
-          break;
+          applyStreetViewCoords(match.lat, match.lon);
+          return;
         }
-      }
 
-      if (!cancelled) setResolvingStreetView(false);
+        // Sem retorno estruturado → tenta busca textual restrita ao CEP
+        const textQuery = encodeURIComponent(
+          [numberPart ? `${street}, ${numberPart}` : street, city, stateUf, cleanCep, "Brasil"].filter(Boolean).join(", "),
+        );
+        const queryResults = await fetchNominatim(
+          `https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=5&countrycodes=br&q=${textQuery}`,
+        );
+        const queryMatch = queryResults?.[0];
+        if (queryMatch?.lat && queryMatch?.lon) {
+          applyStreetViewCoords(queryMatch.lat, queryMatch.lon);
+        }
+      } catch {
+        /* silencioso: sem street view */
+      } finally {
+        if (!cancelled) setResolvingStreetView(false);
+      }
     };
 
     void resolve();
