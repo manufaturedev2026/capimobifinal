@@ -1465,16 +1465,23 @@ export type Database = {
         Row: {
           acabamento: string | null
           ajuste_total_pct: number | null
+          aluguel_estimado: number | null
           area_construida: number | null
+          area_construida_superior: number | null
+          area_construida_terreo: number | null
+          area_terreno: number | null
           area_total: number | null
           bairro: string
           banheiros: number | null
           breakdown: Json | null
           cep: string | null
           cidade: string
+          comparaveis: Json | null
           conservacao: string | null
+          cozinhas: number | null
           created_at: string
           documentacao: string[] | null
+          escritorios: number | null
           estado: string
           extras: string[] | null
           faixa_max: number | null
@@ -1482,12 +1489,24 @@ export type Database = {
           garagem: number | null
           id: string
           justificativa: string | null
+          numero: string | null
+          pontos_atencao: Json | null
+          pontos_fortes: Json | null
           preco_m2_usado: number | null
           quartos: number | null
           rua: string | null
+          salas: number | null
+          score_acabamento: number | null
+          score_documentacao: number | null
+          score_estrutura: number | null
+          score_geral: number | null
+          score_liquidez: number | null
+          score_localizacao: number | null
+          sugestoes_valorizacao: Json | null
           suites: number | null
           tempo_medio_venda_dias: number | null
           tipo: string
+          tipo_estrutura: string | null
           user_id: string | null
           valor_base: number | null
           valor_estimado: number
@@ -1497,16 +1516,23 @@ export type Database = {
         Insert: {
           acabamento?: string | null
           ajuste_total_pct?: number | null
+          aluguel_estimado?: number | null
           area_construida?: number | null
+          area_construida_superior?: number | null
+          area_construida_terreo?: number | null
+          area_terreno?: number | null
           area_total?: number | null
           bairro: string
           banheiros?: number | null
           breakdown?: Json | null
           cep?: string | null
           cidade: string
+          comparaveis?: Json | null
           conservacao?: string | null
+          cozinhas?: number | null
           created_at?: string
           documentacao?: string[] | null
+          escritorios?: number | null
           estado: string
           extras?: string[] | null
           faixa_max?: number | null
@@ -1514,12 +1540,24 @@ export type Database = {
           garagem?: number | null
           id?: string
           justificativa?: string | null
+          numero?: string | null
+          pontos_atencao?: Json | null
+          pontos_fortes?: Json | null
           preco_m2_usado?: number | null
           quartos?: number | null
           rua?: string | null
+          salas?: number | null
+          score_acabamento?: number | null
+          score_documentacao?: number | null
+          score_estrutura?: number | null
+          score_geral?: number | null
+          score_liquidez?: number | null
+          score_localizacao?: number | null
+          sugestoes_valorizacao?: Json | null
           suites?: number | null
           tempo_medio_venda_dias?: number | null
           tipo: string
+          tipo_estrutura?: string | null
           user_id?: string | null
           valor_base?: number | null
           valor_estimado: number
@@ -1529,16 +1567,23 @@ export type Database = {
         Update: {
           acabamento?: string | null
           ajuste_total_pct?: number | null
+          aluguel_estimado?: number | null
           area_construida?: number | null
+          area_construida_superior?: number | null
+          area_construida_terreo?: number | null
+          area_terreno?: number | null
           area_total?: number | null
           bairro?: string
           banheiros?: number | null
           breakdown?: Json | null
           cep?: string | null
           cidade?: string
+          comparaveis?: Json | null
           conservacao?: string | null
+          cozinhas?: number | null
           created_at?: string
           documentacao?: string[] | null
+          escritorios?: number | null
           estado?: string
           extras?: string[] | null
           faixa_max?: number | null
@@ -1546,12 +1591,24 @@ export type Database = {
           garagem?: number | null
           id?: string
           justificativa?: string | null
+          numero?: string | null
+          pontos_atencao?: Json | null
+          pontos_fortes?: Json | null
           preco_m2_usado?: number | null
           quartos?: number | null
           rua?: string | null
+          salas?: number | null
+          score_acabamento?: number | null
+          score_documentacao?: number | null
+          score_estrutura?: number | null
+          score_geral?: number | null
+          score_liquidez?: number | null
+          score_localizacao?: number | null
+          sugestoes_valorizacao?: Json | null
           suites?: number | null
           tempo_medio_venda_dias?: number | null
           tipo?: string
+          tipo_estrutura?: string | null
           user_id?: string | null
           valor_base?: number | null
           valor_estimado?: number
