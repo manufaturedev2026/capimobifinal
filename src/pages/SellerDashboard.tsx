@@ -79,6 +79,7 @@ export default function SellerDashboard() {
   const [teamMembers, setTeamMembers] = useState<{ id: string; full_name: string; photo_url: string | null; phone: string | null; is_active: boolean }[]>([]);
   const [showInstallGuide, setShowInstallGuide] = useState(false);
   const [dashThemeId, setDashThemeId] = useState("azul");
+  const [defaultManager, setDefaultManager] = useState<{ name: string; phone: string | null; photo_url: string | null } | null>(null);
   const { guideMode, installed, requestInstall } = usePwaInstall();
   const pushSub = usePushSubscription(profile?.id);
   const [newCaptureCount, setNewCaptureCount] = useState(0);
@@ -144,6 +145,9 @@ export default function SellerDashboard() {
   useEffect(() => {
     supabase.from("platform_settings").select("value").eq("key", "homepage_theme").maybeSingle().then(({ data }) => {
       if (data?.value) setDashThemeId(data.value);
+    });
+    supabase.from("account_managers").select("name, phone, photo_url").eq("is_active", true).order("created_at", { ascending: true }).limit(1).maybeSingle().then(({ data }) => {
+      if (data) setDefaultManager(data as any);
     });
   }, []);
   const dashTheme = getMarketplaceTheme(dashThemeId);
