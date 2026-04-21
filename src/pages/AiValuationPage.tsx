@@ -601,7 +601,7 @@ export default function AiValuationPage() {
             </div>
           </Section>
 
-          <div className="mt-6">
+          <div id="photo-analysis-section" className="mt-6">
             <PhotoAnalysisStep
               contexto={{
                 tipo, cidade, bairro,
