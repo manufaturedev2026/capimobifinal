@@ -26,6 +26,7 @@ interface AgendaBot {
   success_cta_label: string;
   success_cta_url: string | null;
   is_active: boolean;
+  min_interval_minutes: number;
 }
 
 interface SellerItem {
@@ -104,6 +105,7 @@ export default function AgendaBotConfigTab({ sellerId, sellerSlug }: Props) {
       success_cta_label: "💬 Falar no WhatsApp",
       success_cta_url: null,
       is_active: true,
+      min_interval_minutes: 60,
     });
   };
 
@@ -124,6 +126,7 @@ export default function AgendaBotConfigTab({ sellerId, sellerSlug }: Props) {
         attendant_name: editing.attendant_name, attendant_avatar: editing.attendant_avatar,
         opening_message: editing.opening_message, success_cta_label: editing.success_cta_label,
         success_cta_url: editing.success_cta_url, is_active: editing.is_active,
+        min_interval_minutes: editing.min_interval_minutes,
       }).eq("id", editing.id);
       setSaving(false);
       if (error) { toast({ title: "Erro", description: error.message, variant: "destructive" }); return; }
@@ -133,6 +136,7 @@ export default function AgendaBotConfigTab({ sellerId, sellerSlug }: Props) {
         attendant_name: editing.attendant_name, attendant_avatar: editing.attendant_avatar,
         opening_message: editing.opening_message, success_cta_label: editing.success_cta_label,
         success_cta_url: editing.success_cta_url, is_active: editing.is_active,
+        min_interval_minutes: editing.min_interval_minutes,
       });
       setSaving(false);
       if (error) { toast({ title: "Erro", description: error.message, variant: "destructive" }); return; }
@@ -266,6 +270,26 @@ export default function AgendaBotConfigTab({ sellerId, sellerSlug }: Props) {
               <label className="text-xs text-muted-foreground">URL custom (vazio = WhatsApp do corretor)</label>
               <Input value={editing.success_cta_url || ""} onChange={(e) => setEditing({ ...editing, success_cta_url: e.target.value || null })} className="mt-1" />
             </div>
+          </div>
+        </div>
+
+        <div className="rounded-2xl border bg-card p-4 space-y-3">
+          <p className="text-sm font-bold">Conflito de horários</p>
+          <div>
+            <label className="text-xs text-muted-foreground">
+              Intervalo mínimo entre visitas no mesmo imóvel (minutos)
+            </label>
+            <Input
+              type="number"
+              min={0}
+              max={1440}
+              value={editing.min_interval_minutes}
+              onChange={(e) => setEditing({ ...editing, min_interval_minutes: Math.max(0, parseInt(e.target.value) || 0) })}
+              className="mt-1 w-32"
+            />
+            <p className="text-[11px] text-muted-foreground mt-1">
+              A IA vai recusar agendar se já houver visita marcada para este imóvel dentro deste intervalo. Ex: 60 = 1h de folga entre visitas. Use 0 para desativar.
+            </p>
           </div>
         </div>
 

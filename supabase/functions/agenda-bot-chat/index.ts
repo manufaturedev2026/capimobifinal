@@ -265,6 +265,36 @@ serve(async (req) => {
             if (!profile) throw new Error("Loja não encontrada");
             if (!city) city = profile.city;
 
+            // ===== Verificação de conflito de horário =====
+            let minInterval = 60;
+            if (botId) {
+              const { data: botCfg } = await supabase.from("agenda_bots").select("min_interval_minutes").eq("id", botId).maybeSingle();
+              if (botCfg?.min_interval_minutes != null) minInterval = botCfg.min_interval_minutes;
+            }
+
+            if (item_id && minInterval > 0) {
+              const { data: existing } = await supabase
+                .from("visit_appointments")
+                .select("visit_date, visit_time, status")
+                .eq("item_id", item_id)
+                .eq("visit_date", dt.date)
+                .neq("status", "cancelada");
+
+              if (existing && existing.length > 0) {
+                const [nh, nm] = dt.time.split(":").map(Number);
+                const newMin = nh * 60 + nm;
+                const conflict = existing.find((v: any) => {
+                  const [eh, em] = (v.visit_time || "00:00").split(":").map(Number);
+                  return Math.abs((eh * 60 + em) - newMin) < minInterval;
+                });
+                if (conflict) {
+                  const conflictTime = (conflict.visit_time || "").slice(0, 5);
+                  reply = `Ops! 😕 Já tem uma visita marcada para esse imóvel às ${conflictTime} no dia ${new Date(dt.date + "T00:00:00").toLocaleDateString("pt-BR")}. Preciso de pelo menos ${minInterval} minutos de diferença. Pode escolher outro horário? 🙏`;
+                  break;
+                }
+              }
+            }
+
             const noteSrc = isPrelinked
               ? `Agendamento via bot (pré-vinculado).${botId ? ` Bot ID: ${botId}.` : ""}`
               : `Agendamento via bot. Pedido: "${args.property_query}"`;
