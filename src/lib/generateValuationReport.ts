@@ -408,6 +408,45 @@ export function generateValuationReport(d: ValuationReportData): jsPDF {
   headerStrip("Página 2 — Identificação do Imóvel");
   let y = sectionTitle("Dados do Imóvel", 38);
 
+  // ===== FINALIDADE (opcional) =====
+  if (d.finalidade && d.finalidade.trim()) {
+    setFill([245, 240, 255]);
+    doc.roundedRect(14, y - 2, W - 28, 14, 2, 2, "F");
+    setFill(VIOLET);
+    doc.rect(14, y - 2, 2, 14, "F");
+    setColor(VIOLET);
+    doc.setFont("helvetica", "bold"); doc.setFontSize(8);
+    doc.text("FINALIDADE DA AVALIAÇÃO", 19, y + 3);
+    setColor([20, 20, 30]);
+    doc.setFont("helvetica", "bold"); doc.setFontSize(10.5);
+    doc.text(d.finalidade, 19, y + 9);
+    y += 18;
+  }
+
+  // ===== PROPRIETÁRIO (opcional) =====
+  const propTemDados =
+    d.proprietario && (d.proprietario.nome || d.proprietario.cpf || d.proprietario.telefone || d.proprietario.email);
+  if (propTemDados) {
+    setFill(LIGHT);
+    doc.roundedRect(14, y - 2, W - 28, 22, 2, 2, "F");
+    setColor(GRAY);
+    doc.setFont("helvetica", "normal"); doc.setFontSize(8);
+    doc.text("DADOS DO PROPRIETÁRIO", 18, y + 4);
+    setColor([20, 20, 30]);
+    doc.setFont("helvetica", "bold"); doc.setFontSize(10.5);
+    const nome = d.proprietario?.nome || "—";
+    doc.text(nome, 18, y + 11);
+    setColor([60, 60, 70]);
+    doc.setFont("helvetica", "normal"); doc.setFontSize(9);
+    const linhaInfo = [
+      d.proprietario?.cpf ? `CPF/CNPJ: ${d.proprietario.cpf}` : null,
+      d.proprietario?.telefone ? `Tel: ${d.proprietario.telefone}` : null,
+      d.proprietario?.email ? d.proprietario.email : null,
+    ].filter(Boolean).join("  •  ");
+    if (linhaInfo) doc.text(linhaInfo, 18, y + 17);
+    y += 26;
+  }
+
   setFill(LIGHT);
   doc.roundedRect(14, y - 2, W - 28, 22, 2, 2, "F");
   setColor(NAVY);
