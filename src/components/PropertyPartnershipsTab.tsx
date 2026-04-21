@@ -539,8 +539,8 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
       {/* ===== TABS ===== */}
       <div className="flex gap-1 bg-secondary/50 rounded-2xl p-1.5 overflow-x-auto scrollbar-hide">
         {([
+          { id: "disponivel" as SubTab, label: "Buscar Imóveis", count: totalAvailable },
           { id: "meus" as SubTab, label: "Meus Imóveis", count: 0 },
-          { id: "disponivel" as SubTab, label: "Disponíveis", count: 0 },
           { id: "vigentes" as SubTab, label: "Vigentes", count: activePartnerships.length },
           { id: "minhas" as SubTab, label: "Solicitações", count: myRequests.filter(r => r.status === "pendente").length },
           { id: "recebidas" as SubTab, label: "Recebidas", count: receivedRequests.filter(r => r.status === "pendente").length },
@@ -758,14 +758,51 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
       {/* ===== DISPONÍVEIS ===== */}
       {subTab === "disponivel" && (
         <div className="space-y-4">
-          <div className="relative">
-            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            <input
-              value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-              placeholder="Buscar imóvel ou cidade..."
-              className="w-full pl-10 pr-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
-            />
+          <div className="grid gap-3 lg:grid-cols-[1fr_auto_auto_auto]">
+            <div className="relative">
+              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <input
+                value={searchTerm}
+                onChange={e => setSearchTerm(e.target.value)}
+                placeholder="Buscar imóvel, corretor, bairro ou cidade..."
+                className="w-full pl-10 pr-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+              />
+            </div>
+            <select
+              value={locationScope}
+              onChange={(e) => setLocationScope(e.target.value as typeof locationScope)}
+              className="px-3 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+            >
+              <option value="proximos">Parceiros próximos</option>
+              <option value="cidade">Filtrar por cidade</option>
+              <option value="estado">Filtrar por estado</option>
+              <option value="todos">Todos os imóveis</option>
+            </select>
+            <select
+              value={selectedState}
+              onChange={(e) => { setSelectedState(e.target.value); setSelectedCity(""); }}
+              disabled={locationScope === "todos" || locationScope === "proximos"}
+              className="px-3 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none disabled:opacity-50"
+            >
+              <option value="">Todos os estados</option>
+              {stateOptions.map(state => <option key={state} value={state}>{state}</option>)}
+            </select>
+            <select
+              value={selectedCity}
+              onChange={(e) => setSelectedCity(e.target.value)}
+              disabled={locationScope !== "cidade"}
+              className="px-3 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none disabled:opacity-50"
+            >
+              <option value="">Todas as cidades</option>
+              {cityOptions.map(city => <option key={city} value={city}>{city}</option>)}
+            </select>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+            <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 font-bold text-primary">
+              <MapPin size={12} /> {locationScope === "proximos" ? `Mostrando primeiro ${currentProfile?.city || currentProfile?.state || "sua região"}` : `${filteredItems.length} imóveis encontrados`}
+            </span>
+            {locationScope === "proximos" && <span>Use “Todos os imóveis” para ver a rede completa.</span>}
           </div>
 
           {filteredItems.length === 0 ? (
