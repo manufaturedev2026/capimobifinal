@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { generateValuationReport } from "@/lib/generateValuationReport";
 import AdvancedValuationFields, { ADVANCED_INITIAL, type AdvancedState } from "@/components/AdvancedValuationFields";
+import PhotoAnalysisStep, { type FotoItem, type AnaliseVisual } from "@/components/PhotoAnalysisStep";
 import ApartmentValuationFields, { APARTMENT_INITIAL, type ApartmentState } from "@/components/ApartmentValuationFields";
 import {
   TerrenoExtraFields, TERRENO_INITIAL, type TerrenoState,
