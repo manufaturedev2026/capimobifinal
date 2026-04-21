@@ -28,6 +28,19 @@ interface NominatimResult {
   };
 }
 
+interface PhotonFeature {
+  geometry?: {
+    coordinates?: [number, number];
+  };
+  properties?: {
+    name?: string;
+    street?: string;
+    district?: string;
+    city?: string;
+    postcode?: string;
+  };
+}
+
 interface AddressOverride {
   lat: string;
   lon: string;
@@ -199,19 +212,21 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
 
     let cancelled = false;
 
-    const fetchNominatim = async (url: string) => {
+    const fetchPhoton = async (query: string) => {
       try {
-        const response = await fetch(url, { headers: { Accept: "application/json", "Accept-Language": "pt-BR" } });
-        if (!response.ok) return null;
-        return (await response.json()) as NominatimResult[];
+        const response = await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(query)}&limit=5`, {
+          headers: { Accept: "application/json", "Accept-Language": "pt-BR" },
+        });
+        if (!response.ok) return [] as PhotonFeature[];
+        const data = (await response.json()) as { features?: PhotonFeature[] };
+        return data.features ?? [];
       } catch {
-        return null;
+        return [] as PhotonFeature[];
       }
     };
 
     const applyStreetViewCoords = (lat: string, lon: string) => {
       if (cancelled) return;
-      // svembed com cbll renderiza panorama 360° real no iframe
       setStreetViewEmbed(
         `https://maps.google.com/maps?q=&layer=c&cbll=${lat},${lon}&cbp=11,0,0,0,0&z=17&output=svembed`,
       );
@@ -231,43 +246,49 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
         if (viaCep.erro || !viaCep.logradouro) return;
 
         const street = viaCep.logradouro as string;
+        const district = (viaCep.bairro as string) || "";
         const city = viaCep.localidade as string;
         const stateUf = viaCep.uf as string;
-        const stateName = BR_STATE_NAMES[stateUf?.toUpperCase()] || stateUf;
 
-        // Busca estruturada: CEP + número + rua (mais próximo possível do imóvel)
-        const params = new URLSearchParams({
-          format: "jsonv2",
-          addressdetails: "1",
-          limit: "5",
-          countrycodes: "br",
-          street: numberPart ? `${numberPart} ${street}` : street,
-          city,
-          state: stateName,
-          postalcode: cleanCep,
-          country: "Brasil",
-        });
+        const photonQueries = [
+          [street, numberPart, district, city, stateUf, cleanCep, "Brasil"].filter(Boolean).join(", "),
+          [street, numberPart, city, stateUf, cleanCep, "Brasil"].filter(Boolean).join(", "),
+          [cleanCep, district, city, stateUf, "Brasil"].filter(Boolean).join(", "),
+        ];
 
-        const results = await fetchNominatim(`https://nominatim.openstreetmap.org/search?${params.toString()}`);
-        const exactNumber = results?.find((r) => numberPart && r.address?.house_number === numberPart);
-        const fallbackOnStreet = results?.[0];
-        const match = exactNumber || fallbackOnStreet;
+        const allResults = (
+          await Promise.all(photonQueries.map((query) => fetchPhoton(query)))
+        ).flat();
 
-        if (match?.lat && match?.lon) {
-          applyStreetViewCoords(match.lat, match.lon);
-          return;
-        }
+        const normalizedStreet = normalizeStreet(street);
+        const normalizedDistrict = normalizeText(district);
+        const normalizedCity = normalizeText(city);
 
-        // Sem retorno estruturado → tenta busca textual restrita ao CEP
-        const textQuery = encodeURIComponent(
-          [numberPart ? `${street}, ${numberPart}` : street, city, stateUf, cleanCep, "Brasil"].filter(Boolean).join(", "),
-        );
-        const queryResults = await fetchNominatim(
-          `https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=5&countrycodes=br&q=${textQuery}`,
-        );
-        const queryMatch = queryResults?.[0];
-        if (queryMatch?.lat && queryMatch?.lon) {
-          applyStreetViewCoords(queryMatch.lat, queryMatch.lon);
+        const rankedResults = allResults
+          .map((feature) => {
+            const [lon, lat] = feature.geometry?.coordinates ?? [];
+            if (typeof lat !== "number" || typeof lon !== "number") return null;
+
+            const name = feature.properties?.street || feature.properties?.name || "";
+            const featureDistrict = feature.properties?.district || "";
+            const featureCity = feature.properties?.city || "";
+            const featurePostcode = feature.properties?.postcode || "";
+
+            let score = 0;
+            if (normalizeStreet(name) === normalizedStreet) score += 6;
+            else if (normalizeStreet(name).includes(normalizedStreet) || normalizedStreet.includes(normalizeStreet(name))) score += 3;
+            if (normalizedDistrict && normalizeText(featureDistrict) === normalizedDistrict) score += 3;
+            if (normalizeText(featureCity) === normalizedCity) score += 2;
+            if (featurePostcode.replace(/\D/g, "") === cleanCep) score += 4;
+
+            return { lat, lon, score };
+          })
+          .filter((item): item is { lat: number; lon: number; score: number } => Boolean(item))
+          .sort((a, b) => b.score - a.score);
+
+        const bestMatch = rankedResults[0];
+        if (bestMatch) {
+          applyStreetViewCoords(String(bestMatch.lat), String(bestMatch.lon));
         }
       } catch {
         /* silencioso: sem street view */
@@ -290,15 +311,7 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
   const addressOverrideStreetEmbed = addressOverride
     ? `https://maps.google.com/maps?q=&layer=c&cbll=${addressOverride.lat},${addressOverride.lon}&cbp=11,0,0,0,0&z=17&output=svembed`
     : null;
-  // Fallback: Street View pelo CEP + número direto na URL do Google (sem coords)
-  const cepStreetEmbed = useMemo(() => {
-    if (cleanCep.length !== 8) return null;
-    const numberMatch = address.match(/,\s*(\d+[a-zA-Z]?)/);
-    const numberPart = numberMatch?.[1] ?? "";
-    const query = encodeURIComponent([numberPart, cleanCep, "Brasil"].filter(Boolean).join(", "));
-    return `https://maps.google.com/maps?q=${query}&layer=c&cbp=11,0,0,0,0&output=svembed`;
-  }, [cleanCep, address]);
-  const streetEmbedSrc = streetViewEmbed || addressOverrideStreetEmbed || cepStreetEmbed;
+  const streetEmbedSrc = streetViewEmbed || addressOverrideStreetEmbed;
   const isStreet = view === "street" && !!streetEmbedSrc;
   const currentSrc = isStreet ? streetEmbedSrc : mapSrc;
 
