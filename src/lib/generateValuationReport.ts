@@ -1,4 +1,4 @@
-// Gerador de Laudo de Avaliação Imobiliária PDF (multi-página, profissional)
+// Gerador de Laudo de Avaliação Imobiliária PDF — versão profissional v2
 import jsPDF from "jspdf";
 
 export type ValuationReportData = {
@@ -10,12 +10,20 @@ export type ValuationReportData = {
   cep?: string;
   // Imóvel
   tipo: string;
-  areaTotal: string | number;
-  areaConstruida?: string | number;
+  tipoEstrutura?: string;
+  // Áreas (todas como string p/ vir do form)
+  areaTerreno?: string | number;
+  areaTerreo?: string | number;
+  areaSuperior?: string | number;
+  areaConstruidaTotal?: number;
+  // Internos
   quartos?: string | number;
   banheiros?: string | number;
   suites?: string | number;
   garagem?: string | number;
+  salas?: string | number;
+  cozinhas?: string | number;
+  escritorios?: string | number;
   extras: string[];
   acabamento: string;
   conservacao: string;
@@ -27,22 +35,32 @@ export type ValuationReportData = {
     faixa_max: number;
     venda_rapida: number;
     venda_premium: number;
+    aluguel_estimado?: number;
     potencial_valorizacao_pct: number;
     tempo_medio_venda_dias: number;
     justificativa: string;
     pontos_fortes: string[];
     pontos_atencao: string[];
+    sugestoes_valorizacao?: string[];
+    score_geral?: number;
+    scores?: { localizacao: number; estrutura: number; acabamento: number; liquidez: number; documentacao: number };
+    comparaveis?: Array<{ titulo: string; bairro: string; area: number; quartos: number | null; preco: number }>;
     meta?: {
       preco_m2: number;
       ajuste_total_pct: number;
       breakdown: Array<{ label: string; pct: number }>;
+      market?: {
+        comparaveis: number;
+        media_dormitorios: number;
+        media_banheiros: number;
+        media_area_m2: number;
+        media_preco: number;
+      };
     };
   };
-  // Avaliador
   avaliadorNome?: string;
   avaliadorEmail?: string;
   empresaNome?: string;
-  empresaLogo?: string; // dataURL ou URL
 };
 
 const fmtBRL = (v: number) =>
@@ -54,6 +72,7 @@ const GRAY: [number, number, number] = [110, 110, 120];
 const LIGHT: [number, number, number] = [245, 247, 252];
 const GREEN: [number, number, number] = [34, 130, 80];
 const AMBER: [number, number, number] = [200, 130, 20];
+const VIOLET: [number, number, number] = [110, 60, 160];
 
 function shortCode(): string {
   const ts = Date.now().toString(36).toUpperCase();
@@ -62,24 +81,20 @@ function shortCode(): string {
 }
 
 function liquidezLabel(dias: number): string {
-  if (dias <= 60) return "Alta — venda rápida esperada";
-  if (dias <= 120) return "Média — alinhada à média de mercado";
-  return "Baixa — perfil de venda paciente";
+  if (dias <= 60) return "Alta — venda rápida esperada (30-60 dias)";
+  if (dias <= 120) return "Média — alinhada à média de mercado (60-120 dias)";
+  if (dias <= 180) return "Moderada — perfil paciente (120-180 dias)";
+  return "Baixa — exige estratégia de marketing (180+ dias)";
 }
 
 function localizacaoTexto(d: ValuationReportData): string {
   const parts = [`Imóvel localizado em ${d.bairro}, ${d.cidade}/${d.estado}`];
   if (d.rua) parts.push(`com endereço na ${d.rua}`);
-  // Fallback: se preco_m2 vier 0/ausente, calcula a partir do valor estimado e área total
-  const area = Number(d.areaTotal) || 0;
-  let precoM2 = Number(d.result.meta?.preco_m2) || 0;
-  if (!precoM2 && area > 0 && d.result.valor_estimado > 0) {
-    precoM2 = Math.round(d.result.valor_estimado / area);
-  }
+  const precoM2 = Number(d.result.meta?.preco_m2) || 0;
   if (precoM2 > 0) {
     parts.push(`região com preço médio de ${fmtBRL(precoM2)} por m² aplicado como base de cálculo`);
   } else {
-    parts.push("região analisada com base em comparáveis de mercado");
+    parts.push("valor calculado por base comparativa regional");
   }
   return parts.join(", ") + ".";
 }
@@ -89,6 +104,7 @@ function conservacaoTexto(c: string): string {
     "Novo": "Imóvel em estado novo, sem necessidade de intervenções estruturais ou estéticas.",
     "Reformado": "Imóvel reformado recentemente, com elementos atualizados e em pleno funcionamento.",
     "Bom": "Imóvel em bom estado geral de conservação, manutenção em dia.",
+    "Bom estado": "Imóvel em bom estado geral de conservação, manutenção em dia.",
     "Antigo": "Imóvel com sinais de envelhecimento natural, podendo demandar atualizações pontuais.",
     "Precisa reforma": "Imóvel necessita de reforma para alcançar pleno valor de mercado.",
   };
@@ -99,16 +115,33 @@ function acabamentoTexto(a: string): string {
   const map: Record<string, string> = {
     "Simples": "Padrão construtivo simples, com materiais funcionais e econômicos.",
     "Médio": "Padrão construtivo dentro da média regional, com materiais comerciais de boa procedência.",
+    "Bom": "Padrão acima da média regional, com materiais selecionados e bom acabamento.",
     "Alto padrão": "Acabamentos superiores à média, com materiais nobres e detalhes diferenciados.",
     "Luxo": "Padrão luxo, com materiais premium, projeto refinado e atributos exclusivos.",
   };
   return map[a] ?? "Padrão construtivo compatível com a média regional.";
 }
 
+function estruturaTexto(d: ValuationReportData): string {
+  if (!d.tipoEstrutura) return "";
+  const t = Number(d.areaTerreo) || 0;
+  const s = Number(d.areaSuperior) || 0;
+  const map: Record<string, string> = {
+    "Casa térrea": `Estrutura em pavimento único${t > 0 ? ` com ${t}m² de área construída` : ""}, distribuição horizontal funcional.`,
+    "Sobrado integrado": `Sobrado com dois pavimentos integrados${t > 0 && s > 0 ? ` (térreo ${t}m² + superior ${s}m²)` : ""}, otimizando o aproveitamento do lote.`,
+    "Casa com pavimento superior": `Casa com pavimento superior${t > 0 && s > 0 ? ` (térreo ${t}m² + superior ${s}m²)` : ""}, ampliando a metragem útil.`,
+    "Duas moradias no lote": "Lote com duas moradias independentes, configurando potencial de renda dupla ou uso multifamiliar.",
+    "Uso misto residencial/comercial": "Estrutura com uso misto, combinando função residencial e comercial — versatilidade de ocupação.",
+  };
+  return map[d.tipoEstrutura] ?? "";
+}
+
 function documentacaoTexto(docs: string[]): string {
   if (!docs.length) return "Documentação não informada — recomenda-se análise pelo cartório competente.";
-  if (docs.includes("Pendente")) return "Há pendências documentais relevantes — orienta-se regularização antes da comercialização.";
-  const ok = docs.filter((d) => /OK|Financiável/i.test(d));
+  if (docs.includes("Pendências") || docs.includes("Pendente")) {
+    return "Há pendências documentais relevantes — orienta-se regularização antes da comercialização.";
+  }
+  const ok = docs.filter((d) => /OK|ok|Financiável/i.test(d));
   if (ok.length) return `Documentação favorável: ${ok.join(", ")}. Imóvel apto à comercialização.`;
   return `Situação documental informada: ${docs.join(", ")}.`;
 }
@@ -122,22 +155,18 @@ function analiseTecnicaParagrafo(d: ValuationReportData): string {
       ? "ajuste para baixo justificado por características específicas do imóvel"
       : "alinhamento técnico com a média comparável da região";
 
-  // Contar fatores reais analisados (não só os com ajuste != 0)
   const fatoresAnalisados: string[] = [];
-  if (d.areaTotal) fatoresAnalisados.push("metragem");
+  if (d.areaTerreno || d.areaConstruidaTotal) fatoresAnalisados.push("metragem");
+  if (d.tipoEstrutura) fatoresAnalisados.push("tipo de estrutura");
   if (d.acabamento) fatoresAnalisados.push("padrão de acabamento");
   if (d.conservacao) fatoresAnalisados.push("estado de conservação");
   if (d.extras?.length) fatoresAnalisados.push(`${d.extras.length} diferencial(is)`);
   if (d.documentacao?.length) fatoresAnalisados.push("situação documental");
-  if ((Number(d.quartos) || 0) + (Number(d.suites) || 0) + (Number(d.banheiros) || 0) + (Number(d.garagem) || 0) > 0) {
-    fatoresAnalisados.push("estrutura interna");
-  }
-  const totalFatores = fatoresAnalisados.length || 5;
-  const ajustesAplicados = r.meta?.breakdown.length ?? 0;
+  fatoresAnalisados.push("estrutura interna");
 
   return [
     `O imóvel apresenta ${tendencia}, considerando metragem útil, padrão construtivo e atributos diferenciais.`,
-    `A análise considerou ${totalFatores} fatores objetivos (${fatoresAnalisados.join(", ")}), dos quais ${ajustesAplicados} resultaram em ajuste percentual sobre o preço base regional.`,
+    `A análise considerou ${fatoresAnalisados.length} fatores objetivos (${fatoresAnalisados.join(", ")}).`,
     `O resultado de ${fmtBRL(r.valor_estimado)} reflete o equilíbrio entre o preço base regional e os atributos específicos da propriedade.`,
   ].join(" ");
 }
@@ -152,7 +181,6 @@ export function generateValuationReport(d: ValuationReportData): jsPDF {
   const codigo = shortCode();
   const dataEmissao = new Date().toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" });
 
-  // ======= Helpers =======
   const setColor = (c: [number, number, number]) => doc.setTextColor(c[0], c[1], c[2]);
   const setFill = (c: [number, number, number]) => doc.setFillColor(c[0], c[1], c[2]);
 
@@ -208,59 +236,48 @@ export function generateValuationReport(d: ValuationReportData): jsPDF {
     return y + 2;
   };
 
-  const dataRow = (label: string, value: string, y: number): number => {
-    setColor(GRAY);
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(9);
-    doc.text(label.toUpperCase(), 14, y);
-    setColor([20, 20, 30]);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(10.5);
-    doc.text(value || "—", 14, y + 5);
-    setFill([225, 225, 235]);
-    doc.rect(14, y + 7.5, W - 28, 0.2, "F");
-    return y + 12;
-  };
-
   // =========================================
   // PÁGINA 1 — CAPA
   // =========================================
   setFill(NAVY);
   doc.rect(0, 0, W, H, "F");
-  // detalhe ouro topo
   setFill(GOLD);
   doc.rect(0, 0, W, 4, "F");
-  // detalhe ouro base
   doc.rect(0, H - 4, W, 4, "F");
 
-  // marca/logo
   setColor([255, 255, 255]);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(10);
   doc.text((d.empresaNome ?? "AVALIAÇÃO IMOBILIÁRIA").toUpperCase(), W / 2, 30, { align: "center" });
 
-  // título
-  setColor([255, 255, 255]);
-  doc.setFont("helvetica", "bold");
   doc.setFontSize(28);
   doc.text("Laudo de Avaliação", W / 2, H / 2 - 25, { align: "center" });
-  doc.setFontSize(28);
   doc.text("Imobiliária", W / 2, H / 2 - 12, { align: "center" });
 
-  // linha ouro
   setFill(GOLD);
   doc.rect(W / 2 - 25, H / 2 - 4, 50, 0.8, "F");
 
-  // dados do imóvel resumo
   doc.setFont("helvetica", "normal");
   doc.setFontSize(12);
   setColor([220, 220, 230]);
   doc.text(`${d.tipo} • ${d.bairro}`, W / 2, H / 2 + 8, { align: "center" });
   doc.text(`${d.cidade} / ${d.estado}`, W / 2, H / 2 + 16, { align: "center" });
 
-  // bloco inferior info
+  // Score destaque na capa
+  if (d.result.score_geral !== undefined) {
+    setFill(GOLD);
+    doc.circle(W / 2, H / 2 + 40, 14, "F");
+    setColor(NAVY);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.text(String(d.result.score_geral), W / 2, H / 2 + 43, { align: "center" });
+    setColor([220, 220, 230]);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.text("SCORE PROFISSIONAL /10", W / 2, H / 2 + 60, { align: "center" });
+  }
+
   const blockY = H - 70;
-  setFill([255, 255, 255]);
   doc.setDrawColor(GOLD[0], GOLD[1], GOLD[2]);
   doc.setLineWidth(0.4);
   doc.roundedRect(20, blockY, W - 40, 45, 3, 3, "S");
@@ -299,7 +316,6 @@ export function generateValuationReport(d: ValuationReportData): jsPDF {
   headerStrip("Página 2 — Identificação do Imóvel");
   let y = sectionTitle("Dados do Imóvel", 38);
 
-  // Endereço em destaque
   setFill(LIGHT);
   doc.roundedRect(14, y - 2, W - 28, 22, 2, 2, "F");
   setColor(NAVY);
@@ -312,58 +328,51 @@ export function generateValuationReport(d: ValuationReportData): jsPDF {
   doc.text(doc.splitTextToSize(enderecoLinha, W - 36), 18, y + 11);
   y += 28;
 
-  // Grid 2 colunas
   const colW = (W - 36) / 2;
   const col2X = 14 + colW + 8;
-  let yL = y;
-  let yR = y;
+  let yL = y, yR = y;
 
   const rowL = (label: string, val: string) => {
-    setColor(GRAY);
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(8);
+    setColor(GRAY); doc.setFont("helvetica", "normal"); doc.setFontSize(8);
     doc.text(label.toUpperCase(), 14, yL);
-    setColor([20, 20, 30]);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(10.5);
+    setColor([20, 20, 30]); doc.setFont("helvetica", "bold"); doc.setFontSize(10.5);
     doc.text(val || "—", 14, yL + 5);
-    doc.setDrawColor(225, 225, 235);
-    doc.line(14, yL + 8, 14 + colW, yL + 8);
+    doc.setDrawColor(225, 225, 235); doc.line(14, yL + 8, 14 + colW, yL + 8);
     yL += 13;
   };
   const rowR = (label: string, val: string) => {
-    setColor(GRAY);
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(8);
+    setColor(GRAY); doc.setFont("helvetica", "normal"); doc.setFontSize(8);
     doc.text(label.toUpperCase(), col2X, yR);
-    setColor([20, 20, 30]);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(10.5);
+    setColor([20, 20, 30]); doc.setFont("helvetica", "bold"); doc.setFontSize(10.5);
     doc.text(val || "—", col2X, yR + 5);
-    doc.setDrawColor(225, 225, 235);
-    doc.line(col2X, yR + 8, col2X + colW, yR + 8);
+    doc.setDrawColor(225, 225, 235); doc.line(col2X, yR + 8, col2X + colW, yR + 8);
     yR += 13;
   };
 
   rowL("Tipo do imóvel", d.tipo);
-  rowR("Padrão de acabamento", d.acabamento);
-  rowL("Área total", `${d.areaTotal} m²`);
-  rowR("Área construída", d.areaConstruida ? `${d.areaConstruida} m²` : "—");
-  rowL("Quartos", String(d.quartos ?? "—"));
+  rowR("Estrutura", d.tipoEstrutura ?? "—");
+  rowL("Área terreno", d.areaTerreno ? `${d.areaTerreno} m²` : "—");
+  rowR("Construída total", d.areaConstruidaTotal ? `${d.areaConstruidaTotal} m²` : "—");
+  rowL("Térreo", d.areaTerreo ? `${d.areaTerreo} m²` : "—");
+  rowR("Pavimento superior", d.areaSuperior ? `${d.areaSuperior} m²` : "—");
+  rowL("Dormitórios", String(d.quartos ?? "—"));
   rowR("Suítes", String(d.suites ?? "—"));
   rowL("Banheiros", String(d.banheiros ?? "—"));
   rowR("Vagas garagem", String(d.garagem ?? "—"));
+  rowL("Salas", String(d.salas ?? "—"));
+  rowR("Cozinhas", String(d.cozinhas ?? "—"));
+  rowL("Escritórios", String(d.escritorios ?? "—"));
+  rowR("Padrão de acabamento", d.acabamento);
   rowL("Conservação", d.conservacao);
   rowR("CEP", d.cep || "—");
 
   y = Math.max(yL, yR) + 4;
-  // Diferenciais
+
   y = sectionTitle("Diferenciais", y);
   if (d.extras.length === 0) {
     y = para("Nenhum diferencial declarado.", y, { color: GRAY });
   } else {
-    let cx = 14;
-    let cy = y;
+    let cx = 14, cy = y;
     doc.setFont("helvetica", "bold");
     doc.setFontSize(9);
     d.extras.forEach((ex) => {
@@ -378,7 +387,6 @@ export function generateValuationReport(d: ValuationReportData): jsPDF {
     y = cy + 8;
   }
 
-  // Documentação
   y = sectionTitle("Documentação", y);
   y = para(documentacaoTexto(d.documentacao), y);
 
@@ -393,6 +401,10 @@ export function generateValuationReport(d: ValuationReportData): jsPDF {
 
   const blocks: Array<{ titulo: string; texto: string }> = [
     { titulo: "Localização", texto: localizacaoTexto(d) },
+  ];
+  const ed = estruturaTexto(d);
+  if (ed) blocks.push({ titulo: "Estrutura", texto: ed });
+  blocks.push(
     { titulo: "Conservação", texto: conservacaoTexto(d.conservacao) },
     { titulo: "Acabamento", texto: acabamentoTexto(d.acabamento) },
     {
@@ -406,7 +418,7 @@ export function generateValuationReport(d: ValuationReportData): jsPDF {
       titulo: "Liquidez estimada",
       texto: `${liquidezLabel(d.result.tempo_medio_venda_dias)}. Tempo médio estimado para conclusão da venda: ${d.result.tempo_medio_venda_dias} dias.`,
     },
-  ];
+  );
 
   blocks.forEach((b) => {
     if (y > H - 40) { footer("Página 3 de 6"); doc.addPage(); headerStrip("Página 3 — Análise Técnica (cont.)"); y = 38; }
@@ -424,19 +436,18 @@ export function generateValuationReport(d: ValuationReportData): jsPDF {
   footer("Página 3 de 6");
 
   // =========================================
-  // PÁGINA 4 — RESULTADO FINANCEIRO
+  // PÁGINA 4 — RESULTADO FINANCEIRO + COMPARÁVEIS
   // =========================================
   doc.addPage();
   headerStrip("Página 4 — Resultado Financeiro");
   y = sectionTitle("Resultado da Avaliação", 38);
 
-  // valor estimado destaque
   setFill(NAVY);
   doc.roundedRect(14, y, W - 28, 38, 3, 3, "F");
   setColor([255, 255, 255]);
   doc.setFont("helvetica", "normal");
   doc.setFontSize(9);
-  doc.text("VALOR ESTIMADO JUSTO DE MERCADO", W / 2, y + 9, { align: "center" });
+  doc.text("VALOR JUSTO DE MERCADO", W / 2, y + 9, { align: "center" });
   doc.setFont("helvetica", "bold");
   doc.setFontSize(28);
   doc.text(fmtBRL(d.result.valor_estimado), W / 2, y + 24, { align: "center" });
@@ -446,84 +457,105 @@ export function generateValuationReport(d: ValuationReportData): jsPDF {
   doc.text(`Faixa ideal: ${fmtBRL(d.result.faixa_min)} — ${fmtBRL(d.result.faixa_max)}`, W / 2, y + 33, { align: "center" });
   y += 46;
 
-  // 3 cards estratégias
-  const cardW = (W - 28 - 12) / 3;
-  const cards: Array<{ label: string; value: string; sub: string }> = [
-    { label: "Venda Rápida", value: fmtBRL(d.result.venda_rapida), sub: "até 30-60 dias" },
-    { label: "Venda Premium", value: fmtBRL(d.result.venda_premium), sub: "vendedor paciente" },
-    { label: "Tempo Médio", value: `${d.result.tempo_medio_venda_dias} dias`, sub: "no preço justo" },
+  // 4 cards estratégias
+  const cardW = (W - 28 - 18) / 4;
+  const cards: Array<{ label: string; value: string; sub: string; color: [number, number, number] }> = [
+    { label: "Venda Rápida", value: fmtBRL(d.result.venda_rapida), sub: "30-60 dias", color: AMBER },
+    { label: "Venda Premium", value: fmtBRL(d.result.venda_premium), sub: "vendedor paciente", color: VIOLET },
+    { label: "Aluguel/mês", value: fmtBRL(d.result.aluguel_estimado ?? Math.round(d.result.valor_estimado * 0.005)), sub: "renda potencial", color: GREEN },
+    { label: "Tempo Médio", value: `${d.result.tempo_medio_venda_dias} dias`, sub: "no preço justo", color: NAVY },
   ];
   cards.forEach((c, i) => {
     const x = 14 + i * (cardW + 6);
     setFill(LIGHT);
-    doc.roundedRect(x, y, cardW, 28, 2, 2, "F");
+    doc.roundedRect(x, y, cardW, 30, 2, 2, "F");
+    setFill(c.color);
+    doc.rect(x, y, 2, 30, "F");
     setColor(GRAY);
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(8);
+    doc.setFontSize(7.5);
     doc.text(c.label.toUpperCase(), x + 5, y + 7);
     setColor(NAVY);
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(13);
+    doc.setFontSize(11);
     doc.text(c.value, x + 5, y + 17);
     setColor(GRAY);
     doc.setFont("helvetica", "italic");
-    doc.setFontSize(8);
-    doc.text(c.sub, x + 5, y + 23);
+    doc.setFontSize(7.5);
+    doc.text(c.sub, x + 5, y + 25);
   });
-  y += 36;
+  y += 38;
 
-  // Potencial valorização + locação estimada
-  setFill([240, 246, 240]);
-  doc.roundedRect(14, y, (W - 28) / 2 - 4, 24, 2, 2, "F");
-  setColor(GREEN);
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(8);
-  doc.text("POTENCIAL DE VALORIZAÇÃO", 18, y + 7);
-  doc.setFontSize(18);
-  doc.text(`+${d.result.potencial_valorizacao_pct}% a.a.`, 18, y + 18);
-
-  // Locação estimada (regra: 0,4-0,6% do valor / mês)
-  const aluguelEst = Math.round((d.result.valor_estimado * 0.005) / 50) * 50;
-  const x2 = 14 + (W - 28) / 2 + 4;
-  setFill([245, 240, 252]);
-  doc.roundedRect(x2, y, (W - 28) / 2 - 4, 24, 2, 2, "F");
-  setColor([90, 50, 130]);
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(8);
-  doc.text("POTENCIAL DE LOCAÇÃO MENSAL", x2 + 4, y + 7);
-  doc.setFontSize(18);
-  doc.text(fmtBRL(aluguelEst), x2 + 4, y + 18);
-  y += 32;
-
-  // Gráfico de barras (4 estratégias)
-  setColor(NAVY);
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(10);
-  doc.text("COMPARATIVO DE ESTRATÉGIAS", 14, y);
-  y += 4;
-
-  const max = d.result.venda_premium;
-  const barAreaW = W - 28 - 50;
-  const bars = [
-    { label: "Rápida", val: d.result.venda_rapida, color: AMBER },
-    { label: "Mínima", val: d.result.faixa_min, color: GRAY },
-    { label: "Justa", val: d.result.valor_estimado, color: NAVY },
-    { label: "Máxima", val: d.result.faixa_max, color: GOLD },
-    { label: "Premium", val: d.result.venda_premium, color: GREEN },
-  ];
-  bars.forEach((b) => {
+  // Score profissional
+  if (d.result.scores) {
+    if (y > H - 70) { footer("Página 4 de 6"); doc.addPage(); headerStrip("Página 4 — Resultado (cont.)"); y = 38; }
+    setColor(NAVY);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10.5);
+    doc.text("SCORE PROFISSIONAL", 14, y);
+    setColor(GOLD);
+    doc.setFontSize(10);
+    doc.text(`${d.result.score_geral}/10`, W - 14, y, { align: "right" });
+    setFill(GOLD);
+    doc.rect(14, y + 1.5, 8, 0.5, "F");
     y += 8;
-    setColor([60, 60, 70]);
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(8.5);
-    doc.text(b.label, 14, y);
-    const wpx = (b.val / max) * barAreaW;
-    setFill(b.color);
-    doc.roundedRect(36, y - 4, Math.max(2, wpx), 5, 1, 1, "F");
-    setColor([40, 40, 50]);
-    doc.setFontSize(8);
-    doc.text(fmtBRL(b.val), 36 + wpx + 2, y);
-  });
+
+    const scoreItems: Array<[string, number]> = [
+      ["Localização", d.result.scores.localizacao],
+      ["Estrutura", d.result.scores.estrutura],
+      ["Acabamento", d.result.scores.acabamento],
+      ["Liquidez", d.result.scores.liquidez],
+      ["Documentação", d.result.scores.documentacao],
+    ];
+    scoreItems.forEach(([label, val]) => {
+      setColor([60, 60, 70]);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(9);
+      doc.text(label, 14, y);
+      doc.text(`${val}/10`, 60, y);
+      // barra
+      setFill([225, 225, 235]);
+      doc.rect(75, y - 3, W - 89, 3.5, "F");
+      const cor: [number, number, number] = val >= 8 ? GREEN : val >= 6 ? NAVY : val >= 4 ? AMBER : [200, 60, 60];
+      setFill(cor);
+      doc.rect(75, y - 3, ((W - 89) * val) / 10, 3.5, "F");
+      y += 6;
+    });
+    y += 4;
+  }
+
+  // Comparáveis
+  if (d.result.comparaveis && d.result.comparaveis.length > 0) {
+    if (y > H - 50) { footer("Página 4 de 6"); doc.addPage(); headerStrip("Página 4 — Resultado (cont.)"); y = 38; }
+    setColor(NAVY);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10.5);
+    doc.text("IMÓVEIS COMPARÁVEIS NA REGIÃO", 14, y);
+    setFill(GOLD);
+    doc.rect(14, y + 1.5, 8, 0.5, "F");
+    y += 7;
+
+    d.result.comparaveis.forEach((c) => {
+      if (y > H - 24) { footer("Página 4 de 6"); doc.addPage(); headerStrip("Página 4 — Resultado (cont.)"); y = 38; }
+      setFill(LIGHT);
+      doc.roundedRect(14, y - 4, W - 28, 11, 1.5, 1.5, "F");
+      setColor([20, 20, 30]);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(9);
+      const titulo = doc.splitTextToSize(c.titulo, W - 75)[0];
+      doc.text(titulo, 18, y);
+      setColor(GRAY);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(8);
+      const meta = `${c.area}m²${c.quartos ? ` · ${c.quartos} dorm.` : ""}${c.bairro ? ` · ${c.bairro}` : ""}`;
+      doc.text(meta, 18, y + 4);
+      setColor(NAVY);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(10);
+      doc.text(fmtBRL(c.preco), W - 18, y + 1, { align: "right" });
+      y += 13;
+    });
+  }
 
   footer("Página 4 de 6");
 
@@ -537,7 +569,6 @@ export function generateValuationReport(d: ValuationReportData): jsPDF {
   y = para(analiseTecnicaParagrafo(d), y);
   y += 2;
 
-  // Texto da IA (justificativa)
   setColor(NAVY);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(10.5);
@@ -548,9 +579,8 @@ export function generateValuationReport(d: ValuationReportData): jsPDF {
   y = para(d.result.justificativa, y);
   y += 2;
 
-  // Breakdown
   if (d.result.meta?.breakdown.length) {
-    if (y > H - 60) { footer("Página 5 de 6"); doc.addPage(); headerStrip("Página 5 — Parecer Técnico (cont.)"); y = 38; }
+    if (y > H - 60) { footer("Página 5 de 6"); doc.addPage(); headerStrip("Página 5 — Parecer (cont.)"); y = 38; }
     setColor(NAVY);
     doc.setFont("helvetica", "bold");
     doc.setFontSize(10.5);
@@ -560,7 +590,7 @@ export function generateValuationReport(d: ValuationReportData): jsPDF {
     y += 7;
 
     d.result.meta.breakdown.forEach((b) => {
-      if (y > H - 24) { footer("Página 5 de 6"); doc.addPage(); headerStrip("Página 5 — Parecer Técnico (cont.)"); y = 38; }
+      if (y > H - 24) { footer("Página 5 de 6"); doc.addPage(); headerStrip("Página 5 — Parecer (cont.)"); y = 38; }
       setColor([40, 40, 50]);
       doc.setFont("helvetica", "normal");
       doc.setFontSize(9.5);
@@ -607,22 +637,14 @@ export function generateValuationReport(d: ValuationReportData): jsPDF {
   };
 
   renderList("Pontos Fortes", d.result.pontos_fortes, GREEN, "+");
-  renderList("Pontos de Atenção", d.result.pontos_atencao, AMBER, "-");
-
-  // Melhorias sugeridas (heurísticas)
-  const melhorias: string[] = [];
-  if (d.conservacao === "Antigo" || d.conservacao === "Precisa reforma") melhorias.push("Reforma de pintura, piso e elétrica para captar valorização imediata.");
-  if (!d.extras.includes("Energia solar")) melhorias.push("Avaliar instalação de energia solar como diferencial de valorização.");
-  if (d.acabamento === "Simples") melhorias.push("Substituição de revestimentos por padrão médio pode elevar o valor percebido.");
-  if (!d.documentacao.includes("Financiável")) melhorias.push("Regularizar documentação para tornar o imóvel financiável amplia o público comprador.");
-  if (melhorias.length === 0) melhorias.push("Imóvel já em condições competitivas para o mercado atual.");
-  renderList("Melhorias Sugeridas", melhorias, NAVY, ">");
+  renderList("Pontos de Atenção", d.result.pontos_atencao, AMBER, "!");
+  renderList("Sugestões de Valorização", d.result.sugestoes_valorizacao ?? [], VIOLET, ">");
 
   // Riscos documentais
   const riscos: string[] = [];
-  if (d.documentacao.includes("Pendente")) riscos.push("Há pendências documentais — risco de inviabilizar transação até regularização.");
-  if (d.documentacao.includes("Escritura pendente")) riscos.push("Escritura pendente reduz liquidez e poder de negociação.");
-  if (d.documentacao.includes("Averbação pendente")) riscos.push("Averbação pendente impede financiamento bancário.");
+  if (d.documentacao.includes("Pendências") || d.documentacao.includes("Pendente")) {
+    riscos.push("Há pendências documentais — risco de inviabilizar transação até regularização.");
+  }
   if (riscos.length === 0) riscos.push("Não foram identificados riscos documentais relevantes nas informações fornecidas.");
   renderList("Riscos Documentais", riscos, AMBER, "!");
 
