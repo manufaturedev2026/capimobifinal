@@ -421,8 +421,26 @@ export default function AiValuationPage() {
       avaliadorCreci: avaliadorCreci.trim() || undefined,
       avaliadorEmail: user?.email,
       empresaNome: "CAPIMOBI",
+      valuationId: currentValuationId ?? undefined,
     });
   };
+
+  const deleteValuation = async (id: string) => {
+    if (!user) return;
+    if (!confirm("Excluir esta avaliação? Esta ação não pode ser desfeita.")) return;
+    setDeletingId(id);
+    const { error } = await supabase
+      .from("property_valuations")
+      .delete()
+      .eq("id", id)
+      .eq("user_id", user.id);
+    setDeletingId(null);
+    if (error) {
+      toast({ title: "Erro ao excluir", description: error.message, variant: "destructive" });
+      return;
+    }
+    setHistory((prev) => prev.filter((h) => h.id !== id));
+    toast({ title: "Avaliação excluída" });
 
   const downloadLaudo = () => {
     const doc = buildLaudo();
