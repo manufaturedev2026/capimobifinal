@@ -59,7 +59,7 @@ export type AnaliseVisual = {
   total_fotos_analisadas: number;
 };
 
-const MIN_FOTOS = 4;
+const MIN_FOTOS = 1;
 const MAX_FOTOS = 10;
 const MAX_SIZE_MB = 8;
 
