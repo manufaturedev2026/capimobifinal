@@ -99,8 +99,19 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
 
   const loadData = async () => {
     setLoading(true);
-    await Promise.all([loadMyItems(), loadAvailable(), loadMyRequests(), loadReceivedRequests(), loadActivePartnerships(), loadStoreListings()]);
+    await Promise.all([loadCurrentProfile(), loadMyItems(), loadAvailable(), loadMyRequests(), loadReceivedRequests(), loadActivePartnerships(), loadStoreListings()]);
     setLoading(false);
+  };
+
+  const loadCurrentProfile = async () => {
+    const { data } = await supabase
+      .from("profiles")
+      .select("id, full_name, phone, logo_url, company_name, creci, city, state, slug")
+      .eq("id", profileId)
+      .maybeSingle();
+    setCurrentProfile(data || null);
+    if (data?.state) setSelectedState((prev) => prev || data.state || "");
+    if (data?.city) setSelectedCity((prev) => prev || data.city || "");
   };
 
   const loadMyItems = async () => {
@@ -126,7 +137,7 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
     const sellerIds = [...new Set(items.map(i => i.seller_id))];
     const { data: profiles } = await supabase
       .from("profiles")
-      .select("id, full_name, phone, logo_url, company_name, creci, slug")
+      .select("id, full_name, phone, logo_url, company_name, creci, city, state, slug")
       .in("id", sellerIds);
 
     const profileMap = new Map((profiles || []).map(p => [p.id, p]));
