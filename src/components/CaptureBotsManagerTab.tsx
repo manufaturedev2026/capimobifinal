@@ -362,9 +362,12 @@ export default function CaptureBotsManagerTab({ sellerId, sellerSlug }: Props) {
                     <Icon className="w-5 h-5" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
+                <div className="flex items-center gap-2 flex-wrap">
                       <p className="font-bold truncate">{bot.name}</p>
                       <span className={`text-[10px] px-2 py-0.5 rounded-full border ${meta.color}`}>{meta.label}</span>
+                      <span className={`text-[10px] px-2 py-0.5 rounded-full border flex items-center gap-1 ${bot.use_ai ? "bg-primary/10 text-primary border-primary/30" : "bg-muted text-muted-foreground border-border"}`}>
+                        {bot.use_ai ? <><Zap className="w-2.5 h-2.5" /> IA</> : <><FileText className="w-2.5 h-2.5" /> Formulário</>}
+                      </span>
                       {!bot.is_active && <span className="text-[10px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground">Inativo</span>}
                     </div>
                     <p className="text-[10px] text-muted-foreground font-mono truncate mt-1">{url}</p>
