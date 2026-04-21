@@ -231,7 +231,7 @@ export default function AdminInviteTab() {
               <p className="font-semibold text-[11px] uppercase tracking-wider text-muted-foreground mb-1.5">
                 Estratégia IA ativa: {AI_STRATEGY_INFO[config.ctaType]?.title || "Padrão"}
               </p>
-              <p className="text-muted-foreground leading-relaxed">
+              <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
                 {AI_STRATEGY_INFO[config.ctaType]?.description || "Estratégia padrão de cadastro."}
               </p>
             </div>
