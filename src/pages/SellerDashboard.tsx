@@ -510,6 +510,11 @@ export default function SellerDashboard() {
                 className="sidebar-nav-item text-blue-500 hover:bg-blue-500/10">
                 <CalendarIcon size={18} /> Agenda
               </Link>
+              <Link to="/avaliacao-ia"
+                className="sidebar-nav-item text-emerald-500 hover:bg-emerald-500/10 relative">
+                <Sparkles size={18} /> Avaliação IA
+                <span className="ml-auto text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-600">NEW</span>
+              </Link>
               <Link to="/pacotes"
                 className="sidebar-nav-item text-muted-foreground hover:text-foreground hover:bg-secondary">
                 <Package size={18} /> Pacotes
