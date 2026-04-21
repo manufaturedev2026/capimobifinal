@@ -69,8 +69,6 @@ type Valuation = {
   scores: Scores;
   score_geral: number;
   comparaveis: Comparavel[];
-  comparaveis_origem?: string;
-  comparaveis_aviso?: string | null;
   comparaveis_externos?: ComparavelExterno[];
   mercado_externo?: MercadoExterno | null;
   meta?: {
@@ -84,13 +82,6 @@ type Valuation = {
     bonus_total_pct: number;
     desconto_total_pct: number;
     breakdown: Array<{ label: string; pct: number }>;
-    market?: {
-      comparaveis: number;
-      media_dormitorios: number;
-      media_banheiros: number;
-      media_area_m2: number;
-      media_preco: number;
-    };
     externo?: { total: number; fontes: string[]; preco_m2_mediano: number } | null;
   };
 };
