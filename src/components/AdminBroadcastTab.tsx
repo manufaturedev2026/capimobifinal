@@ -13,7 +13,11 @@ const DEFAULT_HTML = `<div style="font-family:system-ui,sans-serif;max-width:560
   <p style="margin-top:20px"><a href="https://capimobi.com.br/painel" style="background:#2563eb;color:#fff;padding:12px 20px;border-radius:8px;text-decoration:none">Acessar Painel</a></p>
 </div>`;
 
-const TIERS = ["start", "basico", "premium", "vip", "essencial_empresa", "premium_empresa", "prime_empresa", "black"] as const;
+const TIERS = ["basico", "start", "premium", "vip", "essencial_empresa", "premium_empresa", "prime_empresa", "black"] as const;
+// Display overrides to disambiguate duplicated names in PACKAGE_CONFIG
+const TIER_LABEL_OVERRIDES: Record<string, string> = {
+  prime_empresa: "Black Empresa",
+};
 
 export default function AdminBroadcastTab() {
   const { toast } = useToast();
@@ -185,7 +189,7 @@ export default function AdminBroadcastTab() {
                     onClick={() => toggleTier(t)}
                     className={`p-3 rounded-lg border-2 text-left transition-all ${active ? "border-primary bg-primary/10" : "border-border bg-background hover:border-primary/50"}`}
                   >
-                    <div className="font-bold text-sm text-foreground">{cfg.name}</div>
+                    <div className="font-bold text-sm text-foreground">{TIER_LABEL_OVERRIDES[t] || cfg.name}</div>
                     <div className="text-xs text-muted-foreground">{count} corretor{count !== 1 ? "es" : ""}</div>
                   </button>
                 );
