@@ -4,78 +4,226 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Bot, Copy, ExternalLink, Save, Sparkles, Calendar as CalendarIcon } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Bot, Copy, ExternalLink, Sparkles, Plus, Trash2, Home as HomeIcon, Save, Edit3 } from "lucide-react";
 
 interface Props {
   sellerId: string;
   sellerSlug: string | null;
 }
 
-interface AgendaBotConfig {
-  attendantName: string;
-  attendantAvatar: string;
-  openingMessage: string;
-  successCtaLabel: string;
-  successCtaUrl: string;
+interface AgendaBot {
+  id: string;
+  seller_id: string;
+  user_id: string;
+  item_id: string | null;
+  slug: string;
+  name: string;
+  attendant_name: string;
+  attendant_avatar: string | null;
+  opening_message: string | null;
+  success_cta_label: string;
+  success_cta_url: string | null;
+  is_active: boolean;
 }
 
-const DEFAULT: AgendaBotConfig = {
-  attendantName: "Assistente de Agendamento",
-  attendantAvatar: "",
-  openingMessage: "Olá! 👋 Vou te ajudar a agendar uma visita ao imóvel. É rápido e você escolhe o melhor dia e horário. 📅",
-  successCtaLabel: "💬 Falar no WhatsApp",
-  successCtaUrl: "",
-};
+interface SellerItem {
+  id: string;
+  title: string;
+  neighborhood: string | null;
+  city: string | null;
+  category: string;
+}
+
+const slugify = (s: string) =>
+  s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 40) || `bot-${Date.now()}`;
 
 export default function AgendaBotConfigTab({ sellerId, sellerSlug }: Props) {
   const { toast } = useToast();
-  const [cfg, setCfg] = useState<AgendaBotConfig>(DEFAULT);
+  const [bots, setBots] = useState<AgendaBot[]>([]);
+  const [items, setItems] = useState<SellerItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [editing, setEditing] = useState<AgendaBot | null>(null);
   const [saving, setSaving] = useState(false);
 
-  const chatUrl = `${window.location.origin}/agenda/${sellerSlug || sellerId}/chat`;
+  const baseUrl = (botSlug: string) => `${window.location.origin}/agenda/${sellerSlug || sellerId}/chat/${botSlug}`;
 
-  useEffect(() => {
-    (async () => {
-      const { data } = await supabase
-        .from("platform_settings")
-        .select("value")
-        .eq("key", `agenda_bot_config_${sellerId}`)
-        .maybeSingle();
-      if (data?.value) {
-        try { setCfg({ ...DEFAULT, ...JSON.parse(data.value) }); } catch {}
-      }
-      setLoading(false);
-    })();
-  }, [sellerId]);
+  const load = async () => {
+    setLoading(true);
+    const [{ data: botsData }, { data: itemsData }] = await Promise.all([
+      supabase.from("agenda_bots").select("*").eq("seller_id", sellerId).order("created_at", { ascending: false }),
+      supabase.from("seller_items").select("id, title, neighborhood, city, category").eq("seller_id", sellerId).eq("status", "ativo").order("created_at", { ascending: false }).limit(200),
+    ]);
+    setBots((botsData as any) || []);
+    setItems((itemsData as any) || []);
+    setLoading(false);
+  };
 
-  const save = async () => {
-    setSaving(true);
-    const { error } = await supabase
-      .from("platform_settings")
-      .upsert({
-        key: `agenda_bot_config_${sellerId}`,
-        value: JSON.stringify(cfg),
-        updated_at: new Date().toISOString(),
-      } as any, { onConflict: "key" });
-    setSaving(false);
-    toast({
-      title: error ? "Erro ao salvar" : "Bot salvo!",
-      description: error ? error.message : "Configurações do bot atualizadas.",
-      variant: error ? "destructive" : undefined,
+  useEffect(() => { load(); }, [sellerId]);
+
+  const startNew = () => {
+    setEditing({
+      id: "",
+      seller_id: sellerId,
+      user_id: "",
+      item_id: null,
+      slug: "",
+      name: "Bot — Novo imóvel",
+      attendant_name: "Assistente de Agendamento",
+      attendant_avatar: null,
+      opening_message: null,
+      success_cta_label: "💬 Falar no WhatsApp",
+      success_cta_url: null,
+      is_active: true,
     });
   };
 
-  const copyUrl = () => {
-    navigator.clipboard.writeText(chatUrl);
+  const save = async () => {
+    if (!editing) return;
+    if (!editing.name.trim()) { toast({ title: "Nome obrigatório", variant: "destructive" }); return; }
+    setSaving(true);
+
+    const { data: userRes } = await supabase.auth.getUser();
+    const uid = userRes.user?.id;
+    if (!uid) { setSaving(false); return; }
+
+    const slug = editing.slug.trim() || slugify(editing.name);
+
+    if (editing.id) {
+      const { error } = await supabase.from("agenda_bots").update({
+        item_id: editing.item_id, slug, name: editing.name,
+        attendant_name: editing.attendant_name, attendant_avatar: editing.attendant_avatar,
+        opening_message: editing.opening_message, success_cta_label: editing.success_cta_label,
+        success_cta_url: editing.success_cta_url, is_active: editing.is_active,
+      }).eq("id", editing.id);
+      setSaving(false);
+      if (error) { toast({ title: "Erro", description: error.message, variant: "destructive" }); return; }
+    } else {
+      const { error } = await supabase.from("agenda_bots").insert({
+        seller_id: sellerId, user_id: uid, item_id: editing.item_id, slug, name: editing.name,
+        attendant_name: editing.attendant_name, attendant_avatar: editing.attendant_avatar,
+        opening_message: editing.opening_message, success_cta_label: editing.success_cta_label,
+        success_cta_url: editing.success_cta_url, is_active: editing.is_active,
+      });
+      setSaving(false);
+      if (error) { toast({ title: "Erro", description: error.message, variant: "destructive" }); return; }
+    }
+    toast({ title: "Bot salvo!" });
+    setEditing(null);
+    load();
+  };
+
+  const remove = async (id: string) => {
+    if (!confirm("Excluir este bot?")) return;
+    const { error } = await supabase.from("agenda_bots").delete().eq("id", id);
+    if (error) { toast({ title: "Erro", description: error.message, variant: "destructive" }); return; }
+    toast({ title: "Bot excluído" });
+    load();
+  };
+
+  const copyUrl = (botSlug: string) => {
+    navigator.clipboard.writeText(baseUrl(botSlug));
     toast({ title: "Link copiado!" });
   };
 
-  if (loading) return <div className="text-center py-8 text-muted-foreground">Carregando...</div>;
+  if (loading) return <div className="text-center py-8 text-muted-foreground">Carregando bots...</div>;
 
+  // ============ FORM EDIT MODE ============
+  if (editing) {
+    const linkedItem = items.find((i) => i.id === editing.item_id);
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="font-bold flex items-center gap-2">
+            <Bot className="w-5 h-5 text-primary" />
+            {editing.id ? "Editar bot" : "Novo bot"}
+          </h3>
+          <Button variant="ghost" size="sm" onClick={() => setEditing(null)}>Cancelar</Button>
+        </div>
+
+        <div className="rounded-2xl border bg-card p-4 space-y-3">
+          <div>
+            <label className="text-xs text-muted-foreground">Nome interno do bot</label>
+            <Input value={editing.name} onChange={(e) => setEditing({ ...editing, name: e.target.value })} placeholder="Ex: Bot — Apto Praia da Costa" className="mt-1" />
+          </div>
+
+          <div>
+            <label className="text-xs text-muted-foreground">Imóvel pré-vinculado (opcional)</label>
+            <Select value={editing.item_id || "none"} onValueChange={(v) => setEditing({ ...editing, item_id: v === "none" ? null : v })}>
+              <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">Sem vínculo (cliente escolhe via IA)</SelectItem>
+                {items.map((i) => (
+                  <SelectItem key={i.id} value={i.id}>
+                    {i.title} {i.neighborhood ? `— ${i.neighborhood}` : ""}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {linkedItem && (
+              <p className="text-[11px] text-emerald-700 mt-1 flex items-center gap-1">
+                <HomeIcon className="w-3 h-3" /> Bot pré-configurado para este imóvel — IA não precisa adivinhar.
+              </p>
+            )}
+          </div>
+
+          <div>
+            <label className="text-xs text-muted-foreground">Slug do link (URL)</label>
+            <Input value={editing.slug} onChange={(e) => setEditing({ ...editing, slug: slugify(e.target.value) })} placeholder={slugify(editing.name)} className="mt-1 font-mono text-xs" />
+            <p className="text-[10px] text-muted-foreground mt-1">{baseUrl(editing.slug || slugify(editing.name))}</p>
+          </div>
+        </div>
+
+        <div className="rounded-2xl border bg-card p-4 space-y-3">
+          <p className="text-sm font-bold">Atendente virtual</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="text-xs text-muted-foreground">Nome</label>
+              <Input value={editing.attendant_name} onChange={(e) => setEditing({ ...editing, attendant_name: e.target.value })} className="mt-1" />
+            </div>
+            <div>
+              <label className="text-xs text-muted-foreground">URL do avatar</label>
+              <Input value={editing.attendant_avatar || ""} onChange={(e) => setEditing({ ...editing, attendant_avatar: e.target.value || null })} placeholder="https://..." className="mt-1" />
+            </div>
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground">Mensagem de abertura (opcional)</label>
+            <Textarea value={editing.opening_message || ""} onChange={(e) => setEditing({ ...editing, opening_message: e.target.value || null })} className="mt-1 min-h-[70px]" placeholder="Deixe em branco — a IA gera saudação contextual." />
+          </div>
+        </div>
+
+        <div className="rounded-2xl border bg-card p-4 space-y-3">
+          <p className="text-sm font-bold">Botão pós-agendamento</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="text-xs text-muted-foreground">Texto</label>
+              <Input value={editing.success_cta_label} onChange={(e) => setEditing({ ...editing, success_cta_label: e.target.value })} className="mt-1" />
+            </div>
+            <div>
+              <label className="text-xs text-muted-foreground">URL custom (vazio = WhatsApp do corretor)</label>
+              <Input value={editing.success_cta_url || ""} onChange={(e) => setEditing({ ...editing, success_cta_url: e.target.value || null })} className="mt-1" />
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3 rounded-2xl border bg-card p-4">
+          <Switch checked={editing.is_active} onCheckedChange={(v) => setEditing({ ...editing, is_active: v })} />
+          <span className="text-sm">Bot ativo (link funcionando)</span>
+        </div>
+
+        <Button onClick={save} disabled={saving} className="w-full sm:w-auto" size="lg">
+          <Save className="w-4 h-4 mr-2" />
+          {saving ? "Salvando..." : "Salvar bot"}
+        </Button>
+      </div>
+    );
+  }
+
+  // ============ LIST MODE ============
   return (
     <div className="space-y-4">
-      {/* Hero card */}
       <div className="rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 p-4 sm:p-5">
         <div className="flex items-start gap-3">
           <div className="w-12 h-12 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
@@ -83,89 +231,68 @@ export default function AgendaBotConfigTab({ sellerId, sellerSlug }: Props) {
           </div>
           <div className="flex-1 min-w-0">
             <h3 className="font-bold text-foreground flex items-center gap-2">
-              Bot de Agendamento <Sparkles className="w-4 h-4 text-amber-500" />
+              Bots de Agendamento <Sparkles className="w-4 h-4 text-amber-500" />
             </h3>
             <p className="text-sm text-muted-foreground mt-1">
-              IA atende o cliente, identifica automaticamente o imóvel e cria a visita aqui na sua agenda como <strong>pendente de confirmação</strong>.
+              Crie um bot para cada imóvel. Cada um tem link próprio e a IA já sabe qual visita está sendo agendada — sem confusão.
             </p>
           </div>
         </div>
       </div>
 
-      {/* Link */}
-      <div className="rounded-2xl border border-border bg-card p-4 space-y-3">
-        <p className="text-sm font-bold flex items-center gap-2"><CalendarIcon className="w-4 h-4 text-primary" /> Link do bot</p>
-        <p className="text-xs text-muted-foreground">Compartilhe este link no Instagram, WhatsApp, Stories — qualquer cliente que abrir é atendido pela IA e a visita aparece direto na agenda.</p>
-        <div className="flex flex-col sm:flex-row gap-2">
-          <Input value={chatUrl} readOnly className="font-mono text-xs" />
-          <div className="flex gap-2">
-            <Button onClick={copyUrl} variant="outline" size="sm" className="flex-1 sm:flex-none">
-              <Copy className="w-4 h-4 mr-1" /> Copiar
-            </Button>
-            <Button onClick={() => window.open(chatUrl, "_blank")} variant="outline" size="sm" className="flex-1 sm:flex-none">
-              <ExternalLink className="w-4 h-4 mr-1" /> Testar
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      {/* Atendente */}
-      <div className="rounded-2xl border border-border bg-card p-4 space-y-3">
-        <p className="text-sm font-bold">Atendente virtual</p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label className="text-xs text-muted-foreground">Nome</label>
-            <Input value={cfg.attendantName} onChange={(e) => setCfg({ ...cfg, attendantName: e.target.value })} placeholder="Assistente de Agendamento" className="mt-1" />
-          </div>
-          <div>
-            <label className="text-xs text-muted-foreground">URL do avatar</label>
-            <Input value={cfg.attendantAvatar} onChange={(e) => setCfg({ ...cfg, attendantAvatar: e.target.value })} placeholder="https://..." className="mt-1" />
-          </div>
-        </div>
-        <div>
-          <label className="text-xs text-muted-foreground">Mensagem de abertura</label>
-          <Textarea
-            value={cfg.openingMessage}
-            onChange={(e) => setCfg({ ...cfg, openingMessage: e.target.value })}
-            className="mt-1 min-h-[80px]"
-            placeholder="Olá! Vou te ajudar a agendar uma visita..."
-          />
-          <p className="text-[10px] text-muted-foreground mt-1">A IA pode adaptar a saudação automaticamente — esta é o fallback caso o serviço falhe.</p>
-        </div>
-      </div>
-
-      {/* CTA pós-agendamento */}
-      <div className="rounded-2xl border border-border bg-card p-4 space-y-3">
-        <p className="text-sm font-bold">Botão pós-agendamento</p>
-        <p className="text-xs text-muted-foreground">Aparece após a IA registrar a visita. Por padrão abre o WhatsApp do corretor com o resumo.</p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label className="text-xs text-muted-foreground">Texto do botão</label>
-            <Input value={cfg.successCtaLabel} onChange={(e) => setCfg({ ...cfg, successCtaLabel: e.target.value })} className="mt-1" />
-          </div>
-          <div>
-            <label className="text-xs text-muted-foreground">URL customizada (opcional)</label>
-            <Input value={cfg.successCtaUrl} onChange={(e) => setCfg({ ...cfg, successCtaUrl: e.target.value })} placeholder="Vazio = WhatsApp do corretor" className="mt-1" />
-          </div>
-        </div>
-      </div>
-
-      {/* Como funciona */}
-      <div className="rounded-2xl border border-dashed border-border bg-muted/30 p-4 space-y-2">
-        <p className="text-sm font-bold">🤖 Como a IA trabalha</p>
-        <ul className="text-xs text-muted-foreground space-y-1.5 list-disc list-inside">
-          <li>Cliente conversa naturalmente em texto livre — sem formulário.</li>
-          <li>IA identifica o imóvel comparando o pedido com seus anúncios ativos (vínculo automático com confiança {">"} 40%).</li>
-          <li>Data e horário são interpretados de qualquer formato (“amanhã”, “sexta”, “20/04 às 14h”).</li>
-          <li>Visita entra como <strong>pendente de confirmação</strong> na sua agenda — você confirma, reagenda ou cancela.</li>
-          <li>Você recebe push notification imediato a cada novo agendamento.</li>
-        </ul>
-      </div>
-
-      <Button onClick={save} disabled={saving} className="w-full sm:w-auto" size="lg">
-        <Save className="w-4 h-4 mr-2" />
-        {saving ? "Salvando..." : "Salvar configurações"}
+      <Button onClick={startNew} size="lg" className="w-full sm:w-auto">
+        <Plus className="w-4 h-4 mr-2" /> Criar novo bot
       </Button>
+
+      {bots.length === 0 ? (
+        <div className="rounded-2xl border border-dashed p-8 text-center text-muted-foreground">
+          <Bot className="w-10 h-10 mx-auto mb-2 opacity-40" />
+          <p className="text-sm">Nenhum bot criado ainda. Clique acima para começar.</p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {bots.map((bot) => {
+            const linked = items.find((i) => i.id === bot.item_id);
+            const url = baseUrl(bot.slug);
+            return (
+              <div key={bot.id} className={`rounded-2xl border bg-card p-4 ${!bot.is_active ? "opacity-60" : ""}`}>
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                    <Bot className="w-5 h-5 text-primary" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="font-bold truncate">{bot.name}</p>
+                      {!bot.is_active && <span className="text-[10px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground">Inativo</span>}
+                      {linked && <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 flex items-center gap-1"><HomeIcon className="w-3 h-3" /> Pré-vinculado</span>}
+                    </div>
+                    {linked ? (
+                      <p className="text-xs text-muted-foreground truncate mt-0.5">📍 {linked.title}{linked.neighborhood ? ` — ${linked.neighborhood}` : ""}</p>
+                    ) : (
+                      <p className="text-xs text-muted-foreground mt-0.5">IA identifica imóvel pelo texto livre</p>
+                    )}
+                    <p className="text-[10px] text-muted-foreground font-mono truncate mt-1">{url}</p>
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-2 mt-3">
+                  <Button onClick={() => copyUrl(bot.slug)} variant="outline" size="sm" className="flex-1 sm:flex-none">
+                    <Copy className="w-3 h-3 mr-1" /> Copiar link
+                  </Button>
+                  <Button onClick={() => window.open(url, "_blank")} variant="outline" size="sm" className="flex-1 sm:flex-none">
+                    <ExternalLink className="w-3 h-3 mr-1" /> Testar
+                  </Button>
+                  <Button onClick={() => setEditing(bot)} variant="outline" size="sm" className="flex-1 sm:flex-none">
+                    <Edit3 className="w-3 h-3 mr-1" /> Editar
+                  </Button>
+                  <Button onClick={() => remove(bot.id)} variant="ghost" size="sm" className="text-red-600 hover:text-red-700 hover:bg-red-50">
+                    <Trash2 className="w-3 h-3" />
+                  </Button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
