@@ -112,7 +112,7 @@ const DEFAULT_CONFIG: BotConfig = {
   agendMsgSuccess: "✅ Visita agendada com sucesso!",
   agendMsgSuccessEnd: "Um corretor vai confirmar o agendamento pelo WhatsApp. Até breve! 📋🎉",
   // Avaliação
-  avalMsgName: "Para começar, me diz seu nome: 😊",
+  avalMsgName: "Poderia me dizer o seu nome para darmos continuidade ao atendimento? 😊",
   avalMsgNameReply: "Prazer, {nome}! 🤝 Vamos avaliar seu imóvel!",
   avalMsgPhone: "Qual seu telefone ou WhatsApp? 📱",
   avalMsgType: "Qual o tipo do seu imóvel? 🏠",
