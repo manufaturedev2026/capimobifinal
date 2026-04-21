@@ -110,9 +110,12 @@ export default function AiValuationPage() {
   const [numero, setNumero] = useState("");
   const [cep, setCep] = useState("");
 
-  // Imóvel
-  const [tipo, setTipo] = useState("Casa");
-  const [tipoEstrutura, setTipoEstrutura] = useState("Casa térrea");
+  // Imóvel — taxonomia em cascata Categoria → Subtipo → Estrutura
+  const [categoria, setCategoria] = useState<CategoriaImovel>("Residencial");
+  const [subtipo, setSubtipo] = useState<string>("Casa");
+  const [tipoEstrutura, setTipoEstrutura] = useState<string>("Térrea");
+  // Tipo legado derivado do subtipo (compatível com edge function e módulos existentes)
+  const tipo = legacyTipoFromSubtipo(subtipo);
 
   // Áreas
   const [areaTerreno, setAreaTerreno] = useState("");
@@ -152,12 +155,24 @@ export default function AiValuationPage() {
   const updComercial = <K extends keyof ComercialState>(k: K, v: ComercialState[K]) => setComercialExtra((s) => ({ ...s, [k]: v }));
   const updRural = <K extends keyof RuralState>(k: K, v: RuralState[K]) => setRuralExtra((s) => ({ ...s, [k]: v }));
 
-  const estruturasDisponiveis = ESTRUTURAS_POR_TIPO[tipo] || [];
+  const subtiposDisponiveis = getSubtiposByCategoria(categoria);
+  const estruturasDisponiveis = getEstruturasBySubtipo(subtipo);
 
-  const handleTipoChange = (novoTipo: string) => {
-    setTipo(novoTipo);
-    setTipoEstrutura(ESTRUTURA_PADRAO[novoTipo] || "");
+  const handleCategoriaChange = (novaCat: CategoriaImovel) => {
+    setCategoria(novaCat);
+    const subs = getSubtiposByCategoria(novaCat);
+    const novoSub = subs[0] || "";
+    setSubtipo(novoSub);
+    const ests = getEstruturasBySubtipo(novoSub);
+    setTipoEstrutura(ests[0] || "");
   };
+
+  const handleSubtipoChange = (novoSub: string) => {
+    setSubtipo(novoSub);
+    const ests = getEstruturasBySubtipo(novoSub);
+    setTipoEstrutura(ests[0] || "");
+  };
+
 
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Valuation | null>(null);
