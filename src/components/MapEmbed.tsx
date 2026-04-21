@@ -290,7 +290,15 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
   const addressOverrideStreetEmbed = addressOverride
     ? `https://maps.google.com/maps?q=&layer=c&cbll=${addressOverride.lat},${addressOverride.lon}&cbp=11,0,0,0,0&z=17&output=svembed`
     : null;
-  const streetEmbedSrc = streetViewEmbed || addressOverrideStreetEmbed;
+  // Fallback: Street View pelo CEP + número direto na URL do Google (sem coords)
+  const cepStreetEmbed = useMemo(() => {
+    if (cleanCep.length !== 8) return null;
+    const numberMatch = address.match(/,\s*(\d+[a-zA-Z]?)/);
+    const numberPart = numberMatch?.[1] ?? "";
+    const query = encodeURIComponent([numberPart, cleanCep, "Brasil"].filter(Boolean).join(", "));
+    return `https://maps.google.com/maps?q=${query}&layer=c&cbp=11,0,0,0,0&output=svembed`;
+  }, [cleanCep, address]);
+  const streetEmbedSrc = streetViewEmbed || addressOverrideStreetEmbed || cepStreetEmbed;
   const isStreet = view === "street" && !!streetEmbedSrc;
   const currentSrc = isStreet ? streetEmbedSrc : mapSrc;
 
