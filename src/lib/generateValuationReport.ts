@@ -307,10 +307,10 @@ export function generateValuationReport(d: ValuationReportData): jsPDF {
     doc.text("SCORE PROFISSIONAL /10", W / 2, H / 2 + 60, { align: "center" });
   }
 
-  const blockY = H - 70;
+  const blockY = H - 75;
   doc.setDrawColor(GOLD[0], GOLD[1], GOLD[2]);
   doc.setLineWidth(0.4);
-  doc.roundedRect(20, blockY, W - 40, 45, 3, 3, "S");
+  doc.roundedRect(20, blockY, W - 40, 55, 3, 3, "S");
 
   setColor([255, 255, 255]);
   doc.setFont("helvetica", "normal");
@@ -334,13 +334,18 @@ export function generateValuationReport(d: ValuationReportData): jsPDF {
   doc.setFontSize(11);
   doc.text(d.avaliadorNome ?? "Sistema IA Capimobi", W - 26, blockY + 14, { align: "right" });
   let avalLineY = blockY + 22;
-  if (d.avaliadorCreci) {
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(8);
-    setColor(GOLD);
-    doc.text(d.avaliadorCreci, W - 26, avalLineY, { align: "right" });
-    setColor([255, 255, 255]);
+  if (d.avaliadorCreci && d.avaliadorCreci.trim().length > 0) {
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7);
+    setColor([220, 220, 230]);
+    doc.text("CRECI", W - 26, avalLineY, { align: "right" });
     avalLineY += 5;
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(11);
+    setColor(GOLD);
+    doc.text(d.avaliadorCreci.trim(), W - 26, avalLineY, { align: "right" });
+    setColor([255, 255, 255]);
+    avalLineY += 6;
   }
   if (d.avaliadorEmail) {
     doc.setFont("helvetica", "normal");
