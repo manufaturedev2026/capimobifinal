@@ -161,6 +161,11 @@ export default function SellerDashboard() {
   const dashGradient = hasBrokerTheme
     ? brokerStoreTheme.preview.heroBg
     : dashTheme.dashboardGradient;
+
+  // Resolve account manager: profile-assigned > default active manager > hardcoded fallback
+  const managerName = (profile as any)?.account_manager || defaultManager?.name || "Gabriel";
+  const managerPhoto = (profile as any)?.manager_photo || defaultManager?.photo_url || gabrielImg;
+  const managerPhone = (profile as any)?.manager_phone || defaultManager?.phone || "5527995055993";
   useEffect(() => {
     if (!authLoading && !user) navigate("/login");
   }, [user, authLoading, navigate]);
