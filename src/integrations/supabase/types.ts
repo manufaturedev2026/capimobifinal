@@ -330,6 +330,7 @@ export type Database = {
           success_cta_label: string
           success_cta_url: string | null
           updated_at: string
+          use_ai: boolean
           user_id: string
           whatsapp_group_url: string | null
         }
@@ -347,6 +348,7 @@ export type Database = {
           success_cta_label?: string
           success_cta_url?: string | null
           updated_at?: string
+          use_ai?: boolean
           user_id: string
           whatsapp_group_url?: string | null
         }
@@ -364,6 +366,7 @@ export type Database = {
           success_cta_label?: string
           success_cta_url?: string | null
           updated_at?: string
+          use_ai?: boolean
           user_id?: string
           whatsapp_group_url?: string | null
         }
