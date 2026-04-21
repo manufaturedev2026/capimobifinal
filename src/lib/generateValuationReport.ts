@@ -104,10 +104,20 @@ const GREEN: [number, number, number] = [34, 130, 80];
 const AMBER: [number, number, number] = [200, 130, 20];
 const VIOLET: [number, number, number] = [110, 60, 160];
 
-function shortCode(): string {
+function shortCode(seed?: string): string {
+  if (seed) {
+    // Derived deterministic code from id (UUID): take first 8 hex chars of hash
+    const hex = seed.replace(/[^a-z0-9]/gi, "").slice(0, 12).toUpperCase();
+    return `LAU-${hex.slice(0, 8)}-${hex.slice(8, 12) || "0000"}`;
+  }
   const ts = Date.now().toString(36).toUpperCase();
   const r = Math.random().toString(36).slice(2, 6).toUpperCase();
   return `LAU-${ts}-${r}`;
+}
+
+/** Deterministic laudo code derived from a valuation row id */
+export function getLaudoCode(id: string): string {
+  return shortCode(id);
 }
 
 function liquidezLabel(dias: number): string {
