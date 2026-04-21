@@ -212,6 +212,27 @@ export default function AiValuationPage() {
           salas: Number(salas), cozinhas: Number(cozinhas), escritorios: Number(escritorios),
           extras, acabamento, conservacao, documentacao,
           modoAvaliacao: modoAvancado ? "avancado" : "simples",
+          ...(tipo === "Terreno" ? {
+            terrenoFrente: Number(terrenoExtra.frente) || null,
+            terrenoLaterais: Number(terrenoExtra.laterais) || null,
+            terrenoTopografia: terrenoExtra.topografia || null,
+            terrenoZoneamento: terrenoExtra.zoneamento || null,
+          } : {}),
+          ...(tipo === "Comercial" ? {
+            fluxoPessoas: comercialExtra.fluxoPessoas || null,
+            vitrine: comercialExtra.vitrine,
+            peDireito: Number(comercialExtra.peDireito) || null,
+            docas: comercialExtra.docas,
+            estacionamento: comercialExtra.estacionamento,
+          } : {}),
+          ...(tipo === "Rural" ? {
+            hectares: Number(ruralExtra.hectares) || null,
+            aguaAbundante: ruralExtra.aguaAbundante,
+            energia: ruralExtra.energia,
+            curral: ruralExtra.curral,
+            soloProdutivo: ruralExtra.soloProdutivo,
+            acessoAsfalto: ruralExtra.acessoAsfalto,
+          } : {}),
           ...advancedPayload,
           ...(tipo === "Apartamento" ? {
             andarUnidade: Number(apt.andarUnidade) || null,
