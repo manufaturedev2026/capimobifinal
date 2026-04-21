@@ -115,6 +115,10 @@ function buildGeocodingCandidates(address: string) {
   );
 }
 
+function buildStreetViewQueryUrl(query: string) {
+  return `https://www.google.com/maps/@?api=1&map_action=pano&query=${encodeURIComponent(query)}`;
+}
+
 const ADDRESS_OVERRIDES: Record<string, AddressOverride> = {
   [normalizeText("Av. Beira Rio, 120, Centro, Colatina, ES")]: {
     lat: "-19.5350114",
@@ -125,6 +129,13 @@ const ADDRESS_OVERRIDES: Record<string, AddressOverride> = {
       "https://www.google.com/maps?q=Av.+Beira+Rio,+120+-+Centro,+Colatina+-+ES,+29700-193&hl=pt-BR&z=17&output=embed",
     streetViewUrl:
       "https://www.google.com/maps/@-19.5349498,-40.6336249,3a,75y,252.33h,90t/data=!3m7!1e1!3m5!1s5Ul2zyyrn98mD-foBY4ABg!2e0!6shttps:%2F%2Fstreetviewpixels-pa.googleapis.com%2Fv1%2Fthumbnail%3Fcb_client%3Dmaps_sv.tactile%26w%3D900%26h%3D600%26pitch%3D0%26panoid%3D5Ul2zyyrn98mD-foBY4ABg%26yaw%3D252.32602!7i16384!8i8192",
+  },
+  [normalizeText("Rua Giacomo Martinelli, 343, Colatina, ES")]: {
+    lat: "-19.5348",
+    lon: "-40.6299",
+    mapsUrl: "https://www.google.com/maps/search/?api=1&query=Rua+Giacomo+Martinelli,+343,+Colatina,+ES",
+    embedUrl: "https://www.google.com/maps?q=Rua+Giacomo+Martinelli,+343,+Colatina,+ES&hl=pt-BR&z=17&output=embed",
+    streetViewUrl: buildStreetViewQueryUrl("Rua Giacomo Martinelli, 343, Colatina, ES"),
   },
 };
 
@@ -140,16 +151,14 @@ export default function MapEmbed({ address, className = "", showStreetView = tru
   const mapsUrl = addressOverride
     ? addressOverride.mapsUrl || `https://www.google.com/maps/search/?api=1&query=${addressOverride.lat},${addressOverride.lon}`
     : `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`;
-  const fallbackStreetViewUrl = addressOverride
-    ? addressOverride.streetViewUrl
-    : `https://www.google.com/maps/@?api=1&map_action=pano&query=${encodedAddress}`;
+  const fallbackStreetViewUrl = addressOverride?.streetViewUrl || buildStreetViewQueryUrl(address);
   const mapSrc = addressOverride
     ? addressOverride.embedUrl || `https://www.google.com/maps?q=${addressOverride.lat},${addressOverride.lon}&hl=pt-BR&z=17&output=embed`
     : `https://www.google.com/maps?q=${encodedAddress}&hl=pt-BR&z=16&output=embed`;
 
   const geocodingCandidates = useMemo(() => buildGeocodingCandidates(address), [address]);
   const [streetViewUrl, setStreetViewUrl] = useState(fallbackStreetViewUrl);
-  const [resolvingStreetView, setResolvingStreetView] = useState(showStreetView && !addressOverride);
+  const [resolvingStreetView, setResolvingStreetView] = useState(false);
 
   useEffect(() => {
     setStreetViewUrl(fallbackStreetViewUrl);
@@ -291,11 +300,11 @@ export default function MapEmbed({ address, className = "", showStreetView = tru
           <button
             type="button"
             onClick={handleOpenStreetView}
-            disabled={resolvingStreetView}
-            className="absolute bottom-3 right-3 z-10 flex items-center gap-2 px-3.5 py-2 bg-primary text-primary-foreground text-xs font-semibold rounded-full shadow-lg hover:scale-105 transition-transform disabled:opacity-80 disabled:hover:scale-100"
+            aria-busy={resolvingStreetView}
+            className="absolute bottom-3 right-3 z-10 flex items-center gap-2 rounded-full bg-primary px-3.5 py-2 text-xs font-semibold text-primary-foreground shadow-lg transition-transform hover:scale-105"
           >
             {resolvingStreetView ? <Loader2 size={14} className="animate-spin" /> : <Eye size={14} />}
-            {resolvingStreetView ? "Localizando rua..." : "Ver Street View 360°"}
+            Ver Street View 360°
           </button>
         )}
       </div>
@@ -303,9 +312,9 @@ export default function MapEmbed({ address, className = "", showStreetView = tru
         href={mapsUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex items-center gap-2 px-4 py-3 bg-card text-sm text-muted-foreground hover:text-primary transition-colors"
+        className="flex items-center gap-2 bg-card px-4 py-3 text-sm text-muted-foreground transition-colors hover:text-primary"
       >
-        <MapPin size={14} className="text-primary flex-shrink-0" />
+        <MapPin size={14} className="shrink-0 text-primary" />
         <span className="line-clamp-1">{address}</span>
       </a>
     </div>
