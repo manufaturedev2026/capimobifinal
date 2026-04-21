@@ -518,9 +518,32 @@ export default function AiValuationPage() {
               </Card>
 
               {/* Action buttons */}
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              <Card className="p-5 bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
+                <div className="flex items-center gap-2 mb-3 text-sm font-semibold">
+                  <FileBadge className="h-5 w-5 text-primary" /> Laudo Profissional PDF
+                </div>
+                <p className="text-xs text-muted-foreground mb-4">
+                  Gere um laudo de 6 páginas pronto para impressão, envio ao cliente ou anexo em propostas.
+                </p>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                  <Button onClick={downloadLaudo} className="bg-primary hover:bg-primary/90">
+                    <FileBadge className="h-4 w-4 mr-1.5" /> Gerar Laudo
+                  </Button>
+                  <Button variant="outline" onClick={printLaudo}>
+                    <Printer className="h-4 w-4 mr-1.5" /> Imprimir
+                  </Button>
+                  <Button variant="outline" onClick={shareWhatsapp} className="text-emerald-700 border-emerald-300 hover:bg-emerald-50 dark:text-emerald-400 dark:border-emerald-800 dark:hover:bg-emerald-950">
+                    <Share2 className="h-4 w-4 mr-1.5" /> WhatsApp
+                  </Button>
+                  <Button variant="outline" onClick={shareEmail}>
+                    <Mail className="h-4 w-4 mr-1.5" /> Email
+                  </Button>
+                </div>
+              </Card>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <Button variant="outline" size="lg" onClick={exportPdf}>
-                  <Download className="h-4 w-4 mr-2" /> Exportar PDF
+                  <Download className="h-4 w-4 mr-2" /> PDF Resumo
                 </Button>
                 <Button variant="outline" size="lg" onClick={generateAd}>
                   <Wand2 className="h-4 w-4 mr-2" /> Gerar anúncio IA
