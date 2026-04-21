@@ -293,13 +293,28 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
         const stateUf = viaCep.uf as string;
 
         // Query no formato preferido pelo Street View: "R. Rua, número - Bairro, Cidade, UF"
-        if (!cancelled) {
-          const streetWithNumber = numberPart ? `${street}, ${numberPart}` : street;
-          const headPart = district ? `${streetWithNumber} - ${district}` : streetWithNumber;
-          const cityState = [city, stateUf].filter(Boolean).join(" - ");
-          const cepFmt = `${cleanCep.slice(0, 5)}-${cleanCep.slice(5)}`;
-          const fullQuery = [headPart, cityState, cepFmt, "Brasil"].filter(Boolean).join(", ");
-          setStreetViewQuery(fullQuery);
+        const streetWithNumber = numberPart ? `${street}, ${numberPart}` : street;
+        const headPart = district ? `${streetWithNumber} - ${district}` : streetWithNumber;
+        const cityState = [city, stateUf].filter(Boolean).join(" - ");
+        const cepFmt = `${cleanCep.slice(0, 5)}-${cleanCep.slice(5)}`;
+        const fullQuery = [headPart, cityState, cepFmt, "Brasil"].filter(Boolean).join(", ");
+        if (!cancelled) setStreetViewQuery(fullQuery);
+
+        // 1) PRIMEIRO: tentar Google Geocoding (preciso e confiável)
+        try {
+          const { data: geo } = await supabase.functions.invoke("geocode-address", {
+            body: { address: fullQuery },
+          });
+          const lat = Number((geo as { lat?: number })?.lat);
+          const lng = Number((geo as { lng?: number })?.lng);
+          if (Number.isFinite(lat) && Number.isFinite(lng)) {
+            console.log("[MapEmbed] Google geocode OK", { lat, lng, query: fullQuery });
+            applyStreetViewCoords(String(lat), String(lng));
+            return;
+          }
+          console.warn("[MapEmbed] Google geocode sem resultado", geo);
+        } catch (err) {
+          console.warn("[MapEmbed] Google geocode falhou, tentando Photon", err);
         }
 
         // Estratégia: priorizar buscas com BAIRRO (mais preciso que CEP no Photon).
