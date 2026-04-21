@@ -3,6 +3,7 @@ import { MapPin, Eye, Loader2 } from "lucide-react";
 
 interface MapEmbedProps {
   address: string;
+  cep?: string | null;
   className?: string;
   showStreetView?: boolean;
 }
@@ -145,7 +146,7 @@ function getAddressOverride(address: string) {
   return Object.entries(ADDRESS_OVERRIDES).find(([key]) => normalizedAddress.includes(key) || key.includes(normalizedAddress))?.[1];
 }
 
-export default function MapEmbed({ address, className = "", showStreetView = true }: MapEmbedProps) {
+export default function MapEmbed({ address, cep, className = "", showStreetView = true }: MapEmbedProps) {
   const encodedAddress = encodeURIComponent(address);
   const addressOverride = useMemo(() => getAddressOverride(address), [address]);
 
