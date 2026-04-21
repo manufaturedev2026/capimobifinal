@@ -184,8 +184,6 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
       return;
     }
 
-    let cancelled = false;
-
     const parts = normalizeAddressForGeocoding(address)
       .split(",")
       .map((part) => part.trim())
