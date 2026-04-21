@@ -79,6 +79,7 @@ export default function SellerDashboard() {
   const [teamMembers, setTeamMembers] = useState<{ id: string; full_name: string; photo_url: string | null; phone: string | null; is_active: boolean }[]>([]);
   const [showInstallGuide, setShowInstallGuide] = useState(false);
   const [dashThemeId, setDashThemeId] = useState("azul");
+  const [defaultManager, setDefaultManager] = useState<{ name: string; phone: string | null; photo_url: string | null } | null>(null);
   const { guideMode, installed, requestInstall } = usePwaInstall();
   const pushSub = usePushSubscription(profile?.id);
   const [newCaptureCount, setNewCaptureCount] = useState(0);
@@ -145,6 +146,9 @@ export default function SellerDashboard() {
     supabase.from("platform_settings").select("value").eq("key", "homepage_theme").maybeSingle().then(({ data }) => {
       if (data?.value) setDashThemeId(data.value);
     });
+    supabase.from("account_managers").select("name, phone, photo_url").eq("is_active", true).order("created_at", { ascending: true }).limit(1).maybeSingle().then(({ data }) => {
+      if (data) setDefaultManager(data as any);
+    });
   }, []);
   const dashTheme = getMarketplaceTheme(dashThemeId);
 
@@ -157,6 +161,11 @@ export default function SellerDashboard() {
   const dashGradient = hasBrokerTheme
     ? brokerStoreTheme.preview.heroBg
     : dashTheme.dashboardGradient;
+
+  // Resolve account manager: profile-assigned > default active manager > hardcoded fallback
+  const managerName = (profile as any)?.account_manager || defaultManager?.name || "Gabriel";
+  const managerPhoto = (profile as any)?.manager_photo || defaultManager?.photo_url || gabrielImg;
+  const managerPhone = (profile as any)?.manager_phone || defaultManager?.phone || "5527995055993";
   useEffect(() => {
     if (!authLoading && !user) navigate("/login");
   }, [user, authLoading, navigate]);
@@ -552,14 +561,14 @@ export default function SellerDashboard() {
             <div className="relative overflow-hidden rounded-2xl p-4" style={{ background: 'linear-gradient(135deg, hsl(var(--primary) / 0.08) 0%, hsl(var(--accent) / 0.08) 100%)' }}>
               <div className="absolute top-0 right-0 w-20 h-20 rounded-full bg-primary/5 -translate-y-1/2 translate-x-1/2" />
               <div className="flex items-center gap-3 mb-3 relative">
-                <img src={(profile as any)?.manager_photo || gabrielImg} alt={profile?.account_manager || "Gabriel"} className="w-11 h-11 rounded-full object-cover ring-2 ring-primary/30 shadow-lg" width={44} height={44} />
+                <img src={managerPhoto} alt={managerName} className="w-11 h-11 rounded-full object-cover ring-2 ring-primary/30 shadow-lg" width={44} height={44} />
                 <div>
-                  <p className="text-xs font-bold text-foreground">{profile?.account_manager || "Gabriel"}</p>
+                  <p className="text-xs font-bold text-foreground">{managerName}</p>
                   <p className="text-[10px] text-muted-foreground">Seu Gerente de Conta</p>
                 </div>
               </div>
               <a
-                href={`https://wa.me/${((profile as any)?.manager_phone || "5527995055993").replace(/\D/g, "")}?text=Olá%20${encodeURIComponent(profile?.account_manager || "Gabriel")}!%20Preciso%20de%20ajuda%20com%20minha%20loja.`}
+                href={`https://wa.me/${managerPhone.replace(/\D/g, "")}?text=Olá%20${encodeURIComponent(managerName)}!%20Preciso%20de%20ajuda%20com%20minha%20loja.`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="relative w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-green-500 text-white text-xs font-bold hover:bg-green-600 transition-colors shadow-md"
@@ -713,14 +722,14 @@ export default function SellerDashboard() {
                 <div className="lg:hidden relative overflow-hidden rounded-2xl p-5" style={{ background: 'linear-gradient(135deg, hsl(var(--primary) / 0.08) 0%, hsl(var(--accent) / 0.08) 100%)' }}>
                   <div className="absolute top-0 right-0 w-20 h-20 rounded-full bg-primary/5 -translate-y-1/2 translate-x-1/2" />
                   <div className="flex items-center gap-3 mb-3 relative">
-                    <img src={(profile as any)?.manager_photo || gabrielImg} alt={profile?.account_manager || "Gabriel"} className="w-12 h-12 rounded-full object-cover ring-2 ring-primary/30 shadow-lg" width={48} height={48} />
+                    <img src={managerPhoto} alt={managerName} className="w-12 h-12 rounded-full object-cover ring-2 ring-primary/30 shadow-lg" width={48} height={48} />
                     <div>
-                      <p className="text-sm font-bold text-foreground">{profile?.account_manager || "Gabriel"}</p>
+                      <p className="text-sm font-bold text-foreground">{managerName}</p>
                       <p className="text-xs text-muted-foreground">Seu Gerente de Conta</p>
                     </div>
                   </div>
                   <a
-                    href={`https://wa.me/${((profile as any)?.manager_phone || "5527995055993").replace(/\D/g, "")}?text=Olá%20${encodeURIComponent(profile?.account_manager || "Gabriel")}!%20Preciso%20de%20ajuda%20com%20minha%20loja.`}
+                    href={`https://wa.me/${managerPhone.replace(/\D/g, "")}?text=Olá%20${encodeURIComponent(managerName)}!%20Preciso%20de%20ajuda%20com%20minha%20loja.`}
                     target="_blank" rel="noopener noreferrer"
                     className="relative w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-green-500 text-white text-sm font-bold hover:bg-green-600 transition-colors shadow-md">
                     <Headphones size={16} /> Falar com seu Gerente
@@ -1087,11 +1096,11 @@ export default function SellerDashboard() {
 
                   {/* CTA Gerente */}
                   <a
-                    href={`https://wa.me/${((profile as any)?.manager_phone || "5527995055993").replace(/\D/g, "")}?text=Olá%20${encodeURIComponent(profile?.account_manager || "Gabriel")}!%20Comprei%20meu%20domínio%20na%20Hostinger%20e%20preciso%20que%20você%20configure%20na%20minha%20loja.%20Posso%20enviar%20os%20dados%20de%20acesso%3F`}
+                    href={`https://wa.me/${managerPhone.replace(/\D/g, "")}?text=Olá%20${encodeURIComponent(managerName)}!%20Comprei%20meu%20domínio%20na%20Hostinger%20e%20preciso%20que%20você%20configure%20na%20minha%20loja.%20Posso%20enviar%20os%20dados%20de%20acesso%3F`}
                     target="_blank" rel="noopener noreferrer"
                     className="mt-5 w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-green-500 text-white font-bold text-sm hover:bg-green-600 transition-colors"
                   >
-                    <Headphones size={16} /> Já comprei! Falar com {profile?.account_manager || "meu Gerente"}
+                    <Headphones size={16} /> Já comprei! Falar com {managerName}
                   </a>
 
                   <p className="text-center text-[11px] text-muted-foreground mt-2">
