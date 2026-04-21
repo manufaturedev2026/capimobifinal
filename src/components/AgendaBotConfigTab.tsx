@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Bot, Copy, ExternalLink, Sparkles, Plus, Trash2, Home as HomeIcon, Save, Edit3 } from "lucide-react";
+import { Bot, Copy, ExternalLink, Sparkles, Plus, Trash2, Home as HomeIcon, Save, Edit3, Upload, Loader2, X } from "lucide-react";
 
 interface Props {
   sellerId: string;
@@ -47,6 +47,33 @@ export default function AgendaBotConfigTab({ sellerId, sellerSlug }: Props) {
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<AgendaBot | null>(null);
   const [saving, setSaving] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleAvatarUpload = async (file: File) => {
+    if (!editing) return;
+    if (!file.type.startsWith("image/")) {
+      toast({ title: "Selecione uma imagem", variant: "destructive" }); return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: "Imagem muito grande", description: "Máximo 5MB", variant: "destructive" }); return;
+    }
+    setUploadingAvatar(true);
+    const { data: userRes } = await supabase.auth.getUser();
+    const uid = userRes.user?.id;
+    if (!uid) { setUploadingAvatar(false); return; }
+    const ext = file.name.split(".").pop() || "jpg";
+    const path = `${uid}/agenda-bots/${Date.now()}.${ext}`;
+    const { error: upErr } = await supabase.storage.from("seller-uploads").upload(path, file, { upsert: true, contentType: file.type });
+    if (upErr) {
+      setUploadingAvatar(false);
+      toast({ title: "Erro no upload", description: upErr.message, variant: "destructive" }); return;
+    }
+    const { data: pub } = supabase.storage.from("seller-uploads").getPublicUrl(path);
+    setEditing({ ...editing, attendant_avatar: pub.publicUrl });
+    setUploadingAvatar(false);
+    toast({ title: "Avatar carregado!" });
+  };
 
   const baseUrl = (botSlug: string) => `${window.location.origin}/agenda/${sellerSlug || sellerId}/chat/${botSlug}`;
 
@@ -184,8 +211,42 @@ export default function AgendaBotConfigTab({ sellerId, sellerSlug }: Props) {
               <Input value={editing.attendant_name} onChange={(e) => setEditing({ ...editing, attendant_name: e.target.value })} className="mt-1" />
             </div>
             <div>
-              <label className="text-xs text-muted-foreground">URL do avatar</label>
-              <Input value={editing.attendant_avatar || ""} onChange={(e) => setEditing({ ...editing, attendant_avatar: e.target.value || null })} placeholder="https://..." className="mt-1" />
+              <label className="text-xs text-muted-foreground">Avatar do atendente</label>
+              <div className="mt-1 flex items-center gap-3">
+                <div className="w-14 h-14 rounded-full bg-muted overflow-hidden shrink-0 border flex items-center justify-center">
+                  {editing.attendant_avatar ? (
+                    <img src={editing.attendant_avatar} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    <Bot className="w-6 h-6 text-muted-foreground" />
+                  )}
+                </div>
+                <div className="flex-1 flex flex-col gap-1.5">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => { const f = e.target.files?.[0]; if (f) handleAvatarUpload(f); e.target.value = ""; }}
+                  />
+                  <div className="flex gap-2">
+                    <Button type="button" variant="outline" size="sm" onClick={() => fileInputRef.current?.click()} disabled={uploadingAvatar} className="flex-1">
+                      {uploadingAvatar ? <Loader2 className="w-3 h-3 mr-1 animate-spin" /> : <Upload className="w-3 h-3 mr-1" />}
+                      {uploadingAvatar ? "Enviando..." : "Enviar foto"}
+                    </Button>
+                    {editing.attendant_avatar && (
+                      <Button type="button" variant="ghost" size="sm" onClick={() => setEditing({ ...editing, attendant_avatar: null })} className="text-red-600">
+                        <X className="w-3 h-3" />
+                      </Button>
+                    )}
+                  </div>
+                  <Input
+                    value={editing.attendant_avatar || ""}
+                    onChange={(e) => setEditing({ ...editing, attendant_avatar: e.target.value || null })}
+                    placeholder="ou cole uma URL https://..."
+                    className="h-8 text-xs"
+                  />
+                </div>
+              </div>
             </div>
           </div>
           <div>
