@@ -516,6 +516,53 @@ export default function AiValuationPage() {
                 </Card>
               </div>
 
+              {/* Comparáveis do mercado */}
+              {result.meta?.market && result.meta.market.comparaveis > 0 && (
+                <Card className="p-6 border-blue-500/20 bg-blue-500/5">
+                  <div className="flex items-center gap-2 mb-3 text-blue-600 dark:text-blue-400 font-semibold">
+                    <Target className="h-5 w-5" /> Comparativo com o mercado local
+                  </div>
+                  <div className="text-sm text-muted-foreground mb-3">
+                    Análise baseada em <span className="font-semibold text-foreground">{result.meta.market.comparaveis}</span> imóvel(is) similares cadastrados na região.
+                  </div>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <div className="p-3 rounded-lg bg-background/60">
+                      <div className="text-xs text-muted-foreground">Dormitórios (média)</div>
+                      <div className="text-lg font-bold">{result.meta.market.media_dormitorios}</div>
+                    </div>
+                    <div className="p-3 rounded-lg bg-background/60">
+                      <div className="text-xs text-muted-foreground">Banheiros (média)</div>
+                      <div className="text-lg font-bold">{result.meta.market.media_banheiros}</div>
+                    </div>
+                    <div className="p-3 rounded-lg bg-background/60">
+                      <div className="text-xs text-muted-foreground">Área média</div>
+                      <div className="text-lg font-bold">{result.meta.market.media_area_m2} m²</div>
+                    </div>
+                    <div className="p-3 rounded-lg bg-background/60">
+                      <div className="text-xs text-muted-foreground">Preço médio</div>
+                      <div className="text-lg font-bold">{fmtBRL(result.meta.market.media_preco)}</div>
+                    </div>
+                  </div>
+                </Card>
+              )}
+
+              {/* Sugestões de valorização */}
+              {result.sugestoes_valorizacao && result.sugestoes_valorizacao.length > 0 && (
+                <Card className="p-6 border-violet-500/20 bg-violet-500/5">
+                  <div className="flex items-center gap-2 mb-4 text-violet-600 dark:text-violet-400 font-semibold">
+                    <TrendingUp className="h-5 w-5" /> Sugestões de valorização
+                  </div>
+                  <ul className="space-y-2">
+                    {result.sugestoes_valorizacao.map((s, i) => (
+                      <li key={i} className="flex gap-2 text-sm">
+                        <span className="text-violet-600 dark:text-violet-400">→</span>
+                        <span>{s}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </Card>
+              )}
+
               <Card className="p-6 md:p-8">
                 <div className="flex items-center gap-2 mb-4 font-semibold">
                   <Brain className="h-5 w-5 text-primary" /> Análise técnica IA
