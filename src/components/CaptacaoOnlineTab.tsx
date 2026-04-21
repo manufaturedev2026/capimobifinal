@@ -480,7 +480,6 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
   const FLOW_TYPES = [
     { value: "captacao" as const, label: "Captação", icon: Home, color: "text-primary", desc: "Coleta dados do imóvel" },
     { value: "grupo_whatsapp" as const, label: "Grupo", icon: Users, color: "text-[#25d366]", desc: "Convida para grupo" },
-    { value: "agendamento" as const, label: "Agendamento", icon: Calendar, color: "text-blue-500", desc: "Agenda visita" },
     { value: "avaliacao" as const, label: "Avaliação", icon: Gem, color: "text-amber-500", desc: "Agendar Avaliação" },
   ];
 
@@ -943,7 +942,45 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
               {/* Flow Type Selector (visible for both modes) */}
               <div className="rounded-2xl border border-border bg-card p-4 space-y-3">
                 <p className="text-sm font-bold text-foreground">Tipo de Fluxo</p>
+                <div className="grid grid-cols-3 gap-2">
+                  {FLOW_TYPES.map(ft => (
+                    <button
+                      key={ft.value}
+                      onClick={() => handleFlowTypeChange(ft.value)}
+                      className={`p-2.5 rounded-xl border transition-all text-center ${
+                        botFlowType === ft.value
+                          ? "bg-primary/10 border-primary/30 ring-1 ring-primary/20"
+                          : "bg-card border-border hover:border-primary/20"
+                      }`}
+                    >
+                      <ft.icon size={18} className={`mx-auto mb-1 ${ft.color}`} />
+                      <p className="text-xs font-bold text-foreground">{ft.label}</p>
+                      <p className="text-[9px] text-muted-foreground mt-0.5">{ft.desc}</p>
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[10px] text-muted-foreground bg-blue-500/5 border border-blue-500/20 rounded-lg p-2 mt-2">
+                  📅 O fluxo <strong>Agendamento de Visita</strong> agora está na <a href="/agenda" className="underline font-semibold">Agenda</a> com IA dedicada que vincula o imóvel automaticamente.
+                </p>
+              </div>
+              <div className="hidden">
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  {FLOW_TYPES.map(ft => (
+                    <button
+                      key={ft.value}
+                      onClick={() => handleFlowTypeChange(ft.value)}
+                      className={`p-2.5 rounded-xl border transition-all text-center ${
+                        botFlowType === ft.value
+                          ? "bg-primary/10 border-primary/30 ring-1 ring-primary/20"
+                          : "bg-card border-border hover:border-primary/20"
+                      }`}
+                    >
+                      <ft.icon size={18} className={`mx-auto mb-1 ${ft.color}`} />
+                      <p className="text-xs font-bold text-foreground">{ft.label}</p>
+                      <p className="text-[9px] text-muted-foreground mt-0.5">{ft.desc}</p>
+                    </button>
+                  ))}
+                </div>
                   {FLOW_TYPES.map(ft => (
                     <button
                       key={ft.value}
