@@ -328,12 +328,12 @@ export default function AgendaPage() {
 
 function StatCard({ icon, label, value, color }: { icon: React.ReactNode; label: string; value: number; color: string }) {
   return (
-    <div className="bg-card border border-border rounded-xl p-4 shadow-sm">
-      <div className="flex items-center gap-3">
-        <div className={`w-10 h-10 rounded-lg ${color} text-white flex items-center justify-center`}>{icon}</div>
-        <div>
-          <p className="text-xs text-muted-foreground">{label}</p>
-          <p className="text-2xl font-bold text-foreground">{value}</p>
+    <div className="bg-card border border-border rounded-xl p-3 sm:p-4 shadow-sm">
+      <div className="flex items-center gap-2 sm:gap-3">
+        <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg ${color} text-white flex items-center justify-center shrink-0`}>{icon}</div>
+        <div className="min-w-0">
+          <p className="text-[10px] sm:text-xs text-muted-foreground truncate">{label}</p>
+          <p className="text-lg sm:text-2xl font-bold text-foreground">{value}</p>
         </div>
       </div>
     </div>
