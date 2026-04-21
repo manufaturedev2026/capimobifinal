@@ -963,41 +963,6 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
                   📅 O fluxo <strong>Agendamento de Visita</strong> agora está na <a href="/agenda" className="underline font-semibold">Agenda</a> com IA dedicada que vincula o imóvel automaticamente.
                 </p>
               </div>
-              <div className="hidden">
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                  {FLOW_TYPES.map(ft => (
-                    <button
-                      key={ft.value}
-                      onClick={() => handleFlowTypeChange(ft.value)}
-                      className={`p-2.5 rounded-xl border transition-all text-center ${
-                        botFlowType === ft.value
-                          ? "bg-primary/10 border-primary/30 ring-1 ring-primary/20"
-                          : "bg-card border-border hover:border-primary/20"
-                      }`}
-                    >
-                      <ft.icon size={18} className={`mx-auto mb-1 ${ft.color}`} />
-                      <p className="text-xs font-bold text-foreground">{ft.label}</p>
-                      <p className="text-[9px] text-muted-foreground mt-0.5">{ft.desc}</p>
-                    </button>
-                  ))}
-                </div>
-                  {FLOW_TYPES.map(ft => (
-                    <button
-                      key={ft.value}
-                      onClick={() => handleFlowTypeChange(ft.value)}
-                      className={`p-2.5 rounded-xl border transition-all text-center ${
-                        botFlowType === ft.value
-                          ? "bg-primary/10 border-primary/30 ring-1 ring-primary/20"
-                          : "bg-card border-border hover:border-primary/20"
-                      }`}
-                    >
-                      <ft.icon size={18} className={`mx-auto mb-1 ${ft.color}`} />
-                      <p className="text-xs font-bold text-foreground">{ft.label}</p>
-                      <p className="text-[9px] text-muted-foreground mt-0.5">{ft.desc}</p>
-                    </button>
-                  ))}
-                </div>
-              </div>
 
               {/* AI Mode CTA Config */}
               {botChatMode === "ai" && (
