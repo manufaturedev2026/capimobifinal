@@ -289,7 +289,33 @@ export default function AiValuationPage() {
       });
       if (error) throw error;
       if ((data as any)?.error) throw new Error((data as any).error);
-      setResult(data as Valuation);
+
+      // Aplicar ajuste da análise visual (se houver)
+      let finalResult = data as Valuation;
+      if (analiseVisual) {
+        const ajustePct = analiseVisual.ajuste_total_pct;
+        const fator = 1 + ajustePct / 100;
+        const round = (n: number) => Math.round(n);
+        finalResult = {
+          ...finalResult,
+          valor_estimado: round(finalResult.valor_estimado * fator),
+          faixa_min: round(finalResult.faixa_min * fator),
+          faixa_max: round(finalResult.faixa_max * fator),
+          venda_rapida: round(finalResult.venda_rapida * fator),
+          venda_premium: round(finalResult.venda_premium * fator),
+          aluguel_estimado: round(finalResult.aluguel_estimado * fator),
+          meta: finalResult.meta ? {
+            ...finalResult.meta,
+            ajuste_total_pct: (finalResult.meta.ajuste_total_pct || 0) + ajustePct,
+            breakdown: [
+              ...(finalResult.meta.breakdown || []),
+              { label: `📸 Análise visual por fotos (${analiseVisual.total_fotos_analisadas} foto${analiseVisual.total_fotos_analisadas > 1 ? "s" : ""})`, pct: Number(ajustePct.toFixed(1)) },
+            ],
+          } : finalResult.meta,
+        };
+      }
+
+      setResult(finalResult);
       setTimeout(() => document.getElementById("result-section")?.scrollIntoView({ behavior: "smooth" }), 100);
     } catch (e: any) {
       toast({ title: "Erro ao calcular", description: e.message, variant: "destructive" });
