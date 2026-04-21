@@ -474,15 +474,15 @@ export default function AiValuationPage() {
     toast({ title: "Avaliação excluída" });
   };
 
-  const downloadLaudo = () => {
-    const doc = buildLaudo();
+  const downloadLaudo = async () => {
+    const doc = await buildLaudo();
     if (!doc) return;
     doc.save(`laudo-avaliacao-${bairro.replace(/\s+/g, "-").toLowerCase()}-${Date.now()}.pdf`);
     toast({ title: "Laudo PDF gerado!" });
   };
 
-  const printLaudo = () => {
-    const doc = buildLaudo();
+  const printLaudo = async () => {
+    const doc = await buildLaudo();
     if (!doc) return;
     const url = doc.output("bloburl");
     const win = window.open(url, "_blank");
