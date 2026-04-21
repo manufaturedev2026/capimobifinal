@@ -45,6 +45,18 @@ export type ValuationReportData = {
     score_geral?: number;
     scores?: { localizacao: number; estrutura: number; acabamento: number; liquidez: number; documentacao: number };
     comparaveis?: Array<{ titulo: string; bairro: string; area: number; quartos: number | null; preco: number }>;
+    comparaveis_externos?: Array<{ titulo: string; bairro?: string; area?: number; quartos?: number; preco?: number; preco_m2?: number; fonte?: string; url?: string }>;
+    mercado_externo?: {
+      total: number;
+      preco_medio: number;
+      preco_mediano: number;
+      preco_m2_medio: number;
+      preco_m2_mediano: number;
+      preco_provavel_fechamento: number;
+      fontes_consultadas: string[];
+      resumo: string;
+      aviso?: string;
+    } | null;
     meta?: {
       preco_m2: number;
       ajuste_total_pct: number;
