@@ -466,7 +466,7 @@ async function fetchExternalMarket(
   let searchResults: Array<{ url: string; title?: string; description?: string; markdown?: string }> = [];
   try {
     const ctrl = new AbortController();
-    const timeoutId = setTimeout(() => ctrl.abort(), 45000);
+    const timeoutId = setTimeout(() => ctrl.abort(), 22000);
     const fcResp = await fetch("https://api.firecrawl.dev/v2/search", {
       method: "POST",
       headers: {
@@ -531,7 +531,7 @@ REGRAS:
   let parsed: any = null;
   try {
     const ctrl = new AbortController();
-    const timeoutId = setTimeout(() => ctrl.abort(), 45000);
+    const timeoutId = setTimeout(() => ctrl.abort(), 25000);
     const resp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
@@ -1040,10 +1040,20 @@ Deno.serve(async (req) => {
       (Number(data.areaConstruidaTerreo) || 0) + (Number(data.areaConstruidaSuperior) || 0) ||
       (Number(data.areaConstruida) || 0) || data.areaTotal;
     const finalidade: "venda" | "aluguel" = ((data as any).finalidade === "aluguel") ? "aluguel" : "venda";
-    // Busca interna + externa em PARALELO (externa pode demorar 10-30s)
+    // Busca interna + externa em PARALELO. Externa tem hard timeout para nunca derrubar a função.
+    const externalSafe = Promise.race([
+      fetchExternalMarket(data, areaRefForMarket, finalidade).catch((e) => {
+        console.error("[external] failed, continuing without it", String(e));
+        return null;
+      }),
+      new Promise<null>((resolve) => setTimeout(() => {
+        console.warn("[external] hard timeout 50s, continuing without it");
+        resolve(null);
+      }, 50000)),
+    ]);
     const [market, external] = await Promise.all([
       fetchMarketContext(supabase, data.estado, data.cidade, data.bairro, data.tipo, areaRefForMarket, finalidade),
-      fetchExternalMarket(data, areaRefForMarket, finalidade),
+      externalSafe,
     ]);
     const { precoM2, source } = await resolvePrecoM2(supabase, data, market, external);
     const calc = calcular(data, precoM2, market);
