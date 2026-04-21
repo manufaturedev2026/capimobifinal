@@ -283,6 +283,20 @@ export default function CaptureBotsManagerTab({ sellerId, sellerSlug }: Props) {
           <span className="text-sm font-medium text-foreground">Bot ativo (link funcionando)</span>
         </div>
 
+        <div className="flex items-start gap-3 rounded-2xl border border-border bg-background p-4 shadow-sm">
+          <Switch checked={editing.use_ai} onCheckedChange={(v) => setEditing({ ...editing, use_ai: v })} />
+          <div className="flex-1">
+            <p className="text-sm font-medium text-foreground flex items-center gap-1.5">
+              {editing.use_ai ? <><Zap className="w-3.5 h-3.5 text-primary" /> Conversa com IA</> : <><FileText className="w-3.5 h-3.5" /> Formulário fixo (sem IA)</>}
+            </p>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              {editing.use_ai
+                ? "O atendente conversa naturalmente com o lead usando IA."
+                : "Pergunta os campos em ordem fixa — não consome créditos de IA."}
+            </p>
+          </div>
+        </div>
+
         <Button onClick={save} disabled={saving} className="w-full sm:w-auto" size="lg">
           <Save className="w-4 h-4 mr-2" />
           {saving ? "Salvando..." : "Salvar bot"}
