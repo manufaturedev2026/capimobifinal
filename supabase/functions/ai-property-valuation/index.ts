@@ -834,7 +834,16 @@ Deno.serve(async (req) => {
       area: Number(c.built_area || c.area) || 0,
       quartos: Number(c.bedrooms) || null,
       preco: Number(c.price) || 0,
+      status: c.listing_status ?? "publicado",
     }));
+
+    const origemLabel = market.comparaveis_origem === "bairro"
+      ? "Banco interno validado — mesmo bairro"
+      : market.comparaveis_origem === "cidade"
+      ? "Banco interno validado — mesma cidade"
+      : market.comparaveis_origem === "regional_ampliado"
+      ? "Base regional ampliada (estado)"
+      : "Tabela regional de preços";
 
     await supabase.from("property_valuations").insert({
       user_id: userId,
