@@ -96,7 +96,30 @@ const fmtBRL = (v: number) =>
 
 export default function AiValuationPage() {
   const { toast } = useToast();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
+
+  // Tema visual (segue o tema da loja do usuário ou o tema do marketplace)
+  const [marketplaceThemeId, setMarketplaceThemeId] = useState(
+    () => localStorage.getItem("marketplace_theme") || "azul"
+  );
+  useEffect(() => {
+    supabase
+      .from("platform_settings")
+      .select("value")
+      .eq("key", "homepage_theme")
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.value) {
+          setMarketplaceThemeId(data.value);
+          localStorage.setItem("marketplace_theme", data.value);
+        }
+      });
+  }, []);
+  const brokerStoreThemeId = (profile as any)?.store_theme as string | undefined;
+  const hasBrokerTheme = !!brokerStoreThemeId && brokerStoreThemeId !== "default";
+  const themeVars = hasBrokerTheme
+    ? getStoreThemeCssVars(getStoreTheme(brokerStoreThemeId!))
+    : getMarketplaceThemeCssVars(getMarketplaceTheme(marketplaceThemeId));
 
   // Localização
   const [estado, setEstado] = useState("");
