@@ -327,11 +327,9 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
     window.open(streetViewUrl, "_blank", "noopener,noreferrer");
   };
 
-  // Always provide an embeddable Street View source — fall back to a query-based panorama embed
-  const queryStreetEmbed = `https://www.google.com/maps?q=&layer=c&cbll=&cbp=&q=${encodedAddress}&output=svembed`;
-  const streetEmbedSrc = streetViewEmbed || addressOverride?.embedUrl || queryStreetEmbed;
-  const isStreet = view === "street";
-  const currentSrc = isStreet ? streetEmbedSrc : mapSrc;
+  const streetEmbedSrc = streetViewEmbed || addressOverride?.embedUrl || null;
+  const isStreet = view === "street" && !!streetEmbedSrc;
+  const currentSrc = isStreet ? streetEmbedSrc! : mapSrc;
 
   return (
     <div className={`rounded-2xl overflow-hidden border border-border ${className}`}>
