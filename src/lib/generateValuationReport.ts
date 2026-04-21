@@ -307,10 +307,10 @@ export function generateValuationReport(d: ValuationReportData): jsPDF {
     doc.text("SCORE PROFISSIONAL /10", W / 2, H / 2 + 60, { align: "center" });
   }
 
-  const blockY = H - 70;
+  const blockY = H - 75;
   doc.setDrawColor(GOLD[0], GOLD[1], GOLD[2]);
   doc.setLineWidth(0.4);
-  doc.roundedRect(20, blockY, W - 40, 45, 3, 3, "S");
+  doc.roundedRect(20, blockY, W - 40, 55, 3, 3, "S");
 
   setColor([255, 255, 255]);
   doc.setFont("helvetica", "normal");
