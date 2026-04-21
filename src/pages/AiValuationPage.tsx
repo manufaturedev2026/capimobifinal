@@ -20,6 +20,7 @@ import {
   Building2, Award, KeyRound,
 } from "lucide-react";
 import { generateValuationReport } from "@/lib/generateValuationReport";
+import AdvancedValuationFields, { ADVANCED_INITIAL, type AdvancedState } from "@/components/AdvancedValuationFields";
 
 const TIPOS = ["Casa", "Apartamento", "Terreno", "Comercial", "Rural"];
 const TIPOS_ESTRUTURA = [
@@ -38,7 +39,7 @@ const CONSERVACAO = ["Novo", "Reformado", "Bom estado", "Antigo", "Precisa refor
 const DOCUMENTACAO = ["Escritura ok", "Registro ok", "Averbação ok", "Financiável", "Pendências"];
 
 type Comparavel = { titulo: string; bairro: string; area: number; quartos: number | null; preco: number };
-type Scores = { localizacao: number; estrutura: number; acabamento: number; liquidez: number; documentacao: number };
+type Scores = { localizacao: number; estrutura: number; acabamento: number; diferenciais?: number; liquidez: number; documentacao: number };
 
 type Valuation = {
   valor_estimado: number;
@@ -115,6 +116,12 @@ export default function AiValuationPage() {
   const [conservacao, setConservacao] = useState("Bom estado");
   const [documentacao, setDocumentacao] = useState<string[]>(["Escritura ok"]);
 
+  // Modo avançado
+  const [modoAvancado, setModoAvancado] = useState(false);
+  const [adv, setAdv] = useState<AdvancedState>(ADVANCED_INITIAL);
+  const updateAdv = <K extends keyof AdvancedState>(key: K, value: AdvancedState[K]) =>
+    setAdv((s) => ({ ...s, [key]: value }));
+
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Valuation | null>(null);
 
@@ -149,6 +156,28 @@ export default function AiValuationPage() {
     setLoading(true);
     setResult(null);
     try {
+      const advancedPayload = modoAvancado ? {
+        areaCobertaExterna: Number(adv.areaCobertaExterna) || null,
+        areaUtil: Number(adv.areaUtil) || null,
+        lavabos: Number(adv.lavabos) || 0,
+        salaEstar: adv.salaEstar, salaJantar: adv.salaJantar, salaTv: adv.salaTv,
+        copa: adv.copa, lavanderia: adv.lavanderia, areaServico: adv.areaServico,
+        closet: adv.closet, despensa: adv.despensa, varandaInterna: adv.varandaInterna,
+        bairroValorizado: adv.bairroValorizado, ruaTranquila: adv.ruaTranquila,
+        proximoComercio: adv.proximoComercio, proximoEscola: adv.proximoEscola,
+        proximoHospital: adv.proximoHospital, vistaPrivilegiada: adv.vistaPrivilegiada,
+        areaRisco: adv.areaRisco,
+        pisoQualidade: adv.pisoQualidade || null,
+        banheiroQualidade: adv.banheiroQualidade || null,
+        cozinhaQualidade: adv.cozinhaQualidade || null,
+        pinturaQualidade: adv.pinturaQualidade || null,
+        esquadriasQualidade: adv.esquadriasQualidade || null,
+        telhadoQualidade: adv.telhadoQualidade || null,
+        eletricaQualidade: adv.eletricaQualidade || null,
+        habiteSe: adv.habiteSe, financiavel: adv.financiavel, semPendencias: adv.semPendencias,
+        liquidezMercado: adv.liquidezMercado || null,
+      } : {};
+
       const { data, error } = await supabase.functions.invoke("ai-property-valuation", {
         body: {
           estado, cidade, bairro, rua, numero, cep,
@@ -162,6 +191,8 @@ export default function AiValuationPage() {
           suites: Number(suites), garagem: Number(garagem),
           salas: Number(salas), cozinhas: Number(cozinhas), escritorios: Number(escritorios),
           extras, acabamento, conservacao, documentacao,
+          modoAvaliacao: modoAvancado ? "avancado" : "simples",
+          ...advancedPayload,
         },
       });
       if (error) throw error;
