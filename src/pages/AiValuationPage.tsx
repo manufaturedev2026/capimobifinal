@@ -139,6 +139,19 @@ export default function AiValuationPage() {
     return localStorage.getItem("valuation_avaliador_creci") || "";
   });
 
+  // Dados opcionais (proprietário + finalidade + infraestrutura)
+  const [propNome, setPropNome] = useState("");
+  const [propCpf, setPropCpf] = useState("");
+  const [propTelefone, setPropTelefone] = useState("");
+  const [propEmail, setPropEmail] = useState("");
+  const [finalidade, setFinalidade] = useState("");
+  const [infraEscola, setInfraEscola] = useState(false);
+  const [infraHospital, setInfraHospital] = useState(false);
+  const [infraComercio, setInfraComercio] = useState(false);
+  const [infraTransporte, setInfraTransporte] = useState(false);
+  const [infraParque, setInfraParque] = useState(false);
+  const [infraBancos, setInfraBancos] = useState(false);
+
   // Imóvel — taxonomia em cascata Categoria → Subtipo → Estrutura
   const [categoria, setCategoria] = useState<CategoriaImovel>("Residencial");
   const [subtipo, setSubtipo] = useState<string>("Casa");
