@@ -78,10 +78,22 @@ function calcular(p: Payload, precoM2: number) {
   if (!isTerreno) {
     const suites = p.suites ?? 0;
     if (suites > 0) aplica(`${suites} suíte(s)`, suites * 2);
+
     const garagem = p.garagem ?? 0;
-    if (garagem > 1) aplica(`Vagas extras (+${garagem - 1})`, (garagem - 1) * 1.5);
+    if (garagem === 0) aplica("Sem vaga de garagem", -6);
+    else if (garagem > 1) aplica(`Vagas extras (+${garagem - 1})`, (garagem - 1) * 1.5);
+
     const banheiros = p.banheiros ?? 0;
     if (banheiros > 1) aplica(`Banheiros extras (+${banheiros - 1})`, (banheiros - 1) * 1);
+
+    // Quartos: penaliza poucos dormitórios para imóveis maiores
+    const quartos = p.quartos ?? 0;
+    const areaRef = (p.areaConstruida && p.areaConstruida > 0) ? p.areaConstruida : p.areaTotal;
+    if (quartos > 0 && quartos <= 2 && areaRef >= 120) {
+      aplica(`Apenas ${quartos} dormitório(s) p/ ${areaRef}m²`, -4);
+    } else if (quartos >= 4) {
+      aplica(`${quartos} dormitórios`, 3);
+    }
   }
 
   // Extras
