@@ -34,7 +34,7 @@ const TYPE_META: Record<BotType, { label: string; icon: any; color: string; defa
   captacao: {
     label: "Captação de Imóveis",
     icon: HomeIcon,
-    color: "text-blue-600 bg-blue-500/10 border-blue-500/20",
+    color: "text-primary bg-primary/10 border-primary/20",
     defaultName: "Bot — Captação",
     defaultOpening: "Olá! 👋 Vou te ajudar a cadastrar seu imóvel para venda ou aluguel — 100% gratuito. 🏡 Vamos começar?",
     defaultCtaLabel: "💬 Falar no WhatsApp",
@@ -42,7 +42,7 @@ const TYPE_META: Record<BotType, { label: string; icon: any; color: string; defa
   grupo: {
     label: "Grupo de WhatsApp",
     icon: Users,
-    color: "text-emerald-600 bg-emerald-500/10 border-emerald-500/20",
+    color: "text-accent-foreground bg-accent/40 border-accent",
     defaultName: "Bot — Grupo VIP",
     defaultOpening: "Olá! 👋 Que bom ter você por aqui!\n\nVou te adicionar ao nosso grupo VIP no WhatsApp 📲, onde compartilhamos em primeira mão as melhores oportunidades. Vamos garantir sua vaga?",
     defaultCtaLabel: "🔗 Entrar no Grupo",
@@ -50,7 +50,7 @@ const TYPE_META: Record<BotType, { label: string; icon: any; color: string; defa
   avaliacao: {
     label: "Avaliação Profissional",
     icon: Gem,
-    color: "text-amber-600 bg-amber-500/10 border-amber-500/20",
+    color: "text-secondary-foreground bg-secondary border-border",
     defaultName: "Bot — Avaliação",
     defaultOpening: "Olá! 👋 Vou te ajudar a solicitar uma avaliação profissional do seu imóvel. 💎 Análise técnica, mercado atual da sua região e tendências de preço. Vamos começar?",
     defaultCtaLabel: "💬 Falar com Especialista",
@@ -235,7 +235,7 @@ export default function CaptureBotsManagerTab({ sellerId, sellerSlug }: Props) {
                     {uploadingAvatar ? "Enviando..." : "Enviar foto"}
                   </Button>
                   {editing.attendant_avatar && (
-                    <Button type="button" variant="ghost" size="sm" onClick={() => setEditing({ ...editing, attendant_avatar: null })} className="text-red-600">
+                    <Button type="button" variant="ghost" size="sm" onClick={() => setEditing({ ...editing, attendant_avatar: null })} className="text-destructive hover:bg-destructive/10">
                       <X className="w-3 h-3" />
                     </Button>
                   )}
@@ -298,7 +298,7 @@ export default function CaptureBotsManagerTab({ sellerId, sellerSlug }: Props) {
           </div>
           <div className="flex-1 min-w-0">
             <h3 className="font-bold text-foreground flex items-center gap-2">
-              Bots de Captação <Sparkles className="w-4 h-4 text-amber-500" />
+              Bots de Captação <Sparkles className="w-4 h-4 text-primary" />
             </h3>
             <p className="text-sm text-muted-foreground mt-1">
               Crie quantos bots quiser, cada um com link próprio: captação de imóveis, convite para grupo VIP e solicitação de avaliação.
@@ -356,7 +356,7 @@ export default function CaptureBotsManagerTab({ sellerId, sellerSlug }: Props) {
                   <Button onClick={() => setEditing(bot)} variant="outline" size="sm" className="flex-1 sm:flex-none">
                     <Edit3 className="w-3 h-3 mr-1" /> Editar
                   </Button>
-                  <Button onClick={() => remove(bot.id)} variant="ghost" size="sm" className="text-red-600 hover:text-red-700 hover:bg-red-50">
+                  <Button onClick={() => remove(bot.id)} variant="ghost" size="sm" className="text-destructive hover:text-destructive hover:bg-destructive/10">
                     <Trash2 className="w-3 h-3" />
                   </Button>
                 </div>
