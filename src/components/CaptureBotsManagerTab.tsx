@@ -146,7 +146,7 @@ export default function CaptureBotsManagerTab({ sellerId, sellerSlug }: Props) {
         attendant_name: editing.attendant_name, attendant_avatar: editing.attendant_avatar,
         opening_message: editing.opening_message, success_cta_label: editing.success_cta_label,
         success_cta_url: editing.success_cta_url, whatsapp_group_url: editing.whatsapp_group_url,
-        is_active: editing.is_active,
+        is_active: editing.is_active, use_ai: editing.use_ai,
       }).eq("id", editing.id);
       setSaving(false);
       if (error) { toast({ title: "Erro", description: error.message, variant: "destructive" }); return; }
@@ -156,7 +156,7 @@ export default function CaptureBotsManagerTab({ sellerId, sellerSlug }: Props) {
         attendant_name: editing.attendant_name, attendant_avatar: editing.attendant_avatar,
         opening_message: editing.opening_message, success_cta_label: editing.success_cta_label,
         success_cta_url: editing.success_cta_url, whatsapp_group_url: editing.whatsapp_group_url,
-        is_active: editing.is_active,
+        is_active: editing.is_active, use_ai: editing.use_ai,
       });
       setSaving(false);
       if (error) { toast({ title: "Erro", description: error.message, variant: "destructive" }); return; }
