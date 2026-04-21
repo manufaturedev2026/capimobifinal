@@ -16,9 +16,10 @@ import { useCitiesByState } from "@/hooks/useCitiesByState";
 import {
   Sparkles, ArrowLeft, TrendingUp, Clock, Crown, Zap, Target, CheckCircle2,
   AlertCircle, Loader2, Brain, MapPin, Home, Maximize2, Bed, FileText, Save,
-  Megaphone, Download, History, Wand2,
+  Megaphone, Download, History, Wand2, FileBadge, Printer, Share2, Mail,
 } from "lucide-react";
 import jsPDF from "jspdf";
+import { generateValuationReport } from "@/lib/generateValuationReport";
 
 const TIPOS = ["Casa", "Apartamento", "Terreno", "Comercial", "Rural"];
 const EXTRAS = [
