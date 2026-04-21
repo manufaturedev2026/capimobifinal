@@ -267,7 +267,7 @@ export default function AdminInviteTab() {
                 setConfig((p) => ({
                   ...p,
                   ctaType: v,
-                  ctaUrl: v === "internal" ? "/login" : v === "whatsapp" ? "https://wa.me/55" : v === "crm" || v === "captacao_imobiliaria" ? "" : "https://",
+                  ctaUrl: v === "internal" ? "/anunciar" : v === "whatsapp" ? "https://wa.me/55" : v === "crm" || v === "captacao_imobiliaria" ? "" : "https://",
                 }));
               }}
               className="w-full text-sm bg-card text-foreground border border-border rounded px-3 py-2 mt-1"
