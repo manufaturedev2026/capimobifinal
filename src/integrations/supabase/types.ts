@@ -1741,6 +1741,7 @@ export type Database = {
           capture_status: Database["public"]["Enums"]["capture_status"] | null
           category: Database["public"]["Enums"]["item_category"]
           ceiling_height: number | null
+          cep: string | null
           city: string | null
           color: string | null
           commission_percent: number | null
@@ -1819,6 +1820,7 @@ export type Database = {
           capture_status?: Database["public"]["Enums"]["capture_status"] | null
           category: Database["public"]["Enums"]["item_category"]
           ceiling_height?: number | null
+          cep?: string | null
           city?: string | null
           color?: string | null
           commission_percent?: number | null
@@ -1897,6 +1899,7 @@ export type Database = {
           capture_status?: Database["public"]["Enums"]["capture_status"] | null
           category?: Database["public"]["Enums"]["item_category"]
           ceiling_height?: number | null
+          cep?: string | null
           city?: string | null
           color?: string | null
           commission_percent?: number | null
