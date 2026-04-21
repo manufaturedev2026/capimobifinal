@@ -762,17 +762,21 @@ export default function AdminPanel() {
           </div>
         )}
 
-        {tab === "billing" && (
+        {tab === "billing" && (() => {
+          const BILLING_ORDER = ["basico", "start", "premium", "vip", "essencial_empresa", "premium_empresa", "prime_empresa", "black"] as const;
+          const BILLING_LABEL_OVERRIDES: Record<string, string> = { prime_empresa: "Black Empresa" };
+          const orderedTiers = BILLING_ORDER.filter((t) => (PACKAGE_CONFIG as any)[t]);
+          return (
           <div className="bg-card border border-border rounded-2xl p-6">
             <h3 className="font-display font-bold text-lg text-foreground mb-4">Resumo de Faturamento</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {(Object.keys(PACKAGE_CONFIG) as (keyof typeof PACKAGE_CONFIG)[]).map((tier) => {
-                const config = PACKAGE_CONFIG[tier];
+              {orderedTiers.map((tier) => {
+                const config = PACKAGE_CONFIG[tier as keyof typeof PACKAGE_CONFIG];
                 const count = totalByTier[tier] || 0;
                 const revenue = count * (config.price ?? 0);
                 return (
                   <div key={tier} className={`rounded-xl border-2 ${config.borderColor} p-4`}>
-                    <h4 className="font-display font-bold text-foreground">{config.name}</h4>
+                    <h4 className="font-display font-bold text-foreground">{BILLING_LABEL_OVERRIDES[tier] || config.name}</h4>
                     <p className="text-2xl font-bold text-foreground mt-1">{count} <span className="text-sm font-normal text-muted-foreground">assinantes</span></p>
                     {config.price > 0 ? (
                       <p className="text-sm text-muted-foreground mt-1">
@@ -796,7 +800,8 @@ export default function AdminPanel() {
               </p>
             </div>
           </div>
-      )}
+          );
+        })()}
 
 
 
