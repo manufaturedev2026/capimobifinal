@@ -656,15 +656,7 @@ export default function CapturePropertyChatPage() {
   const submitGrupoLead = async (name: string, ph: string) => {
     if (!sellerProfile || submitted) return;
     setSubmitted(true);
-    await supabase.from("property_capture_leads" as any).insert({
-      seller_id: sellerProfile.id,
-      seller_user_id: sellerProfile.user_id,
-      full_name: name,
-      phone: ph,
-      property_type: "outros",
-      description: "Lead via fluxo Grupo de WhatsApp",
-      status: "novo",
-    });
+    // Bot Grupo: não salva lead, só notifica o dono via push
     notifyNewCaptureLead(sellerProfile.user_id, name, `${name} pediu para entrar no grupo de WhatsApp.`, "grupo_whatsapp");
     await addBotMsg(config.grupoMsgSuccess);
     await addBotMsg(config.grupoMsgSuccessEnd);
