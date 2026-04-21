@@ -267,7 +267,7 @@ export default function AdminInviteTab() {
                 setConfig((p) => ({
                   ...p,
                   ctaType: v,
-                  ctaUrl: v === "internal" ? "/login" : v === "whatsapp" ? "https://wa.me/55" : v === "crm" || v === "captacao_imobiliaria" ? "" : "https://",
+                  ctaUrl: v === "internal" ? "/anunciar" : v === "whatsapp" ? "https://wa.me/55" : v === "crm" || v === "captacao_imobiliaria" ? "" : "https://",
                 }));
               }}
               className="w-full text-sm bg-card text-foreground border border-border rounded px-3 py-2 mt-1"
@@ -304,10 +304,10 @@ export default function AdminInviteTab() {
                 <Input
                   value={config.crmRedirectUrl || ""}
                   onChange={(e) => setConfig((p) => ({ ...p, crmRedirectUrl: e.target.value }))}
-                  placeholder="/login ou https://wa.me/5527999999999"
+                  placeholder="/anunciar ou https://wa.me/5527999999999"
                   className="mt-1"
                 />
-                <p className="text-[10px] text-muted-foreground mt-1">Padrão: /login</p>
+                <p className="text-[10px] text-muted-foreground mt-1">Padrão: /anunciar</p>
               </div>
             </div>
           ) : (

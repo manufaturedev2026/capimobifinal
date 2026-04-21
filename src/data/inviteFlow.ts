@@ -233,7 +233,7 @@ export const DEFAULT_CONFIG: InviteChatConfig = {
   attendantName: "Ana • Capimobi",
   attendantAvatar: "",
   ctaText: "🚀 Criar Minha Conta Grátis",
-  ctaUrl: "/login",
+  ctaUrl: "/anunciar",
   ctaType: "internal",
   crmRedirectUrl: "",
   crmButtonText: "🚀 Criar Minha Conta Agora",

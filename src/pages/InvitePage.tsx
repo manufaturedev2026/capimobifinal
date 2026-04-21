@@ -457,7 +457,7 @@ export default function InvitePage() {
                       const whatsappUrl = url.includes("wa.me") ? `${url}?text=${msg}` : url;
                       window.open(whatsappUrl, "_blank", "noopener");
                     } else {
-                      const url = config.crmRedirectUrl || "/login";
+                      const url = config.crmRedirectUrl || "/anunciar";
                       if (url.startsWith("/")) {
                         navigate(url);
                       } else {
