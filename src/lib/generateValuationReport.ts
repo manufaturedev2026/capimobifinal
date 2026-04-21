@@ -116,6 +116,25 @@ export type ValuationReportData = {
   fotos?: Array<{ dataUrl: string; categoria: string }>;
 };
 
+function loadDataUrl(url: string): Promise<string | null> {
+  if (!url || typeof window === "undefined") return Promise.resolve(null);
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return resolve(null);
+      ctx.drawImage(img, 0, 0);
+      try { resolve(canvas.toDataURL("image/png")); } catch { resolve(null); }
+    };
+    img.onerror = () => resolve(null);
+    img.src = url;
+  });
+}
+
 /** Classificação de padrão construtivo (Baixo/Médio/Alto) */
 function classificarPadrao(d: ValuationReportData): { label: string; cor: [number, number, number]; descricao: string } {
   const acabPct: Record<string, number> = { "Simples": 1, "Médio": 2, "Bom": 3, "Alto padrão": 4, "Luxo": 5 };
@@ -250,7 +269,7 @@ function analiseTecnicaParagrafo(d: ValuationReportData): string {
 // =========================================
 //                  RENDER
 // =========================================
-export function generateValuationReport(d: ValuationReportData): jsPDF {
+export async function generateValuationReport(d: ValuationReportData): Promise<jsPDF> {
   const doc = new jsPDF({ unit: "mm", format: "a4" });
   const W = doc.internal.pageSize.getWidth();
   const H = doc.internal.pageSize.getHeight();
