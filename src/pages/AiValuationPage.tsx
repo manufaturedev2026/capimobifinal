@@ -972,7 +972,7 @@ export default function AiValuationPage() {
       </div>
 
       <Dialog open={historyOpen} onOpenChange={setHistoryOpen}>
-        <DialogContent className="max-w-3xl">
+        <DialogContent className="max-w-3xl" style={themeVars}>
           <DialogHeader><DialogTitle>Suas avaliações anteriores</DialogTitle></DialogHeader>
           <div className="max-h-[500px] overflow-y-auto space-y-2">
             {history.length === 0 ? (
