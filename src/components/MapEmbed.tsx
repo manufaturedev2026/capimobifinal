@@ -354,7 +354,10 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
   const addressOverrideStreetEmbed = addressOverride
     ? `https://maps.google.com/maps?q=&layer=c&cbll=${addressOverride.lat},${addressOverride.lon}&cbp=11,0,0,0,0&z=17&output=svembed`
     : null;
-  const streetEmbedSrc = streetViewEmbed || addressOverrideStreetEmbed;
+  const cepStreetEmbed = cleanCep.length === 8
+    ? `https://maps.google.com/maps?q=${encodeURIComponent(address)}&layer=c&cbp=11,0,0,0,0&output=svembed`
+    : null;
+  const streetEmbedSrc = streetViewEmbed || addressOverrideStreetEmbed || cepStreetEmbed;
   const isStreet = view === "street" && !!streetEmbedSrc;
   const currentSrc = isStreet ? streetEmbedSrc : mapSrc;
 
