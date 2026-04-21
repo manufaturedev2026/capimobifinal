@@ -6,7 +6,7 @@ import { useSiteSettings } from "@/hooks/useSiteSettings";
  * instantly before React boots. This component just fades it out once mounted.
  */
 export default function SplashScreen() {
-  const { site_splash_enabled, loaded } = useSiteSettings();
+  const { site_splash_enabled, site_splash_bg_color, loaded } = useSiteSettings();
 
   useEffect(() => {
     const el = document.getElementById("initial-splash");
@@ -18,13 +18,18 @@ export default function SplashScreen() {
       return;
     }
 
+    // Apply admin-configured background color
+    if (loaded && site_splash_bg_color) {
+      (el as HTMLElement).style.background = site_splash_bg_color;
+    }
+
     const t = setTimeout(() => {
       el.classList.add("hide");
       setTimeout(() => el.remove(), 500);
     }, 700);
 
     return () => clearTimeout(t);
-  }, [loaded, site_splash_enabled]);
+  }, [loaded, site_splash_enabled, site_splash_bg_color]);
 
   return null;
 }
