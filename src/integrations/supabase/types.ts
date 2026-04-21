@@ -1466,154 +1466,253 @@ export type Database = {
           acabamento: string | null
           ajuste_total_pct: number | null
           aluguel_estimado: number | null
+          area_coberta_externa: number | null
           area_construida: number | null
           area_construida_superior: number | null
           area_construida_terreo: number | null
+          area_risco: boolean | null
+          area_servico: boolean | null
           area_terreno: number | null
           area_total: number | null
+          area_util: number | null
           bairro: string
+          banheiro_qualidade: string | null
           banheiros: number | null
           breakdown: Json | null
           cep: string | null
           cidade: string
+          closet: boolean | null
           comparaveis: Json | null
           conservacao: string | null
+          copa: boolean | null
+          cozinha_qualidade: string | null
           cozinhas: number | null
           created_at: string
+          despensa: boolean | null
           documentacao: string[] | null
+          eletrica_qualidade: string | null
           escritorios: number | null
+          esquadrias_qualidade: string | null
           estado: string
           extras: string[] | null
           faixa_max: number | null
           faixa_min: number | null
+          financiavel: boolean | null
           garagem: number | null
+          habite_se: boolean | null
           id: string
+          inputs: Json | null
           justificativa: string | null
+          lavabos: number | null
+          lavanderia: boolean | null
+          liquidez_mercado: string | null
+          modo_avaliacao: string | null
           numero: string | null
+          pintura_qualidade: string | null
+          piso_qualidade: string | null
           pontos_atencao: Json | null
           pontos_fortes: Json | null
           preco_m2_usado: number | null
+          proximo_comercio: boolean | null
+          proximo_escola: boolean | null
+          proximo_hospital: boolean | null
           quartos: number | null
+          regiao_valorizada: boolean | null
           rua: string | null
+          rua_tranquila: boolean | null
+          sala_estar: boolean | null
+          sala_jantar: boolean | null
+          sala_tv: boolean | null
           salas: number | null
           score_acabamento: number | null
+          score_diferenciais: number | null
           score_documentacao: number | null
           score_estrutura: number | null
           score_geral: number | null
           score_liquidez: number | null
           score_localizacao: number | null
+          sem_pendencias: boolean | null
           sugestoes_valorizacao: Json | null
           suites: number | null
+          telhado_qualidade: string | null
           tempo_medio_venda_dias: number | null
           tipo: string
           tipo_estrutura: string | null
           user_id: string | null
           valor_base: number | null
           valor_estimado: number
+          varanda_interna: boolean | null
           venda_premium: number | null
           venda_rapida: number | null
+          vista_privilegiada: boolean | null
         }
         Insert: {
           acabamento?: string | null
           ajuste_total_pct?: number | null
           aluguel_estimado?: number | null
+          area_coberta_externa?: number | null
           area_construida?: number | null
           area_construida_superior?: number | null
           area_construida_terreo?: number | null
+          area_risco?: boolean | null
+          area_servico?: boolean | null
           area_terreno?: number | null
           area_total?: number | null
+          area_util?: number | null
           bairro: string
+          banheiro_qualidade?: string | null
           banheiros?: number | null
           breakdown?: Json | null
           cep?: string | null
           cidade: string
+          closet?: boolean | null
           comparaveis?: Json | null
           conservacao?: string | null
+          copa?: boolean | null
+          cozinha_qualidade?: string | null
           cozinhas?: number | null
           created_at?: string
+          despensa?: boolean | null
           documentacao?: string[] | null
+          eletrica_qualidade?: string | null
           escritorios?: number | null
+          esquadrias_qualidade?: string | null
           estado: string
           extras?: string[] | null
           faixa_max?: number | null
           faixa_min?: number | null
+          financiavel?: boolean | null
           garagem?: number | null
+          habite_se?: boolean | null
           id?: string
+          inputs?: Json | null
           justificativa?: string | null
+          lavabos?: number | null
+          lavanderia?: boolean | null
+          liquidez_mercado?: string | null
+          modo_avaliacao?: string | null
           numero?: string | null
+          pintura_qualidade?: string | null
+          piso_qualidade?: string | null
           pontos_atencao?: Json | null
           pontos_fortes?: Json | null
           preco_m2_usado?: number | null
+          proximo_comercio?: boolean | null
+          proximo_escola?: boolean | null
+          proximo_hospital?: boolean | null
           quartos?: number | null
+          regiao_valorizada?: boolean | null
           rua?: string | null
+          rua_tranquila?: boolean | null
+          sala_estar?: boolean | null
+          sala_jantar?: boolean | null
+          sala_tv?: boolean | null
           salas?: number | null
           score_acabamento?: number | null
+          score_diferenciais?: number | null
           score_documentacao?: number | null
           score_estrutura?: number | null
           score_geral?: number | null
           score_liquidez?: number | null
           score_localizacao?: number | null
+          sem_pendencias?: boolean | null
           sugestoes_valorizacao?: Json | null
           suites?: number | null
+          telhado_qualidade?: string | null
           tempo_medio_venda_dias?: number | null
           tipo: string
           tipo_estrutura?: string | null
           user_id?: string | null
           valor_base?: number | null
           valor_estimado: number
+          varanda_interna?: boolean | null
           venda_premium?: number | null
           venda_rapida?: number | null
+          vista_privilegiada?: boolean | null
         }
         Update: {
           acabamento?: string | null
           ajuste_total_pct?: number | null
           aluguel_estimado?: number | null
+          area_coberta_externa?: number | null
           area_construida?: number | null
           area_construida_superior?: number | null
           area_construida_terreo?: number | null
+          area_risco?: boolean | null
+          area_servico?: boolean | null
           area_terreno?: number | null
           area_total?: number | null
+          area_util?: number | null
           bairro?: string
+          banheiro_qualidade?: string | null
           banheiros?: number | null
           breakdown?: Json | null
           cep?: string | null
           cidade?: string
+          closet?: boolean | null
           comparaveis?: Json | null
           conservacao?: string | null
+          copa?: boolean | null
+          cozinha_qualidade?: string | null
           cozinhas?: number | null
           created_at?: string
+          despensa?: boolean | null
           documentacao?: string[] | null
+          eletrica_qualidade?: string | null
           escritorios?: number | null
+          esquadrias_qualidade?: string | null
           estado?: string
           extras?: string[] | null
           faixa_max?: number | null
           faixa_min?: number | null
+          financiavel?: boolean | null
           garagem?: number | null
+          habite_se?: boolean | null
           id?: string
+          inputs?: Json | null
           justificativa?: string | null
+          lavabos?: number | null
+          lavanderia?: boolean | null
+          liquidez_mercado?: string | null
+          modo_avaliacao?: string | null
           numero?: string | null
+          pintura_qualidade?: string | null
+          piso_qualidade?: string | null
           pontos_atencao?: Json | null
           pontos_fortes?: Json | null
           preco_m2_usado?: number | null
+          proximo_comercio?: boolean | null
+          proximo_escola?: boolean | null
+          proximo_hospital?: boolean | null
           quartos?: number | null
+          regiao_valorizada?: boolean | null
           rua?: string | null
+          rua_tranquila?: boolean | null
+          sala_estar?: boolean | null
+          sala_jantar?: boolean | null
+          sala_tv?: boolean | null
           salas?: number | null
           score_acabamento?: number | null
+          score_diferenciais?: number | null
           score_documentacao?: number | null
           score_estrutura?: number | null
           score_geral?: number | null
           score_liquidez?: number | null
           score_localizacao?: number | null
+          sem_pendencias?: boolean | null
           sugestoes_valorizacao?: Json | null
           suites?: number | null
+          telhado_qualidade?: string | null
           tempo_medio_venda_dias?: number | null
           tipo?: string
           tipo_estrutura?: string | null
           user_id?: string | null
           valor_base?: number | null
           valor_estimado?: number
+          varanda_interna?: boolean | null
           venda_premium?: number | null
           venda_rapida?: number | null
+          vista_privilegiada?: boolean | null
         }
         Relationships: []
       }
