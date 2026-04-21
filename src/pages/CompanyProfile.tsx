@@ -1703,9 +1703,12 @@ export default function CompanyProfile() {
                               {product.bathrooms > 0 && <span className="flex items-center gap-0.5"><Bath size={10} /> {product.bathrooms}</span>}
                               {product.area > 0 && <span className="flex items-center gap-0.5"><Ruler size={10} /> {product.area}m²</span>}
                             </div>
-                            {product.city && (
-                              <p className="text-[11px] mt-2 flex items-center gap-1" style={{ color: storeTheme.textMuted }}>
-                                <MapPin size={10} /> {product.city}
+                            {(product.city || product.neighborhood) && (
+                              <p className="text-[11px] mt-2 flex items-start gap-1 line-clamp-2" style={{ color: storeTheme.textMuted }}>
+                                <MapPin size={10} className="flex-shrink-0 mt-0.5" />
+                                <span className="break-words">
+                                  {product.neighborhood ? `${product.neighborhood}, ${product.city}` : product.city}
+                                </span>
                               </p>
                             )}
                             <div
