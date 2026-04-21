@@ -23,13 +23,14 @@ import { generateValuationReport } from "@/lib/generateValuationReport";
 import AdvancedValuationFields, { ADVANCED_INITIAL, type AdvancedState } from "@/components/AdvancedValuationFields";
 import ApartmentValuationFields, { APARTMENT_INITIAL, type ApartmentState } from "@/components/ApartmentValuationFields";
 import {
-  ESTRUTURAS_POR_TIPO, ESTRUTURA_PADRAO,
   TerrenoExtraFields, TERRENO_INITIAL, type TerrenoState,
   ComercialExtraFields, COMERCIAL_INITIAL, type ComercialState,
   RuralExtraFields, RURAL_INITIAL, type RuralState,
 } from "@/components/DynamicStructureFields";
-
-const TIPOS = ["Casa", "Apartamento", "Terreno", "Comercial", "Rural"];
+import {
+  CATEGORIAS, type CategoriaImovel,
+  getSubtiposByCategoria, getEstruturasBySubtipo, legacyTipoFromSubtipo,
+} from "@/components/PropertyTaxonomy";
 const EXTRAS = [
   "Quintal", "Piscina", "Área gourmet", "Varanda",
   "Vista", "Mobiliado", "Portaria", "Elevador", "Energia solar",
@@ -109,9 +110,12 @@ export default function AiValuationPage() {
   const [numero, setNumero] = useState("");
   const [cep, setCep] = useState("");
 
-  // Imóvel
-  const [tipo, setTipo] = useState("Casa");
-  const [tipoEstrutura, setTipoEstrutura] = useState("Casa térrea");
+  // Imóvel — taxonomia em cascata Categoria → Subtipo → Estrutura
+  const [categoria, setCategoria] = useState<CategoriaImovel>("Residencial");
+  const [subtipo, setSubtipo] = useState<string>("Casa");
+  const [tipoEstrutura, setTipoEstrutura] = useState<string>("Térrea");
+  // Tipo legado derivado do subtipo (compatível com edge function e módulos existentes)
+  const tipo = legacyTipoFromSubtipo(subtipo);
 
   // Áreas
   const [areaTerreno, setAreaTerreno] = useState("");
@@ -151,12 +155,24 @@ export default function AiValuationPage() {
   const updComercial = <K extends keyof ComercialState>(k: K, v: ComercialState[K]) => setComercialExtra((s) => ({ ...s, [k]: v }));
   const updRural = <K extends keyof RuralState>(k: K, v: RuralState[K]) => setRuralExtra((s) => ({ ...s, [k]: v }));
 
-  const estruturasDisponiveis = ESTRUTURAS_POR_TIPO[tipo] || [];
+  const subtiposDisponiveis = getSubtiposByCategoria(categoria);
+  const estruturasDisponiveis = getEstruturasBySubtipo(subtipo);
 
-  const handleTipoChange = (novoTipo: string) => {
-    setTipo(novoTipo);
-    setTipoEstrutura(ESTRUTURA_PADRAO[novoTipo] || "");
+  const handleCategoriaChange = (novaCat: CategoriaImovel) => {
+    setCategoria(novaCat);
+    const subs = getSubtiposByCategoria(novaCat);
+    const novoSub = subs[0] || "";
+    setSubtipo(novoSub);
+    const ests = getEstruturasBySubtipo(novoSub);
+    setTipoEstrutura(ests[0] || "");
   };
+
+  const handleSubtipoChange = (novoSub: string) => {
+    setSubtipo(novoSub);
+    const ests = getEstruturasBySubtipo(novoSub);
+    setTipoEstrutura(ests[0] || "");
+  };
+
 
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Valuation | null>(null);
@@ -217,6 +233,7 @@ export default function AiValuationPage() {
       const { data, error } = await supabase.functions.invoke("ai-property-valuation", {
         body: {
           estado, cidade, bairro, rua, numero, cep,
+          categoria, subtipo,
           tipo, tipoEstrutura: isTerreno ? null : tipoEstrutura,
           areaTotal: areaTotalCompat,
           areaTerreno: Number(areaTerreno) || null,
@@ -437,19 +454,25 @@ export default function AiValuationPage() {
             </div>
           </Section>
 
-          <Section icon={<Home className="h-4 w-4" />} title="Tipo de imóvel">
-            <ChipGroup options={TIPOS} value={tipo} onChange={handleTipoChange} />
+          <Section icon={<Home className="h-4 w-4" />} title="Categoria do imóvel">
+            <ChipGroup options={CATEGORIAS as unknown as string[]} value={categoria} onChange={(v) => handleCategoriaChange(v as CategoriaImovel)} />
           </Section>
 
-          {tipo === "Apartamento" && (
-            <Section icon={<Building2 className="h-4 w-4" />} title="Dados específicos do apartamento">
-              <ApartmentValuationFields state={apt} onChange={updateApt} />
+          {subtiposDisponiveis.length > 0 && (
+            <Section icon={<Building2 className="h-4 w-4" />} title="Subtipo">
+              <ChipGroup options={subtiposDisponiveis} value={subtipo} onChange={handleSubtipoChange} />
             </Section>
           )}
 
           {estruturasDisponiveis.length > 0 && (
             <Section icon={<Building2 className="h-4 w-4" />} title="Tipo de estrutura">
               <ChipGroup options={estruturasDisponiveis} value={tipoEstrutura} onChange={setTipoEstrutura} />
+            </Section>
+          )}
+
+          {tipo === "Apartamento" && (
+            <Section icon={<Building2 className="h-4 w-4" />} title="Dados específicos do apartamento">
+              <ApartmentValuationFields state={apt} onChange={updateApt} />
             </Section>
           )}
 
