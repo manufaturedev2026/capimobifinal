@@ -244,7 +244,63 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
     const resolve = async () => {
       setResolvingStreetView(true);
 
-      // Strategy 1: CEP via ViaCEP -> structured Nominatim with house number
+      // Strategy 0 (PRIORITY): CEP + número -> resolve direto pelo endereço do ViaCEP
+      if (cleanCep.length === 8) {
+        try {
+          const viaCepRes = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
+          if (viaCepRes.ok) {
+            const viaCep = await viaCepRes.json();
+            if (!viaCep.erro && viaCep.logradouro) {
+              const street = viaCep.logradouro as string;
+              const bairro = viaCep.bairro as string;
+              const city = viaCep.localidade as string;
+              const stateUf = viaCep.uf as string;
+              const fullLabel = [
+                numberPart ? `${street}, ${numberPart}` : street,
+                bairro,
+                city,
+                stateUf,
+                cleanCep,
+              ].filter(Boolean).join(", ");
+
+              // Tenta geocodar para coords precisas (melhor pano)
+              const stateName = BR_STATE_NAMES[stateUf?.toUpperCase()] || stateUf;
+              const params = new URLSearchParams({
+                format: "jsonv2",
+                addressdetails: "1",
+                limit: "5",
+                countrycodes: "br",
+                street: numberPart ? `${numberPart} ${street}` : street,
+                city,
+                state: stateName,
+                postalcode: cleanCep,
+                country: "Brasil",
+              });
+              const results = await fetchNominatim(`https://nominatim.openstreetmap.org/search?${params.toString()}`);
+              const match = results?.find((r) => !numberPart || r.address?.house_number === numberPart) || results?.[0];
+
+              if (match?.lat && match?.lon) {
+                applyCoords(match.lat, match.lon, fullLabel);
+              } else {
+                // Sem coords: ainda assim usa o endereço completo do CEP no embed por query
+                const encoded = encodeURIComponent(fullLabel);
+                if (!cancelled) {
+                  setStreetViewUrl(`https://www.google.com/maps/@?api=1&map_action=pano&query=${encoded}`);
+                  setStreetViewEmbed(`https://maps.google.com/maps?q=${encoded}&layer=c&cbp=11,0,0,0,0&output=svembed`);
+                  setMapSrc(`https://www.google.com/maps?q=${encoded}&hl=pt-BR&z=18&output=embed`);
+                  setMapsUrl(`https://www.google.com/maps/search/?api=1&query=${encoded}`);
+                }
+              }
+              if (!cancelled) setResolvingStreetView(false);
+              return;
+            }
+          }
+        } catch {
+          /* fall through */
+        }
+      }
+
+      // Strategy 1 (legacy): CEP via ViaCEP -> structured Nominatim with house number
       if (cleanCep.length === 8) {
         try {
           const viaCepRes = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
