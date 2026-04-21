@@ -305,6 +305,9 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
             const fullNameMatch = normalizedStreet && normalizedFeatureStreet === normalizedStreet;
             const partialRatio = streetTokens.length > 0 ? sharedTokens / streetTokens.length : 0;
 
+            // Se temos rua do ViaCEP, não aceitamos resultado de outra rua só porque caiu no mesmo bairro/CEP.
+            if (streetTokens.length > 0 && partialRatio === 0) return null;
+
             let score = 0;
 
             // Bairro exato = sinal mais forte (ViaCEP confirmou o bairro).
