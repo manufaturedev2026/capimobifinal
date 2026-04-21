@@ -441,6 +441,7 @@ export default function AiValuationPage() {
     }
     setHistory((prev) => prev.filter((h) => h.id !== id));
     toast({ title: "Avaliação excluída" });
+  };
 
   const downloadLaudo = () => {
     const doc = buildLaudo();
