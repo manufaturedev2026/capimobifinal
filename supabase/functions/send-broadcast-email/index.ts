@@ -135,7 +135,7 @@ Deno.serve(async (req) => {
     const tierLabel = [...safeTiers, ...(customList.length ? ["custom"] : [])].join(",");
 
     for (const profile of recipients) {
-      const firstName = (profile.full_name || "").split(" ")[0] || "Corretor";
+      const firstName = (profile.full_name || "").split(" ")[0] || "Olá";
       const html = String(content_html)
         .replaceAll("{{nome}}", firstName)
         .replaceAll("{{nome_completo}}", profile.full_name || "")
@@ -151,14 +151,14 @@ Deno.serve(async (req) => {
           replyTo: settings.reply_to || undefined,
         });
         await admin.from("broadcast_sends").insert({
-          batch_id: batchId, to_email: profile.email, profile_id: profile.id,
+          batch_id: batchId, to_email: profile.email, profile_id: profile.profile_id,
           subject: subj, tier_filter: tierLabel, status: "enviado",
         });
         sent++;
       } catch (e) {
         const msg = (e as Error).message;
         await admin.from("broadcast_sends").insert({
-          batch_id: batchId, to_email: profile.email, profile_id: profile.id,
+          batch_id: batchId, to_email: profile.email, profile_id: profile.profile_id,
           subject: subj, tier_filter: tierLabel, status: "falhou", error_message: msg,
         });
         failed++;
