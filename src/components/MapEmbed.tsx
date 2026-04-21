@@ -3,6 +3,7 @@ import { MapPin, Eye, Loader2 } from "lucide-react";
 
 interface MapEmbedProps {
   address: string;
+  cep?: string | null;
   className?: string;
   showStreetView?: boolean;
 }
@@ -145,36 +146,48 @@ function getAddressOverride(address: string) {
   return Object.entries(ADDRESS_OVERRIDES).find(([key]) => normalizedAddress.includes(key) || key.includes(normalizedAddress))?.[1];
 }
 
-export default function MapEmbed({ address, className = "", showStreetView = true }: MapEmbedProps) {
+export default function MapEmbed({ address, cep, className = "", showStreetView = true }: MapEmbedProps) {
   const encodedAddress = encodeURIComponent(address);
   const addressOverride = useMemo(() => getAddressOverride(address), [address]);
+  const cleanCep = useMemo(() => (cep || "").replace(/\D/g, ""), [cep]);
 
-  const mapsUrl = addressOverride
+  const fallbackMapsUrl = addressOverride
     ? addressOverride.mapsUrl || `https://www.google.com/maps/search/?api=1&query=${addressOverride.lat},${addressOverride.lon}`
     : `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`;
   const fallbackStreetViewUrl = addressOverride?.streetViewUrl || buildStreetViewQueryUrl(address);
-  const mapSrc = addressOverride
+  const fallbackMapSrc = addressOverride
     ? addressOverride.embedUrl || `https://www.google.com/maps?q=${addressOverride.lat},${addressOverride.lon}&hl=pt-BR&z=17&output=embed`
     : `https://www.google.com/maps?q=${encodedAddress}&hl=pt-BR&z=16&output=embed`;
 
   const geocodingCandidates = useMemo(() => buildGeocodingCandidates(address), [address]);
   const [streetViewUrl, setStreetViewUrl] = useState(fallbackStreetViewUrl);
+  const [mapSrc, setMapSrc] = useState(fallbackMapSrc);
+  const [mapsUrl, setMapsUrl] = useState(fallbackMapsUrl);
   const [resolvingStreetView, setResolvingStreetView] = useState(false);
 
   useEffect(() => {
     setStreetViewUrl(fallbackStreetViewUrl);
+    setMapSrc(fallbackMapSrc);
+    setMapsUrl(fallbackMapsUrl);
 
     if (addressOverride) {
       setResolvingStreetView(false);
       return;
     }
 
-    if (!showStreetView || !address.trim()) {
+    if (!showStreetView || (!address.trim() && cleanCep.length !== 8)) {
       setResolvingStreetView(false);
       return;
     }
 
     let cancelled = false;
+
+    const applyCoords = (lat: string, lon: string) => {
+      if (cancelled) return;
+      setStreetViewUrl(`https://www.google.com/maps?q=&layer=c&cbll=${lat},${lon}&cbp=11,0,0,0,0`);
+      setMapSrc(`https://www.google.com/maps?q=${lat},${lon}&hl=pt-BR&z=18&output=embed`);
+      setMapsUrl(`https://www.google.com/maps/search/?api=1&query=${lat},${lon}`);
+    };
 
     const parts = normalizeAddressForGeocoding(address)
       .split(",")
@@ -188,99 +201,116 @@ export default function MapEmbed({ address, className = "", showStreetView = tru
     const expectedCity = normalizeText(cityPart || "");
     const expectedState = normalizeText(stateFull || statePart || "");
 
-    const structuredUrl = (() => {
-      const params = new URLSearchParams({
-        format: "jsonv2",
-        addressdetails: "1",
-        limit: "5",
-        countrycodes: "br",
-      });
-      if (streetName) params.set("street", numberPart ? `${numberPart} ${streetName}` : streetName);
-      if (cityPart) params.set("city", cityPart);
-      if (stateFull) params.set("state", stateFull);
-      params.set("country", "Brasil");
-      return `https://nominatim.openstreetmap.org/search?${params.toString()}`;
-    })();
-
-    const urls = [
-      structuredUrl,
-      ...geocodingCandidates.map(
-        (candidate) =>
-          `https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=5&countrycodes=br&q=${encodeURIComponent(candidate)}`,
-      ),
-    ];
-
     const getCity = (result: NominatimResult) =>
       normalizeText(
-        result.address?.city ||
-          result.address?.town ||
-          result.address?.village ||
-          result.address?.municipality ||
-          "",
+        result.address?.city || result.address?.town || result.address?.village || result.address?.municipality || "",
       );
-
     const getStreet = (result: NominatimResult) =>
-      normalizeStreet(
-        result.address?.road ||
-          result.address?.pedestrian ||
-          result.address?.residential ||
-          result.display_name ||
-          "",
-      );
-
-    const getNumber = (result: NominatimResult) => normalizeText(result.address?.house_number || result.display_name || "");
+      normalizeStreet(result.address?.road || result.address?.pedestrian || result.address?.residential || result.display_name || "");
+    const getNumber = (result: NominatimResult) => normalizeText(result.address?.house_number || "");
 
     const matchesLocation = (result: NominatimResult) => {
       const resultCity = getCity(result);
       const resultState = normalizeText(result.address?.state || "");
       const resultStreet = getStreet(result);
       const resultNumber = getNumber(result);
-
       const cityOk = !expectedCity || resultCity.includes(expectedCity) || expectedCity.includes(resultCity);
       const stateOk = !expectedState || resultState.includes(expectedState) || expectedState.includes(resultState);
       const streetOk = !expectedStreet || resultStreet.includes(expectedStreet) || expectedStreet.includes(resultStreet);
       const numberOk = !expectedNumber || !result.address?.house_number || resultNumber.includes(expectedNumber);
-
       return cityOk && stateOk && streetOk && numberOk;
     };
 
-    const resolveStreetView = async () => {
+    const fetchNominatim = async (url: string) => {
+      try {
+        const response = await fetch(url, { headers: { Accept: "application/json", "Accept-Language": "pt-BR" } });
+        if (!response.ok) return null;
+        return (await response.json()) as NominatimResult[];
+      } catch {
+        return null;
+      }
+    };
+
+    const resolve = async () => {
       setResolvingStreetView(true);
 
-      for (const url of urls) {
+      // Strategy 1: CEP via ViaCEP -> structured Nominatim with house number
+      if (cleanCep.length === 8) {
         try {
-          const response = await fetch(url, {
-            headers: {
-              Accept: "application/json",
-              "Accept-Language": "pt-BR",
-            },
-          });
-
-          if (!response.ok) continue;
-
-          const results = (await response.json()) as NominatimResult[];
-          const match = results.find(matchesLocation);
-
-          if (match?.lat && match?.lon) {
-            if (!cancelled) {
-              setStreetViewUrl(`https://www.google.com/maps/@${match.lat},${match.lon},3a,75y,0h,90t/data=!3m1!1e1`);
+          const viaCepRes = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
+          if (viaCepRes.ok) {
+            const viaCep = await viaCepRes.json();
+            if (!viaCep.erro && viaCep.logradouro) {
+              const street = viaCep.logradouro as string;
+              const city = viaCep.localidade as string;
+              const stateUf = viaCep.uf as string;
+              const stateName = BR_STATE_NAMES[stateUf?.toUpperCase()] || stateUf;
+              const streetWithNum = numberPart ? `${numberPart} ${street}` : street;
+              const params = new URLSearchParams({
+                format: "jsonv2",
+                addressdetails: "1",
+                limit: "5",
+                countrycodes: "br",
+                street: streetWithNum,
+                city,
+                state: stateName,
+                country: "Brasil",
+              });
+              const results = await fetchNominatim(`https://nominatim.openstreetmap.org/search?${params.toString()}`);
+              const match = results?.find((r) => !numberPart || r.address?.house_number === numberPart) || results?.[0];
+              if (match?.lat && match?.lon) {
+                applyCoords(match.lat, match.lon);
+                if (!cancelled) setResolvingStreetView(false);
+                return;
+              }
             }
-            break;
           }
         } catch {
-          continue;
+          /* fall through */
+        }
+      }
+
+      // Strategy 2: structured search by parsed address
+      const structuredUrl = (() => {
+        const params = new URLSearchParams({
+          format: "jsonv2",
+          addressdetails: "1",
+          limit: "5",
+          countrycodes: "br",
+        });
+        if (streetName) params.set("street", numberPart ? `${numberPart} ${streetName}` : streetName);
+        if (cityPart) params.set("city", cityPart);
+        if (stateFull) params.set("state", stateFull);
+        params.set("country", "Brasil");
+        return `https://nominatim.openstreetmap.org/search?${params.toString()}`;
+      })();
+
+      const urls = [
+        structuredUrl,
+        ...geocodingCandidates.map(
+          (candidate) =>
+            `https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=5&countrycodes=br&q=${encodeURIComponent(candidate)}`,
+        ),
+      ];
+
+      for (const url of urls) {
+        const results = await fetchNominatim(url);
+        const match = results?.find(matchesLocation);
+        if (match?.lat && match?.lon) {
+          applyCoords(match.lat, match.lon);
+          break;
         }
       }
 
       if (!cancelled) setResolvingStreetView(false);
     };
 
-    void resolveStreetView();
+    void resolve();
 
     return () => {
       cancelled = true;
     };
-  }, [address, addressOverride, fallbackStreetViewUrl, geocodingCandidates, showStreetView]);
+  }, [address, cleanCep, addressOverride, fallbackStreetViewUrl, fallbackMapSrc, fallbackMapsUrl, geocodingCandidates, showStreetView]);
 
   const handleOpenStreetView = () => {
     window.open(streetViewUrl, "_blank", "noopener,noreferrer");
