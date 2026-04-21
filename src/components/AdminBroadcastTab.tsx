@@ -57,7 +57,7 @@ export default function AdminBroadcastTab() {
 
   useEffect(() => { load(); }, []);
 
-  const totalRecipients = selectedTiers.reduce((sum, t) => sum + (counts[t] || 0), 0);
+  const totalRecipients = selectedTiers.reduce((sum, t) => sum + (counts[t] || 0), 0) + customEmails.length;
 
   const toggleTier = (t: string) => {
     setSelectedTiers((prev) => prev.includes(t) ? prev.filter(x => x !== t) : [...prev, t]);
@@ -117,15 +117,15 @@ export default function AdminBroadcastTab() {
       toast({ title: "Preencha assunto e conteúdo", variant: "destructive" });
       return;
     }
-    if (selectedTiers.length === 0) {
-      toast({ title: "Selecione ao menos um plano", variant: "destructive" });
+    if (selectedTiers.length === 0 && customEmails.length === 0) {
+      toast({ title: "Selecione um plano ou cole e-mails personalizados", variant: "destructive" });
       return;
     }
-    if (!confirm(`Enviar para ${totalRecipients} corretor(es) do(s) plano(s) selecionado(s)?`)) return;
+    if (!confirm(`Enviar para ${totalRecipients} destinatário(s)?`)) return;
 
     setSending(true);
     const { data, error } = await supabase.functions.invoke("send-broadcast-email", {
-      body: { subject, content_html: contentHtml, tiers: selectedTiers },
+      body: { subject, content_html: contentHtml, tiers: selectedTiers, custom_emails: customEmails },
     });
     setSending(false);
     if (error || (data as any)?.error) {
