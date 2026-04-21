@@ -585,8 +585,8 @@ export function generateValuationReport(d: ValuationReportData): jsPDF {
     y += 4;
   };
 
-  renderList("Pontos Fortes", d.result.pontos_fortes, GREEN, "✓");
-  renderList("Pontos de Atenção", d.result.pontos_atencao, AMBER, "!");
+  renderList("Pontos Fortes", d.result.pontos_fortes, GREEN, "+");
+  renderList("Pontos de Atenção", d.result.pontos_atencao, AMBER, "-");
 
   // Melhorias sugeridas (heurísticas)
   const melhorias: string[] = [];
@@ -595,7 +595,7 @@ export function generateValuationReport(d: ValuationReportData): jsPDF {
   if (d.acabamento === "Simples") melhorias.push("Substituição de revestimentos por padrão médio pode elevar o valor percebido.");
   if (!d.documentacao.includes("Financiável")) melhorias.push("Regularizar documentação para tornar o imóvel financiável amplia o público comprador.");
   if (melhorias.length === 0) melhorias.push("Imóvel já em condições competitivas para o mercado atual.");
-  renderList("Melhorias Sugeridas", melhorias, NAVY, "→");
+  renderList("Melhorias Sugeridas", melhorias, NAVY, ">");
 
   // Riscos documentais
   const riscos: string[] = [];
@@ -603,7 +603,7 @@ export function generateValuationReport(d: ValuationReportData): jsPDF {
   if (d.documentacao.includes("Escritura pendente")) riscos.push("Escritura pendente reduz liquidez e poder de negociação.");
   if (d.documentacao.includes("Averbação pendente")) riscos.push("Averbação pendente impede financiamento bancário.");
   if (riscos.length === 0) riscos.push("Não foram identificados riscos documentais relevantes nas informações fornecidas.");
-  renderList("Riscos Documentais", riscos, AMBER, "⚠");
+  renderList("Riscos Documentais", riscos, AMBER, "!");
 
   footer("Página 6 de 6");
 
