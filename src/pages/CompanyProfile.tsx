@@ -858,12 +858,9 @@ export default function CompanyProfile() {
             {isPaid && <BadgeCheck size={18} className="text-primary" />}
           </div>
 
-          {(teamMember || dbProfile?.seller_category) && (
+          {(teamMember || activeCategoryLabel) && (
             <span className="text-white/70 text-xs font-medium mb-2">
-              {teamMember
-                ? `📋 Corretor(a)${teamMember.creci ? ` • ${teamMember.creci}` : ""}`
-                : `${({ imobiliaria: "🏢 Imobiliária", corretor: "📋 Corretor(a)", proprietario: "🏠 Proprietário", construtora: "🏗️ Construtora" } as Record<string, string>)[dbProfile.seller_category] || ""}${["corretor", "imobiliaria", "construtora"].includes(dbProfile.seller_category) && dbProfile.creci ? ` • ${dbProfile.creci}` : ""}`
-              }
+              {activeCategoryLabel || "📋 Corretor(a)"}{activeCreci ? ` • ${activeCreci}` : ""}
             </span>
           )}
 
@@ -873,8 +870,8 @@ export default function CompanyProfile() {
             </span>
           )}
 
-          {(teamMember?.bio || dbProfile?.bio) && (
-            <p className="text-white/70 text-xs leading-relaxed line-clamp-3 max-w-sm mb-4">{teamMember?.bio || dbProfile.bio}</p>
+          {activeBio && (
+            <p className="text-white/70 text-xs leading-relaxed line-clamp-3 max-w-sm mb-4">{activeBio}</p>
           )}
 
           {/* Stats row */}
@@ -1111,10 +1108,10 @@ export default function CompanyProfile() {
                     {isPaid && <BadgeCheck size={22} className="text-primary" />}
                   </div>
                   <div className="flex items-center gap-3 mt-1 flex-wrap">
-                    {dbProfile?.seller_category && (
+                    {activeCategoryLabel && (
                       <span className="flex items-center gap-1 text-white/80 text-xs font-medium bg-white/10 px-2 py-0.5 rounded-full">
-                        {({ imobiliaria: "🏢 Imobiliária", corretor: "📋 Corretor(a)", proprietario: "🏠 Proprietário", construtora: "🏗️ Construtora" } as Record<string, string>)[dbProfile.seller_category]}
-                        {["corretor", "imobiliaria", "construtora"].includes(dbProfile.seller_category) && dbProfile.creci && ` • ${dbProfile.creci}`}
+                        {activeCategoryLabel}
+                        {activeCreci && ` • ${activeCreci}`}
                       </span>
                     )}
                     {company.show_location && company.address && (
