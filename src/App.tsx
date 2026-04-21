@@ -181,6 +181,7 @@ const AppLayout = () => {
               <Route path="/painel/personalizacao" element={<RequireAuth><SellerCustomization /></RequireAuth>} />
               <Route path="/agenda" element={<RequireAuth><AgendaPage /></RequireAuth>} />
               <Route path="/agenda/:slug/chat" element={<AgendaBotChatPage />} />
+              <Route path="/agenda/:slug/chat/:botSlug" element={<AgendaBotChatPage />} />
               <Route path="/pacotes" element={<RequireAuth><PackagesPage /></RequireAuth>} />
               <Route path="/admin" element={<RequireAuth><AdminPanel /></RequireAuth>} />
               <Route path="/criar-anuncio" element={<RequireAuth><CreateListing /></RequireAuth>} />
