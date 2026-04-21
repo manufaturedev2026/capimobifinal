@@ -281,6 +281,10 @@ export default function CapturePropertyChatPage() {
               avalCtaLabel: mappedFlow === "avaliacao" ? (b.success_cta_label || merged.avalCtaLabel) : merged.avalCtaLabel,
               avalCtaUrl: mappedFlow === "avaliacao" ? (b.success_cta_url || merged.avalCtaUrl) : merged.avalCtaUrl,
             };
+            // Merge custom form messages saved per-bot (overrides defaults/legacy)
+            if (b.form_messages && typeof b.form_messages === "object") {
+              merged = { ...merged, ...b.form_messages };
+            }
           }
         }
         setConfig(merged);
