@@ -29,7 +29,39 @@ interface CaptureBot {
   whatsapp_group_url: string | null;
   is_active: boolean;
   use_ai: boolean;
+  form_messages: Record<string, string> | null;
 }
+
+const FORM_FIELDS: Record<BotType, { key: string; label: string; placeholder: string; multiline?: boolean }[]> = {
+  captacao: [
+    { key: "flowMsgName", label: "1. Pergunta do nome", placeholder: "Vamos começar? Me diz o seu nome completo 😊" },
+    { key: "flowMsgNameReply", label: "2. Resposta após nome (use {nome})", placeholder: "Prazer, {nome}! 🤝" },
+    { key: "flowMsgPhone", label: "3. Pergunta do telefone", placeholder: "Qual seu telefone ou WhatsApp? 📱" },
+    { key: "flowMsgType", label: "4. Pergunta do tipo de imóvel", placeholder: "Qual o tipo do imóvel? 🏠" },
+    { key: "flowMsgAddress", label: "5. Pergunta do endereço", placeholder: "Qual o endereço ou localização? 📍" },
+    { key: "flowMsgPrice", label: "6. Pergunta do valor", placeholder: "Tem um valor em mente? 💰", multiline: true },
+    { key: "flowMsgNotes", label: "7. Pergunta de observação", placeholder: "Alguma observação? 📝", multiline: true },
+    { key: "flowMsgSuccess", label: "8. Mensagem de sucesso", placeholder: "✅ Pronto! Suas informações foram enviadas!" },
+    { key: "flowMsgSuccessEnd", label: "9. Mensagem final", placeholder: "Em breve um corretor entra em contato 🎉", multiline: true },
+  ],
+  grupo: [
+    { key: "grupoMsgName", label: "1. Pergunta do nome", placeholder: "Que bom ter você aqui! 🎉 Me diz seu nome:" },
+    { key: "grupoMsgNameReply", label: "2. Resposta após nome (use {nome})", placeholder: "Prazer, {nome}! 🤝" },
+    { key: "grupoMsgPhone", label: "3. Pergunta do WhatsApp", placeholder: "Qual seu WhatsApp? 📱" },
+    { key: "grupoMsgSuccess", label: "4. Mensagem de sucesso", placeholder: "✅ Perfeito! Você está pronto para entrar no grupo!" },
+    { key: "grupoMsgSuccessEnd", label: "5. Mensagem final", placeholder: "No grupo você recebe ofertas em primeira mão! 🏡🔥", multiline: true },
+  ],
+  avaliacao: [
+    { key: "avalMsgName", label: "1. Pergunta do nome", placeholder: "Poderia me dizer o seu nome para darmos continuidade? 😊" },
+    { key: "avalMsgNameReply", label: "2. Resposta após nome (use {nome})", placeholder: "Prazer, {nome}! 🤝 Vamos avaliar seu imóvel!" },
+    { key: "avalMsgPhone", label: "3. Pergunta do telefone", placeholder: "Qual seu telefone ou WhatsApp? 📱" },
+    { key: "avalMsgType", label: "4. Pergunta do tipo de imóvel", placeholder: "Qual o tipo do seu imóvel? 🏠" },
+    { key: "avalMsgAddress", label: "5. Pergunta do endereço", placeholder: "Qual o endereço completo? 📍", multiline: true },
+    { key: "avalMsgDetails", label: "6. Pergunta de detalhes", placeholder: "Conte mais sobre o imóvel 📝", multiline: true },
+    { key: "avalMsgSuccess", label: "7. Mensagem de sucesso", placeholder: "✅ Solicitação enviada!" },
+    { key: "avalMsgSuccessEnd", label: "8. Mensagem final", placeholder: "Nosso avaliador entra em contato em breve! 🏡💎", multiline: true },
+  ],
+};
 
 const TYPE_META: Record<BotType, { label: string; icon: any; color: string; defaultName: string; defaultOpening: string; defaultCtaLabel: string }> = {
   captacao: {
