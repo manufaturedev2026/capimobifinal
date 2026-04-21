@@ -799,7 +799,7 @@ export default function StoreLayoutMarketplace({
 
 
         {/* ═══ RESULTS HEADER ═══ */}
-        <div id="marketplace-grid" className="mt-6 mb-4 flex items-center justify-between scroll-mt-20">
+        <div id="marketplace-grid" className="mt-6 mb-4 flex items-center justify-between scroll-mt-32">
           <div className="flex items-center gap-2">
             <Sparkles size={14} style={{ color: storeTheme.primary }} />
             <p className="text-xs font-bold uppercase tracking-wider" style={{ color: storeTheme.textMuted }}>
