@@ -233,6 +233,7 @@ export default function AiValuationPage() {
       const { data, error } = await supabase.functions.invoke("ai-property-valuation", {
         body: {
           estado, cidade, bairro, rua, numero, cep,
+          categoria, subtipo,
           tipo, tipoEstrutura: isTerreno ? null : tipoEstrutura,
           areaTotal: areaTotalCompat,
           areaTerreno: Number(areaTerreno) || null,
