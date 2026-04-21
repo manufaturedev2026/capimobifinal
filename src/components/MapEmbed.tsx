@@ -257,6 +257,14 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
         const city = viaCep.localidade as string;
         const stateUf = viaCep.uf as string;
 
+        // Query no formato preferido pelo Street View: "R. Rua, número - Bairro, Cidade, UF"
+        if (!cancelled) {
+          const streetWithNumber = numberPart ? `${street}, ${numberPart}` : street;
+          const headPart = district ? `${streetWithNumber} - ${district}` : streetWithNumber;
+          const fullQuery = [headPart, city, stateUf].filter(Boolean).join(", ");
+          setStreetViewQuery(fullQuery);
+        }
+
         // Estratégia: priorizar buscas com BAIRRO (mais preciso que CEP no Photon).
         const cepFormatted = `${cleanCep.slice(0, 5)}-${cleanCep.slice(5)}`;
         const photonQueries = [
