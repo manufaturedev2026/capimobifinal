@@ -52,6 +52,8 @@ type SellerProfile = {
   logo_url: string | null;
   company_name: string | null;
   creci: string | null;
+  city?: string | null;
+  state?: string | null;
   slug?: string | null;
 };
 
@@ -68,7 +70,7 @@ const ITEM_FIELDS = "id, title, slug, price, photos, city, state, neighborhood, 
 
 export default function PropertyPartnershipsTab({ profileId, userId }: { profileId: string; userId: string }) {
   const { toast } = useToast();
-  const [subTab, setSubTab] = useState<SubTab>("meus");
+  const [subTab, setSubTab] = useState<SubTab>("disponivel");
   const [availableItems, setAvailableItems] = useState<(PartnershipItem & { seller: SellerProfile | null })[]>([]);
   const [myRequests, setMyRequests] = useState<(PartnershipRequest & { item: PartnershipItem | null; owner: SellerProfile | null })[]>([]);
   const [myItems, setMyItems] = useState<PartnershipItem[]>([]);
@@ -78,6 +80,10 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
   const [loading, setLoading] = useState(true);
   const [savingId, setSavingId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [locationScope, setLocationScope] = useState<"proximos" | "estado" | "cidade" | "todos">("proximos");
+  const [selectedState, setSelectedState] = useState("");
+  const [selectedCity, setSelectedCity] = useState("");
+  const [currentProfile, setCurrentProfile] = useState<SellerProfile | null>(null);
 
   // Dialog states
   const [configItem, setConfigItem] = useState<PartnershipItem | null>(null);
@@ -93,8 +99,19 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
 
   const loadData = async () => {
     setLoading(true);
-    await Promise.all([loadMyItems(), loadAvailable(), loadMyRequests(), loadReceivedRequests(), loadActivePartnerships(), loadStoreListings()]);
+    await Promise.all([loadCurrentProfile(), loadMyItems(), loadAvailable(), loadMyRequests(), loadReceivedRequests(), loadActivePartnerships(), loadStoreListings()]);
     setLoading(false);
+  };
+
+  const loadCurrentProfile = async () => {
+    const { data } = await supabase
+      .from("profiles")
+      .select("id, full_name, phone, logo_url, company_name, creci, city, state, slug")
+      .eq("id", profileId)
+      .maybeSingle();
+    setCurrentProfile(data || null);
+    if (data?.state) setSelectedState((prev) => prev || data.state || "");
+    if (data?.city) setSelectedCity((prev) => prev || data.city || "");
   };
 
   const loadMyItems = async () => {
@@ -120,7 +137,7 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
     const sellerIds = [...new Set(items.map(i => i.seller_id))];
     const { data: profiles } = await supabase
       .from("profiles")
-      .select("id, full_name, phone, logo_url, company_name, creci, slug")
+      .select("id, full_name, phone, logo_url, company_name, creci, city, state, slug")
       .in("id", sellerIds);
 
     const profileMap = new Map((profiles || []).map(p => [p.id, p]));
@@ -419,12 +436,40 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
     cancelado: { label: "Cancelado", color: "text-muted-foreground bg-muted", icon: XCircle },
   };
 
-  const filteredItems = availableItems.filter(i => {
-    if (!searchTerm) return true;
-    const q = searchTerm.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-    const match = (v: string | null) => v?.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(q);
-    return match(i.title) || match(i.city) || match(i.state) || match(i.neighborhood) || match(i.category);
-  });
+  const normalizeText = (v?: string | null) => (v || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  const nearbyCity = normalizeText(currentProfile?.city);
+  const nearbyState = normalizeText(currentProfile?.state);
+  const stateOptions = [...new Set(availableItems.map(i => i.state).filter(Boolean) as string[])].sort();
+  const cityOptions = [...new Set(
+    availableItems
+      .filter(i => !selectedState || normalizeText(i.state) === normalizeText(selectedState))
+      .map(i => i.city)
+      .filter(Boolean) as string[]
+  )].sort();
+
+  const filteredItems = availableItems
+    .filter(i => {
+      const itemCity = normalizeText(i.city);
+      const itemState = normalizeText(i.state);
+      const scopeMatch =
+        locationScope === "todos" ||
+        (locationScope === "proximos" && ((nearbyCity && itemCity === nearbyCity) || (nearbyState && itemState === nearbyState))) ||
+        (locationScope === "estado" && (!selectedState || itemState === normalizeText(selectedState))) ||
+        (locationScope === "cidade" && (!selectedCity || itemCity === normalizeText(selectedCity)) && (!selectedState || itemState === normalizeText(selectedState)));
+      if (!scopeMatch) return false;
+      if (!searchTerm) return true;
+      const q = normalizeText(searchTerm);
+      const match = (v: string | null) => normalizeText(v).includes(q);
+      return match(i.title) || match(i.city) || match(i.state) || match(i.neighborhood) || match(i.category) || match(i.seller?.full_name || null) || match(i.seller?.company_name || null);
+    })
+    .sort((a, b) => {
+      const score = (i: PartnershipItem) => {
+        if (nearbyCity && normalizeText(i.city) === nearbyCity) return 0;
+        if (nearbyState && normalizeText(i.state) === nearbyState) return 1;
+        return 2;
+      };
+      return score(a) - score(b);
+    });
 
   const requestStatusByItem = new Map(
     myRequests
@@ -494,8 +539,8 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
       {/* ===== TABS ===== */}
       <div className="flex gap-1 bg-secondary/50 rounded-2xl p-1.5 overflow-x-auto scrollbar-hide">
         {([
+          { id: "disponivel" as SubTab, label: "Buscar Imóveis", count: totalAvailable },
           { id: "meus" as SubTab, label: "Meus Imóveis", count: 0 },
-          { id: "disponivel" as SubTab, label: "Disponíveis", count: 0 },
           { id: "vigentes" as SubTab, label: "Vigentes", count: activePartnerships.length },
           { id: "minhas" as SubTab, label: "Solicitações", count: myRequests.filter(r => r.status === "pendente").length },
           { id: "recebidas" as SubTab, label: "Recebidas", count: receivedRequests.filter(r => r.status === "pendente").length },
@@ -713,14 +758,51 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
       {/* ===== DISPONÍVEIS ===== */}
       {subTab === "disponivel" && (
         <div className="space-y-4">
-          <div className="relative">
-            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            <input
-              value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-              placeholder="Buscar imóvel ou cidade..."
-              className="w-full pl-10 pr-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
-            />
+          <div className="grid gap-3 lg:grid-cols-[1fr_auto_auto_auto]">
+            <div className="relative">
+              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <input
+                value={searchTerm}
+                onChange={e => setSearchTerm(e.target.value)}
+                placeholder="Buscar imóvel, corretor, bairro ou cidade..."
+                className="w-full pl-10 pr-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+              />
+            </div>
+            <select
+              value={locationScope}
+              onChange={(e) => setLocationScope(e.target.value as typeof locationScope)}
+              className="px-3 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+            >
+              <option value="proximos">Parceiros próximos</option>
+              <option value="cidade">Filtrar por cidade</option>
+              <option value="estado">Filtrar por estado</option>
+              <option value="todos">Todos os imóveis</option>
+            </select>
+            <select
+              value={selectedState}
+              onChange={(e) => { setSelectedState(e.target.value); setSelectedCity(""); }}
+              disabled={locationScope === "todos" || locationScope === "proximos"}
+              className="px-3 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none disabled:opacity-50"
+            >
+              <option value="">Todos os estados</option>
+              {stateOptions.map(state => <option key={state} value={state}>{state}</option>)}
+            </select>
+            <select
+              value={selectedCity}
+              onChange={(e) => setSelectedCity(e.target.value)}
+              disabled={locationScope !== "cidade"}
+              className="px-3 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none disabled:opacity-50"
+            >
+              <option value="">Todas as cidades</option>
+              {cityOptions.map(city => <option key={city} value={city}>{city}</option>)}
+            </select>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+            <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-3 py-1 font-bold text-primary">
+              <MapPin size={12} /> {locationScope === "proximos" ? `Mostrando primeiro ${currentProfile?.city || currentProfile?.state || "sua região"}` : `${filteredItems.length} imóveis encontrados`}
+            </span>
+            {locationScope === "proximos" && <span>Use “Todos os imóveis” para ver a rede completa.</span>}
           </div>
 
           {filteredItems.length === 0 ? (
