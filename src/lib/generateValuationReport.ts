@@ -814,6 +814,89 @@ export function generateValuationReport(d: ValuationReportData): jsPDF {
 
   footer("Página 5 de 6");
 
+  // ========== ANÁLISE VISUAL POR IA (se houver) ==========
+  if (d.analiseVisual) {
+    const av = d.analiseVisual;
+    doc.addPage();
+    headerStrip("Análise Visual por IA");
+    y = sectionTitle("Análise Visual por IA", 38);
+
+    y = para(
+      `Avaliação complementar baseada em ${av.total_fotos_analisadas} foto(s) reais. Observa apenas características visuais aparentes — não substitui laudo de engenharia.`,
+      y, { size: 9.5, color: GRAY }
+    );
+    y += 2;
+
+    setFill(NAVY);
+    doc.roundedRect(14, y, W - 28, 24, 3, 3, "F");
+    setColor([255, 255, 255]);
+    doc.setFont("helvetica", "normal"); doc.setFontSize(8.5);
+    doc.text("SCORE VISUAL GERAL", 20, y + 9);
+    doc.setFont("helvetica", "bold"); doc.setFontSize(20);
+    doc.text(`${av.score_visual_geral.toFixed(1)}/10`, 20, y + 19);
+    setColor(GOLD);
+    doc.setFont("helvetica", "bold"); doc.setFontSize(13);
+    doc.text(`Impacto no valor: ${av.ajuste_total_pct > 0 ? "+" : ""}${av.ajuste_total_pct.toFixed(1)}%`, W - 20, y + 15, { align: "right" });
+    y += 30;
+
+    const scoreItems: Array<[string, number]> = [
+      ["Visual Externo", av.scores.visual_externo],
+      ["Interior", av.scores.interior],
+      ["Acabamento Visual", av.scores.acabamento_visual],
+      ["Conservação Aparente", av.scores.conservacao_aparente],
+      ["Liquidez Visual", av.scores.liquidez_visual],
+    ];
+    scoreItems.forEach(([label, val]) => {
+      setColor([60, 60, 70]);
+      doc.setFont("helvetica", "normal"); doc.setFontSize(9);
+      doc.text(label, 14, y);
+      doc.text(`${val.toFixed(1)}/10`, 70, y);
+      setFill([225, 225, 235]);
+      doc.rect(90, y - 3, W - 104, 3.5, "F");
+      const cor: [number, number, number] = val >= 8 ? GREEN : val >= 6 ? NAVY : val >= 4 ? AMBER : [200, 60, 60];
+      setFill(cor);
+      doc.rect(90, y - 3, ((W - 104) * val) / 10, 3.5, "F");
+      y += 6;
+    });
+    y += 4;
+
+    const resumos: Array<[string, string]> = [
+      ["Resumo Externo", av.resumo_externo],
+      ["Resumo Interno", av.resumo_interno],
+      ["Conservação Aparente", av.resumo_conservacao],
+      ["Conclusão Visual", av.resumo_geral],
+    ];
+    resumos.forEach(([t, txt]) => {
+      if (!txt) return;
+      if (y > H - 30) { footer("Análise Visual"); doc.addPage(); headerStrip("Análise Visual (cont.)"); y = 38; }
+      setColor(NAVY);
+      doc.setFont("helvetica", "bold"); doc.setFontSize(9.5);
+      doc.text(t.toUpperCase(), 14, y);
+      y += 5;
+      y = para(txt, y, { size: 9.5 });
+      y += 1;
+    });
+
+    if (av.sugestoes_melhorias.length) {
+      if (y > H - 50) { footer("Análise Visual"); doc.addPage(); headerStrip("Análise Visual (cont.)"); y = 38; }
+      setColor(VIOLET);
+      doc.setFont("helvetica", "bold"); doc.setFontSize(10.5);
+      doc.text("SUGESTÕES DE VALORIZAÇÃO (BASEADAS NAS FOTOS)", 14, y);
+      setFill(VIOLET);
+      doc.rect(14, y + 1.5, 8, 0.5, "F");
+      y += 7;
+      av.sugestoes_melhorias.slice(0, 8).forEach((s) => {
+        if (y > H - 24) { footer("Análise Visual"); doc.addPage(); headerStrip("Análise Visual (cont.)"); y = 38; }
+        setColor([40, 40, 50]);
+        doc.setFont("helvetica", "normal"); doc.setFontSize(9.5);
+        const lines = doc.splitTextToSize(`›  ${s}`, W - 32);
+        lines.forEach((l: string) => { doc.text(l, 18, y); y += 4.8; });
+      });
+    }
+
+    footer("Análise Visual por IA");
+  }
+
   // =========================================
   // PÁGINA 6 — OBSERVAÇÕES
   // =========================================
