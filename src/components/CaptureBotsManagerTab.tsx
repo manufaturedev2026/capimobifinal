@@ -29,7 +29,39 @@ interface CaptureBot {
   whatsapp_group_url: string | null;
   is_active: boolean;
   use_ai: boolean;
+  form_messages: Record<string, string> | null;
 }
+
+const FORM_FIELDS: Record<BotType, { key: string; label: string; placeholder: string; multiline?: boolean }[]> = {
+  captacao: [
+    { key: "flowMsgName", label: "1. Pergunta do nome", placeholder: "Vamos começar? Me diz o seu nome completo 😊" },
+    { key: "flowMsgNameReply", label: "2. Resposta após nome (use {nome})", placeholder: "Prazer, {nome}! 🤝" },
+    { key: "flowMsgPhone", label: "3. Pergunta do telefone", placeholder: "Qual seu telefone ou WhatsApp? 📱" },
+    { key: "flowMsgType", label: "4. Pergunta do tipo de imóvel", placeholder: "Qual o tipo do imóvel? 🏠" },
+    { key: "flowMsgAddress", label: "5. Pergunta do endereço", placeholder: "Qual o endereço ou localização? 📍" },
+    { key: "flowMsgPrice", label: "6. Pergunta do valor", placeholder: "Tem um valor em mente? 💰", multiline: true },
+    { key: "flowMsgNotes", label: "7. Pergunta de observação", placeholder: "Alguma observação? 📝", multiline: true },
+    { key: "flowMsgSuccess", label: "8. Mensagem de sucesso", placeholder: "✅ Pronto! Suas informações foram enviadas!" },
+    { key: "flowMsgSuccessEnd", label: "9. Mensagem final", placeholder: "Em breve um corretor entra em contato 🎉", multiline: true },
+  ],
+  grupo: [
+    { key: "grupoMsgName", label: "1. Pergunta do nome", placeholder: "Que bom ter você aqui! 🎉 Me diz seu nome:" },
+    { key: "grupoMsgNameReply", label: "2. Resposta após nome (use {nome})", placeholder: "Prazer, {nome}! 🤝" },
+    { key: "grupoMsgPhone", label: "3. Pergunta do WhatsApp", placeholder: "Qual seu WhatsApp? 📱" },
+    { key: "grupoMsgSuccess", label: "4. Mensagem de sucesso", placeholder: "✅ Perfeito! Você está pronto para entrar no grupo!" },
+    { key: "grupoMsgSuccessEnd", label: "5. Mensagem final", placeholder: "No grupo você recebe ofertas em primeira mão! 🏡🔥", multiline: true },
+  ],
+  avaliacao: [
+    { key: "avalMsgName", label: "1. Pergunta do nome", placeholder: "Poderia me dizer o seu nome para darmos continuidade? 😊" },
+    { key: "avalMsgNameReply", label: "2. Resposta após nome (use {nome})", placeholder: "Prazer, {nome}! 🤝 Vamos avaliar seu imóvel!" },
+    { key: "avalMsgPhone", label: "3. Pergunta do telefone", placeholder: "Qual seu telefone ou WhatsApp? 📱" },
+    { key: "avalMsgType", label: "4. Pergunta do tipo de imóvel", placeholder: "Qual o tipo do seu imóvel? 🏠" },
+    { key: "avalMsgAddress", label: "5. Pergunta do endereço", placeholder: "Qual o endereço completo? 📍", multiline: true },
+    { key: "avalMsgDetails", label: "6. Pergunta de detalhes", placeholder: "Conte mais sobre o imóvel 📝", multiline: true },
+    { key: "avalMsgSuccess", label: "7. Mensagem de sucesso", placeholder: "✅ Solicitação enviada!" },
+    { key: "avalMsgSuccessEnd", label: "8. Mensagem final", placeholder: "Nosso avaliador entra em contato em breve! 🏡💎", multiline: true },
+  ],
+};
 
 const TYPE_META: Record<BotType, { label: string; icon: any; color: string; defaultName: string; defaultOpening: string; defaultCtaLabel: string }> = {
   captacao: {
@@ -103,6 +135,7 @@ export default function CaptureBotsManagerTab({ sellerId, sellerSlug }: Props) {
       whatsapp_group_url: null,
       is_active: true,
       use_ai: useAi,
+      form_messages: null,
     });
   };
 
@@ -147,6 +180,7 @@ export default function CaptureBotsManagerTab({ sellerId, sellerSlug }: Props) {
         opening_message: editing.opening_message, success_cta_label: editing.success_cta_label,
         success_cta_url: editing.success_cta_url, whatsapp_group_url: editing.whatsapp_group_url,
         is_active: editing.is_active, use_ai: editing.use_ai,
+        form_messages: editing.form_messages as any,
       }).eq("id", editing.id);
       setSaving(false);
       if (error) { toast({ title: "Erro", description: error.message, variant: "destructive" }); return; }
@@ -157,6 +191,7 @@ export default function CaptureBotsManagerTab({ sellerId, sellerSlug }: Props) {
         opening_message: editing.opening_message, success_cta_label: editing.success_cta_label,
         success_cta_url: editing.success_cta_url, whatsapp_group_url: editing.whatsapp_group_url,
         is_active: editing.is_active, use_ai: editing.use_ai,
+        form_messages: editing.form_messages as any,
       });
       setSaving(false);
       if (error) { toast({ title: "Erro", description: error.message, variant: "destructive" }); return; }
@@ -296,6 +331,40 @@ export default function CaptureBotsManagerTab({ sellerId, sellerSlug }: Props) {
             </p>
           </div>
         </div>
+
+        {!editing.use_ai && (
+          <div className="rounded-2xl border border-border bg-background p-4 space-y-3 shadow-sm">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="text-sm font-bold text-foreground flex items-center gap-1.5"><FileText className="w-3.5 h-3.5" /> Mensagens do formulário</p>
+                <p className="text-[11px] text-muted-foreground mt-0.5">Personalize cada pergunta que o bot faz no modo formulário fixo. Deixe vazio para usar o texto padrão.</p>
+              </div>
+              {editing.form_messages && Object.keys(editing.form_messages).length > 0 && (
+                <Button type="button" variant="ghost" size="sm" onClick={() => setEditing({ ...editing, form_messages: null })} className="text-destructive hover:bg-destructive/10 shrink-0">
+                  <X className="w-3 h-3 mr-1" /> Restaurar padrão
+                </Button>
+              )}
+            </div>
+            {FORM_FIELDS[editing.bot_type].map((f) => {
+              const val = editing.form_messages?.[f.key] ?? "";
+              const update = (v: string) => {
+                const next = { ...(editing.form_messages || {}) };
+                if (v.trim()) next[f.key] = v; else delete next[f.key];
+                setEditing({ ...editing, form_messages: Object.keys(next).length ? next : null });
+              };
+              return (
+                <div key={f.key}>
+                  <label className="text-xs font-semibold text-foreground">{f.label}</label>
+                  {f.multiline ? (
+                    <Textarea value={val} onChange={(e) => update(e.target.value)} placeholder={f.placeholder} className="mt-1 min-h-[60px] bg-card text-foreground text-sm" />
+                  ) : (
+                    <Input value={val} onChange={(e) => update(e.target.value)} placeholder={f.placeholder} className="mt-1 bg-card text-foreground text-sm" />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
 
         <Button onClick={save} disabled={saving} className="w-full sm:w-auto" size="lg">
           <Save className="w-4 h-4 mr-2" />

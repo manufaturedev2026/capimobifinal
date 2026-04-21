@@ -1,0 +1,1 @@
+ALTER TABLE public.capture_bots ADD COLUMN IF NOT EXISTS form_messages jsonb;
