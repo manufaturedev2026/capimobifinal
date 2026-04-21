@@ -383,10 +383,11 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
     window.open(streetViewUrl, "_blank", "noopener,noreferrer");
   };
 
-  // Fallback Street View embed using address query (works without coords via Google legacy embed)
-  const queryStreetEmbed = `https://maps.google.com/maps?q=${encodedAddress}&layer=c&cbp=11,0,0,0,0&output=svembed`;
-  const streetEmbedSrc = streetViewEmbed || addressOverride?.embedUrl || queryStreetEmbed;
-  const isStreet = view === "street";
+  const addressOverrideStreetEmbed = addressOverride
+    ? `https://maps.google.com/maps?q=&layer=c&cbll=${addressOverride.lat},${addressOverride.lon}&cbp=11,0,0,0,0&z=17&output=svembed`
+    : null;
+  const streetEmbedSrc = streetViewEmbed || addressOverrideStreetEmbed;
+  const isStreet = view === "street" && !!streetEmbedSrc;
   const currentSrc = isStreet ? streetEmbedSrc : mapSrc;
 
   return (
@@ -407,9 +408,16 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
         {showStreetView && (
           <button
             type="button"
-            onClick={() => setView(isStreet ? "map" : "street")}
+            onClick={() => {
+              if (isStreet) {
+                setView("map");
+                return;
+              }
+              if (streetEmbedSrc) setView("street");
+            }}
             aria-busy={resolvingStreetView}
-            className="absolute bottom-3 right-3 z-10 flex items-center gap-2 rounded-full bg-primary px-3.5 py-2 text-xs font-semibold text-primary-foreground shadow-lg transition-transform hover:scale-105"
+            className="absolute bottom-3 right-3 z-10 flex items-center gap-2 rounded-full bg-primary px-3.5 py-2 text-xs font-semibold text-primary-foreground shadow-lg transition-transform hover:scale-105 disabled:cursor-not-allowed disabled:opacity-70"
+            disabled={!isStreet && (!streetEmbedSrc || resolvingStreetView)}
           >
             {resolvingStreetView ? <Loader2 size={14} className="animate-spin" /> : (isStreet ? <MapIcon size={14} /> : <Eye size={14} />)}
             {isStreet ? "Ver Mapa" : "Ver Street View 360°"}
