@@ -413,6 +413,7 @@ export default function AiValuationPage() {
         mercado_externo: result.mercado_externo,
       },
       analiseVisual: analiseVisual ?? undefined,
+      fotos: fotos.length > 0 ? fotos.map((f) => ({ dataUrl: f.dataUrl, categoria: f.categoria })) : undefined,
       avaliadorNome:
         avaliadorNome.trim() ||
         user?.user_metadata?.full_name ||
