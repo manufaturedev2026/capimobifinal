@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Plus, Trash2, Save, Send, Loader2, Mail, Calendar, Eye, EyeOff, Copy, FileText, BarChart3, X, Sparkles } from "lucide-react";
+import { Plus, Trash2, Save, Send, Loader2, Mail, Calendar, Eye, EyeOff, Copy, FileText, BarChart3, X, Sparkles, Users, UserMinus, UserPlus, Search } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -19,6 +19,18 @@ type SendRow = {
   error_message: string | null;
   sent_at: string;
 };
+
+type Recipient = {
+  profile_id: string;
+  user_id: string;
+  full_name: string;
+  email: string;
+  created_at: string;
+  sent_count: number;
+  last_sent_at: string | null;
+};
+
+type Excluded = { id: string; email: string; reason: string | null; created_at: string };
 
 const DEFAULT_HTML = `<div style="font-family:system-ui,sans-serif;max-width:560px;margin:auto;padding:24px;background:#f8fafc;border-radius:12px;color:#0f172a">
   <h2>Olá {{nome}}, bem-vindo(a) à Capimobi!</h2>
