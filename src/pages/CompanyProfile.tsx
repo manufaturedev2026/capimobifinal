@@ -536,11 +536,11 @@ export default function CompanyProfile() {
       window.location.assign(url);
     };
 
-    if (teamMember && teamMember.phone) {
-      const phone = teamMember.phone.replace(/\D/g, "");
+    if (teamMember && company.whatsapp) {
+      const phone = company.whatsapp.replace(/\D/g, "");
       const msg = productId
-        ? `Olá ${teamMember.full_name}! 🏠 Vi o imóvel *${title}* na sua loja e gostaria de mais informações.\n\n🔗 ${link}`
-        : `Olá ${teamMember.full_name}! 🏠 Vim da sua loja Capimobi e gostaria de mais informações sobre seus imóveis.\n\n🔗 ${link}`;
+        ? `Olá ${company.name}! 🏠 Vi o imóvel *${title}* na sua loja e gostaria de mais informações.\n\n🔗 ${link}`
+        : `Olá ${company.name}! 🏠 Vim da sua loja Capimobi e gostaria de mais informações sobre seus imóveis.\n\n🔗 ${link}`;
       openUrl(`https://wa.me/55${phone}?text=${encodeURIComponent(msg)}`);
       return;
     }
@@ -606,7 +606,6 @@ export default function CompanyProfile() {
             const sellerName = company.name;
             const totalItems = products.length;
             const seoTitle = `${sellerName} — Imóveis em ${cityName}${stateName ? `, ${stateName}` : ""} | Capimobi`;
-            const activeBio = teamMember?.bio || dbProfile?.bio;
             const seoDesc = activeBio
               ? `${activeBio.slice(0, 130)} — ${totalItems} imóveis em ${cityName}.`
               : `Encontre ${totalItems}+ imóveis com ${sellerName} em ${cityName}. Casas, apartamentos, terrenos à venda. Contato direto via WhatsApp.`;
@@ -721,10 +720,8 @@ export default function CompanyProfile() {
                     <h1 className="font-display font-bold text-lg text-white truncate">{company.name}</h1>
                     {isPaid && <BadgeCheck size={16} className="text-white/80 flex-shrink-0" />}
                   </div>
-                  {dbProfile?.seller_category && (
-                    <span className="text-white/70 text-[11px]">
-                      {({ imobiliaria: "🏢 Imobiliária", corretor: "📋 Corretor(a)", proprietario: "🏠 Proprietário", construtora: "🏗️ Construtora" } as Record<string, string>)[dbProfile.seller_category]}
-                    </span>
+                  {activeCategoryLabel && (
+                    <span className="text-white/70 text-[11px]">{activeCategoryLabel}</span>
                   )}
                   {company.show_location && company.address && (
                     <span className="flex items-center gap-1 text-white/50 text-[10px] mt-0.5">
