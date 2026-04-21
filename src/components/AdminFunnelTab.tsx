@@ -477,6 +477,141 @@ export default function AdminFunnelTab() {
             </div>
           )}
         </div>
+      ) : tab === "recipients" ? (
+        <div className="space-y-4">
+          {/* Adicionar exclusão manual */}
+          <div className="bg-card border border-border rounded-xl p-4 space-y-2">
+            <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+              <UserMinus className="w-4 h-4 text-destructive" />
+              Excluir e-mails do funil manualmente
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Cole um ou mais e-mails (separados por vírgula, espaço ou linha). Eles nunca receberão e-mails do funil.
+            </p>
+            <div className="flex gap-2 flex-col sm:flex-row">
+              <textarea
+                value={newExcludeEmail}
+                onChange={(e) => setNewExcludeEmail(e.target.value)}
+                placeholder="email1@exemplo.com, email2@exemplo.com"
+                rows={2}
+                className="flex-1 px-3 py-2 border border-input rounded-lg bg-background text-foreground text-sm"
+              />
+              <button
+                onClick={addManualExclusion}
+                className="px-4 py-2 rounded-lg bg-destructive text-destructive-foreground font-medium flex items-center justify-center gap-2 hover:opacity-90"
+              >
+                <UserMinus className="w-4 h-4" /> Excluir
+              </button>
+            </div>
+          </div>
+
+          {/* Filtros */}
+          <div className="flex gap-2 flex-wrap items-center">
+            {(["all", "active", "excluded"] as const).map((f) => (
+              <button
+                key={f}
+                onClick={() => setRecipientFilter(f)}
+                className={`px-3 py-1.5 rounded-lg text-sm ${recipientFilter === f ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
+              >
+                {f === "all" ? `Todos (${recipients.length})` : f === "active" ? `No funil (${recipients.filter((r) => !excludedSet.has(r.email.toLowerCase())).length})` : `Excluídos (${recipients.filter((r) => excludedSet.has(r.email.toLowerCase())).length})`}
+              </button>
+            ))}
+            <div className="flex-1 min-w-[200px] relative">
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <input
+                value={recipientSearch}
+                onChange={(e) => setRecipientSearch(e.target.value)}
+                placeholder="Buscar por nome ou e-mail..."
+                className="w-full pl-9 pr-3 py-1.5 border border-input rounded-lg bg-background text-foreground text-sm"
+              />
+            </div>
+          </div>
+
+          {/* Tabela de destinatários */}
+          <div className="bg-card text-card-foreground border border-border rounded-xl overflow-hidden shadow-sm overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-muted text-muted-foreground">
+                <tr>
+                  <th className="text-left p-3">Nome</th>
+                  <th className="text-left p-3">E-mail</th>
+                  <th className="text-left p-3">Cadastrado em</th>
+                  <th className="text-left p-3">Recebeu</th>
+                  <th className="text-left p-3">Status</th>
+                  <th className="text-right p-3">Ação</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredRecipients.map((r) => {
+                  const isExcluded = excludedSet.has(r.email.toLowerCase());
+                  return (
+                    <tr key={r.profile_id} className="border-t border-border">
+                      <td className="p-3 text-foreground">{r.full_name}</td>
+                      <td className="p-3 text-foreground">{r.email}</td>
+                      <td className="p-3 text-muted-foreground whitespace-nowrap text-xs">{new Date(r.created_at).toLocaleDateString("pt-BR")}</td>
+                      <td className="p-3 text-foreground text-xs">
+                        {r.sent_count} e-mail(s)
+                        {r.last_sent_at && <div className="text-muted-foreground">último: {new Date(r.last_sent_at).toLocaleDateString("pt-BR")}</div>}
+                      </td>
+                      <td className="p-3">
+                        {isExcluded ? (
+                          <span className="px-2 py-0.5 rounded text-xs bg-destructive/10 text-destructive">Excluído</span>
+                        ) : (
+                          <span className="px-2 py-0.5 rounded text-xs bg-primary/10 text-primary">No funil</span>
+                        )}
+                      </td>
+                      <td className="p-3 text-right">
+                        {isExcluded ? (
+                          <button
+                            onClick={() => reincludeEmail(r.email)}
+                            disabled={busyEmail === r.email.toLowerCase()}
+                            className="px-2.5 py-1 rounded-lg bg-primary/10 text-primary text-xs flex items-center gap-1 ml-auto hover:bg-primary/20"
+                          >
+                            {busyEmail === r.email.toLowerCase() ? <Loader2 className="w-3 h-3 animate-spin" /> : <UserPlus className="w-3 h-3" />}
+                            Reincluir
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => excludeEmail(r.email)}
+                            disabled={busyEmail === r.email.toLowerCase()}
+                            className="px-2.5 py-1 rounded-lg bg-destructive/10 text-destructive text-xs flex items-center gap-1 ml-auto hover:bg-destructive/20"
+                          >
+                            {busyEmail === r.email.toLowerCase() ? <Loader2 className="w-3 h-3 animate-spin" /> : <UserMinus className="w-3 h-3" />}
+                            Remover
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+                {filteredRecipients.length === 0 && (
+                  <tr><td colSpan={6} className="p-8 text-center text-muted-foreground">Nenhum destinatário encontrado.</td></tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Exclusões "órfãs" — emails na lista mas sem perfil */}
+          {orphanExclusions.length > 0 && (
+            <div className="bg-card border border-border rounded-xl p-4">
+              <div className="text-sm font-semibold text-foreground mb-2">
+                E-mails excluídos sem perfil cadastrado ({orphanExclusions.length})
+              </div>
+              <div className="space-y-1.5">
+                {orphanExclusions.map((e) => (
+                  <div key={e.id} className="flex items-center justify-between gap-2 text-sm">
+                    <span className="text-foreground">{e.email}</span>
+                    <button
+                      onClick={() => reincludeEmail(e.email)}
+                      className="px-2 py-0.5 rounded bg-primary/10 text-primary text-xs flex items-center gap-1 hover:bg-primary/20"
+                    >
+                      <UserPlus className="w-3 h-3" /> Remover da exclusão
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       ) : (
         <div className="space-y-3">
           <div className="flex gap-2">
