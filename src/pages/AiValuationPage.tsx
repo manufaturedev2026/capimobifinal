@@ -466,6 +466,24 @@ export default function AiValuationPage() {
       avaliadorEmail: user?.email,
       empresaNome: "CAPIMOBI",
       valuationId: currentValuationId ?? undefined,
+      finalidade: finalidade.trim() || undefined,
+      proprietario:
+        propNome.trim() || propCpf.trim() || propTelefone.trim() || propEmail.trim()
+          ? {
+              nome: propNome.trim() || undefined,
+              cpf: propCpf.trim() || undefined,
+              telefone: propTelefone.trim() || undefined,
+              email: propEmail.trim() || undefined,
+            }
+          : undefined,
+      infraestrutura: {
+        escola: infraEscola,
+        hospital: infraHospital,
+        comercio: infraComercio,
+        transporte: infraTransporte,
+        parque: infraParque,
+        bancos: infraBancos,
+      },
     });
   };
 
