@@ -189,7 +189,7 @@ export default function PhotoAnalysisStep({
       >
         <Upload className="h-8 w-8 text-primary/60 mx-auto mb-2" />
         <p className="font-semibold">Clique ou arraste fotos aqui</p>
-        <p className="text-xs text-muted-foreground mt-1">JPG, PNG ou WEBP · até {MAX_SIZE_MB}MB cada · máx. {MAX_FOTOS} fotos</p>
+        <p className="text-xs text-muted-foreground mt-1">JPG, PNG ou WEBP · até {MAX_SIZE_MB}MB cada · mínimo {MIN_FOTOS} · máximo {MAX_FOTOS} fotos</p>
         <input
           ref={inputRef}
           type="file"
