@@ -136,8 +136,8 @@ export default function PhotoAnalysisStep({
   };
 
   const analisar = async () => {
-    if (fotos.length === 0) {
-      toast({ title: "Adicione pelo menos 1 foto", variant: "destructive" });
+    if (fotos.length < MIN_FOTOS) {
+      toast({ title: `Adicione no mínimo ${MIN_FOTOS} fotos`, description: `Você enviou ${fotos.length}. A análise visual exige entre ${MIN_FOTOS} e ${MAX_FOTOS} fotos.`, variant: "destructive" });
       return;
     }
     setLoading(true);
