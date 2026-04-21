@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { Bot, Copy, ExternalLink, Sparkles, Plus, Trash2, Save, Edit3, Upload, Loader2, X, Home as HomeIcon, Users, Gem } from "lucide-react";
+import { Bot, Copy, ExternalLink, Sparkles, Plus, Trash2, Save, Edit3, Upload, Loader2, X, Home as HomeIcon, Users, Gem, Zap, FileText } from "lucide-react";
 
 interface Props {
   sellerId: string;
@@ -28,6 +28,7 @@ interface CaptureBot {
   success_cta_url: string | null;
   whatsapp_group_url: string | null;
   is_active: boolean;
+  use_ai: boolean;
 }
 
 const TYPE_META: Record<BotType, { label: string; icon: any; color: string; defaultName: string; defaultOpening: string; defaultCtaLabel: string }> = {
