@@ -494,6 +494,9 @@ function calcular(p: Payload, precoM2: number, market: MarketContext) {
     if (pct) aplica(`Liquidez do mercado: ${p.liquidezMercado}`, pct, "liquidez");
   }
 
+  // ============ APARTAMENTO (regras contextuais) ============
+  aplicaRegrasApartamento(p, aplica, valorBase);
+
   // ============ LIMITADORES ============
   bonusTotal = Math.min(bonusTotal, 35);
   descontoTotal = Math.max(descontoTotal, -30);
