@@ -28,6 +28,19 @@ interface NominatimResult {
   };
 }
 
+interface PhotonFeature {
+  geometry?: {
+    coordinates?: [number, number];
+  };
+  properties?: {
+    name?: string;
+    street?: string;
+    district?: string;
+    city?: string;
+    postcode?: string;
+  };
+}
+
 interface AddressOverride {
   lat: string;
   lon: string;
