@@ -779,7 +779,7 @@ export default function AiValuationPage() {
               {/* Parecer técnico */}
               <Card className="p-6 md:p-8">
                 <div className="flex items-center gap-2 mb-4 font-semibold">
-                  <Brain className="h-5 w-5 text-primary" /> Parecer técnico IA
+                  <Brain className="h-5 w-5 text-primary" /> Parecer técnico
                 </div>
                 <div className="prose prose-sm max-w-none text-muted-foreground whitespace-pre-line leading-relaxed">
                   {result.justificativa}
