@@ -481,11 +481,6 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
   const myPartnerListings = activePartnerships.filter(p => p.role === "requester");
   const myAffiliateListings = activePartnerships.filter(p => p.role === "owner");
   const totalActivePartnerships = activePartnerships.length;
-  const totalPotentialGain = activePartnerships.reduce((acc, p) => {
-    if (!p.item) return acc;
-    const g = calcPartnerGain(p.item.price, p.item.commission_percent, p.item.partner_percent);
-    return acc + (p.role === "owner" ? g.owner : g.partner);
-  }, 0);
   const totalAvailable = availableItems.length;
 
   if (loading) {
@@ -514,21 +509,21 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
           </div>
 
           <h2 className="font-display font-extrabold text-2xl sm:text-3xl mb-1.5 leading-tight">
-            Multiplique suas vendas <Sparkles size={22} className="inline-block" />
+            Gerencie suas parcerias <Sparkles size={22} className="inline-block" />
           </h2>
           <p className="text-sm opacity-90 max-w-xl mb-5">
-            Compartilhe seus imóveis e ganhe acesso ao portfólio de outros corretores. Mais imóveis na sua loja, mais clientes, mais comissões.
+            Acompanhe os imóveis que você afiliou, veja quem se afiliou aos seus anúncios e descubra novas oportunidades para sua loja.
           </p>
 
           {/* Stats */}
           <div className="grid grid-cols-3 gap-2 sm:gap-3">
             <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-3 sm:p-4 border border-white/20">
-              <div className="flex items-center gap-1.5 mb-1 opacity-90"><Handshake size={14} /><span className="text-[10px] sm:text-xs font-bold uppercase">Vigentes</span></div>
-              <p className="font-display font-extrabold text-xl sm:text-3xl">{totalActivePartnerships}</p>
+              <div className="flex items-center gap-1.5 mb-1 opacity-90"><Handshake size={14} /><span className="text-[10px] sm:text-xs font-bold uppercase">Meus parceiros</span></div>
+              <p className="font-display font-extrabold text-xl sm:text-3xl">{myPartnerListings.length}</p>
             </div>
             <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-3 sm:p-4 border border-white/20">
-              <div className="flex items-center gap-1.5 mb-1 opacity-90"><TrendingUp size={14} /><span className="text-[10px] sm:text-xs font-bold uppercase">Potencial</span></div>
-              <p className="font-display font-extrabold text-base sm:text-2xl truncate">{fmt(totalPotentialGain)}</p>
+              <div className="flex items-center gap-1.5 mb-1 opacity-90"><TrendingUp size={14} /><span className="text-[10px] sm:text-xs font-bold uppercase">Meus afiliados</span></div>
+              <p className="font-display font-extrabold text-xl sm:text-3xl">{myAffiliateListings.length}</p>
             </div>
             <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-3 sm:p-4 border border-white/20">
               <div className="flex items-center gap-1.5 mb-1 opacity-90"><Users size={14} /><span className="text-[10px] sm:text-xs font-bold uppercase">Na rede</span></div>
