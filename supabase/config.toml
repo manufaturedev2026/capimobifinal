@@ -7,3 +7,5 @@ project_id = "foqavjauorrheuytpmtj"
     verify_jwt = true
   [functions.send-temp-password]
     verify_jwt = false
+  [functions.send-agenda-push]
+    verify_jwt = false
