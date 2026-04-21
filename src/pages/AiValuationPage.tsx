@@ -20,9 +20,9 @@ import {
   Sparkles, ArrowLeft, TrendingUp, Clock, Crown, Zap, Target, CheckCircle2,
   AlertCircle, Loader2, Brain, MapPin, Home, Maximize2, Bed, FileText,
   Megaphone, Download, History, Wand2, FileBadge, Printer, Share2, Mail,
-  Building2, Award, KeyRound,
+  Building2, Award, KeyRound, Trash2, Search,
 } from "lucide-react";
-import { generateValuationReport } from "@/lib/generateValuationReport";
+import { generateValuationReport, getLaudoCode } from "@/lib/generateValuationReport";
 import AdvancedValuationFields, { ADVANCED_INITIAL, type AdvancedState } from "@/components/AdvancedValuationFields";
 import PhotoAnalysisStep, { type FotoItem, type AnaliseVisual } from "@/components/PhotoAnalysisStep";
 import ApartmentValuationFields, { APARTMENT_INITIAL, type ApartmentState } from "@/components/ApartmentValuationFields";
