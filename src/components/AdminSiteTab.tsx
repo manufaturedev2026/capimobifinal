@@ -229,7 +229,8 @@ export default function AdminSiteTab() {
               placeholder="Ou cole a URL da imagem (PNG transparente recomendado)"
             />
             <div className="mt-4 pt-4 border-t border-border">
-              <label className="block text-sm font-medium text-foreground mb-2">Cor de fundo do círculo da logo</label>
+              <label className="block text-sm font-medium text-foreground mb-2">Cor de fundo da tela do splash</label>
+              <p className="text-xs text-muted-foreground mb-2">Cor que preenche toda a tela de carregamento (atrás da logo e do anel girando).</p>
               <div className="flex items-center gap-3">
                 <input
                   type="color"
