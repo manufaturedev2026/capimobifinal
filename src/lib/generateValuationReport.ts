@@ -1195,6 +1195,55 @@ export function generateValuationReport(d: ValuationReportData): jsPDF {
   if (riscos.length === 0) riscos.push("Não foram identificados riscos documentais relevantes nas informações fornecidas.");
   renderList("Riscos Documentais", riscos, AMBER, "!");
 
+  // ===== ASSINATURA DO RESPONSÁVEL TÉCNICO =====
+  if (y > H - 70) { footer("Página 6 de 6"); doc.addPage(); headerStrip("Responsável Técnico"); y = 38; }
+  y += 6;
+  setColor(NAVY);
+  doc.setFont("helvetica", "bold"); doc.setFontSize(10.5);
+  doc.text("RESPONSÁVEL TÉCNICO", 14, y);
+  setFill(GOLD);
+  doc.rect(14, y + 1.5, 8, 0.5, "F");
+  y += 12;
+
+  doc.setDrawColor(60, 60, 80);
+  doc.setLineWidth(0.4);
+  const sigW = 90;
+  const sigX = (W - sigW) / 2;
+  doc.line(sigX, y + 18, sigX + sigW, y + 18);
+
+  setColor([20, 20, 30]);
+  doc.setFont("helvetica", "bold"); doc.setFontSize(11);
+  const nomeAval = d.avaliadorNome?.trim() || "Especialista responsável";
+  doc.text(nomeAval, W / 2, y + 23, { align: "center" });
+
+  setColor(GRAY);
+  doc.setFont("helvetica", "normal"); doc.setFontSize(9);
+  const linhaCreci: string[] = [];
+  if (d.avaliadorCreci?.trim()) linhaCreci.push(`CRECI ${d.avaliadorCreci.trim()}`);
+  linhaCreci.push(`Emitido em ${dataEmissao}`);
+  doc.text(linhaCreci.join("  •  "), W / 2, y + 28, { align: "center" });
+
+  if (d.avaliadorEmail) {
+    doc.setFontSize(8.5);
+    doc.text(d.avaliadorEmail, W / 2, y + 33, { align: "center" });
+  }
+
+  setFill([245, 247, 252]);
+  doc.roundedRect(14, y, 50, 36, 2, 2, "F");
+  setFill(GOLD);
+  doc.rect(14, y, 2, 36, "F");
+  setColor(NAVY);
+  doc.setFont("helvetica", "bold"); doc.setFontSize(7.5);
+  doc.text("CÓDIGO DO LAUDO", 18, y + 7);
+  setColor([20, 20, 30]);
+  doc.setFont("helvetica", "bold"); doc.setFontSize(10);
+  doc.text(codigo, 18, y + 14);
+  setColor(GRAY);
+  doc.setFont("helvetica", "normal"); doc.setFontSize(7);
+  doc.text("Documento autenticado", 18, y + 21);
+  doc.text("digitalmente pelo sistema", 18, y + 25);
+  doc.text("Capimobi IA.", 18, y + 29);
+
   footer("Página 6 de 6");
 
   return doc;
