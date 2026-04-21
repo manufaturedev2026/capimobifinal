@@ -518,6 +518,40 @@ export function generateValuationReport(d: ValuationReportData): jsPDF {
     y = cy + 8;
   }
 
+  // ===== INFRAESTRUTURA DO BAIRRO (opcional) =====
+  if (d.infraestrutura) {
+    const infraItems: Array<[string, boolean | undefined]> = [
+      ["Escolas próximas", d.infraestrutura.escola],
+      ["Hospitais / Saúde", d.infraestrutura.hospital],
+      ["Comércio local", d.infraestrutura.comercio],
+      ["Transporte público", d.infraestrutura.transporte],
+      ["Praças / Parques", d.infraestrutura.parque],
+      ["Bancos / Serviços", d.infraestrutura.bancos],
+    ].filter((it) => it[1] !== undefined) as Array<[string, boolean]>;
+
+    if (infraItems.length > 0) {
+      y = sectionTitle("Infraestrutura do Bairro", y);
+      const cols = 2;
+      const colWid = (W - 28 - 6) / cols;
+      infraItems.forEach((it, idx) => {
+        const c = idx % cols;
+        const r = Math.floor(idx / cols);
+        const x = 14 + c * (colWid + 6);
+        const yy = y + r * 8;
+        const presente = !!it[1];
+        setFill(presente ? [232, 245, 235] : [248, 240, 240]);
+        doc.roundedRect(x, yy - 4, colWid, 7, 1.5, 1.5, "F");
+        setColor(presente ? GREEN : [180, 80, 80]);
+        doc.setFont("helvetica", "bold"); doc.setFontSize(9);
+        doc.text(presente ? "✓" : "—", x + 3, yy);
+        setColor([40, 40, 50]);
+        doc.setFont("helvetica", "normal"); doc.setFontSize(9);
+        doc.text(it[0], x + 9, yy);
+      });
+      y += Math.ceil(infraItems.length / cols) * 8 + 4;
+    }
+  }
+
   y = sectionTitle("Documentação", y);
   y = para(documentacaoTexto(d.documentacao), y);
 
