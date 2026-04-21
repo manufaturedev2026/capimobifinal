@@ -457,42 +457,62 @@ async function fetchExternalMarket(
   const estruturaInfo = p.tipoEstrutura ? ` ${p.tipoEstrutura}` : "";
   const quartosTxt = quartos > 0 ? ` ${quartos} quartos` : "";
 
-  // Query de busca real no Google (via Firecrawl Search)
-  const searchQuery = `${termoBusca}${estruturaInfo}${quartosTxt} ${finalidadeLabel} ${p.bairro} ${p.cidade} ${p.estado} site:olx.com.br OR site:zapimoveis.com.br OR site:vivareal.com.br OR site:imovelweb.com.br OR site:chavesnamao.com.br`;
+  const queryBase = `${termoBusca}${estruturaInfo}${quartosTxt} ${finalidadeLabel} ${p.bairro} ${p.cidade} ${p.estado}`;
+  const targetSites = [
+    "olx.com.br",
+    "zapimoveis.com.br",
+    "vivareal.com.br",
+    "chavesnamao.com.br",
+    "imovelweb.com.br",
+    "wimoveis.com.br",
+  ];
+  const searchQueries = [
+    queryBase,
+    ...targetSites.map((site) => `${queryBase} site:${site}`),
+  ];
 
-  console.log("[external] firecrawl search start", { query: searchQuery });
+  console.log("[external] firecrawl search start", { queries: searchQueries });
 
   // 1) BUSCA REAL via Firecrawl (Google search + scrape do markdown de cada resultado)
   let searchResults: Array<{ url: string; title?: string; description?: string; markdown?: string }> = [];
   try {
-    const ctrl = new AbortController();
-    const timeoutId = setTimeout(() => ctrl.abort(), 22000);
-    const fcResp = await fetch("https://api.firecrawl.dev/v2/search", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${FIRECRAWL_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      signal: ctrl.signal,
-      body: JSON.stringify({
-        query: searchQuery,
-        limit: 10,
-        lang: "pt",
-        country: "br",
-        scrapeOptions: { formats: ["markdown"], onlyMainContent: true },
-      }),
-    });
-    clearTimeout(timeoutId);
-
-    if (!fcResp.ok) {
-      const errTxt = await fcResp.text().catch(() => "");
-      console.error("[external] firecrawl error", fcResp.status, errTxt.slice(0, 500));
-      return null;
-    }
-    const fcData = await fcResp.json();
-    // Firecrawl v2: { success, data: { web: [...] } } OR { success, data: [...] }
-    const raw = fcData?.data?.web ?? fcData?.data ?? [];
-    searchResults = Array.isArray(raw) ? raw : [];
+    const batches = await Promise.allSettled(searchQueries.map(async (query, index) => {
+      const ctrl = new AbortController();
+      const timeoutId = setTimeout(() => ctrl.abort(), 14000);
+      const fcResp = await fetch("https://api.firecrawl.dev/v2/search", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${FIRECRAWL_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        signal: ctrl.signal,
+        body: JSON.stringify({
+          query,
+          limit: index === 0 ? 8 : 4,
+          lang: "pt",
+          country: "br",
+          scrapeOptions: { formats: ["markdown"], onlyMainContent: true },
+        }),
+      });
+      clearTimeout(timeoutId);
+      if (!fcResp.ok) {
+        const errTxt = await fcResp.text().catch(() => "");
+        console.error("[external] firecrawl error", fcResp.status, errTxt.slice(0, 500));
+        return [];
+      }
+      const fcData = await fcResp.json();
+      const raw = fcData?.data?.web ?? fcData?.data ?? [];
+      return Array.isArray(raw) ? raw : [];
+    }));
+    const seenUrls = new Set<string>();
+    searchResults = batches
+      .flatMap((b) => b.status === "fulfilled" ? b.value : [])
+      .filter((r) => {
+        if (!r?.url || seenUrls.has(r.url)) return false;
+        seenUrls.add(r.url);
+        return true;
+      })
+      .slice(0, 22);
     console.log("[external] firecrawl results:", searchResults.length);
   } catch (e) {
     console.error("[external] firecrawl fetch failed", String(e));
@@ -510,7 +530,7 @@ async function fetchExternalMarket(
 
   // 2) Monta um corpus enxuto pra IA extrair preço/área de cada URL real
   const corpus = searchResults.slice(0, 10).map((r, idx) => {
-    const md = (r.markdown || "").slice(0, 1500); // limita pra não estourar contexto
+    const md = (r.markdown || "").slice(0, 1200); // limita pra não estourar contexto
     return `[${idx + 1}] URL: ${r.url}\nTITULO: ${r.title || ""}\nDESC: ${r.description || ""}\nCONTEUDO:\n${md}`;
   }).join("\n\n---\n\n");
 
