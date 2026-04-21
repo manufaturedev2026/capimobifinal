@@ -73,6 +73,23 @@ export type ValuationReportData = {
   avaliadorNome?: string;
   avaliadorEmail?: string;
   empresaNome?: string;
+  analiseVisual?: {
+    scores: {
+      visual_externo: number;
+      interior: number;
+      acabamento_visual: number;
+      conservacao_aparente: number;
+      liquidez_visual: number;
+    };
+    score_visual_geral: number;
+    ajuste_total_pct: number;
+    resumo_externo: string;
+    resumo_interno: string;
+    resumo_conservacao: string;
+    resumo_geral: string;
+    sugestoes_melhorias: string[];
+    total_fotos_analisadas: number;
+  };
 };
 
 const fmtBRL = (v: number) =>
