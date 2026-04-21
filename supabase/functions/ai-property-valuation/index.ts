@@ -1113,7 +1113,7 @@ Deno.serve(async (req) => {
       ? `Análise baseada em ${market.total} comparativos do ${internoLabel}`
       : "Tabela regional de preços";
 
-    await supabase.from("property_valuations").insert({
+    const { data: insertedValuation } = await supabase.from("property_valuations").insert({
       user_id: userId,
       estado: data.estado, cidade: data.cidade, bairro: data.bairro,
       rua: data.rua, numero: data.numero, cep: data.cep,
