@@ -55,6 +55,14 @@ Deno.serve(async (req) => {
 
     if (!profiles) return json({ ok: true, processed: 0 });
 
+    // Carrega lista de e-mails excluídos do funil
+    const { data: excludedRows } = await admin
+      .from("funnel_excluded_emails")
+      .select("email");
+    const excludedSet = new Set<string>(
+      (excludedRows || []).map((r: any) => String(r.email).toLowerCase().trim())
+    );
+
     let sent = 0, failed = 0, skipped = 0;
     const now = Date.now();
 
