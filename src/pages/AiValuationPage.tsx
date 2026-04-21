@@ -205,6 +205,7 @@ export default function AiValuationPage() {
 
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Valuation | null>(null);
+  const [currentValuationId, setCurrentValuationId] = useState<string | null>(null);
 
   // Análise visual por fotos
   const [fotos, setFotos] = useState<FotoItem[]>([]);
@@ -212,6 +213,8 @@ export default function AiValuationPage() {
 
   const [historyOpen, setHistoryOpen] = useState(false);
   const [history, setHistory] = useState<any[]>([]);
+  const [historySearch, setHistorySearch] = useState("");
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const [adOpen, setAdOpen] = useState(false);
   const [adLoading, setAdLoading] = useState(false);
