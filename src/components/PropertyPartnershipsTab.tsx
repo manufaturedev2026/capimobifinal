@@ -658,8 +658,7 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
             </div>
           )}
         </div>
-        );
-      })()}
+      )}
 
       {/* ===== CONFIG DIALOG ===== */}
       <Dialog open={!!configItem} onOpenChange={(open) => !open && setConfigItem(null)}>
@@ -878,7 +877,8 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
             </div>
           )}
         </div>
-      )}
+        );
+      })()}
 
       {/* ===== DETAIL DIALOG ===== */}
       <Dialog open={!!detailItem} onOpenChange={(open) => !open && setDetailItem(null)}>
