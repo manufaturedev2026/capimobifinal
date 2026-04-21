@@ -250,15 +250,16 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
         const city = viaCep.localidade as string;
         const stateUf = viaCep.uf as string;
 
-        // Busca SOMENTE por CEP e bairro/cidade. Nunca por nome de rua (Photon retorna ruas homônimas em outros bairros).
+        // Estratégia: priorizar buscas com BAIRRO (mais preciso que CEP no Photon).
         const cepFormatted = `${cleanCep.slice(0, 5)}-${cleanCep.slice(5)}`;
         const photonQueries = [
-          cleanCep,
-          cepFormatted,
-          `${cepFormatted}, Brasil`,
+          [street, numberPart, district, city, stateUf, "Brasil"].filter(Boolean).join(", "),
+          [street, district, city, stateUf, "Brasil"].filter(Boolean).join(", "),
+          [district, city, stateUf, "Brasil"].filter(Boolean).join(", "),
           [cepFormatted, district, city, stateUf, "Brasil"].filter(Boolean).join(", "),
           [cleanCep, district, city, stateUf, "Brasil"].filter(Boolean).join(", "),
-          [district, city, stateUf, "Brasil"].filter(Boolean).join(", "),
+          cepFormatted,
+          cleanCep,
         ];
 
         const allResults = (
@@ -276,14 +277,15 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
             const [lon, lat] = feature.geometry?.coordinates ?? [];
             if (typeof lat !== "number" || typeof lon !== "number") return null;
 
+            const featureName = feature.properties?.street || feature.properties?.name || "";
             const featureDistrict = feature.properties?.district || "";
             const featureCity = feature.properties?.city || "";
             const featurePostcode = (feature.properties?.postcode || "").replace(/\D/g, "");
 
-            // DESCARTA: cidade diferente — sempre.
+            // DESCARTA: cidade diferente.
             if (normalizedCity && normalizeText(featureCity) && normalizeText(featureCity) !== normalizedCity) return null;
 
-            // DESCARTA: bairro diferente quando temos bairro do ViaCEP (evita rua homônima em outro bairro).
+            // DESCARTA: bairro diferente quando temos bairro do ViaCEP (regra dura).
             if (
               normalizedDistrict &&
               normalizeText(featureDistrict) &&
@@ -292,19 +294,23 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
               return null;
             }
 
-            // DESCARTA: postcode com prefixo diferente (estado/região errado).
+            // DESCARTA: postcode com prefixo diferente (região errada).
             if (featurePostcode && !featurePostcode.startsWith(cepPrefix)) return null;
 
             let score = 0;
-            if (featurePostcode === cleanCep) score += 1000;
+
+            // Bairro exato = sinal mais forte (ViaCEP confirmou o bairro).
+            if (normalizedDistrict && normalizeText(featureDistrict) === normalizedDistrict) score += 500;
+
+            // Rua exata dentro do bairro correto = match ideal.
+            if (normalizedStreet && normalizeStreet(featureName) === normalizedStreet) score += 400;
+
+            // CEP exato confirma; CEP próximo dá pontos proporcionais.
+            if (featurePostcode === cleanCep) score += 300;
             else if (featurePostcode && featurePostcode.startsWith(cepPrefix)) {
               const distance = Math.abs(Number(featurePostcode) - cepNumeric);
-              score += Math.max(50, 500 - distance);
-            } else {
-              score += 10; // sem postcode mas bairro/cidade batem
+              score += Math.max(20, 200 - distance / 2);
             }
-
-            if (normalizedDistrict && normalizeText(featureDistrict) === normalizedDistrict) score += 30;
 
             return { lat, lon, score, postcode: featurePostcode };
           })
