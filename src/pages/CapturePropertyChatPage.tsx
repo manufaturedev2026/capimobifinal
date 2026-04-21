@@ -256,6 +256,7 @@ export default function CapturePropertyChatPage() {
             merged = {
               ...merged,
               flowType: mappedFlow,
+              chatMode: b.use_ai === false ? "flow" : "ai",
               attendantName: b.attendant_name || merged.attendantName,
               attendantAvatar: b.attendant_avatar || merged.attendantAvatar,
               openingMessage: b.opening_message || merged.openingMessage,

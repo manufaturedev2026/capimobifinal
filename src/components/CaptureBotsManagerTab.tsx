@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { Bot, Copy, ExternalLink, Sparkles, Plus, Trash2, Save, Edit3, Upload, Loader2, X, Home as HomeIcon, Users, Gem } from "lucide-react";
+import { Bot, Copy, ExternalLink, Sparkles, Plus, Trash2, Save, Edit3, Upload, Loader2, X, Home as HomeIcon, Users, Gem, Zap, FileText } from "lucide-react";
 
 interface Props {
   sellerId: string;
@@ -28,6 +28,7 @@ interface CaptureBot {
   success_cta_url: string | null;
   whatsapp_group_url: string | null;
   is_active: boolean;
+  use_ai: boolean;
 }
 
 const TYPE_META: Record<BotType, { label: string; icon: any; color: string; defaultName: string; defaultOpening: string; defaultCtaLabel: string }> = {
@@ -85,15 +86,15 @@ export default function CaptureBotsManagerTab({ sellerId, sellerSlug }: Props) {
 
   useEffect(() => { load(); }, [sellerId]);
 
-  const startNew = (type: BotType) => {
+  const startNew = (type: BotType, useAi: boolean) => {
     const meta = TYPE_META[type];
     setEditing({
       id: "",
       seller_id: sellerId,
       user_id: "",
       bot_type: type,
-      slug: type,
-      name: meta.defaultName,
+      slug: useAi ? type : `${type}-form`,
+      name: `${meta.defaultName}${useAi ? " (IA)" : " (Formulário)"}`,
       attendant_name: "Assistente Imobiliário",
       attendant_avatar: null,
       opening_message: meta.defaultOpening,
@@ -101,6 +102,7 @@ export default function CaptureBotsManagerTab({ sellerId, sellerSlug }: Props) {
       success_cta_url: null,
       whatsapp_group_url: null,
       is_active: true,
+      use_ai: useAi,
     });
   };
 
@@ -144,7 +146,7 @@ export default function CaptureBotsManagerTab({ sellerId, sellerSlug }: Props) {
         attendant_name: editing.attendant_name, attendant_avatar: editing.attendant_avatar,
         opening_message: editing.opening_message, success_cta_label: editing.success_cta_label,
         success_cta_url: editing.success_cta_url, whatsapp_group_url: editing.whatsapp_group_url,
-        is_active: editing.is_active,
+        is_active: editing.is_active, use_ai: editing.use_ai,
       }).eq("id", editing.id);
       setSaving(false);
       if (error) { toast({ title: "Erro", description: error.message, variant: "destructive" }); return; }
@@ -154,7 +156,7 @@ export default function CaptureBotsManagerTab({ sellerId, sellerSlug }: Props) {
         attendant_name: editing.attendant_name, attendant_avatar: editing.attendant_avatar,
         opening_message: editing.opening_message, success_cta_label: editing.success_cta_label,
         success_cta_url: editing.success_cta_url, whatsapp_group_url: editing.whatsapp_group_url,
-        is_active: editing.is_active,
+        is_active: editing.is_active, use_ai: editing.use_ai,
       });
       setSaving(false);
       if (error) { toast({ title: "Erro", description: error.message, variant: "destructive" }); return; }
@@ -281,6 +283,20 @@ export default function CaptureBotsManagerTab({ sellerId, sellerSlug }: Props) {
           <span className="text-sm font-medium text-foreground">Bot ativo (link funcionando)</span>
         </div>
 
+        <div className="flex items-start gap-3 rounded-2xl border border-border bg-background p-4 shadow-sm">
+          <Switch checked={editing.use_ai} onCheckedChange={(v) => setEditing({ ...editing, use_ai: v })} />
+          <div className="flex-1">
+            <p className="text-sm font-medium text-foreground flex items-center gap-1.5">
+              {editing.use_ai ? <><Zap className="w-3.5 h-3.5 text-primary" /> Conversa com IA</> : <><FileText className="w-3.5 h-3.5" /> Formulário fixo (sem IA)</>}
+            </p>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              {editing.use_ai
+                ? "O atendente conversa naturalmente com o lead usando IA."
+                : "Pergunta os campos em ordem fixa — não consome créditos de IA."}
+            </p>
+          </div>
+        </div>
+
         <Button onClick={save} disabled={saving} className="w-full sm:w-auto" size="lg">
           <Save className="w-4 h-4 mr-2" />
           {saving ? "Salvando..." : "Salvar bot"}
@@ -308,17 +324,38 @@ export default function CaptureBotsManagerTab({ sellerId, sellerSlug }: Props) {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-        {(Object.keys(TYPE_META) as BotType[]).map((t) => {
-          const m = TYPE_META[t];
-          const Icon = m.icon;
-          return (
-            <Button key={t} onClick={() => startNew(t)} variant="outline" size="lg" className="h-auto py-3 flex-col gap-1">
-              <div className="flex items-center gap-2"><Icon className="w-4 h-4" /> <Plus className="w-3 h-3" /></div>
-              <span className="text-xs font-bold">{m.label}</span>
-            </Button>
-          );
-        })}
+      <div className="space-y-3">
+        <div className="rounded-2xl border border-primary/20 bg-primary/5 p-3 sm:p-4">
+          <p className="text-xs font-bold text-primary flex items-center gap-1.5 mb-2"><Zap className="w-3.5 h-3.5" /> Bots com IA <span className="text-[10px] font-normal text-muted-foreground">(conversa inteligente)</span></p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            {(Object.keys(TYPE_META) as BotType[]).map((t) => {
+              const m = TYPE_META[t];
+              const Icon = m.icon;
+              return (
+                <Button key={`ai-${t}`} onClick={() => startNew(t, true)} variant="outline" size="lg" className="h-auto py-3 flex-col gap-1 bg-card hover:bg-primary/10 hover:border-primary/40">
+                  <div className="flex items-center gap-2"><Icon className="w-4 h-4 text-primary" /> <Plus className="w-3 h-3" /></div>
+                  <span className="text-xs font-bold">{m.label}</span>
+                </Button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-border bg-muted/30 p-3 sm:p-4">
+          <p className="text-xs font-bold text-foreground flex items-center gap-1.5 mb-2"><FileText className="w-3.5 h-3.5" /> Bots sem IA <span className="text-[10px] font-normal text-muted-foreground">(formulário fixo, não consome IA)</span></p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            {(Object.keys(TYPE_META) as BotType[]).map((t) => {
+              const m = TYPE_META[t];
+              const Icon = m.icon;
+              return (
+                <Button key={`form-${t}`} onClick={() => startNew(t, false)} variant="outline" size="lg" className="h-auto py-3 flex-col gap-1 bg-card hover:bg-accent">
+                  <div className="flex items-center gap-2"><Icon className="w-4 h-4" /> <Plus className="w-3 h-3" /></div>
+                  <span className="text-xs font-bold">{m.label}</span>
+                </Button>
+              );
+            })}
+          </div>
+        </div>
       </div>
 
       {bots.length === 0 ? (
@@ -339,9 +376,12 @@ export default function CaptureBotsManagerTab({ sellerId, sellerSlug }: Props) {
                     <Icon className="w-5 h-5" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
+                <div className="flex items-center gap-2 flex-wrap">
                       <p className="font-bold truncate">{bot.name}</p>
                       <span className={`text-[10px] px-2 py-0.5 rounded-full border ${meta.color}`}>{meta.label}</span>
+                      <span className={`text-[10px] px-2 py-0.5 rounded-full border flex items-center gap-1 ${bot.use_ai ? "bg-primary/10 text-primary border-primary/30" : "bg-muted text-muted-foreground border-border"}`}>
+                        {bot.use_ai ? <><Zap className="w-2.5 h-2.5" /> IA</> : <><FileText className="w-2.5 h-2.5" /> Formulário</>}
+                      </span>
                       {!bot.is_active && <span className="text-[10px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground">Inativo</span>}
                     </div>
                     <p className="text-[10px] text-muted-foreground font-mono truncate mt-1">{url}</p>
