@@ -384,24 +384,43 @@ NÃO invente valores diferentes dos calculados.`;
   }
 }
 
-function fallbackAnalysis(p: Payload, calc: ReturnType<typeof calcular>) {
+function fallbackAnalysis(p: Payload, calc: ReturnType<typeof calcular>, market: MarketContext) {
   const pontos_fortes: string[] = [];
   const pontos_atencao: string[] = [];
+  const sugestoes_valorizacao: string[] = [];
 
   for (const b of calc.breakdown) {
     if (b.pct > 0) pontos_fortes.push(`${b.label} agrega valor (+${b.pct}%)`);
-    else pontos_atencao.push(`${b.label} reduz valor (${b.pct}%)`);
+    else pontos_atencao.push(`${b.label} reduz valor (${b.pct}%) na comparação local`);
   }
   if (pontos_fortes.length === 0) pontos_fortes.push("Imóvel em padrão de mercado para a região");
-  if (pontos_atencao.length === 0) pontos_atencao.push("Sem pontos críticos identificados");
+  if (pontos_atencao.length === 0) pontos_atencao.push("Sem pontos críticos identificados frente ao mercado local");
 
-  const justificativa = `Avaliação técnica para ${p.tipo.toLowerCase()} em ${p.bairro}, ${p.cidade}/${p.estado}.
+  if (p.acabamento === "Simples" && market.modernizationPenaltyWeight > 0.6) {
+    sugestoes_valorizacao.push("Modernizar pintura, piso e iluminação pode elevar valor em 5-8%");
+  }
+  if ((p.garagem ?? 0) === 0 && market.garagePenaltyWeight > 0.5) {
+    sugestoes_valorizacao.push("Adaptar vaga coberta, mesmo que externa, recupera 3-6% do valor");
+  }
+  if (!p.documentacao?.includes("Financiável")) {
+    sugestoes_valorizacao.push("Regularizar para financiamento bancário amplia público em ~30%");
+  }
+  if (sugestoes_valorizacao.length === 0) {
+    sugestoes_valorizacao.push("Imóvel já em condições competitivas para o mercado atual");
+  }
 
-Aplicamos preço base de mercado para a região e ajustamos por características do imóvel: ${calc.bonusTotal > 0 ? `+${calc.bonusTotal}% em bônus` : "sem bônus"} e ${calc.descontoTotal < 0 ? `${calc.descontoTotal}% em descontos` : "sem descontos"}, resultando em ${calc.ajusteTotal > 0 ? "+" : ""}${calc.ajusteTotal}% de ajuste líquido.
+  const justificativa = `Avaliação técnica para ${p.tipo.toLowerCase()} em ${p.bairro}, ${p.cidade}/${p.estado}. ${market.total > 0 ? `Comparada com ${market.total} imóvel(is) similares no mercado local (média de ${market.avgBedrooms.toFixed(1)} dormitórios e ${Math.round(market.avgArea)}m²).` : "Sem comparáveis cadastrados — usados parâmetros de mercado regional."}
 
-O valor final de R$ ${calc.valorFinal.toLocaleString("pt-BR")} reflete metragem, padrão construtivo, conservação e atributos diferenciais. A faixa de venda recomendada considera margem de negociação realista para o mercado atual.`;
+Aplicamos preço base de mercado e ajustamos por características: ${calc.bonusTotal > 0 ? `+${calc.bonusTotal}% em bônus` : "sem bônus"} e ${calc.descontoTotal < 0 ? `${calc.descontoTotal}% em descontos` : "sem descontos"}, resultando em ${calc.ajusteTotal > 0 ? "+" : ""}${calc.ajusteTotal}% de ajuste líquido.
 
-  return { justificativa, pontos_fortes: pontos_fortes.slice(0, 5), pontos_atencao: pontos_atencao.slice(0, 4) };
+O valor final de R$ ${calc.valorFinal.toLocaleString("pt-BR")} reflete metragem, padrão construtivo, conservação, atributos diferenciais e a realidade competitiva da região.`;
+
+  return {
+    justificativa,
+    pontos_fortes: pontos_fortes.slice(0, 5),
+    pontos_atencao: pontos_atencao.slice(0, 4),
+    sugestoes_valorizacao: sugestoes_valorizacao.slice(0, 4),
+  };
 }
 
 Deno.serve(async (req) => {
