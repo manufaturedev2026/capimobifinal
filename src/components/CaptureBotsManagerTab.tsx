@@ -231,7 +231,7 @@ export default function CaptureBotsManagerTab({ sellerId, sellerSlug }: Props) {
                   onChange={(e) => { const f = e.target.files?.[0]; if (f) handleAvatarUpload(f); e.target.value = ""; }}
                 />
                 <div className="flex gap-2">
-                  <Button type="button" variant="outline" size="sm" onClick={() => fileInputRef.current?.click()} disabled={uploadingAvatar} className="flex-1">
+                  <Button type="button" variant="outline" size="sm" onClick={() => fileInputRef.current?.click()} disabled={uploadingAvatar} className="flex-1 bg-card text-foreground hover:bg-accent hover:text-accent-foreground border-border">
                     {uploadingAvatar ? <Loader2 className="w-3 h-3 mr-1 animate-spin" /> : <Upload className="w-3 h-3 mr-1" />}
                     {uploadingAvatar ? "Enviando..." : "Enviar foto"}
                   </Button>
