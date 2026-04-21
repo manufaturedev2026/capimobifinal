@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Plus, Trash2, Save, Send, Loader2, Mail, Calendar, Eye, EyeOff, Copy, FileText, BarChart3, X, Sparkles } from "lucide-react";
+import { Plus, Trash2, Save, Send, Loader2, Mail, Calendar, Eye, EyeOff, Copy, FileText, BarChart3, X, Sparkles, Users, UserMinus, UserPlus, Search } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -19,6 +19,18 @@ type SendRow = {
   error_message: string | null;
   sent_at: string;
 };
+
+type Recipient = {
+  profile_id: string;
+  user_id: string;
+  full_name: string;
+  email: string;
+  created_at: string;
+  sent_count: number;
+  last_sent_at: string | null;
+};
+
+type Excluded = { id: string; email: string; reason: string | null; created_at: string };
 
 const DEFAULT_HTML = `<div style="font-family:system-ui,sans-serif;max-width:560px;margin:auto;padding:24px;background:#f8fafc;border-radius:12px;color:#0f172a">
   <h2>Olá {{nome}}, bem-vindo(a) à Capimobi!</h2>
@@ -85,19 +97,55 @@ export default function AdminFunnelTab() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<string | null>(null);
   const [running, setRunning] = useState(false);
-  const [tab, setTab] = useState<"steps" | "history">("steps");
+  const [tab, setTab] = useState<"steps" | "history" | "recipients">("steps");
   const [previewStep, setPreviewStep] = useState<Step | null>(null);
   const [showTemplates, setShowTemplates] = useState<string | null>(null); // step id
   const [historyFilter, setHistoryFilter] = useState<"all" | "enviado" | "falhou">("all");
+  const [recipients, setRecipients] = useState<Recipient[]>([]);
+  const [excluded, setExcluded] = useState<Excluded[]>([]);
+  const [recipientFilter, setRecipientFilter] = useState<"all" | "active" | "excluded">("all");
+  const [recipientSearch, setRecipientSearch] = useState("");
+  const [newExcludeEmail, setNewExcludeEmail] = useState("");
+  const [busyEmail, setBusyEmail] = useState<string | null>(null);
 
   const load = async () => {
     setLoading(true);
-    const [{ data: s }, { data: h }] = await Promise.all([
+    const [{ data: s }, { data: h }, { data: profilesData }, { data: exData }] = await Promise.all([
       supabase.from("funnel_steps").select("*").order("day_offset"),
-      supabase.from("funnel_sends").select("*").order("sent_at", { ascending: false }).limit(500),
+      supabase.from("funnel_sends").select("*").order("sent_at", { ascending: false }).limit(2000),
+      supabase.from("profiles").select("id, user_id, full_name, email, created_at").not("email", "is", null).order("created_at", { ascending: false }),
+      supabase.from("funnel_excluded_emails").select("*").order("created_at", { ascending: false }),
     ]);
     setSteps((s as Step[]) || []);
-    setSends((h as SendRow[]) || []);
+    const sendRows = (h as SendRow[]) || [];
+    setSends(sendRows);
+    setExcluded((exData as Excluded[]) || []);
+
+    // Build recipients with stats
+    const sendsByEmail: Record<string, { count: number; last: string | null }> = {};
+    sendRows.forEach((row) => {
+      const k = row.to_email.toLowerCase();
+      if (!sendsByEmail[k]) sendsByEmail[k] = { count: 0, last: null };
+      if (row.status === "enviado") {
+        sendsByEmail[k].count++;
+        if (!sendsByEmail[k].last || new Date(row.sent_at) > new Date(sendsByEmail[k].last!)) {
+          sendsByEmail[k].last = row.sent_at;
+        }
+      }
+    });
+    const recs: Recipient[] = ((profilesData as any[]) || []).map((p) => {
+      const stats = sendsByEmail[(p.email || "").toLowerCase()] || { count: 0, last: null };
+      return {
+        profile_id: p.id,
+        user_id: p.user_id,
+        full_name: p.full_name || "—",
+        email: p.email,
+        created_at: p.created_at,
+        sent_count: stats.count,
+        last_sent_at: stats.last,
+      };
+    });
+    setRecipients(recs);
     setLoading(false);
   };
 
@@ -191,6 +239,71 @@ export default function AdminFunnelTab() {
 
   const renderPreview = (html: string, name = "João Silva") => html.replace(/\{\{nome\}\}/g, name);
 
+  const excludedSet = useMemo(
+    () => new Set(excluded.map((e) => e.email.toLowerCase().trim())),
+    [excluded]
+  );
+
+  const excludeEmail = async (email: string, reason?: string) => {
+    const clean = email.trim().toLowerCase();
+    if (!clean) return;
+    setBusyEmail(clean);
+    const { error } = await supabase
+      .from("funnel_excluded_emails")
+      .insert({ email: clean, reason: reason || "Removido manualmente pelo admin" });
+    setBusyEmail(null);
+    if (error) {
+      toast({ title: "Erro", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "E-mail removido do funil", description: clean });
+      load();
+    }
+  };
+
+  const reincludeEmail = async (email: string) => {
+    const clean = email.trim().toLowerCase();
+    setBusyEmail(clean);
+    const { error } = await supabase.from("funnel_excluded_emails").delete().eq("email", clean);
+    setBusyEmail(null);
+    if (error) toast({ title: "Erro", description: error.message, variant: "destructive" });
+    else { toast({ title: "E-mail reincluído no funil", description: clean }); load(); }
+  };
+
+  const addManualExclusion = async () => {
+    const emails = newExcludeEmail
+      .split(/[\s,;]+/)
+      .map((e) => e.trim().toLowerCase())
+      .filter((e) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e));
+    if (emails.length === 0) {
+      toast({ title: "Nenhum e-mail válido", variant: "destructive" });
+      return;
+    }
+    const rows = emails.map((email) => ({ email, reason: "Adicionado manualmente" }));
+    const { error } = await supabase.from("funnel_excluded_emails").upsert(rows, { onConflict: "email" });
+    if (error) toast({ title: "Erro", description: error.message, variant: "destructive" });
+    else {
+      toast({ title: `${emails.length} e-mail(s) excluído(s) do funil` });
+      setNewExcludeEmail("");
+      load();
+    }
+  };
+
+  const filteredRecipients = useMemo(() => {
+    let list = recipients;
+    if (recipientFilter === "active") list = list.filter((r) => !excludedSet.has(r.email.toLowerCase()));
+    if (recipientFilter === "excluded") list = list.filter((r) => excludedSet.has(r.email.toLowerCase()));
+    const q = recipientSearch.trim().toLowerCase();
+    if (q) list = list.filter((r) => r.email.toLowerCase().includes(q) || r.full_name.toLowerCase().includes(q));
+    return list;
+  }, [recipients, recipientFilter, excludedSet, recipientSearch]);
+
+  // E-mails excluídos manualmente que NÃO são perfis cadastrados
+  const orphanExclusions = useMemo(() => {
+    const profileEmails = new Set(recipients.map((r) => r.email.toLowerCase()));
+    return excluded.filter((e) => !profileEmails.has(e.email.toLowerCase()));
+  }, [excluded, recipients]);
+
+
   return (
     <div className="space-y-6 text-foreground">
       {/* Header */}
@@ -238,9 +351,12 @@ export default function AdminFunnelTab() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-2 border-b border-border">
+      <div className="flex gap-2 border-b border-border flex-wrap">
         <button onClick={() => setTab("steps")} className={`px-4 py-2 font-medium ${tab === "steps" ? "border-b-2 border-primary text-primary" : "text-muted-foreground"}`}>
           Etapas ({steps.length})
+        </button>
+        <button onClick={() => setTab("recipients")} className={`px-4 py-2 font-medium flex items-center gap-1.5 ${tab === "recipients" ? "border-b-2 border-primary text-primary" : "text-muted-foreground"}`}>
+          <Users className="w-4 h-4" /> Destinatários ({recipients.length})
         </button>
         <button onClick={() => setTab("history")} className={`px-4 py-2 font-medium ${tab === "history" ? "border-b-2 border-primary text-primary" : "text-muted-foreground"}`}>
           Histórico ({sends.length})
@@ -358,6 +474,141 @@ export default function AdminFunnelTab() {
           {steps.length === 0 && (
             <div className="text-center py-12 text-muted-foreground border-2 border-dashed border-border rounded-xl">
               Nenhuma etapa criada. Use os botões acima para adicionar a primeira etapa.
+            </div>
+          )}
+        </div>
+      ) : tab === "recipients" ? (
+        <div className="space-y-4">
+          {/* Adicionar exclusão manual */}
+          <div className="bg-card border border-border rounded-xl p-4 space-y-2">
+            <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+              <UserMinus className="w-4 h-4 text-destructive" />
+              Excluir e-mails do funil manualmente
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Cole um ou mais e-mails (separados por vírgula, espaço ou linha). Eles nunca receberão e-mails do funil.
+            </p>
+            <div className="flex gap-2 flex-col sm:flex-row">
+              <textarea
+                value={newExcludeEmail}
+                onChange={(e) => setNewExcludeEmail(e.target.value)}
+                placeholder="email1@exemplo.com, email2@exemplo.com"
+                rows={2}
+                className="flex-1 px-3 py-2 border border-input rounded-lg bg-background text-foreground text-sm"
+              />
+              <button
+                onClick={addManualExclusion}
+                className="px-4 py-2 rounded-lg bg-destructive text-destructive-foreground font-medium flex items-center justify-center gap-2 hover:opacity-90"
+              >
+                <UserMinus className="w-4 h-4" /> Excluir
+              </button>
+            </div>
+          </div>
+
+          {/* Filtros */}
+          <div className="flex gap-2 flex-wrap items-center">
+            {(["all", "active", "excluded"] as const).map((f) => (
+              <button
+                key={f}
+                onClick={() => setRecipientFilter(f)}
+                className={`px-3 py-1.5 rounded-lg text-sm ${recipientFilter === f ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
+              >
+                {f === "all" ? `Todos (${recipients.length})` : f === "active" ? `No funil (${recipients.filter((r) => !excludedSet.has(r.email.toLowerCase())).length})` : `Excluídos (${recipients.filter((r) => excludedSet.has(r.email.toLowerCase())).length})`}
+              </button>
+            ))}
+            <div className="flex-1 min-w-[200px] relative">
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <input
+                value={recipientSearch}
+                onChange={(e) => setRecipientSearch(e.target.value)}
+                placeholder="Buscar por nome ou e-mail..."
+                className="w-full pl-9 pr-3 py-1.5 border border-input rounded-lg bg-background text-foreground text-sm"
+              />
+            </div>
+          </div>
+
+          {/* Tabela de destinatários */}
+          <div className="bg-card text-card-foreground border border-border rounded-xl overflow-hidden shadow-sm overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-muted text-muted-foreground">
+                <tr>
+                  <th className="text-left p-3">Nome</th>
+                  <th className="text-left p-3">E-mail</th>
+                  <th className="text-left p-3">Cadastrado em</th>
+                  <th className="text-left p-3">Recebeu</th>
+                  <th className="text-left p-3">Status</th>
+                  <th className="text-right p-3">Ação</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredRecipients.map((r) => {
+                  const isExcluded = excludedSet.has(r.email.toLowerCase());
+                  return (
+                    <tr key={r.profile_id} className="border-t border-border">
+                      <td className="p-3 text-foreground">{r.full_name}</td>
+                      <td className="p-3 text-foreground">{r.email}</td>
+                      <td className="p-3 text-muted-foreground whitespace-nowrap text-xs">{new Date(r.created_at).toLocaleDateString("pt-BR")}</td>
+                      <td className="p-3 text-foreground text-xs">
+                        {r.sent_count} e-mail(s)
+                        {r.last_sent_at && <div className="text-muted-foreground">último: {new Date(r.last_sent_at).toLocaleDateString("pt-BR")}</div>}
+                      </td>
+                      <td className="p-3">
+                        {isExcluded ? (
+                          <span className="px-2 py-0.5 rounded text-xs bg-destructive/10 text-destructive">Excluído</span>
+                        ) : (
+                          <span className="px-2 py-0.5 rounded text-xs bg-primary/10 text-primary">No funil</span>
+                        )}
+                      </td>
+                      <td className="p-3 text-right">
+                        {isExcluded ? (
+                          <button
+                            onClick={() => reincludeEmail(r.email)}
+                            disabled={busyEmail === r.email.toLowerCase()}
+                            className="px-2.5 py-1 rounded-lg bg-primary/10 text-primary text-xs flex items-center gap-1 ml-auto hover:bg-primary/20"
+                          >
+                            {busyEmail === r.email.toLowerCase() ? <Loader2 className="w-3 h-3 animate-spin" /> : <UserPlus className="w-3 h-3" />}
+                            Reincluir
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => excludeEmail(r.email)}
+                            disabled={busyEmail === r.email.toLowerCase()}
+                            className="px-2.5 py-1 rounded-lg bg-destructive/10 text-destructive text-xs flex items-center gap-1 ml-auto hover:bg-destructive/20"
+                          >
+                            {busyEmail === r.email.toLowerCase() ? <Loader2 className="w-3 h-3 animate-spin" /> : <UserMinus className="w-3 h-3" />}
+                            Remover
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+                {filteredRecipients.length === 0 && (
+                  <tr><td colSpan={6} className="p-8 text-center text-muted-foreground">Nenhum destinatário encontrado.</td></tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Exclusões "órfãs" — emails na lista mas sem perfil */}
+          {orphanExclusions.length > 0 && (
+            <div className="bg-card border border-border rounded-xl p-4">
+              <div className="text-sm font-semibold text-foreground mb-2">
+                E-mails excluídos sem perfil cadastrado ({orphanExclusions.length})
+              </div>
+              <div className="space-y-1.5">
+                {orphanExclusions.map((e) => (
+                  <div key={e.id} className="flex items-center justify-between gap-2 text-sm">
+                    <span className="text-foreground">{e.email}</span>
+                    <button
+                      onClick={() => reincludeEmail(e.email)}
+                      className="px-2 py-0.5 rounded bg-primary/10 text-primary text-xs flex items-center gap-1 hover:bg-primary/20"
+                    >
+                      <UserPlus className="w-3 h-3" /> Remover da exclusão
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>

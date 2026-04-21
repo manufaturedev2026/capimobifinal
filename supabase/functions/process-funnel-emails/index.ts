@@ -55,6 +55,14 @@ Deno.serve(async (req) => {
 
     if (!profiles) return json({ ok: true, processed: 0 });
 
+    // Carrega lista de e-mails excluídos do funil
+    const { data: excludedRows } = await admin
+      .from("funnel_excluded_emails")
+      .select("email");
+    const excludedSet = new Set<string>(
+      (excludedRows || []).map((r: any) => String(r.email).toLowerCase().trim())
+    );
+
     let sent = 0, failed = 0, skipped = 0;
     const now = Date.now();
 
@@ -68,6 +76,8 @@ Deno.serve(async (req) => {
     });
 
     for (const profile of profiles) {
+      // Pula e-mails excluídos do funil
+      if (excludedSet.has(String(profile.email).toLowerCase().trim())) { skipped++; continue; }
       const ageDays = Math.floor((now - new Date(profile.created_at).getTime()) / 86400000);
 
       for (const step of stepsFiltered) {
