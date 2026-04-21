@@ -48,7 +48,119 @@ const DOC_PCT: Record<string, number> = {
   "Escritura pendente": -8, "Averbação pendente": -6, "Pendente": -8,
 };
 
-function calcular(p: Payload, precoM2: number) {
+// Comparáveis do mercado local
+type Comparable = {
+  bedrooms: number | null;
+  bathrooms: number | null;
+  suites: number | null;
+  area: number | null;
+  built_area: number | null;
+  price: number | null;
+};
+
+type MarketContext = {
+  total: number;
+  avgBedrooms: number;
+  avgBathrooms: number;
+  avgArea: number;
+  avgPrice: number;
+  // Heurísticas inferidas
+  garagePenaltyWeight: number;       // 0..1 — quão crítica é a falta de garagem
+  modernizationPenaltyWeight: number; // 0..1 — quão importante é acabamento
+  bedroomExpectation: number;         // qtde média de dormitórios esperada
+};
+
+async function fetchMarketContext(
+  supabase: any,
+  estado: string,
+  cidade: string,
+  bairro: string,
+  tipo: string,
+  areaRef: number
+): Promise<MarketContext> {
+  // Mapear tipo do formulário → category de seller_items
+  const categoryMap: Record<string, string> = {
+    "Casa": "casa",
+    "Apartamento": "apartamento",
+    "Terreno": "terreno",
+    "Comercial": "comercial",
+    "Rural": "rural",
+  };
+  const category = categoryMap[tipo] ?? tipo.toLowerCase();
+
+  // Tentar bairro primeiro, fallback cidade
+  let { data: items } = await supabase
+    .from("seller_items")
+    .select("bedrooms,bathrooms,suites,area,built_area,price")
+    .eq("state", estado)
+    .ilike("city", cidade)
+    .ilike("neighborhood", bairro)
+    .eq("category", category)
+    .eq("status", "ativo")
+    .limit(50);
+
+  if (!items || items.length < 3) {
+    const fallback = await supabase
+      .from("seller_items")
+      .select("bedrooms,bathrooms,suites,area,built_area,price")
+      .eq("state", estado)
+      .ilike("city", cidade)
+      .eq("category", category)
+      .eq("status", "ativo")
+      .limit(80);
+    items = fallback.data ?? [];
+  }
+
+  const list: Comparable[] = items ?? [];
+  const total = list.length;
+
+  if (total === 0) {
+    // Sem comparáveis — assume defaults conservadores
+    return {
+      total: 0,
+      avgBedrooms: 3,
+      avgBathrooms: 2,
+      avgArea: areaRef,
+      avgPrice: 0,
+      garagePenaltyWeight: 0.6,
+      modernizationPenaltyWeight: 0.6,
+      bedroomExpectation: 3,
+    };
+  }
+
+  const avg = (arr: number[]) => arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
+  const beds = list.map(c => Number(c.bedrooms) || 0).filter(n => n > 0);
+  const baths = list.map(c => Number(c.bathrooms) || 0).filter(n => n > 0);
+  const areas = list.map(c => Number(c.built_area || c.area) || 0).filter(n => n > 0);
+  const prices = list.map(c => Number(c.price) || 0).filter(n => n > 0);
+
+  const avgBedrooms = avg(beds) || 3;
+  const avgBathrooms = avg(baths) || 2;
+  const avgArea = avg(areas) || areaRef;
+  const avgPrice = avg(prices);
+
+  // Garagem: heurística — área média alta + cidade indica padrão urbano com garagem essencial
+  // (sem coluna garage, usamos proxy: avgArea>=80m² e tipo Casa/Apartamento → garagem é padrão)
+  const garageEssential = (tipo === "Casa" || tipo === "Apartamento") && avgArea >= 80;
+  const garagePenaltyWeight = garageEssential ? Math.min(1, total / 10) : 0.2;
+
+  // Modernização: se preço médio é alto, mercado exige acabamento melhor
+  const pricePerM2Market = avgPrice && avgArea ? avgPrice / avgArea : 0;
+  const modernizationPenaltyWeight = pricePerM2Market > 4000 ? 0.9 : pricePerM2Market > 2500 ? 0.7 : 0.4;
+
+  return {
+    total,
+    avgBedrooms,
+    avgBathrooms,
+    avgArea,
+    avgPrice,
+    garagePenaltyWeight,
+    modernizationPenaltyWeight,
+    bedroomExpectation: Math.round(avgBedrooms),
+  };
+}
+
+function calcular(p: Payload, precoM2: number, market: MarketContext) {
   const breakdown: Array<{ label: string; pct: number }> = [];
   let bonusTotal = 0;
   let descontoTotal = 0;
@@ -74,23 +186,35 @@ function calcular(p: Payload, precoM2: number) {
   if (p.ruaRuim) aplica("Rua ruim/barulho", -5);
   if (p.areaRisco) aplica("Área de risco/alagamento", -8);
 
-  // Estrutura (só p/ não-terreno)
+  // Estrutura (só p/ não-terreno) — agora COMPARATIVO ao mercado local
   if (!isTerreno) {
     const suites = p.suites ?? 0;
     if (suites > 0) aplica(`${suites} suíte(s)`, suites * 2);
 
     const garagem = p.garagem ?? 0;
-    if (garagem === 0) aplica("Sem vaga de garagem", -6);
-    else if (garagem > 1) aplica(`Vagas extras (+${garagem - 1})`, (garagem - 1) * 1.5);
+    if (garagem === 0) {
+      // Penalidade contextual: -3% a -12% baseado em quão essencial garagem é no mercado local
+      const pct = -Math.round(3 + market.garagePenaltyWeight * 9);
+      if (pct < 0) aplica(`Sem garagem (mercado local exige)`, pct);
+    } else if (garagem > 1) {
+      aplica(`Vagas extras (+${garagem - 1})`, (garagem - 1) * 1.5);
+    }
 
     const banheiros = p.banheiros ?? 0;
     if (banheiros > 1) aplica(`Banheiros extras (+${banheiros - 1})`, (banheiros - 1) * 1);
 
-    // Quartos: penaliza poucos dormitórios para imóveis maiores
+    // Dormitórios x Metragem — comparativo ao esperado no mercado
     const quartos = p.quartos ?? 0;
     const areaRef = (p.areaConstruida && p.areaConstruida > 0) ? p.areaConstruida : p.areaTotal;
-    if (quartos > 0 && quartos <= 2 && areaRef >= 120) {
-      aplica(`Apenas ${quartos} dormitório(s) p/ ${areaRef}m²`, -4);
+    const expected = market.bedroomExpectation;
+    // Imóvel grande com poucos dormitórios em relação ao esperado pelo mercado
+    if (quartos > 0 && areaRef >= 150 && quartos <= 2 && quartos < expected) {
+      // -4% a -10% conforme gap
+      const gap = expected - quartos;
+      const pct = -Math.min(10, 4 + gap * 2);
+      aplica(`${quartos} dormitório(s) p/ ${areaRef}m² (mercado espera ~${expected})`, pct);
+    } else if (quartos > 0 && quartos < expected - 1 && areaRef >= 100) {
+      aplica(`Dormitórios abaixo da média do bairro (${quartos} vs ~${expected})`, -3);
     } else if (quartos >= 4) {
       aplica(`${quartos} dormitórios`, 3);
     }
@@ -101,18 +225,25 @@ function calcular(p: Payload, precoM2: number) {
     const pct = EXTRAS_PCT[ex];
     if (pct) aplica(ex, pct);
   }
-  // Vista privilegiada via flag
-  if (p.extras?.includes("Vista privilegiada")) {
-    // já contabilizado acima — evita duplicar
+
+  // Acabamento — agora com peso de modernização do mercado
+  const acabBase = ACABAMENTO_PCT[p.acabamento ?? "Médio"] ?? 0;
+  if (acabBase !== 0) {
+    // Se mercado exige modernização e acabamento é simples, intensifica desconto
+    const ajustado = (acabBase < 0)
+      ? Math.round(acabBase * (0.8 + market.modernizationPenaltyWeight * 0.6))
+      : acabBase;
+    aplica(`Acabamento: ${p.acabamento}`, ajustado);
   }
 
-  // Acabamento
-  const acab = ACABAMENTO_PCT[p.acabamento ?? "Médio"] ?? 0;
-  if (acab !== 0) aplica(`Acabamento: ${p.acabamento}`, acab);
-
-  // Conservação
-  const cons = CONSERVACAO_PCT[p.conservacao ?? "Bom"] ?? 0;
-  if (cons !== 0) aplica(`Conservação: ${p.conservacao}`, cons);
+  // Conservação — também sensível ao mercado
+  const consBase = CONSERVACAO_PCT[p.conservacao ?? "Bom"] ?? 0;
+  if (consBase !== 0) {
+    const ajustado = (consBase < 0)
+      ? Math.round(consBase * (0.8 + market.modernizationPenaltyWeight * 0.6))
+      : consBase;
+    aplica(`Conservação: ${p.conservacao}`, ajustado);
+  }
 
   // Documentação
   for (const doc of p.documentacao ?? []) {
@@ -126,7 +257,6 @@ function calcular(p: Payload, precoM2: number) {
   const ajusteTotal = bonusTotal + descontoTotal;
 
   let valorFinal = valorBase * (1 + ajusteTotal / 100);
-  // Arredondar para o milhar
   valorFinal = Math.round(valorFinal / 1000) * 1000;
 
   const faixa_min = Math.round((valorFinal * 0.95) / 1000) * 1000;
@@ -134,10 +264,8 @@ function calcular(p: Payload, precoM2: number) {
   const venda_rapida = Math.round((valorFinal * 0.92) / 1000) * 1000;
   const venda_premium = Math.round((valorFinal * 1.10) / 1000) * 1000;
 
-  // Tempo estimado por agressividade
   const tempo_medio_venda_dias = ajusteTotal <= -5 ? 45 : ajusteTotal >= 15 ? 150 : 90;
 
-  // Potencial de valorização (heurística)
   let potencial = 5;
   if (p.bairroValorizado) potencial += 2;
   if (p.acabamento === "Alto padrão" || p.acabamento === "Luxo") potencial += 1;
@@ -147,18 +275,10 @@ function calcular(p: Payload, precoM2: number) {
 
   return {
     valorBase: Math.round(valorBase),
-    bonusTotal,
-    descontoTotal,
-    ajusteTotal,
-    valorFinal,
-    faixa_min,
-    faixa_max,
-    venda_rapida,
-    venda_premium,
-    tempo_medio_venda_dias,
-    potencial_valorizacao_pct: potencial,
-    breakdown,
-    areaCalc,
+    bonusTotal, descontoTotal, ajusteTotal, valorFinal,
+    faixa_min, faixa_max, venda_rapida, venda_premium,
+    tempo_medio_venda_dias, potencial_valorizacao_pct: potencial,
+    breakdown, areaCalc,
   };
 }
 
