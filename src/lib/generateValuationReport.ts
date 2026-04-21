@@ -70,9 +70,17 @@ function liquidezLabel(dias: number): string {
 function localizacaoTexto(d: ValuationReportData): string {
   const parts = [`Imóvel localizado em ${d.bairro}, ${d.cidade}/${d.estado}`];
   if (d.rua) parts.push(`com endereço na ${d.rua}`);
-  parts.push(
-    `região com preço médio de ${fmtBRL(d.result.meta?.preco_m2 ?? 0)} por m² aplicado como base de cálculo`
-  );
+  // Fallback: se preco_m2 vier 0/ausente, calcula a partir do valor estimado e área total
+  const area = Number(d.areaTotal) || 0;
+  let precoM2 = Number(d.result.meta?.preco_m2) || 0;
+  if (!precoM2 && area > 0 && d.result.valor_estimado > 0) {
+    precoM2 = Math.round(d.result.valor_estimado / area);
+  }
+  if (precoM2 > 0) {
+    parts.push(`região com preço médio de ${fmtBRL(precoM2)} por m² aplicado como base de cálculo`);
+  } else {
+    parts.push("região analisada com base em comparáveis de mercado");
+  }
   return parts.join(", ") + ".";
 }
 
