@@ -39,6 +39,17 @@ const CONSERVACAO = ["Novo", "Reformado", "Bom estado", "Antigo", "Precisa refor
 const DOCUMENTACAO = ["Escritura ok", "Registro ok", "Averbação ok", "Financiável", "Pendências"];
 
 type Comparavel = { titulo: string; bairro: string; area: number; quartos: number | null; preco: number };
+type ComparavelExterno = { titulo: string; bairro?: string; cidade?: string; area?: number; quartos?: number; preco?: number; preco_m2?: number; fonte?: string; url?: string };
+type MercadoExterno = {
+  total: number;
+  preco_medio: number;
+  preco_mediano: number;
+  preco_m2_medio: number;
+  preco_m2_mediano: number;
+  preco_provavel_fechamento: number;
+  fontes_consultadas: string[];
+  resumo: string;
+};
 type Scores = { localizacao: number; estrutura: number; acabamento: number; diferenciais?: number; liquidez: number; documentacao: number };
 
 type Valuation = {
@@ -59,6 +70,8 @@ type Valuation = {
   comparaveis: Comparavel[];
   comparaveis_origem?: string;
   comparaveis_aviso?: string | null;
+  comparaveis_externos?: ComparavelExterno[];
+  mercado_externo?: MercadoExterno | null;
   meta?: {
     preco_m2: number;
     source: string;
@@ -77,6 +90,7 @@ type Valuation = {
       media_area_m2: number;
       media_preco: number;
     };
+    externo?: { total: number; fontes: string[]; preco_m2_mediano: number } | null;
   };
 };
 
@@ -687,6 +701,88 @@ export default function AiValuationPage() {
                 )}
               </Card>
 
+              {/* Mercado externo: anúncios reais da internet */}
+              {result.mercado_externo && result.mercado_externo.total > 0 && (
+                <Card className="p-6 border-emerald-500/20 bg-gradient-to-br from-emerald-500/5 to-transparent">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-400 font-semibold">
+                      <Target className="h-5 w-5" /> Anúncios reais da internet
+                    </div>
+                    <div className="text-xs px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 font-medium">
+                      {result.mercado_externo.total} anúncio(s)
+                    </div>
+                  </div>
+
+                  {result.mercado_externo.fontes_consultadas?.length > 0 && (
+                    <div className="text-xs text-muted-foreground mb-3">
+                      Fontes consultadas:{" "}
+                      <span className="font-medium text-foreground">
+                        {result.mercado_externo.fontes_consultadas.join(" · ")}
+                      </span>
+                    </div>
+                  )}
+
+                  {result.mercado_externo.resumo && (
+                    <p className="text-sm text-muted-foreground italic mb-4">"{result.mercado_externo.resumo}"</p>
+                  )}
+
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+                    <Stat label="Preço médio" value={fmtBRL(result.mercado_externo.preco_medio)} />
+                    <Stat label="Preço mediano" value={fmtBRL(result.mercado_externo.preco_mediano)} />
+                    <Stat label="R$/m² mediano" value={fmtBRL(result.mercado_externo.preco_m2_mediano)} />
+                    <Stat label="Provável fechamento" value={fmtBRL(result.mercado_externo.preco_provavel_fechamento)} />
+                  </div>
+
+                  {result.comparaveis_externos && result.comparaveis_externos.length > 0 && (
+                    <>
+                      <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+                        Anúncios encontrados
+                      </div>
+                      <div className="space-y-2">
+                        {result.comparaveis_externos.map((c, i) => (
+                          <div key={i} className="flex justify-between items-center gap-3 p-3 rounded-lg bg-background/60 text-sm">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-0.5">
+                                {c.fonte && (
+                                  <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-700 dark:text-emerald-300">
+                                    {c.fonte}
+                                  </span>
+                                )}
+                                {c.url ? (
+                                  <a
+                                    href={c.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="font-medium truncate hover:underline text-emerald-700 dark:text-emerald-300"
+                                  >
+                                    {c.titulo}
+                                  </a>
+                                ) : (
+                                  <span className="font-medium truncate">{c.titulo}</span>
+                                )}
+                              </div>
+                              <div className="text-xs text-muted-foreground">
+                                {c.area ? `${c.area}m²` : ""}
+                                {c.quartos ? ` · ${c.quartos} dorm.` : ""}
+                                {c.bairro ? ` · ${c.bairro}` : ""}
+                                {c.preco_m2 ? ` · ${fmtBRL(c.preco_m2)}/m²` : ""}
+                              </div>
+                            </div>
+                            {c.preco ? (
+                              <div className="font-bold text-emerald-700 dark:text-emerald-400 whitespace-nowrap">
+                                {fmtBRL(c.preco)}
+                              </div>
+                            ) : null}
+                          </div>
+                        ))}
+                      </div>
+                      <p className="text-[10px] text-muted-foreground mt-3 italic">
+                        Fontes: dados públicos extraídos via busca web. Preços podem variar — sempre confirme no anúncio original.
+                      </p>
+                    </>
+                  )}
+                </Card>
+              )}
 
 
               {/* Sugestões */}
