@@ -1,0 +1,1 @@
+ALTER TABLE public.agenda_bots ADD COLUMN IF NOT EXISTS min_interval_minutes integer NOT NULL DEFAULT 60;

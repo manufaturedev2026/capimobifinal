@@ -117,6 +117,7 @@ export type Database = {
           id: string
           is_active: boolean
           item_id: string | null
+          min_interval_minutes: number
           name: string
           opening_message: string | null
           seller_id: string
@@ -133,6 +134,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           item_id?: string | null
+          min_interval_minutes?: number
           name?: string
           opening_message?: string | null
           seller_id: string
@@ -149,6 +151,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           item_id?: string | null
+          min_interval_minutes?: number
           name?: string
           opening_message?: string | null
           seller_id?: string
