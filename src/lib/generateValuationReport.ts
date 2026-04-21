@@ -790,10 +790,14 @@ export function generateValuationReport(d: ValuationReportData): jsPDF {
 
     d.result.meta.breakdown.forEach((b) => {
       if (y > H - 24) { footer("Página 5 de 6"); doc.addPage(); headerStrip("Página 5 — Parecer (cont.)"); y = 38; }
+      const safeLabel = String(b.label ?? "")
+        .replace(/[•●▪◦◆◇▶▷›»]/g, "-")
+        .replace(/[^\x20-\xFF]/g, "")
+        .trim();
       setColor([40, 40, 50]);
       doc.setFont("helvetica", "normal");
       doc.setFontSize(9.5);
-      doc.text(`• ${b.label}`, 18, y);
+      doc.text(`- ${safeLabel}`, 18, y);
       setColor(b.pct > 0 ? GREEN : AMBER);
       doc.setFont("helvetica", "bold");
       doc.text(`${b.pct > 0 ? "+" : ""}${b.pct}%`, W - 18, y, { align: "right" });
