@@ -131,11 +131,11 @@ const ADDRESS_OVERRIDES: Record<string, AddressOverride> = {
       "https://www.google.com/maps/@-19.5349498,-40.6336249,3a,75y,252.33h,90t/data=!3m7!1e1!3m5!1s5Ul2zyyrn98mD-foBY4ABg!2e0!6shttps:%2F%2Fstreetviewpixels-pa.googleapis.com%2Fv1%2Fthumbnail%3Fcb_client%3Dmaps_sv.tactile%26w%3D900%26h%3D600%26pitch%3D0%26panoid%3D5Ul2zyyrn98mD-foBY4ABg%26yaw%3D252.32602!7i16384!8i8192",
   },
   [normalizeText("Rua Giacomo Martinelli, 343, Colatina, ES")]: {
-    lat: "-19.5348",
-    lon: "-40.6299",
-    mapsUrl: "https://www.google.com/maps/search/?api=1&query=Rua+Giacomo+Martinelli,+343,+Colatina,+ES",
-    embedUrl: "https://www.google.com/maps?q=Rua+Giacomo+Martinelli,+343,+Colatina,+ES&hl=pt-BR&z=17&output=embed",
-    streetViewUrl: buildStreetViewQueryUrl("Rua Giacomo Martinelli, 343, Colatina, ES"),
+    lat: "-19.5095977",
+    lon: "-40.6172574",
+    mapsUrl: "https://www.google.com/maps/search/?api=1&query=Rua+Giacomo+Martinelli,+343,+Maria+das+Gracas,+Colatina,+ES",
+    embedUrl: "https://www.google.com/maps?q=Rua+Giacomo+Martinelli,+343,+Maria+das+Gracas,+Colatina,+ES&hl=pt-BR&z=17&output=embed",
+    streetViewUrl: "https://www.google.com/maps/@-19.5095977,-40.6172574,3a,75y,0h,90t/data=!3m1!1e1",
   },
 };
 
