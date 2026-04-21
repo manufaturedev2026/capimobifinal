@@ -59,7 +59,8 @@ export type AnaliseVisual = {
   total_fotos_analisadas: number;
 };
 
-const MAX_FOTOS = 12;
+const MIN_FOTOS = 4;
+const MAX_FOTOS = 10;
 const MAX_SIZE_MB = 8;
 
 interface Props {
@@ -135,8 +136,8 @@ export default function PhotoAnalysisStep({
   };
 
   const analisar = async () => {
-    if (fotos.length === 0) {
-      toast({ title: "Adicione pelo menos 1 foto", variant: "destructive" });
+    if (fotos.length < MIN_FOTOS) {
+      toast({ title: `Adicione no mínimo ${MIN_FOTOS} fotos`, description: `Você enviou ${fotos.length}. A análise visual exige entre ${MIN_FOTOS} e ${MAX_FOTOS} fotos.`, variant: "destructive" });
       return;
     }
     setLoading(true);
@@ -188,7 +189,7 @@ export default function PhotoAnalysisStep({
       >
         <Upload className="h-8 w-8 text-primary/60 mx-auto mb-2" />
         <p className="font-semibold">Clique ou arraste fotos aqui</p>
-        <p className="text-xs text-muted-foreground mt-1">JPG, PNG ou WEBP · até {MAX_SIZE_MB}MB cada · máx. {MAX_FOTOS} fotos</p>
+        <p className="text-xs text-muted-foreground mt-1">JPG, PNG ou WEBP · até {MAX_SIZE_MB}MB cada · mínimo {MIN_FOTOS} · máximo {MAX_FOTOS} fotos</p>
         <input
           ref={inputRef}
           type="file"

@@ -202,6 +202,24 @@ export default function AiValuationPage() {
       toast({ title: "Informe a área (terreno ou construída)", variant: "destructive" });
       return;
     }
+    if (fotos.length < 4 || fotos.length > 10) {
+      toast({
+        title: "Fotos obrigatórias",
+        description: `Envie entre 4 e 10 fotos do imóvel para gerar a avaliação. Atualmente: ${fotos.length}.`,
+        variant: "destructive",
+      });
+      document.getElementById("photo-analysis-section")?.scrollIntoView({ behavior: "smooth" });
+      return;
+    }
+    if (!analiseVisual) {
+      toast({
+        title: "Análise visual pendente",
+        description: "Clique em 'Analisar fotos com IA' antes de calcular a avaliação.",
+        variant: "destructive",
+      });
+      document.getElementById("photo-analysis-section")?.scrollIntoView({ behavior: "smooth" });
+      return;
+    }
     setLoading(true);
     setResult(null);
     try {
@@ -583,7 +601,7 @@ export default function AiValuationPage() {
             </div>
           </Section>
 
-          <div className="mt-6">
+          <div id="photo-analysis-section" className="mt-6">
             <PhotoAnalysisStep
               contexto={{
                 tipo, cidade, bairro,
