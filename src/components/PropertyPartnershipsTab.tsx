@@ -543,7 +543,8 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
         {([
           { id: "disponivel" as SubTab, label: "Buscar Imóveis", count: totalAvailable },
           { id: "meus" as SubTab, label: "Meus Imóveis", count: 0 },
-          { id: "vigentes" as SubTab, label: "Vigentes", count: activePartnerships.length },
+          { id: "parceiros" as SubTab, label: "Meus Parceiros", count: myPartnerListings.length },
+          { id: "afiliados" as SubTab, label: "Meus Afiliados", count: myAffiliateListings.length },
           { id: "minhas" as SubTab, label: "Solicitações", count: myRequests.filter(r => r.status === "pendente").length },
           { id: "recebidas" as SubTab, label: "Recebidas", count: receivedRequests.filter(r => r.status === "pendente").length },
         ]).map(tab => (
@@ -991,18 +992,22 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
         </DialogContent>
       </Dialog>
 
-      {/* ===== VIGENTES ===== */}
-      {subTab === "vigentes" && (
+      {/* ===== PARCERIAS ATIVAS ===== */}
+      {(subTab === "parceiros" || subTab === "afiliados") && (() => {
+        const visiblePartnerships = subTab === "parceiros" ? myPartnerListings : myAffiliateListings;
+        const emptyTitle = subTab === "parceiros" ? "Você ainda não se afiliou a nenhum imóvel." : "Nenhum parceiro se afiliou aos seus imóveis ainda.";
+        const emptyHint = subTab === "parceiros" ? "Imóveis de outros corretores aprovados para sua loja aparecerão aqui." : "Quando alguém se afiliar aos seus imóveis, aparecerá aqui.";
+        return (
         <div className="space-y-4">
-          {activePartnerships.length === 0 ? (
+          {visiblePartnerships.length === 0 ? (
             <div className="text-center py-16 space-y-3">
               <Handshake size={40} className="mx-auto text-muted-foreground/30" />
-              <p className="text-muted-foreground text-sm">Você ainda não tem parcerias vigentes.</p>
-              <p className="text-xs text-muted-foreground">Parcerias aprovadas aparecerão aqui.</p>
+              <p className="text-muted-foreground text-sm">{emptyTitle}</p>
+              <p className="text-xs text-muted-foreground">{emptyHint}</p>
             </div>
           ) : (
             <div className="grid gap-4 lg:grid-cols-2">
-              {activePartnerships.map(p => {
+              {visiblePartnerships.map(p => {
                 const gains = p.item ? calcPartnerGain(p.item.price, p.item.commission_percent, p.item.partner_percent) : null;
                 const publicUrl = p.item
                   ? p.role === "requester" && currentProfile?.slug
