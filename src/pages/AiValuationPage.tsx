@@ -16,9 +16,10 @@ import { useCitiesByState } from "@/hooks/useCitiesByState";
 import {
   Sparkles, ArrowLeft, TrendingUp, Clock, Crown, Zap, Target, CheckCircle2,
   AlertCircle, Loader2, Brain, MapPin, Home, Maximize2, Bed, FileText, Save,
-  Megaphone, Download, History, Wand2,
+  Megaphone, Download, History, Wand2, FileBadge, Printer, Share2, Mail,
 } from "lucide-react";
 import jsPDF from "jspdf";
+import { generateValuationReport } from "@/lib/generateValuationReport";
 
 const TIPOS = ["Casa", "Apartamento", "Terreno", "Comercial", "Rural"];
 const EXTRAS = [
@@ -230,6 +231,47 @@ export default function AiValuationPage() {
 
     doc.save(`avaliacao-${bairro}-${Date.now()}.pdf`);
     toast({ title: "PDF exportado!" });
+  };
+
+  const buildLaudo = () => {
+    if (!result) return null;
+    return generateValuationReport({
+      estado, cidade, bairro, rua, cep, tipo,
+      areaTotal, areaConstruida, quartos, banheiros, suites, garagem,
+      extras, acabamento, conservacao, documentacao,
+      result,
+      avaliadorNome: user?.user_metadata?.full_name || user?.email?.split("@")[0] || "Sistema IA Capimobi",
+      avaliadorEmail: user?.email,
+      empresaNome: "CAPIMOBI",
+    });
+  };
+
+  const downloadLaudo = () => {
+    const doc = buildLaudo();
+    if (!doc) return;
+    doc.save(`laudo-avaliacao-${bairro.replace(/\s+/g, "-").toLowerCase()}-${Date.now()}.pdf`);
+    toast({ title: "Laudo PDF gerado!", description: "Pronto para impressão e envio." });
+  };
+
+  const printLaudo = () => {
+    const doc = buildLaudo();
+    if (!doc) return;
+    const url = doc.output("bloburl");
+    const win = window.open(url, "_blank");
+    if (win) setTimeout(() => win.print(), 800);
+  };
+
+  const shareWhatsapp = () => {
+    if (!result) return;
+    const msg = `📋 *Laudo de Avaliação Imobiliária*\n\n🏠 ${tipo} em ${bairro}, ${cidade}/${estado}\n📐 ${areaTotal}m²${areaConstruida ? ` (constr. ${areaConstruida}m²)` : ""}\n\n💰 *Valor estimado:* ${fmtBRL(result.valor_estimado)}\n📊 Faixa: ${fmtBRL(result.faixa_min)} – ${fmtBRL(result.faixa_max)}\n⚡ Venda rápida: ${fmtBRL(result.venda_rapida)}\n👑 Venda premium: ${fmtBRL(result.venda_premium)}\n⏱ Tempo médio: ${result.tempo_medio_venda_dias} dias\n\n_Avaliação gerada por Capimobi IA_`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, "_blank");
+  };
+
+  const shareEmail = () => {
+    if (!result) return;
+    const subject = `Laudo de Avaliação - ${tipo} em ${bairro}, ${cidade}`;
+    const body = `Segue avaliação imobiliária:\n\n${tipo} em ${bairro}, ${cidade}/${estado}\nÁrea: ${areaTotal}m²\n\nValor estimado: ${fmtBRL(result.valor_estimado)}\nFaixa ideal: ${fmtBRL(result.faixa_min)} – ${fmtBRL(result.faixa_max)}\nVenda rápida: ${fmtBRL(result.venda_rapida)}\nVenda premium: ${fmtBRL(result.venda_premium)}\nTempo médio: ${result.tempo_medio_venda_dias} dias\n\n${result.justificativa}\n\n— Avaliação gerada por Capimobi IA`;
+    window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
 
   const generateAd = async () => {
@@ -476,9 +518,32 @@ export default function AiValuationPage() {
               </Card>
 
               {/* Action buttons */}
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              <Card className="p-5 bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
+                <div className="flex items-center gap-2 mb-3 text-sm font-semibold">
+                  <FileBadge className="h-5 w-5 text-primary" /> Laudo Profissional PDF
+                </div>
+                <p className="text-xs text-muted-foreground mb-4">
+                  Gere um laudo de 6 páginas pronto para impressão, envio ao cliente ou anexo em propostas.
+                </p>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                  <Button onClick={downloadLaudo} className="bg-primary hover:bg-primary/90">
+                    <FileBadge className="h-4 w-4 mr-1.5" /> Gerar Laudo
+                  </Button>
+                  <Button variant="outline" onClick={printLaudo}>
+                    <Printer className="h-4 w-4 mr-1.5" /> Imprimir
+                  </Button>
+                  <Button variant="outline" onClick={shareWhatsapp} className="text-emerald-700 border-emerald-300 hover:bg-emerald-50 dark:text-emerald-400 dark:border-emerald-800 dark:hover:bg-emerald-950">
+                    <Share2 className="h-4 w-4 mr-1.5" /> WhatsApp
+                  </Button>
+                  <Button variant="outline" onClick={shareEmail}>
+                    <Mail className="h-4 w-4 mr-1.5" /> Email
+                  </Button>
+                </div>
+              </Card>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <Button variant="outline" size="lg" onClick={exportPdf}>
-                  <Download className="h-4 w-4 mr-2" /> Exportar PDF
+                  <Download className="h-4 w-4 mr-2" /> PDF Resumo
                 </Button>
                 <Button variant="outline" size="lg" onClick={generateAd}>
                   <Wand2 className="h-4 w-4 mr-2" /> Gerar anúncio IA
