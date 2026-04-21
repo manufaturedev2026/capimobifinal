@@ -364,10 +364,6 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
     };
   }, [address, cleanCep, addressOverride, fallbackStreetViewUrl, fallbackMapSrc, fallbackMapsUrl, geocodingCandidates, showStreetView]);
 
-  const handleOpenStreetView = () => {
-    window.open(streetViewUrl, "_blank", "noopener,noreferrer");
-  };
-
   const addressOverrideStreetEmbed = addressOverride
     ? `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${addressOverride.lat},${addressOverride.lon}&heading=0&pitch=0&fov=90`
     : null;
