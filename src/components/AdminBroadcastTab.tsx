@@ -26,11 +26,19 @@ export default function AdminBroadcastTab() {
   const [subject, setSubject] = useState("");
   const [contentHtml, setContentHtml] = useState(DEFAULT_HTML);
   const [selectedTiers, setSelectedTiers] = useState<string[]>([]);
+  const [customEmailsRaw, setCustomEmailsRaw] = useState("");
   const [testEmail, setTestEmail] = useState("");
   const [sending, setSending] = useState(false);
   const [testing, setTesting] = useState(false);
   const [savingTemplate, setSavingTemplate] = useState(false);
   const [newTemplateName, setNewTemplateName] = useState("");
+
+  const parseCustomEmails = (raw: string): string[] => {
+    return Array.from(new Set(
+      raw.split(/[\s,;]+/).map((e) => e.trim().toLowerCase()).filter((e) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e))
+    ));
+  };
+  const customEmails = parseCustomEmails(customEmailsRaw);
 
   const load = async () => {
     setLoading(true);
@@ -49,7 +57,7 @@ export default function AdminBroadcastTab() {
 
   useEffect(() => { load(); }, []);
 
-  const totalRecipients = selectedTiers.reduce((sum, t) => sum + (counts[t] || 0), 0);
+  const totalRecipients = selectedTiers.reduce((sum, t) => sum + (counts[t] || 0), 0) + customEmails.length;
 
   const toggleTier = (t: string) => {
     setSelectedTiers((prev) => prev.includes(t) ? prev.filter(x => x !== t) : [...prev, t]);
@@ -109,15 +117,15 @@ export default function AdminBroadcastTab() {
       toast({ title: "Preencha assunto e conteúdo", variant: "destructive" });
       return;
     }
-    if (selectedTiers.length === 0) {
-      toast({ title: "Selecione ao menos um plano", variant: "destructive" });
+    if (selectedTiers.length === 0 && customEmails.length === 0) {
+      toast({ title: "Selecione um plano ou cole e-mails personalizados", variant: "destructive" });
       return;
     }
-    if (!confirm(`Enviar para ${totalRecipients} corretor(es) do(s) plano(s) selecionado(s)?`)) return;
+    if (!confirm(`Enviar para ${totalRecipients} destinatário(s)?`)) return;
 
     setSending(true);
     const { data, error } = await supabase.functions.invoke("send-broadcast-email", {
-      body: { subject, content_html: contentHtml, tiers: selectedTiers },
+      body: { subject, content_html: contentHtml, tiers: selectedTiers, custom_emails: customEmails },
     });
     setSending(false);
     if (error || (data as any)?.error) {
@@ -185,6 +193,27 @@ export default function AdminBroadcastTab() {
             </div>
           </div>
 
+          {/* Custom emails */}
+          <div className="bg-card border border-border rounded-xl p-4 shadow-sm">
+            <div className="flex items-center gap-2 mb-2">
+              <Send className="w-4 h-4 text-primary" />
+              <h3 className="font-semibold text-foreground">Lista personalizada de e-mails</h3>
+              <span className="ml-auto text-sm font-bold text-primary">
+                {customEmails.length} válido{customEmails.length !== 1 ? "s" : ""}
+              </span>
+            </div>
+            <p className="text-xs text-muted-foreground mb-2">
+              Cole um e-mail por linha (ou separados por vírgula). Esses e-mails serão somados aos planos selecionados acima. As variáveis <code className="bg-muted px-1 rounded">{"{{nome}}"}</code> usarão "Olá" como padrão para e-mails fora da base.
+            </p>
+            <textarea
+              value={customEmailsRaw}
+              onChange={(e) => setCustomEmailsRaw(e.target.value)}
+              rows={5}
+              placeholder={"joao@exemplo.com\nmaria@exemplo.com\npedro@exemplo.com"}
+              className="w-full px-3 py-2 border border-input rounded-lg bg-background text-foreground font-mono text-xs"
+            />
+          </div>
+
           {/* Subject + content */}
           <div className="bg-card border border-border rounded-xl p-4 space-y-3 shadow-sm">
             <div>
@@ -227,7 +256,7 @@ export default function AdminBroadcastTab() {
             <button onClick={sendBroadcast} disabled={sending || totalRecipients === 0}
               className="w-full px-4 py-3 rounded-lg bg-primary text-primary-foreground font-bold flex items-center justify-center gap-2 hover:opacity-90 disabled:opacity-50">
               {sending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
-              Enviar para {totalRecipients} corretor{totalRecipients !== 1 ? "es" : ""}
+              Enviar para {totalRecipients} destinatário{totalRecipients !== 1 ? "s" : ""}
             </button>
           </div>
         </div>

@@ -24,11 +24,12 @@ Deno.serve(async (req) => {
     if (!isAdmin) return json({ error: "Acesso negado" }, 403);
 
     const body = await req.json();
-    const { subject, content_html, tiers, test_email } = body as {
+    const { subject, content_html, tiers, test_email, custom_emails } = body as {
       subject: string;
       content_html: string;
       tiers: string[];
       test_email?: string;
+      custom_emails?: string[];
     };
 
     if (!subject || !content_html) return json({ error: "Assunto e conteúdo obrigatórios" }, 400);
@@ -75,46 +76,66 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Validate tiers
+    // Validate tiers + custom emails
     const safeTiers = (tiers || []).filter((t) => ALLOWED_TIERS.includes(t));
-    if (safeTiers.length === 0) return json({ error: "Selecione ao menos um plano" }, 400);
-
-    // Get active subscriptions matching tiers
-    const { data: subs } = await admin
-      .from("seller_subscriptions")
-      .select("user_id, tier")
-      .eq("is_active", true)
-      .in("tier", safeTiers);
-
-    const userIds = Array.from(new Set((subs || []).map((s: any) => s.user_id)));
-
-    // Profiles without active subscription = basico (free)
-    let profileQuery = admin.from("profiles").select("id, user_id, full_name, email").not("email", "is", null);
-    if (!safeTiers.includes("basico")) {
-      profileQuery = profileQuery.in("user_id", userIds);
+    const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const customList = Array.from(new Set(
+      (custom_emails || []).map((e) => String(e).trim().toLowerCase()).filter((e) => emailRe.test(e))
+    ));
+    if (safeTiers.length === 0 && customList.length === 0) {
+      return json({ error: "Selecione um plano ou informe e-mails personalizados" }, 400);
     }
-    const { data: profiles } = await profileQuery;
 
-    if (!profiles || profiles.length === 0) {
+    type Recipient = { email: string; full_name: string | null; profile_id: string | null };
+    let recipients: Recipient[] = [];
+
+    if (safeTiers.length > 0) {
+      const { data: subs } = await admin
+        .from("seller_subscriptions")
+        .select("user_id, tier")
+        .eq("is_active", true)
+        .in("tier", safeTiers);
+
+      const userIds = Array.from(new Set((subs || []).map((s: any) => s.user_id)));
+      let profileQuery = admin.from("profiles").select("id, user_id, full_name, email").not("email", "is", null);
+      if (!safeTiers.includes("basico")) {
+        profileQuery = profileQuery.in("user_id", userIds);
+      }
+      const { data: profiles } = await profileQuery;
+
+      const tierByUser: Record<string, string> = {};
+      for (const s of subs || []) tierByUser[(s as any).user_id] = (s as any).tier;
+
+      recipients = (profiles || [])
+        .filter((p: any) => safeTiers.includes(tierByUser[p.user_id] || "basico"))
+        .map((p: any) => ({ email: p.email, full_name: p.full_name, profile_id: p.id }));
+    }
+
+    // Add custom emails (try to enrich with profile name if exists)
+    if (customList.length > 0) {
+      const { data: matched } = await admin
+        .from("profiles")
+        .select("id, full_name, email")
+        .in("email", customList);
+      const map = new Map((matched || []).map((p: any) => [String(p.email).toLowerCase(), p]));
+      const existing = new Set(recipients.map((r) => r.email.toLowerCase()));
+      for (const em of customList) {
+        if (existing.has(em)) continue;
+        const p = map.get(em);
+        recipients.push({ email: em, full_name: p?.full_name || null, profile_id: p?.id || null });
+      }
+    }
+
+    if (recipients.length === 0) {
       await client.close();
       return json({ ok: true, sent: 0, failed: 0, message: "Nenhum destinatário encontrado" });
     }
 
-    // Build tier map
-    const tierByUser: Record<string, string> = {};
-    for (const s of subs || []) tierByUser[(s as any).user_id] = (s as any).tier;
-
-    // Filter by tier (basico if no sub)
-    const recipients = profiles.filter((p: any) => {
-      const tier = tierByUser[p.user_id] || "basico";
-      return safeTiers.includes(tier);
-    });
-
     let sent = 0, failed = 0;
-    const tierLabel = safeTiers.join(",");
+    const tierLabel = [...safeTiers, ...(customList.length ? ["custom"] : [])].join(",");
 
     for (const profile of recipients) {
-      const firstName = (profile.full_name || "").split(" ")[0] || "Corretor";
+      const firstName = (profile.full_name || "").split(" ")[0] || "Olá";
       const html = String(content_html)
         .replaceAll("{{nome}}", firstName)
         .replaceAll("{{nome_completo}}", profile.full_name || "")
@@ -130,14 +151,14 @@ Deno.serve(async (req) => {
           replyTo: settings.reply_to || undefined,
         });
         await admin.from("broadcast_sends").insert({
-          batch_id: batchId, to_email: profile.email, profile_id: profile.id,
+          batch_id: batchId, to_email: profile.email, profile_id: profile.profile_id,
           subject: subj, tier_filter: tierLabel, status: "enviado",
         });
         sent++;
       } catch (e) {
         const msg = (e as Error).message;
         await admin.from("broadcast_sends").insert({
-          batch_id: batchId, to_email: profile.email, profile_id: profile.id,
+          batch_id: batchId, to_email: profile.email, profile_id: profile.profile_id,
           subject: subj, tier_filter: tierLabel, status: "falhou", error_message: msg,
         });
         failed++;
