@@ -24,11 +24,12 @@ Deno.serve(async (req) => {
     if (!isAdmin) return json({ error: "Acesso negado" }, 403);
 
     const body = await req.json();
-    const { subject, content_html, tiers, test_email } = body as {
+    const { subject, content_html, tiers, test_email, custom_emails } = body as {
       subject: string;
       content_html: string;
       tiers: string[];
       test_email?: string;
+      custom_emails?: string[];
     };
 
     if (!subject || !content_html) return json({ error: "Assunto e conteúdo obrigatórios" }, 400);
