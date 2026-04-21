@@ -33,6 +33,7 @@ import PushSubscribeButton from "@/components/PushSubscribeButton";
 import InstallAppFloatingButton from "@/components/InstallAppFloatingButton";
 import { PoolBallButton } from "@/components/PoolBallButton";
 import { isIOSStandaloneApp } from "@/lib/pwaInstall";
+import { getSellerProfessionalTitle } from "@/lib/sellerTitle";
 
 const propertySubcategories = [
   { slug: "todos", name: "Todos", icon: Store, img: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=300&h=200&fit=crop" },
@@ -269,26 +270,32 @@ export default function CompanyProfile() {
           if (memberAny.origin === "partnership" && memberAny.linked_profile_id) {
             const { data: brokerProfile } = await supabase
               .from("profiles")
-              .select("logo_url, id, user_id")
+              .select("id, user_id, full_name, company_name, phone, instagram, bio, creci, seller_category, professional_title, logo_url")
               .eq("id", memberAny.linked_profile_id)
               .maybeSingle();
             if (brokerProfile?.logo_url) {
               member.photo_url = brokerProfile.logo_url;
             }
-            // Store broker's own profile info for CRM routing
+            // Store broker's own profile info for CRM routing + storefront display
             if (brokerProfile) {
               (member as any)._partnerSellerId = brokerProfile.id;
               (member as any)._partnerUserId = brokerProfile.user_id;
+              (member as any)._linkedProfile = brokerProfile;
             }
           } else if (!member.photo_url && member.email) {
             // Fallback for legacy members without origin field
             const { data: brokerProfile } = await supabase
               .from("profiles")
-              .select("logo_url")
+              .select("id, user_id, full_name, company_name, phone, instagram, bio, creci, seller_category, professional_title, logo_url")
               .eq("email", member.email)
               .maybeSingle();
             if (brokerProfile?.logo_url) {
               member.photo_url = brokerProfile.logo_url;
+            }
+            if (brokerProfile) {
+              (member as any)._linkedProfile = brokerProfile;
+              (member as any)._partnerSellerId = brokerProfile.id;
+              (member as any)._partnerUserId = brokerProfile.user_id;
             }
           }
         }
@@ -316,17 +323,32 @@ export default function CompanyProfile() {
     }
   };
 
+  const activeBrokerProfile = (teamMember as any)?._linkedProfile || null;
+  const activeSellerCategory = activeBrokerProfile?.seller_category || (teamMember ? "corretor" : dbProfile?.seller_category);
+  const activeCategoryLabel = activeSellerCategory
+    ? ({ imobiliaria: "🏢 Imobiliária", corretor: "📋 Corretor(a)", proprietario: "🏠 Proprietário", construtora: "🏗️ Construtora" } as Record<string, string>)[activeSellerCategory] || activeSellerCategory
+    : "";
+  const activeProfessionalTitle = activeBrokerProfile
+    ? getSellerProfessionalTitle(activeBrokerProfile)
+    : teamMember
+      ? "Corretor(a) de Imóveis"
+      : getSellerProfessionalTitle(dbProfile);
+  const activeBio = activeBrokerProfile?.bio || teamMember?.bio || dbProfile?.bio || "";
+  const activeCreci = activeBrokerProfile?.creci || teamMember?.creci || "";
+
   const company = isDbProfile
     ? dbProfile
       ? {
           id: dbProfile.id,
-          name: teamMember ? teamMember.full_name : (dbProfile.company_name || dbProfile.full_name),
-          logo: teamMember?.photo_url || dbProfile.logo_url || "",
+          name: activeBrokerProfile
+            ? (activeBrokerProfile.company_name || activeBrokerProfile.full_name || teamMember?.full_name)
+            : (teamMember ? teamMember.full_name : (dbProfile.company_name || dbProfile.full_name)),
+          logo: teamMember?.photo_url || activeBrokerProfile?.logo_url || dbProfile.logo_url || "",
           address: [dbProfile.address, dbProfile.city, dbProfile.state].filter(Boolean).join(", "),
           rating: "5.0",
           reviewCount: 0,
-          whatsapp: teamMember?.phone || dbProfile.phone || "",
-          instagram: (teamMember?.instagram || dbProfile.instagram) || "",
+          whatsapp: activeBrokerProfile?.phone || teamMember?.phone || dbProfile.phone || "",
+          instagram: (activeBrokerProfile?.instagram || teamMember?.instagram || dbProfile.instagram) || "",
           segment: dbProfile.seller_type,
           show_location: dbProfile.show_location ?? true,
         }
@@ -514,11 +536,11 @@ export default function CompanyProfile() {
       window.location.assign(url);
     };
 
-    if (teamMember && teamMember.phone) {
-      const phone = teamMember.phone.replace(/\D/g, "");
+    if (teamMember && company.whatsapp) {
+      const phone = company.whatsapp.replace(/\D/g, "");
       const msg = productId
-        ? `Olá ${teamMember.full_name}! 🏠 Vi o imóvel *${title}* na sua loja e gostaria de mais informações.\n\n🔗 ${link}`
-        : `Olá ${teamMember.full_name}! 🏠 Vim da sua loja Capimobi e gostaria de mais informações sobre seus imóveis.\n\n🔗 ${link}`;
+        ? `Olá ${company.name}! 🏠 Vi o imóvel *${title}* na sua loja e gostaria de mais informações.\n\n🔗 ${link}`
+        : `Olá ${company.name}! 🏠 Vim da sua loja Capimobi e gostaria de mais informações sobre seus imóveis.\n\n🔗 ${link}`;
       openUrl(`https://wa.me/55${phone}?text=${encodeURIComponent(msg)}`);
       return;
     }
@@ -584,7 +606,6 @@ export default function CompanyProfile() {
             const sellerName = company.name;
             const totalItems = products.length;
             const seoTitle = `${sellerName} — Imóveis em ${cityName}${stateName ? `, ${stateName}` : ""} | Capimobi`;
-            const activeBio = teamMember?.bio || dbProfile?.bio;
             const seoDesc = activeBio
               ? `${activeBio.slice(0, 130)} — ${totalItems} imóveis em ${cityName}.`
               : `Encontre ${totalItems}+ imóveis com ${sellerName} em ${cityName}. Casas, apartamentos, terrenos à venda. Contato direto via WhatsApp.`;
@@ -699,10 +720,8 @@ export default function CompanyProfile() {
                     <h1 className="font-display font-bold text-lg text-white truncate">{company.name}</h1>
                     {isPaid && <BadgeCheck size={16} className="text-white/80 flex-shrink-0" />}
                   </div>
-                  {dbProfile?.seller_category && (
-                    <span className="text-white/70 text-[11px]">
-                      {({ imobiliaria: "🏢 Imobiliária", corretor: "📋 Corretor(a)", proprietario: "🏠 Proprietário", construtora: "🏗️ Construtora" } as Record<string, string>)[dbProfile.seller_category]}
-                    </span>
+                  {activeCategoryLabel && (
+                    <span className="text-white/70 text-[11px]">{activeCategoryLabel}</span>
                   )}
                   {company.show_location && company.address && (
                     <span className="flex items-center gap-1 text-white/50 text-[10px] mt-0.5">
@@ -839,12 +858,9 @@ export default function CompanyProfile() {
             {isPaid && <BadgeCheck size={18} className="text-primary" />}
           </div>
 
-          {(teamMember || dbProfile?.seller_category) && (
+          {(teamMember || activeCategoryLabel) && (
             <span className="text-white/70 text-xs font-medium mb-2">
-              {teamMember
-                ? `📋 Corretor(a)${teamMember.creci ? ` • ${teamMember.creci}` : ""}`
-                : `${({ imobiliaria: "🏢 Imobiliária", corretor: "📋 Corretor(a)", proprietario: "🏠 Proprietário", construtora: "🏗️ Construtora" } as Record<string, string>)[dbProfile.seller_category] || ""}${["corretor", "imobiliaria", "construtora"].includes(dbProfile.seller_category) && dbProfile.creci ? ` • ${dbProfile.creci}` : ""}`
-              }
+              {activeCategoryLabel || "📋 Corretor(a)"}{activeCreci ? ` • ${activeCreci}` : ""}
             </span>
           )}
 
@@ -854,8 +870,8 @@ export default function CompanyProfile() {
             </span>
           )}
 
-          {(teamMember?.bio || dbProfile?.bio) && (
-            <p className="text-white/70 text-xs leading-relaxed line-clamp-3 max-w-sm mb-4">{teamMember?.bio || dbProfile.bio}</p>
+          {activeBio && (
+            <p className="text-white/70 text-xs leading-relaxed line-clamp-3 max-w-sm mb-4">{activeBio}</p>
           )}
 
           {/* Stats row */}
@@ -1092,10 +1108,10 @@ export default function CompanyProfile() {
                     {isPaid && <BadgeCheck size={22} className="text-primary" />}
                   </div>
                   <div className="flex items-center gap-3 mt-1 flex-wrap">
-                    {dbProfile?.seller_category && (
+                    {activeCategoryLabel && (
                       <span className="flex items-center gap-1 text-white/80 text-xs font-medium bg-white/10 px-2 py-0.5 rounded-full">
-                        {({ imobiliaria: "🏢 Imobiliária", corretor: "📋 Corretor(a)", proprietario: "🏠 Proprietário", construtora: "🏗️ Construtora" } as Record<string, string>)[dbProfile.seller_category]}
-                        {["corretor", "imobiliaria", "construtora"].includes(dbProfile.seller_category) && dbProfile.creci && ` • ${dbProfile.creci}`}
+                        {activeCategoryLabel}
+                        {activeCreci && ` • ${activeCreci}`}
                       </span>
                     )}
                     {company.show_location && company.address && (
@@ -1290,10 +1306,10 @@ export default function CompanyProfile() {
                   <h3 className="font-display font-bold text-sm" style={{ color: storeTheme.text }}>{company.name}</h3>
                   {teamMember ? (
                     <>
-                      <p className="text-xs mt-0.5" style={{ color: storeTheme.textMuted }}>Corretor(a) de Imóveis</p>
-                      {teamMember.creci && (
+                      <p className="text-xs mt-0.5" style={{ color: storeTheme.textMuted }}>{activeProfessionalTitle}</p>
+                      {activeCreci && (
                         <p className="text-xs font-semibold mt-1 flex items-center gap-1" style={{ color: storeTheme.primary }}>
-                          <Shield size={12} /> {teamMember.creci}
+                          <Shield size={12} /> {activeCreci}
                         </p>
                       )}
                       <p className="text-[10px] mt-1" style={{ color: storeTheme.textMuted }}>
@@ -1302,14 +1318,10 @@ export default function CompanyProfile() {
                     </>
                   ) : (
                     <>
-                      <p className="text-xs mt-0.5" style={{ color: storeTheme.textMuted }}>
-                        {dbProfile?.seller_category
-                          ? ({ imobiliaria: "Imobiliária", corretor: "Corretor(a) de Imóveis", proprietario: "Proprietário", construtora: "Construtora" } as Record<string, string>)[dbProfile.seller_category] || "Imobiliária"
-                          : "Imobiliária"}
-                      </p>
-                      {["corretor", "imobiliaria", "construtora"].includes(dbProfile?.seller_category) && dbProfile?.creci && (
+                      <p className="text-xs mt-0.5" style={{ color: storeTheme.textMuted }}>{activeProfessionalTitle}</p>
+                      {activeCreci && (
                         <p className="text-xs font-semibold mt-1 flex items-center gap-1" style={{ color: storeTheme.primary }}>
-                          <Shield size={12} /> {dbProfile.creci}
+                          <Shield size={12} /> {activeCreci}
                         </p>
                       )}
                     </>
@@ -1366,24 +1378,18 @@ export default function CompanyProfile() {
                     <span>CNPJ: {dbProfile.cnpj}</span>
                   </div>
                 )}
-                {(teamMember?.bio || dbProfile?.bio) && (
-                  <p className="text-sm mb-3 whitespace-pre-line" style={{ color: storeTheme.text }}>{teamMember?.bio || dbProfile.bio}</p>
+                {activeBio && (
+                  <p className="text-sm mb-3 whitespace-pre-line" style={{ color: storeTheme.text }}>{activeBio}</p>
                 )}
                 <div className="space-y-3 text-xs" style={{ color: storeTheme.textMuted }}>
                   <div className="flex items-center gap-2">
                     <Store size={13} className="flex-shrink-0" />
-                    <span>
-                      {teamMember
-                        ? "Corretor(a) de Imóveis"
-                        : dbProfile?.seller_category
-                          ? ({ imobiliaria: "Imobiliária", corretor: "Corretor(a) de Imóveis", proprietario: "Proprietário", construtora: "Construtora" } as Record<string, string>)[dbProfile.seller_category] || "Especialista em imóveis"
-                          : "Especialista em imóveis"}
-                    </span>
+                    <span>{activeProfessionalTitle}</span>
                   </div>
-                  {(teamMember?.creci || (["corretor", "imobiliaria", "construtora"].includes(dbProfile?.seller_category) && dbProfile?.creci)) && !teamMember && (
+                  {activeCreci && (
                     <div className="flex items-center gap-2">
                       <Shield size={13} className="flex-shrink-0" style={{ color: storeTheme.primary }} />
-                      <span className="font-semibold" style={{ color: storeTheme.primary }}>{dbProfile.creci}</span>
+                      <span className="font-semibold" style={{ color: storeTheme.primary }}>{activeCreci}</span>
                     </div>
                   )}
                   <div className="flex items-center gap-2">
