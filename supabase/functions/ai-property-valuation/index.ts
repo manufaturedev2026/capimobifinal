@@ -70,7 +70,119 @@ type Payload = {
   // Mercado
   liquidezMercado?: string;     // alta | media | baixa
   modoAvaliacao?: string;       // simples | avancado
+  // Apartamento (módulo específico)
+  andarUnidade?: number | null;
+  totalAndaresPredio?: number | null;
+  possuiElevador?: boolean;
+  qtdElevadores?: number | null;
+  elevadorModerno?: boolean;
+  condominioGrande?: boolean;
+  escadasLargas?: boolean;
+  vagasGaragem?: number | null;
+  portaria24h?: boolean;
+  lazerCompleto?: boolean;
+  taxaCondominio?: number | null;
+  vistaLivre?: boolean;
+  solManha?: boolean;
+  solTarde?: boolean;
+  barulhoExterno?: boolean;
+  acessibilidade?: boolean;
+  publicoIdoso?: boolean;
+  ultimoAndar?: boolean;
+  garden?: boolean;
 };
+
+// =============== APARTAMENTO: regras contextuais ===============
+function aplicaRegrasApartamento(
+  p: Payload,
+  aplica: (label: string, pct: number, categoria: any) => void,
+  valorBase: number,
+) {
+  if (p.tipo !== "Apartamento") return;
+  const andar = Number(p.andarUnidade) || 0;
+  const total = Number(p.totalAndaresPredio) || 0;
+  const elevadores = Number(p.qtdElevadores) || 0;
+  const vagas = Number(p.vagasGaragem) || 0;
+  const cond = Number(p.taxaCondominio) || 0;
+
+  // ========== ELEVADOR ==========
+  if (p.possuiElevador) {
+    if (total >= 4) {
+      // prédio com 4+ andares e elevador → bônus base
+      const base = total >= 10 ? 8 : total >= 7 ? 6 : 4;
+      aplica(`Elevador em prédio de ${total} andares`, base, "estrutura");
+    }
+    if (elevadores >= 2) aplica(`${elevadores} elevadores (alta capacidade)`, 2, "estrutura");
+    if (p.elevadorModerno) aplica("Elevador moderno", 1, "estrutura");
+  } else {
+    // SEM elevador — analisar andar
+    if (andar >= 4) {
+      let pct = -8 - Math.min(10, (andar - 4) * 2.5); // 4º=-8, 5º=-10.5, 6º=-13, 7º=-15.5, 8º+=-18
+      pct = Math.max(-18, pct);
+      if (p.publicoIdoso) pct = Math.max(-22, pct - 4);
+      aplica(`${andar}º andar sem elevador`, pct, "estrutura");
+    } else if (andar === 3) {
+      const pct = p.publicoIdoso ? -6 : -4;
+      aplica("3º andar sem elevador", pct, "estrutura");
+    } else if (andar === 2) {
+      aplica("2º andar sem elevador", -1.5, "estrutura");
+    } else if (andar === 1) {
+      // pequeno bônus por acesso fácil
+      aplica("1º andar (acesso facilitado)", 1, "estrutura");
+    }
+    // último andar sem elevador: penalização extra
+    if (p.ultimoAndar && andar >= 3) {
+      let extra = -3;
+      if (p.vistaLivre) extra += 4; // compensa
+      aplica("Último andar sem elevador", extra, "estrutura");
+    }
+  }
+
+  // ========== ANDAR ALTO COM ELEVADOR ==========
+  if (p.possuiElevador && andar >= 5) {
+    let bonus = 3;
+    if (p.vistaLivre) bonus += 3;
+    if (andar >= 10) bonus += 2;
+    aplica(`Andar alto (${andar}º) com elevador`, Math.min(8, bonus), "localizacao");
+  }
+
+  // ========== PRIMEIRO ANDAR — contexto ==========
+  if (andar === 1) {
+    if (p.barulhoExterno) aplica("1º andar com ruído externo", -3, "estrutura");
+  }
+  // Garden / térreo
+  if (p.garden) aplica("Garden / térreo com quintal", 4, "diferenciais");
+
+  // ========== VISTA / SOL / RUÍDO ==========
+  if (p.vistaLivre && andar < 5) aplica("Vista livre", 3, "localizacao");
+  if (p.solManha) aplica("Sol da manhã", 2, "localizacao");
+  if (p.solTarde && !p.solManha) aplica("Sol da tarde", 0.5, "localizacao");
+  if (p.barulhoExterno && andar !== 1) {
+    const pct = andar >= 5 ? -2 : -5;
+    aplica("Ruído externo (avenida)", pct, "localizacao");
+  }
+
+  // ========== VAGA GARAGEM (apartamento) ==========
+  if (vagas === 0) {
+    aplica("Sem vaga garagem (apartamento)", -7, "estrutura");
+  } else if (vagas >= 2) {
+    aplica(`${vagas} vagas garagem`, Math.min(10, 4 + (vagas - 1) * 3), "estrutura");
+  } else {
+    aplica("1 vaga garagem", 3, "estrutura");
+  }
+
+  // ========== CONDOMÍNIO ==========
+  if (p.portaria24h) aplica("Portaria 24h e segurança", 3, "diferenciais");
+  if (p.lazerCompleto) aplica("Área de lazer completa", 4, "diferenciais");
+  if (p.acessibilidade === false) aplica("Baixa acessibilidade", -3, "estrutura");
+
+  // Condomínio caro vs valor (>1.2% mensal do valor base é considerado alto)
+  if (cond > 0 && valorBase > 0) {
+    const ratio = (cond * 12) / valorBase; // anual / valor
+    if (ratio > 0.012) aplica("Condomínio elevado p/ padrão", -4, "liquidez");
+    else if (ratio > 0.008) aplica("Condomínio acima da média", -2, "liquidez");
+  }
+}
 
 // =============== TABELAS DE PESOS ===============
 // Localização (35% macro)
@@ -381,6 +493,9 @@ function calcular(p: Payload, precoM2: number, market: MarketContext) {
     const pct = LIQUIDEZ_PCT[p.liquidezMercado];
     if (pct) aplica(`Liquidez do mercado: ${p.liquidezMercado}`, pct, "liquidez");
   }
+
+  // ============ APARTAMENTO (regras contextuais) ============
+  aplicaRegrasApartamento(p, aplica, valorBase);
 
   // ============ LIMITADORES ============
   bonusTotal = Math.min(bonusTotal, 35);
