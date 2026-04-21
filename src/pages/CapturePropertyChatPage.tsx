@@ -712,7 +712,7 @@ export default function CapturePropertyChatPage() {
       description: `Solicitação de avaliação gratuita\n📝 Detalhes: ${detailsVal || "Não informado"}`,
       status: "novo",
     });
-    notifyNewCaptureLead(sellerProfile.user_id, name, `${name} solicitou uma avaliação gratuita.`, "avaliacao");
+    notifyNewCaptureLead(sellerProfile.user_id, name, `${name} solicitou uma avaliação.`, "avaliacao");
     await addBotMsg(config.avalMsgSuccess);
     await addBotMsg(config.avalMsgSuccessEnd);
     setStep("done");
