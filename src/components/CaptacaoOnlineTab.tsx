@@ -155,6 +155,8 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
   const [savingVideo, setSavingVideo] = useState(false);
   const [mainTab, setMainTab] = useState<MainTab>("leads");
   const [expandedLeadId, setExpandedLeadId] = useState<string | null>(null);
+  const [leadsView, setLeadsView] = useState<"kanban" | "lista">("kanban");
+  const [draggingLeadId, setDraggingLeadId] = useState<string | null>(null);
 
   // Bot config
   const [botAttendantName, setBotAttendantName] = useState("Assistente Imobiliário");
@@ -545,32 +547,70 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
       {/* ════════════════════════════════════════════════════════ */}
       {mainTab === "leads" && (
         <div className="space-y-3">
-          {/* Filter Chips */}
-          <div className="flex flex-wrap gap-1.5">
-            {(Object.entries(counts) as [string, number][]).map(([key, count]) => {
-              const cfg = STATUS_CONFIG[key];
-              return (
-                <button
-                  key={key}
-                  onClick={() => setStatusFilter(key)}
-                  className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
-                    statusFilter === key
-                      ? "bg-primary text-primary-foreground border-primary"
-                      : "bg-card text-muted-foreground border-border hover:border-primary/30"
-                  }`}
-                >
-                  {key === "todos" ? "Todos" : cfg?.label || key} ({count})
-                </button>
-              );
-            })}
+          {/* Header: View toggle + Filter chips */}
+          <div className="flex items-center justify-between gap-2 flex-wrap">
+            <div className="flex flex-wrap gap-1.5">
+              {(Object.entries(counts) as [string, number][]).map(([key, count]) => {
+                const cfg = STATUS_CONFIG[key];
+                return (
+                  <button
+                    key={key}
+                    onClick={() => setStatusFilter(key)}
+                    className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
+                      statusFilter === key
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-card text-muted-foreground border-border hover:border-primary/30"
+                    }`}
+                  >
+                    {key === "todos" ? "Todos" : cfg?.label || key} ({count})
+                  </button>
+                );
+              })}
+            </div>
+            <div className="inline-flex rounded-xl border border-border bg-card p-0.5">
+              <button
+                onClick={() => setLeadsView("kanban")}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                  leadsView === "kanban" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                Funil
+              </button>
+              <button
+                onClick={() => setLeadsView("lista")}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                  leadsView === "lista" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                Lista
+              </button>
+            </div>
           </div>
 
-          {/* Leads List */}
+          {/* Conversion Stats Bar (CRM-style) */}
+          {!loading && leads.length > 0 && (
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {(["novo", "em_contato", "captado", "perdido"] as const).map((k) => {
+                const cfg = STATUS_CONFIG[k];
+                const count = counts[k];
+                const pct = leads.length ? Math.round((count / leads.length) * 100) : 0;
+                return (
+                  <div key={k} className={`rounded-xl border p-3 ${cfg.bg}`}>
+                    <p className={`text-[10px] font-bold uppercase tracking-wide ${cfg.color}`}>{cfg.label}</p>
+                    <p className="text-xl font-extrabold text-foreground mt-0.5">{count}</p>
+                    <p className="text-[10px] text-muted-foreground">{pct}% do total</p>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Empty state */}
           {loading ? (
             <div className="flex items-center justify-center py-16">
               <Loader2 size={24} className="animate-spin text-primary" />
             </div>
-          ) : filtered.length === 0 ? (
+          ) : leads.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center rounded-2xl border border-dashed border-border bg-card/50">
               <div className="w-14 h-14 rounded-2xl bg-secondary flex items-center justify-center mb-4">
                 <Inbox size={24} className="text-muted-foreground/40" />
@@ -583,7 +623,135 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
                 <Link2 size={12} /> Ver meus links
               </Button>
             </div>
+          ) : leadsView === "kanban" ? (
+            /* ─── KANBAN BOARD (CRM Funnel) ─── */
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              {(["novo", "em_contato", "captado", "perdido"] as const).map((stage) => {
+                const cfg = STATUS_CONFIG[stage];
+                const stageLeads = leads.filter(l => l.status === stage);
+                return (
+                  <div
+                    key={stage}
+                    onDragOver={(e) => { e.preventDefault(); }}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      if (draggingLeadId) {
+                        const lead = leads.find(l => l.id === draggingLeadId);
+                        if (lead && lead.status !== stage) updateStatus(draggingLeadId, stage);
+                        setDraggingLeadId(null);
+                      }
+                    }}
+                    className={`rounded-2xl border ${cfg.bg} p-2.5 min-h-[200px] flex flex-col`}
+                  >
+                    <div className="flex items-center justify-between mb-2 px-1">
+                      <div className="flex items-center gap-1.5">
+                        <span className={`w-2 h-2 rounded-full ${cfg.color.replace("text-", "bg-")}`} />
+                        <p className={`text-xs font-bold uppercase tracking-wide ${cfg.color}`}>{cfg.label}</p>
+                      </div>
+                      <span className="text-[10px] font-bold text-muted-foreground bg-background/60 px-1.5 py-0.5 rounded-full">
+                        {stageLeads.length}
+                      </span>
+                    </div>
+                    <div className="space-y-2 flex-1">
+                      {stageLeads.length === 0 ? (
+                        <p className="text-[11px] text-muted-foreground/60 text-center py-6 italic">Vazio</p>
+                      ) : (
+                        stageLeads.map((lead) => {
+                          const daysDiff = Math.floor((Date.now() - new Date(lead.created_at).getTime()) / (1000 * 60 * 60 * 24));
+                          const timeLabel = daysDiff === 0 ? "Hoje" : daysDiff === 1 ? "Ontem" : `${daysDiff}d`;
+                          const isExpanded = expandedLeadId === lead.id;
+                          return (
+                            <div
+                              key={lead.id}
+                              draggable
+                              onDragStart={() => setDraggingLeadId(lead.id)}
+                              onDragEnd={() => setDraggingLeadId(null)}
+                              className={`rounded-xl border bg-card p-2.5 cursor-grab active:cursor-grabbing transition-all hover:shadow-md hover:border-primary/30 ${
+                                draggingLeadId === lead.id ? "opacity-50" : ""
+                              }`}
+                            >
+                              <button onClick={() => setExpandedLeadId(isExpanded ? null : lead.id)} className="w-full text-left">
+                                <div className="flex items-start gap-2">
+                                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary/15 to-accent/15 flex items-center justify-center text-xs font-bold text-primary flex-shrink-0">
+                                    {lead.full_name.charAt(0).toUpperCase()}
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-xs font-bold text-foreground truncate">{lead.full_name}</p>
+                                    <p className="text-[10px] text-muted-foreground truncate">
+                                      {PROPERTY_TYPE_LABELS[lead.property_type] || lead.property_type}
+                                    </p>
+                                  </div>
+                                  <span className="text-[9px] text-muted-foreground flex-shrink-0">{timeLabel}</span>
+                                </div>
+                                {lead.desired_price && (
+                                  <p className="text-[11px] font-semibold text-primary mt-1.5">R$ {lead.desired_price.toLocaleString("pt-BR")}</p>
+                                )}
+                                {lead.address && (
+                                  <p className="text-[10px] text-muted-foreground mt-0.5 truncate flex items-center gap-1">
+                                    <MapPin size={9} /> {lead.address}
+                                  </p>
+                                )}
+                              </button>
+
+                              {isExpanded && (
+                                <div className="mt-2 pt-2 border-t border-border space-y-2">
+                                  {lead.description && (
+                                    <p className="text-[11px] text-muted-foreground bg-secondary/50 rounded-lg p-2 leading-relaxed">{lead.description}</p>
+                                  )}
+                                  {lead.photos && lead.photos.length > 0 && (
+                                    <div className="flex items-center gap-1 flex-wrap">
+                                      {lead.photos.slice(0, 3).map((url, i) => (
+                                        <a key={i} href={url} target="_blank" rel="noopener noreferrer">
+                                          <img src={url} alt="" className="w-10 h-10 rounded-lg object-cover border border-border" />
+                                        </a>
+                                      ))}
+                                      {lead.photos.length > 3 && (
+                                        <span className="text-[10px] text-muted-foreground px-1">+{lead.photos.length - 3}</span>
+                                      )}
+                                    </div>
+                                  )}
+                                  <div className="flex items-center gap-1.5 flex-wrap">
+                                    <a
+                                      href={`https://wa.me/${lead.phone.replace(/\D/g, "")}?text=Olá ${encodeURIComponent(lead.full_name)}! Recebi o cadastro do seu imóvel e gostaria de conversar sobre ele.`}
+                                      target="_blank" rel="noopener noreferrer"
+                                      className="flex-1"
+                                    >
+                                      <Button size="sm" className="w-full gap-1 text-[10px] bg-[#25d366] hover:bg-[#22c55e] text-white rounded-lg h-7 px-2">
+                                        <Phone size={10} /> WhatsApp
+                                      </Button>
+                                    </a>
+                                    <Button
+                                      size="sm" variant="ghost"
+                                      className="text-destructive hover:bg-destructive/10 h-7 w-7 p-0 rounded-lg"
+                                      onClick={() => deleteLead(lead.id)}
+                                    >
+                                      <Trash2 size={11} />
+                                    </Button>
+                                  </div>
+                                  {/* Quick stage move (mobile-friendly fallback) */}
+                                  <Select value={lead.status} onValueChange={v => updateStatus(lead.id, v)}>
+                                    <SelectTrigger className="w-full h-7 text-[10px] bg-background text-foreground border-border rounded-lg">
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent className="bg-background text-foreground border-border">
+                                      {Object.entries(STATUS_CONFIG).map(([key, c]) => (
+                                        <SelectItem key={key} value={key} className="text-foreground text-xs">{c.label}</SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           ) : (
+            /* ─── LIST VIEW (legacy) ─── */
             <div className="space-y-2">
               {filtered.map(lead => {
                 const isExpanded = expandedLeadId === lead.id;
@@ -593,17 +761,13 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
 
                 return (
                   <div key={lead.id} className={`rounded-2xl border overflow-hidden transition-all ${isExpanded ? "border-primary/20 bg-card shadow-sm" : "border-border bg-card hover:border-primary/10"}`}>
-                    {/* Lead Row */}
                     <button
                       onClick={() => setExpandedLeadId(isExpanded ? null : lead.id)}
                       className="w-full flex items-center gap-3 p-3.5 text-left"
                     >
-                      {/* Avatar */}
                       <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center text-sm font-bold text-primary flex-shrink-0">
                         {lead.full_name.charAt(0).toUpperCase()}
                       </div>
-
-                      {/* Info */}
                       <div className="flex-1 min-w-0">
                         <p className="font-bold text-sm text-foreground truncate">{lead.full_name}</p>
                         <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5">
@@ -611,8 +775,6 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
                           {lead.desired_price && <span>• R$ {lead.desired_price.toLocaleString("pt-BR")}</span>}
                         </div>
                       </div>
-
-                      {/* Status + Time */}
                       <div className="flex items-center gap-2 flex-shrink-0">
                         <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${cfg.bg} ${cfg.color}`}>
                           {cfg.label}
@@ -621,7 +783,6 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
                       </div>
                     </button>
 
-                    {/* Expanded Details */}
                     {isExpanded && (
                       <div className="px-3.5 pb-3.5 space-y-3 border-t border-border pt-3">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -662,7 +823,6 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
                           </div>
                         )}
 
-                        {/* Actions */}
                         <div className="flex items-center gap-2 flex-wrap pt-1">
                           <Select value={lead.status} onValueChange={v => updateStatus(lead.id, v)}>
                             <SelectTrigger className="w-[140px] h-8 text-xs bg-background text-foreground border-border rounded-xl">
