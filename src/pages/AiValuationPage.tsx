@@ -996,27 +996,72 @@ export default function AiValuationPage() {
       </div>
 
       <Dialog open={historyOpen} onOpenChange={setHistoryOpen}>
-        <DialogContent className="max-w-3xl" style={themeVars}>
-          <DialogHeader><DialogTitle>Suas avaliações anteriores</DialogTitle></DialogHeader>
+        <DialogContent className="max-w-3xl bg-background text-foreground border-border" style={themeVars}>
+          <DialogHeader>
+            <DialogTitle className="text-foreground">Suas avaliações anteriores</DialogTitle>
+          </DialogHeader>
+          <div className="relative mb-3">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Buscar por código (ex: LAU-XXXX) ou bairro/cidade…"
+              value={historySearch}
+              onChange={(e) => setHistorySearch(e.target.value)}
+              className="pl-9 bg-card text-foreground border-border placeholder:text-muted-foreground"
+            />
+          </div>
           <div className="max-h-[500px] overflow-y-auto space-y-2">
             {history.length === 0 ? (
               <p className="text-muted-foreground text-center py-8">Nenhuma avaliação ainda.</p>
-            ) : history.map((h) => (
-              <Card key={h.id} className="p-4 hover:bg-muted/50">
-                <div className="flex justify-between items-start gap-4">
-                  <div className="flex-1">
-                    <div className="font-semibold">{h.tipo} — {h.bairro}, {h.cidade}/{h.estado}</div>
-                    <div className="text-xs text-muted-foreground mt-1">
-                      {h.area_total}m² · {new Date(h.created_at).toLocaleString("pt-BR")}
+            ) : (() => {
+              const q = historySearch.trim().toLowerCase();
+              const filtered = history.filter((h) => {
+                if (!q) return true;
+                const code = getLaudoCode(h.id).toLowerCase();
+                return (
+                  code.includes(q) ||
+                  (h.bairro || "").toLowerCase().includes(q) ||
+                  (h.cidade || "").toLowerCase().includes(q) ||
+                  (h.tipo || "").toLowerCase().includes(q)
+                );
+              });
+              if (filtered.length === 0) {
+                return <p className="text-muted-foreground text-center py-8">Nenhum resultado para "{historySearch}".</p>;
+              }
+              return filtered.map((h) => (
+                <Card key={h.id} className="p-4 bg-card text-card-foreground border-border hover:bg-muted/50 transition">
+                  <div className="flex justify-between items-start gap-4">
+                    <div className="flex-1 min-w-0">
+                      <div className="font-mono text-[11px] font-semibold text-primary mb-1 truncate">
+                        {getLaudoCode(h.id)}
+                      </div>
+                      <div className="font-semibold text-foreground truncate">
+                        {h.tipo} — {h.bairro}, {h.cidade}/{h.estado}
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        {h.area_total}m² · {new Date(h.created_at).toLocaleString("pt-BR")}
+                      </div>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <div className="text-lg font-bold text-primary">{fmtBRL(Number(h.valor_estimado))}</div>
+                      {h.score_geral && <div className="text-xs text-muted-foreground">Score {h.score_geral}/10</div>}
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="mt-2 h-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+                        onClick={() => deleteValuation(h.id)}
+                        disabled={deletingId === h.id}
+                      >
+                        {deletingId === h.id ? (
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        ) : (
+                          <><Trash2 className="h-3.5 w-3.5 mr-1" /> Excluir</>
+                        )}
+                      </Button>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <div className="text-lg font-bold text-primary">{fmtBRL(Number(h.valor_estimado))}</div>
-                    {h.score_geral && <div className="text-xs text-muted-foreground">Score {h.score_geral}/10</div>}
-                  </div>
-                </div>
-              </Card>
-            ))}
+                </Card>
+              ));
+            })()}
           </div>
         </DialogContent>
       </Dialog>
