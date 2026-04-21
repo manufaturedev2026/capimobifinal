@@ -1047,6 +1047,25 @@ Deno.serve(async (req) => {
     ]);
     const { precoM2, source } = await resolvePrecoM2(supabase, data, market, external);
     const calc = calcular(data, precoM2, market);
+
+    // ============ ANCORAGEM AO MERCADO REAL ============
+    // Quando há anúncios externos reais, o valor final NÃO pode divergir mais que ±15%
+    // da mediana do mercado para o mesmo tamanho de imóvel.
+    if (external && external.preco_m2_mediano > 0 && calc.areaCalc > 0) {
+      const valorMercadoMediano = external.preco_m2_mediano * calc.areaCalc;
+      const tetoMercado = Math.round((valorMercadoMediano * 1.15) / 1000) * 1000;
+      const pisoMercado = Math.round((valorMercadoMediano * 0.85) / 1000) * 1000;
+      const ajustado = Math.max(pisoMercado, Math.min(tetoMercado, calc.valorFinal));
+      if (ajustado !== calc.valorFinal) {
+        calc.valorFinal = ajustado;
+        calc.faixa_min = Math.round((ajustado * 0.95) / 1000) * 1000;
+        calc.faixa_max = Math.round((ajustado * 1.05) / 1000) * 1000;
+        calc.venda_rapida = Math.round((ajustado * 0.92) / 1000) * 1000;
+        calc.venda_premium = Math.round((ajustado * 1.10) / 1000) * 1000;
+        calc.aluguel_estimado = Math.round((ajustado * (calc.aluguel_estimado / (calc.valorFinal || 1))) / 50) * 50 || calc.aluguel_estimado;
+      }
+    }
+
     const ai = await aiEnrich(data, calc, precoM2, source, market) ?? fallbackAnalysis(data, calc, market);
 
     const authHeader = req.headers.get("Authorization");
