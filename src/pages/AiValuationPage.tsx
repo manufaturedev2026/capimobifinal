@@ -390,6 +390,12 @@ export default function AiValuationPage() {
             <ChipGroup options={TIPOS} value={tipo} onChange={setTipo} />
           </Section>
 
+          {tipo === "Apartamento" && (
+            <Section icon={<Building2 className="h-4 w-4" />} title="Dados específicos do apartamento">
+              <ApartmentValuationFields state={apt} onChange={updateApt} />
+            </Section>
+          )}
+
           {!isTerreno && (
             <Section icon={<Building2 className="h-4 w-4" />} title="Tipo de estrutura">
               <ChipGroup options={TIPOS_ESTRUTURA} value={tipoEstrutura} onChange={setTipoEstrutura} />
