@@ -236,6 +236,15 @@ export default function CapturePropertyChatPage() {
         if (cfgData?.value) {
           try { merged = { ...DEFAULT_CONFIG, ...JSON.parse(cfgData.value) }; } catch {}
         }
+        // Sanitize legacy messages that promised "avaliação gratuita"
+        const stripGratuita = (s: string) =>
+          s && /gratuita|gratuito|grátis|gratis/i.test(s) && /avalia/i.test(s)
+            ? DEFAULT_CONFIG.avalMsgName
+            : s;
+        merged.avalMsgName = stripGratuita(merged.avalMsgName);
+        if (merged.openingMessage && /avalia\S*\s+(gratuita|gratuito|grátis|gratis)/i.test(merged.openingMessage)) {
+          merged.openingMessage = DEFAULT_CONFIG.openingMessage;
+        }
         // 2) If a botSlug is present, override with the per-bot row from capture_bots
         if (botSlug) {
           const { data: botRow } = await supabase
