@@ -64,7 +64,7 @@ type StoreListing = {
   is_visible: boolean;
 };
 
-type SubTab = "meus" | "disponivel" | "vigentes" | "minhas" | "recebidas";
+type SubTab = "meus" | "disponivel" | "parceiros" | "afiliados" | "minhas" | "recebidas";
 
 const ITEM_FIELDS = "id, title, slug, price, photos, city, state, neighborhood, finality, commission_percent, partner_percent, partnership_enabled, seller_id, user_id, category, description, bedrooms, bathrooms, parking_spots, area, status";
 
@@ -478,6 +478,8 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
   );
 
   // Stats for hero
+  const myPartnerListings = activePartnerships.filter(p => p.role === "requester");
+  const myAffiliateListings = activePartnerships.filter(p => p.role === "owner");
   const totalActivePartnerships = activePartnerships.length;
   const totalPotentialGain = activePartnerships.reduce((acc, p) => {
     if (!p.item) return acc;
