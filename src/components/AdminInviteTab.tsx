@@ -430,6 +430,7 @@ export default function AdminInviteTab() {
           })}
         </div>
       </div>
+      )}
 
       <Button onClick={handleSave} disabled={saving} className="w-full sm:w-auto">
         <Save size={16} /> {saving ? "Salvando..." : "Salvar Convite"}
