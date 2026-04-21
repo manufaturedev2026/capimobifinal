@@ -57,6 +57,8 @@ type Valuation = {
   scores: Scores;
   score_geral: number;
   comparaveis: Comparavel[];
+  comparaveis_origem?: string;
+  comparaveis_aviso?: string | null;
   meta?: {
     preco_m2: number;
     source: string;
