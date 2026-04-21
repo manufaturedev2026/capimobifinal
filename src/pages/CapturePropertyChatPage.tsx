@@ -226,22 +226,55 @@ export default function CapturePropertyChatPage() {
       }
       if (profile) {
         setSellerProfile(profile);
+        // 1) Load legacy global config (fallback / message templates)
         const { data: cfgData } = await supabase
           .from("platform_settings")
           .select("value")
           .eq("key", `capture_bot_config_${profile.id}`)
           .maybeSingle();
+        let merged: BotConfig = { ...DEFAULT_CONFIG };
         if (cfgData?.value) {
-          try {
-            const parsed = JSON.parse(cfgData.value);
-            setConfig({ ...DEFAULT_CONFIG, ...parsed });
-          } catch {}
+          try { merged = { ...DEFAULT_CONFIG, ...JSON.parse(cfgData.value) }; } catch {}
         }
+        // 2) If a botSlug is present, override with the per-bot row from capture_bots
+        if (botSlug) {
+          const { data: botRow } = await supabase
+            .from("capture_bots")
+            .select("*")
+            .eq("seller_id", profile.id)
+            .eq("slug", botSlug)
+            .maybeSingle();
+          if (botRow) {
+            const b: any = botRow;
+            // Map bot_type → flowType
+            const BOT_TYPE_TO_FLOW: Record<string, FlowType> = {
+              captacao: "captacao",
+              grupo: "grupo_whatsapp",
+              avaliacao: "avaliacao",
+            };
+            const mappedFlow = BOT_TYPE_TO_FLOW[b.bot_type] || merged.flowType;
+            merged = {
+              ...merged,
+              flowType: mappedFlow,
+              attendantName: b.attendant_name || merged.attendantName,
+              attendantAvatar: b.attendant_avatar || merged.attendantAvatar,
+              openingMessage: b.opening_message || merged.openingMessage,
+              // Apply CTA label/url to the matching flow
+              captacaoCtaLabel: mappedFlow === "captacao" ? (b.success_cta_label || merged.captacaoCtaLabel) : merged.captacaoCtaLabel,
+              captacaoCtaUrl: mappedFlow === "captacao" ? (b.success_cta_url || merged.captacaoCtaUrl) : merged.captacaoCtaUrl,
+              grupoCtaLabel: mappedFlow === "grupo_whatsapp" ? (b.success_cta_label || merged.grupoCtaLabel) : merged.grupoCtaLabel,
+              grupoWhatsappLink: mappedFlow === "grupo_whatsapp" ? (b.whatsapp_group_url || b.success_cta_url || merged.grupoWhatsappLink) : merged.grupoWhatsappLink,
+              avalCtaLabel: mappedFlow === "avaliacao" ? (b.success_cta_label || merged.avalCtaLabel) : merged.avalCtaLabel,
+              avalCtaUrl: mappedFlow === "avaliacao" ? (b.success_cta_url || merged.avalCtaUrl) : merged.avalCtaUrl,
+            };
+          }
+        }
+        setConfig(merged);
       }
       setLoading(false);
     };
     load();
-  }, [slug]);
+  }, [slug, botSlug]);
 
   const addBotMsg = useCallback((text: string): Promise<void> => {
     return new Promise((resolve) => {
