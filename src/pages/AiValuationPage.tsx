@@ -582,6 +582,20 @@ export default function AiValuationPage() {
             </div>
           </Section>
 
+          <div className="mt-6">
+            <PhotoAnalysisStep
+              contexto={{
+                tipo, cidade, bairro,
+                acabamentoDeclarado: acabamento,
+                conservacaoDeclarada: conservacao,
+              }}
+              fotos={fotos}
+              onFotosChange={setFotos}
+              analise={analiseVisual}
+              onAnaliseChange={setAnaliseVisual}
+            />
+          </div>
+
           <Button
             onClick={handleCalculate}
             disabled={loading}
@@ -591,7 +605,7 @@ export default function AiValuationPage() {
             {loading ? (
               <><Loader2 className="h-5 w-5 animate-spin mr-2" /> Calculando avaliação...</>
             ) : (
-              <><Sparkles className="h-5 w-5 mr-2" /> Calcular Avaliação Profissional</>
+              <><Sparkles className="h-5 w-5 mr-2" /> Calcular Avaliação Profissional{analiseVisual ? " + Visual" : ""}</>
             )}
           </Button>
         </Card>
