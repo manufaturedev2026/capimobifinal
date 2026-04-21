@@ -184,7 +184,8 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
 
     const applyCoords = (lat: string, lon: string) => {
       if (cancelled) return;
-      setStreetViewUrl(`https://www.google.com/maps?q=&layer=c&cbll=${lat},${lon}&cbp=11,0,0,0,0`);
+      // Use map_action=pano to force Street View panorama to load immediately
+      setStreetViewUrl(`https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lon}&heading=0&pitch=0&fov=90`);
       setMapSrc(`https://www.google.com/maps?q=${lat},${lon}&hl=pt-BR&z=18&output=embed`);
       setMapsUrl(`https://www.google.com/maps/search/?api=1&query=${lat},${lon}`);
     };
