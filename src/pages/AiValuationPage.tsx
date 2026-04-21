@@ -475,7 +475,7 @@ export default function AiValuationPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5" style={themeVars}>
       <div className="sticky top-0 z-30 backdrop-blur-xl bg-background/80 border-b">
         <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
           <Link to="/painel" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition">
