@@ -47,6 +47,7 @@ const INITIAL_FORM = {
   neighborhood: "",
   address: "",
   addressNumber: "",
+  cep: "",
   tags: [] as ItemTag[],
   photos: [] as string[],
   brand: "",
@@ -147,6 +148,7 @@ export default function SellerItemForm() {
               neighborhood: d.neighborhood || "",
               address: d.address?.replace(/,\s*\d+$/, '') || "",
               addressNumber: d.address?.match(/,\s*(\d+)$/)?.[1] || "",
+              cep: d.cep || "",
               tags: (d.tags as ItemTag[]) || [],
               photos: d.photos || [],
               brand: d.brand || "",
@@ -296,6 +298,7 @@ export default function SellerItemForm() {
       state: strOrNull(form.state),
       neighborhood: strOrNull(form.neighborhood),
       address: [form.address, form.addressNumber].filter(Boolean).join(", ") || null,
+      cep: strOrNull(form.cep),
       tags: isAluguel ? [...new Set([...form.tags, "aluguel_flex" as ItemTag])] : form.tags.filter(t => t !== "aluguel_flex"),
       photos: form.photos,
       brand: strOrNull(form.brand),
@@ -530,6 +533,20 @@ export default function SellerItemForm() {
               className="col-span-2 px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="Endereço (opcional)" />
             <input value={form.addressNumber} onChange={(e) => setForm((f) => ({ ...f, addressNumber: e.target.value }))}
               className="px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="Número" />
+          </div>
+          <div>
+            <label className="text-xs text-muted-foreground mb-1 block">CEP (recomendado para Street View 360° preciso)</label>
+            <input
+              value={form.cep}
+              onChange={(e) => {
+                const raw = e.target.value.replace(/\D/g, "").slice(0, 8);
+                const formatted = raw.length > 5 ? `${raw.slice(0, 5)}-${raw.slice(5)}` : raw;
+                setForm((f) => ({ ...f, cep: formatted }));
+              }}
+              className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+              placeholder="29705-037"
+              inputMode="numeric"
+            />
           </div>
         </div>
 
