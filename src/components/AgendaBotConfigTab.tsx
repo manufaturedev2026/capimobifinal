@@ -26,6 +26,7 @@ interface AgendaBot {
   success_cta_label: string;
   success_cta_url: string | null;
   is_active: boolean;
+  min_interval_minutes: number;
 }
 
 interface SellerItem {
