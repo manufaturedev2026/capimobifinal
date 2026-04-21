@@ -327,47 +327,27 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
     window.open(streetViewUrl, "_blank", "noopener,noreferrer");
   };
 
-  const canEmbedStreetView = !!streetViewEmbed || !!addressOverride;
-  const isStreetView = view === "street" && canEmbedStreetView;
-  const currentSrc = isStreetView
-    ? (streetViewEmbed || addressOverride?.embedUrl || mapSrc)
-    : mapSrc;
-
   return (
     <div className={`rounded-2xl overflow-hidden border border-border ${className}`}>
       <div className="relative aspect-[16/9] bg-muted">
         <iframe
-          key={currentSrc}
-          src={currentSrc}
+          src={mapSrc}
           className="w-full h-full border-0"
           allowFullScreen
           loading="lazy"
           referrerPolicy="no-referrer-when-downgrade"
-          title={isStreetView ? `Street View - ${address}` : `Mapa - ${address}`}
+          title={`Mapa - ${address}`}
         />
         {showStreetView && (
-          <div className="absolute bottom-3 right-3 z-10 flex items-center gap-2">
-            {canEmbedStreetView && (
-              <button
-                type="button"
-                onClick={() => setView(isStreetView ? "map" : "street")}
-                aria-busy={resolvingStreetView}
-                className="flex items-center gap-2 rounded-full bg-primary px-3.5 py-2 text-xs font-semibold text-primary-foreground shadow-lg transition-transform hover:scale-105"
-              >
-                {resolvingStreetView ? <Loader2 size={14} className="animate-spin" /> : (isStreetView ? <MapIcon size={14} /> : <Eye size={14} />)}
-                {isStreetView ? "Ver Mapa" : "Street View 360°"}
-              </button>
-            )}
-            <button
-              type="button"
-              onClick={handleOpenStreetView}
-              title="Abrir em nova aba"
-              className="flex items-center gap-1 rounded-full bg-background/90 backdrop-blur px-3 py-2 text-xs font-semibold text-foreground shadow-lg border border-border transition-transform hover:scale-105"
-            >
-              <ExternalLink size={13} />
-              Nova aba
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={handleOpenStreetView}
+            aria-busy={resolvingStreetView}
+            className="absolute bottom-3 right-3 z-10 flex items-center gap-2 rounded-full bg-primary px-3.5 py-2 text-xs font-semibold text-primary-foreground shadow-lg transition-transform hover:scale-105"
+          >
+            {resolvingStreetView ? <Loader2 size={14} className="animate-spin" /> : <Eye size={14} />}
+            Ver Street View 360°
+          </button>
         )}
       </div>
       <a
