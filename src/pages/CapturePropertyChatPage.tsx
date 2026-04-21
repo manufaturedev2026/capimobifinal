@@ -268,7 +268,7 @@ export default function CapturePropertyChatPage() {
               chatMode: b.use_ai === false ? "flow" : "ai",
               attendantName: b.attendant_name || merged.attendantName,
               attendantAvatar: b.attendant_avatar || merged.attendantAvatar,
-              openingMessage: b.opening_message || merged.openingMessage,
+              openingMessage: (b.opening_message && !/avalia\S*\s+(gratuita|gratuito|grátis|gratis)/i.test(b.opening_message)) ? b.opening_message : merged.openingMessage,
               // Apply CTA label/url to the matching flow
               captacaoCtaLabel: mappedFlow === "captacao" ? (b.success_cta_label || merged.captacaoCtaLabel) : merged.captacaoCtaLabel,
               captacaoCtaUrl: mappedFlow === "captacao" ? (b.success_cta_url || merged.captacaoCtaUrl) : merged.captacaoCtaUrl,
