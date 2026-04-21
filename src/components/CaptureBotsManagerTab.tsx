@@ -185,34 +185,35 @@ export default function CaptureBotsManagerTab({ sellerId, sellerSlug }: Props) {
     const Icon = meta.icon;
     return (
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="font-bold flex items-center gap-2">
+        <div className="flex items-center justify-between rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 p-4">
+          <h3 className="font-bold text-foreground flex items-center gap-2">
             <Icon className="w-5 h-5 text-primary" />
-            {editing.id ? "Editar bot" : "Novo bot"} — {meta.label}
+            <span>{editing.id ? "Editar bot" : "Novo bot"} — <span className="text-primary">{meta.label}</span></span>
           </h3>
           <Button variant="ghost" size="sm" onClick={() => setEditing(null)}>Cancelar</Button>
         </div>
 
-        <div className="rounded-2xl border bg-card p-4 space-y-3">
+        <div className="rounded-2xl border border-border bg-background p-4 space-y-3 shadow-sm">
+          <p className="text-sm font-bold text-foreground">Identificação</p>
           <div>
-            <label className="text-xs text-muted-foreground">Nome interno do bot</label>
-            <Input value={editing.name} onChange={(e) => setEditing({ ...editing, name: e.target.value })} className="mt-1" />
+            <label className="text-xs font-semibold text-foreground">Nome interno do bot</label>
+            <Input value={editing.name} onChange={(e) => setEditing({ ...editing, name: e.target.value })} className="mt-1 bg-card text-foreground" />
           </div>
           <div>
-            <label className="text-xs text-muted-foreground">Slug do link (URL)</label>
-            <Input value={editing.slug} onChange={(e) => setEditing({ ...editing, slug: slugify(e.target.value) })} placeholder={slugify(editing.name)} className="mt-1 font-mono text-xs" />
+            <label className="text-xs font-semibold text-foreground">Slug do link (URL)</label>
+            <Input value={editing.slug} onChange={(e) => setEditing({ ...editing, slug: slugify(e.target.value) })} placeholder={slugify(editing.name)} className="mt-1 font-mono text-xs bg-card text-foreground" />
             <p className="text-[10px] text-muted-foreground mt-1 break-all">{baseUrl(editing.slug || slugify(editing.name))}</p>
           </div>
         </div>
 
-        <div className="rounded-2xl border bg-card p-4 space-y-3">
-          <p className="text-sm font-bold">Atendente virtual</p>
+        <div className="rounded-2xl border border-border bg-background p-4 space-y-3 shadow-sm">
+          <p className="text-sm font-bold text-foreground">Atendente virtual</p>
           <div>
-            <label className="text-xs text-muted-foreground">Nome</label>
-            <Input value={editing.attendant_name} onChange={(e) => setEditing({ ...editing, attendant_name: e.target.value })} className="mt-1" />
+            <label className="text-xs font-semibold text-foreground">Nome</label>
+            <Input value={editing.attendant_name} onChange={(e) => setEditing({ ...editing, attendant_name: e.target.value })} className="mt-1 bg-card text-foreground" />
           </div>
           <div>
-            <label className="text-xs text-muted-foreground">Avatar do atendente</label>
+            <label className="text-xs font-semibold text-foreground">Avatar do atendente</label>
             <div className="mt-1 flex items-center gap-3">
               <div className="w-14 h-14 rounded-full bg-muted overflow-hidden shrink-0 border flex items-center justify-center">
                 {editing.attendant_avatar ? (
@@ -244,40 +245,40 @@ export default function CaptureBotsManagerTab({ sellerId, sellerSlug }: Props) {
                   value={editing.attendant_avatar || ""}
                   onChange={(e) => setEditing({ ...editing, attendant_avatar: e.target.value || null })}
                   placeholder="ou cole uma URL https://..."
-                  className="h-8 text-xs"
+                  className="h-8 text-xs bg-card text-foreground"
                 />
               </div>
             </div>
           </div>
           <div>
-            <label className="text-xs text-muted-foreground">Mensagem de abertura</label>
-            <Textarea value={editing.opening_message || ""} onChange={(e) => setEditing({ ...editing, opening_message: e.target.value || null })} className="mt-1 min-h-[90px]" />
+            <label className="text-xs font-semibold text-foreground">Mensagem de abertura</label>
+            <Textarea value={editing.opening_message || ""} onChange={(e) => setEditing({ ...editing, opening_message: e.target.value || null })} className="mt-1 min-h-[90px] bg-card text-foreground" />
           </div>
         </div>
 
-        <div className="rounded-2xl border bg-card p-4 space-y-3">
-          <p className="text-sm font-bold">Botão pós-conversa</p>
+        <div className="rounded-2xl border border-border bg-background p-4 space-y-3 shadow-sm">
+          <p className="text-sm font-bold text-foreground">Botão pós-conversa</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="text-xs text-muted-foreground">Texto</label>
-              <Input value={editing.success_cta_label} onChange={(e) => setEditing({ ...editing, success_cta_label: e.target.value })} className="mt-1" />
+              <label className="text-xs font-semibold text-foreground">Texto</label>
+              <Input value={editing.success_cta_label} onChange={(e) => setEditing({ ...editing, success_cta_label: e.target.value })} className="mt-1 bg-card text-foreground" />
             </div>
             <div>
-              <label className="text-xs text-muted-foreground">URL custom (vazio = WhatsApp do corretor)</label>
-              <Input value={editing.success_cta_url || ""} onChange={(e) => setEditing({ ...editing, success_cta_url: e.target.value || null })} className="mt-1" />
+              <label className="text-xs font-semibold text-foreground">URL custom <span className="text-muted-foreground font-normal">(vazio = WhatsApp do corretor)</span></label>
+              <Input value={editing.success_cta_url || ""} onChange={(e) => setEditing({ ...editing, success_cta_url: e.target.value || null })} placeholder="https://wa.me/55..." className="mt-1 bg-card text-foreground" />
             </div>
           </div>
           {editing.bot_type === "grupo" && (
             <div>
-              <label className="text-xs text-muted-foreground">Link do grupo de WhatsApp (chat.whatsapp.com/...)</label>
-              <Input value={editing.whatsapp_group_url || ""} onChange={(e) => setEditing({ ...editing, whatsapp_group_url: e.target.value || null })} placeholder="https://chat.whatsapp.com/..." className="mt-1" />
+              <label className="text-xs font-semibold text-foreground">Link do grupo de WhatsApp <span className="text-muted-foreground font-normal">(chat.whatsapp.com/...)</span></label>
+              <Input value={editing.whatsapp_group_url || ""} onChange={(e) => setEditing({ ...editing, whatsapp_group_url: e.target.value || null })} placeholder="https://chat.whatsapp.com/..." className="mt-1 bg-card text-foreground" />
             </div>
           )}
         </div>
 
-        <div className="flex items-center gap-3 rounded-2xl border bg-card p-4">
+        <div className="flex items-center gap-3 rounded-2xl border border-border bg-background p-4 shadow-sm">
           <Switch checked={editing.is_active} onCheckedChange={(v) => setEditing({ ...editing, is_active: v })} />
-          <span className="text-sm">Bot ativo (link funcionando)</span>
+          <span className="text-sm font-medium text-foreground">Bot ativo (link funcionando)</span>
         </div>
 
         <Button onClick={save} disabled={saving} className="w-full sm:w-auto" size="lg">
