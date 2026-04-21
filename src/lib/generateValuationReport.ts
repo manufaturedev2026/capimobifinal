@@ -558,6 +558,26 @@ export function generateValuationReport(d: ValuationReportData): jsPDF {
   });
   y += 38;
 
+  // ===== Classificação de padrão (Baixo / Médio / Alto) =====
+  {
+    const cls = classificarPadrao(d);
+    if (y > H - 30) { footer("Página 4 de 6"); doc.addPage(); headerStrip("Página 4 — Resultado (cont.)"); y = 38; }
+    setFill(cls.cor);
+    doc.roundedRect(14, y, W - 28, 22, 3, 3, "F");
+    setColor([255, 255, 255]);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.text("CLASSIFICAÇÃO DE PADRÃO CONSTRUTIVO", 20, y + 7);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(15);
+    doc.text(cls.label, 20, y + 15);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    const desc = doc.splitTextToSize(cls.descricao, W - 50);
+    doc.text(desc[0] || "", W - 20, y + 13, { align: "right" });
+    y += 28;
+  }
+
   // Score profissional
   if (d.result.scores) {
     if (y > H - 70) { footer("Página 4 de 6"); doc.addPage(); headerStrip("Página 4 — Resultado (cont.)"); y = 38; }
@@ -860,6 +880,100 @@ export function generateValuationReport(d: ValuationReportData): jsPDF {
   }
 
   footer("Página 5 de 6");
+
+  // ========== GALERIA DE FOTOS (se houver) ==========
+  if (d.fotos && d.fotos.length > 0) {
+    doc.addPage();
+    headerStrip("Galeria de Fotos Analisadas");
+    let yg = sectionTitle("Fotos do Imóvel", 38);
+
+    // Aviso se poucas fotos
+    if (d.fotos.length < 3) {
+      setFill([255, 245, 225]);
+      doc.roundedRect(14, yg, W - 28, 14, 2, 2, "F");
+      setFill(AMBER);
+      doc.rect(14, yg, 2, 14, "F");
+      setColor(AMBER);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(9);
+      doc.text("LIMITAÇÃO DE ANÁLISE VISUAL", 20, yg + 6);
+      setColor([60, 60, 70]);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(8.5);
+      doc.text(
+        `Apenas ${d.fotos.length} foto(s) enviada(s). Para análise visual mais robusta, recomenda-se ao menos 3 fotos cobrindo fachada, ambientes internos e área externa.`,
+        20, yg + 11,
+      );
+      yg += 20;
+    } else {
+      yg = para(
+        `${d.fotos.length} foto(s) enviada(s) e analisada(s) pela IA. As imagens foram utilizadas como base complementar para classificação visual e ajuste do valor.`,
+        yg, { size: 9.5, color: GRAY }
+      );
+    }
+
+    // Grid 3 colunas, miniatura ~58×58 mm
+    const cols = 3;
+    const gap = 6;
+    const thumbW = (W - 28 - gap * (cols - 1)) / cols;
+    const thumbH = thumbW * 0.75; // 4:3
+    const labelH = 12;
+
+    d.fotos.forEach((foto, idx) => {
+      const col = idx % cols;
+      const row = Math.floor(idx / cols);
+      const x = 14 + col * (thumbW + gap);
+      const yPos = yg + row * (thumbH + labelH + gap);
+
+      // Quebra de página se necessário
+      if (yPos + thumbH + labelH > H - 22) {
+        footer("Galeria de Fotos");
+        doc.addPage();
+        headerStrip("Galeria de Fotos (cont.)");
+        yg = 38;
+        const newRow = 0;
+        const newY = yg;
+        try {
+          doc.addImage(foto.dataUrl, "JPEG", x, newY, thumbW, thumbH, undefined, "FAST");
+        } catch {
+          setFill(LIGHT);
+          doc.rect(x, newY, thumbW, thumbH, "F");
+        }
+        setColor(GRAY);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(7.5);
+        doc.text(`${idx + 1}. ${foto.categoria || "outro"}`, x, newY + thumbH + 5);
+        return;
+      }
+
+      try {
+        doc.addImage(foto.dataUrl, "JPEG", x, yPos, thumbW, thumbH, undefined, "FAST");
+      } catch {
+        setFill(LIGHT);
+        doc.rect(x, yPos, thumbW, thumbH, "F");
+        setColor(GRAY);
+        doc.setFontSize(8);
+        doc.text("imagem", x + thumbW / 2, yPos + thumbH / 2, { align: "center" });
+      }
+      setColor([60, 60, 70]);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(7.8);
+      const labelText = `${idx + 1}. ${foto.categoria || "outro"}`;
+      doc.text(labelText, x, yPos + thumbH + 5);
+
+      // Observação se houver ambiente identificado
+      const amb = d.analiseVisual?.ambientes_identificados?.find((a) => a.foto_index === idx);
+      if (amb?.observacao) {
+        setColor(GRAY);
+        doc.setFont("helvetica", "italic");
+        doc.setFontSize(6.8);
+        const obs = doc.splitTextToSize(amb.observacao, thumbW);
+        doc.text(obs[0] || "", x, yPos + thumbH + 9);
+      }
+    });
+
+    footer("Galeria de Fotos");
+  }
 
   // ========== ANÁLISE VISUAL (se houver) ==========
   if (d.analiseVisual) {
