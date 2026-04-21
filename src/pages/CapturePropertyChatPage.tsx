@@ -82,7 +82,7 @@ interface BotConfig {
 const DEFAULT_CONFIG: BotConfig = {
   attendantName: "Assistente Imobiliário",
   attendantAvatar: "",
-  openingMessage: "Olá! 👋 Vou te ajudar a cadastrar seu imóvel para avaliação gratuita! É rápido e sem compromisso 🏡",
+  openingMessage: "Olá! 👋 Vou te ajudar a cadastrar seu imóvel para divulgação profissional! É rápido e sem compromisso 🏡",
   chatMode: "flow",
   flowType: "captacao",
   // Captação
@@ -112,7 +112,7 @@ const DEFAULT_CONFIG: BotConfig = {
   agendMsgSuccess: "✅ Visita agendada com sucesso!",
   agendMsgSuccessEnd: "Um corretor vai confirmar o agendamento pelo WhatsApp. Até breve! 📋🎉",
   // Avaliação
-  avalMsgName: "Olá! 👋 Vou te ajudar a solicitar uma avaliação profissional do seu imóvel! Me diz seu nome:",
+  avalMsgName: "Olá! 👋 Vou te ajudar a solicitar uma avaliação profissional do seu imóvel. Me diz seu nome:",
   avalMsgNameReply: "Prazer, {nome}! 🤝 Vamos avaliar seu imóvel!",
   avalMsgPhone: "Qual seu telefone ou WhatsApp? 📱",
   avalMsgType: "Qual o tipo do seu imóvel? 🏠",
@@ -124,7 +124,7 @@ const DEFAULT_CONFIG: BotConfig = {
 
 // Opening messages per flow type
 const FLOW_OPENINGS: Record<FlowType, string> = {
-  captacao: "Olá! 👋 Vou te ajudar a cadastrar seu imóvel para avaliação gratuita! É rápido e sem compromisso 🏡",
+  captacao: "Olá! 👋 Vou te ajudar a cadastrar seu imóvel para divulgação profissional! É rápido e sem compromisso 🏡",
   grupo_whatsapp: "Olá! 👋 Entre no nosso grupo exclusivo de imóveis e receba as melhores oportunidades! 🏡🔥",
   agendamento: "Olá! 👋 Vou te ajudar a agendar uma visita a um imóvel! É rápido e fácil 🏠📅",
   avaliacao: "Olá! 👋 Solicite uma avaliação profissional do seu imóvel! Descubra quanto ele vale no mercado 💎🏡",
