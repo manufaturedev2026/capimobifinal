@@ -794,7 +794,7 @@ export function generateValuationReport(d: ValuationReportData): jsPDF {
   doc.text("FÓRMULA APLICADA", 14, y);
   y += 5;
   y = para(
-    `Valor Final = (R$/m² base × Área) × (1 + Σ ajustes ponderados)`,
+    `Valor Final = (R$/m² base x Área) x (1 + Soma dos ajustes ponderados)`,
     y, { size: 9.5, bold: true }
   );
 
