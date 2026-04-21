@@ -201,6 +201,9 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
   const [mapSrc, setMapSrc] = useState(fallbackMapSrc);
   const [mapsUrl, setMapsUrl] = useState(fallbackMapsUrl);
   const [streetViewEmbed, setStreetViewEmbed] = useState<string | null>(null);
+  const [streetViewCoords, setStreetViewCoords] = useState<{ lat: string; lon: string } | null>(
+    addressOverride ? { lat: addressOverride.lat, lon: addressOverride.lon } : null,
+  );
   const [streetViewQuery, setStreetViewQuery] = useState<string | null>(null);
   const [resolvingStreetView, setResolvingStreetView] = useState(false);
   const [view, setView] = useState<"map" | "street">("map");
@@ -221,6 +224,7 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
     setMapSrc(fallbackMapSrc);
     setMapsUrl(fallbackMapsUrl);
     setStreetViewEmbed(null);
+    setStreetViewCoords(addressOverride ? { lat: addressOverride.lat, lon: addressOverride.lon } : null);
     setStreetViewQuery(null);
     setView("map");
 
@@ -264,6 +268,7 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
 
     const applyStreetViewCoords = (lat: string, lon: string) => {
       if (cancelled) return;
+      setStreetViewCoords({ lat, lon });
       setStreetViewEmbed(
         `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lon}&heading=0&pitch=0&fov=90`,
       );
@@ -396,19 +401,14 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
 
   // Official Google Maps Embed API — works inside iframe and shows real 360° Street View
   const officialStreetEmbed = (() => {
-    if (!mapsApiKey) return null;
+    if (!mapsApiKey || !streetViewCoords) return null;
     const base = `https://www.google.com/maps/embed/v1/streetview?key=${mapsApiKey}`;
-    if (addressOverride) {
-      return `${base}&location=${addressOverride.lat},${addressOverride.lon}&heading=0&pitch=0&fov=90`;
-    }
-    if (streetViewEmbed) {
-      // streetViewEmbed contains lat,lon coords from Photon
-      const match = streetViewEmbed.match(/viewpoint=([-\d.]+),([-\d.]+)/);
-      if (match) return `${base}&location=${match[1]},${match[2]}&heading=0&pitch=0&fov=90`;
-    }
-    const query = streetViewQuery || address;
-    if (query) return `${base}&location=${encodeURIComponent(query)}&heading=0&pitch=0&fov=90`;
-    return null;
+    const lat = Number(streetViewCoords.lat);
+    const lon = Number(streetViewCoords.lon);
+
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) return null;
+
+    return `${base}&location=${encodeURIComponent(`${lat},${lon}`)}&heading=0&pitch=0&fov=90`;
   })();
 
   // Official Maps Embed (2D) for the map view when key is available
