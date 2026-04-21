@@ -348,13 +348,13 @@ export default function CaptureBotsManagerTab({ sellerId, sellerSlug }: Props) {
                   </div>
                 </div>
                 <div className="flex flex-wrap gap-2 mt-3">
-                  <Button onClick={() => copyUrl(bot.slug)} variant="outline" size="sm" className="flex-1 sm:flex-none">
+                  <Button onClick={() => copyUrl(bot.slug)} variant="outline" size="sm" className="flex-1 sm:flex-none bg-card text-foreground hover:bg-accent hover:text-accent-foreground border-border">
                     <Copy className="w-3 h-3 mr-1" /> Copiar link
                   </Button>
-                  <Button onClick={() => window.open(url, "_blank")} variant="outline" size="sm" className="flex-1 sm:flex-none">
+                  <Button onClick={() => window.open(url, "_blank")} variant="outline" size="sm" className="flex-1 sm:flex-none bg-card text-foreground hover:bg-accent hover:text-accent-foreground border-border">
                     <ExternalLink className="w-3 h-3 mr-1" /> Testar
                   </Button>
-                  <Button onClick={() => setEditing(bot)} variant="outline" size="sm" className="flex-1 sm:flex-none">
+                  <Button onClick={() => setEditing(bot)} variant="outline" size="sm" className="flex-1 sm:flex-none bg-card text-foreground hover:bg-accent hover:text-accent-foreground border-border">
                     <Edit3 className="w-3 h-3 mr-1" /> Editar
                   </Button>
                   <Button onClick={() => remove(bot.id)} variant="ghost" size="sm" className="text-destructive hover:text-destructive hover:bg-destructive/10">
