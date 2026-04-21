@@ -76,6 +76,24 @@ export type ValuationReportData = {
   empresaNome?: string;
   /** Optional valuation row id used to derive a stable laudo code */
   valuationId?: string;
+  /** Dados opcionais do proprietário */
+  proprietario?: {
+    nome?: string;
+    cpf?: string;
+    telefone?: string;
+    email?: string;
+  };
+  /** Finalidade opcional da avaliação */
+  finalidade?: string;
+  /** Infraestrutura próxima (booleans opcionais) */
+  infraestrutura?: {
+    escola?: boolean;
+    hospital?: boolean;
+    comercio?: boolean;
+    transporte?: boolean;
+    parque?: boolean;
+    bancos?: boolean;
+  };
   analiseVisual?: {
     scores: {
       visual_externo: number;
@@ -390,6 +408,45 @@ export function generateValuationReport(d: ValuationReportData): jsPDF {
   headerStrip("Página 2 — Identificação do Imóvel");
   let y = sectionTitle("Dados do Imóvel", 38);
 
+  // ===== FINALIDADE (opcional) =====
+  if (d.finalidade && d.finalidade.trim()) {
+    setFill([245, 240, 255]);
+    doc.roundedRect(14, y - 2, W - 28, 14, 2, 2, "F");
+    setFill(VIOLET);
+    doc.rect(14, y - 2, 2, 14, "F");
+    setColor(VIOLET);
+    doc.setFont("helvetica", "bold"); doc.setFontSize(8);
+    doc.text("FINALIDADE DA AVALIAÇÃO", 19, y + 3);
+    setColor([20, 20, 30]);
+    doc.setFont("helvetica", "bold"); doc.setFontSize(10.5);
+    doc.text(d.finalidade, 19, y + 9);
+    y += 18;
+  }
+
+  // ===== PROPRIETÁRIO (opcional) =====
+  const propTemDados =
+    d.proprietario && (d.proprietario.nome || d.proprietario.cpf || d.proprietario.telefone || d.proprietario.email);
+  if (propTemDados) {
+    setFill(LIGHT);
+    doc.roundedRect(14, y - 2, W - 28, 22, 2, 2, "F");
+    setColor(GRAY);
+    doc.setFont("helvetica", "normal"); doc.setFontSize(8);
+    doc.text("DADOS DO PROPRIETÁRIO", 18, y + 4);
+    setColor([20, 20, 30]);
+    doc.setFont("helvetica", "bold"); doc.setFontSize(10.5);
+    const nome = d.proprietario?.nome || "—";
+    doc.text(nome, 18, y + 11);
+    setColor([60, 60, 70]);
+    doc.setFont("helvetica", "normal"); doc.setFontSize(9);
+    const linhaInfo = [
+      d.proprietario?.cpf ? `CPF/CNPJ: ${d.proprietario.cpf}` : null,
+      d.proprietario?.telefone ? `Tel: ${d.proprietario.telefone}` : null,
+      d.proprietario?.email ? d.proprietario.email : null,
+    ].filter(Boolean).join("  •  ");
+    if (linhaInfo) doc.text(linhaInfo, 18, y + 17);
+    y += 26;
+  }
+
   setFill(LIGHT);
   doc.roundedRect(14, y - 2, W - 28, 22, 2, 2, "F");
   setColor(NAVY);
@@ -459,6 +516,40 @@ export function generateValuationReport(d: ValuationReportData): jsPDF {
       cx += w + 4;
     });
     y = cy + 8;
+  }
+
+  // ===== INFRAESTRUTURA DO BAIRRO (opcional) =====
+  if (d.infraestrutura) {
+    const infraItems: Array<[string, boolean | undefined]> = [
+      ["Escolas próximas", d.infraestrutura.escola],
+      ["Hospitais / Saúde", d.infraestrutura.hospital],
+      ["Comércio local", d.infraestrutura.comercio],
+      ["Transporte público", d.infraestrutura.transporte],
+      ["Praças / Parques", d.infraestrutura.parque],
+      ["Bancos / Serviços", d.infraestrutura.bancos],
+    ].filter((it) => it[1] !== undefined) as Array<[string, boolean]>;
+
+    if (infraItems.length > 0) {
+      y = sectionTitle("Infraestrutura do Bairro", y);
+      const cols = 2;
+      const colWid = (W - 28 - 6) / cols;
+      infraItems.forEach((it, idx) => {
+        const c = idx % cols;
+        const r = Math.floor(idx / cols);
+        const x = 14 + c * (colWid + 6);
+        const yy = y + r * 8;
+        const presente = !!it[1];
+        setFill(presente ? [232, 245, 235] : [248, 240, 240]);
+        doc.roundedRect(x, yy - 4, colWid, 7, 1.5, 1.5, "F");
+        setColor(presente ? GREEN : [180, 80, 80]);
+        doc.setFont("helvetica", "bold"); doc.setFontSize(9);
+        doc.text(presente ? "✓" : "—", x + 3, yy);
+        setColor([40, 40, 50]);
+        doc.setFont("helvetica", "normal"); doc.setFontSize(9);
+        doc.text(it[0], x + 9, yy);
+      });
+      y += Math.ceil(infraItems.length / cols) * 8 + 4;
+    }
   }
 
   y = sectionTitle("Documentação", y);
@@ -1103,6 +1194,55 @@ export function generateValuationReport(d: ValuationReportData): jsPDF {
   }
   if (riscos.length === 0) riscos.push("Não foram identificados riscos documentais relevantes nas informações fornecidas.");
   renderList("Riscos Documentais", riscos, AMBER, "!");
+
+  // ===== ASSINATURA DO RESPONSÁVEL TÉCNICO =====
+  if (y > H - 70) { footer("Página 6 de 6"); doc.addPage(); headerStrip("Responsável Técnico"); y = 38; }
+  y += 6;
+  setColor(NAVY);
+  doc.setFont("helvetica", "bold"); doc.setFontSize(10.5);
+  doc.text("RESPONSÁVEL TÉCNICO", 14, y);
+  setFill(GOLD);
+  doc.rect(14, y + 1.5, 8, 0.5, "F");
+  y += 12;
+
+  doc.setDrawColor(60, 60, 80);
+  doc.setLineWidth(0.4);
+  const sigW = 90;
+  const sigX = (W - sigW) / 2;
+  doc.line(sigX, y + 18, sigX + sigW, y + 18);
+
+  setColor([20, 20, 30]);
+  doc.setFont("helvetica", "bold"); doc.setFontSize(11);
+  const nomeAval = d.avaliadorNome?.trim() || "Especialista responsável";
+  doc.text(nomeAval, W / 2, y + 23, { align: "center" });
+
+  setColor(GRAY);
+  doc.setFont("helvetica", "normal"); doc.setFontSize(9);
+  const linhaCreci: string[] = [];
+  if (d.avaliadorCreci?.trim()) linhaCreci.push(`CRECI ${d.avaliadorCreci.trim()}`);
+  linhaCreci.push(`Emitido em ${dataEmissao}`);
+  doc.text(linhaCreci.join("  •  "), W / 2, y + 28, { align: "center" });
+
+  if (d.avaliadorEmail) {
+    doc.setFontSize(8.5);
+    doc.text(d.avaliadorEmail, W / 2, y + 33, { align: "center" });
+  }
+
+  setFill([245, 247, 252]);
+  doc.roundedRect(14, y, 50, 36, 2, 2, "F");
+  setFill(GOLD);
+  doc.rect(14, y, 2, 36, "F");
+  setColor(NAVY);
+  doc.setFont("helvetica", "bold"); doc.setFontSize(7.5);
+  doc.text("CÓDIGO DO LAUDO", 18, y + 7);
+  setColor([20, 20, 30]);
+  doc.setFont("helvetica", "bold"); doc.setFontSize(10);
+  doc.text(codigo, 18, y + 14);
+  setColor(GRAY);
+  doc.setFont("helvetica", "normal"); doc.setFontSize(7);
+  doc.text("Documento autenticado", 18, y + 21);
+  doc.text("digitalmente pelo sistema", 18, y + 25);
+  doc.text("Capimobi IA.", 18, y + 29);
 
   footer("Página 6 de 6");
 

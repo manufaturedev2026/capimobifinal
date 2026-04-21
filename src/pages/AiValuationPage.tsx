@@ -139,6 +139,19 @@ export default function AiValuationPage() {
     return localStorage.getItem("valuation_avaliador_creci") || "";
   });
 
+  // Dados opcionais (proprietário + finalidade + infraestrutura)
+  const [propNome, setPropNome] = useState("");
+  const [propCpf, setPropCpf] = useState("");
+  const [propTelefone, setPropTelefone] = useState("");
+  const [propEmail, setPropEmail] = useState("");
+  const [finalidade, setFinalidade] = useState("");
+  const [infraEscola, setInfraEscola] = useState(false);
+  const [infraHospital, setInfraHospital] = useState(false);
+  const [infraComercio, setInfraComercio] = useState(false);
+  const [infraTransporte, setInfraTransporte] = useState(false);
+  const [infraParque, setInfraParque] = useState(false);
+  const [infraBancos, setInfraBancos] = useState(false);
+
   // Imóvel — taxonomia em cascata Categoria → Subtipo → Estrutura
   const [categoria, setCategoria] = useState<CategoriaImovel>("Residencial");
   const [subtipo, setSubtipo] = useState<string>("Casa");
@@ -453,6 +466,24 @@ export default function AiValuationPage() {
       avaliadorEmail: user?.email,
       empresaNome: "CAPIMOBI",
       valuationId: currentValuationId ?? undefined,
+      finalidade: finalidade.trim() || undefined,
+      proprietario:
+        propNome.trim() || propCpf.trim() || propTelefone.trim() || propEmail.trim()
+          ? {
+              nome: propNome.trim() || undefined,
+              cpf: propCpf.trim() || undefined,
+              telefone: propTelefone.trim() || undefined,
+              email: propEmail.trim() || undefined,
+            }
+          : undefined,
+      infraestrutura: {
+        escola: infraEscola,
+        hospital: infraHospital,
+        comercio: infraComercio,
+        transporte: infraTransporte,
+        parque: infraParque,
+        bancos: infraBancos,
+      },
     });
   };
 
@@ -997,6 +1028,74 @@ export default function AiValuationPage() {
                     />
                   </div>
                 </div>
+
+                {/* ===== Campos opcionais (proprietário, finalidade, infraestrutura) ===== */}
+                <details className="mb-4 group rounded-lg border border-border/40 bg-background/60 overflow-hidden">
+                  <summary className="cursor-pointer select-none px-3 py-2.5 text-xs font-semibold text-foreground hover:bg-muted/50 flex items-center justify-between">
+                    <span className="flex items-center gap-1.5">
+                      <FileBadge className="h-3.5 w-3.5 text-primary" />
+                      Dados complementares (opcional) — Proprietário, Finalidade e Infraestrutura
+                    </span>
+                    <span className="text-muted-foreground group-open:rotate-180 transition-transform">▾</span>
+                  </summary>
+
+                  <div className="p-3 space-y-4 border-t border-border/40">
+                    <div className="space-y-1">
+                      <Label htmlFor="laudo-finalidade" className="text-xs">Finalidade da avaliação</Label>
+                      <select
+                        id="laudo-finalidade"
+                        value={finalidade}
+                        onChange={(e) => setFinalidade(e.target.value)}
+                        className="w-full h-9 rounded-md border border-border bg-background px-3 text-sm text-foreground"
+                      >
+                        <option value="">— Não especificada —</option>
+                        <option value="Venda">Venda</option>
+                        <option value="Locação">Locação</option>
+                        <option value="Garantia bancária / Financiamento">Garantia bancária / Financiamento</option>
+                        <option value="Inventário / Partilha">Inventário / Partilha</option>
+                        <option value="Divórcio / Separação">Divórcio / Separação</option>
+                        <option value="Avaliação patrimonial">Avaliação patrimonial</option>
+                        <option value="Doação">Doação</option>
+                        <option value="Judicial / Perícia">Judicial / Perícia</option>
+                        <option value="Reposição de seguro">Reposição de seguro</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <p className="text-xs font-semibold mb-2 text-foreground">Dados do proprietário (opcional)</p>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        <Input value={propNome} onChange={(e) => setPropNome(e.target.value.slice(0, 100))} placeholder="Nome completo" className="h-9 text-sm" />
+                        <Input value={propCpf} onChange={(e) => setPropCpf(e.target.value.slice(0, 20))} placeholder="CPF/CNPJ" className="h-9 text-sm" />
+                        <Input value={propTelefone} onChange={(e) => setPropTelefone(e.target.value.slice(0, 20))} placeholder="Telefone" className="h-9 text-sm" />
+                        <Input value={propEmail} onChange={(e) => setPropEmail(e.target.value.slice(0, 100))} placeholder="E-mail" className="h-9 text-sm" />
+                      </div>
+                    </div>
+
+                    <div>
+                      <p className="text-xs font-semibold mb-2 text-foreground">Infraestrutura próxima do imóvel</p>
+                      <div className="grid grid-cols-2 gap-1.5">
+                        {[
+                          { label: "Escolas", v: infraEscola, set: setInfraEscola },
+                          { label: "Hospitais / Saúde", v: infraHospital, set: setInfraHospital },
+                          { label: "Comércio local", v: infraComercio, set: setInfraComercio },
+                          { label: "Transporte público", v: infraTransporte, set: setInfraTransporte },
+                          { label: "Praças / Parques", v: infraParque, set: setInfraParque },
+                          { label: "Bancos / Serviços", v: infraBancos, set: setInfraBancos },
+                        ].map((it) => (
+                          <label key={it.label} className="flex items-center gap-2 text-xs cursor-pointer p-1.5 rounded hover:bg-muted/50">
+                            <input
+                              type="checkbox"
+                              checked={it.v}
+                              onChange={(e) => it.set(e.target.checked)}
+                              className="h-3.5 w-3.5 accent-primary"
+                            />
+                            <span className="text-foreground">{it.label}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </details>
 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                   <Button onClick={downloadLaudo} className="bg-primary hover:bg-primary/90">
