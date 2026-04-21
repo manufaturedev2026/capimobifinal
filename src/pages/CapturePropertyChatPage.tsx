@@ -242,6 +242,10 @@ export default function CapturePropertyChatPage() {
             ? DEFAULT_CONFIG.avalMsgName
             : s;
         merged.avalMsgName = stripGratuita(merged.avalMsgName);
+        // Sanitize legacy long intro that duplicates the opening message
+        if (merged.avalMsgName && /vou te ajudar a solicitar uma avalia/i.test(merged.avalMsgName)) {
+          merged.avalMsgName = DEFAULT_CONFIG.avalMsgName;
+        }
         if (merged.openingMessage && /avalia\S*\s+(gratuita|gratuito|grátis|gratis)/i.test(merged.openingMessage)) {
           merged.openingMessage = DEFAULT_CONFIG.openingMessage;
         }
