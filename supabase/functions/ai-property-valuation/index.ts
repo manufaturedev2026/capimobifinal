@@ -445,58 +445,90 @@ async function fetchExternalMarket(
   p: Payload, areaRef: number, finalidade: "venda" | "aluguel"
 ): Promise<ExternalMarket | null> {
   const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-  if (!LOVABLE_API_KEY) return null;
+  const FIRECRAWL_API_KEY = Deno.env.get("FIRECRAWL_API_KEY");
+  if (!LOVABLE_API_KEY || !FIRECRAWL_API_KEY) {
+    console.warn("[external] missing keys", { hasLovable: !!LOVABLE_API_KEY, hasFirecrawl: !!FIRECRAWL_API_KEY });
+    return null;
+  }
 
   const quartos = Number(p.quartos) || 0;
-  const areaMin = Math.round(areaRef * 0.7);
-  const areaMax = Math.round(areaRef * 1.3);
-  const qMin = Math.max(1, quartos - 1);
-  const qMax = quartos + 1;
   const finalidadeLabel = finalidade === "aluguel" ? "para alugar" : "à venda";
-
-  // Termo de busca específico: usa subtipo (Kitnet, Studio, Loft, Cobertura, Sobrado...) quando informado
-  // em vez do tipo genérico legado (Apartamento/Casa). Isso evita misturar kitnets com apartamentos comuns.
   const termoBusca = (p.subtipo && p.subtipo.trim()) ? p.subtipo : p.tipo;
-  const estruturaInfo = p.tipoEstrutura ? ` (${p.tipoEstrutura})` : "";
+  const estruturaInfo = p.tipoEstrutura ? ` ${p.tipoEstrutura}` : "";
+  const quartosTxt = quartos > 0 ? ` ${quartos} quartos` : "";
 
-  const prompt = `Você é um analista imobiliário. Pesquise na internet anúncios reais ATIVOS de ${termoBusca.toLowerCase()}${estruturaInfo} ${finalidadeLabel} em ${p.bairro}, ${p.cidade}/${p.estado}.
+  // Query de busca real no Google (via Firecrawl Search)
+  const searchQuery = `${termoBusca}${estruturaInfo}${quartosTxt} ${finalidadeLabel} ${p.bairro} ${p.cidade} ${p.estado} site:olx.com.br OR site:zapimoveis.com.br OR site:vivareal.com.br OR site:imovelweb.com.br OR site:chavesnamao.com.br`;
 
-CRITÉRIOS DE BUSCA:
-- Tipo específico: ${termoBusca}${estruturaInfo} — busque EXATAMENTE este formato (não traga apartamentos comuns se for kitnet/studio/loft, nem sobrados se for casa térrea, etc.)
-- Bairro prioritário: ${p.bairro} (depois bairros próximos da mesma cidade)
-- Metragem entre ${areaMin}m² e ${areaMax}m²
-- Quartos entre ${qMin} e ${qMax}
-- ${finalidade === "aluguel" ? "ALUGUEL apenas (ignorar venda)" : "VENDA apenas (ignorar aluguel)"}
+  console.log("[external] firecrawl search start", { query: searchQuery });
 
-FONTES PERMITIDAS (priorize nesta ordem): OLX, Zap Imóveis, Viva Real, Imovelweb, ChavesNaMão, sites de imobiliárias locais de ${p.cidade}/${p.estado}.
+  // 1) BUSCA REAL via Firecrawl (Google search + scrape do markdown de cada resultado)
+  let searchResults: Array<{ url: string; title?: string; description?: string; markdown?: string }> = [];
+  try {
+    const ctrl = new AbortController();
+    const timeoutId = setTimeout(() => ctrl.abort(), 45000);
+    const fcResp = await fetch("https://api.firecrawl.dev/v2/search", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${FIRECRAWL_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      signal: ctrl.signal,
+      body: JSON.stringify({
+        query: searchQuery,
+        limit: 10,
+        lang: "pt",
+        country: "br",
+        scrapeOptions: { formats: ["markdown"], onlyMainContent: true },
+      }),
+    });
+    clearTimeout(timeoutId);
+
+    if (!fcResp.ok) {
+      const errTxt = await fcResp.text().catch(() => "");
+      console.error("[external] firecrawl error", fcResp.status, errTxt.slice(0, 500));
+      return null;
+    }
+    const fcData = await fcResp.json();
+    // Firecrawl v2: { success, data: { web: [...] } } OR { success, data: [...] }
+    const raw = fcData?.data?.web ?? fcData?.data ?? [];
+    searchResults = Array.isArray(raw) ? raw : [];
+    console.log("[external] firecrawl results:", searchResults.length);
+  } catch (e) {
+    console.error("[external] firecrawl fetch failed", String(e));
+    return null;
+  }
+
+  if (searchResults.length === 0) {
+    return {
+      total: 0, comparaveis: [], preco_medio: 0, preco_mediano: 0,
+      preco_m2_medio: 0, preco_m2_mediano: 0, preco_provavel_fechamento: 0,
+      fontes_consultadas: [], resumo: "Sem anúncios encontrados na web.",
+      aviso: "Nenhum anúncio externo localizado para este perfil.",
+    };
+  }
+
+  // 2) Monta um corpus enxuto pra IA extrair preço/área de cada URL real
+  const corpus = searchResults.slice(0, 10).map((r, idx) => {
+    const md = (r.markdown || "").slice(0, 1500); // limita pra não estourar contexto
+    return `[${idx + 1}] URL: ${r.url}\nTITULO: ${r.title || ""}\nDESC: ${r.description || ""}\nCONTEUDO:\n${md}`;
+  }).join("\n\n---\n\n");
+
+  const prompt = `Você é um analista imobiliário. A partir dos anúncios REAIS abaixo (extraídos da web por scraping), extraia os dados estruturados de cada um.
+
+ANÚNCIOS:
+${corpus}
 
 REGRAS:
-1. Use Google Search para encontrar anúncios públicos REAIS e ATIVOS.
-2. Extraia entre 5 e 12 anúncios distintos. Não invente. Se não achar, retorne menos.
-3. Remova duplicados (mesmo imóvel em portais diferentes).
-4. Descarte preços absurdos (ex: casa 200m² por R$ 5 mil; casa simples por R$ 10 milhões).
-5. Descarte anúncios sem preço claro.
-6. Para CADA anúncio extraído, retorne JSON com: titulo, bairro, area (m², número), quartos (número), preco (R$, número sem pontuação), fonte (nome do portal), url (link real).
-7. Calcule também: preco_medio, preco_mediano, preco_m2_medio, preco_m2_mediano (use mediana para reduzir efeito de outlier).
-8. Aplique desconto provável de negociação de 7% sobre a mediana → preco_provavel_fechamento.
-9. Liste as fontes_consultadas (apenas portais cujos resultados você usou).
-10. Escreva um resumo de 2-3 linhas sobre o mercado encontrado.
+1. Use APENAS os anúncios listados acima. Nunca invente URL ou preço.
+2. Para cada anúncio, retorne: titulo, bairro, area (m², número), quartos (número), preco (R$ número sem pontuação), fonte (OLX/Zap/VivaReal/etc), url (URL exata da lista).
+3. Se algum dado faltar no anúncio, omita aquele anúncio.
+4. Descarte anúncios sem preço claro ou com preço absurdo.
+5. Filtre apenas ${finalidade === "aluguel" ? "ALUGUEL" : "VENDA"}.
+6. Retorne JSON puro:
+{"comparaveis":[{"titulo":"","bairro":"","area":0,"quartos":0,"preco":0,"fonte":"","url":""}],"resumo":"breve descrição do mercado encontrado"}`;
 
-RETORNE APENAS UM JSON VÁLIDO, sem texto antes/depois, neste formato exato:
-{
-  "comparaveis": [{"titulo":"...","bairro":"...","area":150,"quartos":3,"preco":450000,"fonte":"OLX","url":"https://..."}],
-  "preco_medio": 0,
-  "preco_mediano": 0,
-  "preco_m2_medio": 0,
-  "preco_m2_mediano": 0,
-  "preco_provavel_fechamento": 0,
-  "fontes_consultadas": ["OLX","Zap"],
-  "resumo": "..."
-}
-Se não houver dados confiáveis, retorne: {"comparaveis":[],"resumo":"Sem anúncios externos encontrados"}.`;
-
-  console.log("[external] start", { termo: termoBusca, bairro: p.bairro, cidade: p.cidade, areaRef, finalidade });
-
+  let parsed: any = null;
   try {
     const ctrl = new AbortController();
     const timeoutId = setTimeout(() => ctrl.abort(), 45000);
@@ -507,94 +539,80 @@ Se não houver dados confiáveis, retorne: {"comparaveis":[],"resumo":"Sem anún
       body: JSON.stringify({
         model: "google/gemini-2.5-flash",
         messages: [{ role: "user", content: prompt }],
-        tools: [{ type: "google_search" }],
       }),
     });
     clearTimeout(timeoutId);
-
     if (!resp.ok) {
-      const errTxt = await resp.text().catch(() => "");
-      console.error("[external] gateway error", resp.status, errTxt.slice(0, 500));
+      console.error("[external] extraction error", resp.status);
       return null;
     }
     const data = await resp.json();
     let content: string = data.choices?.[0]?.message?.content ?? "";
-    console.log("[external] raw content length", content.length);
-    // Tirar code fences se houver
     content = content.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/i, "").trim();
-    // Recortar do primeiro { ao último }
     const i = content.indexOf("{");
     const j = content.lastIndexOf("}");
-    if (i < 0 || j < 0) {
-      console.warn("[external] no JSON braces in content. Preview:", content.slice(0, 300));
-      return null;
-    }
-    let parsed: any;
-    try {
-      parsed = JSON.parse(content.slice(i, j + 1));
-    } catch (e) {
-      console.error("[external] JSON parse failed", String(e), "preview:", content.slice(i, i + 300));
-      return null;
-    }
-
-    const compsRaw: ExternalComp[] = Array.isArray(parsed.comparaveis) ? parsed.comparaveis : [];
-    console.log("[external] comparaveis brutos:", compsRaw.length);
-
-    // Filtragem anti-outlier server-side (defesa em profundidade)
-    const [pmin, pmax] = PRECO_M2_RANGE[p.tipo] ?? [100, 50000];
-    const refMin = finalidade === "aluguel" ? pmin / 200 : pmin;
-    const refMax = finalidade === "aluguel" ? pmax / 50 : pmax;
-
-    const enriched = compsRaw
-      .map(c => {
-        const area = Number(c.area) || 0;
-        const preco = Number(c.preco) || 0;
-        const ppm2 = area > 0 ? preco / area : 0;
-        return { ...c, area, preco, preco_m2: Math.round(ppm2) };
-      })
-      .filter(c => {
-        const ok = c.preco > 0 && c.area > 0 && c.preco_m2! >= refMin && c.preco_m2! <= refMax;
-        if (!ok) console.log("[external] descartado", { titulo: c.titulo, area: c.area, preco: c.preco, ppm2: c.preco_m2, refMin, refMax });
-        return ok;
-      });
-
-    // Remove duplicados por url ou (titulo+preco)
-    const seen = new Set<string>();
-    const unique = enriched.filter(c => {
-      const key = c.url || `${c.titulo}|${c.preco}`;
-      if (seen.has(key)) return false;
-      seen.add(key);
-      return true;
-    });
-    console.log("[external] após filtros e dedupe:", unique.length);
-
-    const precos = unique.map(c => c.preco!).filter(n => n > 0);
-    const ppm2s = unique.map(c => c.preco_m2!).filter(n => n > 0);
-    const precosClean = removeOutliers(precos);
-    const ppm2sClean = removeOutliers(ppm2s);
-
-    const preco_medio = precosClean.length ? Math.round(precosClean.reduce((a, b) => a + b, 0) / precosClean.length) : 0;
-    const preco_mediano = Math.round(median(precosClean));
-    const preco_m2_medio = ppm2sClean.length ? Math.round(ppm2sClean.reduce((a, b) => a + b, 0) / ppm2sClean.length) : 0;
-    const preco_m2_mediano = Math.round(median(ppm2sClean));
-    const preco_provavel_fechamento = preco_mediano ? Math.round(preco_mediano * 0.93) : 0;
-
-    return {
-      total: unique.length,
-      comparaveis: unique.slice(0, 10),
-      preco_medio,
-      preco_mediano,
-      preco_m2_medio,
-      preco_m2_mediano,
-      preco_provavel_fechamento,
-      fontes_consultadas: Array.isArray(parsed.fontes_consultadas) ? parsed.fontes_consultadas : [],
-      resumo: typeof parsed.resumo === "string" ? parsed.resumo : "",
-      aviso: unique.length === 0 ? "Sem anúncios externos confiáveis encontrados — usando apenas base interna." : undefined,
-    };
+    if (i < 0 || j < 0) return null;
+    parsed = JSON.parse(content.slice(i, j + 1));
   } catch (e) {
-    console.error("[external] fetchExternalMarket failed:", String(e));
+    console.error("[external] extraction failed", String(e));
     return null;
   }
+
+  const compsRaw: ExternalComp[] = Array.isArray(parsed?.comparaveis) ? parsed.comparaveis : [];
+  console.log("[external] extracted from real ads:", compsRaw.length);
+
+  // Validação anti-alucinação: URL precisa estar na lista real do Firecrawl
+  const realUrls = new Set(searchResults.map(r => r.url));
+  const realOnly = compsRaw.filter(c => c.url && realUrls.has(c.url));
+  console.log("[external] após validação de URL real:", realOnly.length);
+
+  // Filtragem anti-outlier
+  const [pmin, pmax] = PRECO_M2_RANGE[p.tipo] ?? [100, 50000];
+  const refMin = finalidade === "aluguel" ? pmin / 200 : pmin;
+  const refMax = finalidade === "aluguel" ? pmax / 50 : pmax;
+
+  const enriched = realOnly
+    .map(c => {
+      const area = Number(c.area) || 0;
+      const preco = Number(c.preco) || 0;
+      const ppm2 = area > 0 ? preco / area : 0;
+      return { ...c, area, preco, preco_m2: Math.round(ppm2) };
+    })
+    .filter(c => c.preco > 0 && c.area > 0 && c.preco_m2! >= refMin && c.preco_m2! <= refMax);
+
+  const seen = new Set<string>();
+  const unique = enriched.filter(c => {
+    const key = c.url || `${c.titulo}|${c.preco}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+
+  const precos = unique.map(c => c.preco!).filter(n => n > 0);
+  const ppm2s = unique.map(c => c.preco_m2!).filter(n => n > 0);
+  const precosClean = removeOutliers(precos);
+  const ppm2sClean = removeOutliers(ppm2s);
+
+  const preco_medio = precosClean.length ? Math.round(precosClean.reduce((a, b) => a + b, 0) / precosClean.length) : 0;
+  const preco_mediano = Math.round(median(precosClean));
+  const preco_m2_medio = ppm2sClean.length ? Math.round(ppm2sClean.reduce((a, b) => a + b, 0) / ppm2sClean.length) : 0;
+  const preco_m2_mediano = Math.round(median(ppm2sClean));
+  const preco_provavel_fechamento = preco_mediano ? Math.round(preco_mediano * 0.93) : 0;
+
+  const fontes = Array.from(new Set(unique.map(c => c.fonte).filter(Boolean))) as string[];
+
+  return {
+    total: unique.length,
+    comparaveis: unique.slice(0, 10),
+    preco_medio,
+    preco_mediano,
+    preco_m2_medio,
+    preco_m2_mediano,
+    preco_provavel_fechamento,
+    fontes_consultadas: fontes,
+    resumo: typeof parsed?.resumo === "string" ? parsed.resumo : `Análise baseada em ${unique.length} anúncio(s) real(is) coletado(s) da web.`,
+    aviso: unique.length === 0 ? "Anúncios localizados, mas nenhum com dados estruturados completos." : undefined,
+  };
 }
 
 async function resolvePrecoM2(
