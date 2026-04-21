@@ -10,7 +10,7 @@ import { DEFAULT_CONFIG, DEFAULT_FLOWS, STEP_TYPE_LABELS, STEP_NAMES, type Invit
 const AI_STRATEGY_INFO: Record<string, { title: string; description: string }> = {
   internal: {
     title: "📱 Cadastro Interno",
-    description: "A IA descobre o perfil do visitante, apresenta funcionalidades detalhadas e guia naturalmente até criar uma conta gratuita na plataforma.",
+    description: "A IA identifica o perfil do visitante em tempo real (corretor, imobiliária, construtora ou autônomo), entende suas necessidades e apresenta de forma personalizada os principais benefícios da plataforma.\n\nDurante a conversa, ela demonstra funcionalidades relevantes como criação de app próprio, CRM integrado, captação de leads, anúncios automáticos, gestão de imóveis, atendimento via WhatsApp e ferramentas de vendas.\n\nCom abordagem natural e consultiva, a IA tira dúvidas, gera confiança, destaca vantagens competitivas e conduz o visitante passo a passo até criar uma conta gratuita, iniciar testes ou solicitar uma demonstração personalizada.",
   },
   crm: {
     title: "📋 Captura CRM",
@@ -231,7 +231,7 @@ export default function AdminInviteTab() {
               <p className="font-semibold text-[11px] uppercase tracking-wider text-muted-foreground mb-1.5">
                 Estratégia IA ativa: {AI_STRATEGY_INFO[config.ctaType]?.title || "Padrão"}
               </p>
-              <p className="text-muted-foreground leading-relaxed">
+              <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
                 {AI_STRATEGY_INFO[config.ctaType]?.description || "Estratégia padrão de cadastro."}
               </p>
             </div>
