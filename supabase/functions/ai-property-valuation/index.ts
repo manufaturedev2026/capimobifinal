@@ -1102,7 +1102,18 @@ Deno.serve(async (req) => {
       macro_percents: calc.macroPercents,
       comparaveis: comparaveisOut,
       comparaveis_origem: origemLabel,
-      comparaveis_aviso: market.comparaveis_aviso,
+      comparaveis_aviso: market.comparaveis_aviso ?? external?.aviso ?? null,
+      comparaveis_externos: external?.comparaveis ?? [],
+      mercado_externo: external ? {
+        total: external.total,
+        preco_medio: external.preco_medio,
+        preco_mediano: external.preco_mediano,
+        preco_m2_medio: external.preco_m2_medio,
+        preco_m2_mediano: external.preco_m2_mediano,
+        preco_provavel_fechamento: external.preco_provavel_fechamento,
+        fontes_consultadas: external.fontes_consultadas,
+        resumo: external.resumo,
+      } : null,
       meta: {
         preco_m2: precoM2, source,
         valor_base: calc.valorBase, area_calc: calc.areaCalc,
@@ -1118,6 +1129,11 @@ Deno.serve(async (req) => {
           media_area_m2: Math.round(market.avgArea),
           media_preco: Math.round(market.avgPrice),
         },
+        externo: external ? {
+          total: external.total,
+          fontes: external.fontes_consultadas,
+          preco_m2_mediano: external.preco_m2_mediano,
+        } : null,
       },
     }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
   } catch (e) {
