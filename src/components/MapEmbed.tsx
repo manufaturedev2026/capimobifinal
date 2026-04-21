@@ -90,7 +90,9 @@ function normalizeText(value: string) {
 
 function normalizeStreet(value: string) {
   return normalizeText(value)
-    .replace(/\b(avenida|av|rua|rodovia|rod|travessa|tv|alameda|estrada)\b/g, "")
+    // remove pontuação para que "r." vire "r"
+    .replace(/[.,]/g, " ")
+    .replace(/\b(avenida|av|rua|r|rodovia|rod|travessa|tv|alameda|al|estrada|est|praca|praça|largo|servidao|servidão)\b/g, "")
     .replace(/\s+/g, " ")
     .trim();
 }
@@ -100,6 +102,9 @@ function normalizeAddressForGeocoding(address: string) {
     .replace(/\bAv\.?\b/gi, "Avenida")
     .replace(/\bR\.?\b/gi, "Rua")
     .replace(/\bRod\.?\b/gi, "Rodovia")
+    .replace(/\bTv\.?\b/gi, "Travessa")
+    .replace(/\bAl\.?\b/gi, "Alameda")
+    .replace(/\bEst\.?\b/gi, "Estrada")
     .replace(/\bES\b/gi, "Espírito Santo")
     .replace(/\s+/g, " ")
     .trim();
