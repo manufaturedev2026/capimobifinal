@@ -805,7 +805,9 @@ export default function AdminPanel() {
           );
         })()}
 
-
+        {tab === "plans" && (
+          <AdminPlansTab />
+        )}
 
 
         {tab === "crm" && (
