@@ -357,12 +357,11 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
   };
 
   const addressOverrideStreetEmbed = addressOverride
-    ? `https://maps.google.com/maps?q=&layer=c&cbll=${addressOverride.lat},${addressOverride.lon}&cbp=11,0,0,0,0&z=17&output=svembed`
+    ? `https://www.google.com/maps?layer=c&cbll=${addressOverride.lat},${addressOverride.lon}&cbp=11,0,0,0,0&z=17&output=svembed`
     : null;
-  const cepStreetEmbed = cleanCep.length === 8
-    ? `https://maps.google.com/maps?q=${encodeURIComponent(address)}&layer=c&cbp=11,0,0,0,0&output=svembed`
-    : null;
-  const streetEmbedSrc = streetViewEmbed || addressOverrideStreetEmbed || cepStreetEmbed;
+  const streetEmbedSrc = streetViewEmbed || addressOverrideStreetEmbed;
+  const hasEmbeddedStreetView = Boolean(streetEmbedSrc);
+  const canOpenStreetView = Boolean(streetViewUrl);
   const isStreet = view === "street" && !!streetEmbedSrc;
   const currentSrc = isStreet ? streetEmbedSrc : mapSrc;
 
@@ -385,15 +384,19 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
           <button
             type="button"
             onClick={() => {
-              if (isStreet) {
-                setView("map");
-                return;
-              }
-              if (streetEmbedSrc) setView("street");
+               if (isStreet) {
+                 setView("map");
+                 return;
+               }
+               if (hasEmbeddedStreetView) {
+                 setView("street");
+                 return;
+               }
+               handleOpenStreetView();
             }}
             aria-busy={resolvingStreetView}
             className="absolute bottom-3 right-3 z-10 flex items-center gap-2 rounded-full bg-primary px-3.5 py-2 text-xs font-semibold text-primary-foreground shadow-lg transition-transform hover:scale-105 disabled:cursor-not-allowed disabled:opacity-70"
-            disabled={!isStreet && (!streetEmbedSrc || resolvingStreetView)}
+             disabled={!isStreet && !canOpenStreetView}
           >
             {resolvingStreetView ? <Loader2 size={14} className="animate-spin" /> : (isStreet ? <MapIcon size={14} /> : <Eye size={14} />)}
             {isStreet ? "Ver Mapa" : "Ver Street View 360°"}
