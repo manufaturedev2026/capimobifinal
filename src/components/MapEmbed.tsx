@@ -414,28 +414,29 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
     };
   }, [address, cleanCep, addressOverride, fallbackStreetViewUrl, fallbackMapSrc, fallbackMapsUrl, geocodingCandidates, showStreetView]);
 
-  // Official Google Maps Embed API — works inside iframe and shows real 360° Street View
+  // Official Google Maps Embed API — exige location=lat,lng numérico (regras 1-5)
   const officialStreetEmbed = (() => {
     if (!mapsApiKey) return null;
     const base = `https://www.google.com/maps/embed/v1/streetview?key=${mapsApiKey}`;
 
-    if (streetViewCoords) {
-      const lat = Number(streetViewCoords.lat);
-      const lon = Number(streetViewCoords.lon);
-
-      if (Number.isFinite(lat) && Number.isFinite(lon)) {
-        return `${base}&location=${lat},${lon}&heading=0&pitch=0&fov=90`;
-      }
+    if (!streetViewCoords) {
+      console.warn("[MapEmbed] sem coordenadas — Street View desativado");
+      return null;
     }
 
-    const fallbackLocation = normalizeAddressForGeocoding(streetViewQuery || geocodingCandidates[0] || address)
-      .replace(/\s+-\s+/g, ", ")
-      .replace(/\s+/g, " ")
-      .trim();
+    const lat = Number(String(streetViewCoords.lat).replace(",", "."));
+    const lon = Number(String(streetViewCoords.lon).replace(",", "."));
 
-    if (!fallbackLocation) return null;
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
+      console.warn("[MapEmbed] coords inválidas, ignorando", streetViewCoords);
+      return null;
+    }
 
-    return `${base}&location=${encodeURIComponent(fallbackLocation)}&heading=0&pitch=0&fov=90`;
+    const location = `${lat},${lon}`;
+    const finalUrl = `${base}&location=${encodeURIComponent(location)}&heading=0&pitch=0&fov=90`;
+    console.log("[MapEmbed] StreetView location:", location);
+    console.log("[MapEmbed] StreetView URL:", finalUrl);
+    return finalUrl;
   })();
 
   // Official Maps Embed (2D) for the map view when key is available
