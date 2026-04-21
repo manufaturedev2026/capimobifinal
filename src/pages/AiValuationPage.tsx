@@ -50,6 +50,7 @@ type MercadoExterno = {
   preco_provavel_fechamento: number;
   fontes_consultadas: string[];
   resumo: string;
+  aviso?: string;
 };
 type Scores = { localizacao: number; estrutura: number; acabamento: number; diferenciais?: number; liquidez: number; documentacao: number };
 
