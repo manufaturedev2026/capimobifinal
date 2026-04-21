@@ -182,10 +182,13 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
 
     let cancelled = false;
 
-    const applyCoords = (lat: string, lon: string) => {
+    const applyCoords = (lat: string, lon: string, label?: string) => {
       if (cancelled) return;
-      // Use map_action=pano to force Street View panorama to load immediately
-      setStreetViewUrl(`https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lon}&heading=0&pitch=0&fov=90`);
+      // Prefer query-based pano (Google finds nearest panorama); fallback to viewpoint coords
+      const panoUrl = label
+        ? `https://www.google.com/maps/@?api=1&map_action=pano&query=${encodeURIComponent(label)}`
+        : `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lon}&heading=0&pitch=0&fov=90`;
+      setStreetViewUrl(panoUrl);
       setMapSrc(`https://www.google.com/maps?q=${lat},${lon}&hl=pt-BR&z=18&output=embed`);
       setMapsUrl(`https://www.google.com/maps/search/?api=1&query=${lat},${lon}`);
     };
