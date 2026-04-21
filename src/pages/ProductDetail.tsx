@@ -385,8 +385,9 @@ export default function ProductDetail() {
       doWhatsAppRedirect(e);
     }
   };
+  const locationParts = [product.neighborhood, product.city, product.state].filter(Boolean).join(", ");
   const mapAddress = isDb
-    ? product.address || [product.neighborhood, product.city, product.state].filter(Boolean).join(", ") || company.address
+    ? (product.address && locationParts ? `${product.address}, ${locationParts}` : product.address || locationParts || company.address)
     : (isProperty && product.location ? product.location : company.address);
 
   /* ── Build specs (technical details only, amenities handled separately) ── */
