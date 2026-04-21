@@ -447,13 +447,17 @@ Deno.serve(async (req) => {
     const precoM2 = Number(priceData?.[0]?.preco_m2) || 3500;
     const source = priceData?.[0]?.source || "default";
 
-    // 2. Calcular determinístico
-    const calc = calcular(data, precoM2);
+    // 2. Buscar contexto de mercado (comparáveis reais)
+    const areaRefForMarket = (data.areaConstruida && data.areaConstruida > 0) ? data.areaConstruida : data.areaTotal;
+    const market = await fetchMarketContext(supabase, data.estado, data.cidade, data.bairro, data.tipo, areaRefForMarket);
 
-    // 3. Enriquecer com IA (com fallback)
-    const ai = await aiEnrich(data, calc, precoM2, source) ?? fallbackAnalysis(data, calc);
+    // 3. Calcular determinístico (com pesos contextuais ao mercado)
+    const calc = calcular(data, precoM2, market);
 
-    // 4. Salvar histórico
+    // 4. Enriquecer com IA (com fallback)
+    const ai = await aiEnrich(data, calc, precoM2, source, market) ?? fallbackAnalysis(data, calc, market);
+
+    // 5. Salvar histórico
     const authHeader = req.headers.get("Authorization");
     let userId: string | null = null;
     if (authHeader) {
@@ -476,7 +480,7 @@ Deno.serve(async (req) => {
       venda_rapida: calc.venda_rapida, venda_premium: calc.venda_premium,
       tempo_medio_venda_dias: calc.tempo_medio_venda_dias,
       justificativa: ai.justificativa,
-      breakdown: { items: calc.breakdown, bonus: calc.bonusTotal, desconto: calc.descontoTotal, source },
+      breakdown: { items: calc.breakdown, bonus: calc.bonusTotal, desconto: calc.descontoTotal, source, market_total: market.total },
     });
 
     return new Response(JSON.stringify({
