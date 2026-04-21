@@ -310,17 +310,38 @@ export default function CaptureBotsManagerTab({ sellerId, sellerSlug }: Props) {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-        {(Object.keys(TYPE_META) as BotType[]).map((t) => {
-          const m = TYPE_META[t];
-          const Icon = m.icon;
-          return (
-            <Button key={t} onClick={() => startNew(t)} variant="outline" size="lg" className="h-auto py-3 flex-col gap-1">
-              <div className="flex items-center gap-2"><Icon className="w-4 h-4" /> <Plus className="w-3 h-3" /></div>
-              <span className="text-xs font-bold">{m.label}</span>
-            </Button>
-          );
-        })}
+      <div className="space-y-3">
+        <div className="rounded-2xl border border-primary/20 bg-primary/5 p-3 sm:p-4">
+          <p className="text-xs font-bold text-primary flex items-center gap-1.5 mb-2"><Zap className="w-3.5 h-3.5" /> Bots com IA <span className="text-[10px] font-normal text-muted-foreground">(conversa inteligente)</span></p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            {(Object.keys(TYPE_META) as BotType[]).map((t) => {
+              const m = TYPE_META[t];
+              const Icon = m.icon;
+              return (
+                <Button key={`ai-${t}`} onClick={() => startNew(t, true)} variant="outline" size="lg" className="h-auto py-3 flex-col gap-1 bg-card hover:bg-primary/10 hover:border-primary/40">
+                  <div className="flex items-center gap-2"><Icon className="w-4 h-4 text-primary" /> <Plus className="w-3 h-3" /></div>
+                  <span className="text-xs font-bold">{m.label}</span>
+                </Button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-border bg-muted/30 p-3 sm:p-4">
+          <p className="text-xs font-bold text-foreground flex items-center gap-1.5 mb-2"><FileText className="w-3.5 h-3.5" /> Bots sem IA <span className="text-[10px] font-normal text-muted-foreground">(formulário fixo, não consome IA)</span></p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            {(Object.keys(TYPE_META) as BotType[]).map((t) => {
+              const m = TYPE_META[t];
+              const Icon = m.icon;
+              return (
+                <Button key={`form-${t}`} onClick={() => startNew(t, false)} variant="outline" size="lg" className="h-auto py-3 flex-col gap-1 bg-card hover:bg-accent">
+                  <div className="flex items-center gap-2"><Icon className="w-4 h-4" /> <Plus className="w-3 h-3" /></div>
+                  <span className="text-xs font-bold">{m.label}</span>
+                </Button>
+              );
+            })}
+          </div>
+        </div>
       </div>
 
       {bots.length === 0 ? (
