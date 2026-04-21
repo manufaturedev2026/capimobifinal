@@ -15,6 +15,8 @@ type Payload = {
   cep?: string;
   tipo: string;
   tipoEstrutura?: string;
+  categoria?: string;
+  subtipo?: string;
   // Áreas
   areaTerreno?: number | null;
   areaConstruidaTerreo?: number | null;
@@ -452,10 +454,15 @@ async function fetchExternalMarket(
   const qMax = quartos + 1;
   const finalidadeLabel = finalidade === "aluguel" ? "para alugar" : "à venda";
 
-  const prompt = `Você é um analista imobiliário. Pesquise na internet anúncios reais ATIVOS de ${p.tipo.toLowerCase()} ${finalidadeLabel} em ${p.bairro}, ${p.cidade}/${p.estado}.
+  // Termo de busca específico: usa subtipo (Kitnet, Studio, Loft, Cobertura, Sobrado...) quando informado
+  // em vez do tipo genérico legado (Apartamento/Casa). Isso evita misturar kitnets com apartamentos comuns.
+  const termoBusca = (p.subtipo && p.subtipo.trim()) ? p.subtipo : p.tipo;
+  const estruturaInfo = p.tipoEstrutura ? ` (${p.tipoEstrutura})` : "";
+
+  const prompt = `Você é um analista imobiliário. Pesquise na internet anúncios reais ATIVOS de ${termoBusca.toLowerCase()}${estruturaInfo} ${finalidadeLabel} em ${p.bairro}, ${p.cidade}/${p.estado}.
 
 CRITÉRIOS DE BUSCA:
-- Tipo: ${p.tipo}${p.tipoEstrutura ? ` (${p.tipoEstrutura})` : ""}
+- Tipo específico: ${termoBusca}${estruturaInfo} — busque EXATAMENTE este formato (não traga apartamentos comuns se for kitnet/studio/loft, nem sobrados se for casa térrea, etc.)
 - Bairro prioritário: ${p.bairro} (depois bairros próximos da mesma cidade)
 - Metragem entre ${areaMin}m² e ${areaMax}m²
 - Quartos entre ${qMin} e ${qMax}
