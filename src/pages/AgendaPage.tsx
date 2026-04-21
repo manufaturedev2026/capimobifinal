@@ -256,10 +256,10 @@ export default function AgendaPage() {
               filtered.map((v) => {
                 const meta = STATUS_META[v.status];
                 return (
-                  <div key={v.id} className="bg-card border border-border rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
-                    <div className="flex items-start justify-between gap-3 flex-wrap">
+                  <div key={v.id} className="bg-card border border-border rounded-xl p-3 sm:p-4 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
+                        <div className="flex items-center gap-2 mb-1 flex-wrap">
                           <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${meta.bg} ${meta.color}`}>
                             <span className={`w-1.5 h-1.5 rounded-full ${meta.dot}`} />
                             {meta.label}
@@ -269,35 +269,35 @@ export default function AgendaPage() {
                             {new Date(v.visit_date + "T00:00:00").toLocaleDateString("pt-BR")} às {v.visit_time?.slice(0, 5)}
                           </span>
                         </div>
-                        <h4 className="font-bold text-foreground">{v.client_name}</h4>
-                        {v.client_phone && <p className="text-sm text-muted-foreground flex items-center gap-1"><Phone className="w-3 h-3" /> {v.client_phone}</p>}
+                        <h4 className="font-bold text-foreground break-words">{v.client_name}</h4>
+                        {v.client_phone && <p className="text-sm text-muted-foreground flex items-center gap-1 break-all"><Phone className="w-3 h-3 shrink-0" /> {v.client_phone}</p>}
                         {(v.property_type || v.address) && (
-                          <p className="text-sm text-foreground mt-1">
+                          <p className="text-sm text-foreground mt-1 break-words">
                             {v.property_type && <span className="font-medium">{v.property_type}</span>}
                             {v.property_type && v.address && " • "}
                             {v.address}{v.city ? `, ${v.city}` : ""}
                           </p>
                         )}
                         {v.responsible_name && <p className="text-xs text-muted-foreground mt-1">Responsável: {v.responsible_name}</p>}
-                        {v.notes && <p className="text-xs text-muted-foreground mt-1 italic">"{v.notes}"</p>}
+                        {v.notes && <p className="text-xs text-muted-foreground mt-1 italic break-words">"{v.notes}"</p>}
                       </div>
 
-                      <div className="flex flex-wrap gap-1.5">
-                        <Button size="sm" variant="outline" onClick={() => openWhatsApp(v.client_phone, v.client_name)} title="WhatsApp">
+                      <div className="grid grid-cols-5 sm:flex sm:flex-wrap gap-1.5 sm:shrink-0">
+                        <Button size="sm" variant="outline" onClick={() => openWhatsApp(v.client_phone, v.client_name)} title="WhatsApp" className="px-0 sm:px-3">
                           <MessageCircle className="w-4 h-4" />
                         </Button>
-                        <Button size="sm" variant="outline" onClick={() => openMaps(v.address)} title="Maps">
+                        <Button size="sm" variant="outline" onClick={() => openMaps(v.address)} title="Maps" className="px-0 sm:px-3">
                           <MapPin className="w-4 h-4" />
                         </Button>
-                        <Button size="sm" variant="outline" onClick={() => { setEditing(v); setOpenForm(true); }} title="Editar">
+                        <Button size="sm" variant="outline" onClick={() => { setEditing(v); setOpenForm(true); }} title="Editar" className="px-0 sm:px-3">
                           <Edit3 className="w-4 h-4" />
                         </Button>
-                        {v.status !== "fechada" && (
-                          <Button size="sm" onClick={() => finalize(v)} title="Finalizar">
+                        {v.status !== "fechada" ? (
+                          <Button size="sm" onClick={() => finalize(v)} title="Finalizar" className="px-0 sm:px-3">
                             <CheckCircle2 className="w-4 h-4" />
                           </Button>
-                        )}
-                        <Button size="sm" variant="outline" onClick={() => remove(v)} title="Excluir" className="text-destructive hover:bg-destructive/10">
+                        ) : <span className="hidden sm:inline" />}
+                        <Button size="sm" variant="outline" onClick={() => remove(v)} title="Excluir" className="text-destructive hover:bg-destructive/10 px-0 sm:px-3">
                           <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
