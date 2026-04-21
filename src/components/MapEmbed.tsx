@@ -263,7 +263,8 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
               const results = await fetchNominatim(`https://nominatim.openstreetmap.org/search?${params.toString()}`);
               const match = results?.find((r) => !numberPart || r.address?.house_number === numberPart) || results?.[0];
               if (match?.lat && match?.lon) {
-                applyCoords(match.lat, match.lon);
+                const label = [numberPart ? `${street}, ${numberPart}` : street, viaCep.bairro, city, stateUf].filter(Boolean).join(", ");
+                applyCoords(match.lat, match.lon, label);
                 if (!cancelled) setResolvingStreetView(false);
                 return;
               }
