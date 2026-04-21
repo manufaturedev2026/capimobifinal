@@ -321,6 +321,7 @@ export type Database = {
           attendant_name: string
           bot_type: string
           created_at: string
+          form_messages: Json | null
           id: string
           is_active: boolean
           name: string
@@ -339,6 +340,7 @@ export type Database = {
           attendant_name?: string
           bot_type?: string
           created_at?: string
+          form_messages?: Json | null
           id?: string
           is_active?: boolean
           name?: string
@@ -357,6 +359,7 @@ export type Database = {
           attendant_name?: string
           bot_type?: string
           created_at?: string
+          form_messages?: Json | null
           id?: string
           is_active?: boolean
           name?: string
