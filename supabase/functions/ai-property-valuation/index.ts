@@ -1113,7 +1113,7 @@ Deno.serve(async (req) => {
       ? `Análise baseada em ${market.total} comparativos do ${internoLabel}`
       : "Tabela regional de preços";
 
-    await supabase.from("property_valuations").insert({
+    const { data: insertedValuation } = await supabase.from("property_valuations").insert({
       user_id: userId,
       estado: data.estado, cidade: data.cidade, bairro: data.bairro,
       rua: data.rua, numero: data.numero, cep: data.cep,
@@ -1159,9 +1159,10 @@ Deno.serve(async (req) => {
       sugestoes_valorizacao: ai.sugestoes_valorizacao, comparaveis: comparaveisOut,
       justificativa: ai.justificativa,
       breakdown: { items: calc.breakdown, bonus: calc.bonusTotal, desconto: calc.descontoTotal, source, market_total: market.total, macro: calc.macroPercents },
-    });
+    }).select("id").single();
 
     return new Response(JSON.stringify({
+      id: insertedValuation?.id ?? null,
       valor_estimado: calc.valorFinal,
       faixa_min: calc.faixa_min, faixa_max: calc.faixa_max,
       venda_rapida: calc.venda_rapida, venda_premium: calc.venda_premium,
