@@ -127,6 +127,21 @@ export default function AiValuationPage() {
   const updateApt = <K extends keyof ApartmentState>(key: K, value: ApartmentState[K]) =>
     setApt((s) => ({ ...s, [key]: value }));
 
+  // Campos contextuais por tipo
+  const [terrenoExtra, setTerrenoExtra] = useState<TerrenoState>(TERRENO_INITIAL);
+  const [comercialExtra, setComercialExtra] = useState<ComercialState>(COMERCIAL_INITIAL);
+  const [ruralExtra, setRuralExtra] = useState<RuralState>(RURAL_INITIAL);
+  const updTerreno = <K extends keyof TerrenoState>(k: K, v: TerrenoState[K]) => setTerrenoExtra((s) => ({ ...s, [k]: v }));
+  const updComercial = <K extends keyof ComercialState>(k: K, v: ComercialState[K]) => setComercialExtra((s) => ({ ...s, [k]: v }));
+  const updRural = <K extends keyof RuralState>(k: K, v: RuralState[K]) => setRuralExtra((s) => ({ ...s, [k]: v }));
+
+  const estruturasDisponiveis = ESTRUTURAS_POR_TIPO[tipo] || [];
+
+  const handleTipoChange = (novoTipo: string) => {
+    setTipo(novoTipo);
+    setTipoEstrutura(ESTRUTURA_PADRAO[novoTipo] || "");
+  };
+
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Valuation | null>(null);
 
