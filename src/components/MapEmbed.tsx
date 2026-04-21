@@ -327,9 +327,11 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
     window.open(streetViewUrl, "_blank", "noopener,noreferrer");
   };
 
-  const streetEmbedSrc = streetViewEmbed || addressOverride?.embedUrl || null;
-  const isStreet = view === "street" && !!streetEmbedSrc;
-  const currentSrc = isStreet ? streetEmbedSrc! : mapSrc;
+  // Always provide an embeddable Street View source — fall back to a query-based panorama embed
+  const queryStreetEmbed = `https://www.google.com/maps?q=&layer=c&cbll=&cbp=&q=${encodedAddress}&output=svembed`;
+  const streetEmbedSrc = streetViewEmbed || addressOverride?.embedUrl || queryStreetEmbed;
+  const isStreet = view === "street";
+  const currentSrc = isStreet ? streetEmbedSrc : mapSrc;
 
   return (
     <div className={`rounded-2xl overflow-hidden border border-border ${className}`}>
@@ -349,10 +351,7 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
         {showStreetView && (
           <button
             type="button"
-            onClick={() => {
-              if (streetEmbedSrc) setView(isStreet ? "map" : "street");
-              else handleOpenStreetView();
-            }}
+            onClick={() => setView(isStreet ? "map" : "street")}
             aria-busy={resolvingStreetView}
             className="absolute bottom-3 right-3 z-10 flex items-center gap-2 rounded-full bg-primary px-3.5 py-2 text-xs font-semibold text-primary-foreground shadow-lg transition-transform hover:scale-105"
           >
