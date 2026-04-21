@@ -134,8 +134,8 @@ const ADDRESS_OVERRIDES: Record<string, AddressOverride> = {
     lat: "-19.5095977",
     lon: "-40.6172574",
     mapsUrl: "https://www.google.com/maps/search/?api=1&query=Rua+Giacomo+Martinelli,+343,+Maria+das+Gracas,+Colatina,+ES",
-    embedUrl: "https://www.google.com/maps?q=Rua+Giacomo+Martinelli,+343,+Maria+das+Gracas,+Colatina,+ES&hl=pt-BR&z=17&output=embed",
-    streetViewUrl: "https://www.google.com/maps/@-19.5095977,-40.6172574,3a,75y,0h,90t/data=!3m1!1e1",
+    embedUrl: "https://www.google.com/maps?q=Rua+Giacomo+Martinelli,+343,+Maria+das+Gracas,+Colatina,+ES&hl=pt-BR&z=18&output=embed",
+    streetViewUrl: "https://www.google.com/maps?q=&layer=c&cbll=-19.5095977,-40.6172574&cbp=11,0,0,0,0",
   },
 };
 
