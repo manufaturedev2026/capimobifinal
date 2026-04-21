@@ -82,7 +82,7 @@ interface BotConfig {
 const DEFAULT_CONFIG: BotConfig = {
   attendantName: "Assistente Imobiliário",
   attendantAvatar: "",
-  openingMessage: "Olá! 👋 Vou te ajudar a cadastrar seu imóvel para avaliação gratuita! É rápido e sem compromisso 🏡",
+  openingMessage: "Olá! 👋 Vou te ajudar a cadastrar seu imóvel para divulgação profissional! É rápido e sem compromisso 🏡",
   chatMode: "flow",
   flowType: "captacao",
   // Captação
