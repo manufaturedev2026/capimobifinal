@@ -797,26 +797,44 @@ export async function generateValuationReport(d: ValuationReportData): Promise<j
 
       if (d.result.comparaveis_externos?.length) {
         y += 2;
-        d.result.comparaveis_externos.slice(0, 6).forEach((c) => {
-          if (y > H - 24) { footer("Página 4 de 6"); doc.addPage(); headerStrip("Página 4 — Resultado (cont.)"); y = 38; }
+        for (const c of d.result.comparaveis_externos.slice(0, 6)) {
+          const hasUrl = !!c.url;
+          const rowH = hasUrl ? 22 : 12;
+          if (y > H - rowH - 18) { footer("Página 4 de 6"); doc.addPage(); headerStrip("Página 4 — Resultado (cont.)"); y = 38; }
           setFill([240, 248, 242]);
-          doc.roundedRect(14, y - 4, W - 28, 12, 1.5, 1.5, "F");
+          doc.roundedRect(14, y - 4, W - 28, rowH, 1.5, 1.5, "F");
           setColor([20, 20, 30]);
           doc.setFont("helvetica", "bold");
           doc.setFontSize(8.8);
-          const titulo = doc.splitTextToSize(`${c.fonte ? `[${c.fonte}] ` : ""}${c.titulo}`, W - 82)[0];
+          const titulo = doc.splitTextToSize(`${c.fonte ? `[${c.fonte}] ` : ""}${c.titulo}`, W - 104)[0];
           doc.text(titulo, 18, y);
           setColor(GRAY);
           doc.setFont("helvetica", "normal");
           doc.setFontSize(7.8);
           const meta = `${c.area ? `${c.area}m²` : ""}${c.quartos ? ` · ${c.quartos} dorm.` : ""}${c.bairro ? ` · ${c.bairro}` : ""}${c.preco_m2 ? ` · ${fmtBRL(c.preco_m2)}/m²` : ""}`;
-          doc.text(doc.splitTextToSize(meta, W - 82), 18, y + 4);
+          doc.text(doc.splitTextToSize(meta, W - 104), 18, y + 4);
+          if (hasUrl) {
+            setColor(NAVY);
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(7.5);
+            doc.text("Abrir anúncio", 18, y + 11);
+            doc.link(18, y + 7, 32, 6, { url: c.url! });
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(c.url!)}&format=png&margin=3`;
+            const qrImg = await loadDataUrl(qrUrl);
+            if (qrImg) {
+              try { doc.addImage(qrImg, "PNG", W - 52, y - 2, 15, 15); } catch { /* ignora QR */ }
+            }
+            setColor(GRAY);
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(6.5);
+            doc.text("QR do anúncio", W - 44.5, y + 17, { align: "center" });
+          }
           setColor(GREEN);
           doc.setFont("helvetica", "bold");
           doc.setFontSize(9.5);
           if (c.preco) doc.text(fmtBRL(c.preco), W - 18, y + 1, { align: "right" });
-          y += 14;
-        });
+          y += rowH + 2;
+        }
       }
     } else {
       y = para(d.result.mercado_externo.aviso || "Não foram encontrados anúncios externos confiáveis para este subtipo com os filtros atuais.", y, { size: 9, color: AMBER, bold: true });
