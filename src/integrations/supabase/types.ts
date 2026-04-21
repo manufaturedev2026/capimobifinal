@@ -561,6 +561,30 @@ export type Database = {
           },
         ]
       }
+      funnel_excluded_emails: {
+        Row: {
+          created_at: string
+          email: string
+          excluded_by: string | null
+          id: string
+          reason: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          excluded_by?: string | null
+          id?: string
+          reason?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          excluded_by?: string | null
+          id?: string
+          reason?: string | null
+        }
+        Relationships: []
+      }
       funnel_sends: {
         Row: {
           day_offset: number
