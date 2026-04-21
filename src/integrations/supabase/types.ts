@@ -2270,6 +2270,66 @@ export type Database = {
         }
         Relationships: []
       }
+      subscription_plans: {
+        Row: {
+          ai_generations_per_day: number
+          badge_color: string
+          benefits: Json
+          border_color: string
+          category: string
+          color: string
+          created_at: string
+          id: string
+          is_active: boolean
+          is_popular: boolean
+          max_items: number
+          name: string
+          price: number
+          setup_fee: number
+          sort_order: number
+          tier: string
+          updated_at: string
+        }
+        Insert: {
+          ai_generations_per_day?: number
+          badge_color?: string
+          benefits?: Json
+          border_color?: string
+          category?: string
+          color?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          is_popular?: boolean
+          max_items?: number
+          name: string
+          price?: number
+          setup_fee?: number
+          sort_order?: number
+          tier: string
+          updated_at?: string
+        }
+        Update: {
+          ai_generations_per_day?: number
+          badge_color?: string
+          benefits?: Json
+          border_color?: string
+          category?: string
+          color?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          is_popular?: boolean
+          max_items?: number
+          name?: string
+          price?: number
+          setup_fee?: number
+          sort_order?: number
+          tier?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       suppressed_emails: {
         Row: {
           created_at: string

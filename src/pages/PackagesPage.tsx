@@ -4,21 +4,28 @@ import { motion } from "framer-motion";
 import { Check, Crown, Star, Zap, ArrowLeft, Settings, Shield, Gem, Diamond } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { useSubscription, PACKAGE_CONFIG } from "@/hooks/useSubscription";
+import { useSubscription } from "@/hooks/useSubscription";
+import { useActivePlans, type Plan } from "@/hooks/usePlans";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
-const individualTiers = ["start", "premium", "vip"] as const;
-const enterpriseTiers = ["essencial_empresa", "premium_empresa", "prime_empresa"] as const;
-const tierIcons: Record<string, any> = { basico: Zap, start: Zap, premium: Star, vip: Crown, essencial_empresa: Shield, premium_empresa: Gem, prime_empresa: Diamond };
+const tierIcons: Record<string, any> = {
+  basico: Zap, start: Zap, premium: Star, vip: Crown,
+  essencial_empresa: Shield, premium_empresa: Gem, prime_empresa: Diamond, black: Crown,
+};
 
 export default function PackagesPage() {
   const { user, profile } = useAuth();
-  const { subscription, currentTier, config: activeConfig, refetch } = useSubscription(user?.id);
+  const { subscription, currentTier, refetch } = useSubscription(user?.id);
+  const { plans, loading: plansLoading } = useActivePlans();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [selecting, setSelecting] = useState<string | null>(null);
   const [openingPortal, setOpeningPortal] = useState(false);
+
+  const individualPlans = plans.filter((p) => p.category === "individual" || p.category === "free");
+  const enterprisePlans = plans.filter((p) => p.category === "enterprise");
+  const activePlan = plans.find((p) => p.tier === currentTier);
 
   const handleManageSubscription = async () => {
     if (!user) {
@@ -40,15 +47,15 @@ export default function PackagesPage() {
     setOpeningPortal(false);
   };
 
-  const handleSelect = async (tier: "basico" | "start" | "premium" | "vip") => {
+  const handleSelect = async (plan: Plan) => {
     if (!user || !profile) {
       navigate("/login");
       return;
     }
-    setSelecting(tier);
+    setSelecting(plan.tier);
 
     try {
-      if (tier === "basico") {
+      if (plan.price === 0) {
         // Free tier - handle locally
         if (subscription) {
           await supabase
@@ -56,23 +63,22 @@ export default function PackagesPage() {
             .update({ is_active: false } as any)
             .eq("id", subscription.id);
         }
-        const config = PACKAGE_CONFIG[tier];
         const { error } = await supabase.from("seller_subscriptions").insert({
           user_id: user.id,
           seller_id: profile.id,
-          tier,
-          max_items: config.maxItems,
+          tier: plan.tier,
+          max_items: plan.max_items,
           expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
           payment_method: "gratis",
           payment_status: "confirmado",
         } as any);
         if (error) throw error;
         await refetch();
-        toast({ title: "Pacote Básico ativado!", description: "Você pode começar a anunciar agora." });
+        toast({ title: `Pacote ${plan.name} ativado!`, description: "Você pode começar a anunciar agora." });
       } else {
         // Paid tier - redirect to Stripe Checkout
         const { data, error } = await supabase.functions.invoke("create-checkout", {
-          body: { tier },
+          body: { tier: plan.tier },
         });
         if (error) throw error;
         if (data?.url) {
@@ -85,6 +91,91 @@ export default function PackagesPage() {
       toast({ title: "Erro ao processar", description: err.message || "Tente novamente.", variant: "destructive" });
     }
     setSelecting(null);
+  };
+
+  if (plansLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+      </div>
+    );
+  }
+
+  const renderCard = (plan: Plan, idx: number, opts: { showPartners?: boolean } = {}) => {
+    const Icon = tierIcons[plan.tier] || Zap;
+    const isCurrent = currentTier === plan.tier;
+
+    return (
+      <motion.div
+        key={plan.id}
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: idx * 0.1 }}
+        className={`relative bg-card border-2 rounded-3xl overflow-hidden shadow-lg transition-all hover:shadow-2xl ${
+          isCurrent ? "border-primary ring-4 ring-primary/20" : plan.is_popular ? "border-amber-400" : "border-border"
+        }`}
+      >
+        {plan.is_popular && !isCurrent && (
+          <div className="absolute top-0 right-0 px-4 py-1 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold rounded-bl-xl">
+            POPULAR
+          </div>
+        )}
+        {isCurrent && (
+          <div className="absolute top-0 left-0 px-4 py-1 bg-primary text-primary-foreground text-xs font-bold rounded-br-xl">
+            ATUAL
+          </div>
+        )}
+
+        <div className={`p-6 bg-gradient-to-br ${plan.color} text-white`}>
+          <Icon size={32} className="mb-3" />
+          <h2 className="font-display font-extrabold text-2xl">{plan.name}</h2>
+          <div className="mt-2">
+            <span className="font-display font-bold text-3xl">R$ {plan.price.toFixed(2).replace(".", ",")}</span>
+            <span className="text-white/70 text-sm">/mês</span>
+            {plan.setup_fee > 0 && (
+              <div className="mt-2 px-3 py-1.5 bg-white/15 rounded-xl text-center">
+                <span className="text-white text-xs font-bold">✨ 7 dias grátis</span>
+                <span className="text-white/70 text-xs block">teste sem compromisso</span>
+              </div>
+            )}
+          </div>
+          {opts.showPartners && (
+            <div className="mt-3 px-3 py-2 bg-white/15 rounded-xl text-center">
+              <span className="text-white font-bold text-sm">
+                {plan.tier === "essencial_empresa" ? "Até 5" : plan.tier === "premium_empresa" ? "Até 10" : "∞"} Parceiros Vinculados
+              </span>
+            </div>
+          )}
+        </div>
+
+        <div className="p-6">
+          <ul className="space-y-3">
+            {plan.benefits.map((b, i) => (
+              <li key={i} className="flex items-start gap-2 text-sm text-foreground">
+                <Check size={16} className="text-green-500 mt-0.5 flex-shrink-0" />
+                {b}
+              </li>
+            ))}
+          </ul>
+
+          <button
+            onClick={() => handleSelect(plan)}
+            disabled={isCurrent || selecting === plan.tier}
+            className={`w-full mt-3 py-3 rounded-xl font-bold text-sm transition-all ${
+              isCurrent
+                ? "bg-muted text-muted-foreground cursor-default"
+                : `bg-gradient-to-r ${plan.color} text-white hover:opacity-90 shadow-lg`
+            }`}
+          >
+            {selecting === plan.tier
+              ? "Processando..."
+              : isCurrent
+              ? "Plano Atual"
+              : "Contratar"}
+          </button>
+        </div>
+      </motion.div>
+    );
   };
 
   return (
@@ -100,154 +191,25 @@ export default function PackagesPage() {
       </div>
 
       <div className="container max-w-6xl mx-auto px-4 -mt-8 relative z-10 pb-24 lg:pb-16">
-        {/* Individual Plans */}
-        <h2 className="font-display font-extrabold text-xl text-foreground mb-4">Planos Individuais</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {individualTiers.map((tier, i) => {
-            const config = PACKAGE_CONFIG[tier];
-            const Icon = tierIcons[tier];
-            const isCurrent = currentTier === tier;
-            const isPopular = tier === "premium";
+        {individualPlans.length > 0 && (
+          <>
+            <h2 className="font-display font-extrabold text-xl text-foreground mb-4">Planos Individuais</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {individualPlans.map((p, i) => renderCard(p, i))}
+            </div>
+          </>
+        )}
 
-            return (
-              <motion.div
-                key={tier}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
-                className={`relative bg-card border-2 rounded-3xl overflow-hidden shadow-lg transition-all hover:shadow-2xl ${
-                  isCurrent ? "border-primary ring-4 ring-primary/20" : isPopular ? "border-amber-400" : "border-border"
-                }`}
-              >
-                {isPopular && (
-                  <div className="absolute top-0 right-0 px-4 py-1 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold rounded-bl-xl">
-                    POPULAR
-                  </div>
-                )}
-                {isCurrent && (
-                  <div className="absolute top-0 left-0 px-4 py-1 bg-primary text-primary-foreground text-xs font-bold rounded-br-xl">
-                    ATUAL
-                  </div>
-                )}
+        {enterprisePlans.length > 0 && (
+          <>
+            <h2 className="font-display font-extrabold text-xl text-foreground mt-10 mb-4">Planos Empresariais</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {enterprisePlans.map((p, i) => renderCard(p, i, { showPartners: true }))}
+            </div>
+          </>
+        )}
 
-                <div className={`p-6 bg-gradient-to-br ${config.color} text-white`}>
-                  <Icon size={32} className="mb-3" />
-                  <h2 className="font-display font-extrabold text-2xl">{config.name}</h2>
-                  <div className="mt-2">
-                    <span className="font-display font-bold text-3xl">R$ {config.price.toFixed(2).replace(".", ",")}</span>
-                    <span className="text-white/70 text-sm">/mês</span>
-                    {config.setupFee > 0 && (
-                      <div className="mt-2 px-3 py-1.5 bg-white/15 rounded-xl text-center">
-                        <span className="text-white text-xs font-bold">
-                          ✨ 7 dias grátis
-                        </span>
-                        <span className="text-white/70 text-xs block">teste sem compromisso</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="p-6">
-                  <ul className="space-y-3">
-                    {config.benefits.map((b) => (
-                      <li key={b} className="flex items-start gap-2 text-sm text-foreground">
-                        <Check size={16} className="text-green-500 mt-0.5 flex-shrink-0" />
-                        {b}
-                      </li>
-                    ))}
-                  </ul>
-
-                  <button
-                    onClick={() => handleSelect(tier as any)}
-                    disabled={isCurrent || selecting === tier}
-                    className={`w-full mt-3 py-3 rounded-xl font-bold text-sm transition-all ${
-                      isCurrent
-                        ? "bg-muted text-muted-foreground cursor-default"
-                        : `bg-gradient-to-r ${config.color} text-white hover:opacity-90 shadow-lg`
-                    }`}
-                  >
-                    {selecting === tier
-                      ? "Processando..."
-                      : isCurrent
-                      ? "Plano Atual"
-                      : "Contratar"}
-                  </button>
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
-
-        {/* Enterprise Plans */}
-        <h2 className="font-display font-extrabold text-xl text-foreground mt-10 mb-4">Planos Empresariais</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {enterpriseTiers.map((tier, i) => {
-            const config = PACKAGE_CONFIG[tier];
-            const Icon = tierIcons[tier];
-            const isCurrent = currentTier === tier;
-
-            return (
-              <motion.div
-                key={tier}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 + 0.3 }}
-                className={`relative bg-card border-2 rounded-3xl overflow-hidden shadow-lg transition-all hover:shadow-2xl ${
-                  isCurrent ? "border-primary ring-4 ring-primary/20" : "border-border"
-                }`}
-              >
-                {isCurrent && (
-                  <div className="absolute top-0 left-0 px-4 py-1 bg-primary text-primary-foreground text-xs font-bold rounded-br-xl">
-                    ATUAL
-                  </div>
-                )}
-
-                <div className={`p-6 bg-gradient-to-br ${config.color} text-white`}>
-                  <Icon size={32} className="mb-3" />
-                  <h2 className="font-display font-extrabold text-2xl">{config.name}</h2>
-                  <div className="mt-2">
-                    <span className="font-display font-bold text-3xl">R$ {config.price.toFixed(2).replace(".", ",")}</span>
-                    <span className="text-white/70 text-sm">/mês</span>
-                  </div>
-                  <div className="mt-3 px-3 py-2 bg-white/15 rounded-xl text-center">
-                    <span className="text-white font-bold text-sm">
-                      {tier === "essencial_empresa" ? "Até 5" : tier === "premium_empresa" ? "Até 10" : "∞"} Parceiros Vinculados
-                    </span>
-                  </div>
-                </div>
-
-                <div className="p-6">
-                  <ul className="space-y-3">
-                    {config.benefits.map((b) => (
-                      <li key={b} className="flex items-start gap-2 text-sm text-foreground">
-                        <Check size={16} className="text-green-500 mt-0.5 flex-shrink-0" />
-                        {b}
-                      </li>
-                    ))}
-                  </ul>
-
-                  <button
-                    onClick={() => handleSelect(tier as any)}
-                    disabled={isCurrent || selecting === tier}
-                    className={`w-full mt-3 py-3 rounded-xl font-bold text-sm transition-all ${
-                      isCurrent
-                        ? "bg-muted text-muted-foreground cursor-default"
-                        : `bg-gradient-to-r ${config.color} text-white hover:opacity-90 shadow-lg`
-                    }`}
-                  >
-                    {selecting === tier
-                      ? "Processando..."
-                      : isCurrent
-                      ? "Plano Atual"
-                      : "Contratar"}
-                  </button>
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
-
-        {subscription && (
+        {subscription && activePlan && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -255,23 +217,23 @@ export default function PackagesPage() {
           >
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
               <div className="flex items-center gap-4">
-                <div className={`p-3 rounded-xl bg-gradient-to-br ${activeConfig.color}`}>
-                  {(() => { const ActiveIcon = tierIcons[currentTier as keyof typeof tierIcons] || Zap; return <ActiveIcon size={24} className="text-white" />; })()}
+                <div className={`p-3 rounded-xl bg-gradient-to-br ${activePlan.color}`}>
+                  {(() => { const ActiveIcon = tierIcons[currentTier] || Zap; return <ActiveIcon size={24} className="text-white" />; })()}
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Plano Ativo</p>
-                  <h3 className="font-display font-extrabold text-xl text-foreground">{activeConfig.name}</h3>
+                  <h3 className="font-display font-extrabold text-xl text-foreground">{activePlan.name}</h3>
                   <p className="text-sm text-muted-foreground">
-                    {currentTier === "basico" ? "Grátis" : `R$ ${activeConfig.price.toFixed(2).replace(".", ",")}/mês`}
+                    {activePlan.price === 0 ? "Grátis" : `R$ ${activePlan.price.toFixed(2).replace(".", ",")}/mês`}
                     {subscription.expires_at && (
                       <span className="ml-2">
-                        · {currentTier === "basico" ? "Válido até" : "Renova em"} {new Date(subscription.expires_at).toLocaleDateString("pt-BR")}
+                        · {activePlan.price === 0 ? "Válido até" : "Renova em"} {new Date(subscription.expires_at).toLocaleDateString("pt-BR")}
                       </span>
                     )}
                   </p>
                 </div>
               </div>
-              {currentTier !== "basico" && (
+              {activePlan.price > 0 && (
                 <div className="flex gap-3 w-full md:w-auto">
                   <button
                     onClick={handleManageSubscription}

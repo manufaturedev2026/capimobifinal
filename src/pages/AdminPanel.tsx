@@ -21,6 +21,7 @@ import AdminSmtpTab from "@/components/AdminSmtpTab";
 import AdminFunnelTab from "@/components/AdminFunnelTab";
 import AdminBroadcastTab from "@/components/AdminBroadcastTab";
 import AdminApifyLeadsTab from "@/components/AdminApifyLeadsTab";
+import AdminPlansTab from "@/components/AdminPlansTab";
 import AdminManagersTab from "@/components/AdminManagersTab";
 import { LOGIN_HERO_PRESETS, normalizeLoginHeroSetting, resolveLoginHeroImage } from "@/data/loginHeroPresets";
 
@@ -59,7 +60,7 @@ export default function AdminPanel() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [tierFilter, setTierFilter] = useState<string>("todos");
-  const [tab, setTab] = useState<"dashboard" | "clientes" | "managers" | "billing" | "referrals" | "crm" | "seo" | "vendas" | "config" | "push" | "site" | "smtp" | "funnel" | "broadcast" | "ads" | "invite" | "apify">("dashboard");
+  const [tab, setTab] = useState<"dashboard" | "clientes" | "managers" | "billing" | "plans" | "referrals" | "crm" | "seo" | "vendas" | "config" | "push" | "site" | "smtp" | "funnel" | "broadcast" | "ads" | "invite" | "apify">("dashboard");
   const [managersList, setManagersList] = useState<Array<{ id: string; name: string; phone: string | null; photo_url: string | null }>>([]);
   // Category edit dialog
   const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
@@ -494,6 +495,7 @@ export default function AdminPanel() {
     { key: "clientes" as const, label: "Clientes", icon: Users },
     { key: "managers" as const, label: "Gerentes", icon: UserCog },
     { key: "billing" as const, label: "Faturamento", icon: DollarSign },
+    { key: "plans" as const, label: "Planos", icon: Package },
     { key: "crm" as const, label: "CRM WhatsApp", icon: MessageCircle },
     { key: "ads" as const, label: "CRM de ADS", icon: Megaphone },
     { key: "push" as const, label: "Push Broadcast", icon: Bell },
@@ -803,7 +805,9 @@ export default function AdminPanel() {
           );
         })()}
 
-
+        {tab === "plans" && (
+          <AdminPlansTab />
+        )}
 
 
         {tab === "crm" && (
