@@ -26,11 +26,19 @@ export default function AdminBroadcastTab() {
   const [subject, setSubject] = useState("");
   const [contentHtml, setContentHtml] = useState(DEFAULT_HTML);
   const [selectedTiers, setSelectedTiers] = useState<string[]>([]);
+  const [customEmailsRaw, setCustomEmailsRaw] = useState("");
   const [testEmail, setTestEmail] = useState("");
   const [sending, setSending] = useState(false);
   const [testing, setTesting] = useState(false);
   const [savingTemplate, setSavingTemplate] = useState(false);
   const [newTemplateName, setNewTemplateName] = useState("");
+
+  const parseCustomEmails = (raw: string): string[] => {
+    return Array.from(new Set(
+      raw.split(/[\s,;]+/).map((e) => e.trim().toLowerCase()).filter((e) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e))
+    ));
+  };
+  const customEmails = parseCustomEmails(customEmailsRaw);
 
   const load = async () => {
     setLoading(true);
