@@ -401,7 +401,7 @@ export default function AiValuationPage() {
           </Section>
 
           <Section icon={<Home className="h-4 w-4" />} title="Tipo de imóvel">
-            <ChipGroup options={TIPOS} value={tipo} onChange={setTipo} />
+            <ChipGroup options={TIPOS} value={tipo} onChange={handleTipoChange} />
           </Section>
 
           {tipo === "Apartamento" && (
@@ -410,9 +410,27 @@ export default function AiValuationPage() {
             </Section>
           )}
 
-          {!isTerreno && (
+          {estruturasDisponiveis.length > 0 && (
             <Section icon={<Building2 className="h-4 w-4" />} title="Tipo de estrutura">
-              <ChipGroup options={TIPOS_ESTRUTURA} value={tipoEstrutura} onChange={setTipoEstrutura} />
+              <ChipGroup options={estruturasDisponiveis} value={tipoEstrutura} onChange={setTipoEstrutura} />
+            </Section>
+          )}
+
+          {tipo === "Terreno" && (
+            <Section icon={<Maximize2 className="h-4 w-4" />} title="Dados específicos do terreno">
+              <TerrenoExtraFields state={terrenoExtra} onChange={updTerreno} />
+            </Section>
+          )}
+
+          {tipo === "Comercial" && (
+            <Section icon={<Building2 className="h-4 w-4" />} title="Dados específicos comerciais">
+              <ComercialExtraFields state={comercialExtra} onChange={updComercial} />
+            </Section>
+          )}
+
+          {tipo === "Rural" && (
+            <Section icon={<Sparkles className="h-4 w-4" />} title="Dados específicos rurais">
+              <RuralExtraFields state={ruralExtra} onChange={updRural} />
             </Section>
           )}
 
