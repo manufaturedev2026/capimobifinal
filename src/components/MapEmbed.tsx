@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { MapPin, Eye, Loader2 } from "lucide-react";
+import { MapPin, Eye, Loader2, Map as MapIcon, ExternalLink } from "lucide-react";
 
 interface MapEmbedProps {
   address: string;
