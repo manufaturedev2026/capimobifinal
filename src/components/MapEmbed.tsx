@@ -182,6 +182,7 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
   const [mapSrc, setMapSrc] = useState(fallbackMapSrc);
   const [mapsUrl, setMapsUrl] = useState(fallbackMapsUrl);
   const [streetViewEmbed, setStreetViewEmbed] = useState<string | null>(null);
+  const [streetViewQuery, setStreetViewQuery] = useState<string | null>(null);
   const [resolvingStreetView, setResolvingStreetView] = useState(false);
   const [view, setView] = useState<"map" | "street">("map");
 
@@ -190,6 +191,7 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
     setMapSrc(fallbackMapSrc);
     setMapsUrl(fallbackMapsUrl);
     setStreetViewEmbed(null);
+    setStreetViewQuery(null);
     setView("map");
 
     if (addressOverride) {
@@ -254,6 +256,14 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
         const district = (viaCep.bairro as string) || "";
         const city = viaCep.localidade as string;
         const stateUf = viaCep.uf as string;
+
+        // Query no formato preferido pelo Street View: "R. Rua, número - Bairro, Cidade, UF"
+        if (!cancelled) {
+          const streetWithNumber = numberPart ? `${street}, ${numberPart}` : street;
+          const headPart = district ? `${streetWithNumber} - ${district}` : streetWithNumber;
+          const fullQuery = [headPart, city, stateUf].filter(Boolean).join(", ");
+          setStreetViewQuery(fullQuery);
+        }
 
         // Estratégia: priorizar buscas com BAIRRO (mais preciso que CEP no Photon).
         const cepFormatted = `${cleanCep.slice(0, 5)}-${cleanCep.slice(5)}`;
@@ -359,10 +369,13 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
   const addressOverrideStreetEmbed = addressOverride
     ? `https://www.google.com/maps?layer=c&cbll=${addressOverride.lat},${addressOverride.lon}&cbp=11,0,0,0,0&z=17&output=svembed`
     : null;
+  const viaCepStreetEmbed = streetViewQuery
+    ? `https://www.google.com/maps?q=${encodeURIComponent(streetViewQuery)}&layer=c&cbp=11,0,0,0,0&output=svembed`
+    : null;
   const addressStreetEmbed = address.trim()
     ? `https://www.google.com/maps?q=${encodedAddress}&layer=c&cbp=11,0,0,0,0&output=svembed`
     : null;
-  const streetEmbedSrc = streetViewEmbed || addressOverrideStreetEmbed || addressStreetEmbed;
+  const streetEmbedSrc = streetViewEmbed || addressOverrideStreetEmbed || viaCepStreetEmbed || addressStreetEmbed;
   const hasEmbeddedStreetView = Boolean(streetEmbedSrc);
   const canOpenStreetView = Boolean(streetViewUrl);
   const isStreet = view === "street" && !!streetEmbedSrc;
