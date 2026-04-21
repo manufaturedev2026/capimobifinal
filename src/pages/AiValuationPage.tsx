@@ -307,10 +307,10 @@ export default function AiValuationPage() {
           meta: finalResult.meta ? {
             ...finalResult.meta,
             ajuste_total_pct: (finalResult.meta.ajuste_total_pct || 0) + ajustePct,
-            breakdown: [
-              ...(finalResult.meta.breakdown || []),
-              { label: `📸 Análise visual por fotos (${analiseVisual.total_fotos_analisadas} foto${analiseVisual.total_fotos_analisadas > 1 ? "s" : ""})`, pct: Number(ajustePct.toFixed(1)) },
-            ],
+              breakdown: [
+                ...(finalResult.meta.breakdown || []),
+                { label: `Análise visual por fotos (${analiseVisual.total_fotos_analisadas} foto${analiseVisual.total_fotos_analisadas > 1 ? "s" : ""})`, pct: Number(ajustePct.toFixed(1)) },
+              ],
           } : finalResult.meta,
         };
       }
