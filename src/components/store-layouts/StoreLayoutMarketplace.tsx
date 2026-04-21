@@ -599,9 +599,12 @@ export default function StoreLayoutMarketplace({
                         </div>
                         <div className="p-3">
                           <h3 className="text-xs font-bold line-clamp-1" style={{ color: storeTheme.text }}>{product.title}</h3>
-                          {product.city && (
-                            <p className="text-[10px] mt-0.5 flex items-center gap-1" style={{ color: storeTheme.textMuted }}>
-                              <MapPin size={10} /> {product.city}
+                          {(product.city || product.neighborhood) && (
+                            <p className="text-[10px] mt-0.5 flex items-start gap-1 line-clamp-2" style={{ color: storeTheme.textMuted }}>
+                              <MapPin size={10} className="flex-shrink-0 mt-0.5" />
+                              <span className="break-words">
+                                {product.neighborhood ? `${product.neighborhood}, ${product.city}` : product.city}
+                              </span>
                             </p>
                           )}
                           <p className="font-bold text-sm mt-1" style={{ color: storeTheme.primary }}>
