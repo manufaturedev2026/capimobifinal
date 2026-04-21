@@ -330,7 +330,7 @@ export default function PartnerAgencyTab({ profileId, userId, maxMembers }: { pr
       </div>
 
       {/* Search Bar */}
-      {requests.length > 0 && (
+      {activeSubTab !== "loja-espelho" && requests.length > 0 && (
         <div className="relative">
           <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <Input
@@ -445,7 +445,7 @@ export default function PartnerAgencyTab({ profileId, userId, maxMembers }: { pr
       )}
 
       {/* Search no results */}
-      {requests.length > 0 && filteredRequests.length === 0 && searchQuery && (
+      {activeSubTab !== "loja-espelho" && requests.length > 0 && filteredRequests.length === 0 && searchQuery && (
         <div className="text-center py-12 text-muted-foreground">
           <Search size={32} className="mx-auto mb-3 opacity-30" />
           <p className="text-sm">Nenhum resultado para "<strong className="text-foreground">{searchQuery}</strong>"</p>
