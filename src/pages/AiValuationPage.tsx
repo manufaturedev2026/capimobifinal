@@ -353,6 +353,7 @@ export default function AiValuationPage() {
         comparaveis_externos: result.comparaveis_externos,
         mercado_externo: result.mercado_externo,
       },
+      analiseVisual: analiseVisual ?? undefined,
       avaliadorNome: user?.user_metadata?.full_name || user?.email?.split("@")[0] || "Sistema IA Capimobi",
       avaliadorEmail: user?.email,
       empresaNome: "CAPIMOBI",
