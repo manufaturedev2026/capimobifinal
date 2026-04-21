@@ -830,6 +830,9 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
                       ) : (
                         <div className="w-full h-full flex items-center justify-center"><Home size={32} className="text-muted-foreground/30" /></div>
                       )}
+                      <div className="absolute top-2 left-2 px-2 py-1 rounded-lg bg-background/90 text-foreground text-[10px] font-bold uppercase shadow-lg backdrop-blur-sm">
+                        {item.finality === "aluguel" ? "Aluguel" : "Venda"}
+                      </div>
                       <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-3 pt-10">
                         <p className="text-white font-bold text-sm line-clamp-1">{item.title}</p>
                         <p className="text-white/80 text-xs flex items-center gap-1">
@@ -842,7 +845,7 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
                         </div>
                       )}
                       {requested && (
-                        <div className={`absolute top-2 left-2 px-2 py-1 rounded-lg text-white text-[10px] font-bold shadow-lg ${requestStatus === "aprovado" ? "bg-green-600" : "bg-amber-500"}`}>
+                        <div className={`absolute top-9 left-2 px-2 py-1 rounded-lg text-white text-[10px] font-bold shadow-lg ${requestStatus === "aprovado" ? "bg-green-600" : "bg-amber-500"}`}>
                           {requestStatus === "aprovado" ? "Parceria Ativa" : "Aguardando"}
                         </div>
                       )}
@@ -859,7 +862,7 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
                         )}
                         {gains.partner > 0 && (
                           <div className="text-right">
-                            <p className="text-[10px] text-muted-foreground">Ganho/venda</p>
+                            <p className="text-[10px] text-muted-foreground">Comissão</p>
                             <p className="font-bold text-sm text-green-600">{fmt(gains.partner)}</p>
                           </div>
                         )}
