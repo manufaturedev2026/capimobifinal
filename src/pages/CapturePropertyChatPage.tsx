@@ -379,7 +379,7 @@ export default function CapturePropertyChatPage() {
         captacao: { title: "Novo lead de captação 🏠", verb: "quer vender ou alugar um imóvel." },
         grupo_whatsapp: { title: "Novo lead do grupo 👥", verb: "pediu para entrar no grupo de WhatsApp." },
         agendamento: { title: "Nova visita agendada 📅", verb: "quer agendar uma visita." },
-        avaliacao: { title: "Novo pedido de avaliação 💎", verb: "solicitou uma avaliação profissional do imóvel." },
+        avaliacao: { title: "Novo pedido de avaliação 💎", verb: "solicitou uma avaliação." },
       };
       const pushCfg = FLOW_PUSH[flowType] || FLOW_PUSH.captacao;
       supabase.functions.invoke("notify-new-lead", {
@@ -712,7 +712,7 @@ export default function CapturePropertyChatPage() {
       description: `Solicitação de avaliação gratuita\n📝 Detalhes: ${detailsVal || "Não informado"}`,
       status: "novo",
     });
-    notifyNewCaptureLead(sellerProfile.user_id, name, `${name} solicitou uma avaliação gratuita.`, "avaliacao");
+    notifyNewCaptureLead(sellerProfile.user_id, name, `${name} solicitou uma avaliação.`, "avaliacao");
     await addBotMsg(config.avalMsgSuccess);
     await addBotMsg(config.avalMsgSuccessEnd);
     setStep("done");
