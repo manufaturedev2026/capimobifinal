@@ -261,7 +261,9 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
         if (!cancelled) {
           const streetWithNumber = numberPart ? `${street}, ${numberPart}` : street;
           const headPart = district ? `${streetWithNumber} - ${district}` : streetWithNumber;
-          const fullQuery = [headPart, city, stateUf].filter(Boolean).join(", ");
+          const cityState = [city, stateUf].filter(Boolean).join(" - ");
+          const cepFmt = `${cleanCep.slice(0, 5)}-${cleanCep.slice(5)}`;
+          const fullQuery = [headPart, cityState, cepFmt, "Brasil"].filter(Boolean).join(", ");
           setStreetViewQuery(fullQuery);
         }
 
