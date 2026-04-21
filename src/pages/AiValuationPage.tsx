@@ -170,6 +170,10 @@ export default function AiValuationPage() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Valuation | null>(null);
 
+  // Análise visual por fotos
+  const [fotos, setFotos] = useState<FotoItem[]>([]);
+  const [analiseVisual, setAnaliseVisual] = useState<AnaliseVisual | null>(null);
+
   const [historyOpen, setHistoryOpen] = useState(false);
   const [history, setHistory] = useState<any[]>([]);
 
