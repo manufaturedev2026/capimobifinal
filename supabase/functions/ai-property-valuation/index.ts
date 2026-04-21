@@ -574,6 +574,11 @@ Se não houver dados confiáveis, retorne: {"comparaveis":[],"resumo":"Sem anún
 async function resolvePrecoM2(
   supabase: any, p: Payload, market: MarketContext, external: ExternalMarket | null
 ): Promise<{ precoM2: number; source: string }> {
+  // PRIORIDADE 1: mediana de preço/m² de anúncios externos REAIS (mercado vivo)
+  if (external && external.preco_m2_mediano > 0) {
+    return { precoM2: external.preco_m2_mediano, source: "mercado_externo" };
+  }
+  // PRIORIDADE 2: tabela administrativa por bairro/cidade
   const { data, error } = await supabase.rpc("resolve_price_per_sqm", {
     p_estado: p.estado, p_cidade: p.cidade, p_bairro: p.bairro, p_tipo: p.tipo,
   });
@@ -582,9 +587,11 @@ async function resolvePrecoM2(
     const src = data?.[0]?.source || "default";
     if (v > 0) return { precoM2: v, source: src };
   }
+  // PRIORIDADE 3: comparativo interno validado
   if (market.pricePerM2Market > 0) {
     return { precoM2: Math.round(market.pricePerM2Market), source: "comparativo_regional" };
   }
+  // PRIORIDADE 4: média nacional
   const fallback: Record<string, number> = {
     "Casa": 3800, "Apartamento": 6500, "Terreno": 1200,
     "Comercial": 5500, "Rural": 80,
