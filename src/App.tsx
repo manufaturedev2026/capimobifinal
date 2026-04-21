@@ -47,6 +47,7 @@ const InvitePage = lazyPage(() => import("@/pages/InvitePage"));
 const ResetPasswordPage = lazyPage(() => import("@/pages/ResetPasswordPage"));
 const AgendaPage = lazyPage(() => import("@/pages/AgendaPage"));
 const AgendaBotChatPage = lazyPage(() => import("@/pages/AgendaBotChatPage"));
+const AiValuationPage = lazyPage(() => import("@/pages/AiValuationPage"));
 
 const queryClient = new QueryClient();
 
@@ -179,6 +180,7 @@ const AppLayout = () => {
               <Route path="/painel/editar/:id" element={<RequireAuth><SellerItemForm /></RequireAuth>} />
               <Route path="/painel/perfil" element={<RequireAuth><SellerProfile /></RequireAuth>} />
               <Route path="/painel/personalizacao" element={<RequireAuth><SellerCustomization /></RequireAuth>} />
+              <Route path="/avaliacao-ia" element={<RequireAuth><AiValuationPage /></RequireAuth>} />
               <Route path="/agenda" element={<RequireAuth><AgendaPage /></RequireAuth>} />
               <Route path="/agenda/:slug/chat" element={<AgendaBotChatPage />} />
               <Route path="/agenda/:slug/chat/:botSlug" element={<AgendaBotChatPage />} />
