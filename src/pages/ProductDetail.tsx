@@ -386,7 +386,7 @@ export default function ProductDetail() {
     }
   };
   const mapAddress = isDb
-    ? [product.address, product.neighborhood, product.city, product.state].filter(Boolean).join(", ") || company.address
+    ? product.address || [product.neighborhood, product.city, product.state].filter(Boolean).join(", ") || company.address
     : (isProperty && product.location ? product.location : company.address);
 
   /* ── Build specs (technical details only, amenities handled separately) ── */
