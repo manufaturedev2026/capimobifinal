@@ -145,38 +145,39 @@ export default function AgendaPage() {
       </Helmet>
 
       {/* Header */}
-      <div className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground py-6">
-        <div className="container max-w-7xl mx-auto px-4">
-          <div className="flex items-center justify-between flex-wrap gap-3">
-            <div className="flex items-center gap-3">
-              <button onClick={() => navigate("/painel")} className="p-2 rounded-lg hover:bg-white/10">
+      <div className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground py-4 sm:py-6">
+        <div className="container max-w-7xl mx-auto px-3 sm:px-4">
+          <div className="flex items-start sm:items-center justify-between flex-wrap gap-3">
+            <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+              <button onClick={() => navigate("/painel")} className="p-2 rounded-lg hover:bg-white/10 shrink-0">
                 <ArrowLeft className="w-5 h-5" />
               </button>
-              <div>
-                <h1 className="text-2xl font-bold flex items-center gap-2">
-                  <CalendarIcon className="w-6 h-6" /> Agenda de Visitas
+              <div className="min-w-0">
+                <h1 className="text-lg sm:text-2xl font-bold flex items-center gap-2">
+                  <CalendarIcon className="w-5 h-5 sm:w-6 sm:h-6 shrink-0" />
+                  <span className="truncate">Agenda de Visitas</span>
                 </h1>
-                <p className="text-sm text-primary-foreground/80">Organize visitas, leads e compromissos imobiliários.</p>
+                <p className="text-xs sm:text-sm text-primary-foreground/80 hidden sm:block">Organize visitas, leads e compromissos imobiliários.</p>
               </div>
             </div>
-            <div className="flex flex-wrap gap-2">
-              <Button onClick={() => { setEditing(null); setOpenForm(true); }} className="bg-white text-primary hover:bg-white/90">
+            <div className="flex flex-wrap gap-1.5 sm:gap-2 w-full sm:w-auto">
+              <Button onClick={() => { setEditing(null); setOpenForm(true); }} className="bg-white text-primary hover:bg-white/90 flex-1 sm:flex-none" size="sm">
                 <Plus className="w-4 h-4 mr-1" /> Nova Visita
               </Button>
-              <Button variant="secondary" size="sm" onClick={() => setQuick("hoje")}>Hoje</Button>
-              <Button variant="secondary" size="sm" onClick={() => setQuick("semana")}>Semana</Button>
-              <Button variant="secondary" size="sm" onClick={() => setQuick("mes")}>Mês</Button>
-              <Button variant="secondary" size="sm" onClick={exportCsv}>
-                <Download className="w-4 h-4 mr-1" /> Exportar
+              <Button variant="secondary" size="sm" onClick={() => setQuick("hoje")} className="flex-1 sm:flex-none">Hoje</Button>
+              <Button variant="secondary" size="sm" onClick={() => setQuick("semana")} className="flex-1 sm:flex-none">Semana</Button>
+              <Button variant="secondary" size="sm" onClick={() => setQuick("mes")} className="flex-1 sm:flex-none">Mês</Button>
+              <Button variant="secondary" size="sm" onClick={exportCsv} className="flex-1 sm:flex-none">
+                <Download className="w-4 h-4 sm:mr-1" /> <span className="hidden sm:inline">Exportar</span>
               </Button>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="container max-w-7xl mx-auto px-4 py-6 space-y-6">
+      <div className="container max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 sm:gap-3">
           <StatCard icon={<CalendarIcon className="w-5 h-5" />} label="Visitas Hoje" value={stats.hoje} color="bg-blue-500" />
           <StatCard icon={<TrendingUp className="w-5 h-5" />} label="Semana" value={stats.semana} color="bg-emerald-500" />
           <StatCard icon={<Flame className="w-5 h-5" />} label="Leads Quentes" value={stats.quentes} color="bg-orange-500" />
@@ -185,9 +186,9 @@ export default function AgendaPage() {
         </div>
 
         {/* Filters */}
-        <div className="bg-card border border-border rounded-xl p-3 flex flex-wrap gap-2 items-center shadow-sm">
+        <div className="bg-card border border-border rounded-xl p-2.5 sm:p-3 grid grid-cols-2 sm:flex sm:flex-wrap gap-2 items-center shadow-sm">
           <Select value={quick} onValueChange={(v) => setQuick(v as Quick)}>
-            <SelectTrigger className="w-[140px]"><SelectValue /></SelectTrigger>
+            <SelectTrigger className="w-full sm:w-[140px]"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="todas">Todas</SelectItem>
               <SelectItem value="hoje">Hoje</SelectItem>
@@ -197,7 +198,7 @@ export default function AgendaPage() {
             </SelectContent>
           </Select>
           <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as any)}>
-            <SelectTrigger className="w-[160px]"><SelectValue placeholder="Status" /></SelectTrigger>
+            <SelectTrigger className="w-full sm:w-[160px]"><SelectValue placeholder="Status" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="todos">Todos status</SelectItem>
               {(Object.keys(STATUS_META) as VisitStatus[]).map((s) => (
@@ -205,27 +206,27 @@ export default function AgendaPage() {
               ))}
             </SelectContent>
           </Select>
-          <Input placeholder="Cidade" className="w-[160px]" value={cityFilter} onChange={(e) => setCityFilter(e.target.value)} />
-          <Input placeholder="Corretor responsável" className="w-[200px]" value={responsibleFilter} onChange={(e) => setResponsibleFilter(e.target.value)} />
+          <Input placeholder="Cidade" className="w-full sm:w-[160px]" value={cityFilter} onChange={(e) => setCityFilter(e.target.value)} />
+          <Input placeholder="Responsável" className="w-full sm:w-[200px] col-span-2 sm:col-span-1" value={responsibleFilter} onChange={(e) => setResponsibleFilter(e.target.value)} />
         </div>
 
         {/* Two columns */}
-        <div className="grid grid-cols-1 lg:grid-cols-[420px_1fr] gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-[420px_1fr] gap-4 lg:gap-6">
           {/* Calendar */}
-          <div className="bg-card border border-border rounded-xl p-4 shadow-sm h-fit">
-            <h3 className="font-semibold mb-3 flex items-center gap-2"><CalendarIcon className="w-4 h-4 text-primary" /> Calendário</h3>
+          <div className="bg-card border border-border rounded-xl p-3 sm:p-4 shadow-sm h-fit">
+            <h3 className="font-semibold mb-3 flex items-center gap-2 text-sm sm:text-base"><CalendarIcon className="w-4 h-4 text-primary" /> Calendário</h3>
             <Calendar
               mode="single"
               selected={selectedDate}
               onSelect={(d) => { setSelectedDate(d); setQuick("todas"); }}
               modifiers={{ withVisit: datesWithVisits }}
               modifiersClassNames={{ withVisit: "bg-primary/15 text-primary font-bold" }}
-              className="p-0 pointer-events-auto"
+              className="p-0 pointer-events-auto mx-auto"
             />
-            <div className="mt-4 space-y-1.5 text-xs">
-              <p className="font-semibold text-muted-foreground mb-2">Legenda</p>
+            <div className="mt-4 grid grid-cols-2 sm:block gap-1.5 text-xs">
+              <p className="font-semibold text-muted-foreground mb-1 sm:mb-2 col-span-2">Legenda</p>
               {(Object.keys(STATUS_META) as VisitStatus[]).map((s) => (
-                <div key={s} className="flex items-center gap-2">
+                <div key={s} className="flex items-center gap-2 sm:mb-1.5">
                   <span className={`w-2.5 h-2.5 rounded-full ${STATUS_META[s].dot}`} />
                   <span className="text-foreground">{STATUS_META[s].label}</span>
                 </div>
