@@ -349,7 +349,10 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
         {showStreetView && (
           <button
             type="button"
-            onClick={() => setView(isStreet ? "map" : "street")}
+            onClick={() => {
+              if (streetEmbedSrc) setView(isStreet ? "map" : "street");
+              else handleOpenStreetView();
+            }}
             aria-busy={resolvingStreetView}
             className="absolute bottom-3 right-3 z-10 flex items-center gap-2 rounded-full bg-primary px-3.5 py-2 text-xs font-semibold text-primary-foreground shadow-lg transition-transform hover:scale-105"
           >
