@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
-export type VisitStatus = "confirmada" | "pendente" | "reagendada" | "cancelada" | "fechada";
+export type VisitStatus = "confirmada" | "pendente" | "reagendada" | "cancelada" | "fechada" | "pendente_confirmacao";
 
 export interface VisitAppointment {
   id: string;
@@ -22,6 +22,9 @@ export interface VisitAppointment {
   status: VisitStatus;
   notes: string | null;
   outcome: string | null;
+  source?: string | null;
+  ai_match_confidence?: number | null;
+  ai_property_guess?: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -44,6 +47,7 @@ export interface VisitInput {
 }
 
 export const STATUS_META: Record<VisitStatus, { label: string; color: string; bg: string; dot: string }> = {
+  pendente_confirmacao: { label: "🤖 A confirmar", color: "text-fuchsia-700", bg: "bg-fuchsia-100", dot: "bg-fuchsia-500" },
   confirmada: { label: "Confirmada", color: "text-emerald-700", bg: "bg-emerald-100", dot: "bg-emerald-500" },
   pendente:   { label: "Pendente",   color: "text-amber-700",   bg: "bg-amber-100",   dot: "bg-amber-500" },
   reagendada: { label: "Reagendada", color: "text-blue-700",    bg: "bg-blue-100",    dot: "bg-blue-500" },

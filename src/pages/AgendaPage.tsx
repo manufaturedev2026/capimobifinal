@@ -1,16 +1,18 @@
 import { useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useVisitAppointments, STATUS_META, VisitStatus, VisitAppointment } from "@/hooks/useVisitAppointments";
 import VisitFormDialog from "@/components/VisitFormDialog";
+import AgendaBotConfigTab from "@/components/AgendaBotConfigTab";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Helmet } from "react-helmet-async";
 import {
   Calendar as CalendarIcon, Plus, MessageCircle, MapPin, Edit3, CheckCircle2, ArrowLeft,
-  Download, Phone, Clock, Trash2, Flame, TrendingUp, Home as HomeIcon, DollarSign
+  Download, Phone, Clock, Trash2, Flame, TrendingUp, Home as HomeIcon, DollarSign, Bot, Sparkles
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -164,9 +166,24 @@ export default function AgendaPage() {
               <Button onClick={() => { setEditing(null); setOpenForm(true); }} className="bg-white text-primary hover:bg-white/90 flex-1 sm:flex-none" size="sm">
                 <Plus className="w-4 h-4 mr-1" /> Nova Visita
               </Button>
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant="secondary" size="sm" className="flex-1 sm:flex-none gap-1">
+                    <Bot className="w-4 h-4" /> <span className="hidden sm:inline">Bot IA</span>
+                    <Sparkles className="w-3 h-3 text-amber-400" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="right" className="w-full sm:max-w-xl overflow-y-auto">
+                  <SheetHeader className="mb-4">
+                    <SheetTitle className="flex items-center gap-2">
+                      <Bot className="w-5 h-5 text-primary" /> Bot de Agendamento por IA
+                    </SheetTitle>
+                  </SheetHeader>
+                  {profile && <AgendaBotConfigTab sellerId={profile.id} sellerSlug={profile.slug} />}
+                </SheetContent>
+              </Sheet>
               <Button variant="secondary" size="sm" onClick={() => setQuick("hoje")} className="flex-1 sm:flex-none">Hoje</Button>
               <Button variant="secondary" size="sm" onClick={() => setQuick("semana")} className="flex-1 sm:flex-none">Semana</Button>
-              <Button variant="secondary" size="sm" onClick={() => setQuick("mes")} className="flex-1 sm:flex-none">Mês</Button>
               <Button variant="secondary" size="sm" onClick={exportCsv} className="flex-1 sm:flex-none">
                 <Download className="w-4 h-4 sm:mr-1" /> <span className="hidden sm:inline">Exportar</span>
               </Button>

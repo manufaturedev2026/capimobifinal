@@ -2480,6 +2480,8 @@ export type Database = {
       visit_appointments: {
         Row: {
           address: string | null
+          ai_match_confidence: number | null
+          ai_property_guess: string | null
           city: string | null
           client_email: string | null
           client_name: string
@@ -2496,6 +2498,7 @@ export type Database = {
           push_morning_sent_at: string | null
           responsible_name: string | null
           seller_id: string
+          source: string
           status: Database["public"]["Enums"]["visit_status"]
           team_member_id: string | null
           updated_at: string
@@ -2505,6 +2508,8 @@ export type Database = {
         }
         Insert: {
           address?: string | null
+          ai_match_confidence?: number | null
+          ai_property_guess?: string | null
           city?: string | null
           client_email?: string | null
           client_name: string
@@ -2521,6 +2526,7 @@ export type Database = {
           push_morning_sent_at?: string | null
           responsible_name?: string | null
           seller_id: string
+          source?: string
           status?: Database["public"]["Enums"]["visit_status"]
           team_member_id?: string | null
           updated_at?: string
@@ -2530,6 +2536,8 @@ export type Database = {
         }
         Update: {
           address?: string | null
+          ai_match_confidence?: number | null
+          ai_property_guess?: string | null
           city?: string | null
           client_email?: string | null
           client_name?: string
@@ -2546,6 +2554,7 @@ export type Database = {
           push_morning_sent_at?: string | null
           responsible_name?: string | null
           seller_id?: string
+          source?: string
           status?: Database["public"]["Enums"]["visit_status"]
           team_member_id?: string | null
           updated_at?: string
@@ -2718,6 +2727,7 @@ export type Database = {
         | "reagendada"
         | "cancelada"
         | "fechada"
+        | "pendente_confirmacao"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -2914,6 +2924,7 @@ export const Constants = {
         "reagendada",
         "cancelada",
         "fechada",
+        "pendente_confirmacao",
       ],
     },
   },

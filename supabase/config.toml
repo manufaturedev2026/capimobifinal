@@ -9,3 +9,5 @@ project_id = "foqavjauorrheuytpmtj"
     verify_jwt = false
   [functions.send-agenda-push]
     verify_jwt = false
+  [functions.agenda-bot-chat]
+    verify_jwt = false
