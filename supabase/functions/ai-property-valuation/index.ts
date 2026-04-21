@@ -996,8 +996,12 @@ Deno.serve(async (req) => {
       (Number(data.areaConstruidaTerreo) || 0) + (Number(data.areaConstruidaSuperior) || 0) ||
       (Number(data.areaConstruida) || 0) || data.areaTotal;
     const finalidade: "venda" | "aluguel" = ((data as any).finalidade === "aluguel") ? "aluguel" : "venda";
-    const market = await fetchMarketContext(supabase, data.estado, data.cidade, data.bairro, data.tipo, areaRefForMarket, finalidade);
-    const { precoM2, source } = await resolvePrecoM2(supabase, data, market);
+    // Busca interna + externa em PARALELO (externa pode demorar 10-30s)
+    const [market, external] = await Promise.all([
+      fetchMarketContext(supabase, data.estado, data.cidade, data.bairro, data.tipo, areaRefForMarket, finalidade),
+      fetchExternalMarket(data, areaRefForMarket, finalidade),
+    ]);
+    const { precoM2, source } = await resolvePrecoM2(supabase, data, market, external);
     const calc = calcular(data, precoM2, market);
     const ai = await aiEnrich(data, calc, precoM2, source, market) ?? fallbackAnalysis(data, calc, market);
 
