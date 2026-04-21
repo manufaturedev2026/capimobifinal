@@ -202,10 +202,10 @@ export default function AiValuationPage() {
       toast({ title: "Informe a área (terreno ou construída)", variant: "destructive" });
       return;
     }
-    if (fotos.length < 4 || fotos.length > 10) {
+    if (fotos.length < 1 || fotos.length > 10) {
       toast({
         title: "Fotos obrigatórias",
-        description: `Envie entre 4 e 10 fotos do imóvel para gerar a avaliação. Atualmente: ${fotos.length}.`,
+        description: `Envie entre 1 e 10 fotos do imóvel para gerar a avaliação. Atualmente: ${fotos.length}.`,
         variant: "destructive",
       });
       document.getElementById("photo-analysis-section")?.scrollIntoView({ behavior: "smooth" });
