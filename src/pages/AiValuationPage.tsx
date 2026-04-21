@@ -22,15 +22,14 @@ import {
 import { generateValuationReport } from "@/lib/generateValuationReport";
 import AdvancedValuationFields, { ADVANCED_INITIAL, type AdvancedState } from "@/components/AdvancedValuationFields";
 import ApartmentValuationFields, { APARTMENT_INITIAL, type ApartmentState } from "@/components/ApartmentValuationFields";
+import {
+  ESTRUTURAS_POR_TIPO, ESTRUTURA_PADRAO,
+  TerrenoExtraFields, TERRENO_INITIAL, type TerrenoState,
+  ComercialExtraFields, COMERCIAL_INITIAL, type ComercialState,
+  RuralExtraFields, RURAL_INITIAL, type RuralState,
+} from "@/components/DynamicStructureFields";
 
 const TIPOS = ["Casa", "Apartamento", "Terreno", "Comercial", "Rural"];
-const TIPOS_ESTRUTURA = [
-  "Casa térrea",
-  "Sobrado integrado",
-  "Casa com pavimento superior",
-  "Duas moradias no lote",
-  "Uso misto residencial/comercial",
-];
 const EXTRAS = [
   "Quintal", "Piscina", "Área gourmet", "Varanda",
   "Vista", "Mobiliado", "Portaria", "Elevador", "Energia solar",
