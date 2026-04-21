@@ -9,7 +9,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { Package, Eye, Plus, Settings, Edit, Trash2, Copy, ToggleLeft, ToggleRight, Search, Image, LogOut, BarChart3, Star, Crown, Zap, AlertTriangle, Shield, MessageCircle, Home, UserCircle, Headphones, Globe, ExternalLink, CheckCircle2, ClipboardCopy, Lock, Clapperboard, Menu, X, Building2, Users, BadgeCheck, GripVertical, ChevronRight, Sparkles, FileText, Magnet, Camera, Bell, Download, Calculator, Palette, Handshake, Megaphone, Calendar as CalendarIcon } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import SoldCountdown from "@/components/SoldCountdown";
-import TeamMembersTab from "@/components/TeamMembersTab";
 import StoreEffectsPicker from "@/components/StoreEffectsPicker";
 import BrokerAnalytics from "@/components/BrokerAnalytics";
 
@@ -378,7 +377,6 @@ export default function SellerDashboard() {
     { id: "notifications" as DashboardTab, label: "Push", icon: Bell },
     { id: "profit" as DashboardTab, label: "Calculadora de Lucro", icon: Calculator },
     { id: "domain", label: "Meu Domínio", icon: Globe, locked: lockedTabs.includes("domain") },
-    ...(showTeamTab ? [{ id: "loja-espelhada" as DashboardTab, label: "Loja Espelhada", icon: Users }] : []),
     { id: "ads" as DashboardTab, label: "Fazer ADS", icon: Megaphone, tourId: "tour-ads" },
     { id: "imobiliarias" as DashboardTab, label: "Imobiliárias", icon: Building2 },
     { id: "parcerias" as DashboardTab, label: "Parcerias", icon: Handshake },
@@ -1188,21 +1186,13 @@ export default function SellerDashboard() {
             )}
 
 
-            {activeTab === "loja-espelhada" && showTeamTab && profile?.id && (
-              <TeamMembersTab
-                profileId={profile.id}
-                userId={user!.id}
-                maxMembers={maxTeamMembers}
-              />
-            )}
-
             {activeTab === "ads" && profile?.id && (
               <SellerAdsTab profileId={profile.id} userId={user!.id} />
             )}
 
             {activeTab === "imobiliarias" && profile?.id && (
               isImobiliaria ? (
-                <PartnerAgencyTab profileId={profile.id} userId={user!.id} />
+                <PartnerAgencyTab profileId={profile.id} userId={user!.id} maxMembers={maxTeamMembers} />
               ) : (
                 <PartnerBrokerTab profileId={profile.id} userId={user!.id} />
               )

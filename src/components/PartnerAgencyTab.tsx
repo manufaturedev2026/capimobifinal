@@ -1,9 +1,10 @@
 import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { CheckCircle2, XCircle, Clock, User, Phone, Mail, MessageSquare, Trash2, Search, MapPin, Instagram, FileText, Shield, Building2, ExternalLink, Eye, MousePointerClick, BarChart3 } from "lucide-react";
+import { CheckCircle2, XCircle, Clock, User, Phone, Mail, MessageSquare, Trash2, Search, MapPin, Instagram, FileText, Shield, Building2, ExternalLink, Eye, MousePointerClick, BarChart3, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import TeamMembersTab from "@/components/TeamMembersTab";
 
 interface RequestWithProfile {
   id: string;
@@ -44,14 +45,14 @@ const categoryLabels: Record<string, string> = {
   construtora: "Construtora",
 };
 
-export default function PartnerAgencyTab({ profileId, userId }: { profileId: string; userId: string }) {
+export default function PartnerAgencyTab({ profileId, userId, maxMembers }: { profileId: string; userId: string; maxMembers: number }) {
   const { toast } = useToast();
   const [requests, setRequests] = useState<RequestWithProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [processingId, setProcessingId] = useState<string | null>(null);
   const [slugInputs, setSlugInputs] = useState<Record<string, string>>({});
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeSubTab, setActiveSubTab] = useState<"vinculados" | "solicitacoes">("vinculados");
+  const [activeSubTab, setActiveSubTab] = useState<"loja-espelho" | "vinculados" | "solicitacoes">("loja-espelho");
 
   const [companySlug, setCompanySlug] = useState<string | null>(null);
 
@@ -289,6 +290,17 @@ export default function PartnerAgencyTab({ profileId, userId }: { profileId: str
       {/* Sub-tabs */}
       <div className="flex gap-1 bg-secondary/50 p-1 rounded-xl">
         <button
+          onClick={() => { setActiveSubTab("loja-espelho"); setSearchQuery(""); }}
+          className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
+            activeSubTab === "loja-espelho"
+              ? "bg-background text-foreground shadow-sm"
+              : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <Users size={16} />
+          Loja espelho
+        </button>
+        <button
           onClick={() => { setActiveSubTab("vinculados"); setSearchQuery(""); }}
           className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
             activeSubTab === "vinculados"
@@ -328,6 +340,10 @@ export default function PartnerAgencyTab({ profileId, userId }: { profileId: str
             className="pl-10 h-11 rounded-xl bg-secondary/50 border-border"
           />
         </div>
+      )}
+
+      {activeSubTab === "loja-espelho" && (
+        <TeamMembersTab profileId={profileId} userId={userId} maxMembers={maxMembers} />
       )}
 
       {/* ─── Sub-tab: Vinculados ─── */}
