@@ -282,10 +282,17 @@ function calcular(p: Payload, precoM2: number, market: MarketContext) {
   };
 }
 
-async function aiEnrich(p: Payload, calc: ReturnType<typeof calcular>, precoM2: number, source: string): Promise<{
+async function aiEnrich(
+  p: Payload,
+  calc: ReturnType<typeof calcular>,
+  precoM2: number,
+  source: string,
+  market: MarketContext
+): Promise<{
   justificativa: string;
   pontos_fortes: string[];
   pontos_atencao: string[];
+  sugestoes_valorizacao?: string[];
 } | null> {
   const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
   if (!LOVABLE_API_KEY) return null;
@@ -294,7 +301,17 @@ async function aiEnrich(p: Payload, calc: ReturnType<typeof calcular>, precoM2: 
                       source === "cidade" ? "da média da cidade" :
                       source === "estado" ? "da média do estado" : "do parâmetro nacional";
 
-  const userPrompt = `Você é um avaliador imobiliário sênior. Gere uma análise técnica realista e profissional para o imóvel:
+  const marketBlock = market.total > 0
+    ? `Comparáveis reais analisados: ${market.total} imóvel(is) similares no mercado local.
+- Média de dormitórios na região: ${market.avgBedrooms.toFixed(1)}
+- Média de banheiros: ${market.avgBathrooms.toFixed(1)}
+- Área média (m²): ${Math.round(market.avgArea)}
+- Preço médio: R$ ${Math.round(market.avgPrice).toLocaleString("pt-BR")}
+- Garagem é considerada essencial neste mercado: ${market.garagePenaltyWeight > 0.5 ? "SIM" : "NÃO (mercado tolera ausência)"}
+- Mercado exige acabamento moderno: ${market.modernizationPenaltyWeight > 0.6 ? "SIM" : "NÃO"}`
+    : `Sem comparáveis reais cadastrados no bairro — use parâmetros conservadores e NÃO invente comparações.`;
+
+  const userPrompt = `Você é um avaliador imobiliário sênior. Gere análise técnica COMPARATIVA com o mercado local — NUNCA frases genéricas.
 
 📍 ${p.bairro}, ${p.cidade}/${p.estado}${p.rua ? ` — ${p.rua}` : ""}
 🏠 ${p.tipo} | Área: ${calc.areaCalc}m² | Quartos: ${p.quartos ?? 0} (${p.suites ?? 0} suítes) | Banheiros: ${p.banheiros ?? 0} | Vagas: ${p.garagem ?? 0}
@@ -302,14 +319,29 @@ async function aiEnrich(p: Payload, calc: ReturnType<typeof calcular>, precoM2: 
 🎨 Acabamento: ${p.acabamento} | 🔧 Conservação: ${p.conservacao}
 📄 Documentação: ${p.documentacao?.join(", ") || "—"}
 
+📊 CONTEXTO DE MERCADO LOCAL:
+${marketBlock}
+
 Cálculo aplicado:
 - Preço base: R$ ${precoM2}/m² (referência ${sourceLabel})
 - Valor base: R$ ${calc.valorBase.toLocaleString("pt-BR")}
-- Bônus aplicados: +${calc.bonusTotal}% | Descontos: ${calc.descontoTotal}%
+- Bônus: +${calc.bonusTotal}% | Descontos: ${calc.descontoTotal}%
 - Valor final: R$ ${calc.valorFinal.toLocaleString("pt-BR")}
-- Ajustes: ${calc.breakdown.map(b => `${b.label} (${b.pct > 0 ? "+" : ""}${b.pct}%)`).join("; ") || "nenhum"}
+- Ajustes aplicados: ${calc.breakdown.map(b => `${b.label} (${b.pct > 0 ? "+" : ""}${b.pct}%)`).join("; ") || "nenhum"}
 
-Retorne SOMENTE via tool: justificativa (3-4 parágrafos profissionais explicando o resultado e o mercado da região), 3-5 pontos_fortes e 2-4 pontos_atencao. Não invente valores diferentes dos calculados.`;
+REGRAS PARA PONTOS DE ATENÇÃO (sejam contextuais ao mercado):
+1. GARAGEM: só critique ausência de vagas se garagem for essencial neste mercado (ver flag acima). Se mercado tolera, NÃO mencione.
+2. DORMITÓRIOS: só critique se a quantidade for nitidamente abaixo da média local para a metragem. Cite a média do bairro.
+3. ACABAMENTO/MODERNIZAÇÃO: só critique se o mercado exige padrão acima. Se preço/m² regional é baixo, acabamento simples é compatível — NÃO critique.
+4. Se o imóvel for loft, studio ou tiver proposta diferenciada, NÃO aplique críticas tradicionais.
+5. Cite SEMPRE os números comparativos do bairro nos pontos de atenção (ex: "abaixo da média de X dormitórios da região").
+
+Retorne via tool:
+- justificativa: 3-4 parágrafos profissionais com comparação real ao mercado.
+- pontos_fortes: 3-5 itens objetivos.
+- pontos_atencao: 2-4 itens CONTEXTUAIS ao mercado local (não genéricos).
+- sugestoes_valorizacao: 2-4 ações concretas que elevariam o valor (com impacto % estimado).
+NÃO invente valores diferentes dos calculados.`;
 
   try {
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -331,8 +363,9 @@ Retorne SOMENTE via tool: justificativa (3-4 parágrafos profissionais explicand
                 justificativa: { type: "string" },
                 pontos_fortes: { type: "array", items: { type: "string" } },
                 pontos_atencao: { type: "array", items: { type: "string" } },
+                sugestoes_valorizacao: { type: "array", items: { type: "string" } },
               },
-              required: ["justificativa", "pontos_fortes", "pontos_atencao"],
+              required: ["justificativa", "pontos_fortes", "pontos_atencao", "sugestoes_valorizacao"],
             },
           },
         }],
