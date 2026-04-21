@@ -800,7 +800,8 @@ export default function AdminPanel() {
               </p>
             </div>
           </div>
-      )}
+          );
+        })()}
 
 
 
