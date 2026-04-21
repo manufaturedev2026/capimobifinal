@@ -254,7 +254,9 @@ export function generateValuationReport(d: ValuationReportData): jsPDF {
     doc.setFontSize(7);
     doc.text(`Código ${codigo}`, 14, H - 5);
     doc.text(pageLabel, W - 14, H - 5, { align: "right" });
-    if (d.empresaNome) doc.text(d.empresaNome, W / 2, H - 5, { align: "center" });
+    const especialista = d.avaliadorNome?.trim() || "Especialista";
+    const creciTxt = d.avaliadorCreci?.trim() ? ` — CRECI ${d.avaliadorCreci.trim()}` : "";
+    doc.text(`${especialista}${creciTxt}`, W / 2, H - 5, { align: "center" });
   };
 
   const headerStrip = (title: string) => {
