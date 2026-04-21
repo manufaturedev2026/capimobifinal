@@ -261,6 +261,7 @@ export default function AiValuationPage() {
     }
     setLoading(true);
     setResult(null);
+    setCurrentValuationId(null);
     try {
       const advancedPayload = modoAvancado ? {
         areaCobertaExterna: Number(adv.areaCobertaExterna) || null,
