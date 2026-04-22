@@ -1,9 +1,10 @@
 import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { CheckCircle2, XCircle, Clock, User, Phone, Mail, MessageSquare, Trash2, Search, MapPin, Instagram, FileText, Shield, Building2, ExternalLink, Eye, MousePointerClick, BarChart3, Users } from "lucide-react";
+import { CheckCircle2, XCircle, Clock, User, Phone, Mail, MessageSquare, Trash2, Search, MapPin, Instagram, FileText, Shield, Building2, ExternalLink, Eye, MousePointerClick, BarChart3, Users, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import TeamMembersTab from "@/components/TeamMembersTab";
 
 interface RequestWithProfile {
@@ -46,6 +47,7 @@ const categoryLabels: Record<string, string> = {
 };
 
 const tabHelp = {
+  informacoes: "Edite os dados que corretores verão antes de solicitar vínculo: descrição, WhatsApp, e-mail, Instagram, endereço e disponibilidade para receber pedidos.",
   "loja-espelho": "Cadastre e edite os corretores da sua empresa. Cada corretor ganha uma loja espelho com URL própria, usando o tema da imobiliária e os dados dele.",
   vinculados: "Veja os corretores parceiros já aprovados, acompanhe acessos, cliques no WhatsApp e copie o link da loja espelho vinculada.",
   solicitacoes: "Analise os pedidos de vínculo enviados por corretores e aprove ou recuse quem poderá representar sua imobiliária.",
@@ -70,7 +72,9 @@ export default function PartnerAgencyTab({ profileId, userId, maxMembers }: { pr
   const [processingId, setProcessingId] = useState<string | null>(null);
   const [slugInputs, setSlugInputs] = useState<Record<string, string>>({});
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeSubTab, setActiveSubTab] = useState<"loja-espelho" | "vinculados" | "solicitacoes">("loja-espelho");
+  const [activeSubTab, setActiveSubTab] = useState<"informacoes" | "loja-espelho" | "vinculados" | "solicitacoes">("loja-espelho");
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [companyInfo, setCompanyInfo] = useState({ company_name: "", bio: "", phone: "", email: "", instagram: "", address: "", open_for_partnerships: true });
 
   const [companySlug, setCompanySlug] = useState<string | null>(null);
 
@@ -82,10 +86,33 @@ export default function PartnerAgencyTab({ profileId, userId, maxMembers }: { pr
   const fetchCompanySlug = async () => {
     const { data } = await supabase
       .from("profiles")
-      .select("slug")
+      .select("slug, company_name, full_name, bio, phone, email, instagram, address, open_for_partnerships")
       .eq("id", profileId)
       .maybeSingle();
     if (data?.slug) setCompanySlug(data.slug);
+    if (data) setCompanyInfo({
+      company_name: data.company_name || data.full_name || "",
+      bio: data.bio || "",
+      phone: data.phone || "",
+      email: data.email || "",
+      instagram: data.instagram || "",
+      address: data.address || "",
+      open_for_partnerships: data.open_for_partnerships ?? true,
+    });
+  };
+
+  const saveCompanyInfo = async () => {
+    setSavingProfile(true);
+    const { error } = await supabase.from("profiles").update({
+      company_name: companyInfo.company_name.trim() || null,
+      bio: companyInfo.bio.trim() || null,
+      phone: companyInfo.phone.trim() || null,
+      instagram: companyInfo.instagram.trim() || null,
+      address: companyInfo.address.trim() || null,
+      open_for_partnerships: companyInfo.open_for_partnerships,
+    }).eq("id", profileId).eq("user_id", userId);
+    setSavingProfile(false);
+    toast(error ? { title: "Erro ao salvar", description: error.message, variant: "destructive" } : { title: "Informações salvas!" });
   };
 
   const fetchRequests = async () => {
