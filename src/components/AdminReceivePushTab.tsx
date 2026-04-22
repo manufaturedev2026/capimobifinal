@@ -10,7 +10,9 @@ interface AdminReceivePushTabProps {
 
 export default function AdminReceivePushTab({ userId }: AdminReceivePushTabProps) {
   const [adminPushSellerId, setAdminPushSellerId] = useState<string | undefined>();
-  const push = usePushSubscription(adminPushSellerId);
+  const push = usePushSubscription(adminPushSellerId, {
+    successDescription: "Você receberá notificações do painel admin, CRM, bots e leads.",
+  });
 
   useEffect(() => {
     let cancelled = false;

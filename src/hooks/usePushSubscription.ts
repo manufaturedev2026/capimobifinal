@@ -7,7 +7,10 @@ const SUBSCRIPTION_TIMEOUT_MS = 20000;
 const PUSH_SW_URL = "/push-sw.js";
 const PUSH_SW_SCOPE = "/push-sw-scope/";
 
-export function usePushSubscription(sellerId?: string) {
+export function usePushSubscription(
+  sellerId?: string,
+  options: { successDescription?: string } = {}
+) {
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isSupported, setIsSupported] = useState(false);
   const [permission, setPermission] = useState<NotificationPermission>("default");
@@ -220,7 +223,7 @@ export function usePushSubscription(sellerId?: string) {
 
       console.log("[Push] Subscription saved successfully!");
       setIsSubscribed(true);
-      toast({ title: "Notificações ativadas! 🔔", description: "Você receberá notificações deste corretor." });
+      toast({ title: "Notificações ativadas! 🔔", description: options.successDescription || "Você receberá notificações deste perfil." });
       return true;
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
@@ -230,7 +233,7 @@ export function usePushSubscription(sellerId?: string) {
     } finally {
       setLoading(false);
     }
-  }, [sellerId]);
+  }, [sellerId, options.successDescription]);
 
   return { isSubscribed, isSupported, permission, subscribe, loading, unsupportedReason };
 }
