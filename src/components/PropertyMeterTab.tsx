@@ -376,7 +376,9 @@ export default function PropertyMeterTab({ userId, themeVars }: { userId: string
       toast({ title: "Erro ao carregar ambientes", description: error.message, variant: "destructive" });
     } else {
       setRooms((data || []) as MeasuredRoom[]);
+      return (data || []) as MeasuredRoom[];
     }
+    return [];
   }, [db, measuredRoomsTable, toast, userId]);
 
   const fetchPhotos = useCallback(async (propertyId: string) => {
