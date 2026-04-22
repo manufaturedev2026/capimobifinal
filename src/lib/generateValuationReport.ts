@@ -1317,7 +1317,7 @@ export async function generateValuationReport(d: ValuationReportData): Promise<j
   renderList("Limitações da Avaliação", limitacoes, GRAY, "-");
 
   // ===== ASSINATURA DO RESPONSÁVEL TÉCNICO =====
-  if (y > H - 95) { footer("Página 6 de 6"); doc.addPage(); headerStrip("Responsável Técnico"); y = 38; }
+  if (y > H - 110) { footer("Página 6 de 6"); doc.addPage(); headerStrip("Responsável Técnico"); y = 38; }
   y += 18;
   setColor(NAVY);
   doc.setFont("helvetica", "bold"); doc.setFontSize(10.5);
@@ -1341,27 +1341,27 @@ export async function generateValuationReport(d: ValuationReportData): Promise<j
   doc.setFont("helvetica", "normal"); doc.setFontSize(9);
   const linhaCreci: string[] = [];
   if (d.avaliadorCreci?.trim()) linhaCreci.push(`CRECI ${d.avaliadorCreci.trim()}`);
-  linhaCreci.push(`Emitido em ${dataEmissao}`);
-  doc.text(linhaCreci.join("  •  "), W / 2, y + 28, { align: "center" });
+  if (linhaCreci.length) doc.text(linhaCreci.join("  •  "), W / 2, y + 28, { align: "center" });
 
   if (d.avaliadorEmail) {
     doc.setFontSize(8.5);
     doc.text(d.avaliadorEmail, W / 2, y + 33, { align: "center" });
   }
 
+  const codeY = y + 44;
   setFill([245, 247, 252]);
-  doc.roundedRect(14, y, 50, 36, 2, 2, "F");
+  doc.roundedRect(14, codeY, W - 28, 24, 2, 2, "F");
   setFill(GOLD);
-  doc.rect(14, y, 2, 36, "F");
+  doc.rect(14, codeY, 2, 24, "F");
   setColor(NAVY);
   doc.setFont("helvetica", "bold"); doc.setFontSize(7.5);
-  doc.text("CÓDIGO DO LAUDO", 18, y + 7);
+  doc.text("CÓDIGO DO LAUDO", W / 2, codeY + 7, { align: "center" });
   setColor([20, 20, 30]);
   doc.setFont("helvetica", "bold"); doc.setFontSize(10);
-  doc.text(codigo, 18, y + 14);
+  doc.text(codigo, W / 2, codeY + 14, { align: "center" });
   setColor(GRAY);
   doc.setFont("helvetica", "normal"); doc.setFontSize(7);
-  doc.text(`Emitido em ${dataEmissao}`, 18, y + 21);
+  doc.text(`Emitido em ${dataEmissao}`, W / 2, codeY + 20, { align: "center" });
 
   footer("Página 6 de 6");
 
