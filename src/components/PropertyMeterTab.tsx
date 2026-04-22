@@ -188,18 +188,32 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
   const db = useMemo(() => supabase as any, []);
   const [properties, setProperties] = useState<MeasuredProperty[]>([]);
   const [rooms, setRooms] = useState<MeasuredRoom[]>([]);
+  const [photos, setPhotos] = useState<MeasuredPhoto[]>([]);
   const [selectedProperty, setSelectedProperty] = useState<MeasuredProperty | null>(null);
   const [loading, setLoading] = useState(true);
   const [propertyDialogOpen, setPropertyDialogOpen] = useState(false);
   const [roomDialogOpen, setRoomDialogOpen] = useState(false);
+  const [reportDialogOpen, setReportDialogOpen] = useState(false);
+  const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [editingPropertyId, setEditingPropertyId] = useState<string | null>(null);
   const [editingRoomId, setEditingRoomId] = useState<string | null>(null);
+  const [photoCategory, setPhotoCategory] = useState("Fachada");
   const [propertyForm, setPropertyForm] = useState<PropertyForm>(emptyPropertyForm);
   const [roomForm, setRoomForm] = useState<RoomForm>(emptyRoomForm);
 
   const measuredPropertiesTable = "measured_properties" as any;
   const measuredRoomsTable = "measured_rooms" as any;
+  const measuredPhotosTable = "measured_property_photos" as any;
   const computedArea = useMemo(() => calculateRoomArea(roomForm), [roomForm]);
+  const technicalAreas = useMemo(() => {
+    const landArea = selectedProperty ? Number(selectedProperty.land_area_manual || 0) || Number(selectedProperty.land_width || 0) * Number(selectedProperty.land_length || 0) : 0;
+    const usefulArea = rooms.filter((room) => room.area_type === "Interna útil").reduce((sum, room) => sum + Number(room.area || 0), 0);
+    const coveredArea = rooms.filter((room) => room.area_type === "Construída coberta").reduce((sum, room) => sum + Number(room.area || 0), 0);
+    const openArea = rooms.filter((room) => room.area_type === "Externa descoberta").reduce((sum, room) => sum + Number(room.area || 0), 0);
+    const builtArea = usefulArea + coveredArea;
+    const uncoveredArea = Math.max(landArea - builtArea, openArea, 0);
+    return { builtArea, usefulArea, landArea, uncoveredArea };
+  }, [rooms, selectedProperty]);
   const livePropertyTotal = useMemo(() => {
     const savedTotal = rooms.reduce((sum, room) => sum + Number(room.area || 0), 0);
     if (!editingRoomId && roomDialogOpen) return savedTotal + computedArea;
