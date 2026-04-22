@@ -744,14 +744,12 @@ export default function CapturePropertyChatPage() {
   };
 
   const handleWhatsAppRedirect = () => {
-    // CTA URL personalizado tem prioridade absoluta
-    // Modo IA usa aiCtaUrl; modo fluxo usa o CTA do fluxo ativo
-    const customCtaUrl = isAiMode
-      ? config.aiCtaUrl
-      : flowType === "captacao" ? config.captacaoCtaUrl :
-        flowType === "grupo_whatsapp" ? config.grupoWhatsappLink :
-        flowType === "agendamento" ? config.agendCtaUrl :
-        flowType === "avaliacao" ? config.avalCtaUrl : "";
+    // CTA URL personalizado do fluxo/bot tem prioridade; vazio cai no WhatsApp do corretor.
+    const flowCtaUrl = flowType === "captacao" ? config.captacaoCtaUrl :
+      flowType === "grupo_whatsapp" ? config.grupoWhatsappLink :
+      flowType === "agendamento" ? config.agendCtaUrl :
+      flowType === "avaliacao" ? config.avalCtaUrl : "";
+    const customCtaUrl = flowCtaUrl || (!botSlug && isAiMode ? config.aiCtaUrl : "");
     if (customCtaUrl && customCtaUrl.trim()) {
       window.open(customCtaUrl.trim(), "_blank", "noopener");
       return;
