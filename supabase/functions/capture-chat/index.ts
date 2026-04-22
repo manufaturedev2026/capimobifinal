@@ -329,6 +329,24 @@ REGRAS:
       });
     }
 
+    const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+    let chatCredit: Awaited<ReturnType<typeof consumeAiCreditsForUser>> | null = null;
+    if (messages.length > 0) {
+      let ownerUserId = typeof sellerUserId === "string" ? sellerUserId : null;
+      if (!ownerUserId && typeof sellerId === "string") {
+        const { data: sellerProfile } = await admin.from("profiles").select("user_id").eq("id", sellerId).maybeSingle();
+        ownerUserId = sellerProfile?.user_id || null;
+      }
+      if (!ownerUserId) {
+        return new Response(JSON.stringify({ error: "Loja não encontrada para cobrança de créditos." }), {
+          status: 404,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      chatCredit = await consumeAiCreditsForUser(admin, ownerUserId, typeof sellerId === "string" ? sellerId : null, "capture_bot_chat", corsHeaders);
+      if (!chatCredit.ok) return chatCredit.response;
+    }
+
     const flowKey = (typeof flowType === "string" && FLOW_PROMPTS[flowType]) ? flowType : "captacao";
     const flowSpecific = FLOW_PROMPTS[flowKey];
 
