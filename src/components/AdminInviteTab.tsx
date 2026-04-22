@@ -275,7 +275,7 @@ export default function AdminInviteTab() {
             <h3 className="text-sm font-semibold text-foreground flex items-center gap-2"><Bot size={16} /> Bots de Convite</h3>
             <p className="text-xs text-muted-foreground mt-1">Cada bot tem sua própria URL, IA, texto e botão final.</p>
           </div>
-          <Button variant="outline" size="sm" onClick={addBot}><Plus size={14} /> Novo bot</Button>
+          <Button variant="default" size="sm" onClick={addBot}><Plus size={14} /> Novo bot</Button>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-[220px_1fr] gap-3">
           <div className="space-y-2">
@@ -305,7 +305,7 @@ export default function AdminInviteTab() {
               <label className="text-xs text-muted-foreground">URL do bot</label>
               <div className="flex gap-2 mt-1">
                 <Input value={activeBot.slug} onChange={(e) => updateActiveBot((p) => ({ ...p, slug: normalizeInviteSlug(e.target.value) }))} />
-                {bots.length > 1 && <Button variant="outline" size="icon" onClick={() => removeBot(activeBot.id)}><Trash2 size={14} /></Button>}
+                {bots.length > 1 && <Button variant="destructive" size="icon" onClick={() => removeBot(activeBot.id)} aria-label="Excluir bot"><Trash2 size={14} /></Button>}
               </div>
               <p className="text-[10px] text-muted-foreground mt-1">Use “principal” para manter /convite. Outros ficam em /convite/sua-url.</p>
             </div>
