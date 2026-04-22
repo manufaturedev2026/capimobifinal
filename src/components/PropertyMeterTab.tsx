@@ -130,12 +130,6 @@ const propertyTypes = ["Casa", "Apartamento", "Terreno", "Comercial", "Rural"];
 const roomTypes = ["Sala", "Quarto", "Suíte", "Cozinha", "Banheiro", "Corredor", "Garagem", "Varanda", "Área gourmet", "Área de serviço", "Escritório", "Outro"];
 const shapes = ["Retângulo / Quadrado", "Triângulo Retângulo", "Formato em L", "Trapézio", "Circular", "Manual"];
 const areaTypes = ["Interna útil", "Construída coberta", "Externa descoberta", "Terreno"];
-const measurementModes = ["Medição por Ambientes", "Medição Externa da Construção", "Medição do Terreno"];
-const measurementModeDescriptions: Record<string, string> = {
-  "Medição por Ambientes": "Some cômodos e áreas cadastradas.",
-  "Medição Externa da Construção": "Use medidas externas da construção.",
-  "Medição do Terreno": "Priorize largura, comprimento ou área manual do terreno.",
-};
 const externalShapes = ["Retângulo", "L", "Triângulo", "Trapézio", "Irregular"];
 const photoCategories = ["Fachada", "Sala", "Quartos", "Cozinha", "Banheiros", "Área externa", "Garagem", "Outros"];
 const themedPrimaryButton = "bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/20";
@@ -483,7 +477,7 @@ export default function PropertyMeterTab({ userId, themeVars }: { userId: string
       land_length: toNumber(propertyForm.land_length) || null,
       land_area_manual: toNumber(propertyForm.land_area_manual) || null,
       measured_by: propertyForm.measured_by.trim() || null,
-      measurement_mode: propertyForm.measurement_mode,
+      measurement_mode: "Medição por Ambientes",
       external_shape: propertyForm.external_shape,
       external_width: toNumber(propertyForm.external_width) || null,
       external_length: toNumber(propertyForm.external_length) || null,
