@@ -3,10 +3,24 @@ import { motion, AnimatePresence } from "framer-motion";
 import { CheckCheck, ArrowLeft, Phone, Video, MoreVertical, Send, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { SITE_URL } from "@/lib/siteUrl";
 import { DEFAULT_CONFIG, DEFAULT_FLOWS, type FlowStep, type BotStep, type InputStep, type ChoiceStep, type InviteChatConfig } from "@/data/inviteFlow";
+
+const resolveInviteConfig = (parsed: any, botSlug?: string): InviteChatConfig => {
+  const base = { ...DEFAULT_CONFIG };
+  if (Array.isArray(parsed?.bots) && parsed.bots.length > 0) {
+    const selected = parsed.bots.find((bot: any) => bot.slug === botSlug) || parsed.bots.find((bot: any) => bot.slug === "principal") || parsed.bots[0];
+    const ctaType = selected.ctaType || base.ctaType;
+    const flows = selected.flows ? { ...DEFAULT_FLOWS, ...selected.flows } : { ...DEFAULT_FLOWS };
+    return { ...base, ...selected, ctaType, flows, flow: flows[ctaType] || DEFAULT_FLOWS[ctaType] };
+  }
+
+  const ctaType = parsed?.ctaType || base.ctaType;
+  const flows = parsed?.flows ? { ...DEFAULT_FLOWS, ...parsed.flows } : parsed?.flow?.length ? { ...DEFAULT_FLOWS, [ctaType]: parsed.flow } : { ...DEFAULT_FLOWS };
+  return { ...base, ...parsed, ctaType, flows, flow: flows[ctaType] || DEFAULT_FLOWS[ctaType] };
+};
 
 interface VisibleBubble {
   id: string;
