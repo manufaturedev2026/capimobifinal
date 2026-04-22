@@ -171,6 +171,7 @@ const AppLayout = () => {
               <Route path="/corretores/:estado" element={<SeoBrokersPage />} />
               <Route path="/corretores/:estado/:cidade" element={<SeoBrokersPage />} />
               <Route path="/convite" element={<InvitePage />} />
+              <Route path="/convite/:botSlug" element={<InvitePage />} />
               <Route path="/anunciar" element={<VenderPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/entrar" element={<Navigate to="/login" replace />} />
