@@ -9,6 +9,7 @@ export type ValuationReportData = {
   rua?: string;
   cep?: string;
   // Imóvel
+  nomeImovel?: string;
   tipo: string;
   tipoEstrutura?: string;
   // Áreas (todas como string p/ vir do form)
@@ -276,6 +277,7 @@ export async function generateValuationReport(d: ValuationReportData): Promise<j
   const H = doc.internal.pageSize.getHeight();
   const codigo = shortCode(d.valuationId);
   const dataEmissao = new Date().toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" });
+  const tituloImovel = d.nomeImovel?.trim() || `${d.tipo} • ${d.bairro}`;
 
   const setColor = (c: [number, number, number]) => doc.setTextColor(c[0], c[1], c[2]);
   const setFill = (c: [number, number, number]) => doc.setFillColor(c[0], c[1], c[2]);
@@ -358,7 +360,7 @@ export async function generateValuationReport(d: ValuationReportData): Promise<j
   doc.setFont("helvetica", "normal");
   doc.setFontSize(12);
   setColor([220, 220, 230]);
-  doc.text(`${d.tipo} • ${d.bairro}`, W / 2, H / 2 + 8, { align: "center" });
+  doc.text(doc.splitTextToSize(tituloImovel, W - 44), W / 2, H / 2 + 8, { align: "center" });
   doc.text(`${d.cidade} / ${d.estado}`, W / 2, H / 2 + 16, { align: "center" });
 
   // Score destaque na capa
@@ -412,6 +414,19 @@ export async function generateValuationReport(d: ValuationReportData): Promise<j
     doc.setFontSize(11);
     setColor(GOLD);
     doc.text(d.avaliadorCreci.trim(), W - 26, avalLineY, { align: "right" });
+    setColor([255, 255, 255]);
+    avalLineY += 6;
+  }
+  if (d.avaliadorCnai && d.avaliadorCnai.trim().length > 0) {
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7);
+    setColor([220, 220, 230]);
+    doc.text("CNAI", W - 26, avalLineY, { align: "right" });
+    avalLineY += 5;
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(11);
+    setColor(GOLD);
+    doc.text(d.avaliadorCnai.trim(), W - 26, avalLineY, { align: "right" });
     setColor([255, 255, 255]);
     avalLineY += 6;
   }
