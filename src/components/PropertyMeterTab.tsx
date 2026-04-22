@@ -945,10 +945,10 @@ export default function PropertyMeterTab({ userId, themeVars }: { userId: string
           </div>
 
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-            <MetricCard title="Área Construída" value={technicalAreas.builtArea} />
+            <MetricCard title="Área Interna" value={technicalAreas.usefulArea} />
+            <MetricCard title="Área Externa" value={technicalAreas.externalArea} />
             <MetricCard title="Terreno" value={technicalAreas.landArea} />
-            <MetricCard title="Área Externa" value={technicalAreas.uncoveredArea} />
-            <MetricCard title="Taxa de Ocupação" value={technicalAreas.occupancyRate} suffix="%" />
+            <MetricCard title="Total para Avaliação" value={livePropertyTotal} />
           </div>
 
           <div className="rounded-3xl border border-border bg-card p-4 shadow-sm">
@@ -995,6 +995,15 @@ export default function PropertyMeterTab({ userId, themeVars }: { userId: string
                 {measurementDraft.external_shape === "Triângulo" && <><MeasurementField label="Base construção" value={measurementDraft.external_base} onChange={(value) => setMeasurementDraft((prev) => ({ ...prev, external_base: value }))} onBlur={() => persistMeasurementDraft()} /><MeasurementField label="Altura construção" value={measurementDraft.external_height} onChange={(value) => setMeasurementDraft((prev) => ({ ...prev, external_height: value }))} onBlur={() => persistMeasurementDraft()} /></>}
                 {measurementDraft.external_shape === "Trapézio" && <><MeasurementField label="Base maior" value={measurementDraft.external_base} onChange={(value) => setMeasurementDraft((prev) => ({ ...prev, external_base: value }))} onBlur={() => persistMeasurementDraft()} /><MeasurementField label="Base menor" value={measurementDraft.external_side_a} onChange={(value) => setMeasurementDraft((prev) => ({ ...prev, external_side_a: value }))} onBlur={() => persistMeasurementDraft()} /><MeasurementField label="Altura" value={measurementDraft.external_height} onChange={(value) => setMeasurementDraft((prev) => ({ ...prev, external_height: value }))} onBlur={() => persistMeasurementDraft()} /></>}
                 {measurementDraft.external_shape === "Irregular" && <MeasurementField label="Área construída manual" value={measurementDraft.external_area_manual} onChange={(value) => setMeasurementDraft((prev) => ({ ...prev, external_area_manual: value }))} onBlur={() => persistMeasurementDraft()} />}
+              </div>
+              <div className="mt-4">
+                <p className="mb-2 text-xs font-bold uppercase text-primary">Diferenciais da área externa</p>
+                <div className="flex flex-wrap gap-2">
+                  {externalFeatureOptions.map((feature) => {
+                    const active = getExternalFeatures(selectedProperty.notes).includes(feature);
+                    return <button key={feature} type="button" onClick={() => toggleExternalFeature(feature)} className={`rounded-full border px-3 py-2 text-xs font-bold transition-all ${active ? "border-primary bg-primary text-primary-foreground" : "border-primary/20 bg-card text-foreground hover:bg-primary/10"}`}>{feature}</button>;
+                  })}
+                </div>
               </div>
             </div>
           </div>
