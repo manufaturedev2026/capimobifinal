@@ -127,7 +127,9 @@ type RoomForm = {
 };
 
 const propertyTypes = ["Casa", "Apartamento", "Terreno", "Comercial", "Rural"];
-const roomTypes = ["Sala", "Quarto", "Suíte", "Cozinha", "Banheiro", "Corredor", "Garagem", "Varanda", "Área gourmet", "Área de serviço", "Escritório", "Outro"];
+const internalRoomTypes = ["Sala", "Quarto", "Suíte", "Cozinha", "Banheiro", "Corredor", "Área de serviço", "Escritório", "Outro"];
+const externalRoomTypes = ["Piscina", "Garagem externa", "Quintal", "Jardim", "Varanda", "Área gourmet", "Churrasqueira", "Edícula", "Depósito", "Canil", "Outro"];
+const roomTypes = [...internalRoomTypes, ...externalRoomTypes.filter((type) => !internalRoomTypes.includes(type))];
 const shapes = ["Retângulo / Quadrado", "Triângulo Retângulo", "Formato em L", "Trapézio", "Circular", "Manual"];
 const areaTypes = ["Interna útil", "Construída coberta", "Externa descoberta", "Terreno"];
 const measurementModes = ["Medição por Ambientes", "Medição Externa da Construção"];
@@ -137,6 +139,8 @@ const measurementModeDescriptions: Record<string, string> = {
 };
 const externalShapes = ["Retângulo", "L", "Triângulo", "Trapézio", "Irregular"];
 const photoCategories = ["Fachada", "Sala", "Quartos", "Cozinha", "Banheiros", "Área externa", "Garagem", "Outros"];
+const externalFeatureOptions = ["Piscina", "Garagem externa", "Área gourmet", "Churrasqueira", "Quintal", "Jardim", "Varanda", "Edícula", "Depósito", "Canil", "Portão eletrônico", "Paisagismo"];
+const externalFeaturesPrefix = "Diferenciais externos:";
 const themedPrimaryButton = "bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/20";
 const themedOutlineButton = "border-primary/25 bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground";
 
@@ -246,6 +250,17 @@ const calculateExternalArea = (property: Pick<MeasuredProperty, "external_shape"
 const calculateRoomsTotal = (items: Pick<MeasuredRoom, "area">[]) => items.reduce((sum, room) => sum + Number(room.area || 0), 0);
 const calculateCombinedTotal = (items: Pick<MeasuredRoom, "area">[], property: Pick<MeasuredProperty, "external_shape" | "external_width" | "external_length" | "external_base" | "external_height" | "external_side_a" | "external_side_b" | "external_area_manual"> | null) => calculateRoomsTotal(items) + (property ? calculateExternalArea(property) : 0);
 
+const getExternalFeatures = (notes: string | null | undefined) => {
+  const line = (notes || "").split("\n").find((item) => item.startsWith(externalFeaturesPrefix));
+  return line ? line.replace(externalFeaturesPrefix, "").split(",").map((item) => item.trim()).filter(Boolean) : [];
+};
+
+const mergeExternalFeatures = (notes: string | null | undefined, features: string[]) => {
+  const baseNotes = (notes || "").split("\n").filter((item) => !item.startsWith(externalFeaturesPrefix)).join("\n").trim();
+  const featureLine = features.length ? `${externalFeaturesPrefix} ${features.join(", ")}` : "";
+  return [baseNotes, featureLine].filter(Boolean).join("\n") || null;
+};
+
 const propertyToForm = (property: MeasuredProperty): PropertyForm => ({
   name: property.name,
   property_type: property.property_type,
@@ -310,6 +325,7 @@ export default function PropertyMeterTab({ userId, themeVars }: { userId: string
   const [editingRoomId, setEditingRoomId] = useState<string | null>(null);
   const [photoCategory, setPhotoCategory] = useState("Fachada");
   const [photoRoomId, setPhotoRoomId] = useState("geral");
+  const [roomScope, setRoomScope] = useState<"Interna" | "Externa">("Interna");
   const [propertyForm, setPropertyForm] = useState<PropertyForm>(emptyPropertyForm);
   const [measurementDraft, setMeasurementDraft] = useState<PropertyForm>(emptyPropertyForm);
   const [roomForm, setRoomForm] = useState<RoomForm>(emptyRoomForm);
@@ -323,11 +339,12 @@ export default function PropertyMeterTab({ userId, themeVars }: { userId: string
     const externalBuiltArea = selectedProperty ? calculateExternalArea(selectedProperty) : 0;
     const usefulArea = rooms.filter((room) => room.area_type === "Interna útil").reduce((sum, room) => sum + Number(room.area || 0), 0);
     const coveredArea = rooms.filter((room) => room.area_type === "Construída coberta").reduce((sum, room) => sum + Number(room.area || 0), 0);
-    const openArea = rooms.filter((room) => room.area_type === "Externa descoberta").reduce((sum, room) => sum + Number(room.area || 0), 0);
+    const externalRoomsArea = rooms.filter((room) => room.area_type === "Externa descoberta").reduce((sum, room) => sum + Number(room.area || 0), 0);
     const builtArea = externalBuiltArea + usefulArea + coveredArea;
-    const uncoveredArea = Math.max(landArea - builtArea, openArea, 0);
+    const externalArea = externalBuiltArea + externalRoomsArea;
+    const uncoveredArea = Math.max(landArea - builtArea, externalRoomsArea, 0);
     const occupancyRate = landArea > 0 ? (builtArea / landArea) * 100 : 0;
-    return { builtArea, usefulArea, landArea, uncoveredArea, occupancyRate };
+    return { builtArea, usefulArea, externalArea, landArea, uncoveredArea, occupancyRate };
   }, [rooms, selectedProperty]);
   const livePropertyTotal = useMemo(() => {
     const savedTotal = calculateCombinedTotal(rooms, selectedProperty);
@@ -589,6 +606,7 @@ export default function PropertyMeterTab({ userId, themeVars }: { userId: string
 
   const openNewRoom = () => {
     setEditingRoomId(null);
+    setRoomScope("Interna");
     setRoomForm(emptyRoomForm);
     setRoomDialogOpen(true);
   };
@@ -604,6 +622,7 @@ export default function PropertyMeterTab({ userId, themeVars }: { userId: string
 
   const openEditRoom = (room: MeasuredRoom) => {
     setEditingRoomId(room.id);
+    setRoomScope(room.area_type === "Externa descoberta" ? "Externa" : "Interna");
     setRoomForm(roomToForm(room));
     setRoomDialogOpen(true);
   };
@@ -763,9 +782,25 @@ export default function PropertyMeterTab({ userId, themeVars }: { userId: string
     else setSelectedProperty(data as MeasuredProperty);
   };
 
+  const toggleExternalFeature = async (feature: string) => {
+    if (!selectedProperty) return;
+    const current = getExternalFeatures(selectedProperty.notes);
+    const nextFeatures = current.includes(feature) ? current.filter((item) => item !== feature) : [...current, feature];
+    const notes = mergeExternalFeatures(selectedProperty.notes, nextFeatures);
+    setSelectedProperty((prev) => prev ? { ...prev, notes } : prev);
+    setMeasurementDraft((prev) => ({ ...prev, notes: notes || "" }));
+    const { data, error } = await db.from(measuredPropertiesTable).update({ notes }).eq("id", selectedProperty.id).eq("user_id", userId).select("*").single();
+    if (error) toast({ title: "Erro ao salvar diferencial", description: error.message, variant: "destructive" });
+    else setSelectedProperty(data as MeasuredProperty);
+  };
+
   const sendToValuation = () => {
     if (!selectedProperty) return;
-    sessionStorage.setItem("meter_property_for_valuation", JSON.stringify({ property: selectedProperty, rooms, photos, areas: technicalAreas }));
+    const internalRooms = rooms.filter((room) => room.area_type !== "Externa descoberta");
+    const externalRooms = rooms.filter((room) => room.area_type === "Externa descoberta");
+    const internalPhotos = photos.filter((photo) => photo.room_id ? internalRooms.some((room) => room.id === photo.room_id) : photo.category !== "Área externa" && photo.category !== "Garagem");
+    const externalPhotos = photos.filter((photo) => photo.category === "Área externa" || photo.category === "Garagem" || (photo.room_id ? externalRooms.some((room) => room.id === photo.room_id) : false));
+    sessionStorage.setItem("meter_property_for_valuation", JSON.stringify({ property: selectedProperty, rooms, photos, internalRooms, externalRooms, internalPhotos, externalPhotos, externalFeatures: getExternalFeatures(selectedProperty.notes), areas: technicalAreas }));
     navigate(`/avaliacao-ia?imovel=${selectedProperty.id}`);
   };
 
@@ -910,10 +945,10 @@ export default function PropertyMeterTab({ userId, themeVars }: { userId: string
           </div>
 
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-            <MetricCard title="Área Construída" value={technicalAreas.builtArea} />
+            <MetricCard title="Área Interna" value={technicalAreas.usefulArea} />
+            <MetricCard title="Área Externa" value={technicalAreas.externalArea} />
             <MetricCard title="Terreno" value={technicalAreas.landArea} />
-            <MetricCard title="Área Externa" value={technicalAreas.uncoveredArea} />
-            <MetricCard title="Taxa de Ocupação" value={technicalAreas.occupancyRate} suffix="%" />
+            <MetricCard title="Total para Avaliação" value={livePropertyTotal} />
           </div>
 
           <div className="rounded-3xl border border-border bg-card p-4 shadow-sm">
@@ -960,6 +995,15 @@ export default function PropertyMeterTab({ userId, themeVars }: { userId: string
                 {measurementDraft.external_shape === "Triângulo" && <><MeasurementField label="Base construção" value={measurementDraft.external_base} onChange={(value) => setMeasurementDraft((prev) => ({ ...prev, external_base: value }))} onBlur={() => persistMeasurementDraft()} /><MeasurementField label="Altura construção" value={measurementDraft.external_height} onChange={(value) => setMeasurementDraft((prev) => ({ ...prev, external_height: value }))} onBlur={() => persistMeasurementDraft()} /></>}
                 {measurementDraft.external_shape === "Trapézio" && <><MeasurementField label="Base maior" value={measurementDraft.external_base} onChange={(value) => setMeasurementDraft((prev) => ({ ...prev, external_base: value }))} onBlur={() => persistMeasurementDraft()} /><MeasurementField label="Base menor" value={measurementDraft.external_side_a} onChange={(value) => setMeasurementDraft((prev) => ({ ...prev, external_side_a: value }))} onBlur={() => persistMeasurementDraft()} /><MeasurementField label="Altura" value={measurementDraft.external_height} onChange={(value) => setMeasurementDraft((prev) => ({ ...prev, external_height: value }))} onBlur={() => persistMeasurementDraft()} /></>}
                 {measurementDraft.external_shape === "Irregular" && <MeasurementField label="Área construída manual" value={measurementDraft.external_area_manual} onChange={(value) => setMeasurementDraft((prev) => ({ ...prev, external_area_manual: value }))} onBlur={() => persistMeasurementDraft()} />}
+              </div>
+              <div className="mt-4">
+                <p className="mb-2 text-xs font-bold uppercase text-primary">Diferenciais da área externa</p>
+                <div className="flex flex-wrap gap-2">
+                  {externalFeatureOptions.map((feature) => {
+                    const active = getExternalFeatures(selectedProperty.notes).includes(feature);
+                    return <button key={feature} type="button" onClick={() => toggleExternalFeature(feature)} className={`rounded-full border px-3 py-2 text-xs font-bold transition-all ${active ? "border-primary bg-primary text-primary-foreground" : "border-primary/20 bg-card text-foreground hover:bg-primary/10"}`}>{feature}</button>;
+                  })}
+                </div>
               </div>
             </div>
           </div>
@@ -1082,11 +1126,20 @@ export default function PropertyMeterTab({ userId, themeVars }: { userId: string
           </DialogHeader>
           <div className="space-y-4">
             <Field label="Nome do ambiente" value={roomForm.name} onChange={(value) => setRoomForm((prev) => ({ ...prev, name: value }))} />
+            <div className="grid grid-cols-2 gap-2 rounded-2xl border border-primary/15 bg-primary/10 p-2">
+              {(["Interna", "Externa"] as const).map((scope) => (
+                <button key={scope} type="button" onClick={() => {
+                  setRoomScope(scope);
+                  setRoomForm((prev) => ({ ...prev, area_type: scope === "Externa" ? "Externa descoberta" : "Interna útil", room_type: scope === "Externa" ? "Piscina" : "Sala" }));
+                  setPhotoCategory(scope === "Externa" ? "Área externa" : "Sala");
+                }} className={`rounded-xl px-3 py-2 text-sm font-extrabold transition-all ${roomScope === scope ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "text-foreground hover:bg-primary/10"}`}>Área {scope}</button>
+              ))}
+            </div>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <Picker themeVars={themeVars} label="Tipo" value={roomForm.room_type} options={roomTypes} onChange={(value) => setRoomForm((prev) => ({ ...prev, room_type: value }))} />
+              <Picker themeVars={themeVars} label="Tipo" value={roomForm.room_type} options={roomScope === "Externa" ? externalRoomTypes : internalRoomTypes} onChange={(value) => setRoomForm((prev) => ({ ...prev, room_type: value }))} />
               <Picker themeVars={themeVars} label="Formato" value={roomForm.shape} options={shapes} onChange={(value) => setRoomForm((prev) => ({ ...prev, shape: value }))} />
             </div>
-            <Picker themeVars={themeVars} label="Tipo da área" value={roomForm.area_type} options={areaTypes} onChange={(value) => setRoomForm((prev) => ({ ...prev, area_type: value }))} />
+            <Picker themeVars={themeVars} label="Tipo da área" value={roomForm.area_type} options={roomScope === "Externa" ? ["Externa descoberta", "Construída coberta"] : ["Interna útil", "Construída coberta"]} onChange={(value) => setRoomForm((prev) => ({ ...prev, area_type: value }))} />
             {measurementFields()}
             <div className="rounded-2xl border border-primary/20 bg-primary/10 p-4">
               <p className="text-xs font-bold uppercase text-primary">Área calculada</p>
