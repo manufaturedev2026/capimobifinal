@@ -1470,7 +1470,7 @@ export default function CompanyProfile() {
                 onCinemaMode: () => setGalleryLightbox(0),
                 onShareLink: () => { navigator.clipboard.writeText(window.location.href); },
                 storiesBar: sellerStories.length > 0 || (user && dbProfile && user.id === dbProfile.user_id)
-                  ? <StoriesBar sellerId={dbProfile?.id} textColor={storeTheme.text} onAddStory={user && dbProfile && user.id === dbProfile.user_id ? () => setStoryUploadOpen(true) : undefined} />
+                  ? <StoriesBar sellerId={dbProfile?.id} textColor={storeTheme.text} corretorSlug={corretorSlug} onAddStory={user && dbProfile && user.id === dbProfile.user_id ? () => setStoryUploadOpen(true) : undefined} />
                   : undefined,
               };
 
@@ -2323,6 +2323,7 @@ export default function CompanyProfile() {
             sellers={sellerStories}
             initialSellerIndex={storySellerIndex}
             onClose={() => setStoryViewerOpen(false)}
+            corretorSlug={corretorSlug}
           />
         ) : null;
       })()}
