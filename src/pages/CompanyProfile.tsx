@@ -2170,7 +2170,7 @@ export default function CompanyProfile() {
                 <MapPin size={12} /> Localização
               </h5>
               <div className="flex-1 rounded-xl overflow-hidden" style={{ border: `1px solid ${storeTheme.primary}20`, minHeight: 240 }}>
-                <MapEmbed address={company?.address || [dbProfile?.address, dbProfile?.city, dbProfile?.state].filter(Boolean).join(", ")} allowStreetViewFallback />
+                <MapEmbed address={company?.address || [dbProfile?.address, dbProfile?.city, dbProfile?.state].filter(Boolean).join(", ")} cep={(dbProfile as any)?.cep} allowStreetViewFallback />
               </div>
               {(company?.address || dbProfile?.address) && (
                 <p className="text-[11px] mt-3 flex items-start gap-1.5" style={{ color: storeTheme.textMuted }}>

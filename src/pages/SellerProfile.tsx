@@ -28,6 +28,7 @@ export default function SellerProfile({ embedded }: { embedded?: boolean }) {
     seller_type: "imoveis" as SellerType,
     logo_url: "",
     address: "",
+    cep: "",
     city: "",
     state: "",
     show_location: true,
@@ -58,6 +59,7 @@ export default function SellerProfile({ embedded }: { embedded?: boolean }) {
         seller_type: profile.seller_type || "imoveis",
         logo_url: profile.logo_url || "",
         address: profile.address || "",
+        cep: (profile as any).cep || "",
         city: profile.city || "",
         state: profile.state || "",
         show_location: profile.show_location ?? true,
@@ -122,6 +124,7 @@ export default function SellerProfile({ embedded }: { embedded?: boolean }) {
       phone: form.phone.trim() || null,
       company_name: form.company_name.trim() || null,
       address: form.address.trim() || null,
+      cep: form.cep.trim() || null,
       city: form.city || null,
       instagram: form.instagram.trim() || null,
       bio: form.bio.trim() || null,
@@ -339,6 +342,8 @@ export default function SellerProfile({ embedded }: { embedded?: boolean }) {
           </div>
         </div>
         <input value={form.address} onChange={(e) => setForm((f) => ({ ...f, address: e.target.value }))} className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="Endereço completo" />
+        <input value={form.cep} onChange={(e) => setForm((f) => ({ ...f, cep: e.target.value }))} className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="CEP para Street View 360°" />
+        <p className="text-xs text-muted-foreground -mt-2">Informe o CEP do escritório/loja para o Street View 360° localizar melhor a fachada dentro do mapa.</p>
         <label className="flex items-center gap-3 cursor-pointer select-none">
           <input type="checkbox" checked={form.show_location} onChange={(e) => setForm((f) => ({ ...f, show_location: e.target.checked }))} className="w-5 h-5 rounded border-input text-primary focus:ring-ring accent-primary cursor-pointer" />
           <span className="text-sm text-foreground">
