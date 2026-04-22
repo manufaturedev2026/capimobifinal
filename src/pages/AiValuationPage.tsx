@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { getMarketplaceTheme } from "@/lib/marketplaceThemes";
@@ -97,6 +97,7 @@ const fmtBRL = (v: number) =>
 export default function AiValuationPage() {
   const { toast } = useToast();
   const { user, profile } = useAuth();
+  const [searchParams] = useSearchParams();
 
   // Tema visual (segue o tema da loja do usuário ou o tema do marketplace)
   const [marketplaceThemeId, setMarketplaceThemeId] = useState(
@@ -128,6 +129,10 @@ export default function AiValuationPage() {
   const [rua, setRua] = useState("");
   const [numero, setNumero] = useState("");
   const [cep, setCep] = useState("");
+  const [nomeImovel, setNomeImovel] = useState("");
+  const [complemento, setComplemento] = useState("");
+  const [referencia, setReferencia] = useState("");
+  const [measuredPropertyId, setMeasuredPropertyId] = useState<string | null>(null);
 
   // Avaliador (persistido localmente para reuso)
   const [avaliadorNome, setAvaliadorNome] = useState<string>(() => {
@@ -176,6 +181,9 @@ export default function AiValuationPage() {
   const [salas, setSalas] = useState("1");
   const [cozinhas, setCozinhas] = useState("1");
   const [escritorios, setEscritorios] = useState("0");
+  const [valorPedido, setValorPedido] = useState("");
+  const [iptu, setIptu] = useState("");
+  const [condominio, setCondominio] = useState("");
 
   const [extras, setExtras] = useState<string[]>([]);
   const [acabamento, setAcabamento] = useState("Médio");
@@ -238,6 +246,37 @@ export default function AiValuationPage() {
   const [adContent, setAdContent] = useState<{ titulo: string; descricao: string } | null>(null);
 
   const { cities } = useCitiesByState(estado);
+
+  useEffect(() => {
+    const propertyId = searchParams.get("imovel");
+    const raw = sessionStorage.getItem("meter_property_for_valuation");
+    if (!propertyId || !raw) return;
+    try {
+      const payload = JSON.parse(raw);
+      const property = payload.property || {};
+      if (property.id !== propertyId) return;
+      setMeasuredPropertyId(property.id || null);
+      setNomeImovel(property.name || "");
+      setCep(property.cep || "");
+      setRua(property.street || property.address || "");
+      setNumero(property.number || "");
+      setComplemento(property.complement || "");
+      setReferencia(property.reference_point || "");
+      setBairro(property.neighborhood || "");
+      setCidade(property.city || "");
+      setEstado(property.state || "");
+      setAreaTerreno(String(payload.areas?.landArea || property.land_area_manual || ""));
+      setAreaTerreo(String(payload.areas?.builtArea || property.total_area || ""));
+      setQuartos(String(property.bedrooms || "0"));
+      setBanheiros(String(property.bathrooms || "0"));
+      setGaragem(String(property.parking_spaces || "0"));
+      setValorPedido(property.asking_price?.toString?.() || "");
+      setIptu(property.iptu?.toString?.() || "");
+      setCondominio(property.condominium_fee?.toString?.() || "");
+      setFotos((payload.photos || []).slice(0, 10).map((photo: any) => ({ id: photo.id || crypto.randomUUID(), file: new File([], "foto-medidor.jpg", { type: "image/jpeg" }), dataUrl: photo.image_url, categoria: "outro" as const })));
+      toast({ title: "Imóvel importado do Medidor", description: "Dados, medidas e fotos foram enviados para o Avaliador." });
+    } catch {}
+  }, [searchParams, toast]);
 
   const isTerreno = tipo === "Terreno";
   const areaConstruidaTotal = (Number(areaTerreo) || 0) + (Number(areaSuperior) || 0);
