@@ -74,7 +74,7 @@ export default function PartnerAgencyTab({ profileId, userId, maxMembers }: { pr
   const [searchQuery, setSearchQuery] = useState("");
   const [activeSubTab, setActiveSubTab] = useState<"informacoes" | "loja-espelho" | "vinculados" | "solicitacoes">("loja-espelho");
   const [savingProfile, setSavingProfile] = useState(false);
-  const [companyInfo, setCompanyInfo] = useState({ company_name: "", bio: "", phone: "", email: "", instagram: "", address: "", open_for_partnerships: true });
+  const [companyInfo, setCompanyInfo] = useState({ company_name: "", cnpj: "", bio: "", phone: "", email: "", instagram: "", address: "", open_for_partnerships: true });
 
   const [companySlug, setCompanySlug] = useState<string | null>(null);
 
@@ -86,12 +86,13 @@ export default function PartnerAgencyTab({ profileId, userId, maxMembers }: { pr
   const fetchCompanySlug = async () => {
     const { data } = await supabase
       .from("profiles")
-      .select("slug, company_name, full_name, bio, phone, email, instagram, address, open_for_partnerships")
+      .select("slug, company_name, full_name, cnpj, bio, phone, email, instagram, address, open_for_partnerships")
       .eq("id", profileId)
       .maybeSingle();
     if (data?.slug) setCompanySlug(data.slug);
     if (data) setCompanyInfo({
       company_name: data.company_name || data.full_name || "",
+      cnpj: data.cnpj || "",
       bio: data.bio || "",
       phone: data.phone || "",
       email: data.email || "",
@@ -105,6 +106,7 @@ export default function PartnerAgencyTab({ profileId, userId, maxMembers }: { pr
     setSavingProfile(true);
     const { error } = await supabase.from("profiles").update({
       company_name: companyInfo.company_name.trim() || null,
+      cnpj: companyInfo.cnpj.trim() || null,
       bio: companyInfo.bio.trim() || null,
       phone: companyInfo.phone.trim() || null,
       instagram: companyInfo.instagram.trim() || null,
