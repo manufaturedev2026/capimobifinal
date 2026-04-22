@@ -334,7 +334,19 @@ export default function PartnerAgencyTab({ profileId, userId, maxMembers }: { pr
       )}
 
       {/* Sub-tabs */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-1 bg-secondary/50 p-1 rounded-xl">
+      <div className="grid grid-cols-1 sm:grid-cols-4 gap-1 bg-secondary/50 p-1 rounded-xl">
+        <button
+          onClick={() => { setActiveSubTab("informacoes"); setSearchQuery(""); }}
+          className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
+            activeSubTab === "informacoes"
+              ? "bg-background text-foreground shadow-sm"
+              : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <Building2 size={16} />
+          Informações
+          <HelpBubble text={tabHelp.informacoes} />
+        </button>
         <button
           onClick={() => { setActiveSubTab("loja-espelho"); setSearchQuery(""); }}
           className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
@@ -393,6 +405,32 @@ export default function PartnerAgencyTab({ profileId, userId, maxMembers }: { pr
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-10 h-11 rounded-xl bg-secondary/50 border-border"
           />
+        </div>
+      )}
+
+      {activeSubTab === "informacoes" && (
+        <div className="rounded-2xl border border-border bg-card p-4 sm:p-5 space-y-4">
+          <div>
+            <h3 className="font-bold text-foreground flex items-center gap-2">
+              <Building2 size={18} className="text-primary" /> Perfil público para vínculos
+            </h3>
+            <p className="text-sm text-muted-foreground mt-1">Essas informações aparecem para corretores que procuram imobiliárias disponíveis.</p>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <Input placeholder="Nome da imobiliária" value={companyInfo.company_name} onChange={(e) => setCompanyInfo((p) => ({ ...p, company_name: e.target.value }))} />
+            <Input placeholder="WhatsApp / telefone" value={companyInfo.phone} onChange={(e) => setCompanyInfo((p) => ({ ...p, phone: e.target.value }))} />
+            <Input placeholder="E-mail" value={companyInfo.email} disabled className="bg-muted/50" />
+            <Input placeholder="Instagram" value={companyInfo.instagram} onChange={(e) => setCompanyInfo((p) => ({ ...p, instagram: e.target.value }))} />
+            <Input className="sm:col-span-2" placeholder="Endereço" value={companyInfo.address} onChange={(e) => setCompanyInfo((p) => ({ ...p, address: e.target.value }))} />
+          </div>
+          <Textarea placeholder="Descrição da imobiliária, regiões de atuação, proposta para corretores e regras de parceria..." value={companyInfo.bio} onChange={(e) => setCompanyInfo((p) => ({ ...p, bio: e.target.value }))} rows={5} />
+          <label className="flex items-start gap-3 rounded-xl border border-border bg-secondary/30 p-3 text-sm">
+            <input type="checkbox" checked={companyInfo.open_for_partnerships} onChange={(e) => setCompanyInfo((p) => ({ ...p, open_for_partnerships: e.target.checked }))} className="mt-1" />
+            <span><strong className="text-foreground">Aparecer para corretores solicitarem vínculo</strong><br /><span className="text-muted-foreground">Quando desativado, sua imobiliária não aparece na lista de disponíveis.</span></span>
+          </label>
+          <Button onClick={saveCompanyInfo} disabled={savingProfile} className="gap-2">
+            <Save size={16} /> {savingProfile ? "Salvando..." : "Salvar informações"}
+          </Button>
         </div>
       )}
 
