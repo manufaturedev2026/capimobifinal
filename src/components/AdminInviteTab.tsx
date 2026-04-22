@@ -235,11 +235,17 @@ export default function AdminInviteTab() {
     });
   };
 
-  const copyUrl = () => {
-    const path = activeBot.slug === "principal" ? "/convite" : `/convite/${activeBot.slug}`;
-    const url = `${window.location.origin}${path}`;
+  const getInvitePath = (bot: InviteBotConfig = activeBot) => (bot.slug === "principal" ? "/convite" : `/convite/${bot.slug}`);
+  const getInviteUrl = (bot: InviteBotConfig = activeBot) => `${window.location.origin}${getInvitePath(bot)}`;
+
+  const copyUrl = (bot: InviteBotConfig = activeBot) => {
+    const url = getInviteUrl(bot);
     navigator.clipboard.writeText(url);
     toast({ title: "URL copiada!", description: url });
+  };
+
+  const testBot = (bot: InviteBotConfig = activeBot) => {
+    window.open(getInvitePath(bot), "_blank", "noopener,noreferrer");
   };
 
   if (!loaded) return <div className="p-8 text-center text-muted-foreground">Carregando...</div>;
@@ -250,7 +256,7 @@ export default function AdminInviteTab() {
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h2 className="text-xl font-bold flex items-center gap-2 text-foreground">
-            <MessageCircle size={22} className="text-[#25d366]" />
+            <MessageCircle size={22} className="text-primary" />
             Página de Convite Interativo
           </h2>
           <p className="text-sm text-muted-foreground mt-1">
@@ -258,10 +264,8 @@ export default function AdminInviteTab() {
           </p>
         </div>
         <div className="flex gap-2">
-          <Button variant="secondary" size="sm" onClick={copyUrl}><Copy size={14} /> URL</Button>
-          <a href={activeBot.slug === "principal" ? "/convite" : `/convite/${activeBot.slug}`} target="_blank" rel="noopener">
-            <Button variant="secondary" size="sm"><ExternalLink size={14} /> Visualizar</Button>
-          </a>
+          <Button variant="secondary" size="sm" onClick={() => copyUrl()}><Copy size={14} /> Copiar URL</Button>
+          <Button variant="secondary" size="sm" onClick={() => testBot()}><ExternalLink size={14} /> Testar</Button>
         </div>
       </div>
 
@@ -276,15 +280,20 @@ export default function AdminInviteTab() {
         <div className="grid grid-cols-1 md:grid-cols-[220px_1fr] gap-3">
           <div className="space-y-2">
             {bots.map((bot) => (
-              <button
-                key={bot.id}
-                type="button"
-                onClick={() => setActiveBotId(bot.id)}
-                className={`w-full rounded-lg border px-3 py-2 text-left text-sm transition-colors ${bot.id === activeBot.id ? "border-primary bg-primary/10 text-foreground" : "border-border text-muted-foreground hover:bg-muted"}`}
-              >
-                <span className="block font-medium truncate">{bot.name}</span>
-                <span className="block text-[11px] truncate">/{bot.slug === "principal" ? "convite" : `convite/${bot.slug}`}</span>
-              </button>
+              <div key={bot.id} className={`rounded-lg border p-2 transition-colors ${bot.id === activeBot.id ? "border-primary bg-primary/10" : "border-border hover:bg-muted"}`}>
+                <button
+                  type="button"
+                  onClick={() => setActiveBotId(bot.id)}
+                  className="w-full text-left text-sm"
+                >
+                  <span className="block font-medium truncate text-foreground">{bot.name}</span>
+                  <span className="block text-[11px] truncate text-muted-foreground">{getInvitePath(bot)}</span>
+                </button>
+                <div className="mt-2 grid grid-cols-2 gap-2">
+                  <Button variant="outline" size="sm" className="h-8 px-2 text-xs" onClick={() => testBot(bot)}><ExternalLink size={12} /> Ir</Button>
+                  <Button variant="outline" size="sm" className="h-8 px-2 text-xs" onClick={() => copyUrl(bot)}><Copy size={12} /> Copiar</Button>
+                </div>
+              </div>
             ))}
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
