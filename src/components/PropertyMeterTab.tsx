@@ -23,6 +23,15 @@ type MeasuredProperty = {
   land_length: number | null;
   land_area_manual: number | null;
   measured_by: string | null;
+  measurement_mode: string | null;
+  external_shape: string | null;
+  external_width: number | null;
+  external_length: number | null;
+  external_base: number | null;
+  external_height: number | null;
+  external_side_a: number | null;
+  external_side_b: number | null;
+  external_area_manual: number | null;
   created_at: string;
   updated_at: string;
 };
@@ -64,6 +73,15 @@ type PropertyForm = {
   land_length: string;
   land_area_manual: string;
   measured_by: string;
+  measurement_mode: string;
+  external_shape: string;
+  external_width: string;
+  external_length: string;
+  external_base: string;
+  external_height: string;
+  external_side_a: string;
+  external_side_b: string;
+  external_area_manual: string;
   notes: string;
 };
 
@@ -86,6 +104,8 @@ const propertyTypes = ["Casa", "Apartamento", "Terreno", "Comercial", "Rural"];
 const roomTypes = ["Sala", "Quarto", "Suíte", "Cozinha", "Banheiro", "Corredor", "Garagem", "Varanda", "Área gourmet", "Área de serviço", "Escritório", "Outro"];
 const shapes = ["Retângulo / Quadrado", "Triângulo Retângulo", "Formato em L", "Trapézio", "Circular", "Manual"];
 const areaTypes = ["Interna útil", "Construída coberta", "Externa descoberta", "Terreno"];
+const measurementModes = ["Medição por Ambientes", "Medição Externa da Construção", "Medição do Terreno"];
+const externalShapes = ["Retângulo", "L", "Triângulo", "Trapézio", "Irregular"];
 const photoCategories = ["Fachada", "Sala", "Quartos", "Cozinha", "Banheiros", "Área externa", "Garagem", "Outros"];
 const themedPrimaryButton = "bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/20";
 const themedOutlineButton = "border-primary/25 bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground";
@@ -100,6 +120,15 @@ const emptyPropertyForm: PropertyForm = {
   land_length: "",
   land_area_manual: "",
   measured_by: "",
+  measurement_mode: "Medição por Ambientes",
+  external_shape: "Retângulo",
+  external_width: "",
+  external_length: "",
+  external_base: "",
+  external_height: "",
+  external_side_a: "",
+  external_side_b: "",
+  external_area_manual: "",
   notes: "",
 };
 
@@ -155,6 +184,23 @@ const calculateRoomArea = (room: RoomForm) => {
   }
 };
 
+const calculateExternalArea = (property: Pick<MeasuredProperty, "external_shape" | "external_width" | "external_length" | "external_base" | "external_height" | "external_side_a" | "external_side_b" | "external_area_manual">) => {
+  const width = Number(property.external_width || 0);
+  const length = Number(property.external_length || 0);
+  const base = Number(property.external_base || 0);
+  const height = Number(property.external_height || 0);
+  const sideA = Number(property.external_side_a || 0);
+  const sideB = Number(property.external_side_b || 0);
+  switch (property.external_shape) {
+    case "Retângulo": return width * length;
+    case "L": return width * length + sideA * sideB;
+    case "Triângulo": return (base * height) / 2;
+    case "Trapézio": return ((base + sideA) * height) / 2;
+    case "Irregular": return Number(property.external_area_manual || 0);
+    default: return 0;
+  }
+};
+
 const propertyToForm = (property: MeasuredProperty): PropertyForm => ({
   name: property.name,
   property_type: property.property_type,
@@ -165,6 +211,15 @@ const propertyToForm = (property: MeasuredProperty): PropertyForm => ({
   land_length: property.land_length?.toString() || "",
   land_area_manual: property.land_area_manual?.toString() || "",
   measured_by: property.measured_by || "",
+  measurement_mode: property.measurement_mode || "Medição por Ambientes",
+  external_shape: property.external_shape || "Retângulo",
+  external_width: property.external_width?.toString() || "",
+  external_length: property.external_length?.toString() || "",
+  external_base: property.external_base?.toString() || "",
+  external_height: property.external_height?.toString() || "",
+  external_side_a: property.external_side_a?.toString() || "",
+  external_side_b: property.external_side_b?.toString() || "",
+  external_area_manual: property.external_area_manual?.toString() || "",
   notes: property.notes || "",
 });
 
@@ -207,12 +262,14 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
   const computedArea = useMemo(() => calculateRoomArea(roomForm), [roomForm]);
   const technicalAreas = useMemo(() => {
     const landArea = selectedProperty ? Number(selectedProperty.land_area_manual || 0) || Number(selectedProperty.land_width || 0) * Number(selectedProperty.land_length || 0) : 0;
+    const externalBuiltArea = selectedProperty ? calculateExternalArea(selectedProperty) : 0;
     const usefulArea = rooms.filter((room) => room.area_type === "Interna útil").reduce((sum, room) => sum + Number(room.area || 0), 0);
     const coveredArea = rooms.filter((room) => room.area_type === "Construída coberta").reduce((sum, room) => sum + Number(room.area || 0), 0);
     const openArea = rooms.filter((room) => room.area_type === "Externa descoberta").reduce((sum, room) => sum + Number(room.area || 0), 0);
-    const builtArea = usefulArea + coveredArea;
+    const builtArea = externalBuiltArea || usefulArea + coveredArea;
     const uncoveredArea = Math.max(landArea - builtArea, openArea, 0);
-    return { builtArea, usefulArea, landArea, uncoveredArea };
+    const occupancyRate = landArea > 0 ? (builtArea / landArea) * 100 : 0;
+    return { builtArea, usefulArea, landArea, uncoveredArea, occupancyRate };
   }, [rooms, selectedProperty]);
   const livePropertyTotal = useMemo(() => {
     const savedTotal = rooms.reduce((sum, room) => sum + Number(room.area || 0), 0);
@@ -318,6 +375,15 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
       land_length: toNumber(propertyForm.land_length) || null,
       land_area_manual: toNumber(propertyForm.land_area_manual) || null,
       measured_by: propertyForm.measured_by.trim() || null,
+      measurement_mode: propertyForm.measurement_mode,
+      external_shape: propertyForm.external_shape,
+      external_width: toNumber(propertyForm.external_width) || null,
+      external_length: toNumber(propertyForm.external_length) || null,
+      external_base: toNumber(propertyForm.external_base) || null,
+      external_height: toNumber(propertyForm.external_height) || null,
+      external_side_a: toNumber(propertyForm.external_side_a) || null,
+      external_side_b: toNumber(propertyForm.external_side_b) || null,
+      external_area_manual: toNumber(propertyForm.external_area_manual) || null,
       notes: propertyForm.notes.trim() || null,
     };
 
@@ -373,6 +439,15 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
         land_length: property.land_length,
         land_area_manual: property.land_area_manual,
         measured_by: property.measured_by,
+        measurement_mode: property.measurement_mode,
+        external_shape: property.external_shape,
+        external_width: property.external_width,
+        external_length: property.external_length,
+        external_base: property.external_base,
+        external_height: property.external_height,
+        external_side_a: property.external_side_a,
+        external_side_b: property.external_side_b,
+        external_area_manual: property.external_area_manual,
         notes: property.notes,
       })
       .select("*")
@@ -551,6 +626,13 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
     if (selectedProperty) fetchPhotos(selectedProperty.id);
   };
 
+  const updateMeasurementMode = async (mode: string) => {
+    if (!selectedProperty) return;
+    setSelectedProperty({ ...selectedProperty, measurement_mode: mode });
+    const { error } = await db.from(measuredPropertiesTable).update({ measurement_mode: mode }).eq("id", selectedProperty.id).eq("user_id", userId);
+    if (error) toast({ title: "Erro ao alterar modo", description: error.message, variant: "destructive" });
+  };
+
   const shareText = selectedProperty ? `${selectedProperty.name}\nÁrea total: ${formatArea(livePropertyTotal)}\n${selectedProperty.address ? `${selectedProperty.address}\n` : ""}${selectedProperty.neighborhood}, ${selectedProperty.city}\nAmbientes: ${rooms.map((room) => `${room.name} (${formatArea(room.area)})`).join(", ")}` : "";
   const shareUrl = selectedProperty ? `${window.location.origin}/painel?medidor=${selectedProperty.id}` : window.location.href;
 
@@ -715,9 +797,19 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
 
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
             <MetricCard title="Área Construída" value={technicalAreas.builtArea} />
-            <MetricCard title="Área Útil" value={technicalAreas.usefulArea} />
             <MetricCard title="Terreno" value={technicalAreas.landArea} />
             <MetricCard title="Área Externa" value={technicalAreas.uncoveredArea} />
+            <MetricCard title="Taxa de Ocupação" value={technicalAreas.occupancyRate} suffix="%" />
+          </div>
+
+          <div className="rounded-3xl border border-border bg-card p-4 shadow-sm">
+            <p className="text-xs font-bold uppercase text-primary">Modos de medição</p>
+            <div className="mt-3 grid gap-2 md:grid-cols-3">
+              {measurementModes.map((mode) => (
+                <button key={mode} type="button" onClick={() => updateMeasurementMode(mode)} className={`rounded-2xl border p-3 text-left text-sm font-bold transition-all ${selectedProperty.measurement_mode === mode ? "border-primary bg-primary text-primary-foreground" : "border-primary/20 bg-primary/10 text-primary"}`}>{mode}</button>
+              ))}
+            </div>
+            <p className="mt-3 text-sm text-muted-foreground">Modo atual: <strong className="text-foreground">{selectedProperty.measurement_mode || "Medição por Ambientes"}</strong></p>
           </div>
 
           <div className="rounded-3xl border border-border bg-card p-4 shadow-sm">
@@ -810,6 +902,17 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
               <Field label="Comprimento terreno (m)" value={propertyForm.land_length} onChange={(value) => setPropertyForm((prev) => ({ ...prev, land_length: value }))} />
               <Field label="Área terreno manual" value={propertyForm.land_area_manual} onChange={(value) => setPropertyForm((prev) => ({ ...prev, land_area_manual: value }))} />
             </div>
+            <Picker label="Modo de medição" value={propertyForm.measurement_mode} options={measurementModes} onChange={(value) => setPropertyForm((prev) => ({ ...prev, measurement_mode: value }))} />
+            <div className="rounded-2xl border border-primary/15 bg-primary/10 p-3">
+              <Picker label="Formato externo da construção" value={propertyForm.external_shape} options={externalShapes} onChange={(value) => setPropertyForm((prev) => ({ ...prev, external_shape: value }))} />
+              <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                {propertyForm.external_shape === "Retângulo" && <><Field label="Largura construção" value={propertyForm.external_width} onChange={(value) => setPropertyForm((prev) => ({ ...prev, external_width: value }))} /><Field label="Comprimento construção" value={propertyForm.external_length} onChange={(value) => setPropertyForm((prev) => ({ ...prev, external_length: value }))} /></>}
+                {propertyForm.external_shape === "L" && <><Field label="Largura bloco 1" value={propertyForm.external_width} onChange={(value) => setPropertyForm((prev) => ({ ...prev, external_width: value }))} /><Field label="Comprimento bloco 1" value={propertyForm.external_length} onChange={(value) => setPropertyForm((prev) => ({ ...prev, external_length: value }))} /><Field label="Largura bloco 2" value={propertyForm.external_side_a} onChange={(value) => setPropertyForm((prev) => ({ ...prev, external_side_a: value }))} /><Field label="Comprimento bloco 2" value={propertyForm.external_side_b} onChange={(value) => setPropertyForm((prev) => ({ ...prev, external_side_b: value }))} /></>}
+                {propertyForm.external_shape === "Triângulo" && <><Field label="Base construção" value={propertyForm.external_base} onChange={(value) => setPropertyForm((prev) => ({ ...prev, external_base: value }))} /><Field label="Altura construção" value={propertyForm.external_height} onChange={(value) => setPropertyForm((prev) => ({ ...prev, external_height: value }))} /></>}
+                {propertyForm.external_shape === "Trapézio" && <><Field label="Base maior" value={propertyForm.external_base} onChange={(value) => setPropertyForm((prev) => ({ ...prev, external_base: value }))} /><Field label="Base menor" value={propertyForm.external_side_a} onChange={(value) => setPropertyForm((prev) => ({ ...prev, external_side_a: value }))} /><Field label="Altura" value={propertyForm.external_height} onChange={(value) => setPropertyForm((prev) => ({ ...prev, external_height: value }))} /></>}
+                {propertyForm.external_shape === "Irregular" && <Field label="Área construída manual" value={propertyForm.external_area_manual} onChange={(value) => setPropertyForm((prev) => ({ ...prev, external_area_manual: value }))} />}
+              </div>
+            </div>
             <Field label="Responsável pela medição" value={propertyForm.measured_by} onChange={(value) => setPropertyForm((prev) => ({ ...prev, measured_by: value }))} />
             <TextArea label="Observações" value={propertyForm.notes} onChange={(value) => setPropertyForm((prev) => ({ ...prev, notes: value }))} />
             <Button onClick={saveProperty} className={`h-12 w-full rounded-2xl font-bold ${themedPrimaryButton}`}><Save size={16} /> {editingPropertyId ? "Salvar imóvel" : "Salvar e Abrir"}</Button>
@@ -873,8 +976,9 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
   );
 }
 
-function MetricCard({ title, value }: { title: string; value: number }) {
-  return <div className="rounded-3xl border border-primary/15 bg-primary/10 p-4 shadow-sm"><p className="text-xs font-bold uppercase text-muted-foreground">{title}</p><p className="mt-1 font-display text-2xl font-extrabold text-primary">{formatArea(value)}</p></div>;
+function MetricCard({ title, value, suffix }: { title: string; value: number; suffix?: string }) {
+  const display = suffix === "%" ? `${Number(value || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%` : formatArea(value);
+  return <div className="rounded-3xl border border-primary/15 bg-primary/10 p-4 shadow-sm"><p className="text-xs font-bold uppercase text-muted-foreground">{title}</p><p className="mt-1 font-display text-2xl font-extrabold text-primary">{display}</p></div>;
 }
 
 function Field({ label, value, onChange }: { label: string; value: string; onChange: (value: string) => void }) {
