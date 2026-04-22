@@ -297,6 +297,9 @@ export default function StoreLayoutNetflix({
   const accent = "#e50914";
   const isIOSStandalone = isIOSStandaloneApp();
   const isMobile = useIsMobile();
+  const profileDisplayName = dbProfile?.seller_category === "imobiliaria" || dbProfile?.seller_category === "construtora"
+    ? dbProfile?.company_name || dbProfile?.full_name || sellerDisplayName
+    : dbProfile?.full_name || dbProfile?.company_name || sellerDisplayName;
 
   const allProducts = products || filteredProducts;
   const billboard = allProducts.filter((p: any) => p.image).slice(0, 6);
@@ -892,7 +895,7 @@ export default function StoreLayoutNetflix({
                             {dbProfile.logo_url ? (
                               <img
                                 src={dbProfile.logo_url}
-                                alt={dbProfile.full_name || dbProfile.company_name}
+                                alt={profileDisplayName}
                                 className="relative w-12 h-12 rounded-full object-cover flex-shrink-0"
                                 style={{ border: `2px solid ${storeTheme.primary}`, boxShadow: `0 0 20px ${storeTheme.primary}60` }}
                               />
@@ -907,7 +910,7 @@ export default function StoreLayoutNetflix({
                           </div>
                           <div className="min-w-0 flex-1">
                             <p className="text-sm font-bold truncate" style={{ color: storeTheme.text }}>
-                              {dbProfile.full_name || dbProfile.company_name}
+                              {profileDisplayName}
                             </p>
                             <p className="text-[10px] flex items-center gap-1" style={{ color: storeTheme.textMuted }}>
                               <Sparkles size={9} style={{ color: storeTheme.primary }} />
@@ -969,7 +972,7 @@ export default function StoreLayoutNetflix({
                           <motion.button
                             whileHover={{ scale: 1.02, y: -1 }}
                             whileTap={{ scale: 0.98 }}
-                            onClick={() => handleWhatsApp(`Olá ${dbProfile.full_name || dbProfile.company_name}!`)}
+                            onClick={() => handleWhatsApp(`Olá ${profileDisplayName}!`)}
                             className="relative w-full flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-xs font-bold overflow-hidden"
                             style={{
                               background: `linear-gradient(135deg, ${storeTheme.primary}, ${storeTheme.primary}dd)`,

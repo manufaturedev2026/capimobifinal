@@ -128,6 +128,9 @@ export default function StoreLayoutMarketplace({
   const heroRef = useRef<HTMLDivElement>(null);
   const isIOSStandalone = isIOSStandaloneApp();
   const isMobile = useIsMobile();
+  const profileDisplayName = dbProfile?.seller_category === "imobiliaria" || dbProfile?.seller_category === "construtora"
+    ? dbProfile?.company_name || dbProfile?.full_name || "Imobiliária"
+    : dbProfile?.full_name || dbProfile?.company_name || "Corretor";
 
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const heroY = useTransform(scrollYProgress, [0, 1], [0, 120]);
@@ -293,7 +296,7 @@ export default function StoreLayoutMarketplace({
             <div className="flex items-center gap-2">
               <Sparkles size={14} style={{ color: storeTheme.primary }} />
               <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest" style={{ color: storeTheme.primary }}>
-                {dbProfile?.full_name || "Corretor"} — {getSellerProfessionalTitle(dbProfile)}
+                {profileDisplayName} — {getSellerProfessionalTitle(dbProfile)}
               </span>
             </div>
             {dbProfile?.creci && (
