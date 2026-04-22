@@ -313,9 +313,7 @@ REGRAS:
 
       return new Response(JSON.stringify({
         text,
-        used: (usedToday ?? 0) + 1,
-        limit: dailyLimit,
-        remaining: Math.max(0, dailyLimit - ((usedToday ?? 0) + 1)),
+        aiCredits: { charged: cost, balance },
       }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
