@@ -127,7 +127,9 @@ type RoomForm = {
 };
 
 const propertyTypes = ["Casa", "Apartamento", "Terreno", "Comercial", "Rural"];
-const roomTypes = ["Sala", "Quarto", "Suíte", "Cozinha", "Banheiro", "Corredor", "Garagem", "Varanda", "Área gourmet", "Área de serviço", "Escritório", "Outro"];
+const internalRoomTypes = ["Sala", "Quarto", "Suíte", "Cozinha", "Banheiro", "Corredor", "Área de serviço", "Escritório", "Outro"];
+const externalRoomTypes = ["Piscina", "Garagem externa", "Quintal", "Jardim", "Varanda", "Área gourmet", "Churrasqueira", "Edícula", "Depósito", "Canil", "Outro"];
+const roomTypes = [...internalRoomTypes, ...externalRoomTypes.filter((type) => !internalRoomTypes.includes(type))];
 const shapes = ["Retângulo / Quadrado", "Triângulo Retângulo", "Formato em L", "Trapézio", "Circular", "Manual"];
 const areaTypes = ["Interna útil", "Construída coberta", "Externa descoberta", "Terreno"];
 const measurementModes = ["Medição por Ambientes", "Medição Externa da Construção"];
@@ -137,6 +139,8 @@ const measurementModeDescriptions: Record<string, string> = {
 };
 const externalShapes = ["Retângulo", "L", "Triângulo", "Trapézio", "Irregular"];
 const photoCategories = ["Fachada", "Sala", "Quartos", "Cozinha", "Banheiros", "Área externa", "Garagem", "Outros"];
+const externalFeatureOptions = ["Piscina", "Garagem externa", "Área gourmet", "Churrasqueira", "Quintal", "Jardim", "Varanda", "Edícula", "Depósito", "Canil", "Portão eletrônico", "Paisagismo"];
+const externalFeaturesPrefix = "Diferenciais externos:";
 const themedPrimaryButton = "bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/20";
 const themedOutlineButton = "border-primary/25 bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground";
 
