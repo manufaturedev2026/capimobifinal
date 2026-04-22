@@ -489,7 +489,7 @@ export default function ProductDetail() {
                 {dbSeller.cnpj && <div className="flex items-center gap-2 text-xs text-muted-foreground"><BadgeCheck size={13} className="text-primary flex-shrink-0" /><span>CNPJ {dbSeller.cnpj}</span></div>}
                 {company.whatsapp && <div className="flex items-center gap-2 text-xs text-muted-foreground"><MessageCircle size={13} className="text-green-500 flex-shrink-0" /><span>Contato direto via WhatsApp</span></div>}
                 {sellerTier && sellerTier !== "basico" && (
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground"><Star size={13} className="text-accent fill-accent flex-shrink-0" /><span>Vendedor verificado</span></div>
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground"><Star size={13} className="text-accent fill-accent flex-shrink-0" /><span>{getSellerVerifiedLabel((company as any).sellerCategory, "full")}</span></div>
                 )}
                 {dbSeller.instagram && (
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">

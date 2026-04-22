@@ -724,7 +724,7 @@ export default function StoreLayoutMinimal({
               <div className="grid sm:grid-cols-2 gap-3 mb-6">
                 {[
                   { icon: MessageCircle, text: "Contato direto via WhatsApp" },
-                  { icon: BadgeCheck, text: "Vendedor verificado e premium" },
+                  { icon: BadgeCheck, text: dbProfile?.seller_category ? getSellerVerifiedLabel(dbProfile.seller_category, "premium") : "Vendedor verificado e premium" },
                   { icon: Clock, text: "Atendimento em horário comercial" },
                   { icon: Zap, text: "Resposta rápida e profissional" },
                 ].map((item, i) => (

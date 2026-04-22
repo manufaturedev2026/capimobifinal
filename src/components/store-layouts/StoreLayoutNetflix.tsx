@@ -882,7 +882,7 @@ export default function StoreLayoutNetflix({
                       }}
                     >
                       <h5 className="text-[11px] font-black uppercase tracking-widest mb-3 flex items-center gap-1.5" style={{ color: storeTheme.primary }}>
-                        <BadgeCheck size={12} /> Profissional Verificado
+                        <BadgeCheck size={12} /> {dbProfile?.seller_category ? getSellerVerifiedLabel(dbProfile.seller_category, "title") : "Profissional Verificado"}
                       </h5>
                         <div className="flex items-center gap-3">
                           <div className="relative">
@@ -932,7 +932,7 @@ export default function StoreLayoutNetflix({
                         <div className="grid grid-cols-3 gap-2">
                           {[
                             { val: allProducts.length as any, label: "Imóveis" },
-                            { val: "✓" as any, label: "Verificado" },
+                            { val: "✓" as any, label: dbProfile?.seller_category ? getSellerVerifiedLabel(dbProfile.seller_category, "title").split(" ")[0] : "Verificado" },
                             ...(availableCities && availableCities.length > 0 ? [{ val: availableCities.length as any, label: availableCities.length === 1 ? "Cidade" : "Cidades" }] : []),
                           ].map((stat, i) => (
                             <motion.div
@@ -1026,7 +1026,7 @@ export default function StoreLayoutNetflix({
                       <div className="space-y-1">
                         {[
                           { txt: "Resposta rápida via WhatsApp", icon: MessageCircle },
-                          { txt: "Vendedor premium verificado", icon: ShieldCheck },
+                          { txt: dbProfile?.seller_category ? getSellerVerifiedLabel(dbProfile.seller_category, "premium") : "Vendedor premium verificado", icon: ShieldCheck },
                           { txt: `${allProducts.length} imóveis disponíveis`, icon: Home },
                         ].map((item, i) => (
                           <motion.div
