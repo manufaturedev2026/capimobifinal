@@ -6,6 +6,7 @@ export const AI_CREDIT_COSTS: Record<string, number> = {
   valuation_ad: 2,
   photo_analysis: 3,
   platform_help_chat: 1,
+  capture_bot_chat: 1,
   agenda_bot_chat: 1,
   invite_chat: 1,
 };
