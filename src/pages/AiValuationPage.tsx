@@ -143,6 +143,10 @@ export default function AiValuationPage() {
     if (typeof window === "undefined") return "";
     return localStorage.getItem("valuation_avaliador_creci") || "";
   });
+  const [avaliadorCnai, setAvaliadorCnai] = useState<string>(() => {
+    if (typeof window === "undefined") return "";
+    return localStorage.getItem("valuation_avaliador_cnai") || "";
+  });
   const [avaliadorEmail, setAvaliadorEmail] = useState<string>(() => {
     if (typeof window === "undefined") return "";
     return localStorage.getItem("valuation_avaliador_email") || "";
@@ -512,6 +516,7 @@ export default function AiValuationPage() {
         user?.email?.split("@")[0] ||
         "Especialista responsável",
       avaliadorCreci: avaliadorCreci.trim() || undefined,
+      avaliadorCnai: avaliadorCnai.trim() || undefined,
       avaliadorEmail: avaliadorEmail.trim() || user?.email,
       valuationId: currentValuationId ?? undefined,
       finalidade: finalidade.trim() || undefined,
@@ -1052,7 +1057,7 @@ export default function AiValuationPage() {
                 </p>
 
                 {/* Identificação do avaliador */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4 p-3 rounded-lg bg-background/60 border border-border/40">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4 p-3 rounded-lg bg-background/60 border border-border/40">
                   <div className="space-y-1">
                     <Label htmlFor="avaliador-nome" className="text-xs flex items-center gap-1.5">
                       <Award className="h-3 w-3 text-primary" /> Nome do avaliador
@@ -1102,6 +1107,23 @@ export default function AiValuationPage() {
                       }}
                       placeholder={user?.email || "email@exemplo.com"}
                       maxLength={100}
+                      className="h-9 text-sm"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <Label htmlFor="avaliador-cnai" className="text-xs flex items-center gap-1.5">
+                      <FileBadge className="h-3 w-3 text-primary" /> CNAI
+                    </Label>
+                    <Input
+                      id="avaliador-cnai"
+                      value={avaliadorCnai}
+                      onChange={(e) => {
+                        const v = e.target.value.slice(0, 30);
+                        setAvaliadorCnai(v);
+                        if (typeof window !== "undefined") localStorage.setItem("valuation_avaliador_cnai", v);
+                      }}
+                      placeholder="Ex: CNAI 12345"
+                      maxLength={30}
                       className="h-9 text-sm"
                     />
                   </div>
