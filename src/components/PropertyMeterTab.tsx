@@ -166,6 +166,20 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
   const measuredPropertiesTable = "measured_properties" as any;
   const measuredRoomsTable = "measured_rooms" as any;
   const computedArea = useMemo(() => calculateRoomArea(roomForm), [roomForm]);
+  const livePropertyTotal = useMemo(() => {
+    const savedTotal = rooms.reduce((sum, room) => sum + Number(room.area || 0), 0);
+    if (!editingRoomId && roomDialogOpen) return savedTotal + computedArea;
+    if (editingRoomId && roomDialogOpen) {
+      const currentRoomArea = rooms.find((room) => room.id === editingRoomId)?.area || 0;
+      return savedTotal - Number(currentRoomArea) + computedArea;
+    }
+    return selectedProperty?.total_area ?? savedTotal;
+  }, [computedArea, editingRoomId, roomDialogOpen, rooms, selectedProperty?.total_area]);
+
+  const syncSelectedTotal = (propertyId: string, area: number) => {
+    setSelectedProperty((prev) => (prev?.id === propertyId ? { ...prev, total_area: Number(area.toFixed(2)), updated_at: new Date().toISOString() } : prev));
+    setProperties((prev) => prev.map((property) => property.id === propertyId ? { ...property, total_area: Number(area.toFixed(2)), updated_at: new Date().toISOString() } : property));
+  };
 
   const fetchProperties = useCallback(async () => {
     const { data, error } = await db
