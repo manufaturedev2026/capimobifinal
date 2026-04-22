@@ -324,20 +324,20 @@ export default function PropertyMeterTab({ userId, themeVars }: { userId: string
     const usefulArea = rooms.filter((room) => room.area_type === "Interna útil").reduce((sum, room) => sum + Number(room.area || 0), 0);
     const coveredArea = rooms.filter((room) => room.area_type === "Construída coberta").reduce((sum, room) => sum + Number(room.area || 0), 0);
     const openArea = rooms.filter((room) => room.area_type === "Externa descoberta").reduce((sum, room) => sum + Number(room.area || 0), 0);
-    const builtArea = externalBuiltArea || usefulArea + coveredArea;
+    const builtArea = externalBuiltArea + usefulArea + coveredArea;
     const uncoveredArea = Math.max(landArea - builtArea, openArea, 0);
     const occupancyRate = landArea > 0 ? (builtArea / landArea) * 100 : 0;
     return { builtArea, usefulArea, landArea, uncoveredArea, occupancyRate };
   }, [rooms, selectedProperty]);
   const livePropertyTotal = useMemo(() => {
-    const savedTotal = rooms.reduce((sum, room) => sum + Number(room.area || 0), 0);
+    const savedTotal = calculateCombinedTotal(rooms, selectedProperty);
     if (!editingRoomId && roomDialogOpen) return savedTotal + computedArea;
     if (editingRoomId && roomDialogOpen) {
       const currentRoomArea = rooms.find((room) => room.id === editingRoomId)?.area || 0;
       return savedTotal - Number(currentRoomArea) + computedArea;
     }
-    return selectedProperty?.total_area ?? savedTotal;
-  }, [computedArea, editingRoomId, roomDialogOpen, rooms, selectedProperty?.total_area]);
+    return savedTotal;
+  }, [computedArea, editingRoomId, roomDialogOpen, rooms, selectedProperty]);
 
   const syncSelectedTotal = (propertyId: string, area: number) => {
     setSelectedProperty((prev) => (prev?.id === propertyId ? { ...prev, total_area: Number(area.toFixed(2)), updated_at: new Date().toISOString() } : prev));
@@ -752,7 +752,8 @@ export default function PropertyMeterTab({ userId, themeVars }: { userId: string
       external_side_b: toNumber(next.external_side_b) || null,
       external_area_manual: toNumber(next.external_area_manual) || null,
     };
-    const { data, error } = await db.from(measuredPropertiesTable).update(payload).eq("id", selectedProperty.id).eq("user_id", userId).select("*").single();
+    const totalArea = calculateCombinedTotal(rooms, { ...selectedProperty, ...payload });
+    const { data, error } = await db.from(measuredPropertiesTable).update({ ...payload, total_area: Number(totalArea.toFixed(2)) }).eq("id", selectedProperty.id).eq("user_id", userId).select("*").single();
     if (error) toast({ title: "Erro ao salvar medidas", description: error.message, variant: "destructive" });
     else setSelectedProperty(data as MeasuredProperty);
   };
