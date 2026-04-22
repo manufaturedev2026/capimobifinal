@@ -450,6 +450,7 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
       name: roomForm.name.trim(),
       room_type: roomForm.room_type,
       shape: roomForm.shape,
+      area_type: roomForm.area_type,
       width: toNumber(roomForm.width) || null,
       length: toNumber(roomForm.length) || null,
       height: toNumber(roomForm.height) || null,
@@ -496,6 +497,7 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
       name: `${room.name} - Cópia`,
       room_type: room.room_type,
       shape: room.shape,
+      area_type: room.area_type,
       width: room.width,
       length: room.length,
       height: room.height,
@@ -514,6 +516,39 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
     toast({ title: "Ambiente duplicado" });
     await fetchRooms(selectedProperty.id);
     await fetchProperties();
+  };
+
+  const uploadPhotos = async (files: FileList | null) => {
+    if (!selectedProperty || !files?.length) return;
+    for (const file of Array.from(files)) {
+      const path = `${userId}/measurements/${selectedProperty.id}/${Date.now()}-${file.name.replace(/\s+/g, "-")}`;
+      const { error: uploadError } = await supabase.storage.from("seller-uploads").upload(path, file, { upsert: false });
+      if (uploadError) {
+        toast({ title: "Erro ao enviar foto", description: uploadError.message, variant: "destructive" });
+        continue;
+      }
+      const { data: publicUrl } = supabase.storage.from("seller-uploads").getPublicUrl(path);
+      await db.from(measuredPhotosTable).insert({ property_id: selectedProperty.id, user_id: userId, image_url: publicUrl.publicUrl, category: photoCategory, sort_order: photos.length + 1 });
+    }
+    toast({ title: "Fotos adicionadas" });
+    fetchPhotos(selectedProperty.id);
+  };
+
+  const deletePhoto = async (photo: MeasuredPhoto) => {
+    const { error } = await db.from(measuredPhotosTable).delete().eq("id", photo.id).eq("user_id", userId);
+    if (error) return toast({ title: "Erro ao excluir foto", description: error.message, variant: "destructive" });
+    setPhotos((prev) => prev.filter((item) => item.id !== photo.id));
+  };
+
+  const movePhoto = async (photo: MeasuredPhoto, direction: -1 | 1) => {
+    const index = photos.findIndex((item) => item.id === photo.id);
+    const swap = photos[index + direction];
+    if (!swap) return;
+    await Promise.all([
+      db.from(measuredPhotosTable).update({ sort_order: swap.sort_order }).eq("id", photo.id).eq("user_id", userId),
+      db.from(measuredPhotosTable).update({ sort_order: photo.sort_order }).eq("id", swap.id).eq("user_id", userId),
+    ]);
+    if (selectedProperty) fetchPhotos(selectedProperty.id);
   };
 
   const measurementFields = () => {
