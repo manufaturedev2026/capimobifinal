@@ -23,6 +23,7 @@ import MapEmbed from "@/components/MapEmbed";
 import WhatsAppLeadCapture from "@/components/WhatsAppLeadCapture";
 import { useIsMobile } from "@/hooks/use-mobile";
 import StoreEffects from "@/components/StoreEffects";
+import { getSellerVerifiedLabel } from "@/lib/sellerTitle";
 import ThemeParticles from "@/components/ThemeParticles";
 import { getStoreTheme } from "@/components/StoreThemePicker";
 import { getStoreThemeCssVars } from "@/lib/marketplaceThemeCssVars";
