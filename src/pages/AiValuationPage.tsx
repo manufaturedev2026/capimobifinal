@@ -632,7 +632,7 @@ export default function AiValuationPage() {
               </Button>
             )}
             <div className="hidden md:flex items-center gap-2 text-xs font-medium text-primary">
-              <Brain className="h-4 w-4" /> Avaliação Profissional IA
+              <Brain className="h-4 w-4" /> Avaliação Profissional
             </div>
           </div>
         </div>
