@@ -782,6 +782,18 @@ export default function PropertyMeterTab({ userId, themeVars }: { userId: string
     else setSelectedProperty(data as MeasuredProperty);
   };
 
+  const toggleExternalFeature = async (feature: string) => {
+    if (!selectedProperty) return;
+    const current = getExternalFeatures(selectedProperty.notes);
+    const nextFeatures = current.includes(feature) ? current.filter((item) => item !== feature) : [...current, feature];
+    const notes = mergeExternalFeatures(selectedProperty.notes, nextFeatures);
+    setSelectedProperty((prev) => prev ? { ...prev, notes } : prev);
+    setMeasurementDraft((prev) => ({ ...prev, notes: notes || "" }));
+    const { data, error } = await db.from(measuredPropertiesTable).update({ notes }).eq("id", selectedProperty.id).eq("user_id", userId).select("*").single();
+    if (error) toast({ title: "Erro ao salvar diferencial", description: error.message, variant: "destructive" });
+    else setSelectedProperty(data as MeasuredProperty);
+  };
+
   const sendToValuation = () => {
     if (!selectedProperty) return;
     const internalRooms = rooms.filter((room) => room.area_type !== "Externa descoberta");
