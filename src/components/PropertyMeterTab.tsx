@@ -244,6 +244,11 @@ const calculateExternalArea = (property: Pick<MeasuredProperty, "external_shape"
   }
 };
 
+const calculateCombinedTotal = (items: Pick<MeasuredRoom, "area">[], property: Pick<MeasuredProperty, "external_shape" | "external_width" | "external_length" | "external_base" | "external_height" | "external_side_a" | "external_side_b" | "external_area_manual"> | null) => {
+  const roomsTotal = items.reduce((sum, room) => sum + Number(room.area || 0), 0);
+  return roomsTotal + (property ? calculateExternalArea(property) : 0);
+};
+
 const propertyToForm = (property: MeasuredProperty): PropertyForm => ({
   name: property.name,
   property_type: property.property_type,
