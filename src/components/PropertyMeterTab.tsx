@@ -404,11 +404,39 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
     await fetchProperties();
   };
 
+  const duplicateRoom = async (room: MeasuredRoom) => {
+    if (!selectedProperty) return;
+    const { error } = await db.from(measuredRoomsTable).insert({
+      property_id: selectedProperty.id,
+      user_id: userId,
+      name: `${room.name} - Cópia`,
+      room_type: room.room_type,
+      shape: room.shape,
+      width: room.width,
+      length: room.length,
+      height: room.height,
+      base: room.base,
+      side_a: room.side_a,
+      side_b: room.side_b,
+      area: room.area,
+      notes: room.notes,
+    });
+    if (error) {
+      toast({ title: "Erro ao duplicar ambiente", description: error.message, variant: "destructive" });
+      return;
+    }
+    const updatedTotal = rooms.reduce((sum, item) => sum + Number(item.area || 0), 0) + Number(room.area || 0);
+    syncSelectedTotal(selectedProperty.id, updatedTotal);
+    toast({ title: "Ambiente duplicado" });
+    await fetchRooms(selectedProperty.id);
+    await fetchProperties();
+  };
+
   const measurementFields = () => {
     if (roomForm.shape === "Manual") {
       return <Field label="Área total (m²)" value={roomForm.area} onChange={(value) => setRoomForm((prev) => ({ ...prev, area: value }))} />;
     }
-    if (roomForm.shape === "Triângulo") {
+    if (roomForm.shape === "Triângulo" || roomForm.shape === "Triângulo Retângulo") {
       return (
         <div className="grid grid-cols-2 gap-3">
           <Field label="Base (m)" value={roomForm.base} onChange={(value) => setRoomForm((prev) => ({ ...prev, base: value }))} />
@@ -425,7 +453,10 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
         </div>
       );
     }
-    if (roomForm.shape === "L") {
+    if (roomForm.shape === "Circular") {
+      return <Field label="Raio (m)" value={roomForm.side_a} onChange={(value) => setRoomForm((prev) => ({ ...prev, side_a: value }))} />;
+    }
+    if (roomForm.shape === "L" || roomForm.shape === "Formato em L") {
       return (
         <div className="grid grid-cols-2 gap-3">
           <Field label="Largura bloco 1" value={roomForm.width} onChange={(value) => setRoomForm((prev) => ({ ...prev, width: value }))} />
