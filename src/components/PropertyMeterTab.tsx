@@ -1067,13 +1067,13 @@ function TextArea({ label, value, onChange }: { label: string; value: string; on
   );
 }
 
-function Picker({ label, value, options, optionLabels, onChange }: { label: string; value: string; options: string[]; optionLabels?: Record<string, string>; onChange: (value: string) => void }) {
+function Picker({ label, value, options, optionLabels, themeVars, onChange }: { label: string; value: string; options: string[]; optionLabels?: Record<string, string>; themeVars?: CSSProperties; onChange: (value: string) => void }) {
   return (
     <div>
       <label className="mb-1 block text-xs font-semibold text-muted-foreground">{label}</label>
       <Select value={value} onValueChange={onChange}>
         <SelectTrigger className="h-12 rounded-2xl border-primary/20 bg-primary/5 focus:ring-primary"><SelectValue /></SelectTrigger>
-        <SelectContent className="border-primary/20 bg-popover text-popover-foreground">{options.map((option) => <SelectItem key={option} value={option}>{optionLabels?.[option] || option}</SelectItem>)}</SelectContent>
+        <SelectContent style={themeVars} className="border-primary/20 bg-popover text-popover-foreground">{options.map((option) => <SelectItem key={option} value={option}>{optionLabels?.[option] || option}</SelectItem>)}</SelectContent>
       </Select>
     </div>
   );
