@@ -38,7 +38,6 @@ export const PACKAGE_CONFIG = {
       "Selo Start + Hero Banner",
       "Destaque na listagem",
       "Push: 1 envio por dia",
-      "Gerador de Texto IA: 10/dia",
     ],
   },
   basico: {
