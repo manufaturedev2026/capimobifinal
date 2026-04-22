@@ -5,7 +5,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const BASE_CONTEXT = `Você é {ATTENDANT_NAME}, consultora digital da Capimobi — uma plataforma completa para corretores, imobiliárias e construtoras criarem suas lojas online de imóveis.
+const BASE_CONTEXT = `Você é {ATTENDANT_NAME}, {CONSULTANT_TITLE} digital da Capimobi — uma plataforma completa para corretores, imobiliárias e construtoras criarem suas lojas online de imóveis.
 
 REGRAS GERAIS:
 - Responda SEMPRE em português brasileiro, de forma clara e envolvente (máximo 5-6 linhas por mensagem)
@@ -225,13 +225,16 @@ serve(async (req) => {
     const assistantName = configuredAttendant && !/^Ana(\s|$|•)/i.test(configuredAttendant)
       ? configuredAttendant
       : configuredBotName || configuredAttendant || "Assistente Capimobi";
+    const firstName = assistantName.split(/[\s•-]+/)[0] || assistantName;
+    const consultantTitle = /a$/i.test(firstName) ? "consultora" : "consultor";
     const strategy = `${baseStrategy}${extraPrompt}`
       .replaceAll("{ATTENDANT_NAME}", assistantName)
+      .replaceAll("{CONSULTANT_TITLE}", consultantTitle)
       .replaceAll("Ana", assistantName);
 
     if (messages.length === 0) {
       return new Response(JSON.stringify({
-        reply: `Olá! É um prazer receber você por aqui na Capimobi. Eu sou ${assistantName}, sua consultora digital, e estou pronta para te ajudar a transformar sua presença no mercado imobiliário. 🏠\n\nPara começarmos, como você se chama?`,
+        reply: `Olá! É um prazer receber você por aqui na Capimobi. Eu sou ${assistantName}, seu ${consultantTitle} digital, e estou pronto para te ajudar a transformar sua presença no mercado imobiliário. 🏠\n\nPara começarmos, como você se chama?`,
       }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
