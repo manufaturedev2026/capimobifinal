@@ -20,6 +20,7 @@ type MeasuredProperty = {
   notes: string | null;
   total_area: number;
   created_at: string;
+  updated_at: string;
 };
 
 type MeasuredRoom = {
@@ -63,8 +64,8 @@ type RoomForm = {
 };
 
 const propertyTypes = ["Casa", "Apartamento", "Terreno", "Comercial", "Rural"];
-const roomTypes = ["Sala", "Quarto", "Suíte", "Cozinha", "Banheiro", "Varanda", "Garagem", "Área externa", "Terreno", "Comercial", "Outro"];
-const shapes = ["Retângulo", "Triângulo", "L", "Trapézio", "Manual"];
+const roomTypes = ["Sala", "Quarto", "Suíte", "Cozinha", "Banheiro", "Corredor", "Garagem", "Varanda", "Área gourmet", "Área de serviço", "Escritório", "Outro"];
+const shapes = ["Retângulo / Quadrado", "Triângulo Retângulo", "Formato em L", "Trapézio", "Circular", "Manual"];
 
 const emptyPropertyForm: PropertyForm = {
   name: "",
@@ -78,7 +79,7 @@ const emptyPropertyForm: PropertyForm = {
 const emptyRoomForm: RoomForm = {
   name: "",
   room_type: "Sala",
-  shape: "Retângulo",
+  shape: "Retângulo / Quadrado",
   width: "",
   length: "",
   height: "",
@@ -95,6 +96,7 @@ const toNumber = (value: string | number | null | undefined) => {
 };
 
 const formatArea = (area: number | null | undefined) => `${Number(area || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} m²`;
+const formatDateTime = (value: string) => new Date(value).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", year: "2-digit", hour: "2-digit", minute: "2-digit" });
 
 const calculateRoomArea = (room: RoomForm) => {
   const width = toNumber(room.width);
@@ -106,15 +108,20 @@ const calculateRoomArea = (room: RoomForm) => {
 
   switch (room.shape) {
     case "Retângulo":
+    case "Retângulo / Quadrado":
       return width * length;
     case "Triângulo":
+    case "Triângulo Retângulo":
       return (base * height) / 2;
     case "L":
+    case "Formato em L":
       return width * length + sideA * sideB;
     case "Trapézio":
       return ((base + sideA) * height) / 2;
     case "Manual":
       return toNumber(room.area);
+    case "Circular":
+      return 3.1416 * sideA * sideA;
     default:
       return 0;
   }
@@ -160,6 +167,20 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
   const measuredPropertiesTable = "measured_properties" as any;
   const measuredRoomsTable = "measured_rooms" as any;
   const computedArea = useMemo(() => calculateRoomArea(roomForm), [roomForm]);
+  const livePropertyTotal = useMemo(() => {
+    const savedTotal = rooms.reduce((sum, room) => sum + Number(room.area || 0), 0);
+    if (!editingRoomId && roomDialogOpen) return savedTotal + computedArea;
+    if (editingRoomId && roomDialogOpen) {
+      const currentRoomArea = rooms.find((room) => room.id === editingRoomId)?.area || 0;
+      return savedTotal - Number(currentRoomArea) + computedArea;
+    }
+    return selectedProperty?.total_area ?? savedTotal;
+  }, [computedArea, editingRoomId, roomDialogOpen, rooms, selectedProperty?.total_area]);
+
+  const syncSelectedTotal = (propertyId: string, area: number) => {
+    setSelectedProperty((prev) => (prev?.id === propertyId ? { ...prev, total_area: Number(area.toFixed(2)), updated_at: new Date().toISOString() } : prev));
+    setProperties((prev) => prev.map((property) => property.id === propertyId ? { ...property, total_area: Number(area.toFixed(2)), updated_at: new Date().toISOString() } : property));
+  };
 
   const fetchProperties = useCallback(async () => {
     const { data, error } = await db
@@ -384,11 +405,39 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
     await fetchProperties();
   };
 
+  const duplicateRoom = async (room: MeasuredRoom) => {
+    if (!selectedProperty) return;
+    const { error } = await db.from(measuredRoomsTable).insert({
+      property_id: selectedProperty.id,
+      user_id: userId,
+      name: `${room.name} - Cópia`,
+      room_type: room.room_type,
+      shape: room.shape,
+      width: room.width,
+      length: room.length,
+      height: room.height,
+      base: room.base,
+      side_a: room.side_a,
+      side_b: room.side_b,
+      area: room.area,
+      notes: room.notes,
+    });
+    if (error) {
+      toast({ title: "Erro ao duplicar ambiente", description: error.message, variant: "destructive" });
+      return;
+    }
+    const updatedTotal = rooms.reduce((sum, item) => sum + Number(item.area || 0), 0) + Number(room.area || 0);
+    syncSelectedTotal(selectedProperty.id, updatedTotal);
+    toast({ title: "Ambiente duplicado" });
+    await fetchRooms(selectedProperty.id);
+    await fetchProperties();
+  };
+
   const measurementFields = () => {
     if (roomForm.shape === "Manual") {
       return <Field label="Área total (m²)" value={roomForm.area} onChange={(value) => setRoomForm((prev) => ({ ...prev, area: value }))} />;
     }
-    if (roomForm.shape === "Triângulo") {
+    if (roomForm.shape === "Triângulo" || roomForm.shape === "Triângulo Retângulo") {
       return (
         <div className="grid grid-cols-2 gap-3">
           <Field label="Base (m)" value={roomForm.base} onChange={(value) => setRoomForm((prev) => ({ ...prev, base: value }))} />
@@ -405,7 +454,10 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
         </div>
       );
     }
-    if (roomForm.shape === "L") {
+    if (roomForm.shape === "Circular") {
+      return <Field label="Raio (m)" value={roomForm.side_a} onChange={(value) => setRoomForm((prev) => ({ ...prev, side_a: value }))} />;
+    }
+    if (roomForm.shape === "L" || roomForm.shape === "Formato em L") {
       return (
         <div className="grid grid-cols-2 gap-3">
           <Field label="Largura bloco 1" value={roomForm.width} onChange={(value) => setRoomForm((prev) => ({ ...prev, width: value }))} />
@@ -483,6 +535,7 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
                     <div className="rounded-2xl bg-primary/8 p-4">
                       <p className="text-xs font-semibold uppercase text-muted-foreground">Metragem total</p>
                       <p className="mt-1 font-display text-3xl font-extrabold text-primary">{formatArea(property.total_area)}</p>
+                      <p className="mt-2 text-[11px] font-medium text-muted-foreground">Última edição: {formatDateTime(property.updated_at)}</p>
                     </div>
                   </button>
                   <div className="mt-4 grid grid-cols-4 gap-2">
@@ -509,8 +562,8 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
                 <p className="mt-1 text-sm text-muted-foreground">{selectedProperty.neighborhood}, {selectedProperty.city}</p>
               </div>
               <div className="rounded-2xl bg-primary px-5 py-4 text-primary-foreground shadow-lg shadow-primary/20">
-                <p className="text-xs font-semibold opacity-80">Total calculado</p>
-                <p className="font-display text-3xl font-extrabold">{formatArea(selectedProperty.total_area)}</p>
+                <p className="text-xs font-semibold opacity-80">Área Total Atual</p>
+                <p className="font-display text-3xl font-extrabold">{formatArea(livePropertyTotal)}</p>
               </div>
             </div>
             <div className="mt-4 flex flex-wrap gap-2">
@@ -539,6 +592,7 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
                   {room.notes && <p className="mt-3 text-sm text-muted-foreground">{room.notes}</p>}
                   <div className="mt-4 flex gap-2">
                     <Button size="sm" variant="outline" onClick={() => openEditRoom(room)} className="flex-1 rounded-xl"><Edit3 size={14} /> Editar</Button>
+                    <Button size="sm" variant="outline" onClick={() => duplicateRoom(room)} className="rounded-xl"><Copy size={14} /></Button>
                     <Button size="sm" variant="outline" onClick={() => deleteRoom(room)} className="rounded-xl text-destructive hover:text-destructive"><Trash2 size={14} /></Button>
                   </div>
                 </div>
@@ -568,7 +622,7 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
               <Field label="Bairro" value={propertyForm.neighborhood} onChange={(value) => setPropertyForm((prev) => ({ ...prev, neighborhood: value }))} />
             </div>
             <TextArea label="Observações" value={propertyForm.notes} onChange={(value) => setPropertyForm((prev) => ({ ...prev, notes: value }))} />
-            <Button onClick={saveProperty} className="h-12 w-full rounded-2xl font-bold"><Save size={16} /> Salvar imóvel</Button>
+            <Button onClick={saveProperty} className="h-12 w-full rounded-2xl font-bold"><Save size={16} /> {editingPropertyId ? "Salvar imóvel" : "Salvar e Abrir"}</Button>
           </div>
         </DialogContent>
       </Dialog>
@@ -588,6 +642,7 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
             <div className="rounded-2xl border border-primary/20 bg-primary/10 p-4">
               <p className="text-xs font-bold uppercase text-primary">Área calculada</p>
               <p className="font-display text-3xl font-extrabold text-primary">{formatArea(computedArea)}</p>
+              <p className="mt-2 text-xs font-semibold text-muted-foreground">Total do imóvel em tempo real: {formatArea(livePropertyTotal)}</p>
             </div>
             <TextArea label="Observações" value={roomForm.notes} onChange={(value) => setRoomForm((prev) => ({ ...prev, notes: value }))} />
             <Button onClick={saveRoom} className="h-12 w-full rounded-2xl font-bold"><Save size={16} /> Salvar ambiente</Button>
