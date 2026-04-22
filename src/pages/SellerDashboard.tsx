@@ -62,6 +62,11 @@ type SellerItem = {
 };
 
 type DashboardTab = "overview" | "items" | "stats" | "domain" | "loja-espelhada" | "events" | "referral" | "crm" | "gallery" | "rentals" | "contracts" | "captacao" | "stories" | "notifications" | "profit" | "meter" | "customization" | "profile" | "imobiliarias" | "ads" | "parcerias";
+type SidebarNavItem =
+  | { type: "tab"; id: DashboardTab; label: string; icon: any; locked?: boolean; tourId?: string }
+  | { type: "link"; href: string; label: string; icon: any; className?: string; tourId?: string; badge?: string }
+  | { type: "action"; key: string; label: string; icon: any; onClick: () => void | Promise<void>; disabled?: boolean; className?: string };
+type SidebarGroup = { key: string; title: string; emoji: string; items: SidebarNavItem[] };
 
 export default function SellerDashboard() {
   const { user, profile, signOut, refreshProfile, loading: authLoading } = useAuth();
@@ -376,11 +381,11 @@ export default function SellerDashboard() {
   const maxTeamMembers = ["prime_empresa", "black"].includes(currentTier) ? 9999 : currentTier === "premium_empresa" ? 10 : currentTier === "essencial_empresa" ? 5 : isImobiliaria ? 3 : 0;
   const lockedTabs: DashboardTab[] = isFreePlan ? ["domain"] : [];
 
-  const tabNav = (id: DashboardTab, label: string, icon: any, options: { locked?: boolean; tourId?: string } = {}) => ({ type: "tab" as const, id, label, icon, ...options });
-  const linkNav = (href: string, label: string, icon: any, options: { className?: string; tourId?: string; badge?: string } = {}) => ({ type: "link" as const, href, label, icon, ...options });
-  const actionNav = (key: string, label: string, icon: any, onClick: () => void | Promise<void>, options: { disabled?: boolean; className?: string } = {}) => ({ type: "action" as const, key, label, icon, onClick, ...options });
+  const tabNav = (id: DashboardTab, label: string, icon: any, options: { locked?: boolean; tourId?: string } = {}): SidebarNavItem => ({ type: "tab", id, label, icon, ...options });
+  const linkNav = (href: string, label: string, icon: any, options: { className?: string; tourId?: string; badge?: string } = {}): SidebarNavItem => ({ type: "link", href, label, icon, ...options });
+  const actionNav = (key: string, label: string, icon: any, onClick: () => void | Promise<void>, options: { disabled?: boolean; className?: string } = {}): SidebarNavItem => ({ type: "action", key, label, icon, onClick, ...options });
 
-  const sidebarGroups = [
+  const sidebarGroups: SidebarGroup[] = [
     { key: "principal", title: "Principal", emoji: "🏠", items: [tabNav("overview", "Visão Geral", Home, { tourId: "tour-overview" }), tabNav("stats", "Estatísticas", BarChart3, { tourId: "tour-stats" }), linkNav("/agenda", "Agenda", CalendarIcon), tabNav("crm" as DashboardTab, "Meu CRM", MessageCircle, { tourId: "tour-crm" })] },
     { key: "imoveis", title: "Imóveis", emoji: "🏘️", items: [tabNav("items", "Meus Anúncios", Package), linkNav("/painel/novo", "Novo Anúncio", Plus, { tourId: "tour-new-listing" }), tabNav("gallery" as DashboardTab, "Galeria de Anúncios", Image), tabNav("rentals" as DashboardTab, "Aluguéis", Building2), tabNav("contracts" as DashboardTab, "Contratos", FileText), linkNav("/avaliacao-ia", "Avaliação de Imóveis", Sparkles, { badge: "NEW" }), tabNav("meter" as DashboardTab, "Medidor de Imóveis", Ruler)] },
     { key: "marketing", title: "Marketing", emoji: "🚀", items: [tabNav("stories" as DashboardTab, "Stories", Camera), tabNav("notifications" as DashboardTab, "Push", Bell), tabNav("ads" as DashboardTab, "Fazer ADS", Megaphone, { tourId: "tour-ads" }), tabNav("events", "Efeitos", Sparkles), tabNav("captacao" as DashboardTab, "Captação", Magnet)] },
@@ -391,7 +396,7 @@ export default function SellerDashboard() {
     ...(isAdmin ? [{ key: "admin", title: "Admin", emoji: "⚙️", items: [linkNav("/admin", "Painel Admin", Shield)] }] : []),
   ];
 
-  const sidebarNav = sidebarGroups.flatMap((group) => group.items).filter((item) => item.type === "tab") as ReturnType<typeof tabNav>[];
+  const sidebarNav = sidebarGroups.flatMap((group) => group.items).filter((item): item is Extract<SidebarNavItem, { type: "tab" }> => item.type === "tab");
 
   const getSidebarBadge = (id?: DashboardTab) => {
     if (id === "crm" && newCrmCount > 0) return newCrmCount;
