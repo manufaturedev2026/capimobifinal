@@ -439,6 +439,15 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
         land_length: property.land_length,
         land_area_manual: property.land_area_manual,
         measured_by: property.measured_by,
+        measurement_mode: property.measurement_mode,
+        external_shape: property.external_shape,
+        external_width: property.external_width,
+        external_length: property.external_length,
+        external_base: property.external_base,
+        external_height: property.external_height,
+        external_side_a: property.external_side_a,
+        external_side_b: property.external_side_b,
+        external_area_manual: property.external_area_manual,
         notes: property.notes,
       })
       .select("*")
