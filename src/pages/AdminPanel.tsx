@@ -580,7 +580,7 @@ export default function AdminPanel() {
         </aside>
 
         {/* Mobile tabs */}
-        <div className="md:hidden flex gap-2 p-3 overflow-x-auto border-b border-border bg-card shrink-0">
+        <div className="md:hidden flex flex-wrap gap-2 p-3 border-b border-border bg-card shrink-0">
           {sidebarItems.map((item) => (
             <button
               key={item.key}
