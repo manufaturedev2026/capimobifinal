@@ -6,7 +6,7 @@ import { useSiteSettings } from "@/hooks/useSiteSettings";
  * Reaproveita o estilo do splash inicial (logo + ring giratório).
  */
 export default function PanelSplash() {
-  const { site_splash_enabled, site_splash_bg_color, loaded } = useSiteSettings();
+  const { site_splash_enabled, loaded } = useSiteSettings();
   const [visible, setVisible] = useState(true);
   const [hiding, setHiding] = useState(false);
 
@@ -22,8 +22,6 @@ export default function PanelSplash() {
 
   if (!visible) return null;
 
-  const bg = site_splash_bg_color || "#FFFFFF";
-
   return (
     <div
       style={{
@@ -33,7 +31,7 @@ export default function PanelSplash() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: bg,
+        background: "linear-gradient(135deg, hsl(var(--background)), hsl(var(--primary) / 0.12), hsl(var(--background)))",
         opacity: hiding ? 0 : 1,
         pointerEvents: hiding ? "none" : "auto",
         transition: "opacity .4s ease",
@@ -46,8 +44,8 @@ export default function PanelSplash() {
           height: "13rem",
           borderRadius: "9999px",
           border: "4px solid transparent",
-          borderTopColor: "#00AEEF",
-          borderRightColor: "rgba(0,174,239,.4)",
+          borderTopColor: "hsl(var(--primary))",
+          borderRightColor: "hsl(var(--primary) / 0.35)",
           animation: "spin 1s linear infinite",
         }}
       />
