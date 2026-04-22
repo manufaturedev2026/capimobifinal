@@ -1147,6 +1147,7 @@ export type Database = {
           bio: string | null
           capture_video_title: string | null
           capture_video_url: string | null
+          cep: string | null
           city: string | null
           cnpj: string | null
           company_name: string | null
@@ -1199,6 +1200,7 @@ export type Database = {
           bio?: string | null
           capture_video_title?: string | null
           capture_video_url?: string | null
+          cep?: string | null
           city?: string | null
           cnpj?: string | null
           company_name?: string | null
@@ -1253,6 +1255,7 @@ export type Database = {
           bio?: string | null
           capture_video_title?: string | null
           capture_video_url?: string | null
+          cep?: string | null
           city?: string | null
           cnpj?: string | null
           company_name?: string | null
