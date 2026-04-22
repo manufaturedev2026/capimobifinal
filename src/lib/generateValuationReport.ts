@@ -72,6 +72,7 @@ export type ValuationReportData = {
   };
   avaliadorNome?: string;
   avaliadorCreci?: string;
+  avaliadorCnai?: string;
   avaliadorEmail?: string;
   empresaNome?: string;
   /** Optional valuation row id used to derive a stable laudo code */
@@ -292,8 +293,11 @@ export async function generateValuationReport(d: ValuationReportData): Promise<j
     doc.text(`Código ${codigo}`, 14, H - 5);
     doc.text(pageLabel, W - 14, H - 5, { align: "right" });
     const especialista = d.avaliadorNome?.trim() || "Especialista";
-    const creciTxt = d.avaliadorCreci?.trim() ? ` — CRECI ${d.avaliadorCreci.trim()}` : "";
-    doc.text(`${especialista}${creciTxt}`, W / 2, H - 5, { align: "center" });
+    const documentos = [
+      d.avaliadorCreci?.trim() ? `CRECI ${d.avaliadorCreci.trim()}` : "",
+      d.avaliadorCnai?.trim() ? `CNAI ${d.avaliadorCnai.trim()}` : "",
+    ].filter(Boolean).join(" • ");
+    doc.text(`${especialista}${documentos ? ` — ${documentos}` : ""}`, W / 2, H - 5, { align: "center" });
   };
 
   const headerStrip = (title: string) => {
@@ -1339,9 +1343,10 @@ export async function generateValuationReport(d: ValuationReportData): Promise<j
 
   setColor(GRAY);
   doc.setFont("helvetica", "normal"); doc.setFontSize(9);
-  const linhaCreci: string[] = [];
-  if (d.avaliadorCreci?.trim()) linhaCreci.push(`CRECI ${d.avaliadorCreci.trim()}`);
-  if (linhaCreci.length) doc.text(linhaCreci.join("  •  "), W / 2, y + 28, { align: "center" });
+  const linhaDocumentos: string[] = [];
+  if (d.avaliadorCreci?.trim()) linhaDocumentos.push(`CRECI ${d.avaliadorCreci.trim()}`);
+  if (d.avaliadorCnai?.trim()) linhaDocumentos.push(`CNAI ${d.avaliadorCnai.trim()}`);
+  if (linhaDocumentos.length) doc.text(linhaDocumentos.join("  •  "), W / 2, y + 28, { align: "center" });
 
   if (d.avaliadorEmail) {
     doc.setFontSize(8.5);
