@@ -934,6 +934,29 @@ export default function PropertyMeterTab({ userId, themeVars }: { userId: string
           </div>
 
           <div className="rounded-3xl border border-border bg-card p-4 shadow-sm">
+            <div className="mb-4">
+              <p className="text-xs font-bold uppercase text-primary">Medidas do imóvel</p>
+              <h3 className="font-display text-xl font-extrabold text-foreground">Editar metragem</h3>
+              <p className="text-sm text-muted-foreground">Preencha uma vez aqui; os dados ficam salvos no imóvel automaticamente ao sair do campo.</p>
+            </div>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+              <MeasurementField label="Largura terreno (m)" value={measurementDraft.land_width} onChange={(value) => setMeasurementDraft((prev) => ({ ...prev, land_width: value }))} onBlur={() => persistMeasurementDraft()} />
+              <MeasurementField label="Comprimento terreno (m)" value={measurementDraft.land_length} onChange={(value) => setMeasurementDraft((prev) => ({ ...prev, land_length: value }))} onBlur={() => persistMeasurementDraft()} />
+              <MeasurementField label="Área terreno manual" value={measurementDraft.land_area_manual} onChange={(value) => setMeasurementDraft((prev) => ({ ...prev, land_area_manual: value }))} onBlur={() => persistMeasurementDraft()} />
+            </div>
+            <div className="mt-4 rounded-2xl border border-primary/15 bg-primary/10 p-3">
+              <Picker themeVars={themeVars} label="Formato externo da construção" value={measurementDraft.external_shape} options={externalShapes} onChange={(value) => persistMeasurementDraft({ external_shape: value })} />
+              <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                {measurementDraft.external_shape === "Retângulo" && <><MeasurementField label="Largura construção" value={measurementDraft.external_width} onChange={(value) => setMeasurementDraft((prev) => ({ ...prev, external_width: value }))} onBlur={() => persistMeasurementDraft()} /><MeasurementField label="Comprimento construção" value={measurementDraft.external_length} onChange={(value) => setMeasurementDraft((prev) => ({ ...prev, external_length: value }))} onBlur={() => persistMeasurementDraft()} /></>}
+                {measurementDraft.external_shape === "L" && <><MeasurementField label="Largura bloco 1" value={measurementDraft.external_width} onChange={(value) => setMeasurementDraft((prev) => ({ ...prev, external_width: value }))} onBlur={() => persistMeasurementDraft()} /><MeasurementField label="Comprimento bloco 1" value={measurementDraft.external_length} onChange={(value) => setMeasurementDraft((prev) => ({ ...prev, external_length: value }))} onBlur={() => persistMeasurementDraft()} /><MeasurementField label="Largura bloco 2" value={measurementDraft.external_side_a} onChange={(value) => setMeasurementDraft((prev) => ({ ...prev, external_side_a: value }))} onBlur={() => persistMeasurementDraft()} /><MeasurementField label="Comprimento bloco 2" value={measurementDraft.external_side_b} onChange={(value) => setMeasurementDraft((prev) => ({ ...prev, external_side_b: value }))} onBlur={() => persistMeasurementDraft()} /></>}
+                {measurementDraft.external_shape === "Triângulo" && <><MeasurementField label="Base construção" value={measurementDraft.external_base} onChange={(value) => setMeasurementDraft((prev) => ({ ...prev, external_base: value }))} onBlur={() => persistMeasurementDraft()} /><MeasurementField label="Altura construção" value={measurementDraft.external_height} onChange={(value) => setMeasurementDraft((prev) => ({ ...prev, external_height: value }))} onBlur={() => persistMeasurementDraft()} /></>}
+                {measurementDraft.external_shape === "Trapézio" && <><MeasurementField label="Base maior" value={measurementDraft.external_base} onChange={(value) => setMeasurementDraft((prev) => ({ ...prev, external_base: value }))} onBlur={() => persistMeasurementDraft()} /><MeasurementField label="Base menor" value={measurementDraft.external_side_a} onChange={(value) => setMeasurementDraft((prev) => ({ ...prev, external_side_a: value }))} onBlur={() => persistMeasurementDraft()} /><MeasurementField label="Altura" value={measurementDraft.external_height} onChange={(value) => setMeasurementDraft((prev) => ({ ...prev, external_height: value }))} onBlur={() => persistMeasurementDraft()} /></>}
+                {measurementDraft.external_shape === "Irregular" && <MeasurementField label="Área construída manual" value={measurementDraft.external_area_manual} onChange={(value) => setMeasurementDraft((prev) => ({ ...prev, external_area_manual: value }))} onBlur={() => persistMeasurementDraft()} />}
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-3xl border border-border bg-card p-4 shadow-sm">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-xs font-bold uppercase text-primary">Fotos do imóvel</p>
