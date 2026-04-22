@@ -203,7 +203,7 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { messages, ctaType, customPrompt, attendantName } = await req.json();
+    const { messages, ctaType, customPrompt, attendantName, botName } = await req.json();
     
     if (!messages || !Array.isArray(messages)) {
       return new Response(JSON.stringify({ error: "Messages array required" }), {
@@ -220,7 +220,11 @@ serve(async (req) => {
     const extraPrompt = typeof customPrompt === "string" && customPrompt.trim()
       ? `\n\nINSTRUÇÕES ESPECÍFICAS DESTE BOT:\n${customPrompt.trim()}`
       : "";
-    const assistantName = typeof attendantName === "string" && attendantName.trim() ? attendantName.trim() : "Ana";
+    const configuredAttendant = typeof attendantName === "string" ? attendantName.trim() : "";
+    const configuredBotName = typeof botName === "string" ? botName.trim() : "";
+    const assistantName = configuredAttendant && !/^Ana(\s|$|•)/i.test(configuredAttendant)
+      ? configuredAttendant
+      : configuredBotName || configuredAttendant || "Assistente Capimobi";
     const strategy = `${baseStrategy}${extraPrompt}`
       .replaceAll("{ATTENDANT_NAME}", assistantName)
       .replaceAll("Ana", assistantName);
