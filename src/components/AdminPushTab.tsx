@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { BRAZIL_STATES } from "@/data/brazilStates";
+import { usePushSubscription } from "@/hooks/usePushSubscription";
 
 interface AdminPushTabProps {
   userId: string;
@@ -47,6 +48,26 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
   const stateCities = filterState !== "all" ? (regionData[filterState] || []) : [];
   const [estimate, setEstimate] = useState<number | null>(null);
   const [estimating, setEstimating] = useState(false);
+  const [adminPushSellerId, setAdminPushSellerId] = useState<string | undefined>();
+  const adminPush = usePushSubscription(adminPushSellerId);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("user_id", userId)
+        .maybeSingle();
+
+      if (cancelled || !data?.id) return;
+      setAdminPushSellerId(data.id);
+      await supabase
+        .from("platform_settings")
+        .upsert({ key: "admin_push_seller_id", value: data.id, updated_at: new Date().toISOString() } as any, { onConflict: "key" });
+    })();
+    return () => { cancelled = true; };
+  }, [userId]);
 
   // Estimate number of recipients when filters change
   useEffect(() => {
