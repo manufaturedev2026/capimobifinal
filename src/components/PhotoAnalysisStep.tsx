@@ -251,9 +251,9 @@ export default function PhotoAnalysisStep({
             {loading ? (
               <><Loader2 className="h-5 w-5 mr-2 animate-spin" /> Analisando imagens do imóvel...</>
             ) : analise ? (
-              <><Sparkles className="h-5 w-5 mr-2" /> Reanalisar fotos</>
+              <><Sparkles className="h-5 w-5 mr-2" /> Reanalisar fotos · 3 créditos</>
             ) : (
-              <><Sparkles className="h-5 w-5 mr-2" /> Analisar fotos com IA</>
+              <><Sparkles className="h-5 w-5 mr-2" /> Analisar fotos com IA · 3 créditos</>
             )}
           </Button>
           <AnimatePresence>

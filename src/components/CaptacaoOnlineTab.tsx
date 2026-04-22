@@ -416,6 +416,7 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
   };
 
   const generateAdWithAI = async () => {
+    toast({ title: "Gerando com IA", description: "Esta ação consome 2 créditos IA." });
     setGeneratingAI(true);
     try {
       const { data, error } = await supabase.functions.invoke("capture-chat", {

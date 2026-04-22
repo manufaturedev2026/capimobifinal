@@ -821,7 +821,7 @@ export default function AiValuationPage() {
             {loading ? (
               <><Loader2 className="h-5 w-5 animate-spin mr-2" /> Calculando avaliação...</>
             ) : (
-              <><Sparkles className="h-5 w-5 mr-2" /> Calcular Avaliação Profissional{analiseVisual ? " + Visual" : ""}</>
+              <><Sparkles className="h-5 w-5 mr-2" /> Calcular Avaliação Profissional{analiseVisual ? " + Visual" : ""} · 5 créditos</>
             )}
           </Button>
         </Card>
@@ -1219,10 +1219,10 @@ export default function AiValuationPage() {
                   onClick={generateAd}
                   className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground border-0"
                 >
-                  <Wand2 className="h-4 w-4 mr-2" /> Gerar anúncio IA
+                  <Wand2 className="h-4 w-4 mr-2" /> Gerar anúncio IA · 2 créditos
                 </Button>
                 <Button size="lg" onClick={handleCalculate} disabled={loading}>
-                  <Sparkles className="h-4 w-4 mr-2" /> Recalcular
+                  <Sparkles className="h-4 w-4 mr-2" /> Recalcular · 5 créditos
                 </Button>
               </div>
 
