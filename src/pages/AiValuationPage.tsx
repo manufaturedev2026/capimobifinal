@@ -497,7 +497,7 @@ export default function AiValuationPage() {
     return generateValuationReport({
       estado, cidade, bairro,
       rua: rua ? `${rua}${numero ? `, ${numero}` : ""}` : rua,
-      cep, tipo, tipoEstrutura: isTerreno ? undefined : tipoEstrutura,
+      cep, nomeImovel, tipo, tipoEstrutura: isTerreno ? undefined : tipoEstrutura,
       areaTerreno, areaTerreo, areaSuperior,
       areaConstruidaTotal,
       quartos, banheiros, suites, garagem,
@@ -1053,7 +1053,7 @@ export default function AiValuationPage() {
                   <FileBadge className="h-5 w-5 text-primary" /> Laudo Profissional PDF
                 </div>
                 <p className="text-xs text-muted-foreground mb-4">
-                  Gere um laudo de 6 páginas pronto para impressão, envio ao cliente ou anexo em propostas.
+                  Gere quantas versões precisar após corrigir nome, e-mail, CRECI ou CNAI.
                 </p>
 
                 {/* Identificação do avaliador */}
