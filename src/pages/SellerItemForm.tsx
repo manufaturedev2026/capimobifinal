@@ -567,18 +567,29 @@ export default function SellerItemForm() {
               className="px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="Número" />
           </div>
           <div>
-            <label className="text-xs text-muted-foreground mb-1 block">CEP (recomendado para Street View 360° preciso)</label>
-            <input
-              value={form.cep}
-              onChange={(e) => {
-                const raw = e.target.value.replace(/\D/g, "").slice(0, 8);
-                const formatted = raw.length > 5 ? `${raw.slice(0, 5)}-${raw.slice(5)}` : raw;
-                setForm((f) => ({ ...f, cep: formatted }));
-              }}
-              className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
-              placeholder="29705-037"
-              inputMode="numeric"
-            />
+            <label className="text-xs text-muted-foreground mb-1 block">CEP (busca rua, bairro, cidade e estado no Brasil)</label>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <input
+                value={form.cep}
+                onChange={(e) => {
+                  const raw = e.target.value.replace(/\D/g, "").slice(0, 8);
+                  const formatted = raw.length > 5 ? `${raw.slice(0, 5)}-${raw.slice(5)}` : raw;
+                  setForm((f) => ({ ...f, cep: formatted }));
+                }}
+                className="flex-1 px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
+                placeholder="29705-037"
+                inputMode="numeric"
+              />
+              <button
+                type="button"
+                onClick={handleCepLookup}
+                disabled={fetchingCep || form.cep.replace(/\D/g, "").length !== 8}
+                className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {fetchingCep ? <Loader2 size={16} className="animate-spin" /> : <Search size={16} />}
+                Buscar CEP
+              </button>
+            </div>
           </div>
         </div>
 
