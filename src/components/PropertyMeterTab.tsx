@@ -958,8 +958,9 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
   );
 }
 
-function MetricCard({ title, value }: { title: string; value: number }) {
-  return <div className="rounded-3xl border border-primary/15 bg-primary/10 p-4 shadow-sm"><p className="text-xs font-bold uppercase text-muted-foreground">{title}</p><p className="mt-1 font-display text-2xl font-extrabold text-primary">{formatArea(value)}</p></div>;
+function MetricCard({ title, value, suffix }: { title: string; value: number; suffix?: string }) {
+  const display = suffix === "%" ? `${Number(value || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%` : formatArea(value);
+  return <div className="rounded-3xl border border-primary/15 bg-primary/10 p-4 shadow-sm"><p className="text-xs font-bold uppercase text-muted-foreground">{title}</p><p className="mt-1 font-display text-2xl font-extrabold text-primary">{display}</p></div>;
 }
 
 function Field({ label, value, onChange }: { label: string; value: string; onChange: (value: string) => void }) {
