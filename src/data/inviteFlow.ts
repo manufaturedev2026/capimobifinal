@@ -30,8 +30,12 @@ export type FlowStep = BotStep | InputStep | ChoiceStep | CtaStep;
 export type CtaType = "internal" | "whatsapp" | "whatsapp_group" | "url" | "crm" | "captacao_imobiliaria";
 
 export interface InviteChatConfig {
+  id?: string;
+  name?: string;
+  slug?: string;
   attendantName: string;
   attendantAvatar: string;
+  aiPrompt?: string;
   ctaText: string;
   ctaUrl: string;
   ctaType: CtaType;
@@ -42,7 +46,14 @@ export interface InviteChatConfig {
   flow: FlowStep[];
   /** Per-CTA-type flows */
   flows: Record<CtaType, FlowStep[]>;
+  bots?: InviteBotConfig[];
 }
+
+export type InviteBotConfig = Omit<InviteChatConfig, "bots"> & {
+  id: string;
+  name: string;
+  slug: string;
+};
 
 // ─── Default flows per CTA type ───
 
@@ -230,8 +241,12 @@ export const DEFAULT_FLOWS: Record<CtaType, FlowStep[]> = {
 };
 
 export const DEFAULT_CONFIG: InviteChatConfig = {
+  id: "principal",
+  name: "Convite principal",
+  slug: "principal",
   attendantName: "Ana • Capimobi",
   attendantAvatar: "",
+  aiPrompt: "",
   ctaText: "🚀 Criar Minha Conta Grátis",
   ctaUrl: "/anunciar",
   ctaType: "internal",

@@ -3,10 +3,24 @@ import { motion, AnimatePresence } from "framer-motion";
 import { CheckCheck, ArrowLeft, Phone, Video, MoreVertical, Send, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { SITE_URL } from "@/lib/siteUrl";
 import { DEFAULT_CONFIG, DEFAULT_FLOWS, type FlowStep, type BotStep, type InputStep, type ChoiceStep, type InviteChatConfig } from "@/data/inviteFlow";
+
+const resolveInviteConfig = (parsed: any, botSlug?: string): InviteChatConfig => {
+  const base = { ...DEFAULT_CONFIG };
+  if (Array.isArray(parsed?.bots) && parsed.bots.length > 0) {
+    const selected = parsed.bots.find((bot: any) => bot.slug === botSlug) || parsed.bots.find((bot: any) => bot.slug === "principal") || parsed.bots[0];
+    const ctaType = selected.ctaType || base.ctaType;
+    const flows = selected.flows ? { ...DEFAULT_FLOWS, ...selected.flows } : { ...DEFAULT_FLOWS };
+    return { ...base, ...selected, ctaType, flows, flow: flows[ctaType] || DEFAULT_FLOWS[ctaType] };
+  }
+
+  const ctaType = parsed?.ctaType || base.ctaType;
+  const flows = parsed?.flows ? { ...DEFAULT_FLOWS, ...parsed.flows } : parsed?.flow?.length ? { ...DEFAULT_FLOWS, [ctaType]: parsed.flow } : { ...DEFAULT_FLOWS };
+  return { ...base, ...parsed, ctaType, flows, flow: flows[ctaType] || DEFAULT_FLOWS[ctaType] };
+};
 
 interface VisibleBubble {
   id: string;
@@ -15,6 +29,7 @@ interface VisibleBubble {
 }
 
 export default function InvitePage() {
+  const { botSlug } = useParams();
   const [config, setConfig] = useState<InviteChatConfig>(DEFAULT_CONFIG);
   const [flow, setFlow] = useState<FlowStep[]>([]);
   const [bubbles, setBubbles] = useState<VisibleBubble[]>([]);
@@ -65,21 +80,7 @@ export default function InvitePage() {
       if (data?.value) {
         try {
           const parsed = JSON.parse(data.value);
-          if (parsed.attendantName) cfg.attendantName = parsed.attendantName;
-          if (parsed.attendantAvatar) cfg.attendantAvatar = parsed.attendantAvatar;
-          if (parsed.ctaText) cfg.ctaText = parsed.ctaText;
-          if (parsed.ctaUrl) cfg.ctaUrl = parsed.ctaUrl;
-          if (parsed.ctaType) cfg.ctaType = parsed.ctaType;
-          if (parsed.chatMode) cfg.chatMode = parsed.chatMode;
-          if (parsed.crmRedirectUrl !== undefined) cfg.crmRedirectUrl = parsed.crmRedirectUrl;
-          if (parsed.crmButtonText) cfg.crmButtonText = parsed.crmButtonText;
-          // Migrate: support per-CTA flows
-          if (parsed.flows) {
-            cfg.flows = { ...DEFAULT_FLOWS, ...parsed.flows };
-          } else if (parsed.flow?.length) {
-            cfg.flows = { ...DEFAULT_FLOWS, [cfg.ctaType]: parsed.flow };
-          }
-          cfg.flow = cfg.flows[cfg.ctaType] || DEFAULT_FLOWS[cfg.ctaType];
+          cfg = resolveInviteConfig(parsed, botSlug);
         } catch {}
       }
       setConfig(cfg);
@@ -87,14 +88,14 @@ export default function InvitePage() {
       setFlow(activeFlow);
       setCurrentStepId(activeFlow[0]?.id ?? null);
     })();
-  }, []);
+  }, [botSlug]);
 
   // ─── AI Mode Logic ───
   const startAiChat = useCallback(async () => {
     setTyping(true);
     try {
       const { data, error } = await supabase.functions.invoke("invite-chat", {
-        body: { messages: [], ctaType: config.ctaType },
+        body: { messages: [], ctaType: config.ctaType, customPrompt: config.aiPrompt },
       });
       if (error) throw error;
       const reply = data?.reply || "Olá! 👋 Antes de tudo, qual é o seu nome? 😊";
@@ -107,7 +108,7 @@ export default function InvitePage() {
       setAiMessages([{ role: "assistant", content: "Olá! 👋 Antes de tudo, qual é o seu nome? 😊" }]);
     }
     setTyping(false);
-  }, []);
+  }, [config.ctaType, config.aiPrompt]);
 
   // Track page view
   useEffect(() => {
@@ -140,7 +141,7 @@ export default function InvitePage() {
     while (retries <= maxRetries && !success) {
       try {
         const { data, error } = await supabase.functions.invoke("invite-chat", {
-          body: { messages: updatedMessages, ctaType: config.ctaType },
+          body: { messages: updatedMessages, ctaType: config.ctaType, customPrompt: config.aiPrompt },
         });
 
         if (error) {
