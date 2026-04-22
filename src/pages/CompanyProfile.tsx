@@ -2352,6 +2352,7 @@ export default function CompanyProfile() {
           leadSource={leadCaptureContext?.leadSource}
           teamMemberId={teamMember?.id || null}
           teamMemberName={teamMember?.full_name || null}
+          partnerAgencyName={dbProfile?.company_name || dbProfile?.full_name || null}
           partnerBrokerSellerId={teamMember?._partnerSellerId || null}
           partnerBrokerUserId={teamMember?._partnerUserId || null}
           onComplete={() => {
