@@ -25,6 +25,7 @@ interface MapEmbedProps {
   cep?: string | null;
   className?: string;
   showStreetView?: boolean;
+  allowStreetViewFallback?: boolean;
 }
 
 interface NominatimResult {
@@ -183,7 +184,7 @@ function getAddressOverride(address: string) {
   return Object.entries(ADDRESS_OVERRIDES).find(([key]) => normalizedAddress.includes(key) || key.includes(normalizedAddress))?.[1];
 }
 
-export default function MapEmbed({ address, cep, className = "", showStreetView = true }: MapEmbedProps) {
+export default function MapEmbed({ address, cep, className = "", showStreetView = true, allowStreetViewFallback = false }: MapEmbedProps) {
   const encodedAddress = encodeURIComponent(address);
   const addressOverride = useMemo(() => getAddressOverride(address), [address]);
   const cleanCep = useMemo(() => (cep || "").replace(/\D/g, ""), [cep]);
@@ -470,11 +471,15 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
                  setView("map");
                  return;
                }
-               if (hasEmbeddedStreetView) setView("street");
+               if (hasEmbeddedStreetView) {
+                 setView("street");
+                 return;
+               }
+               if (allowStreetViewFallback) window.open(streetViewUrl, "_blank", "noopener,noreferrer");
             }}
             aria-busy={resolvingStreetView}
             className="absolute bottom-3 right-3 z-10 flex items-center gap-2 rounded-full bg-primary px-3.5 py-2 text-xs font-semibold text-primary-foreground shadow-lg transition-transform hover:scale-105 disabled:cursor-not-allowed disabled:opacity-70"
-             disabled={!isStreet && !hasEmbeddedStreetView}
+             disabled={!isStreet && !hasEmbeddedStreetView && !allowStreetViewFallback}
           >
             {resolvingStreetView ? <Loader2 size={14} className="animate-spin" /> : (isStreet ? <MapIcon size={14} /> : <Eye size={14} />)}
             {isStreet ? "Ver Mapa" : "Ver Street View 360°"}
