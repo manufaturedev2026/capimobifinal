@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { CSSProperties, ReactNode } from "react";
-import { ArrowLeft, Camera, Copy, Edit3, FileText, Home, ImagePlus, MoveDown, MoveUp, Plus, Ruler, Save, Trash2 } from "lucide-react";
+import { ArrowLeft, Camera, CheckCircle2, Copy, Edit3, FileText, Home, ImagePlus, MoveDown, MoveUp, Plus, Ruler, Save, Trash2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -131,6 +131,11 @@ const roomTypes = ["Sala", "Quarto", "Suíte", "Cozinha", "Banheiro", "Corredor"
 const shapes = ["Retângulo / Quadrado", "Triângulo Retângulo", "Formato em L", "Trapézio", "Circular", "Manual"];
 const areaTypes = ["Interna útil", "Construída coberta", "Externa descoberta", "Terreno"];
 const measurementModes = ["Medição por Ambientes", "Medição Externa da Construção", "Medição do Terreno"];
+const measurementModeDescriptions: Record<string, string> = {
+  "Medição por Ambientes": "Some cômodos e áreas cadastradas.",
+  "Medição Externa da Construção": "Use medidas externas da construção.",
+  "Medição do Terreno": "Priorize largura, comprimento ou área manual do terreno.",
+};
 const externalShapes = ["Retângulo", "L", "Triângulo", "Trapézio", "Irregular"];
 const photoCategories = ["Fachada", "Sala", "Quartos", "Cozinha", "Banheiros", "Área externa", "Garagem", "Outros"];
 const themedPrimaryButton = "bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/20";
@@ -718,9 +723,11 @@ export default function PropertyMeterTab({ userId, themeVars }: { userId: string
 
   const updateMeasurementMode = async (mode: string) => {
     if (!selectedProperty) return;
+    if (selectedProperty.measurement_mode === mode) return;
     setSelectedProperty({ ...selectedProperty, measurement_mode: mode });
     const { error } = await db.from(measuredPropertiesTable).update({ measurement_mode: mode }).eq("id", selectedProperty.id).eq("user_id", userId);
     if (error) toast({ title: "Erro ao alterar modo", description: error.message, variant: "destructive" });
+    else toast({ title: "Modo de medição atualizado", description: mode });
   };
 
   const sendToValuation = () => {
