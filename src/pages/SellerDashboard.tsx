@@ -6,7 +6,7 @@ import { getStoreTheme } from "@/components/StoreThemePicker";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Package, Eye, Plus, Settings, Edit, Trash2, Copy, ToggleLeft, ToggleRight, Search, Image, LogOut, BarChart3, Star, Crown, Zap, AlertTriangle, Shield, MessageCircle, Home, UserCircle, Headphones, Globe, ExternalLink, CheckCircle2, ClipboardCopy, Lock, Clapperboard, Menu, X, Building2, Users, BadgeCheck, GripVertical, ChevronRight, Sparkles, FileText, Magnet, Camera, Bell, Download, Calculator, Palette, Handshake, Megaphone, Calendar as CalendarIcon } from "lucide-react";
+import { Package, Eye, Plus, Settings, Edit, Trash2, Copy, ToggleLeft, ToggleRight, Search, Image, LogOut, BarChart3, Star, Crown, Zap, AlertTriangle, Shield, MessageCircle, Home, UserCircle, Headphones, Globe, ExternalLink, CheckCircle2, ClipboardCopy, Lock, Clapperboard, Menu, X, Building2, Users, BadgeCheck, GripVertical, ChevronRight, Sparkles, FileText, Magnet, Camera, Bell, Download, Calculator, Palette, Handshake, Megaphone, Calendar as CalendarIcon, Ruler } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import SoldCountdown from "@/components/SoldCountdown";
 import StoreEffectsPicker from "@/components/StoreEffectsPicker";
@@ -20,6 +20,7 @@ import CaptacaoOnlineTab from "@/components/CaptacaoOnlineTab";
 import StoriesTab from "@/components/StoriesTab";
 import NotificationsTab from "@/components/NotificationsTab";
 import ProfitCalculatorTab from "@/components/ProfitCalculatorTab";
+import PropertyMeterTab from "@/components/PropertyMeterTab";
 import PartnerBrokerTab from "@/components/PartnerBrokerTab";
 import PropertyPartnershipsTab from "@/components/PropertyPartnershipsTab";
 import SellerAdsTab from "@/components/SellerAdsTab";
@@ -58,7 +59,7 @@ type SellerItem = {
   sold_at: string | null;
 };
 
-type DashboardTab = "overview" | "items" | "stats" | "domain" | "loja-espelhada" | "events" | "referral" | "crm" | "gallery" | "rentals" | "contracts" | "captacao" | "stories" | "notifications" | "profit" | "customization" | "profile" | "imobiliarias" | "ads" | "parcerias";
+type DashboardTab = "overview" | "items" | "stats" | "domain" | "loja-espelhada" | "events" | "referral" | "crm" | "gallery" | "rentals" | "contracts" | "captacao" | "stories" | "notifications" | "profit" | "meter" | "customization" | "profile" | "imobiliarias" | "ads" | "parcerias";
 
 export default function SellerDashboard() {
   const { user, profile, signOut, refreshProfile, loading: authLoading } = useAuth();
@@ -376,6 +377,7 @@ export default function SellerDashboard() {
     { id: "stories" as DashboardTab, label: "Stories", icon: Camera },
     { id: "notifications" as DashboardTab, label: "Push", icon: Bell },
     { id: "profit" as DashboardTab, label: "Calculadora de Lucro", icon: Calculator },
+    { id: "meter" as DashboardTab, label: "Medidor de Imóveis", icon: Ruler },
     { id: "domain", label: "Meu Domínio", icon: Globe, locked: lockedTabs.includes("domain") },
     { id: "ads" as DashboardTab, label: "Fazer ADS", icon: Megaphone, tourId: "tour-ads" },
     { id: "imobiliarias" as DashboardTab, label: "Imobiliárias", icon: Building2 },
@@ -1170,6 +1172,10 @@ export default function SellerDashboard() {
             {/* Profit Calculator Tab */}
             {activeTab === "profit" && (
               <ProfitCalculatorTab />
+            )}
+
+            {activeTab === "meter" && user?.id && (
+              <PropertyMeterTab userId={user.id} />
             )}
 
             {/* Customization Tab */}
