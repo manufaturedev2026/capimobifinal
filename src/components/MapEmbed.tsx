@@ -319,10 +319,16 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
 
       try {
         const viaCepRes = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
-        if (!viaCepRes.ok) return;
+        if (!viaCepRes.ok) {
+          await resolveFromAddressCandidates();
+          return;
+        }
 
         const viaCep = await viaCepRes.json();
-        if (viaCep.erro || !viaCep.logradouro) return;
+        if (viaCep.erro || !viaCep.logradouro) {
+          await resolveFromAddressCandidates();
+          return;
+        }
 
         const street = viaCep.logradouro as string;
         const district = (viaCep.bairro as string) || "";
@@ -436,7 +442,10 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
         const bestMatch = rankedResults[0];
         if (bestMatch && bestMatch.score > 0) {
           applyStreetViewCoords(String(bestMatch.lat), String(bestMatch.lon));
+          return;
         }
+
+        await resolveFromAddressCandidates();
       } catch {
         /* silencioso: sem street view */
       } finally {
