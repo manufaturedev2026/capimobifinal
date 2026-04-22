@@ -420,6 +420,7 @@ export default function PartnerAgencyTab({ profileId, userId, maxMembers }: { pr
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             <Input placeholder="Nome da imobiliária" value={companyInfo.company_name} onChange={(e) => setCompanyInfo((p) => ({ ...p, company_name: e.target.value }))} />
+            <Input placeholder="CNPJ" value={companyInfo.cnpj} onChange={(e) => setCompanyInfo((p) => ({ ...p, cnpj: e.target.value }))} />
             <Input placeholder="WhatsApp / telefone" value={companyInfo.phone} onChange={(e) => setCompanyInfo((p) => ({ ...p, phone: e.target.value }))} />
             <Input placeholder="E-mail" value={companyInfo.email} disabled className="bg-muted/50" />
             <Input placeholder="Instagram" value={companyInfo.instagram} onChange={(e) => setCompanyInfo((p) => ({ ...p, instagram: e.target.value }))} />
