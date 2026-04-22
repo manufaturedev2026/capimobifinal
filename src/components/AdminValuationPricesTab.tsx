@@ -134,7 +134,7 @@ export default function AdminValuationPricesTab() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-2xl font-bold flex items-center gap-2">
+          <h2 className="text-2xl font-bold flex items-center gap-2 text-foreground">
             <DollarSign className="h-6 w-6 text-primary" /> Avaliação IA — Preços por m²
           </h2>
           <p className="text-sm text-muted-foreground">
@@ -142,10 +142,10 @@ export default function AdminValuationPricesTab() {
           </p>
         </div>
         <div className="flex gap-2">
-          <Button variant={view === "prices" ? "default" : "outline"} size="sm" onClick={() => setView("prices")}>
+          <Button variant={view === "prices" ? "default" : "secondary"} size="sm" onClick={() => setView("prices")}>
             <DollarSign className="h-4 w-4 mr-1" /> Preços ({rows.length})
           </Button>
-          <Button variant={view === "history" ? "default" : "outline"} size="sm" onClick={() => setView("history")}>
+          <Button variant={view === "history" ? "default" : "secondary"} size="sm" onClick={() => setView("history")}>
             <History className="h-4 w-4 mr-1" /> Histórico ({valuations.length})
           </Button>
         </div>
