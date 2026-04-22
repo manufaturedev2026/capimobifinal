@@ -784,7 +784,11 @@ export default function PropertyMeterTab({ userId, themeVars }: { userId: string
 
   const sendToValuation = () => {
     if (!selectedProperty) return;
-    sessionStorage.setItem("meter_property_for_valuation", JSON.stringify({ property: selectedProperty, rooms, photos, areas: technicalAreas }));
+    const internalRooms = rooms.filter((room) => room.area_type !== "Externa descoberta");
+    const externalRooms = rooms.filter((room) => room.area_type === "Externa descoberta");
+    const internalPhotos = photos.filter((photo) => photo.room_id ? internalRooms.some((room) => room.id === photo.room_id) : photo.category !== "Área externa" && photo.category !== "Garagem");
+    const externalPhotos = photos.filter((photo) => photo.category === "Área externa" || photo.category === "Garagem" || (photo.room_id ? externalRooms.some((room) => room.id === photo.room_id) : false));
+    sessionStorage.setItem("meter_property_for_valuation", JSON.stringify({ property: selectedProperty, rooms, photos, internalRooms, externalRooms, internalPhotos, externalPhotos, externalFeatures: getExternalFeatures(selectedProperty.notes), areas: technicalAreas }));
     navigate(`/avaliacao-ia?imovel=${selectedProperty.id}`);
   };
 
