@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback, CSSProperties } from "react";
 import { MessageCircle, X, Send, Bot, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
+import { supabase } from "@/integrations/supabase/client";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
@@ -43,11 +44,12 @@ export default function AiHelpChat({ themeVars }: AiHelpChatProps) {
     let assistantSoFar = "";
 
     try {
+      const { data: sessionData } = await supabase.auth.getSession();
       const resp = await fetch(CHAT_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${(await import("@/integrations/supabase/client")).supabase.auth.getSession ? (await (await import("@/integrations/supabase/client")).supabase.auth.getSession()).data.session?.access_token || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY : import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          Authorization: `Bearer ${sessionData.session?.access_token || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
         body: JSON.stringify({ messages: allMessages }),
       });
