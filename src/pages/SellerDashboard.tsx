@@ -1175,7 +1175,7 @@ export default function SellerDashboard() {
             )}
 
             {activeTab === "meter" && user?.id && (
-              <PropertyMeterTab userId={user.id} />
+              <PropertyMeterTab userId={user.id} themeVars={dashThemeVars} />
             )}
 
             {/* Customization Tab */}
