@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import { ArrowLeft, Camera, Copy, Edit3, FileText, Home, ImagePlus, Link2, Mail, MessageCircle, MoveDown, MoveUp, Plus, Ruler, Save, Share2, Trash2 } from "lucide-react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,9 +16,21 @@ type MeasuredProperty = {
   name: string;
   property_type: string;
   address: string | null;
+  cep: string | null;
+  street: string | null;
+  number: string | null;
+  complement: string | null;
+  state: string | null;
+  reference_point: string | null;
   city: string;
   neighborhood: string;
   notes: string | null;
+  asking_price: number | null;
+  bedrooms: number | null;
+  bathrooms: number | null;
+  parking_spaces: number | null;
+  iptu: number | null;
+  condominium_fee: number | null;
   total_area: number;
   land_width: number | null;
   land_length: number | null;
@@ -60,6 +73,7 @@ type MeasuredPhoto = {
   user_id: string;
   image_url: string;
   category: string;
+  room_id: string | null;
   sort_order: number;
 };
 
@@ -67,8 +81,20 @@ type PropertyForm = {
   name: string;
   property_type: string;
   address: string;
+  cep: string;
+  street: string;
+  number: string;
+  complement: string;
+  state: string;
+  reference_point: string;
   city: string;
   neighborhood: string;
+  asking_price: string;
+  bedrooms: string;
+  bathrooms: string;
+  parking_spaces: string;
+  iptu: string;
+  condominium_fee: string;
   land_width: string;
   land_length: string;
   land_area_manual: string;
@@ -114,8 +140,20 @@ const emptyPropertyForm: PropertyForm = {
   name: "",
   property_type: "Casa",
   address: "",
+  cep: "",
+  street: "",
+  number: "",
+  complement: "",
+  state: "",
+  reference_point: "",
   city: "",
   neighborhood: "",
+  asking_price: "",
+  bedrooms: "",
+  bathrooms: "",
+  parking_spaces: "",
+  iptu: "",
+  condominium_fee: "",
   land_width: "",
   land_length: "",
   land_area_manual: "",
@@ -205,8 +243,20 @@ const propertyToForm = (property: MeasuredProperty): PropertyForm => ({
   name: property.name,
   property_type: property.property_type,
   address: property.address || "",
+  cep: property.cep || "",
+  street: property.street || "",
+  number: property.number || "",
+  complement: property.complement || "",
+  state: property.state || "",
+  reference_point: property.reference_point || "",
   city: property.city,
   neighborhood: property.neighborhood,
+  asking_price: property.asking_price?.toString() || "",
+  bedrooms: property.bedrooms?.toString() || "",
+  bathrooms: property.bathrooms?.toString() || "",
+  parking_spaces: property.parking_spaces?.toString() || "",
+  iptu: property.iptu?.toString() || "",
+  condominium_fee: property.condominium_fee?.toString() || "",
   land_width: property.land_width?.toString() || "",
   land_length: property.land_length?.toString() || "",
   land_area_manual: property.land_area_manual?.toString() || "",
