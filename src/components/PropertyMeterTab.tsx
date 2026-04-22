@@ -877,7 +877,7 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
               <div>
                 <p className="mb-2 inline-flex rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary">{selectedProperty.property_type}</p>
                 <h2 className="font-display text-3xl font-extrabold text-foreground">{selectedProperty.name}</h2>
-                <p className="mt-1 text-sm text-muted-foreground">{selectedProperty.neighborhood}, {selectedProperty.city}</p>
+                <p className="mt-1 text-sm text-muted-foreground">{selectedProperty.address || selectedProperty.street} • {selectedProperty.neighborhood}, {selectedProperty.city}/{selectedProperty.state}</p>
               </div>
               <div className="rounded-2xl bg-primary px-5 py-4 text-primary-foreground shadow-lg shadow-primary/20">
                 <p className="text-xs font-semibold opacity-80">Área Total Atual</p>
@@ -889,6 +889,7 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
               <Button variant="outline" onClick={() => openEditProperty(selectedProperty)} className={`rounded-2xl ${themedOutlineButton}`}><Edit3 size={16} /> Editar imóvel</Button>
               <Button variant="outline" onClick={() => setReportDialogOpen(true)} className={`rounded-2xl ${themedOutlineButton}`}><FileText size={16} /> Gerar Laudo</Button>
               <Button variant="outline" onClick={() => setShareDialogOpen(true)} className={`rounded-2xl ${themedOutlineButton}`}><Share2 size={16} /> Compartilhar Imóvel</Button>
+              <Button onClick={sendToValuation} className={`rounded-2xl ${themedPrimaryButton}`}><FileText size={16} /> Enviar para Avaliador</Button>
             </div>
           </div>
 
@@ -917,6 +918,7 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
               </div>
               <div className="flex flex-col gap-2 sm:flex-row">
                 <Picker label="Categoria" value={photoCategory} options={photoCategories} onChange={setPhotoCategory} />
+                <Picker label="Ambiente" value={photoRoomId} options={["geral", ...rooms.map((room) => room.id)]} optionLabels={{ geral: "Imóvel geral", ...Object.fromEntries(rooms.map((room) => [room.id, room.name])) }} onChange={setPhotoRoomId} />
                 <label className={`inline-flex h-12 cursor-pointer items-center justify-center gap-2 rounded-2xl px-4 text-sm font-bold ${themedPrimaryButton}`}>
                   <ImagePlus size={16} /> Adicionar fotos
                   <input type="file" multiple accept="image/*" className="hidden" onChange={(event) => uploadPhotos(event.target.files)} />
@@ -931,7 +933,7 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
                   <div key={photo.id} className="group overflow-hidden rounded-2xl border border-border bg-secondary/40">
                     <img src={photo.image_url} alt={`Foto ${photo.category}`} className="aspect-[4/3] w-full object-cover" loading="lazy" />
                     <div className="flex items-center justify-between gap-1 p-2">
-                      <span className="truncate text-xs font-bold text-foreground">{photo.category}</span>
+                      <span className="truncate text-xs font-bold text-foreground">{photo.category}{photo.room_id ? ` • ${rooms.find((room) => room.id === photo.room_id)?.name || "Ambiente"}` : ""}</span>
                       <div className="flex gap-1">
                         <button type="button" onClick={() => movePhoto(photo, -1)} className="text-primary"><MoveUp size={14} /></button>
                         <button type="button" onClick={() => movePhoto(photo, 1)} className="text-primary"><MoveDown size={14} /></button>
