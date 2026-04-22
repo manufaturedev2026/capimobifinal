@@ -100,7 +100,7 @@ export default function InvitePage() {
         body: {
           target_user_id: adminUserId,
           title: "Novo lead do bot de convite",
-          body: `${leadName} enviou WhatsApp ${leadPhone}`,
+          body: leadPhone ? `${leadName} enviou WhatsApp ${leadPhone}` : `${leadName} avançou no convite`,
           url: "/admin",
           source: notes,
         },
@@ -342,6 +342,18 @@ export default function InvitePage() {
   const showChoices = !isAiMode && interactionReady && currentStep?.type === "choice";
   const showAiInput = isAiMode && !showCta;
 
+  const handleFinalCtaClick = () => {
+    trackEvent("signup_clicked");
+    const notes = `Lead clicou no botão final do convite | Bot: ${config.name || config.slug || "principal"} | Tipo: ${config.ctaType}`;
+    notifyAdminLead(userName || "Visitante do convite", "", notes);
+
+    if (config.ctaType === "internal") {
+      navigate(config.ctaUrl);
+    } else {
+      window.open(config.ctaUrl, "_blank", "noopener");
+    }
+  };
+
   return (
     <>
       <Helmet>
@@ -521,7 +533,7 @@ export default function InvitePage() {
             )}
             {showCta && config.ctaType !== "crm" && config.ctaType !== "captacao_imobiliaria" && (
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="flex flex-col items-center gap-3 pt-4 pb-8">
-                <Button onClick={() => { trackEvent("signup_clicked"); if (config.ctaType === "internal") navigate(config.ctaUrl); else window.open(config.ctaUrl, "_blank", "noopener"); }} className="bg-[#25d366] hover:bg-[#22c55e] text-white font-bold text-base px-8 py-6 rounded-full shadow-lg animate-pulse" size="lg">
+                <Button onClick={handleFinalCtaClick} className="bg-[#25d366] hover:bg-[#22c55e] text-white font-bold text-base px-8 py-6 rounded-full shadow-lg animate-pulse" size="lg">
                   {config.ctaText}
                 </Button>
                 <p className="text-[#667781] text-xs text-center">Cadastro rápido • 100% gratuito • Sem cartão de crédito</p>
