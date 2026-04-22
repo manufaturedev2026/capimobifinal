@@ -626,6 +626,13 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
     if (selectedProperty) fetchPhotos(selectedProperty.id);
   };
 
+  const updateMeasurementMode = async (mode: string) => {
+    if (!selectedProperty) return;
+    setSelectedProperty({ ...selectedProperty, measurement_mode: mode });
+    const { error } = await db.from(measuredPropertiesTable).update({ measurement_mode: mode }).eq("id", selectedProperty.id).eq("user_id", userId);
+    if (error) toast({ title: "Erro ao alterar modo", description: error.message, variant: "destructive" });
+  };
+
   const shareText = selectedProperty ? `${selectedProperty.name}\nÁrea total: ${formatArea(livePropertyTotal)}\n${selectedProperty.address ? `${selectedProperty.address}\n` : ""}${selectedProperty.neighborhood}, ${selectedProperty.city}\nAmbientes: ${rooms.map((room) => `${room.name} (${formatArea(room.area)})`).join(", ")}` : "";
   const shareUrl = selectedProperty ? `${window.location.origin}/painel?medidor=${selectedProperty.id}` : window.location.href;
 
@@ -799,7 +806,7 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
             <p className="text-xs font-bold uppercase text-primary">Modos de medição</p>
             <div className="mt-3 grid gap-2 md:grid-cols-3">
               {measurementModes.map((mode) => (
-                <button key={mode} type="button" onClick={() => setPropertyForm((prev) => ({ ...prev, measurement_mode: mode }))} className={`rounded-2xl border p-3 text-left text-sm font-bold transition-all ${selectedProperty.measurement_mode === mode ? "border-primary bg-primary text-primary-foreground" : "border-primary/20 bg-primary/10 text-primary"}`}>{mode}</button>
+                <button key={mode} type="button" onClick={() => updateMeasurementMode(mode)} className={`rounded-2xl border p-3 text-left text-sm font-bold transition-all ${selectedProperty.measurement_mode === mode ? "border-primary bg-primary text-primary-foreground" : "border-primary/20 bg-primary/10 text-primary"}`}>{mode}</button>
               ))}
             </div>
             <p className="mt-3 text-sm text-muted-foreground">Modo atual: <strong className="text-foreground">{selectedProperty.measurement_mode || "Medição por Ambientes"}</strong></p>
