@@ -1,5 +1,6 @@
 // Avaliação imobiliária profissional v3 — pesos macro % diretos + modo avançado
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { consumeAiCredits, refundAiCredits } from "../_shared/ai-credits.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -1042,6 +1043,7 @@ Valor de R$ ${calc.valorFinal.toLocaleString("pt-BR")} reflete metragem, padrão
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+  let credit: Awaited<ReturnType<typeof consumeAiCredits>> | null = null;
 
   try {
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
@@ -1055,6 +1057,9 @@ Deno.serve(async (req) => {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
+    credit = await consumeAiCredits(req, "property_valuation", corsHeaders);
+    if (!credit.ok) return credit.response;
 
     const areaRefForMarket =
       (Number(data.areaConstruidaTerreo) || 0) + (Number(data.areaConstruidaSuperior) || 0) ||
@@ -1098,16 +1103,6 @@ Deno.serve(async (req) => {
 
     const ai = await aiEnrich(data, calc, precoM2, source, market) ?? fallbackAnalysis(data, calc, market);
 
-    const authHeader = req.headers.get("Authorization");
-    let userId: string | null = null;
-    if (authHeader) {
-      try {
-        const token = authHeader.replace("Bearer ", "");
-        const { data: { user } } = await supabase.auth.getUser(token);
-        userId = user?.id ?? null;
-      } catch {}
-    }
-
     const comparaveisOut = market.topComparables.map(c => ({
       titulo: c.title ?? "Imóvel similar",
       bairro: c.neighborhood ?? "",
@@ -1134,7 +1129,7 @@ Deno.serve(async (req) => {
       : "Tabela regional de preços";
 
     const { data: insertedValuation } = await supabase.from("property_valuations").insert({
-      user_id: userId,
+      user_id: credit.userId,
       measured_property_id: data.measuredPropertyId ?? null,
       estado: data.estado, cidade: data.cidade, bairro: data.bairro,
       rua: data.rua, numero: data.numero, cep: data.cep,
@@ -1233,6 +1228,7 @@ Deno.serve(async (req) => {
     }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
   } catch (e) {
     console.error("valuation error:", e);
+    if (credit?.ok) await refundAiCredits(credit.admin, credit.userId, credit.sellerId, credit.cost, "property_valuation");
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

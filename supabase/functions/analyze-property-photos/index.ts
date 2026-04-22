@@ -1,3 +1,5 @@
+import { consumeAiCredits, refundAiCredits } from "../_shared/ai-credits.ts";
+
 // Edge function: analyze-property-photos
 // Recebe fotos (data URLs base64) categorizadas e devolve scores visuais + ajuste percentual.
 // Não armazena imagens — análise é stateless. Modelo: google/gemini-2.5-pro
@@ -25,6 +27,9 @@ Deno.serve(async (req) => {
         status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
+    const credit = await consumeAiCredits(req, "photo_analysis", corsHeaders);
+    if (!credit.ok) return credit.response;
 
     const body = await req.json();
     const photos = (body?.photos ?? []) as PhotoIn[];
@@ -172,6 +177,7 @@ Distribuição interna do ajuste (soma = ajuste_total_pct):
     });
 
     if (!aiResp.ok) {
+      await refundAiCredits(credit.admin, credit.userId, credit.sellerId, credit.cost, "photo_analysis");
       if (aiResp.status === 429) {
         return new Response(JSON.stringify({ error: "Limite de requisições atingido. Aguarde alguns instantes." }), {
           status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -192,6 +198,7 @@ Distribuição interna do ajuste (soma = ajuste_total_pct):
     const aiData = await aiResp.json();
     const toolCall = aiData?.choices?.[0]?.message?.tool_calls?.[0];
     if (!toolCall?.function?.arguments) {
+      await refundAiCredits(credit.admin, credit.userId, credit.sellerId, credit.cost, "photo_analysis");
       console.error("Resposta sem tool call:", JSON.stringify(aiData).slice(0, 500));
       return new Response(JSON.stringify({ error: "IA não retornou análise estruturada" }), {
         status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -202,6 +209,7 @@ Distribuição interna do ajuste (soma = ajuste_total_pct):
     try {
       parsed = JSON.parse(toolCall.function.arguments);
     } catch (e) {
+      await refundAiCredits(credit.admin, credit.userId, credit.sellerId, credit.cost, "photo_analysis");
       console.error("JSON inválido:", toolCall.function.arguments);
       return new Response(JSON.stringify({ error: "Resposta da IA inválida" }), {
         status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },

@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback, CSSProperties } from "react";
 import { MessageCircle, X, Send, Bot, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
+import { supabase } from "@/integrations/supabase/client";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
@@ -43,11 +44,12 @@ export default function AiHelpChat({ themeVars }: AiHelpChatProps) {
     let assistantSoFar = "";
 
     try {
+      const { data: sessionData } = await supabase.auth.getSession();
       const resp = await fetch(CHAT_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          Authorization: `Bearer ${sessionData.session?.access_token || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
         body: JSON.stringify({ messages: allMessages }),
       });
@@ -135,7 +137,7 @@ export default function AiHelpChat({ themeVars }: AiHelpChatProps) {
               <Bot size={22} />
               <div className="flex-1">
                 <p className="font-semibold text-sm">Assistente Capimobi</p>
-                <p className="text-[10px] opacity-80">IA para tirar suas dúvidas</p>
+                <p className="text-[10px] opacity-80">IA para tirar suas dúvidas · 1 crédito por mensagem</p>
               </div>
               <button onClick={() => setOpen(false)} className="p-1 rounded-full hover:bg-white/20 transition">
                 <X size={18} />
@@ -148,7 +150,7 @@ export default function AiHelpChat({ themeVars }: AiHelpChatProps) {
                 <div className="text-center text-muted-foreground text-sm py-8 space-y-2">
                   <Bot size={36} className="mx-auto opacity-40" />
                   <p>Olá! 👋 Como posso ajudar?</p>
-                  <p className="text-xs">Pergunte sobre anúncios, loja, CRM, planos...</p>
+                  <p className="text-xs">Pergunte sobre anúncios, loja, CRM, planos... · custo: 1 crédito</p>
                 </div>
               )}
               {messages.map((m, i) => (

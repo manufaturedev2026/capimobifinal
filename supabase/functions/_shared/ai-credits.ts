@@ -6,6 +6,8 @@ export const AI_CREDIT_COSTS: Record<string, number> = {
   valuation_ad: 2,
   photo_analysis: 3,
   platform_help_chat: 1,
+  agenda_bot_chat: 1,
+  invite_chat: 1,
 };
 
 type CreditCheck = {
@@ -111,4 +113,38 @@ export async function refundAiCredits(
     p_notes: "Estorno automático: a IA não concluiu a solicitação.",
     p_metadata: { source: "edge_function" },
   });
+}
+
+export async function consumeAiCreditsForUser(
+  admin: ReturnType<typeof createClient>,
+  userId: string,
+  sellerId: string | null,
+  toolKey: keyof typeof AI_CREDIT_COSTS,
+  corsHeaders: Record<string, string>,
+): Promise<CreditCheck> {
+  const cost = AI_CREDIT_COSTS[toolKey];
+  await admin.rpc("refresh_ai_monthly_credits", { p_user_id: userId, p_seller_id: sellerId });
+  const { data: debit, error } = await admin.rpc("consume_ai_credits", {
+    p_user_id: userId,
+    p_amount: cost,
+    p_tool_key: toolKey,
+    p_seller_id: sellerId,
+    p_notes: `Uso de ${toolKey}`,
+    p_metadata: { source: "edge_function" },
+  });
+
+  if (error || !debit?.success) {
+    return {
+      ok: false,
+      response: new Response(JSON.stringify({
+        error: "Créditos IA insuficientes. Compre mais créditos ou aguarde a renovação mensal.",
+        aiCredits: { balance: debit?.balance ?? 0, required: cost },
+      }), {
+        status: 402,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      }),
+    };
+  }
+
+  return { ok: true, admin, userId, sellerId, cost, balance: Number(debit.balance ?? 0) };
 }
