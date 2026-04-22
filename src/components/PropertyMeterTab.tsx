@@ -375,6 +375,15 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
       land_length: toNumber(propertyForm.land_length) || null,
       land_area_manual: toNumber(propertyForm.land_area_manual) || null,
       measured_by: propertyForm.measured_by.trim() || null,
+      measurement_mode: propertyForm.measurement_mode,
+      external_shape: propertyForm.external_shape,
+      external_width: toNumber(propertyForm.external_width) || null,
+      external_length: toNumber(propertyForm.external_length) || null,
+      external_base: toNumber(propertyForm.external_base) || null,
+      external_height: toNumber(propertyForm.external_height) || null,
+      external_side_a: toNumber(propertyForm.external_side_a) || null,
+      external_side_b: toNumber(propertyForm.external_side_b) || null,
+      external_area_manual: toNumber(propertyForm.external_area_manual) || null,
       notes: propertyForm.notes.trim() || null,
     };
 
