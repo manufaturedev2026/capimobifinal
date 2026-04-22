@@ -306,10 +306,10 @@ export default function PartnerAgencyTab({ profileId, userId, maxMembers }: { pr
       </div>
 
       {/* Sub-tabs */}
-      <div className="flex gap-1 bg-secondary/50 p-1 rounded-xl">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-1 bg-secondary/50 p-1 rounded-xl">
         <button
           onClick={() => { setActiveSubTab("loja-espelho"); setSearchQuery(""); }}
-          className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
+          className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
             activeSubTab === "loja-espelho"
               ? "bg-background text-foreground shadow-sm"
               : "text-muted-foreground hover:text-foreground"
@@ -317,10 +317,11 @@ export default function PartnerAgencyTab({ profileId, userId, maxMembers }: { pr
         >
           <Users size={16} />
           Loja espelho
+          <HelpBubble text={tabHelp["loja-espelho"]} />
         </button>
         <button
           onClick={() => { setActiveSubTab("vinculados"); setSearchQuery(""); }}
-          className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
+          className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
             activeSubTab === "vinculados"
               ? "bg-background text-foreground shadow-sm"
               : "text-muted-foreground hover:text-foreground"
@@ -328,10 +329,11 @@ export default function PartnerAgencyTab({ profileId, userId, maxMembers }: { pr
         >
           <CheckCircle2 size={16} />
           Vinculados ({approvedCount})
+          <HelpBubble text={tabHelp.vinculados} />
         </button>
         <button
           onClick={() => { setActiveSubTab("solicitacoes"); setSearchQuery(""); }}
-          className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
+          className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
             activeSubTab === "solicitacoes"
               ? "bg-background text-foreground shadow-sm"
               : "text-muted-foreground hover:text-foreground"
@@ -339,6 +341,7 @@ export default function PartnerAgencyTab({ profileId, userId, maxMembers }: { pr
         >
           <Clock size={16} />
           Solicitações
+          <HelpBubble text={tabHelp.solicitacoes} />
           {pendingCount > 0 && (
             <span className="w-5 h-5 rounded-full bg-yellow-500 text-white text-[10px] font-bold flex items-center justify-center">
               {pendingCount}
@@ -347,8 +350,13 @@ export default function PartnerAgencyTab({ profileId, userId, maxMembers }: { pr
         </button>
       </div>
 
+      <div className="flex items-start gap-2 rounded-xl border border-border bg-card p-3 text-sm text-muted-foreground">
+        <HelpBubble text={tabHelp[activeSubTab]} />
+        <p>{tabHelp[activeSubTab]}</p>
+      </div>
+
       {/* Search Bar */}
-      {requests.length > 0 && (
+      {activeSubTab !== "loja-espelho" && requests.length > 0 && (
         <div className="relative">
           <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <Input
