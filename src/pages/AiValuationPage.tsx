@@ -649,6 +649,9 @@ export default function AiValuationPage() {
         <Card className="p-6 md:p-8 shadow-xl border-border/50 backdrop-blur-sm bg-card/95">
           <Section icon={<MapPin className="h-4 w-4" />} title="Localização">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Field label="Nome do imóvel *">
+                <Input value={nomeImovel} onChange={(e) => setNomeImovel(e.target.value)} placeholder="Ex: Casa Jardim Europa" />
+              </Field>
               <Field label="Estado *">
                 <Select value={estado} onValueChange={(v) => { setEstado(v); setCidade(""); }}>
                   <SelectTrigger><SelectValue placeholder="UF" /></SelectTrigger>
@@ -668,14 +671,20 @@ export default function AiValuationPage() {
               <Field label="Bairro *">
                 <Input value={bairro} onChange={(e) => setBairro(e.target.value)} placeholder="Ex: Praia do Canto" />
               </Field>
-              <Field label="CEP (opcional)">
+              <Field label="CEP *">
                 <Input value={cep} onChange={(e) => setCep(e.target.value)} placeholder="00000-000" />
               </Field>
-              <Field label="Rua (opcional)">
+              <Field label="Rua *">
                 <Input value={rua} onChange={(e) => setRua(e.target.value)} placeholder="Nome da rua" />
               </Field>
-              <Field label="Número (opcional)">
+              <Field label="Número *">
                 <Input value={numero} onChange={(e) => setNumero(e.target.value)} placeholder="Ex: 123" />
+              </Field>
+              <Field label="Complemento">
+                <Input value={complemento} onChange={(e) => setComplemento(e.target.value)} placeholder="Apto, bloco, lote" />
+              </Field>
+              <Field label="Referência">
+                <Input value={referencia} onChange={(e) => setReferencia(e.target.value)} placeholder="Próximo a..." />
               </Field>
             </div>
           </Section>
@@ -753,6 +762,9 @@ export default function AiValuationPage() {
                 <Field label="Salas"><Input type="number" value={salas} onChange={(e) => setSalas(e.target.value)} /></Field>
                 <Field label="Cozinhas"><Input type="number" value={cozinhas} onChange={(e) => setCozinhas(e.target.value)} /></Field>
                 <Field label="Escritórios"><Input type="number" value={escritorios} onChange={(e) => setEscritorios(e.target.value)} /></Field>
+                <Field label="Valor pedido"><Input type="number" value={valorPedido} onChange={(e) => setValorPedido(e.target.value)} /></Field>
+                <Field label="IPTU"><Input type="number" value={iptu} onChange={(e) => setIptu(e.target.value)} /></Field>
+                <Field label="Condomínio"><Input type="number" value={condominio} onChange={(e) => setCondominio(e.target.value)} /></Field>
               </div>
             </Section>
           )}
