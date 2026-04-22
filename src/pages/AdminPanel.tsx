@@ -513,6 +513,8 @@ export default function AdminPanel() {
     { key: "invite" as const, label: "Convite", icon: MessageCircle },
     { key: "receivePush" as const, label: "Receber Push", icon: Bell },
   ];
+  const activeSidebarItem = sidebarItems.find((item) => item.key === tab) || sidebarItems[0];
+  const ActiveSidebarIcon = activeSidebarItem.icon;
 
   return (
     <div
@@ -520,15 +522,15 @@ export default function AdminPanel() {
       style={{ ...adminThemeVars, background: `linear-gradient(180deg, ${adminTheme.darkBase} 0%, ${adminTheme.darkMid} 18%, hsl(var(--background)) 42%)` }}
     >
       {/* Header */}
-      <div className="py-5 shrink-0 transition-all duration-300" style={{ background: adminTheme.dashboardGradient }}>
+      <div className="py-4 md:py-5 shrink-0 transition-all duration-300" style={{ background: adminTheme.dashboardGradient }}>
         <div className="container max-w-7xl mx-auto px-4">
           <Link to="/painel" className="inline-flex items-center gap-2 text-white/70 text-sm mb-2 hover:text-white">
             <ArrowLeft size={16} /> Voltar
           </Link>
           <div className="flex items-center gap-3">
-            <Shield size={28} className="text-white" />
-            <div>
-              <h1 className="font-display font-extrabold text-2xl text-white">Painel Administrativo</h1>
+            <Shield size={26} className="text-white shrink-0" />
+            <div className="min-w-0">
+              <h1 className="font-display font-extrabold text-xl md:text-2xl text-white truncate">Painel Administrativo</h1>
               <p className="text-xs text-white/70 mt-1">Tema ativo: {adminTheme.icon} {adminTheme.name}</p>
             </div>
           </div>
