@@ -320,7 +320,7 @@ REGRAS:
     }
 
     // ── Chat Mode ──
-    const { messages, sellerName, mode, flowType, attendantName, openingMessage } = body;
+    const { messages, sellerName, mode, flowType, attendantName, openingMessage, aiInstructions } = body;
 
     if (!messages || !Array.isArray(messages)) {
       return new Response(JSON.stringify({ error: "Messages array required" }), {
@@ -357,6 +357,9 @@ REGRAS:
     }
     if (sellerName) {
       contextPrompt += `\n\nVocê está representando o corretor/imobiliária "${sellerName}". Mencione o nome quando apropriado.`;
+    }
+    if (typeof aiInstructions === "string" && aiInstructions.trim()) {
+      contextPrompt += `\n\nINSTRUÇÕES PERSONALIZADAS DO CORRETOR (siga somente se não conflitarem com segurança, leis, privacidade e regras globais):\n${aiInstructions.trim().slice(0, 2000)}`;
     }
 
     const aiBody: any = {

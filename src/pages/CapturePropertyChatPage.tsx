@@ -77,6 +77,7 @@ interface BotConfig {
   avalCtaUrl?: string;
   aiCtaLabel?: string;
   aiCtaUrl?: string;
+  aiInstructions?: string;
 }
 
 const DEFAULT_CONFIG: BotConfig = {
@@ -331,7 +332,7 @@ export default function CapturePropertyChatPage() {
     try {
       const sellerName = sellerProfile?.company_name || sellerProfile?.full_name || "";
       const { data, error } = await supabase.functions.invoke("capture-chat", {
-        body: { messages: [], sellerName, flowType, attendantName: config.attendantName, openingMessage: config.openingMessage },
+        body: { messages: [], sellerName, flowType, attendantName: config.attendantName, openingMessage: config.openingMessage, aiInstructions: config.aiInstructions },
       });
       if (error) throw error;
       const reply = data?.reply || "Olá! 👋 Vou te ajudar a cadastrar seu imóvel. Qual é o seu nome? 😊";
@@ -344,7 +345,7 @@ export default function CapturePropertyChatPage() {
       setAiMessages([{ role: "assistant", content: fallback }]);
     }
     setTyping(false);
-  }, [sellerProfile, addBotMsgInstant, flowType]);
+  }, [sellerProfile, addBotMsgInstant, flowType, config.attendantName, config.openingMessage, config.aiInstructions]);
 
   useEffect(() => {
     if (isAiMode && !loading && sellerProfile && messages.length === 0) {
@@ -409,7 +410,7 @@ export default function CapturePropertyChatPage() {
     try {
       const sellerName = sellerProfile?.company_name || sellerProfile?.full_name || "";
       const { data, error } = await supabase.functions.invoke("capture-chat", {
-        body: { messages: updatedMessages, sellerName, flowType, attendantName: config.attendantName },
+        body: { messages: updatedMessages, sellerName, flowType, attendantName: config.attendantName, aiInstructions: config.aiInstructions },
       });
       if (error) throw error;
       const reply = data?.reply || "Desculpe, tente novamente!";

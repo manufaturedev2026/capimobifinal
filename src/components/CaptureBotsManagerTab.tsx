@@ -332,6 +332,34 @@ export default function CaptureBotsManagerTab({ sellerId, sellerSlug }: Props) {
           </div>
         </div>
 
+        {editing.use_ai && (
+          <div className="rounded-2xl border border-primary/20 bg-primary/5 p-4 space-y-3 shadow-sm">
+            <div>
+              <p className="text-sm font-bold text-foreground flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-primary" /> Instruções para a IA
+              </p>
+              <p className="text-[11px] text-muted-foreground mt-0.5">
+                Oriente como o bot deve atender, quais informações destacar e regras específicas do corretor.
+              </p>
+            </div>
+            <Textarea
+              value={editing.form_messages?.aiInstructions ?? ""}
+              onChange={(e) => {
+                const next = { ...(editing.form_messages || {}) };
+                const value = e.target.value.slice(0, 2000);
+                if (value.trim()) next.aiInstructions = value; else delete next.aiInstructions;
+                setEditing({ ...editing, form_messages: Object.keys(next).length ? next : null });
+              }}
+              placeholder="Ex: Seja mais direto, priorize imóveis em Vila Velha, informe que avaliamos gratuitamente, nunca prometa preço sem análise, chame leads urgentes de prioridade..."
+              className="min-h-[120px] bg-card text-foreground"
+              maxLength={2000}
+            />
+            <p className="text-[10px] text-muted-foreground text-right">
+              {(editing.form_messages?.aiInstructions?.length || 0)}/2000
+            </p>
+          </div>
+        )}
+
         {!editing.use_ai && (
           <div className="rounded-2xl border border-border bg-background p-4 space-y-3 shadow-sm">
             <div className="flex items-start justify-between gap-3">
