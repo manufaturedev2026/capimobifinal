@@ -1135,6 +1135,7 @@ Deno.serve(async (req) => {
 
     const { data: insertedValuation } = await supabase.from("property_valuations").insert({
       user_id: userId,
+      measured_property_id: data.measuredPropertyId ?? null,
       estado: data.estado, cidade: data.cidade, bairro: data.bairro,
       rua: data.rua, numero: data.numero, cep: data.cep,
       tipo: data.tipo, tipo_estrutura: data.tipoEstrutura,

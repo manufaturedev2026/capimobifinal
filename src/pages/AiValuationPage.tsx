@@ -289,8 +289,8 @@ export default function AiValuationPage() {
     setter(arr.includes(val) ? arr.filter((x) => x !== val) : [...arr, val]);
 
   const handleCalculate = async () => {
-    if (!estado || !cidade || !bairro) {
-      toast({ title: "Preencha estado, cidade e bairro", variant: "destructive" });
+    if (!nomeImovel.trim() || !estado || !cidade || !bairro || !cep.trim() || !rua.trim() || !numero.trim()) {
+      toast({ title: "Preencha os dados obrigatórios", description: "Nome do imóvel, CEP, rua, número, bairro, cidade e estado são obrigatórios.", variant: "destructive" });
       return;
     }
     if (!areaTotalCompat) {
@@ -344,6 +344,7 @@ export default function AiValuationPage() {
       const { data, error } = await supabase.functions.invoke("ai-property-valuation", {
         body: {
           estado, cidade, bairro, rua, numero, cep,
+          nomeImovel, complemento, referencia, measuredPropertyId,
           categoria, subtipo,
           tipo, tipoEstrutura: isTerreno ? null : tipoEstrutura,
           areaTotal: areaTotalCompat,
@@ -353,6 +354,11 @@ export default function AiValuationPage() {
           areaConstruida: areaConstruidaTotal || null,
           quartos: Number(quartos), banheiros: Number(banheiros),
           suites: Number(suites), garagem: Number(garagem),
+          valorPedido: Number(valorPedido) || null,
+          iptu: Number(iptu) || null,
+          condominio: Number(condominio) || null,
+          ambientesMedidos: measuredPropertyId ? JSON.parse(sessionStorage.getItem("meter_property_for_valuation") || "{}").rooms || [] : [],
+          fotosMedidor: measuredPropertyId ? JSON.parse(sessionStorage.getItem("meter_property_for_valuation") || "{}").photos || [] : [],
           salas: Number(salas), cozinhas: Number(cozinhas), escritorios: Number(escritorios),
           extras, acabamento, conservacao, documentacao,
           modoAvaliacao: modoAvancado ? "avancado" : "simples",
