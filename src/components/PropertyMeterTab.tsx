@@ -263,13 +263,31 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
     }
   }, [db, measuredRoomsTable, toast, userId]);
 
+  const fetchPhotos = useCallback(async (propertyId: string) => {
+    const { data, error } = await db
+      .from(measuredPhotosTable)
+      .select("*")
+      .eq("property_id", propertyId)
+      .eq("user_id", userId)
+      .order("sort_order", { ascending: true });
+
+    if (error) {
+      toast({ title: "Erro ao carregar fotos", description: error.message, variant: "destructive" });
+    } else {
+      setPhotos((data || []) as MeasuredPhoto[]);
+    }
+  }, [db, measuredPhotosTable, toast, userId]);
+
   useEffect(() => {
     fetchProperties();
   }, [fetchProperties]);
 
   useEffect(() => {
-    if (selectedProperty?.id) fetchRooms(selectedProperty.id);
-  }, [fetchRooms, selectedProperty?.id]);
+    if (selectedProperty?.id) {
+      fetchRooms(selectedProperty.id);
+      fetchPhotos(selectedProperty.id);
+    }
+  }, [fetchPhotos, fetchRooms, selectedProperty?.id]);
 
   const openNewProperty = () => {
     setEditingPropertyId(null);
@@ -296,6 +314,10 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
       address: propertyForm.address.trim() || null,
       city: propertyForm.city.trim(),
       neighborhood: propertyForm.neighborhood.trim(),
+      land_width: toNumber(propertyForm.land_width) || null,
+      land_length: toNumber(propertyForm.land_length) || null,
+      land_area_manual: toNumber(propertyForm.land_area_manual) || null,
+      measured_by: propertyForm.measured_by.trim() || null,
       notes: propertyForm.notes.trim() || null,
     };
 
@@ -347,6 +369,10 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
         address: property.address,
         city: property.city,
         neighborhood: property.neighborhood,
+        land_width: property.land_width,
+        land_length: property.land_length,
+        land_area_manual: property.land_area_manual,
+        measured_by: property.measured_by,
         notes: property.notes,
       })
       .select("*")
@@ -366,6 +392,7 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
           name: room.name,
           room_type: room.room_type,
           shape: room.shape,
+          area_type: room.area_type,
           width: room.width,
           length: room.length,
           height: room.height,
