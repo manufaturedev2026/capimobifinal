@@ -649,7 +649,8 @@ export default function PropertyMeterTab({ userId, themeVars }: { userId: string
 
     setRoomDialogOpen(false);
     toast({ title: editingRoomId ? "Ambiente atualizado" : "Ambiente adicionado" });
-    await fetchRooms(selectedProperty.id);
+    const refreshedRooms = await fetchRooms(selectedProperty.id);
+    syncSelectedTotal(selectedProperty.id, calculateCombinedTotal(refreshedRooms, selectedProperty));
     await fetchProperties();
   };
 
@@ -660,7 +661,9 @@ export default function PropertyMeterTab({ userId, themeVars }: { userId: string
       toast({ title: "Erro ao excluir ambiente", description: error.message, variant: "destructive" });
       return;
     }
-    setRooms((prev) => prev.filter((r) => r.id !== room.id));
+    const nextRooms = rooms.filter((r) => r.id !== room.id);
+    setRooms(nextRooms);
+    if (selectedProperty) syncSelectedTotal(selectedProperty.id, calculateCombinedTotal(nextRooms, selectedProperty));
     toast({ title: "Ambiente excluído" });
     await fetchProperties();
   };
@@ -687,7 +690,7 @@ export default function PropertyMeterTab({ userId, themeVars }: { userId: string
       toast({ title: "Erro ao duplicar ambiente", description: error.message, variant: "destructive" });
       return;
     }
-    const updatedTotal = rooms.reduce((sum, item) => sum + Number(item.area || 0), 0) + Number(room.area || 0);
+    const updatedTotal = calculateCombinedTotal([...rooms, room], selectedProperty);
     syncSelectedTotal(selectedProperty.id, updatedTotal);
     toast({ title: "Ambiente duplicado" });
     await fetchRooms(selectedProperty.id);
