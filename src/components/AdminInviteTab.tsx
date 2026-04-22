@@ -357,6 +357,15 @@ export default function AdminInviteTab() {
                 {AI_STRATEGY_INFO[activeBot.ctaType]?.description || "Estratégia padrão de cadastro."}
               </p>
             </div>
+            <div className="mt-2 space-y-1">
+              <label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Instrução extra dessa IA</label>
+              <Textarea
+                value={activeBot.aiPrompt || ""}
+                onChange={(e) => updateActiveBot((p) => ({ ...p, aiPrompt: e.target.value }))}
+                placeholder="Ex: Foque em imobiliárias de médio porte e direcione para demonstração pelo WhatsApp..."
+                className="min-h-[90px] bg-background/80"
+              />
+            </div>
           </div>
         )}
       </div>
