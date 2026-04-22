@@ -146,12 +146,6 @@ export default function PackagesPage() {
           <div className="mt-2">
             <span className="font-display font-bold text-3xl">R$ {plan.price.toFixed(2).replace(".", ",")}</span>
             <span className="text-white/70 text-sm">/mês</span>
-            {plan.setup_fee > 0 && (
-              <div className="mt-2 px-3 py-1.5 bg-white/15 rounded-xl text-center">
-                <span className="text-white text-xs font-bold">✨ 7 dias grátis</span>
-                <span className="text-white/70 text-xs block">teste sem compromisso</span>
-              </div>
-            )}
           </div>
           {opts.showPartners && (
             <div className="mt-3 px-3 py-2 bg-white/15 rounded-xl text-center">
