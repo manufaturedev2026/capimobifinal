@@ -33,11 +33,29 @@ const FEATURES = [
     ],
   },
   {
-    icon: Brain, emoji: "🧠", title: "CRM Inteligente para Corretores",
+    icon: Award, emoji: "🏅", title: "Avaliação Profissional de Imóveis",
+    items: [
+      "Gere laudos profissionais em PDF",
+      "Inclua dados do avaliador com CRECI e CNAI",
+      "Análise de fotos para apoiar padrão de acabamento e conservação",
+      "Regenere o laudo sempre que precisar corrigir detalhes",
+    ],
+  },
+  {
+    icon: Home, emoji: "📐", title: "Calculadora de Tamanho do Imóvel",
+    items: [
+      "Calcule área total e ambientes do imóvel",
+      "Organize medidas por cômodos e áreas externas",
+      "Use os dados na avaliação e no cadastro do anúncio",
+      "Mais precisão para venda, locação e laudos",
+    ],
+  },
+  {
+    icon: Brain, emoji: "🧠", title: "Gestão Completa para Corretores",
     items: [
       "Gestão completa de leads",
-      "Histórico de clientes",
-      "Lembretes automáticos de follow-up",
+      "CRM Kanban com histórico de clientes",
+      "Contratos, propostas, visitas e parcerias",
       "Organização total do funil de vendas",
     ],
   },
@@ -69,9 +87,10 @@ const FEATURES = [
     ],
   },
   {
-    icon: Home, emoji: "🏠", title: "Galeria de Imóveis Profissional",
+    icon: Home, emoji: "🏠", title: "Cadastro Profissional de Imóveis",
     items: [
       "Cadastre imóveis com fotos e detalhes completos",
+      "Localize rua, bairro, cidade e estado pelo CEP",
       "Páginas otimizadas para aparecer no Google",
       "Filtros inteligentes (cidade, preço, tipo)",
       "Destaque seus melhores imóveis",
@@ -122,13 +141,13 @@ const PLANS = [
   {
     key: "basico", name: "Básico", subtitle: "Para experimentar", price: 0, priceLabel: "Gratuito",
     setupFee: null, popular: false,
-    benefits: ["Até 5 anúncios ativos", "Vitrine própria (sua loja online)", "URL personalizada /seu-nome", "1 Layout (Marketplace) + 1 Tema", "Painel do vendedor completo", "Estatísticas básicas", "Gerador de contratos (1 modelo)", "QR Code dos anúncios e propostas PDF", "Calculadora de Lucro (ROI)", "Sistema de Parcerias entre corretores", "Push: 1 envio por dia", "Gerador de Texto IA: 5/dia"],
+    benefits: ["Até 5 anúncios ativos", "Vitrine própria (sua loja online)", "URL personalizada /seu-nome", "1 Layout (Marketplace) + 1 Tema", "Painel do vendedor completo", "Estatísticas básicas", "Busca de endereço por CEP no cadastro", "Gerador de contratos (1 modelo)", "QR Code dos anúncios e propostas PDF", "Calculadora de Lucro (ROI)", "Sistema de Parcerias entre corretores", "Push: 1 envio por dia", "Gerador de Texto IA: 5/dia"],
     cta: "Criar conta grátis",
   },
   {
     key: "start", name: "Start", subtitle: "Para corretores iniciantes", price: 24.99, priceLabel: "R$24,99",
     setupFee: 299, popular: false,
-    benefits: ["Até 25 anúncios ativos", "Vitrine Lvl 1 — mais visibilidade", "1 Layout (Showcase) + 3 Temas", "CRM Kanban completo", "Stories (estilo Instagram)", "Página de Captação de imóveis", "Todos os modelos de contrato", "Simulador de Financiamento", "PDF de Proposta profissional", "Selo Start + Hero Banner", "Destaque na listagem", "Push: 1 envio por dia", "Gerador de Texto IA: 10/dia"],
+    benefits: ["Até 25 anúncios ativos", "Vitrine Lvl 1 — mais visibilidade", "1 Layout (Showcase) + 3 Temas", "CRM Kanban completo", "Ferramenta de calcular tamanho do imóvel", "Stories (estilo Instagram)", "Página de Captação de imóveis", "Todos os modelos de contrato", "Simulador de Financiamento", "PDF de Proposta profissional", "Selo Start + Hero Banner", "Destaque na listagem", "Push: 1 envio por dia", "Gerador de Texto IA: 10/dia"],
     cta: "Começar agora",
   },
   {
@@ -140,7 +159,7 @@ const PLANS = [
   {
     key: "vip", name: "Premium", subtitle: "Para dominar o mercado", price: 114.99, priceLabel: "R$114,99",
     setupFee: 1379, popular: false,
-    benefits: ["Até 115 anúncios ativos", "Vitrine Lvl 3 — máximo individual", "Todos os 7 Layouts + Temas", "Tudo do VIP +", "Captação com IA Inteligente", "Instagram na loja", "SEO otimizado (cidade/bairro)", "Destaque Épico (até 5 imóveis)", "Galeria Showroom + Copywriting", "Selo Premium exclusivo", "Push Notifications: 3 envios por dia", "Suporte VIP dedicado", "Gerador de Texto IA: 50/dia"],
+    benefits: ["Até 115 anúncios ativos", "Vitrine Lvl 3 — máximo individual", "Todos os 7 Layouts + Temas", "Tudo do VIP +", "Avaliação Profissional com laudo PDF", "CRECI e CNAI no laudo", "Captação com IA Inteligente", "Instagram na loja", "SEO otimizado (cidade/bairro)", "Destaque Épico (até 5 imóveis)", "Galeria Showroom + Copywriting", "Selo Premium exclusivo", "Push Notifications: 3 envios por dia", "Suporte VIP dedicado", "Gerador de Texto IA: 50/dia"],
     cta: "Assinar Premium",
   },
 ];
@@ -257,8 +276,8 @@ export default function VenderPage() {
   return (
     <>
       <Helmet>
-        <title>Site Imobiliário Profissional com CRM | Capimobi</title>
-        <meta name="description" content="Crie seu site imobiliário profissional com CRM completo, gestão de leads, contratos, stories e muito mais. Comece gratuitamente." />
+        <title>Site Imobiliário com Gestão Completa | Capimobi</title>
+        <meta name="description" content="Crie seu site imobiliário com CRM, avaliação profissional, laudos, cálculo de área, contratos, stories e gestão completa. Comece gratuitamente." />
       </Helmet>
 
       <div className="min-h-screen text-white overflow-x-hidden relative" style={{ ...themeVars, background: theme.darkBase }}>
@@ -323,15 +342,14 @@ export default function VenderPage() {
               </div>
 
               <h1 className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-[1.1]">
-                Crie Seu Site Imobiliário Profissional com{" "}
+                Crie Seu Site Imobiliário com{" "}
                 <span className="text-transparent bg-clip-text" style={{ backgroundImage: `linear-gradient(to right, ${theme.primary}, ${theme.promoAccent || theme.primary})` }}>
-                  CRM Completo
+                  Gestão Completa
                 </span>
               </h1>
 
               <p className="text-sm md:text-base lg:text-lg text-white/60 max-w-lg leading-relaxed">
-                Pare de depender de plataformas e portais caros.
-                Tenha seu próprio site, seus próprios clientes e controle total das suas vendas.
+                Tenha site próprio, CRM, avaliação profissional, cálculo de área, contratos, propostas e controle total dos seus imóveis.
               </p>
 
               <div className="flex flex-row gap-2 sm:gap-3">
@@ -467,10 +485,10 @@ export default function VenderPage() {
               <Rocket className="w-4 h-4" /> Tudo que você precisa em um só lugar
             </div>
             <h2 className="font-display text-xl sm:text-2xl md:text-3xl font-black">
-              Com nossa plataforma, você cria um site imobiliário completo
+              Com nossa plataforma, você anuncia, avalia e gerencia imóveis em um só lugar
             </h2>
             <p className="text-white/50 text-sm md:text-base max-w-2xl mx-auto">
-              Ferramentas avançadas para corretores e imobiliárias crescerem de verdade.
+              Ferramentas avançadas para corretores e imobiliárias venderem, alugarem, captarem e entregarem laudos profissionais.
             </p>
           </div>
         </section>
