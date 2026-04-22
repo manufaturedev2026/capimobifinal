@@ -514,7 +514,7 @@ export default function SellerDashboard() {
               </Link>
               <Link to="/avaliacao-ia"
                 className="sidebar-nav-item text-emerald-500 hover:bg-emerald-500/10 relative">
-                <Sparkles size={18} /> Avaliação IA
+                <Sparkles size={18} /> Avaliação de Imóveis
                 <span className="ml-auto text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-600">NEW</span>
               </Link>
               <Link to="/pacotes"
