@@ -52,6 +52,7 @@ Retorne via tool: titulo (até 80 chars, atrativo) e descricao (3-5 parágrafos 
     });
 
     if (!response.ok) {
+      await refundAiCredits(credit.admin, credit.userId, credit.sellerId, credit.cost, "valuation_ad");
       if (response.status === 429) {
         return new Response(JSON.stringify({ error: "Limite atingido. Tente novamente em instantes." }), {
           status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },

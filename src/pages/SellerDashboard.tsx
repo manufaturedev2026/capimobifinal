@@ -43,6 +43,7 @@ import { usePushSubscription } from "@/hooks/usePushSubscription";
 import WelcomePushPopup from "@/components/WelcomePushPopup";
 import AiHelpChat from "@/components/AiHelpChat";
 import PanelSplash from "@/components/PanelSplash";
+import AiCreditsCard from "@/components/AiCreditsCard";
 
 type SellerItem = {
   id: string;
