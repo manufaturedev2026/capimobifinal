@@ -1,4 +1,4 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
+import { createClient } from "npm:@supabase/supabase-js@2.104.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -114,10 +114,19 @@ Deno.serve(async (req) => {
     }
 
     const token = authHeader.replace("Bearer ", "");
+    const userClient = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_ANON_KEY")!, {
+      global: { headers: { Authorization: authHeader } },
+    });
     const adminClient = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
-    const { data: userData, error: userError } = await adminClient.auth.getUser(token);
-    const user = userData?.user;
-    if (userError || !user) {
+    const { data: claimsData, error: claimsError } = await userClient.auth.getClaims(token);
+    let userId = claimsData?.claims?.sub as string | undefined;
+
+    if (claimsError || !userId) {
+      const { data: userData, error: userError } = await adminClient.auth.getUser(token);
+      userId = userError ? undefined : userData?.user?.id;
+    }
+
+    if (!userId) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -128,7 +137,7 @@ Deno.serve(async (req) => {
     const { data: roleData } = await adminClient
       .from("user_roles")
       .select("role")
-      .eq("user_id", user.id)
+      .eq("user_id", userId)
       .eq("role", "admin")
       .maybeSingle();
 
@@ -295,13 +304,13 @@ Deno.serve(async (req) => {
     const { data: adminProfile } = await adminClient
       .from("profiles")
       .select("id")
-      .eq("user_id", user.id)
+      .eq("user_id", userId)
       .single();
 
     if (adminProfile) {
       await adminClient.from("push_notifications_log").insert({
         seller_id: adminProfile.id,
-        user_id: user.id,
+        user_id: userId,
         title,
         body,
         url: url || null,
