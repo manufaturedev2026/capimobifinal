@@ -370,7 +370,7 @@ REGRAS:
     }
 
     // ── Chat Mode ──
-    const { messages, sellerName, mode, flowType } = body;
+    const { messages, sellerName, mode, flowType, attendantName, openingMessage } = body;
 
     if (!messages || !Array.isArray(messages)) {
       return new Response(JSON.stringify({ error: "Messages array required" }), {
@@ -384,6 +384,11 @@ REGRAS:
 
     // Saudações fixas por fluxo (evita IA improvisar mensagem genérica de captação)
     if (messages.length === 0) {
+      if (typeof openingMessage === "string" && openingMessage.trim()) {
+        return new Response(JSON.stringify({ reply: openingMessage.trim(), extractedData: null }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
       const sellerTag = sellerName ? ` ${sellerName}` : "";
       const greetings: Record<string, string> = {
         captacao: `Olá 👋 Seja bem-vindo(a)${sellerTag ? " à" + sellerTag : ""}! Vou te ajudar a cadastrar seu imóvel para venda ou aluguel de forma rápida e gratuita. 🏡\n\nPara começar, qual tipo de imóvel você deseja anunciar? (Casa, Apartamento, Terreno, Sala Comercial, Galpão, Fazenda/Sítio ou Outro)`,
@@ -397,6 +402,9 @@ REGRAS:
     }
 
     let contextPrompt = `${SYSTEM_BASE}\n\n${flowSpecific}`;
+    if (typeof attendantName === "string" && attendantName.trim()) {
+      contextPrompt += `\n\nSeu nome de atendimento é "${attendantName.trim()}". Quando se apresentar, use exatamente esse nome e nunca outro nome.`;
+    }
     if (sellerName) {
       contextPrompt += `\n\nVocê está representando o corretor/imobiliária "${sellerName}". Mencione o nome quando apropriado.`;
     }
