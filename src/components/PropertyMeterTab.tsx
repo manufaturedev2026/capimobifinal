@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import type { ReactNode } from "react";
 import { ArrowLeft, Copy, Edit3, Home, Plus, Ruler, Save, Trash2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
@@ -144,6 +145,7 @@ const roomToForm = (room: MeasuredRoom): RoomForm => ({
 
 export default function PropertyMeterTab({ userId }: { userId: string }) {
   const { toast } = useToast();
+  const db = useMemo(() => supabase as any, []);
   const [properties, setProperties] = useState<MeasuredProperty[]>([]);
   const [rooms, setRooms] = useState<MeasuredRoom[]>([]);
   const [selectedProperty, setSelectedProperty] = useState<MeasuredProperty | null>(null);
@@ -160,7 +162,7 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
   const computedArea = useMemo(() => calculateRoomArea(roomForm), [roomForm]);
 
   const fetchProperties = useCallback(async () => {
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from(measuredPropertiesTable)
       .select("*")
       .eq("user_id", userId)
@@ -176,10 +178,10 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
       }
     }
     setLoading(false);
-  }, [measuredPropertiesTable, selectedProperty, toast, userId]);
+  }, [db, measuredPropertiesTable, selectedProperty, toast, userId]);
 
   const fetchRooms = useCallback(async (propertyId: string) => {
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from(measuredRoomsTable)
       .select("*")
       .eq("property_id", propertyId)
@@ -191,7 +193,7 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
     } else {
       setRooms((data || []) as MeasuredRoom[]);
     }
-  }, [measuredRoomsTable, toast, userId]);
+  }, [db, measuredRoomsTable, toast, userId]);
 
   useEffect(() => {
     fetchProperties();
