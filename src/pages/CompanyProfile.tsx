@@ -2089,11 +2089,7 @@ export default function CompanyProfile() {
                 </div>
                 <p className="text-[11px] mt-0.5 flex items-center gap-1 lg:justify-center" style={{ color: storeTheme.textMuted }}>
                   <Sparkles size={9} style={{ color: storeTheme.primary }} />
-                  {teamMember
-                    ? "Corretor(a) de Imóveis"
-                    : dbProfile?.seller_category
-                      ? ({ imobiliaria: "Imobiliária", corretor: "Corretor(a) de Imóveis", proprietario: "Proprietário", construtora: "Construtora", loja_veiculos: "Loja de Veículos", autonomo: "Vendedor Autônomo", concessionaria: "Concessionária" } as Record<string, string>)[dbProfile.seller_category] || "Especialista em imóveis"
-                      : "Especialista em imóveis"}
+                  {activeProfessionalTitle || "Especialista em imóveis"}
                 </p>
                 <div className="flex gap-2 mt-3 flex-wrap lg:justify-center">
                 
@@ -2109,8 +2105,8 @@ export default function CompanyProfile() {
                     </a>
                   )}
                 </div>
-                {(teamMember?.bio || dbProfile?.bio) && (
-                  <p className="text-[11px] leading-relaxed mt-2" style={{ color: storeTheme.textMuted }}>{teamMember?.bio || dbProfile.bio}</p>
+                {activeBio && (
+                  <p className="text-[11px] leading-relaxed mt-2" style={{ color: storeTheme.textMuted }}>{activeBio}</p>
                 )}
                 <div className="grid grid-cols-3 gap-2 mt-3">
                   <div className="text-center py-2 rounded-lg" style={{ background: `linear-gradient(135deg, ${storeTheme.primary}15, ${storeTheme.primary}05)`, border: `1px solid ${storeTheme.primary}30` }}>
@@ -2131,13 +2127,13 @@ export default function CompanyProfile() {
               </div>
             </div>
             <div className="mt-4 space-y-2">
-              {(teamMember?.creci || (["corretor", "imobiliaria", "construtora"].includes(dbProfile?.seller_category) && dbProfile?.creci)) && (
+              {activeCreci && (
                 <div className="flex items-center justify-center gap-1.5 py-2 rounded-lg" style={{ background: `linear-gradient(135deg, ${storeTheme.primary}20, ${storeTheme.primary}10)`, border: `1px solid ${storeTheme.primary}50`, boxShadow: `0 0 15px ${storeTheme.primary}30` }}>
                   <Shield size={12} style={{ color: storeTheme.primary }} />
-                  <span className="text-[10px] font-bold tracking-wider" style={{ color: storeTheme.primary }}>CRECI {teamMember?.creci || dbProfile.creci}</span>
+                  <span className="text-[10px] font-bold tracking-wider" style={{ color: storeTheme.primary }}>CRECI {activeCreci}</span>
                 </div>
               )}
-              {dbProfile?.cnpj && (
+              {!teamMember && dbProfile?.cnpj && (
                 <div className="flex items-center justify-center gap-2 px-3 py-2 rounded-lg" style={{ background: `${storeTheme.primary}08`, border: `1px solid ${storeTheme.primary}20` }}>
                   <Store size={12} style={{ color: storeTheme.textMuted }} />
                   <span className="text-[10px]" style={{ color: storeTheme.textMuted }}>CNPJ: {dbProfile.cnpj}</span>
