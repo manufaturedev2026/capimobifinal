@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import InstallAppFloatingButton from "@/components/InstallAppFloatingButton";
 import PushSubscribeButton from "@/components/PushSubscribeButton";
+import { usePwaInstall } from "@/hooks/usePwaInstall";
 
 /**
  * Floating actions for the public homepage:
@@ -13,6 +14,7 @@ import PushSubscribeButton from "@/components/PushSubscribeButton";
  */
 export default function HomePwaActions({ primaryColor }: { primaryColor?: string }) {
   const [adminSellerId, setAdminSellerId] = useState<string | null>(null);
+  const { installed, isPreview } = usePwaInstall();
 
   useEffect(() => {
     let cancelled = false;
@@ -52,13 +54,13 @@ export default function HomePwaActions({ primaryColor }: { primaryColor?: string
 
   return (
     <>
-      <InstallAppFloatingButton primaryColor={primaryColor} />
-      {adminSellerId && (
+      {!installed && <InstallAppFloatingButton primaryColor={primaryColor} />}
+      {(installed || isPreview) && adminSellerId && (
         <PushSubscribeButton
           sellerId={adminSellerId}
           primaryColor={primaryColor}
-          requireInstalled={false}
-          positionClassName="bottom-36 md:bottom-20"
+          requireInstalled
+          positionClassName="bottom-20 md:bottom-6"
         />
       )}
     </>
