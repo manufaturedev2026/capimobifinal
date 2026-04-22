@@ -262,12 +262,14 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
   const computedArea = useMemo(() => calculateRoomArea(roomForm), [roomForm]);
   const technicalAreas = useMemo(() => {
     const landArea = selectedProperty ? Number(selectedProperty.land_area_manual || 0) || Number(selectedProperty.land_width || 0) * Number(selectedProperty.land_length || 0) : 0;
+    const externalBuiltArea = selectedProperty ? calculateExternalArea(selectedProperty) : 0;
     const usefulArea = rooms.filter((room) => room.area_type === "Interna útil").reduce((sum, room) => sum + Number(room.area || 0), 0);
     const coveredArea = rooms.filter((room) => room.area_type === "Construída coberta").reduce((sum, room) => sum + Number(room.area || 0), 0);
     const openArea = rooms.filter((room) => room.area_type === "Externa descoberta").reduce((sum, room) => sum + Number(room.area || 0), 0);
-    const builtArea = usefulArea + coveredArea;
+    const builtArea = externalBuiltArea || usefulArea + coveredArea;
     const uncoveredArea = Math.max(landArea - builtArea, openArea, 0);
-    return { builtArea, usefulArea, landArea, uncoveredArea };
+    const occupancyRate = landArea > 0 ? (builtArea / landArea) * 100 : 0;
+    return { builtArea, usefulArea, landArea, uncoveredArea, occupancyRate };
   }, [rooms, selectedProperty]);
   const livePropertyTotal = useMemo(() => {
     const savedTotal = rooms.reduce((sum, room) => sum + Number(room.area || 0), 0);
