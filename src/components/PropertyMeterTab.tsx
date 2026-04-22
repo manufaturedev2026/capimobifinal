@@ -345,6 +345,15 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
     setRoomDialogOpen(true);
   };
 
+  const backToProperties = () => {
+    setRoomDialogOpen(false);
+    setPropertyDialogOpen(false);
+    setEditingRoomId(null);
+    setEditingPropertyId(null);
+    setSelectedProperty(null);
+    setRooms([]);
+  };
+
   const openEditRoom = (room: MeasuredRoom) => {
     setEditingRoomId(room.id);
     setRoomForm(roomToForm(room));
@@ -554,7 +563,7 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
       ) : (
         <div className="space-y-5">
           <div className="rounded-3xl border border-border bg-card p-4 shadow-sm">
-            <button onClick={() => setSelectedProperty(null)} className="mb-4 flex items-center gap-2 text-sm font-bold text-muted-foreground hover:text-foreground">
+            <button type="button" onClick={backToProperties} className="mb-4 flex items-center gap-2 text-sm font-bold text-primary hover:text-primary/80">
               <ArrowLeft size={17} /> Voltar para imóveis
             </button>
             <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
