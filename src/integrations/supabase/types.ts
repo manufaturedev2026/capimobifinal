@@ -1030,6 +1030,113 @@ export type Database = {
         }
         Relationships: []
       }
+      measured_properties: {
+        Row: {
+          address: string | null
+          city: string
+          created_at: string
+          id: string
+          name: string
+          neighborhood: string
+          notes: string | null
+          property_type: string
+          total_area: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          address?: string | null
+          city: string
+          created_at?: string
+          id?: string
+          name: string
+          neighborhood: string
+          notes?: string | null
+          property_type?: string
+          total_area?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          address?: string | null
+          city?: string
+          created_at?: string
+          id?: string
+          name?: string
+          neighborhood?: string
+          notes?: string | null
+          property_type?: string
+          total_area?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      measured_rooms: {
+        Row: {
+          area: number
+          base: number | null
+          created_at: string
+          height: number | null
+          id: string
+          length: number | null
+          name: string
+          notes: string | null
+          property_id: string
+          room_type: string
+          shape: string
+          side_a: number | null
+          side_b: number | null
+          updated_at: string
+          user_id: string
+          width: number | null
+        }
+        Insert: {
+          area?: number
+          base?: number | null
+          created_at?: string
+          height?: number | null
+          id?: string
+          length?: number | null
+          name: string
+          notes?: string | null
+          property_id: string
+          room_type: string
+          shape?: string
+          side_a?: number | null
+          side_b?: number | null
+          updated_at?: string
+          user_id: string
+          width?: number | null
+        }
+        Update: {
+          area?: number
+          base?: number | null
+          created_at?: string
+          height?: number | null
+          id?: string
+          length?: number | null
+          name?: string
+          notes?: string | null
+          property_id?: string
+          room_type?: string
+          shape?: string
+          side_a?: number | null
+          side_b?: number | null
+          updated_at?: string
+          user_id?: string
+          width?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "measured_rooms_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "measured_properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       partner_store_listings: {
         Row: {
           created_at: string
