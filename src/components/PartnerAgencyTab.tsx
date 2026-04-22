@@ -1,9 +1,10 @@
 import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { CheckCircle2, XCircle, Clock, User, Phone, Mail, MessageSquare, Trash2, Search, MapPin, Instagram, FileText, Shield, Building2, ExternalLink, Eye, MousePointerClick, BarChart3, Users } from "lucide-react";
+import { CheckCircle2, XCircle, Clock, User, Phone, Mail, MessageSquare, Trash2, Search, MapPin, Instagram, FileText, Shield, Building2, ExternalLink, Eye, MousePointerClick, BarChart3, Users, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import TeamMembersTab from "@/components/TeamMembersTab";
 
 interface RequestWithProfile {
@@ -46,6 +47,7 @@ const categoryLabels: Record<string, string> = {
 };
 
 const tabHelp = {
+  informacoes: "Edite os dados que corretores verão antes de solicitar vínculo: descrição, WhatsApp, e-mail, Instagram, endereço e disponibilidade para receber pedidos.",
   "loja-espelho": "Cadastre e edite os corretores da sua empresa. Cada corretor ganha uma loja espelho com URL própria, usando o tema da imobiliária e os dados dele.",
   vinculados: "Veja os corretores parceiros já aprovados, acompanhe acessos, cliques no WhatsApp e copie o link da loja espelho vinculada.",
   solicitacoes: "Analise os pedidos de vínculo enviados por corretores e aprove ou recuse quem poderá representar sua imobiliária.",
@@ -70,7 +72,9 @@ export default function PartnerAgencyTab({ profileId, userId, maxMembers }: { pr
   const [processingId, setProcessingId] = useState<string | null>(null);
   const [slugInputs, setSlugInputs] = useState<Record<string, string>>({});
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeSubTab, setActiveSubTab] = useState<"loja-espelho" | "vinculados" | "solicitacoes">("loja-espelho");
+  const [activeSubTab, setActiveSubTab] = useState<"informacoes" | "loja-espelho" | "vinculados" | "solicitacoes">("loja-espelho");
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [companyInfo, setCompanyInfo] = useState({ company_name: "", bio: "", phone: "", email: "", instagram: "", address: "", open_for_partnerships: true });
 
   const [companySlug, setCompanySlug] = useState<string | null>(null);
 
@@ -82,10 +86,33 @@ export default function PartnerAgencyTab({ profileId, userId, maxMembers }: { pr
   const fetchCompanySlug = async () => {
     const { data } = await supabase
       .from("profiles")
-      .select("slug")
+      .select("slug, company_name, full_name, bio, phone, email, instagram, address, open_for_partnerships")
       .eq("id", profileId)
       .maybeSingle();
     if (data?.slug) setCompanySlug(data.slug);
+    if (data) setCompanyInfo({
+      company_name: data.company_name || data.full_name || "",
+      bio: data.bio || "",
+      phone: data.phone || "",
+      email: data.email || "",
+      instagram: data.instagram || "",
+      address: data.address || "",
+      open_for_partnerships: data.open_for_partnerships ?? true,
+    });
+  };
+
+  const saveCompanyInfo = async () => {
+    setSavingProfile(true);
+    const { error } = await supabase.from("profiles").update({
+      company_name: companyInfo.company_name.trim() || null,
+      bio: companyInfo.bio.trim() || null,
+      phone: companyInfo.phone.trim() || null,
+      instagram: companyInfo.instagram.trim() || null,
+      address: companyInfo.address.trim() || null,
+      open_for_partnerships: companyInfo.open_for_partnerships,
+    }).eq("id", profileId).eq("user_id", userId);
+    setSavingProfile(false);
+    toast(error ? { title: "Erro ao salvar", description: error.message, variant: "destructive" } : { title: "Informações salvas!" });
   };
 
   const fetchRequests = async () => {
@@ -307,7 +334,19 @@ export default function PartnerAgencyTab({ profileId, userId, maxMembers }: { pr
       )}
 
       {/* Sub-tabs */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-1 bg-secondary/50 p-1 rounded-xl">
+      <div className="grid grid-cols-1 sm:grid-cols-4 gap-1 bg-secondary/50 p-1 rounded-xl">
+        <button
+          onClick={() => { setActiveSubTab("informacoes"); setSearchQuery(""); }}
+          className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
+            activeSubTab === "informacoes"
+              ? "bg-background text-foreground shadow-sm"
+              : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <Building2 size={16} />
+          Informações
+          <HelpBubble text={tabHelp.informacoes} />
+        </button>
         <button
           onClick={() => { setActiveSubTab("loja-espelho"); setSearchQuery(""); }}
           className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
@@ -366,6 +405,32 @@ export default function PartnerAgencyTab({ profileId, userId, maxMembers }: { pr
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-10 h-11 rounded-xl bg-secondary/50 border-border"
           />
+        </div>
+      )}
+
+      {activeSubTab === "informacoes" && (
+        <div className="rounded-2xl border border-border bg-card p-4 sm:p-5 space-y-4">
+          <div>
+            <h3 className="font-bold text-foreground flex items-center gap-2">
+              <Building2 size={18} className="text-primary" /> Perfil público para vínculos
+            </h3>
+            <p className="text-sm text-muted-foreground mt-1">Essas informações aparecem para corretores que procuram imobiliárias disponíveis.</p>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <Input placeholder="Nome da imobiliária" value={companyInfo.company_name} onChange={(e) => setCompanyInfo((p) => ({ ...p, company_name: e.target.value }))} />
+            <Input placeholder="WhatsApp / telefone" value={companyInfo.phone} onChange={(e) => setCompanyInfo((p) => ({ ...p, phone: e.target.value }))} />
+            <Input placeholder="E-mail" value={companyInfo.email} disabled className="bg-muted/50" />
+            <Input placeholder="Instagram" value={companyInfo.instagram} onChange={(e) => setCompanyInfo((p) => ({ ...p, instagram: e.target.value }))} />
+            <Input className="sm:col-span-2" placeholder="Endereço" value={companyInfo.address} onChange={(e) => setCompanyInfo((p) => ({ ...p, address: e.target.value }))} />
+          </div>
+          <Textarea placeholder="Descrição da imobiliária, regiões de atuação, proposta para corretores e regras de parceria..." value={companyInfo.bio} onChange={(e) => setCompanyInfo((p) => ({ ...p, bio: e.target.value }))} rows={5} />
+          <label className="flex items-start gap-3 rounded-xl border border-border bg-secondary/30 p-3 text-sm">
+            <input type="checkbox" checked={companyInfo.open_for_partnerships} onChange={(e) => setCompanyInfo((p) => ({ ...p, open_for_partnerships: e.target.checked }))} className="mt-1" />
+            <span><strong className="text-foreground">Aparecer para corretores solicitarem vínculo</strong><br /><span className="text-muted-foreground">Quando desativado, sua imobiliária não aparece na lista de disponíveis.</span></span>
+          </label>
+          <Button onClick={saveCompanyInfo} disabled={savingProfile} className="gap-2">
+            <Save size={16} /> {savingProfile ? "Salvando..." : "Salvar informações"}
+          </Button>
         </div>
       )}
 
