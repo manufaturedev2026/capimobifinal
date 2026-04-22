@@ -513,106 +513,57 @@ export default function SellerDashboard() {
           </div>
 
           {/* Nav */}
-          <nav className="flex-1 p-3 space-y-1">
-            {sidebarNav.map((nav) => (
-              <button key={nav.id} id={nav.tourId} onClick={() => handleTabClick(nav.id)}
-                className={`sidebar-nav-item ${nav.locked ? "text-muted-foreground/40 cursor-not-allowed" : activeTab === nav.id ? "active" : ""}`}>
-                <nav.icon size={18} /> {nav.label}
-                {nav.id === "crm" && newCrmCount > 0 && (
-                  <span className="ml-auto bg-destructive text-destructive-foreground text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
-                    {newCrmCount}
-                  </span>
-                )}
-                {nav.id === "captacao" && newCaptureCount > 0 && (
-                  <span className="ml-auto bg-destructive text-destructive-foreground text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
-                    {newCaptureCount}
-                  </span>
-                )}
-                {nav.id === "parcerias" && newPartnershipCount > 0 && (
-                  <span className="ml-auto bg-destructive text-destructive-foreground text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
-                    {newPartnershipCount}
-                  </span>
-                )}
-                {nav.locked && <Lock size={14} className="ml-auto text-muted-foreground/40" />}
-              </button>
-            ))}
+          <nav className="flex-1 overflow-y-auto p-3 space-y-2">
+            {sidebarGroups.map((group) => {
+              const open = openSidebarGroups[group.key] ?? true;
+              return (
+                <div key={group.key} className="rounded-2xl border border-border/70 bg-card/40 overflow-hidden animate-fade-in">
+                  <button
+                    type="button"
+                    onClick={() => setOpenSidebarGroups((prev) => ({ ...prev, [group.key]: !open }))}
+                    className="w-full flex items-center justify-between gap-2 px-3 py-2.5 text-xs font-extrabold uppercase tracking-wider text-muted-foreground hover:bg-secondary/70 transition-colors"
+                  >
+                    <span className="flex items-center gap-2"><span className="text-sm">{group.emoji}</span>{group.title}</span>
+                    <ChevronDown size={14} className={`transition-transform duration-200 ${open ? "rotate-0" : "-rotate-90"}`} />
+                  </button>
+                  {open && (
+                    <div className="px-2 pb-2 space-y-1 animate-accordion-down">
+                      {group.items.map((item) => {
+                        const Icon = item.icon;
+                        const key = item.type === "tab" ? item.id : item.type === "link" ? item.href : item.key;
+                        const badge = item.type === "tab" ? getSidebarBadge(item.id) : null;
+                        const baseClass = "sidebar-nav-item text-muted-foreground hover:text-foreground hover:bg-secondary/80 w-full text-left transition-all duration-200 hover:translate-x-0.5";
 
-            <div className="pt-3 mt-3 border-t border-border space-y-0.5">
-              <Link to="/painel/novo" id="tour-new-listing"
-                className="sidebar-nav-item text-muted-foreground hover:text-foreground hover:bg-secondary">
-                <Plus size={18} /> Novo Anúncio
-              </Link>
-              {profile?.id && (
-                <Link to={getStoreUrl(profile)} id="tour-store"
-                  className="sidebar-nav-item text-muted-foreground hover:text-foreground hover:bg-secondary">
-                  <Eye size={18} /> Ver Minha Loja
-                </Link>
-              )}
-              <button onClick={() => setActiveTab("profile")}
-                className="sidebar-nav-item text-muted-foreground hover:text-foreground hover:bg-secondary w-full text-left">
-                <UserCircle size={18} /> Meu Perfil
-              </button>
-              <button onClick={() => setActiveTab("customization")} id="tour-customization"
-                className={`sidebar-nav-item ${activeTab === "customization" ? "active" : "text-muted-foreground hover:text-foreground hover:bg-secondary"}`}>
-                <Palette size={18} /> Personalização
-              </button>
-              <Link to="/agenda"
-                className="sidebar-nav-item text-blue-500 hover:bg-blue-500/10">
-                <CalendarIcon size={18} /> Agenda
-              </Link>
-              <Link to="/avaliacao-ia"
-                className="sidebar-nav-item text-emerald-500 hover:bg-emerald-500/10 relative">
-                <Sparkles size={18} /> Avaliação de Imóveis
-                <span className="ml-auto text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-600">NEW</span>
-              </Link>
-              <Link to="/pacotes"
-                className="sidebar-nav-item text-muted-foreground hover:text-foreground hover:bg-secondary">
-                <Package size={18} /> Pacotes
-              </Link>
-              {isAdmin && (
-                <Link to="/admin"
-                  className="sidebar-nav-item text-purple-500 hover:bg-purple-500/10">
-                  <Shield size={18} /> Painel Admin
-                </Link>
-              )}
-              {!installed && (
-                <button
-                  type="button"
-                  onClick={async () => {
-                    const result = await requestInstall();
-                    if (result.outcome === "unavailable") setShowInstallGuide(true);
-                  }}
-                  className="sidebar-nav-item text-emerald-500 hover:bg-emerald-500/10"
-                >
-                  <Download size={18} /> Instalar APP
-                </button>
-              )}
-              {!pushSub.isSubscribed && (
-                <button
-                  type="button"
-                  onClick={async () => {
-                    if (!pushSub.isSupported) {
-                      toast({ title: "Notificações não suportadas", description: pushSub.unsupportedReason || "Este navegador não suporta push notifications. Tente pelo app instalado.", variant: "destructive" });
-                      return;
-                    }
-                    if (pushSub.permission === "denied") {
-                      toast({ title: "Notificações bloqueadas", description: "Desbloqueie nas configurações do navegador.", variant: "destructive" });
-                      return;
-                    }
-                    await pushSub.subscribe();
-                  }}
-                  disabled={pushSub.loading}
-                  className="sidebar-nav-item text-amber-500 hover:bg-amber-500/10"
-                >
-                  <Bell size={18} /> {pushSub.loading ? "Ativando..." : "Ativar Notificações"}
-                </button>
-              )}
-              {pushSub.isSubscribed && (
-                <div className="sidebar-nav-item text-muted-foreground cursor-default opacity-70">
-                  <Bell size={18} /> Notificações ativas ✓
+                        if (item.type === "link") {
+                          return (
+                            <Link key={key} to={item.href} id={item.tourId} className={`${baseClass} ${item.className || ""}`}>
+                              <Icon size={18} /> {item.label}
+                              {item.badge && <span className="ml-auto text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-primary/15 text-primary">{item.badge}</span>}
+                            </Link>
+                          );
+                        }
+
+                        if (item.type === "action") {
+                          return (
+                            <button key={key} type="button" onClick={item.onClick} disabled={item.disabled} className={`${baseClass} ${item.disabled ? "opacity-60 cursor-default" : ""} ${item.className || ""}`}>
+                              <Icon size={18} /> {item.label}
+                            </button>
+                          );
+                        }
+
+                        return (
+                          <button key={key} id={item.tourId} onClick={() => handleTabClick(item.id)} className={`sidebar-nav-item w-full text-left transition-all duration-200 ${item.locked ? "text-muted-foreground/40 cursor-not-allowed" : activeTab === item.id ? "active shadow-sm" : "text-muted-foreground hover:text-foreground hover:bg-secondary/80 hover:translate-x-0.5"}`}>
+                            {item.locked ? <Lock size={18} /> : <Icon size={18} />} {item.label}
+                            {badge && <span className="ml-auto bg-destructive text-destructive-foreground text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">{badge}</span>}
+                            {item.locked && <Lock size={14} className="ml-auto text-muted-foreground/40" />}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
+              );
+            })}
           </nav>
 
           {/* Gerente Card — Premium */}
