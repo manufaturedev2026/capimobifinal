@@ -1,5 +1,6 @@
 // Avaliação imobiliária profissional v3 — pesos macro % diretos + modo avançado
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { consumeAiCredits, refundAiCredits } from "../_shared/ai-credits.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -1047,6 +1048,8 @@ Deno.serve(async (req) => {
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
     const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(SUPABASE_URL, SERVICE_KEY);
+    const credit = await consumeAiCredits(req, "property_valuation", corsHeaders);
+    if (!credit.ok) return credit.response;
 
     const data = await req.json() as Payload;
 
@@ -1134,7 +1137,7 @@ Deno.serve(async (req) => {
       : "Tabela regional de preços";
 
     const { data: insertedValuation } = await supabase.from("property_valuations").insert({
-      user_id: userId,
+      user_id: credit.userId,
       measured_property_id: data.measuredPropertyId ?? null,
       estado: data.estado, cidade: data.cidade, bairro: data.bairro,
       rua: data.rua, numero: data.numero, cep: data.cep,
