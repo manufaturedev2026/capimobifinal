@@ -1,3 +1,5 @@
+import { consumeAiCredits, refundAiCredits } from "../_shared/ai-credits.ts";
+
 // Gera texto pronto para anúncio a partir de uma avaliação
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -11,6 +13,8 @@ Deno.serve(async (req) => {
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY missing");
 
     const data = await req.json();
+    const credit = await consumeAiCredits(req, "valuation_ad", corsHeaders);
+    if (!credit.ok) return credit.response;
     const userPrompt = `Crie um anúncio profissional, persuasivo e curto para este imóvel (estilo OLX/Imovelweb).
 
 Localização: ${data.bairro}, ${data.cidade}/${data.estado}
@@ -48,6 +52,7 @@ Retorne via tool: titulo (até 80 chars, atrativo) e descricao (3-5 parágrafos 
     });
 
     if (!response.ok) {
+      await refundAiCredits(credit.admin, credit.userId, credit.sellerId, credit.cost, "valuation_ad");
       if (response.status === 429) {
         return new Response(JSON.stringify({ error: "Limite atingido. Tente novamente em instantes." }), {
           status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },

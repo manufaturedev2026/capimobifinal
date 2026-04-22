@@ -171,6 +171,92 @@ export type Database = {
           },
         ]
       }
+      ai_credit_transactions: {
+        Row: {
+          amount: number
+          created_at: string
+          external_reference: string | null
+          id: string
+          metadata: Json
+          notes: string | null
+          seller_id: string | null
+          status: string
+          tool_key: string
+          transaction_type: string
+          user_id: string
+          wallet_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          external_reference?: string | null
+          id?: string
+          metadata?: Json
+          notes?: string | null
+          seller_id?: string | null
+          status?: string
+          tool_key: string
+          transaction_type: string
+          user_id: string
+          wallet_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          external_reference?: string | null
+          id?: string
+          metadata?: Json
+          notes?: string | null
+          seller_id?: string | null
+          status?: string
+          tool_key?: string
+          transaction_type?: string
+          user_id?: string
+          wallet_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_credit_transactions_wallet_id_fkey"
+            columns: ["wallet_id"]
+            isOneToOne: false
+            referencedRelation: "ai_credit_wallets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_credit_wallets: {
+        Row: {
+          balance: number
+          created_at: string
+          id: string
+          last_monthly_reset_at: string | null
+          monthly_plan_credits: number
+          seller_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          balance?: number
+          created_at?: string
+          id?: string
+          last_monthly_reset_at?: string | null
+          monthly_plan_credits?: number
+          seller_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          balance?: number
+          created_at?: string
+          id?: string
+          last_monthly_reset_at?: string | null
+          monthly_plan_credits?: number
+          seller_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       ai_text_generations_log: {
         Row: {
           action: string
@@ -3277,6 +3363,31 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      add_ai_credits: {
+        Args: {
+          p_amount: number
+          p_external_reference?: string
+          p_metadata?: Json
+          p_notes?: string
+          p_seller_id?: string
+          p_tool_key?: string
+          p_transaction_type: string
+          p_user_id: string
+        }
+        Returns: number
+      }
+      consume_ai_credits: {
+        Args: {
+          p_amount: number
+          p_external_reference?: string
+          p_metadata?: Json
+          p_notes?: string
+          p_seller_id?: string
+          p_tool_key: string
+          p_user_id: string
+        }
+        Returns: Json
+      }
       decrypt_smtp_password: {
         Args: { p_encrypted: string; p_key: string }
         Returns: string
@@ -3293,6 +3404,10 @@ export type Database = {
         Args: { payload: Json; queue_name: string }
         Returns: number
       }
+      ensure_ai_credit_wallet: {
+        Args: { p_seller_id?: string; p_user_id: string }
+        Returns: string
+      }
       generate_item_slug: {
         Args: { p_item_id: string; p_title: string }
         Returns: string
@@ -3300,6 +3415,10 @@ export type Database = {
       generate_seller_slug: {
         Args: { p_name: string; p_profile_id: string }
         Returns: string
+      }
+      get_ai_monthly_credits_for_tier: {
+        Args: { p_tier: string }
+        Returns: number
       }
       has_role: {
         Args: {
@@ -3324,6 +3443,22 @@ export type Database = {
           msg_id: number
           read_ct: number
         }[]
+      }
+      refresh_ai_monthly_credits: {
+        Args: { p_seller_id?: string; p_user_id: string }
+        Returns: Json
+      }
+      refund_ai_credits: {
+        Args: {
+          p_amount: number
+          p_external_reference?: string
+          p_metadata?: Json
+          p_notes?: string
+          p_seller_id?: string
+          p_tool_key: string
+          p_user_id: string
+        }
+        Returns: number
       }
       resolve_price_per_sqm: {
         Args: {

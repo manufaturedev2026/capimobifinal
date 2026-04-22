@@ -43,6 +43,7 @@ import { usePushSubscription } from "@/hooks/usePushSubscription";
 import WelcomePushPopup from "@/components/WelcomePushPopup";
 import AiHelpChat from "@/components/AiHelpChat";
 import PanelSplash from "@/components/PanelSplash";
+import AiCreditsCard from "@/components/AiCreditsCard";
 
 type SellerItem = {
   id: string;
@@ -614,6 +615,10 @@ export default function SellerDashboard() {
                     <p className="text-white/60 text-sm mt-1">Gerencie seus imóveis e acompanhe seu desempenho.</p>
                   </div>
                 </motion.div>
+
+                {user?.id && profile?.id && (
+                  <AiCreditsCard userId={user.id} sellerId={profile.id} />
+                )}
 
                 {/* Stats Grid — Premium Cards */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">

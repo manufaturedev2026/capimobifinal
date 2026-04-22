@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { consumeAiCredits, refundAiCredits } from "../_shared/ai-credits.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -256,59 +257,9 @@ serve(async (req) => {
     if (action === "generate_ad_copy") {
       const { sellerName, captureUrl, templateHint } = body;
 
-      // Validar limite diário por plano
-      const authHeader = req.headers.get("Authorization");
-      if (!authHeader) {
-        return new Response(JSON.stringify({ error: "Não autenticado" }), {
-          status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-      const supabaseAnon = Deno.env.get("SUPABASE_ANON_KEY")!;
-      const supabaseService = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-      const userClient = createClient(supabaseUrl, supabaseAnon, {
-        global: { headers: { Authorization: authHeader } },
-      });
-      const { data: userData } = await userClient.auth.getUser();
-      const user = userData?.user;
-      if (!user) {
-        return new Response(JSON.stringify({ error: "Sessão inválida" }), {
-          status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-
-      const admin = createClient(supabaseUrl, supabaseService);
-
-      // Buscar plano vigente
-      const { data: subRows } = await admin
-        .from("seller_subscriptions")
-        .select("tier, seller_id")
-        .eq("user_id", user.id)
-        .eq("is_active", true)
-        .order("created_at", { ascending: false })
-        .limit(1);
-      const tier = (subRows?.[0]?.tier as string) || "basico";
-      const sellerId = subRows?.[0]?.seller_id as string | undefined;
-      const dailyLimit = AI_GEN_DAILY_LIMITS[tier] ?? 5;
-
-      // Contar gerações nas últimas 24h
-      const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-      const { count: usedToday } = await admin
-        .from("ai_text_generations_log")
-        .select("*", { count: "exact", head: true })
-        .eq("user_id", user.id)
-        .gte("created_at", since);
-
-      if ((usedToday ?? 0) >= dailyLimit) {
-        return new Response(JSON.stringify({
-          error: `Limite diário atingido (${dailyLimit} gerações/dia no seu plano). Faça upgrade para gerar mais.`,
-          limitReached: true,
-          used: usedToday,
-          limit: dailyLimit,
-        }), {
-          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
+      const credit = await consumeAiCredits(req, "capture_ad_copy", corsHeaders);
+      if (!credit.ok) return credit.response;
+      const { admin, userId, sellerId, cost, balance } = credit;
 
       const adPrompt = `Você é um copywriter especialista em marketing imobiliário brasileiro.
 
@@ -341,6 +292,7 @@ REGRAS:
       });
 
       if (!aiResp.ok) {
+        await refundAiCredits(admin, userId, sellerId, cost, "capture_ad_copy");
         const status = aiResp.status;
         return new Response(JSON.stringify({ error: status === 429 ? "Limite atingido" : "Erro na IA" }), {
           status, headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -353,7 +305,7 @@ REGRAS:
       // Registrar uso (best-effort, não bloqueia resposta)
       if (sellerId) {
         await admin.from("ai_text_generations_log").insert({
-          user_id: user.id,
+          user_id: userId,
           seller_id: sellerId,
           action: "generate_ad_copy",
         });
@@ -361,9 +313,7 @@ REGRAS:
 
       return new Response(JSON.stringify({
         text,
-        used: (usedToday ?? 0) + 1,
-        limit: dailyLimit,
-        remaining: Math.max(0, dailyLimit - ((usedToday ?? 0) + 1)),
+        aiCredits: { charged: cost, balance },
       }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
