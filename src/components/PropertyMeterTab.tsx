@@ -309,6 +309,7 @@ export default function PropertyMeterTab({ userId, themeVars }: { userId: string
   const [photoCategory, setPhotoCategory] = useState("Fachada");
   const [photoRoomId, setPhotoRoomId] = useState("geral");
   const [propertyForm, setPropertyForm] = useState<PropertyForm>(emptyPropertyForm);
+  const [measurementDraft, setMeasurementDraft] = useState<PropertyForm>(emptyPropertyForm);
   const [roomForm, setRoomForm] = useState<RoomForm>(emptyRoomForm);
 
   const measuredPropertiesTable = "measured_properties" as any;
@@ -399,6 +400,7 @@ export default function PropertyMeterTab({ userId, themeVars }: { userId: string
     if (selectedProperty?.id) {
       fetchRooms(selectedProperty.id);
       fetchPhotos(selectedProperty.id);
+      setMeasurementDraft(propertyToForm(selectedProperty));
     }
   }, [fetchPhotos, fetchRooms, selectedProperty?.id]);
 
@@ -725,9 +727,32 @@ export default function PropertyMeterTab({ userId, themeVars }: { userId: string
     if (!selectedProperty) return;
     if (selectedProperty.measurement_mode === mode) return;
     setSelectedProperty({ ...selectedProperty, measurement_mode: mode });
+    setMeasurementDraft((prev) => ({ ...prev, measurement_mode: mode }));
     const { error } = await db.from(measuredPropertiesTable).update({ measurement_mode: mode }).eq("id", selectedProperty.id).eq("user_id", userId);
     if (error) toast({ title: "Erro ao alterar modo", description: error.message, variant: "destructive" });
     else toast({ title: "Modo de medição atualizado", description: mode });
+  };
+
+  const persistMeasurementDraft = async (updates: Partial<PropertyForm> = {}) => {
+    if (!selectedProperty) return;
+    const next = { ...measurementDraft, ...updates };
+    setMeasurementDraft(next);
+    const payload = {
+      land_width: toNumber(next.land_width) || null,
+      land_length: toNumber(next.land_length) || null,
+      land_area_manual: toNumber(next.land_area_manual) || null,
+      external_shape: next.external_shape,
+      external_width: toNumber(next.external_width) || null,
+      external_length: toNumber(next.external_length) || null,
+      external_base: toNumber(next.external_base) || null,
+      external_height: toNumber(next.external_height) || null,
+      external_side_a: toNumber(next.external_side_a) || null,
+      external_side_b: toNumber(next.external_side_b) || null,
+      external_area_manual: toNumber(next.external_area_manual) || null,
+    };
+    const { data, error } = await db.from(measuredPropertiesTable).update(payload).eq("id", selectedProperty.id).eq("user_id", userId).select("*").single();
+    if (error) toast({ title: "Erro ao salvar medidas", description: error.message, variant: "destructive" });
+    else setSelectedProperty(data as MeasuredProperty);
   };
 
   const sendToValuation = () => {
@@ -909,6 +934,29 @@ export default function PropertyMeterTab({ userId, themeVars }: { userId: string
           </div>
 
           <div className="rounded-3xl border border-border bg-card p-4 shadow-sm">
+            <div className="mb-4">
+              <p className="text-xs font-bold uppercase text-primary">Medidas do imóvel</p>
+              <h3 className="font-display text-xl font-extrabold text-foreground">Editar metragem</h3>
+              <p className="text-sm text-muted-foreground">Preencha uma vez aqui; os dados ficam salvos no imóvel automaticamente ao sair do campo.</p>
+            </div>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+              <MeasurementField label="Largura terreno (m)" value={measurementDraft.land_width} onChange={(value) => setMeasurementDraft((prev) => ({ ...prev, land_width: value }))} onBlur={() => persistMeasurementDraft()} />
+              <MeasurementField label="Comprimento terreno (m)" value={measurementDraft.land_length} onChange={(value) => setMeasurementDraft((prev) => ({ ...prev, land_length: value }))} onBlur={() => persistMeasurementDraft()} />
+              <MeasurementField label="Área terreno manual" value={measurementDraft.land_area_manual} onChange={(value) => setMeasurementDraft((prev) => ({ ...prev, land_area_manual: value }))} onBlur={() => persistMeasurementDraft()} />
+            </div>
+            <div className="mt-4 rounded-2xl border border-primary/15 bg-primary/10 p-3">
+              <Picker themeVars={themeVars} label="Formato externo da construção" value={measurementDraft.external_shape} options={externalShapes} onChange={(value) => persistMeasurementDraft({ external_shape: value })} />
+              <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                {measurementDraft.external_shape === "Retângulo" && <><MeasurementField label="Largura construção" value={measurementDraft.external_width} onChange={(value) => setMeasurementDraft((prev) => ({ ...prev, external_width: value }))} onBlur={() => persistMeasurementDraft()} /><MeasurementField label="Comprimento construção" value={measurementDraft.external_length} onChange={(value) => setMeasurementDraft((prev) => ({ ...prev, external_length: value }))} onBlur={() => persistMeasurementDraft()} /></>}
+                {measurementDraft.external_shape === "L" && <><MeasurementField label="Largura bloco 1" value={measurementDraft.external_width} onChange={(value) => setMeasurementDraft((prev) => ({ ...prev, external_width: value }))} onBlur={() => persistMeasurementDraft()} /><MeasurementField label="Comprimento bloco 1" value={measurementDraft.external_length} onChange={(value) => setMeasurementDraft((prev) => ({ ...prev, external_length: value }))} onBlur={() => persistMeasurementDraft()} /><MeasurementField label="Largura bloco 2" value={measurementDraft.external_side_a} onChange={(value) => setMeasurementDraft((prev) => ({ ...prev, external_side_a: value }))} onBlur={() => persistMeasurementDraft()} /><MeasurementField label="Comprimento bloco 2" value={measurementDraft.external_side_b} onChange={(value) => setMeasurementDraft((prev) => ({ ...prev, external_side_b: value }))} onBlur={() => persistMeasurementDraft()} /></>}
+                {measurementDraft.external_shape === "Triângulo" && <><MeasurementField label="Base construção" value={measurementDraft.external_base} onChange={(value) => setMeasurementDraft((prev) => ({ ...prev, external_base: value }))} onBlur={() => persistMeasurementDraft()} /><MeasurementField label="Altura construção" value={measurementDraft.external_height} onChange={(value) => setMeasurementDraft((prev) => ({ ...prev, external_height: value }))} onBlur={() => persistMeasurementDraft()} /></>}
+                {measurementDraft.external_shape === "Trapézio" && <><MeasurementField label="Base maior" value={measurementDraft.external_base} onChange={(value) => setMeasurementDraft((prev) => ({ ...prev, external_base: value }))} onBlur={() => persistMeasurementDraft()} /><MeasurementField label="Base menor" value={measurementDraft.external_side_a} onChange={(value) => setMeasurementDraft((prev) => ({ ...prev, external_side_a: value }))} onBlur={() => persistMeasurementDraft()} /><MeasurementField label="Altura" value={measurementDraft.external_height} onChange={(value) => setMeasurementDraft((prev) => ({ ...prev, external_height: value }))} onBlur={() => persistMeasurementDraft()} /></>}
+                {measurementDraft.external_shape === "Irregular" && <MeasurementField label="Área construída manual" value={measurementDraft.external_area_manual} onChange={(value) => setMeasurementDraft((prev) => ({ ...prev, external_area_manual: value }))} onBlur={() => persistMeasurementDraft()} />}
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-3xl border border-border bg-card p-4 shadow-sm">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-xs font-bold uppercase text-primary">Fotos do imóvel</p>
@@ -1012,25 +1060,9 @@ export default function PropertyMeterTab({ userId, themeVars }: { userId: string
               <Field label="IPTU" value={propertyForm.iptu} onChange={(value) => setPropertyForm((prev) => ({ ...prev, iptu: value }))} />
               <Field label="Condomínio" value={propertyForm.condominium_fee} onChange={(value) => setPropertyForm((prev) => ({ ...prev, condominium_fee: value }))} />
             </div>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-              <Field label="Largura terreno (m)" value={propertyForm.land_width} onChange={(value) => setPropertyForm((prev) => ({ ...prev, land_width: value }))} />
-              <Field label="Comprimento terreno (m)" value={propertyForm.land_length} onChange={(value) => setPropertyForm((prev) => ({ ...prev, land_length: value }))} />
-              <Field label="Área terreno manual" value={propertyForm.land_area_manual} onChange={(value) => setPropertyForm((prev) => ({ ...prev, land_area_manual: value }))} />
-            </div>
-            <Picker themeVars={themeVars} label="Modo de medição" value={propertyForm.measurement_mode} options={measurementModes} onChange={(value) => setPropertyForm((prev) => ({ ...prev, measurement_mode: value }))} />
-            <div className="rounded-2xl border border-primary/15 bg-primary/10 p-3">
-              <Picker themeVars={themeVars} label="Formato externo da construção" value={propertyForm.external_shape} options={externalShapes} onChange={(value) => setPropertyForm((prev) => ({ ...prev, external_shape: value }))} />
-              <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                {propertyForm.external_shape === "Retângulo" && <><Field label="Largura construção" value={propertyForm.external_width} onChange={(value) => setPropertyForm((prev) => ({ ...prev, external_width: value }))} /><Field label="Comprimento construção" value={propertyForm.external_length} onChange={(value) => setPropertyForm((prev) => ({ ...prev, external_length: value }))} /></>}
-                {propertyForm.external_shape === "L" && <><Field label="Largura bloco 1" value={propertyForm.external_width} onChange={(value) => setPropertyForm((prev) => ({ ...prev, external_width: value }))} /><Field label="Comprimento bloco 1" value={propertyForm.external_length} onChange={(value) => setPropertyForm((prev) => ({ ...prev, external_length: value }))} /><Field label="Largura bloco 2" value={propertyForm.external_side_a} onChange={(value) => setPropertyForm((prev) => ({ ...prev, external_side_a: value }))} /><Field label="Comprimento bloco 2" value={propertyForm.external_side_b} onChange={(value) => setPropertyForm((prev) => ({ ...prev, external_side_b: value }))} /></>}
-                {propertyForm.external_shape === "Triângulo" && <><Field label="Base construção" value={propertyForm.external_base} onChange={(value) => setPropertyForm((prev) => ({ ...prev, external_base: value }))} /><Field label="Altura construção" value={propertyForm.external_height} onChange={(value) => setPropertyForm((prev) => ({ ...prev, external_height: value }))} /></>}
-                {propertyForm.external_shape === "Trapézio" && <><Field label="Base maior" value={propertyForm.external_base} onChange={(value) => setPropertyForm((prev) => ({ ...prev, external_base: value }))} /><Field label="Base menor" value={propertyForm.external_side_a} onChange={(value) => setPropertyForm((prev) => ({ ...prev, external_side_a: value }))} /><Field label="Altura" value={propertyForm.external_height} onChange={(value) => setPropertyForm((prev) => ({ ...prev, external_height: value }))} /></>}
-                {propertyForm.external_shape === "Irregular" && <Field label="Área construída manual" value={propertyForm.external_area_manual} onChange={(value) => setPropertyForm((prev) => ({ ...prev, external_area_manual: value }))} />}
-              </div>
-            </div>
             <Field label="Responsável pela medição" value={propertyForm.measured_by} onChange={(value) => setPropertyForm((prev) => ({ ...prev, measured_by: value }))} />
             <TextArea label="Observações" value={propertyForm.notes} onChange={(value) => setPropertyForm((prev) => ({ ...prev, notes: value }))} />
-            <Button onClick={saveProperty} className={`h-12 w-full rounded-2xl font-bold ${themedPrimaryButton}`}><Save size={16} /> {editingPropertyId ? "Salvar imóvel" : "Salvar e Abrir"}</Button>
+            <Button onClick={saveProperty} className={`h-12 w-full rounded-2xl font-bold ${themedPrimaryButton}`}><Save size={16} /> {editingPropertyId ? "Salvar imóvel" : "Salvar e abrir imóvel"}</Button>
           </div>
         </DialogContent>
       </Dialog>
@@ -1072,6 +1104,15 @@ function Field({ label, value, onChange }: { label: string; value: string; onCha
     <div>
       <label className="mb-1 block text-xs font-semibold text-muted-foreground">{label}</label>
       <Input value={value} onChange={(event) => onChange(event.target.value)} className="h-12 rounded-2xl !border-primary/20 !bg-primary/5 focus-visible:ring-primary" />
+    </div>
+  );
+}
+
+function MeasurementField({ label, value, onChange, onBlur }: { label: string; value: string; onChange: (value: string) => void; onBlur: () => void }) {
+  return (
+    <div>
+      <label className="mb-1 block text-xs font-semibold text-muted-foreground">{label}</label>
+      <Input value={value} inputMode="decimal" onChange={(event) => onChange(event.target.value)} onBlur={onBlur} className="h-12 rounded-2xl !border-primary/20 !bg-primary/5 focus-visible:ring-primary" />
     </div>
   );
 }
