@@ -1043,13 +1043,12 @@ Valor de R$ ${calc.valorFinal.toLocaleString("pt-BR")} reflete metragem, padrão
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+  let credit: Awaited<ReturnType<typeof consumeAiCredits>> | null = null;
 
   try {
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
     const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(SUPABASE_URL, SERVICE_KEY);
-    const credit = await consumeAiCredits(req, "property_valuation", corsHeaders);
-    if (!credit.ok) return credit.response;
 
     const data = await req.json() as Payload;
 
@@ -1058,6 +1057,9 @@ Deno.serve(async (req) => {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
+    credit = await consumeAiCredits(req, "property_valuation", corsHeaders);
+    if (!credit.ok) return credit.response;
 
     const areaRefForMarket =
       (Number(data.areaConstruidaTerreo) || 0) + (Number(data.areaConstruidaSuperior) || 0) ||
@@ -1100,16 +1102,6 @@ Deno.serve(async (req) => {
     }
 
     const ai = await aiEnrich(data, calc, precoM2, source, market) ?? fallbackAnalysis(data, calc, market);
-
-    const authHeader = req.headers.get("Authorization");
-    let userId: string | null = null;
-    if (authHeader) {
-      try {
-        const token = authHeader.replace("Bearer ", "");
-        const { data: { user } } = await supabase.auth.getUser(token);
-        userId = user?.id ?? null;
-      } catch {}
-    }
 
     const comparaveisOut = market.topComparables.map(c => ({
       titulo: c.title ?? "Imóvel similar",
@@ -1236,6 +1228,7 @@ Deno.serve(async (req) => {
     }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
   } catch (e) {
     console.error("valuation error:", e);
+    if (credit?.ok) await refundAiCredits(credit.admin, credit.userId, credit.sellerId, credit.cost, "property_valuation");
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
