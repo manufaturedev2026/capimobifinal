@@ -130,11 +130,10 @@ const propertyTypes = ["Casa", "Apartamento", "Terreno", "Comercial", "Rural"];
 const roomTypes = ["Sala", "Quarto", "Suíte", "Cozinha", "Banheiro", "Corredor", "Garagem", "Varanda", "Área gourmet", "Área de serviço", "Escritório", "Outro"];
 const shapes = ["Retângulo / Quadrado", "Triângulo Retângulo", "Formato em L", "Trapézio", "Circular", "Manual"];
 const areaTypes = ["Interna útil", "Construída coberta", "Externa descoberta", "Terreno"];
-const measurementModes = ["Medição por Ambientes", "Medição Externa da Construção", "Medição do Terreno"];
+const measurementModes = ["Medição por Ambientes", "Medição Externa da Construção"];
 const measurementModeDescriptions: Record<string, string> = {
   "Medição por Ambientes": "Some cômodos e áreas cadastradas.",
   "Medição Externa da Construção": "Use medidas externas da construção.",
-  "Medição do Terreno": "Priorize largura, comprimento ou área manual do terreno.",
 };
 const externalShapes = ["Retângulo", "L", "Triângulo", "Trapézio", "Irregular"];
 const photoCategories = ["Fachada", "Sala", "Quartos", "Cozinha", "Banheiros", "Área externa", "Garagem", "Outros"];
@@ -243,6 +242,9 @@ const calculateExternalArea = (property: Pick<MeasuredProperty, "external_shape"
     default: return 0;
   }
 };
+
+const calculateRoomsTotal = (items: Pick<MeasuredRoom, "area">[]) => items.reduce((sum, room) => sum + Number(room.area || 0), 0);
+const calculateCombinedTotal = (items: Pick<MeasuredRoom, "area">[], property: Pick<MeasuredProperty, "external_shape" | "external_width" | "external_length" | "external_base" | "external_height" | "external_side_a" | "external_side_b" | "external_area_manual"> | null) => calculateRoomsTotal(items) + (property ? calculateExternalArea(property) : 0);
 
 const propertyToForm = (property: MeasuredProperty): PropertyForm => ({
   name: property.name,
