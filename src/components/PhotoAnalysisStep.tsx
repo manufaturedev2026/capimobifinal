@@ -152,9 +152,13 @@ export default function PhotoAnalysisStep({
       const { data, error } = await supabase.functions.invoke("analyze-property-photos", { body: payload });
       if (error) throw error;
       if ((data as any)?.error) throw new Error((data as any).error);
+      const normalizedAnalysis = {
+        ...(data as AnaliseVisual),
+        total_fotos_analisadas: Math.max(Number((data as AnaliseVisual).total_fotos_analisadas) || 0, fotos.length),
+      };
       setProgress(100);
-      onAnaliseChange(data as AnaliseVisual);
-      toast({ title: "Análise visual concluída ✨", description: `Ajuste sugerido: ${(data as AnaliseVisual).ajuste_total_pct > 0 ? "+" : ""}${(data as AnaliseVisual).ajuste_total_pct.toFixed(1)}%` });
+      onAnaliseChange(normalizedAnalysis);
+      toast({ title: "Análise visual concluída ✨", description: `Ajuste sugerido: ${normalizedAnalysis.ajuste_total_pct > 0 ? "+" : ""}${normalizedAnalysis.ajuste_total_pct.toFixed(1)}%` });
     } catch (e: any) {
       toast({ title: "Erro na análise visual", description: e.message, variant: "destructive" });
     } finally {
