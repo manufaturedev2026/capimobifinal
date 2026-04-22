@@ -259,6 +259,24 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
       );
     };
 
+    const resolveFromAddressCandidates = async () => {
+      if (!allowStreetViewFallback || !address.trim()) return false;
+
+      for (const candidate of geocodingCandidates) {
+        const { data: geo } = await supabase.functions.invoke("geocode-address", {
+          body: { address: candidate },
+        });
+        const lat = Number((geo as { lat?: number })?.lat);
+        const lng = Number((geo as { lng?: number })?.lng);
+        if (Number.isFinite(lat) && Number.isFinite(lng)) {
+          applyStreetViewCoords(String(lat), String(lng));
+          return true;
+        }
+      }
+
+      return false;
+    };
+
     // Para imóveis, Street View segue CEP + número. Para loja, permitimos endereço completo para abrir no iframe.
     if (cleanCep.length !== 8) {
       if (!allowStreetViewFallback || !address.trim()) {
@@ -269,17 +287,7 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
       const resolveAddressOnly = async () => {
         setResolvingStreetView(true);
         try {
-          for (const candidate of geocodingCandidates) {
-            const { data: geo } = await supabase.functions.invoke("geocode-address", {
-              body: { address: candidate },
-            });
-            const lat = Number((geo as { lat?: number })?.lat);
-            const lng = Number((geo as { lng?: number })?.lng);
-            if (Number.isFinite(lat) && Number.isFinite(lng)) {
-              applyStreetViewCoords(String(lat), String(lng));
-              return;
-            }
-          }
+          await resolveFromAddressCandidates();
         } catch {
           /* silencioso: sem street view */
         } finally {
