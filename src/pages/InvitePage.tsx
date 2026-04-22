@@ -66,6 +66,50 @@ export default function InvitePage() {
     } as any).then(() => {});
   }, []);
 
+  const notifyAdminLead = useCallback(async (leadName: string, leadPhone: string, notes: string) => {
+    try {
+      let adminUserId: string | null = null;
+      const { data: pushSetting } = await supabase
+        .from("platform_settings")
+        .select("value")
+        .eq("key", "admin_push_seller_id")
+        .maybeSingle();
+
+      if (pushSetting?.value) {
+        const { data: adminProfile } = await supabase
+          .from("profiles")
+          .select("user_id")
+          .eq("id", pushSetting.value)
+          .maybeSingle();
+        adminUserId = adminProfile?.user_id || null;
+      }
+
+      if (!adminUserId) {
+        const { data: adminRole } = await supabase
+          .from("user_roles")
+          .select("user_id")
+          .eq("role", "admin")
+          .limit(1)
+          .maybeSingle();
+        adminUserId = adminRole?.user_id || null;
+      }
+
+      if (!adminUserId) return;
+
+      await supabase.functions.invoke("notify-new-lead", {
+        body: {
+          target_user_id: adminUserId,
+          title: "Novo lead do bot de convite",
+          body: `${leadName} enviou WhatsApp ${leadPhone}`,
+          url: "/admin",
+          source: notes,
+        },
+      });
+    } catch (error) {
+      console.error("Admin lead push error:", error);
+    }
+  }, []);
+
   const isAiMode = config.chatMode === "ai";
 
   useEffect(() => {
@@ -419,6 +463,7 @@ export default function InvitePage() {
                           user_id: "00000000-0000-0000-0000-000000000000",
                           notes,
                         });
+                        await notifyAdminLead(crmName.trim(), crmPhone.trim(), notes);
                         setCrmSaved(true);
                         trackEvent("crm_submitted");
                         addBubble("Obrigado! Em breve entraremos em contato 🤝", "attendant");
