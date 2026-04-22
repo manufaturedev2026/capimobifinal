@@ -325,6 +325,7 @@ export default function PropertyMeterTab({ userId, themeVars }: { userId: string
   const [editingRoomId, setEditingRoomId] = useState<string | null>(null);
   const [photoCategory, setPhotoCategory] = useState("Fachada");
   const [photoRoomId, setPhotoRoomId] = useState("geral");
+  const [roomScope, setRoomScope] = useState<"Interna" | "Externa">("Interna");
   const [propertyForm, setPropertyForm] = useState<PropertyForm>(emptyPropertyForm);
   const [measurementDraft, setMeasurementDraft] = useState<PropertyForm>(emptyPropertyForm);
   const [roomForm, setRoomForm] = useState<RoomForm>(emptyRoomForm);
@@ -337,12 +338,12 @@ export default function PropertyMeterTab({ userId, themeVars }: { userId: string
     const landArea = selectedProperty ? Number(selectedProperty.land_area_manual || 0) || Number(selectedProperty.land_width || 0) * Number(selectedProperty.land_length || 0) : 0;
     const externalBuiltArea = selectedProperty ? calculateExternalArea(selectedProperty) : 0;
     const usefulArea = rooms.filter((room) => room.area_type === "Interna útil").reduce((sum, room) => sum + Number(room.area || 0), 0);
-    const coveredArea = rooms.filter((room) => room.area_type === "Construída coberta").reduce((sum, room) => sum + Number(room.area || 0), 0);
-    const openArea = rooms.filter((room) => room.area_type === "Externa descoberta").reduce((sum, room) => sum + Number(room.area || 0), 0);
+    const externalRoomsArea = rooms.filter((room) => room.area_type === "Externa descoberta").reduce((sum, room) => sum + Number(room.area || 0), 0);
     const builtArea = externalBuiltArea + usefulArea + coveredArea;
-    const uncoveredArea = Math.max(landArea - builtArea, openArea, 0);
+    const externalArea = externalBuiltArea + externalRoomsArea;
+    const uncoveredArea = Math.max(landArea - builtArea, externalRoomsArea, 0);
     const occupancyRate = landArea > 0 ? (builtArea / landArea) * 100 : 0;
-    return { builtArea, usefulArea, landArea, uncoveredArea, occupancyRate };
+    return { builtArea, usefulArea, externalArea, landArea, uncoveredArea, occupancyRate };
   }, [rooms, selectedProperty]);
   const livePropertyTotal = useMemo(() => {
     const savedTotal = calculateCombinedTotal(rooms, selectedProperty);
