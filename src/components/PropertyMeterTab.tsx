@@ -884,13 +884,28 @@ export default function PropertyMeterTab({ userId, themeVars }: { userId: string
           </div>
 
           <div className="rounded-3xl border border-border bg-card p-4 shadow-sm">
-            <p className="text-xs font-bold uppercase text-primary">Modos de medição</p>
+            <p className="text-xs font-bold uppercase text-primary">Modo de cálculo da metragem</p>
             <div className="mt-3 grid gap-2 md:grid-cols-3">
-              {measurementModes.map((mode) => (
-                <button key={mode} type="button" onClick={() => updateMeasurementMode(mode)} className={`rounded-2xl border p-3 text-left text-sm font-bold transition-all ${selectedProperty.measurement_mode === mode ? "border-primary bg-primary text-primary-foreground" : "border-primary/20 bg-primary/10 text-primary"}`}>{mode}</button>
-              ))}
+              {measurementModes.map((mode) => {
+                const active = (selectedProperty.measurement_mode || "Medição por Ambientes") === mode;
+                return (
+                  <button
+                    key={mode}
+                    type="button"
+                    onClick={() => updateMeasurementMode(mode)}
+                    aria-pressed={active}
+                    className={`rounded-2xl border p-3 text-left transition-all ${active ? "border-primary bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "border-primary/20 bg-primary/10 text-foreground hover:border-primary/50 hover:bg-primary/15"}`}
+                  >
+                    <span className="flex items-center justify-between gap-3 text-sm font-extrabold">
+                      {mode}
+                      {active && <CheckCircle2 size={17} className="shrink-0" />}
+                    </span>
+                    <span className={`mt-1 block text-xs font-semibold ${active ? "text-primary-foreground/80" : "text-muted-foreground"}`}>{measurementModeDescriptions[mode]}</span>
+                  </button>
+                );
+              })}
             </div>
-            <p className="mt-3 text-sm text-muted-foreground">Modo atual: <strong className="text-foreground">{selectedProperty.measurement_mode || "Medição por Ambientes"}</strong></p>
+            <p className="mt-3 rounded-2xl border border-primary/15 bg-primary/10 px-3 py-2 text-sm font-semibold text-foreground">Selecionado: <strong className="text-primary">{selectedProperty.measurement_mode || "Medição por Ambientes"}</strong></p>
           </div>
 
           <div className="rounded-3xl border border-border bg-card p-4 shadow-sm">
