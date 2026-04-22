@@ -740,16 +740,6 @@ export default function PropertyMeterTab({ userId, themeVars }: { userId: string
     if (selectedProperty) fetchPhotos(selectedProperty.id);
   };
 
-  const updateMeasurementMode = async (mode: string) => {
-    if (!selectedProperty) return;
-    if (selectedProperty.measurement_mode === mode) return;
-    setSelectedProperty({ ...selectedProperty, measurement_mode: mode });
-    setMeasurementDraft((prev) => ({ ...prev, measurement_mode: mode }));
-    const { error } = await db.from(measuredPropertiesTable).update({ measurement_mode: mode }).eq("id", selectedProperty.id).eq("user_id", userId);
-    if (error) toast({ title: "Erro ao alterar modo", description: error.message, variant: "destructive" });
-    else toast({ title: "Modo de medição atualizado", description: mode });
-  };
-
   const persistMeasurementDraft = async (updates: Partial<PropertyForm> = {}) => {
     if (!selectedProperty) return;
     const next = { ...measurementDraft, ...updates };
