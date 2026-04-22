@@ -38,7 +38,6 @@ export const PACKAGE_CONFIG = {
       "Selo Start + Hero Banner",
       "Destaque na listagem",
       "Push: 1 envio por dia",
-      "Gerador de Texto IA: 10/dia",
     ],
   },
   basico: {
@@ -62,7 +61,6 @@ export const PACKAGE_CONFIG = {
       "Calculadora de Lucro (ROI)",
       "Sistema de Parcerias entre corretores",
       "Push: 1 envio por dia",
-      "Gerador de Texto IA: 5/dia",
     ],
   },
   premium: {
@@ -89,7 +87,6 @@ export const PACKAGE_CONFIG = {
       "Estatísticas avançadas",
       "Selo VIP nos anúncios",
       "Suporte prioritário",
-      "Gerador de Texto IA: 20/dia",
     ],
   },
   vip: {
@@ -114,7 +111,6 @@ export const PACKAGE_CONFIG = {
       "Selo Premium exclusivo",
       "Push Notifications: 3 envios por dia",
       "Suporte VIP dedicado",
-      "Gerador de Texto IA: 50/dia",
     ],
   },
   essencial_empresa: {
@@ -138,7 +134,6 @@ export const PACKAGE_CONFIG = {
       "Selo Exclusive",
       "Push Notifications: 4 envios por dia",
       "Suporte dedicado",
-      "Gerador de Texto IA: 100/dia",
     ],
   },
   premium_empresa: {
@@ -159,7 +154,6 @@ export const PACKAGE_CONFIG = {
       "Selo Prime",
       "Push Notifications: 5 envios por dia",
       "Suporte premium dedicado",
-      "Gerador de Texto IA: 200/dia",
     ],
   },
   prime_empresa: {
@@ -180,7 +174,6 @@ export const PACKAGE_CONFIG = {
       "Selo Black ★ exclusivo",
       "Push Notifications: 6 envios por dia",
       "Suporte 24/7 prioritário",
-      "Gerador de Texto IA: 400/dia",
     ],
   },
   black: {
@@ -201,7 +194,6 @@ export const PACKAGE_CONFIG = {
       "Selo Black ★ exclusivo",
       "Push Notifications: 6 envios por dia",
       "Suporte 24/7 prioritário",
-      "Gerador de Texto IA: 400/dia",
     ],
   },
 } as const;
