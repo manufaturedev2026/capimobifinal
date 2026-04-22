@@ -499,11 +499,7 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
                  setView("map");
                  return;
                }
-               if (hasEmbeddedStreetView) {
-                 setView("street");
-                 return;
-               }
-               if (allowStreetViewFallback) window.open(streetViewUrl, "_blank", "noopener,noreferrer");
+               if (hasEmbeddedStreetView) setView("street");
             }}
             aria-busy={resolvingStreetView}
             className="absolute bottom-3 right-3 z-10 flex items-center gap-2 rounded-full bg-primary px-3.5 py-2 text-xs font-semibold text-primary-foreground shadow-lg transition-transform hover:scale-105 disabled:cursor-not-allowed disabled:opacity-70"
