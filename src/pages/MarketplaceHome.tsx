@@ -31,6 +31,7 @@ import { getMarketplaceThemeCssVars } from "@/lib/marketplaceThemeCssVars";
 import { supabase } from "@/integrations/supabase/client";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { SITE_URL } from "@/lib/siteUrl";
+import HomePwaActions from "@/components/HomePwaActions";
 
 const QUICK_ACTIONS = [
   { slug: "casa", name: "Casas", desc: "Residenciais", icon: Home },
@@ -1298,6 +1299,8 @@ export default function MarketplaceHome() {
           );
         })()}
       </AnimatePresence>
+
+      <HomePwaActions primaryColor={PRIMARY} />
     </div>
   );
 }
