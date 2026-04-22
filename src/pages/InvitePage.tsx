@@ -139,7 +139,7 @@ export default function InvitePage() {
     setTyping(true);
     try {
       const { data, error } = await supabase.functions.invoke("invite-chat", {
-        body: { messages: [], ctaType: config.ctaType, customPrompt: config.aiPrompt },
+        body: { messages: [], ctaType: config.ctaType, customPrompt: config.aiPrompt, attendantName: config.attendantName },
       });
       if (error) throw error;
       const reply = data?.reply || "Olá! 👋 Antes de tudo, qual é o seu nome? 😊";
@@ -185,7 +185,7 @@ export default function InvitePage() {
     while (retries <= maxRetries && !success) {
       try {
         const { data, error } = await supabase.functions.invoke("invite-chat", {
-          body: { messages: updatedMessages, ctaType: config.ctaType, customPrompt: config.aiPrompt },
+          body: { messages: updatedMessages, ctaType: config.ctaType, customPrompt: config.aiPrompt, attendantName: config.attendantName },
         });
 
         if (error) {
