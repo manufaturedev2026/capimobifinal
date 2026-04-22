@@ -297,6 +297,9 @@ export default function StoreLayoutNetflix({
   const accent = "#e50914";
   const isIOSStandalone = isIOSStandaloneApp();
   const isMobile = useIsMobile();
+  const profileDisplayName = dbProfile?.seller_category === "imobiliaria" || dbProfile?.seller_category === "construtora"
+    ? dbProfile?.company_name || dbProfile?.full_name || sellerDisplayName
+    : dbProfile?.full_name || dbProfile?.company_name || sellerDisplayName;
 
   const allProducts = products || filteredProducts;
   const billboard = allProducts.filter((p: any) => p.image).slice(0, 6);
