@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Save, ArrowLeft, Upload, X, MapPin, Lock, Video } from "lucide-react";
+import { Save, ArrowLeft, Upload, X, MapPin, Lock, Video, Search, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { getTagStyle, getTagLabel, getTagEmoji, TAG_CATEGORIES } from "@/data/products";
 import type { Database } from "@/integrations/supabase/types";
@@ -114,6 +114,7 @@ export default function SellerItemForm() {
   const { toast } = useToast();
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [fetchingCep, setFetchingCep] = useState(false);
   const [activeItemCount, setActiveItemCount] = useState(0);
   const [isAluguel, setIsAluguel] = useState(false);
   const { subscription, currentTier, config: pkgConfig, isExpired } = useSubscription(user?.id);
@@ -268,6 +269,37 @@ export default function SellerItemForm() {
   };
 
   const removePhoto = (index: number) => setForm((f) => ({ ...f, photos: f.photos.filter((_, i) => i !== index) }));
+
+  const handleCepLookup = async () => {
+    const cleanCep = form.cep.replace(/\D/g, "");
+    if (cleanCep.length !== 8) {
+      toast({ title: "CEP inválido", description: "Digite um CEP com 8 números.", variant: "destructive" });
+      return;
+    }
+
+    setFetchingCep(true);
+    try {
+      const response = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
+      const data = await response.json();
+      if (!response.ok || data.erro) {
+        toast({ title: "CEP não encontrado", description: "Confira o CEP informado e tente novamente.", variant: "destructive" });
+        return;
+      }
+
+      setForm((f) => ({
+        ...f,
+        state: data.uf || f.state,
+        city: data.localidade || f.city,
+        neighborhood: data.bairro || f.neighborhood,
+        address: data.logradouro || f.address,
+      }));
+      toast({ title: "Endereço localizado", description: "Rua, bairro, cidade e estado foram preenchidos pelo CEP." });
+    } catch {
+      toast({ title: "Erro ao buscar CEP", description: "Não foi possível consultar o CEP agora.", variant: "destructive" });
+    } finally {
+      setFetchingCep(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
