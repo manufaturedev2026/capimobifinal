@@ -316,26 +316,44 @@ export default function PropertyMeterTab({ userId, themeVars }: { userId: string
   const measuredRoomsTable = "measured_rooms" as any;
   const measuredPhotosTable = "measured_property_photos" as any;
   const computedArea = useMemo(() => calculateRoomArea(roomForm), [roomForm]);
+  const measurementPreview = useMemo(() => {
+    if (!selectedProperty) return null;
+    return {
+      ...selectedProperty,
+      land_width: toNumber(measurementDraft.land_width) || null,
+      land_length: toNumber(measurementDraft.land_length) || null,
+      land_area_manual: toNumber(measurementDraft.land_area_manual) || null,
+      external_shape: measurementDraft.external_shape,
+      external_width: toNumber(measurementDraft.external_width) || null,
+      external_length: toNumber(measurementDraft.external_length) || null,
+      external_base: toNumber(measurementDraft.external_base) || null,
+      external_height: toNumber(measurementDraft.external_height) || null,
+      external_side_a: toNumber(measurementDraft.external_side_a) || null,
+      external_side_b: toNumber(measurementDraft.external_side_b) || null,
+      external_area_manual: toNumber(measurementDraft.external_area_manual) || null,
+    };
+  }, [measurementDraft, selectedProperty]);
   const technicalAreas = useMemo(() => {
-    const landArea = selectedProperty ? Number(selectedProperty.land_area_manual || 0) || Number(selectedProperty.land_width || 0) * Number(selectedProperty.land_length || 0) : 0;
-    const externalBuiltArea = selectedProperty ? calculateExternalArea(selectedProperty) : 0;
+    const landArea = measurementPreview ? Number(measurementPreview.land_area_manual || 0) || Number(measurementPreview.land_width || 0) * Number(measurementPreview.land_length || 0) : 0;
+    const externalBuiltArea = measurementPreview ? calculateExternalArea(measurementPreview) : 0;
     const usefulArea = rooms.filter((room) => room.area_type === "Interna útil").reduce((sum, room) => sum + Number(room.area || 0), 0);
     const coveredArea = rooms.filter((room) => room.area_type === "Construída coberta").reduce((sum, room) => sum + Number(room.area || 0), 0);
     const openArea = rooms.filter((room) => room.area_type === "Externa descoberta").reduce((sum, room) => sum + Number(room.area || 0), 0);
-    const builtArea = externalBuiltArea || usefulArea + coveredArea;
+    const builtArea = externalBuiltArea + usefulArea + coveredArea;
+    const externalArea = externalBuiltArea + openArea;
     const uncoveredArea = Math.max(landArea - builtArea, openArea, 0);
     const occupancyRate = landArea > 0 ? (builtArea / landArea) * 100 : 0;
-    return { builtArea, usefulArea, landArea, uncoveredArea, occupancyRate };
-  }, [rooms, selectedProperty]);
+    return { builtArea, usefulArea, externalArea, landArea, uncoveredArea, occupancyRate };
+  }, [measurementPreview, rooms]);
   const livePropertyTotal = useMemo(() => {
-    const savedTotal = rooms.reduce((sum, room) => sum + Number(room.area || 0), 0);
+    const savedTotal = calculateCombinedTotal(rooms, measurementPreview);
     if (!editingRoomId && roomDialogOpen) return savedTotal + computedArea;
     if (editingRoomId && roomDialogOpen) {
       const currentRoomArea = rooms.find((room) => room.id === editingRoomId)?.area || 0;
       return savedTotal - Number(currentRoomArea) + computedArea;
     }
-    return selectedProperty?.total_area ?? savedTotal;
-  }, [computedArea, editingRoomId, roomDialogOpen, rooms, selectedProperty?.total_area]);
+    return savedTotal;
+  }, [computedArea, editingRoomId, measurementPreview, roomDialogOpen, rooms]);
 
   const syncSelectedTotal = (propertyId: string, area: number) => {
     setSelectedProperty((prev) => (prev?.id === propertyId ? { ...prev, total_area: Number(area.toFixed(2)), updated_at: new Date().toISOString() } : prev));
