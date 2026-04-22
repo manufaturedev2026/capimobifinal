@@ -1016,7 +1016,7 @@ export default function PropertyMeterTab({ userId, themeVars }: { userId: string
               <Field label="Valor pedido" value={propertyForm.asking_price} onChange={(value) => setPropertyForm((prev) => ({ ...prev, asking_price: value }))} />
               <Field label="Quartos" value={propertyForm.bedrooms} onChange={(value) => setPropertyForm((prev) => ({ ...prev, bedrooms: value }))} />
               <Field label="Banheiros" value={propertyForm.bathrooms} onChange={(value) => setPropertyForm((prev) => ({ ...prev, bathrooms: value }))} />
-              <Field label="Vagas" value={propertyForm.parking_spaces} onChange={(value) => setPropertyForm((prev) => ({ ...prev, parking_spaces: value }))} />
+              <Field label="Garagem" value={propertyForm.parking_spaces} onChange={(value) => setPropertyForm((prev) => ({ ...prev, parking_spaces: value }))} />
               <Field label="IPTU" value={propertyForm.iptu} onChange={(value) => setPropertyForm((prev) => ({ ...prev, iptu: value }))} />
               <Field label="Condomínio" value={propertyForm.condominium_fee} onChange={(value) => setPropertyForm((prev) => ({ ...prev, condominium_fee: value }))} />
             </div>
