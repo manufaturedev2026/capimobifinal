@@ -66,6 +66,8 @@ type RoomForm = {
 const propertyTypes = ["Casa", "Apartamento", "Terreno", "Comercial", "Rural"];
 const roomTypes = ["Sala", "Quarto", "Suíte", "Cozinha", "Banheiro", "Corredor", "Garagem", "Varanda", "Área gourmet", "Área de serviço", "Escritório", "Outro"];
 const shapes = ["Retângulo / Quadrado", "Triângulo Retângulo", "Formato em L", "Trapézio", "Circular", "Manual"];
+const themedPrimaryButton = "bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/20";
+const themedOutlineButton = "border-primary/25 bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground";
 
 const emptyPropertyForm: PropertyForm = {
   name: "",
@@ -495,7 +497,7 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
                   <p className="text-sm text-muted-foreground">Imóveis, ambientes e metragem total em um só lugar.</p>
                 </div>
               </div>
-              <Button onClick={openNewProperty} className="h-12 rounded-2xl font-bold shadow-lg shadow-primary/20">
+              <Button onClick={openNewProperty} className={`h-12 rounded-2xl font-bold ${themedPrimaryButton}`}>
                 <Plus size={18} /> Novo Imóvel
               </Button>
             </div>
@@ -506,7 +508,7 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
               <Ruler size={48} className="mx-auto mb-4 text-muted-foreground/40" />
               <h3 className="font-display text-xl font-bold text-foreground">Nenhum imóvel medido</h3>
               <p className="mt-1 text-sm text-muted-foreground">Crie o primeiro imóvel para começar a adicionar ambientes.</p>
-              <Button onClick={openNewProperty} className="mt-6 rounded-2xl">
+              <Button onClick={openNewProperty} className={`mt-6 rounded-2xl ${themedPrimaryButton}`}>
                 <Plus size={16} /> Novo Imóvel
               </Button>
             </div>
@@ -567,8 +569,8 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
               </div>
             </div>
             <div className="mt-4 flex flex-wrap gap-2">
-              <Button onClick={openNewRoom} className="rounded-2xl"><Plus size={16} /> Adicionar ambiente</Button>
-              <Button variant="outline" onClick={() => openEditProperty(selectedProperty)} className="rounded-2xl"><Edit3 size={16} /> Editar imóvel</Button>
+              <Button onClick={openNewRoom} className={`rounded-2xl ${themedPrimaryButton}`}><Plus size={16} /> Adicionar ambiente</Button>
+              <Button variant="outline" onClick={() => openEditProperty(selectedProperty)} className={`rounded-2xl ${themedOutlineButton}`}><Edit3 size={16} /> Editar imóvel</Button>
             </div>
           </div>
 
@@ -591,8 +593,8 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
                   </div>
                   {room.notes && <p className="mt-3 text-sm text-muted-foreground">{room.notes}</p>}
                   <div className="mt-4 flex gap-2">
-                    <Button size="sm" variant="outline" onClick={() => openEditRoom(room)} className="flex-1 rounded-xl"><Edit3 size={14} /> Editar</Button>
-                    <Button size="sm" variant="outline" onClick={() => duplicateRoom(room)} className="rounded-xl"><Copy size={14} /></Button>
+                    <Button size="sm" variant="outline" onClick={() => openEditRoom(room)} className={`flex-1 rounded-xl ${themedOutlineButton}`}><Edit3 size={14} /> Editar</Button>
+                    <Button size="sm" variant="outline" onClick={() => duplicateRoom(room)} className={`rounded-xl ${themedOutlineButton}`}><Copy size={14} /></Button>
                     <Button size="sm" variant="outline" onClick={() => deleteRoom(room)} className="rounded-xl text-destructive hover:text-destructive"><Trash2 size={14} /></Button>
                   </div>
                 </div>
@@ -622,7 +624,7 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
               <Field label="Bairro" value={propertyForm.neighborhood} onChange={(value) => setPropertyForm((prev) => ({ ...prev, neighborhood: value }))} />
             </div>
             <TextArea label="Observações" value={propertyForm.notes} onChange={(value) => setPropertyForm((prev) => ({ ...prev, notes: value }))} />
-            <Button onClick={saveProperty} className="h-12 w-full rounded-2xl font-bold"><Save size={16} /> {editingPropertyId ? "Salvar imóvel" : "Salvar e Abrir"}</Button>
+            <Button onClick={saveProperty} className={`h-12 w-full rounded-2xl font-bold ${themedPrimaryButton}`}><Save size={16} /> {editingPropertyId ? "Salvar imóvel" : "Salvar e Abrir"}</Button>
           </div>
         </DialogContent>
       </Dialog>
@@ -645,7 +647,7 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
               <p className="mt-2 text-xs font-semibold text-muted-foreground">Total do imóvel em tempo real: {formatArea(livePropertyTotal)}</p>
             </div>
             <TextArea label="Observações" value={roomForm.notes} onChange={(value) => setRoomForm((prev) => ({ ...prev, notes: value }))} />
-            <Button onClick={saveRoom} className="h-12 w-full rounded-2xl font-bold"><Save size={16} /> Salvar ambiente</Button>
+            <Button onClick={saveRoom} className={`h-12 w-full rounded-2xl font-bold ${themedPrimaryButton}`}><Save size={16} /> Salvar ambiente</Button>
           </div>
         </DialogContent>
       </Dialog>
@@ -693,7 +695,7 @@ function IconAction({ title, destructive, onClick, children }: { title: string; 
       type="button"
       title={title}
       onClick={(event) => { event.stopPropagation(); onClick(); }}
-      className={`flex h-11 items-center justify-center rounded-2xl border transition-all ${destructive ? "border-destructive/20 text-destructive hover:bg-destructive/10" : "border-border text-muted-foreground hover:bg-secondary hover:text-foreground"}`}
+      className={`flex h-11 items-center justify-center rounded-2xl border transition-all ${destructive ? "border-destructive/20 text-destructive hover:bg-destructive/10" : "border-primary/25 bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground"}`}
     >
       {children}
     </button>
