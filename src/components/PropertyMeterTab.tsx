@@ -184,6 +184,23 @@ const calculateRoomArea = (room: RoomForm) => {
   }
 };
 
+const calculateExternalArea = (property: Pick<MeasuredProperty, "external_shape" | "external_width" | "external_length" | "external_base" | "external_height" | "external_side_a" | "external_side_b" | "external_area_manual">) => {
+  const width = Number(property.external_width || 0);
+  const length = Number(property.external_length || 0);
+  const base = Number(property.external_base || 0);
+  const height = Number(property.external_height || 0);
+  const sideA = Number(property.external_side_a || 0);
+  const sideB = Number(property.external_side_b || 0);
+  switch (property.external_shape) {
+    case "Retângulo": return width * length;
+    case "L": return width * length + sideA * sideB;
+    case "Triângulo": return (base * height) / 2;
+    case "Trapézio": return ((base + sideA) * height) / 2;
+    case "Irregular": return Number(property.external_area_manual || 0);
+    default: return 0;
+  }
+};
+
 const propertyToForm = (property: MeasuredProperty): PropertyForm => ({
   name: property.name,
   property_type: property.property_type,
@@ -194,6 +211,15 @@ const propertyToForm = (property: MeasuredProperty): PropertyForm => ({
   land_length: property.land_length?.toString() || "",
   land_area_manual: property.land_area_manual?.toString() || "",
   measured_by: property.measured_by || "",
+  measurement_mode: property.measurement_mode || "Medição por Ambientes",
+  external_shape: property.external_shape || "Retângulo",
+  external_width: property.external_width?.toString() || "",
+  external_length: property.external_length?.toString() || "",
+  external_base: property.external_base?.toString() || "",
+  external_height: property.external_height?.toString() || "",
+  external_side_a: property.external_side_a?.toString() || "",
+  external_side_b: property.external_side_b?.toString() || "",
+  external_area_manual: property.external_area_manual?.toString() || "",
   notes: property.notes || "",
 });
 
