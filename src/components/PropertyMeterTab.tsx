@@ -1124,6 +1124,15 @@ function Field({ label, value, onChange }: { label: string; value: string; onCha
   );
 }
 
+function MeasurementField({ label, value, onChange, onBlur }: { label: string; value: string; onChange: (value: string) => void; onBlur: () => void }) {
+  return (
+    <div>
+      <label className="mb-1 block text-xs font-semibold text-muted-foreground">{label}</label>
+      <Input value={value} inputMode="decimal" onChange={(event) => onChange(event.target.value)} onBlur={onBlur} className="h-12 rounded-2xl !border-primary/20 !bg-primary/5 focus-visible:ring-primary" />
+    </div>
+  );
+}
+
 function TextArea({ label, value, onChange }: { label: string; value: string; onChange: (value: string) => void }) {
   return (
     <div>
