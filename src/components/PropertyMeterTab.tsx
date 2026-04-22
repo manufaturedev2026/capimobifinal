@@ -512,8 +512,20 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
         name: `${property.name} - Cópia`,
         property_type: property.property_type,
         address: property.address,
+        cep: property.cep,
+        street: property.street,
+        number: property.number,
+        complement: property.complement,
+        state: property.state,
+        reference_point: property.reference_point,
         city: property.city,
         neighborhood: property.neighborhood,
+        asking_price: property.asking_price,
+        bedrooms: property.bedrooms,
+        bathrooms: property.bathrooms,
+        parking_spaces: property.parking_spaces,
+        iptu: property.iptu,
+        condominium_fee: property.condominium_fee,
         land_width: property.land_width,
         land_length: property.land_length,
         land_area_manual: property.land_area_manual,
@@ -682,7 +694,7 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
         continue;
       }
       const { data: publicUrl } = supabase.storage.from("seller-uploads").getPublicUrl(path);
-      await db.from(measuredPhotosTable).insert({ property_id: selectedProperty.id, user_id: userId, image_url: publicUrl.publicUrl, category: photoCategory, sort_order: photos.length + 1 });
+      await db.from(measuredPhotosTable).insert({ property_id: selectedProperty.id, user_id: userId, image_url: publicUrl.publicUrl, category: photoCategory, room_id: photoRoomId === "geral" ? null : photoRoomId, sort_order: photos.length + 1 });
     }
     toast({ title: "Fotos adicionadas" });
     fetchPhotos(selectedProperty.id);
@@ -718,6 +730,12 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
   const copyShareLink = async () => {
     await navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
     toast({ title: "Link copiado" });
+  };
+
+  const sendToValuation = () => {
+    if (!selectedProperty) return;
+    sessionStorage.setItem("meter_property_for_valuation", JSON.stringify({ property: selectedProperty, rooms, photos, areas: technicalAreas }));
+    navigate(`/avaliacao-ia?imovel=${selectedProperty.id}`);
   };
 
   const reportRows = selectedProperty ? [
