@@ -6,7 +6,7 @@ import { getStoreTheme } from "@/components/StoreThemePicker";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Package, Eye, Plus, Settings, Edit, Trash2, Copy, ToggleLeft, ToggleRight, Search, Image, LogOut, BarChart3, Star, Crown, Zap, AlertTriangle, Shield, MessageCircle, Home, UserCircle, Headphones, Globe, ExternalLink, CheckCircle2, ClipboardCopy, Lock, Clapperboard, Menu, X, Building2, Users, BadgeCheck, GripVertical, ChevronRight, Sparkles, FileText, Magnet, Camera, Bell, Download, Calculator, Palette, Handshake, Megaphone, Calendar as CalendarIcon, Ruler, Coins } from "lucide-react";
+import { Package, Eye, Plus, Settings, Edit, Trash2, Copy, ToggleLeft, ToggleRight, Search, Image, LogOut, BarChart3, Star, Crown, Zap, AlertTriangle, Shield, MessageCircle, Home, UserCircle, Headphones, Globe, ExternalLink, CheckCircle2, ClipboardCopy, Lock, Clapperboard, Menu, X, Building2, Users, BadgeCheck, GripVertical, ChevronRight, ChevronDown, Sparkles, FileText, Magnet, Camera, Bell, Download, Calculator, Palette, Handshake, Megaphone, Calendar as CalendarIcon, Ruler, Coins } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import SoldCountdown from "@/components/SoldCountdown";
 import StoreEffectsPicker from "@/components/StoreEffectsPicker";
@@ -62,6 +62,11 @@ type SellerItem = {
 };
 
 type DashboardTab = "overview" | "items" | "stats" | "domain" | "loja-espelhada" | "events" | "referral" | "crm" | "gallery" | "rentals" | "contracts" | "captacao" | "stories" | "notifications" | "profit" | "meter" | "customization" | "profile" | "imobiliarias" | "ads" | "parcerias";
+type SidebarNavItem =
+  | { type: "tab"; id: DashboardTab; label: string; icon: any; locked?: boolean; tourId?: string }
+  | { type: "link"; href: string; label: string; icon: any; className?: string; tourId?: string; badge?: string }
+  | { type: "action"; key: string; label: string; icon: any; onClick: () => void | Promise<void>; disabled?: boolean; className?: string };
+type SidebarGroup = { key: string; title: string; emoji: string; items: SidebarNavItem[] };
 
 export default function SellerDashboard() {
   const { user, profile, signOut, refreshProfile, loading: authLoading } = useAuth();
@@ -77,6 +82,16 @@ export default function SellerDashboard() {
   const [chartView, setChartView] = useState<"diario" | "semanal">("diario");
   const [activeTab, setActiveTab] = useState<DashboardTab>("overview");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [openSidebarGroups, setOpenSidebarGroups] = useState<Record<string, boolean>>({
+    principal: true,
+    imoveis: true,
+    marketing: true,
+    network: true,
+    loja: true,
+    financeiro: true,
+    conta: true,
+    admin: true,
+  });
   const [draggedItemId, setDraggedItemId] = useState<string | null>(null);
   const [dragOverItemId, setDragOverItemId] = useState<string | null>(null);
   const [teamMembers, setTeamMembers] = useState<{ id: string; full_name: string; photo_url: string | null; phone: string | null; is_active: boolean }[]>([]);
@@ -366,26 +381,29 @@ export default function SellerDashboard() {
   const maxTeamMembers = ["prime_empresa", "black"].includes(currentTier) ? 9999 : currentTier === "premium_empresa" ? 10 : currentTier === "essencial_empresa" ? 5 : isImobiliaria ? 3 : 0;
   const lockedTabs: DashboardTab[] = isFreePlan ? ["domain"] : [];
 
-  const sidebarNav: { id: DashboardTab; label: string; icon: any; locked?: boolean; tourId?: string }[] = [
-    { id: "overview", label: "Visão Geral", icon: Home, tourId: "tour-overview" },
-    { id: "items", label: "Meus Anúncios", icon: Package },
-    { id: "stats", label: "Estatísticas", icon: BarChart3, tourId: "tour-stats" },
-    { id: "events", label: "Efeitos", icon: Sparkles },
-    
-    { id: "crm" as DashboardTab, label: "Meu CRM", icon: MessageCircle, tourId: "tour-crm" },
-    { id: "gallery" as DashboardTab, label: "Galeria de Anúncios", icon: Image },
-    { id: "rentals" as DashboardTab, label: "Aluguéis", icon: Building2 },
-    { id: "contracts" as DashboardTab, label: "Contratos", icon: FileText },
-    { id: "captacao" as DashboardTab, label: "Captação", icon: Magnet },
-    { id: "stories" as DashboardTab, label: "Stories", icon: Camera },
-    { id: "notifications" as DashboardTab, label: "Push", icon: Bell },
-    { id: "profit" as DashboardTab, label: "Calculadora de Lucro", icon: Calculator },
-    { id: "meter" as DashboardTab, label: "Medidor de Imóveis", icon: Ruler },
-    { id: "domain", label: "Meu Domínio", icon: Globe, locked: lockedTabs.includes("domain") },
-    { id: "ads" as DashboardTab, label: "Fazer ADS", icon: Megaphone, tourId: "tour-ads" },
-    { id: "imobiliarias" as DashboardTab, label: "Imobiliárias", icon: Building2 },
-    { id: "parcerias" as DashboardTab, label: "Parcerias", icon: Handshake },
+  const tabNav = (id: DashboardTab, label: string, icon: any, options: { locked?: boolean; tourId?: string } = {}): SidebarNavItem => ({ type: "tab", id, label, icon, ...options });
+  const linkNav = (href: string, label: string, icon: any, options: { className?: string; tourId?: string; badge?: string } = {}): SidebarNavItem => ({ type: "link", href, label, icon, ...options });
+  const actionNav = (key: string, label: string, icon: any, onClick: () => void | Promise<void>, options: { disabled?: boolean; className?: string } = {}): SidebarNavItem => ({ type: "action", key, label, icon, onClick, ...options });
+
+  const sidebarGroups: SidebarGroup[] = [
+    { key: "principal", title: "Principal", emoji: "🏠", items: [tabNav("overview", "Visão Geral", Home, { tourId: "tour-overview" }), tabNav("stats", "Estatísticas", BarChart3, { tourId: "tour-stats" }), linkNav("/agenda", "Agenda", CalendarIcon), tabNav("crm" as DashboardTab, "Meu CRM", MessageCircle, { tourId: "tour-crm" })] },
+    { key: "imoveis", title: "Imóveis", emoji: "🏘️", items: [tabNav("items", "Meus Anúncios", Package), linkNav("/painel/novo", "Novo Anúncio", Plus, { tourId: "tour-new-listing" }), tabNav("gallery" as DashboardTab, "Galeria de Anúncios", Image), tabNav("rentals" as DashboardTab, "Aluguéis", Building2), tabNav("contracts" as DashboardTab, "Contratos", FileText), linkNav("/avaliacao-ia", "Avaliação de Imóveis", Sparkles, { badge: "NEW" }), tabNav("meter" as DashboardTab, "Medidor de Imóveis", Ruler)] },
+    { key: "marketing", title: "Marketing", emoji: "🚀", items: [tabNav("stories" as DashboardTab, "Stories", Camera), tabNav("notifications" as DashboardTab, "Push", Bell), tabNav("ads" as DashboardTab, "Fazer ADS", Megaphone, { tourId: "tour-ads" }), tabNav("events", "Efeitos", Sparkles), tabNav("captacao" as DashboardTab, "Captação", Magnet)] },
+    { key: "network", title: "Network", emoji: "🤝", items: [tabNav("parcerias" as DashboardTab, "Parcerias", Handshake), tabNav("imobiliarias" as DashboardTab, "Imobiliárias", Building2)] },
+    { key: "loja", title: "Loja/Site", emoji: "🛒", items: [...(profile?.id ? [linkNav(getStoreUrl(profile), "Ver Minha Loja", Eye, { tourId: "tour-store" })] : []), tabNav("domain", "Meu Domínio", Globe, { locked: lockedTabs.includes("domain") }), tabNav("customization", "Personalização", Palette, { tourId: "tour-customization" })] },
+    { key: "financeiro", title: "Financeiro", emoji: "💰", items: [tabNav("profit" as DashboardTab, "Calculadora de Lucro", Calculator), linkNav("/pacotes", "Pacotes", Package)] },
+    { key: "conta", title: "Conta", emoji: "👤", items: [tabNav("profile", "Meu Perfil", UserCircle), ...(!installed ? [actionNav("install", "Instalar APP", Download, async () => { const result = await requestInstall(); if (result.outcome === "unavailable") setShowInstallGuide(true); })] : []), ...(!pushSub.isSubscribed ? [actionNav("push", pushSub.loading ? "Ativando..." : "Ativar Notificações", Bell, async () => { if (!pushSub.isSupported) { toast({ title: "Notificações não suportadas", description: pushSub.unsupportedReason || "Este navegador não suporta push notifications. Tente pelo app instalado.", variant: "destructive" }); return; } if (pushSub.permission === "denied") { toast({ title: "Notificações bloqueadas", description: "Desbloqueie nas configurações do navegador.", variant: "destructive" }); return; } await pushSub.subscribe(); }, { disabled: pushSub.loading })] : [actionNav("push-active", "Notificações ativas ✓", Bell, () => {}, { disabled: true })])] },
+    ...(isAdmin ? [{ key: "admin", title: "Admin", emoji: "⚙️", items: [linkNav("/admin", "Painel Admin", Shield)] }] : []),
   ];
+
+  const sidebarNav = sidebarGroups.flatMap((group) => group.items).filter((item): item is Extract<SidebarNavItem, { type: "tab" }> => item.type === "tab");
+
+  const getSidebarBadge = (id?: DashboardTab) => {
+    if (id === "crm" && newCrmCount > 0) return newCrmCount;
+    if (id === "captacao" && newCaptureCount > 0) return newCaptureCount;
+    if (id === "parcerias" && newPartnershipCount > 0) return newPartnershipCount;
+    return null;
+  };
 
   const handleTabClick = (tabId: DashboardTab) => {
     if (lockedTabs.includes(tabId)) {
@@ -495,106 +513,57 @@ export default function SellerDashboard() {
           </div>
 
           {/* Nav */}
-          <nav className="flex-1 p-3 space-y-1">
-            {sidebarNav.map((nav) => (
-              <button key={nav.id} id={nav.tourId} onClick={() => handleTabClick(nav.id)}
-                className={`sidebar-nav-item ${nav.locked ? "text-muted-foreground/40 cursor-not-allowed" : activeTab === nav.id ? "active" : ""}`}>
-                <nav.icon size={18} /> {nav.label}
-                {nav.id === "crm" && newCrmCount > 0 && (
-                  <span className="ml-auto bg-destructive text-destructive-foreground text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
-                    {newCrmCount}
-                  </span>
-                )}
-                {nav.id === "captacao" && newCaptureCount > 0 && (
-                  <span className="ml-auto bg-destructive text-destructive-foreground text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
-                    {newCaptureCount}
-                  </span>
-                )}
-                {nav.id === "parcerias" && newPartnershipCount > 0 && (
-                  <span className="ml-auto bg-destructive text-destructive-foreground text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
-                    {newPartnershipCount}
-                  </span>
-                )}
-                {nav.locked && <Lock size={14} className="ml-auto text-muted-foreground/40" />}
-              </button>
-            ))}
+          <nav className="flex-1 overflow-y-auto p-3 space-y-2">
+            {sidebarGroups.map((group) => {
+              const open = openSidebarGroups[group.key] ?? true;
+              return (
+                <div key={group.key} className="rounded-2xl border border-border/70 bg-card/40 overflow-hidden animate-fade-in">
+                  <button
+                    type="button"
+                    onClick={() => setOpenSidebarGroups((prev) => ({ ...prev, [group.key]: !open }))}
+                    className="w-full flex items-center justify-between gap-2 px-3 py-2.5 text-xs font-extrabold uppercase tracking-wider text-muted-foreground hover:bg-secondary/70 transition-colors"
+                  >
+                    <span className="flex items-center gap-2"><span className="text-sm">{group.emoji}</span>{group.title}</span>
+                    <ChevronDown size={14} className={`transition-transform duration-200 ${open ? "rotate-0" : "-rotate-90"}`} />
+                  </button>
+                  {open && (
+                    <div className="px-2 pb-2 space-y-1 animate-accordion-down">
+                      {group.items.map((item) => {
+                        const Icon = item.icon;
+                        const key = item.type === "tab" ? item.id : item.type === "link" ? item.href : item.key;
+                        const badge = item.type === "tab" ? getSidebarBadge(item.id) : null;
+                        const baseClass = "sidebar-nav-item text-muted-foreground hover:text-foreground hover:bg-secondary/80 w-full text-left transition-all duration-200 hover:translate-x-0.5";
 
-            <div className="pt-3 mt-3 border-t border-border space-y-0.5">
-              <Link to="/painel/novo" id="tour-new-listing"
-                className="sidebar-nav-item text-muted-foreground hover:text-foreground hover:bg-secondary">
-                <Plus size={18} /> Novo Anúncio
-              </Link>
-              {profile?.id && (
-                <Link to={getStoreUrl(profile)} id="tour-store"
-                  className="sidebar-nav-item text-muted-foreground hover:text-foreground hover:bg-secondary">
-                  <Eye size={18} /> Ver Minha Loja
-                </Link>
-              )}
-              <button onClick={() => setActiveTab("profile")}
-                className="sidebar-nav-item text-muted-foreground hover:text-foreground hover:bg-secondary w-full text-left">
-                <UserCircle size={18} /> Meu Perfil
-              </button>
-              <button onClick={() => setActiveTab("customization")} id="tour-customization"
-                className={`sidebar-nav-item ${activeTab === "customization" ? "active" : "text-muted-foreground hover:text-foreground hover:bg-secondary"}`}>
-                <Palette size={18} /> Personalização
-              </button>
-              <Link to="/agenda"
-                className="sidebar-nav-item text-blue-500 hover:bg-blue-500/10">
-                <CalendarIcon size={18} /> Agenda
-              </Link>
-              <Link to="/avaliacao-ia"
-                className="sidebar-nav-item text-emerald-500 hover:bg-emerald-500/10 relative">
-                <Sparkles size={18} /> Avaliação de Imóveis
-                <span className="ml-auto text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-600">NEW</span>
-              </Link>
-              <Link to="/pacotes"
-                className="sidebar-nav-item text-muted-foreground hover:text-foreground hover:bg-secondary">
-                <Package size={18} /> Pacotes
-              </Link>
-              {isAdmin && (
-                <Link to="/admin"
-                  className="sidebar-nav-item text-purple-500 hover:bg-purple-500/10">
-                  <Shield size={18} /> Painel Admin
-                </Link>
-              )}
-              {!installed && (
-                <button
-                  type="button"
-                  onClick={async () => {
-                    const result = await requestInstall();
-                    if (result.outcome === "unavailable") setShowInstallGuide(true);
-                  }}
-                  className="sidebar-nav-item text-emerald-500 hover:bg-emerald-500/10"
-                >
-                  <Download size={18} /> Instalar APP
-                </button>
-              )}
-              {!pushSub.isSubscribed && (
-                <button
-                  type="button"
-                  onClick={async () => {
-                    if (!pushSub.isSupported) {
-                      toast({ title: "Notificações não suportadas", description: pushSub.unsupportedReason || "Este navegador não suporta push notifications. Tente pelo app instalado.", variant: "destructive" });
-                      return;
-                    }
-                    if (pushSub.permission === "denied") {
-                      toast({ title: "Notificações bloqueadas", description: "Desbloqueie nas configurações do navegador.", variant: "destructive" });
-                      return;
-                    }
-                    await pushSub.subscribe();
-                  }}
-                  disabled={pushSub.loading}
-                  className="sidebar-nav-item text-amber-500 hover:bg-amber-500/10"
-                >
-                  <Bell size={18} /> {pushSub.loading ? "Ativando..." : "Ativar Notificações"}
-                </button>
-              )}
-              {pushSub.isSubscribed && (
-                <div className="sidebar-nav-item text-muted-foreground cursor-default opacity-70">
-                  <Bell size={18} /> Notificações ativas ✓
+                        if (item.type === "link") {
+                          return (
+                            <Link key={key} to={item.href} id={item.tourId} className={`${baseClass} ${item.className || ""}`}>
+                              <Icon size={18} /> {item.label}
+                              {item.badge && <span className="ml-auto text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-primary/15 text-primary">{item.badge}</span>}
+                            </Link>
+                          );
+                        }
+
+                        if (item.type === "action") {
+                          return (
+                            <button key={key} type="button" onClick={item.onClick} disabled={item.disabled} className={`${baseClass} ${item.disabled ? "opacity-60 cursor-default" : ""} ${item.className || ""}`}>
+                              <Icon size={18} /> {item.label}
+                            </button>
+                          );
+                        }
+
+                        return (
+                          <button key={key} id={item.tourId} onClick={() => handleTabClick(item.id)} className={`sidebar-nav-item w-full text-left transition-all duration-200 ${item.locked ? "text-muted-foreground/40 cursor-not-allowed" : activeTab === item.id ? "active shadow-sm" : "text-muted-foreground hover:text-foreground hover:bg-secondary/80 hover:translate-x-0.5"}`}>
+                            {item.locked ? <Lock size={18} /> : <Icon size={18} />} {item.label}
+                            {badge && <span className="ml-auto bg-destructive text-destructive-foreground text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">{badge}</span>}
+                            {item.locked && <Lock size={14} className="ml-auto text-muted-foreground/40" />}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
+              );
+            })}
           </nav>
 
           {/* Gerente Card — Premium */}
