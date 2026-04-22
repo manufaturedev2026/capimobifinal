@@ -708,7 +708,51 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
             <div className="mt-4 flex flex-wrap gap-2">
               <Button onClick={openNewRoom} className={`rounded-2xl ${themedPrimaryButton}`}><Plus size={16} /> Adicionar ambiente</Button>
               <Button variant="outline" onClick={() => openEditProperty(selectedProperty)} className={`rounded-2xl ${themedOutlineButton}`}><Edit3 size={16} /> Editar imóvel</Button>
+              <Button variant="outline" onClick={() => setReportDialogOpen(true)} className={`rounded-2xl ${themedOutlineButton}`}><FileText size={16} /> Gerar Laudo</Button>
+              <Button variant="outline" onClick={() => setShareDialogOpen(true)} className={`rounded-2xl ${themedOutlineButton}`}><Share2 size={16} /> Compartilhar Imóvel</Button>
             </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+            <MetricCard title="Área Construída" value={technicalAreas.builtArea} />
+            <MetricCard title="Área Útil" value={technicalAreas.usefulArea} />
+            <MetricCard title="Terreno" value={technicalAreas.landArea} />
+            <MetricCard title="Área Externa" value={technicalAreas.uncoveredArea} />
+          </div>
+
+          <div className="rounded-3xl border border-border bg-card p-4 shadow-sm">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-xs font-bold uppercase text-primary">Fotos do imóvel</p>
+                <h3 className="font-display text-xl font-extrabold text-foreground">Galeria técnica</h3>
+              </div>
+              <div className="flex flex-col gap-2 sm:flex-row">
+                <Picker label="Categoria" value={photoCategory} options={photoCategories} onChange={setPhotoCategory} />
+                <label className={`inline-flex h-12 cursor-pointer items-center justify-center gap-2 rounded-2xl px-4 text-sm font-bold ${themedPrimaryButton}`}>
+                  <ImagePlus size={16} /> Adicionar fotos
+                  <input type="file" multiple accept="image/*" className="hidden" onChange={(event) => uploadPhotos(event.target.files)} />
+                </label>
+              </div>
+            </div>
+            {photos.length === 0 ? (
+              <div className="mt-4 rounded-2xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground"><Camera className="mx-auto mb-2 text-primary" />Nenhuma foto adicionada.</div>
+            ) : (
+              <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-4">
+                {photos.map((photo) => (
+                  <div key={photo.id} className="group overflow-hidden rounded-2xl border border-border bg-secondary/40">
+                    <img src={photo.image_url} alt={`Foto ${photo.category}`} className="aspect-[4/3] w-full object-cover" loading="lazy" />
+                    <div className="flex items-center justify-between gap-1 p-2">
+                      <span className="truncate text-xs font-bold text-foreground">{photo.category}</span>
+                      <div className="flex gap-1">
+                        <button type="button" onClick={() => movePhoto(photo, -1)} className="text-primary"><MoveUp size={14} /></button>
+                        <button type="button" onClick={() => movePhoto(photo, 1)} className="text-primary"><MoveDown size={14} /></button>
+                        <button type="button" onClick={() => deletePhoto(photo)} className="text-destructive"><Trash2 size={14} /></button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {rooms.length === 0 ? (
@@ -724,6 +768,7 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="text-xs font-bold text-primary">{room.room_type} • {room.shape}</p>
+                      <p className="text-[11px] font-semibold text-muted-foreground">{room.area_type}</p>
                       <h3 className="font-display text-lg font-bold text-foreground">{room.name}</h3>
                     </div>
                     <p className="rounded-2xl bg-primary/10 px-3 py-2 font-display text-lg font-extrabold text-primary">{formatArea(room.area)}</p>
