@@ -292,6 +292,7 @@ REGRAS:
       });
 
       if (!aiResp.ok) {
+        await refundAiCredits(admin, userId, sellerId, cost, "capture_ad_copy");
         const status = aiResp.status;
         return new Response(JSON.stringify({ error: status === 429 ? "Limite atingido" : "Erro na IA" }), {
           status, headers: { ...corsHeaders, "Content-Type": "application/json" },
