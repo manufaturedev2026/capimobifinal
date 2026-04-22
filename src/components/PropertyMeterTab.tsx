@@ -885,8 +885,6 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
             <div className="mt-4 flex flex-wrap gap-2">
               <Button onClick={openNewRoom} className={`rounded-2xl ${themedPrimaryButton}`}><Plus size={16} /> Adicionar ambiente</Button>
               <Button variant="outline" onClick={() => openEditProperty(selectedProperty)} className={`rounded-2xl ${themedOutlineButton}`}><Edit3 size={16} /> Editar imóvel</Button>
-              <Button variant="outline" onClick={() => setReportDialogOpen(true)} className={`rounded-2xl ${themedOutlineButton}`}><FileText size={16} /> Gerar Laudo</Button>
-              <Button variant="outline" onClick={() => setShareDialogOpen(true)} className={`rounded-2xl ${themedOutlineButton}`}><Share2 size={16} /> Compartilhar Imóvel</Button>
               <Button onClick={sendToValuation} className={`rounded-2xl ${themedPrimaryButton}`}><FileText size={16} /> Enviar para Avaliador</Button>
             </div>
           </div>
