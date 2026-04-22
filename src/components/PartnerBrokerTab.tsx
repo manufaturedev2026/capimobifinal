@@ -11,6 +11,7 @@ interface Agency {
   id: string;
   full_name: string;
   company_name: string | null;
+  email: string;
   logo_url: string | null;
   city: string | null;
   state: string | null;
@@ -53,7 +54,7 @@ export default function PartnerBrokerTab({ profileId, userId }: { profileId: str
     // Fetch agencies (imobiliárias e construtoras)
     const { data: agencyData } = await supabase
       .from("profiles")
-      .select("id, full_name, company_name, logo_url, city, state, slug, cnpj, phone, instagram, bio")
+      .select("id, full_name, company_name, email, logo_url, city, state, slug, cnpj, phone, instagram, bio")
       .in("seller_category", ["imobiliaria", "construtora"])
       .eq("open_for_partnerships", true)
       .neq("id", profileId);
@@ -294,8 +295,13 @@ export default function PartnerBrokerTab({ profileId, userId }: { profileId: str
                           <p className="text-xs text-muted-foreground">CNPJ: {agency.cnpj}</p>
                         )}
                         {agency.bio && (
-                          <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{agency.bio}</p>
+                          <p className="text-xs text-muted-foreground mt-1 line-clamp-3">{agency.bio}</p>
                         )}
+                        <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
+                          {agency.phone && <span className="inline-flex items-center gap-1"><Phone size={12} /> {agency.phone}</span>}
+                          {agency.email && <span className="inline-flex items-center gap-1">✉ {agency.email}</span>}
+                          {agency.instagram && <span className="inline-flex items-center gap-1">@ {agency.instagram.replace("@", "")}</span>}
+                        </div>
                       </div>
                     </div>
 
@@ -449,7 +455,8 @@ export default function PartnerBrokerTab({ profileId, userId }: { profileId: str
           {availableAgencies.length > 0 ? (
             <div className="grid gap-3 sm:grid-cols-2">
               {availableAgencies.map((agency) => (
-                <div key={agency.id} className="rounded-xl border border-border bg-card p-4 flex items-start gap-3">
+                <div key={agency.id} className="rounded-xl border border-border bg-card p-4 flex flex-col gap-3">
+                  <div className="flex items-start gap-3">
                   <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center overflow-hidden shrink-0">
                     {agency.logo_url ? (
                       <img src={agency.logo_url} alt="" className="w-full h-full object-cover" />
@@ -463,8 +470,17 @@ export default function PartnerBrokerTab({ profileId, userId }: { profileId: str
                       <p className="text-xs text-muted-foreground">{agency.city}{agency.state ? ` - ${agency.state}` : ""}</p>
                     )}
                     {agency.cnpj && <p className="text-xs text-muted-foreground">CNPJ: {agency.cnpj}</p>}
+                    {agency.bio && <p className="text-xs text-muted-foreground mt-2 line-clamp-4">{agency.bio}</p>}
+                  </div>
+                  </div>
 
-                    <div className="mt-2">
+                  <div className="grid gap-1.5 text-xs text-muted-foreground">
+                    {agency.phone && <span className="flex items-center gap-2"><Phone size={13} className="text-primary" /> WhatsApp: {agency.phone}</span>}
+                    {agency.email && <span className="flex items-center gap-2"><span className="text-primary">✉</span> E-mail: {agency.email}</span>}
+                    {agency.instagram && <span className="flex items-center gap-2"><span className="text-primary">@</span> Instagram: {agency.instagram.replace("@", "")}</span>}
+                  </div>
+
+                    <div>
                       <Dialog open={dialogOpen && selectedAgency?.id === agency.id} onOpenChange={(o) => {
                         setDialogOpen(o);
                         if (!o) setSelectedAgency(null);
@@ -486,6 +502,12 @@ export default function PartnerBrokerTab({ profileId, userId }: { profileId: str
                           <p className="text-sm text-muted-foreground">
                             Enviar solicitação para <strong>{agency.company_name || agency.full_name}</strong>
                           </p>
+                          <div className="rounded-xl border border-border bg-secondary/30 p-3 text-xs text-muted-foreground space-y-1">
+                            {agency.bio && <p>{agency.bio}</p>}
+                            {agency.phone && <p>WhatsApp: {agency.phone}</p>}
+                            {agency.email && <p>E-mail: {agency.email}</p>}
+                            {agency.instagram && <p>Instagram: {agency.instagram}</p>}
+                          </div>
                           <Textarea
                             placeholder="Mensagem opcional (ex: Sou corretor CRECI XXXXX, atuo na região de...)"
                             value={message}
@@ -497,8 +519,6 @@ export default function PartnerBrokerTab({ profileId, userId }: { profileId: str
                           </Button>
                         </DialogContent>
                       </Dialog>
-                    </div>
-                  </div>
                 </div>
               ))}
             </div>
