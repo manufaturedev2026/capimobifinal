@@ -8,9 +8,10 @@ interface PushSubscribeButtonProps {
   primaryColor?: string;
   /** When true, only show after the PWA is installed (gives priority to the Install button) */
   requireInstalled?: boolean;
+  positionClassName?: string;
 }
 
-export default function PushSubscribeButton({ sellerId, primaryColor, requireInstalled = true }: PushSubscribeButtonProps) {
+export default function PushSubscribeButton({ sellerId, primaryColor, requireInstalled = true, positionClassName = "bottom-20 md:bottom-6" }: PushSubscribeButtonProps) {
   const { isSubscribed, isSupported, subscribe, loading } = usePushSubscription(sellerId);
   const { installed, isPreview } = usePwaInstall();
 
@@ -21,7 +22,7 @@ export default function PushSubscribeButton({ sellerId, primaryColor, requireIns
   if (requireInstalled && !installed && !isPreview) return null;
 
   return (
-    <div className="fixed bottom-20 right-4 z-40 md:bottom-6">
+    <div className={`fixed right-4 z-40 ${positionClassName}`}>
       <button
         type="button"
         onClick={subscribe}

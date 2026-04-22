@@ -54,7 +54,12 @@ export default function HomePwaActions({ primaryColor }: { primaryColor?: string
     <>
       <InstallAppFloatingButton primaryColor={primaryColor} />
       {adminSellerId && (
-        <PushSubscribeButton sellerId={adminSellerId} primaryColor={primaryColor} />
+        <PushSubscribeButton
+          sellerId={adminSellerId}
+          primaryColor={primaryColor}
+          requireInstalled={false}
+          positionClassName="bottom-36 md:bottom-20"
+        />
       )}
     </>
   );
