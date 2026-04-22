@@ -729,23 +729,23 @@ export default function AdminPanel() {
                       </div>
                     </div>
 
-                    <div className="flex gap-1.5 flex-wrap">
+                    <div className="flex w-full flex-col gap-1.5 sm:w-auto sm:flex-row sm:flex-wrap sm:justify-end">
                       <Link
                         to={getSellerStoreUrl(seller)}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-semibold hover:bg-primary/20"
+                        className="flex items-center justify-center gap-1 px-3 py-2 sm:py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-semibold hover:bg-primary/20"
                       >
                         <Eye size={12} /> Ver Loja
                       </Link>
                        {sub?.payment_status === "pendente" && (
                         <button onClick={() => approvePayment(sub.id)}
-                          className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-green-500/10 text-green-600 text-xs font-semibold hover:bg-green-500/20">
+                          className="flex items-center justify-center gap-1 px-3 py-2 sm:py-1.5 rounded-lg bg-green-500/10 text-green-600 text-xs font-semibold hover:bg-green-500/20">
                           <Check size={12} /> Aprovar
                         </button>
                       )}
                       <button onClick={() => openPlanDialog(seller)}
-                        className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-amber-500/10 text-amber-600 text-xs font-semibold hover:bg-amber-500/20">
+                        className="flex items-center justify-center gap-1 px-3 py-2 sm:py-1.5 rounded-lg bg-amber-500/10 text-amber-600 text-xs font-semibold hover:bg-amber-500/20">
                         <Crown size={12} /> Plano
                       </button>
                        {sub && (
