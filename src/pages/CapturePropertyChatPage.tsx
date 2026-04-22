@@ -410,7 +410,7 @@ export default function CapturePropertyChatPage() {
     try {
       const sellerName = sellerProfile?.company_name || sellerProfile?.full_name || "";
       const { data, error } = await supabase.functions.invoke("capture-chat", {
-        body: { messages: updatedMessages, sellerName, flowType, attendantName: config.attendantName },
+        body: { messages: updatedMessages, sellerName, flowType, attendantName: config.attendantName, aiInstructions: config.aiInstructions },
       });
       if (error) throw error;
       const reply = data?.reply || "Desculpe, tente novamente!";
