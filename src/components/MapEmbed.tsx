@@ -246,13 +246,52 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
 
     const [, numberPart] = parts;
 
-    // Street View depende SOMENTE de CEP + número (do imóvel mais próximo possível)
-    if (cleanCep.length !== 8) {
-      setResolvingStreetView(false);
-      return;
-    }
-
     let cancelled = false;
+
+    const applyStreetViewCoords = (lat: string, lon: string) => {
+      if (cancelled) return;
+      setStreetViewCoords({ lat, lon });
+      setStreetViewEmbed(
+        `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lon}&heading=0&pitch=0&fov=90`,
+      );
+      setStreetViewUrl(
+        `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lon}&heading=0&pitch=0&fov=90`,
+      );
+    };
+
+    // Para imóveis, Street View segue CEP + número. Para loja, permitimos endereço completo para abrir no iframe.
+    if (cleanCep.length !== 8) {
+      if (!allowStreetViewFallback || !address.trim()) {
+        setResolvingStreetView(false);
+        return;
+      }
+
+      const resolveAddressOnly = async () => {
+        setResolvingStreetView(true);
+        try {
+          for (const candidate of geocodingCandidates) {
+            const { data: geo } = await supabase.functions.invoke("geocode-address", {
+              body: { address: candidate },
+            });
+            const lat = Number((geo as { lat?: number })?.lat);
+            const lng = Number((geo as { lng?: number })?.lng);
+            if (Number.isFinite(lat) && Number.isFinite(lng)) {
+              applyStreetViewCoords(String(lat), String(lng));
+              return;
+            }
+          }
+        } catch {
+          /* silencioso: sem street view */
+        } finally {
+          if (!cancelled) setResolvingStreetView(false);
+        }
+      };
+
+      void resolveAddressOnly();
+      return () => {
+        cancelled = true;
+      };
+    }
 
     const fetchPhoton = async (query: string) => {
       try {
@@ -265,17 +304,6 @@ export default function MapEmbed({ address, cep, className = "", showStreetView 
       } catch {
         return [] as PhotonFeature[];
       }
-    };
-
-    const applyStreetViewCoords = (lat: string, lon: string) => {
-      if (cancelled) return;
-      setStreetViewCoords({ lat, lon });
-      setStreetViewEmbed(
-        `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lon}&heading=0&pitch=0&fov=90`,
-      );
-      setStreetViewUrl(
-        `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lon}&heading=0&pitch=0&fov=90`,
-      );
     };
 
     const resolve = async () => {
