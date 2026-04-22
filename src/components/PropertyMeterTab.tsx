@@ -96,6 +96,7 @@ const toNumber = (value: string | number | null | undefined) => {
 };
 
 const formatArea = (area: number | null | undefined) => `${Number(area || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} m²`;
+const formatDateTime = (value: string) => new Date(value).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", year: "2-digit", hour: "2-digit", minute: "2-digit" });
 
 const calculateRoomArea = (room: RoomForm) => {
   const width = toNumber(room.width);
