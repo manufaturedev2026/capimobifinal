@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
-import { ArrowLeft, Copy, Edit3, Home, Plus, Ruler, Save, Trash2 } from "lucide-react";
+import { ArrowLeft, Camera, Copy, Edit3, FileText, Home, ImagePlus, Link2, Mail, MessageCircle, MoveDown, MoveUp, Plus, Ruler, Save, Share2, Trash2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,10 @@ type MeasuredProperty = {
   neighborhood: string;
   notes: string | null;
   total_area: number;
+  land_width: number | null;
+  land_length: number | null;
+  land_area_manual: number | null;
+  measured_by: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -37,7 +41,17 @@ type MeasuredRoom = {
   side_a: number | null;
   side_b: number | null;
   area: number;
+  area_type: string;
   notes: string | null;
+};
+
+type MeasuredPhoto = {
+  id: string;
+  property_id: string;
+  user_id: string;
+  image_url: string;
+  category: string;
+  sort_order: number;
 };
 
 type PropertyForm = {
@@ -46,6 +60,10 @@ type PropertyForm = {
   address: string;
   city: string;
   neighborhood: string;
+  land_width: string;
+  land_length: string;
+  land_area_manual: string;
+  measured_by: string;
   notes: string;
 };
 
@@ -53,6 +71,7 @@ type RoomForm = {
   name: string;
   room_type: string;
   shape: string;
+  area_type: string;
   width: string;
   length: string;
   height: string;
@@ -66,6 +85,8 @@ type RoomForm = {
 const propertyTypes = ["Casa", "Apartamento", "Terreno", "Comercial", "Rural"];
 const roomTypes = ["Sala", "Quarto", "Suíte", "Cozinha", "Banheiro", "Corredor", "Garagem", "Varanda", "Área gourmet", "Área de serviço", "Escritório", "Outro"];
 const shapes = ["Retângulo / Quadrado", "Triângulo Retângulo", "Formato em L", "Trapézio", "Circular", "Manual"];
+const areaTypes = ["Interna útil", "Construída coberta", "Externa descoberta", "Terreno"];
+const photoCategories = ["Fachada", "Sala", "Quartos", "Cozinha", "Banheiros", "Área externa", "Garagem", "Outros"];
 const themedPrimaryButton = "bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/20";
 const themedOutlineButton = "border-primary/25 bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground";
 
@@ -75,6 +96,10 @@ const emptyPropertyForm: PropertyForm = {
   address: "",
   city: "",
   neighborhood: "",
+  land_width: "",
+  land_length: "",
+  land_area_manual: "",
+  measured_by: "",
   notes: "",
 };
 
@@ -82,6 +107,7 @@ const emptyRoomForm: RoomForm = {
   name: "",
   room_type: "Sala",
   shape: "Retângulo / Quadrado",
+  area_type: "Interna útil",
   width: "",
   length: "",
   height: "",
