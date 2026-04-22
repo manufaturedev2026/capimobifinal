@@ -624,7 +624,7 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
               <Field label="Bairro" value={propertyForm.neighborhood} onChange={(value) => setPropertyForm((prev) => ({ ...prev, neighborhood: value }))} />
             </div>
             <TextArea label="Observações" value={propertyForm.notes} onChange={(value) => setPropertyForm((prev) => ({ ...prev, notes: value }))} />
-            <Button onClick={saveProperty} className="h-12 w-full rounded-2xl font-bold"><Save size={16} /> {editingPropertyId ? "Salvar imóvel" : "Salvar e Abrir"}</Button>
+            <Button onClick={saveProperty} className={`h-12 w-full rounded-2xl font-bold ${themedPrimaryButton}`}><Save size={16} /> {editingPropertyId ? "Salvar imóvel" : "Salvar e Abrir"}</Button>
           </div>
         </DialogContent>
       </Dialog>
@@ -647,7 +647,7 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
               <p className="mt-2 text-xs font-semibold text-muted-foreground">Total do imóvel em tempo real: {formatArea(livePropertyTotal)}</p>
             </div>
             <TextArea label="Observações" value={roomForm.notes} onChange={(value) => setRoomForm((prev) => ({ ...prev, notes: value }))} />
-            <Button onClick={saveRoom} className="h-12 w-full rounded-2xl font-bold"><Save size={16} /> Salvar ambiente</Button>
+            <Button onClick={saveRoom} className={`h-12 w-full rounded-2xl font-bold ${themedPrimaryButton}`}><Save size={16} /> Salvar ambiente</Button>
           </div>
         </DialogContent>
       </Dialog>
@@ -695,7 +695,7 @@ function IconAction({ title, destructive, onClick, children }: { title: string; 
       type="button"
       title={title}
       onClick={(event) => { event.stopPropagation(); onClick(); }}
-      className={`flex h-11 items-center justify-center rounded-2xl border transition-all ${destructive ? "border-destructive/20 text-destructive hover:bg-destructive/10" : "border-border text-muted-foreground hover:bg-secondary hover:text-foreground"}`}
+      className={`flex h-11 items-center justify-center rounded-2xl border transition-all ${destructive ? "border-destructive/20 text-destructive hover:bg-destructive/10" : "border-primary/25 bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground"}`}
     >
       {children}
     </button>
