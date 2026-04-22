@@ -1,3 +1,5 @@
+import { consumeAiCredits, refundAiCredits } from "../_shared/ai-credits.ts";
+
 // Gera texto pronto para anúncio a partir de uma avaliação
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
