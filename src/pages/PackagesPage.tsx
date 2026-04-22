@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Check, Crown, Star, Zap, ArrowLeft, Settings, Shield, Gem, Diamond } from "lucide-react";
+import { Check, Crown, Star, Zap, ArrowLeft, Settings, Shield, Gem, Diamond, Coins } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
@@ -13,6 +13,19 @@ const tierIcons: Record<string, any> = {
   basico: Zap, start: Zap, premium: Star, vip: Crown,
   essencial_empresa: Shield, premium_empresa: Gem, prime_empresa: Diamond, black: Crown,
 };
+
+const aiMonthlyCredits: Record<string, number> = {
+  basico: 25,
+  start: 250,
+  premium: 600,
+  vip: 1000,
+  essencial_empresa: 2000,
+  premium_empresa: 2000,
+  prime_empresa: 3500,
+  black: 6800,
+};
+
+const formatCredits = (credits: number) => credits.toLocaleString("pt-BR");
 
 export default function PackagesPage() {
   const { user, profile } = useAuth();
@@ -104,6 +117,7 @@ export default function PackagesPage() {
   const renderCard = (plan: Plan, idx: number, opts: { showPartners?: boolean } = {}) => {
     const Icon = tierIcons[plan.tier] || Zap;
     const isCurrent = currentTier === plan.tier;
+    const credits = aiMonthlyCredits[plan.tier] ?? 25;
 
     return (
       <motion.div
@@ -146,6 +160,10 @@ export default function PackagesPage() {
               </span>
             </div>
           )}
+          <div className="mt-3 flex items-center justify-center gap-2 rounded-xl bg-white/15 px-3 py-2 text-center">
+            <Coins size={16} className="text-white" />
+            <span className="text-sm font-bold text-white">{formatCredits(credits)} créditos IA/mês</span>
+          </div>
         </div>
 
         <div className="p-6">
