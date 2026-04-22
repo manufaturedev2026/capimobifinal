@@ -161,6 +161,10 @@ const propertyToForm = (property: MeasuredProperty): PropertyForm => ({
   address: property.address || "",
   city: property.city,
   neighborhood: property.neighborhood,
+  land_width: property.land_width?.toString() || "",
+  land_length: property.land_length?.toString() || "",
+  land_area_manual: property.land_area_manual?.toString() || "",
+  measured_by: property.measured_by || "",
   notes: property.notes || "",
 });
 
@@ -168,6 +172,7 @@ const roomToForm = (room: MeasuredRoom): RoomForm => ({
   name: room.name,
   room_type: room.room_type,
   shape: room.shape,
+  area_type: room.area_type || "Interna útil",
   width: room.width?.toString() || "",
   length: room.length?.toString() || "",
   height: room.height?.toString() || "",
