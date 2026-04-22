@@ -265,6 +265,45 @@ export default function AdminInviteTab() {
         </div>
       </div>
 
+      <div className="bg-card border border-border rounded-xl p-4 space-y-3">
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          <div>
+            <h3 className="text-sm font-semibold text-foreground flex items-center gap-2"><Bot size={16} /> Bots de Convite</h3>
+            <p className="text-xs text-muted-foreground mt-1">Cada bot tem sua própria URL, IA, texto e botão final.</p>
+          </div>
+          <Button variant="outline" size="sm" onClick={addBot}><Plus size={14} /> Novo bot</Button>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-[220px_1fr] gap-3">
+          <div className="space-y-2">
+            {bots.map((bot) => (
+              <button
+                key={bot.id}
+                type="button"
+                onClick={() => setActiveBotId(bot.id)}
+                className={`w-full rounded-lg border px-3 py-2 text-left text-sm transition-colors ${bot.id === activeBot.id ? "border-primary bg-primary/10 text-foreground" : "border-border text-muted-foreground hover:bg-muted"}`}
+              >
+                <span className="block font-medium truncate">{bot.name}</span>
+                <span className="block text-[11px] truncate">/{bot.slug === "principal" ? "convite" : `convite/${bot.slug}`}</span>
+              </button>
+            ))}
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="text-xs text-muted-foreground">Nome interno do bot</label>
+              <Input value={activeBot.name} onChange={(e) => updateActiveBot((p) => ({ ...p, name: e.target.value }))} className="mt-1" />
+            </div>
+            <div>
+              <label className="text-xs text-muted-foreground">URL do bot</label>
+              <div className="flex gap-2 mt-1">
+                <Input value={activeBot.slug} onChange={(e) => updateActiveBot((p) => ({ ...p, slug: normalizeInviteSlug(e.target.value) }))} />
+                {bots.length > 1 && <Button variant="outline" size="icon" onClick={() => removeBot(activeBot.id)}><Trash2 size={14} /></Button>}
+              </div>
+              <p className="text-[10px] text-muted-foreground mt-1">Use “principal” para manter /convite. Outros ficam em /convite/sua-url.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Chat Mode Toggle */}
       <div className="bg-card border border-border rounded-xl p-4 space-y-3">
         <h3 className="text-sm font-semibold flex items-center gap-2 text-foreground">🧠 Modo do Chat</h3>
