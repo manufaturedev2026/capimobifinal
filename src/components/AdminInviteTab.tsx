@@ -290,8 +290,8 @@ export default function AdminInviteTab() {
                   <span className="block text-[11px] truncate text-muted-foreground">{getInvitePath(bot)}</span>
                 </button>
                 <div className="mt-2 grid grid-cols-2 gap-2">
-                  <Button variant="outline" size="sm" className="h-8 px-2 text-xs" onClick={() => testBot(bot)}><ExternalLink size={12} /> Ir</Button>
-                  <Button variant="outline" size="sm" className="h-8 px-2 text-xs" onClick={() => copyUrl(bot)}><Copy size={12} /> Copiar</Button>
+                  <Button variant="secondary" size="sm" className="h-8 px-2 text-xs" onClick={() => testBot(bot)}><ExternalLink size={12} /> Ir</Button>
+                  <Button variant="secondary" size="sm" className="h-8 px-2 text-xs" onClick={() => copyUrl(bot)}><Copy size={12} /> Copiar</Button>
                 </div>
               </div>
             ))}
