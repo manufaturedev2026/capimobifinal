@@ -519,7 +519,8 @@ export default function PartnerBrokerTab({ profileId, userId }: { profileId: str
                           </Button>
                         </DialogContent>
                       </Dialog>
-                </div>
+                    </div>
+                  </div>
               ))}
             </div>
           ) : (
