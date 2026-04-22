@@ -6,7 +6,7 @@ import { getStoreTheme } from "@/components/StoreThemePicker";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Package, Eye, Plus, Settings, Edit, Trash2, Copy, ToggleLeft, ToggleRight, Search, Image, LogOut, BarChart3, Star, Crown, Zap, AlertTriangle, Shield, MessageCircle, Home, UserCircle, Headphones, Globe, ExternalLink, CheckCircle2, ClipboardCopy, Lock, Clapperboard, Menu, X, Building2, Users, BadgeCheck, GripVertical, ChevronRight, Sparkles, FileText, Magnet, Camera, Bell, Download, Calculator, Palette, Handshake, Megaphone, Calendar as CalendarIcon, Ruler } from "lucide-react";
+import { Package, Eye, Plus, Settings, Edit, Trash2, Copy, ToggleLeft, ToggleRight, Search, Image, LogOut, BarChart3, Star, Crown, Zap, AlertTriangle, Shield, MessageCircle, Home, UserCircle, Headphones, Globe, ExternalLink, CheckCircle2, ClipboardCopy, Lock, Clapperboard, Menu, X, Building2, Users, BadgeCheck, GripVertical, ChevronRight, Sparkles, FileText, Magnet, Camera, Bell, Download, Calculator, Palette, Handshake, Megaphone, Calendar as CalendarIcon, Ruler, Coins } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import SoldCountdown from "@/components/SoldCountdown";
 import StoreEffectsPicker from "@/components/StoreEffectsPicker";
@@ -44,6 +44,7 @@ import WelcomePushPopup from "@/components/WelcomePushPopup";
 import AiHelpChat from "@/components/AiHelpChat";
 import PanelSplash from "@/components/PanelSplash";
 import AiCreditsCard from "@/components/AiCreditsCard";
+import { useAiCredits } from "@/hooks/useAiCredits";
 
 type SellerItem = {
   id: string;
@@ -84,6 +85,7 @@ export default function SellerDashboard() {
   const [defaultManager, setDefaultManager] = useState<{ name: string; phone: string | null; photo_url: string | null } | null>(null);
   const { guideMode, installed, requestInstall } = usePwaInstall();
   const pushSub = usePushSubscription(profile?.id);
+  const aiCredits = useAiCredits(user?.id, profile?.id);
   const [newCaptureCount, setNewCaptureCount] = useState(0);
   const [newCrmCount, setNewCrmCount] = useState(0);
   const [newPartnershipCount, setNewPartnershipCount] = useState(0);
@@ -462,6 +464,33 @@ export default function SellerDashboard() {
               {isExpired && (
                 <span className="px-2 py-0.5 rounded-full bg-destructive/10 text-destructive text-[10px] font-bold">Expirado</span>
               )}
+            </div>
+
+            <div className="mt-4 overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/10 via-card to-accent/10 p-3 shadow-sm">
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl bg-primary/15 text-primary">
+                    <Coins size={16} />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Créditos IA</p>
+                    <p className="text-xs text-muted-foreground truncate">Uso nas ferramentas de IA</p>
+                  </div>
+                </div>
+                <span className="font-display text-xl font-extrabold text-foreground">
+                  {aiCredits.loading ? "..." : aiCredits.balance}
+                </span>
+              </div>
+              <div className="mt-3 h-2 overflow-hidden rounded-full bg-muted">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-primary to-accent transition-all duration-500"
+                  style={{ width: `${Math.min(100, Math.max(6, (aiCredits.balance / Math.max(aiCredits.monthlyPlanCredits || 10, aiCredits.balance || 1)) * 100))}%` }}
+                />
+              </div>
+              <div className="mt-2 flex items-center justify-between text-[10px] text-muted-foreground">
+                <span>Plano/mês</span>
+                <span className="font-bold text-foreground">{aiCredits.monthlyPlanCredits} créditos</span>
+              </div>
             </div>
           </div>
 
