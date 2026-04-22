@@ -299,8 +299,6 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
   const [loading, setLoading] = useState(true);
   const [propertyDialogOpen, setPropertyDialogOpen] = useState(false);
   const [roomDialogOpen, setRoomDialogOpen] = useState(false);
-  const [reportDialogOpen, setReportDialogOpen] = useState(false);
-  const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [editingPropertyId, setEditingPropertyId] = useState<string | null>(null);
   const [editingRoomId, setEditingRoomId] = useState<string | null>(null);
   const [photoCategory, setPhotoCategory] = useState("Fachada");
