@@ -513,6 +513,8 @@ export default function AdminPanel() {
     { key: "invite" as const, label: "Convite", icon: MessageCircle },
     { key: "receivePush" as const, label: "Receber Push", icon: Bell },
   ];
+  const activeSidebarItem = sidebarItems.find((item) => item.key === tab) || sidebarItems[0];
+  const ActiveSidebarIcon = activeSidebarItem.icon;
 
   return (
     <div
@@ -520,15 +522,15 @@ export default function AdminPanel() {
       style={{ ...adminThemeVars, background: `linear-gradient(180deg, ${adminTheme.darkBase} 0%, ${adminTheme.darkMid} 18%, hsl(var(--background)) 42%)` }}
     >
       {/* Header */}
-      <div className="py-5 shrink-0 transition-all duration-300" style={{ background: adminTheme.dashboardGradient }}>
+      <div className="py-4 md:py-5 shrink-0 transition-all duration-300" style={{ background: adminTheme.dashboardGradient }}>
         <div className="container max-w-7xl mx-auto px-4">
           <Link to="/painel" className="inline-flex items-center gap-2 text-white/70 text-sm mb-2 hover:text-white">
             <ArrowLeft size={16} /> Voltar
           </Link>
           <div className="flex items-center gap-3">
-            <Shield size={28} className="text-white" />
-            <div>
-              <h1 className="font-display font-extrabold text-2xl text-white">Painel Administrativo</h1>
+            <Shield size={26} className="text-white shrink-0" />
+            <div className="min-w-0">
+              <h1 className="font-display font-extrabold text-xl md:text-2xl text-white truncate">Painel Administrativo</h1>
               <p className="text-xs text-white/70 mt-1">Tema ativo: {adminTheme.icon} {adminTheme.name}</p>
             </div>
           </div>
@@ -580,28 +582,45 @@ export default function AdminPanel() {
         </aside>
 
         {/* Mobile tabs */}
-        <div className="md:hidden flex flex-wrap gap-2 p-3 border-b border-border bg-card shrink-0">
-          {sidebarItems.map((item) => (
-            <button
-              key={item.key}
-              onClick={() => setTab(item.key)}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
-                tab === item.key ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
-              }`}
-            >
-              <item.icon size={14} />
-              {item.label}
-              {'badge' in item && (item as any).badge > 0 && (
-                <span className="bg-destructive text-destructive-foreground text-[10px] px-1.5 py-0.5 rounded-full font-bold">
-                  {(item as any).badge}
-                </span>
-              )}
-            </button>
-          ))}
+        <div className="md:hidden sticky top-0 z-30 border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80 shrink-0">
+          <div className="p-3 space-y-3">
+            <div className="flex items-center gap-2">
+              <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                <ActiveSidebarIcon size={18} />
+              </div>
+              <label className="sr-only" htmlFor="admin-mobile-tab">Selecionar seção</label>
+              <select
+                id="admin-mobile-tab"
+                value={tab}
+                onChange={(e) => setTab(e.target.value as typeof tab)}
+                className="min-w-0 flex-1 h-10 rounded-xl border border-input bg-background px-3 text-sm font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              >
+                {sidebarItems.map((item) => (
+                  <option key={item.key} value={item.key}>{item.label}</option>
+                ))}
+              </select>
+            </div>
+            <div className="-mx-3 overflow-x-auto px-3 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              <div className="flex w-max gap-2">
+                {sidebarItems.map((item) => (
+                  <button
+                    key={item.key}
+                    onClick={() => setTab(item.key)}
+                    className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
+                      tab === item.key ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
+                    }`}
+                  >
+                    <item.icon size={14} />
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Main content */}
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 w-full min-w-0">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden p-3 md:p-6 w-full min-w-0">
 
 
         {tab === "clientes" && (
@@ -710,50 +729,50 @@ export default function AdminPanel() {
                       </div>
                     </div>
 
-                    <div className="flex gap-1.5 flex-wrap">
+                    <div className="flex w-full flex-col gap-1.5 sm:w-auto sm:flex-row sm:flex-wrap sm:justify-end">
                       <Link
                         to={getSellerStoreUrl(seller)}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-semibold hover:bg-primary/20"
+                        className="flex items-center justify-center gap-1 px-3 py-2 sm:py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-semibold hover:bg-primary/20"
                       >
                         <Eye size={12} /> Ver Loja
                       </Link>
                        {sub?.payment_status === "pendente" && (
                         <button onClick={() => approvePayment(sub.id)}
-                          className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-green-500/10 text-green-600 text-xs font-semibold hover:bg-green-500/20">
+                          className="flex items-center justify-center gap-1 px-3 py-2 sm:py-1.5 rounded-lg bg-green-500/10 text-green-600 text-xs font-semibold hover:bg-green-500/20">
                           <Check size={12} /> Aprovar
                         </button>
                       )}
                       <button onClick={() => openPlanDialog(seller)}
-                        className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-amber-500/10 text-amber-600 text-xs font-semibold hover:bg-amber-500/20">
+                        className="flex items-center justify-center gap-1 px-3 py-2 sm:py-1.5 rounded-lg bg-amber-500/10 text-amber-600 text-xs font-semibold hover:bg-amber-500/20">
                         <Crown size={12} /> Plano
                       </button>
                        {sub && (
                         <>
                           <button onClick={() => renewSubscription(sub.id)}
-                            className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-semibold hover:bg-primary/20">
+                            className="flex items-center justify-center gap-1 px-3 py-2 sm:py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-semibold hover:bg-primary/20">
                             <RefreshCw size={12} /> Renovar
                           </button>
                           <button onClick={() => cancelSubscription(sub.id)}
-                            className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-destructive/10 text-destructive text-xs font-semibold hover:bg-destructive/20">
+                            className="flex items-center justify-center gap-1 px-3 py-2 sm:py-1.5 rounded-lg bg-destructive/10 text-destructive text-xs font-semibold hover:bg-destructive/20">
                             <X size={12} /> Cancelar
                           </button>
                         </>
                       )}
                       {bans[seller.user_id] ? (
                         <button onClick={() => unbanUser(seller.user_id)}
-                          className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-green-500/10 text-green-600 text-xs font-semibold hover:bg-green-500/20">
+                          className="flex items-center justify-center gap-1 px-3 py-2 sm:py-1.5 rounded-lg bg-green-500/10 text-green-600 text-xs font-semibold hover:bg-green-500/20">
                           <ShieldOff size={12} /> Desbanir
                         </button>
                       ) : (
                         <button onClick={() => openBanDialog(seller)}
-                          className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-red-900/10 text-red-500 text-xs font-semibold hover:bg-red-900/20">
+                          className="flex items-center justify-center gap-1 px-3 py-2 sm:py-1.5 rounded-lg bg-destructive/10 text-destructive text-xs font-semibold hover:bg-destructive/20">
                           <Ban size={12} /> Banir
                         </button>
                       )}
                       <button onClick={() => { setDeleteSeller(seller); setDeleteDialogOpen(true); }}
-                        className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-destructive/10 text-destructive text-xs font-semibold hover:bg-destructive/20">
+                        className="flex items-center justify-center gap-1 px-3 py-2 sm:py-1.5 rounded-lg bg-destructive/10 text-destructive text-xs font-semibold hover:bg-destructive/20">
                         <Trash2 size={12} /> Excluir
                       </button>
                     </div>
