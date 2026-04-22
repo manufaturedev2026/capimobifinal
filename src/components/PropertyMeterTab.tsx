@@ -309,6 +309,7 @@ export default function PropertyMeterTab({ userId, themeVars }: { userId: string
   const [photoCategory, setPhotoCategory] = useState("Fachada");
   const [photoRoomId, setPhotoRoomId] = useState("geral");
   const [propertyForm, setPropertyForm] = useState<PropertyForm>(emptyPropertyForm);
+  const [measurementDraft, setMeasurementDraft] = useState<PropertyForm>(emptyPropertyForm);
   const [roomForm, setRoomForm] = useState<RoomForm>(emptyRoomForm);
 
   const measuredPropertiesTable = "measured_properties" as any;
@@ -399,6 +400,7 @@ export default function PropertyMeterTab({ userId, themeVars }: { userId: string
     if (selectedProperty?.id) {
       fetchRooms(selectedProperty.id);
       fetchPhotos(selectedProperty.id);
+      setMeasurementDraft(propertyToForm(selectedProperty));
     }
   }, [fetchPhotos, fetchRooms, selectedProperty?.id]);
 
@@ -725,9 +727,32 @@ export default function PropertyMeterTab({ userId, themeVars }: { userId: string
     if (!selectedProperty) return;
     if (selectedProperty.measurement_mode === mode) return;
     setSelectedProperty({ ...selectedProperty, measurement_mode: mode });
+    setMeasurementDraft((prev) => ({ ...prev, measurement_mode: mode }));
     const { error } = await db.from(measuredPropertiesTable).update({ measurement_mode: mode }).eq("id", selectedProperty.id).eq("user_id", userId);
     if (error) toast({ title: "Erro ao alterar modo", description: error.message, variant: "destructive" });
     else toast({ title: "Modo de medição atualizado", description: mode });
+  };
+
+  const persistMeasurementDraft = async (updates: Partial<PropertyForm> = {}) => {
+    if (!selectedProperty) return;
+    const next = { ...measurementDraft, ...updates };
+    setMeasurementDraft(next);
+    const payload = {
+      land_width: toNumber(next.land_width) || null,
+      land_length: toNumber(next.land_length) || null,
+      land_area_manual: toNumber(next.land_area_manual) || null,
+      external_shape: next.external_shape,
+      external_width: toNumber(next.external_width) || null,
+      external_length: toNumber(next.external_length) || null,
+      external_base: toNumber(next.external_base) || null,
+      external_height: toNumber(next.external_height) || null,
+      external_side_a: toNumber(next.external_side_a) || null,
+      external_side_b: toNumber(next.external_side_b) || null,
+      external_area_manual: toNumber(next.external_area_manual) || null,
+    };
+    const { data, error } = await db.from(measuredPropertiesTable).update(payload).eq("id", selectedProperty.id).eq("user_id", userId).select("*").single();
+    if (error) toast({ title: "Erro ao salvar medidas", description: error.message, variant: "destructive" });
+    else setSelectedProperty(data as MeasuredProperty);
   };
 
   const sendToValuation = () => {
