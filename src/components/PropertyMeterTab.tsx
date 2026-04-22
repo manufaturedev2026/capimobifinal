@@ -913,8 +913,9 @@ export default function PropertyMeterTab({ userId, themeVars }: { userId: string
                 <p className="mt-1 text-sm text-muted-foreground">{selectedProperty.address || selectedProperty.street} • {selectedProperty.neighborhood}, {selectedProperty.city}/{selectedProperty.state}</p>
               </div>
               <div className="rounded-2xl bg-primary px-5 py-4 text-primary-foreground shadow-lg shadow-primary/20">
-                <p className="text-xs font-semibold opacity-80">Área Total Atual</p>
+                <p className="text-xs font-semibold opacity-80">Total para Avaliação</p>
                 <p className="font-display text-3xl font-extrabold">{formatArea(livePropertyTotal)}</p>
+                <p className="mt-1 text-xs font-semibold opacity-80">Interna {formatArea(technicalAreas.usefulArea)} + externa {formatArea(technicalAreas.externalArea)}</p>
               </div>
             </div>
             <div className="mt-4 flex flex-wrap gap-2">
@@ -925,15 +926,15 @@ export default function PropertyMeterTab({ userId, themeVars }: { userId: string
           </div>
 
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-            <MetricCard title="Área Construída" value={technicalAreas.builtArea} />
+            <MetricCard title="Área Interna" value={technicalAreas.usefulArea} />
+            <MetricCard title="Área Externa" value={technicalAreas.externalArea} />
             <MetricCard title="Terreno" value={technicalAreas.landArea} />
-            <MetricCard title="Área Externa" value={technicalAreas.uncoveredArea} />
-            <MetricCard title="Taxa de Ocupação" value={technicalAreas.occupancyRate} suffix="%" />
+            <MetricCard title="Total Avaliador" value={livePropertyTotal} />
           </div>
 
           <div className="rounded-3xl border border-border bg-card p-4 shadow-sm">
             <p className="text-xs font-bold uppercase text-primary">Modo de cálculo da metragem</p>
-            <div className="mt-3 grid gap-2 md:grid-cols-3">
+            <div className="mt-3 grid gap-2 md:grid-cols-2">
               {measurementModes.map((mode) => {
                 const active = (selectedProperty.measurement_mode || "Medição por Ambientes") === mode;
                 return (
