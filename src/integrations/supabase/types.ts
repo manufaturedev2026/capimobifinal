@@ -3416,6 +3416,10 @@ export type Database = {
         Args: { p_name: string; p_profile_id: string }
         Returns: string
       }
+      get_ai_monthly_credits_for_tier: {
+        Args: { p_tier: string }
+        Returns: number
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -3439,6 +3443,10 @@ export type Database = {
           msg_id: number
           read_ct: number
         }[]
+      }
+      refresh_ai_monthly_credits: {
+        Args: { p_seller_id?: string; p_user_id: string }
+        Returns: Json
       }
       refund_ai_credits: {
         Args: {
