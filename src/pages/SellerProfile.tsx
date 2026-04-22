@@ -246,15 +246,19 @@ export default function SellerProfile({ embedded }: { embedded?: boolean }) {
       </div>
 
       <div className="bg-card border border-border rounded-2xl p-5 space-y-4">
-        <h2 className="font-display font-bold text-foreground">Informações Pessoais</h2>
+        <h2 className="font-display font-bold text-foreground">Informações do Perfil</h2>
+        <p className="text-xs text-muted-foreground">
+          O nome público/fantasia é o nome que aparece na sua loja. Para corretor, use o nome fantasia profissional; para imobiliária ou construtora, use o nome da empresa.
+        </p>
         <input value={form.full_name} onChange={(e) => setForm((f) => ({ ...f, full_name: e.target.value }))} className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="Nome completo" />
         <input value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="E-mail" />
         <input value={form.phone} onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))} className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="Telefone" />
         <input value={form.company_name} onChange={(e) => setForm((f) => ({ ...f, company_name: e.target.value }))} className="w-full px-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder={
-          form.seller_category === "corretor" ? "Nome do Corretor" :
-          form.seller_category === "proprietario" ? "Nome do Proprietário" :
-          "Nome da Empresa"
+          form.seller_category === "corretor" ? "Nome fantasia do corretor" :
+          form.seller_category === "construtora" ? "Nome fantasia da construtora" :
+          "Nome fantasia da imobiliária"
         } />
+        <p className="text-xs text-muted-foreground -mt-2">Esse campo define o nome exibido no topo da loja, nos cards e nos contatos.</p>
         <div className="relative">
           <Instagram size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <input value={form.instagram} onChange={(e) => setForm((f) => ({ ...f, instagram: e.target.value }))} className="w-full pl-10 pr-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none" placeholder="Instagram (ex: @sualoja)" />
