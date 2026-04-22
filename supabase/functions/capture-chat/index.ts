@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
-import { consumeAiCredits, refundAiCredits } from "../_shared/ai-credits.ts";
+import { consumeAiCredits, consumeAiCreditsForUser, refundAiCredits } from "../_shared/ai-credits.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -320,13 +320,31 @@ REGRAS:
     }
 
     // ── Chat Mode ──
-    const { messages, sellerName, mode, flowType, attendantName, openingMessage, aiInstructions } = body;
+    const { messages, sellerId, sellerUserId, sellerName, mode, flowType, attendantName, openingMessage, aiInstructions } = body;
 
     if (!messages || !Array.isArray(messages)) {
       return new Response(JSON.stringify({ error: "Messages array required" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
+    }
+
+    const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+    let chatCredit: Awaited<ReturnType<typeof consumeAiCreditsForUser>> | null = null;
+    if (messages.length > 0) {
+      let ownerUserId = typeof sellerUserId === "string" ? sellerUserId : null;
+      if (!ownerUserId && typeof sellerId === "string") {
+        const { data: sellerProfile } = await admin.from("profiles").select("user_id").eq("id", sellerId).maybeSingle();
+        ownerUserId = sellerProfile?.user_id || null;
+      }
+      if (!ownerUserId) {
+        return new Response(JSON.stringify({ error: "Loja não encontrada para cobrança de créditos." }), {
+          status: 404,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      chatCredit = await consumeAiCreditsForUser(admin, ownerUserId, typeof sellerId === "string" ? sellerId : null, "capture_bot_chat", corsHeaders);
+      if (!chatCredit.ok) return chatCredit.response;
     }
 
     const flowKey = (typeof flowType === "string" && FLOW_PROMPTS[flowType]) ? flowType : "captacao";
@@ -382,6 +400,7 @@ REGRAS:
     });
 
     if (!response.ok) {
+      if (chatCredit?.ok) await refundAiCredits(chatCredit.admin, chatCredit.userId, chatCredit.sellerId, chatCredit.cost, "capture_bot_chat");
       if (response.status === 429) {
         return new Response(JSON.stringify({ error: "Muitas mensagens. Aguarde um momento." }), {
           status: 429,
@@ -432,7 +451,11 @@ REGRAS:
       finalReply = "Desculpe, não consegui processar sua mensagem. Tente novamente!";
     }
 
-    return new Response(JSON.stringify({ reply: finalReply, extractedData }), {
+    return new Response(JSON.stringify({
+      reply: finalReply,
+      extractedData,
+      aiCredits: chatCredit?.ok ? { charged: chatCredit.cost, balance: chatCredit.balance } : null,
+    }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
