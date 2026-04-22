@@ -1054,35 +1054,6 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
           </div>
         </DialogContent>
       </Dialog>
-
-      <Dialog open={reportDialogOpen} onOpenChange={setReportDialogOpen}>
-        <DialogContent className="max-h-[90vh] overflow-y-auto rounded-3xl sm:max-w-2xl">
-          <DialogHeader><DialogTitle>Laudo profissional de medição</DialogTitle></DialogHeader>
-          <div className="space-y-5 rounded-2xl border border-border bg-card p-4">
-            <p className="text-sm text-muted-foreground">Este imóvel possui área medida de forma digital com base nas informações inseridas no sistema.</p>
-            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-              {reportRows.map(([label, value]) => <div key={label} className="rounded-2xl bg-secondary/60 p-3"><p className="text-xs font-bold uppercase text-muted-foreground">{label}</p><p className="font-semibold text-foreground">{value}</p></div>)}
-            </div>
-            <div>
-              <h4 className="mb-2 font-display text-lg font-bold text-foreground">Ambientes medidos</h4>
-              <div className="space-y-2">{rooms.map((room) => <div key={room.id} className="flex justify-between rounded-xl border border-border p-3 text-sm"><span>{room.name} • {room.area_type}</span><strong>{formatArea(room.area)}</strong></div>)}</div>
-            </div>
-            {selectedProperty?.notes && <p className="rounded-2xl bg-primary/10 p-3 text-sm text-foreground"><strong>Observações:</strong> {selectedProperty.notes}</p>}
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={shareDialogOpen} onOpenChange={setShareDialogOpen}>
-        <DialogContent className="rounded-3xl sm:max-w-md">
-          <DialogHeader><DialogTitle>Compartilhar imóvel</DialogTitle></DialogHeader>
-          <div className="grid gap-3">
-            <Button onClick={copyShareLink} className={`rounded-2xl ${themedPrimaryButton}`}><Link2 size={16} /> Copiar link</Button>
-            <Button asChild variant="outline" className={`rounded-2xl ${themedOutlineButton}`}><a href={`https://wa.me/?text=${encodeURIComponent(`${shareText}\n${shareUrl}`)}`} target="_blank" rel="noreferrer"><MessageCircle size={16} /> WhatsApp</a></Button>
-            <Button asChild variant="outline" className={`rounded-2xl ${themedOutlineButton}`}><a href={`mailto:?subject=${encodeURIComponent(selectedProperty?.name || "Imóvel medido")}&body=${encodeURIComponent(`${shareText}\n${shareUrl}`)}`}><Mail size={16} /> Email</a></Button>
-            <Button disabled variant="outline" className="rounded-2xl opacity-70"><FileText size={16} /> PDF futuro</Button>
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
