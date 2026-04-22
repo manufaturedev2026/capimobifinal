@@ -5,7 +5,72 @@ import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Save, ExternalLink, Copy, MessageCircle, User, ChevronDown, ChevronRight, Plus, Trash2, Bot, GitBranch } from "lucide-react";
-import { DEFAULT_CONFIG, DEFAULT_FLOWS, STEP_TYPE_LABELS, STEP_NAMES, type InviteChatConfig, type FlowStep, type BotStep, type ChoiceStep, type InputStep, type CtaType } from "@/data/inviteFlow";
+import { DEFAULT_CONFIG, DEFAULT_FLOWS, STEP_TYPE_LABELS, STEP_NAMES, type InviteChatConfig, type InviteBotConfig, type FlowStep, type BotStep, type ChoiceStep, type InputStep, type CtaType } from "@/data/inviteFlow";
+
+
+const cloneFlows = () =>
+  Object.fromEntries(Object.entries(DEFAULT_FLOWS).map(([key, flow]) => [key, flow.map((step) => ({ ...step }))])) as InviteChatConfig["flows"];
+
+const normalizeInviteSlug = (value: string) =>
+  value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 48) || "convite";
+
+const createInviteBot = (overrides: Partial<InviteBotConfig> = {}): InviteBotConfig => {
+  const ctaType = overrides.ctaType || DEFAULT_CONFIG.ctaType;
+  const flows = overrides.flows || cloneFlows();
+  const slugBase = normalizeInviteSlug(overrides.slug || overrides.name || "convite");
+  return {
+    ...DEFAULT_CONFIG,
+    id: overrides.id || `bot_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+    name: overrides.name || "Novo convite",
+    slug: slugBase,
+    attendantName: overrides.attendantName || DEFAULT_CONFIG.attendantName,
+    attendantAvatar: overrides.attendantAvatar || "",
+    aiPrompt: overrides.aiPrompt || "",
+    ctaText: overrides.ctaText || DEFAULT_CONFIG.ctaText,
+    ctaUrl: overrides.ctaUrl || DEFAULT_CONFIG.ctaUrl,
+    ctaType,
+    crmRedirectUrl: overrides.crmRedirectUrl || "",
+    crmButtonText: overrides.crmButtonText || DEFAULT_CONFIG.crmButtonText,
+    chatMode: overrides.chatMode || DEFAULT_CONFIG.chatMode,
+    flows,
+    flow: flows[ctaType] || DEFAULT_FLOWS[ctaType],
+  };
+};
+
+const migrateInviteConfig = (parsed: any): InviteChatConfig => {
+  if (Array.isArray(parsed?.bots) && parsed.bots.length > 0) {
+    const bots = parsed.bots.map((bot: any, index: number) => createInviteBot({
+      ...bot,
+      id: bot.id || `bot_${index + 1}`,
+      name: bot.name || (index === 0 ? "Convite principal" : `Convite ${index + 1}`),
+      slug: bot.slug || (index === 0 ? "principal" : `convite-${index + 1}`),
+      flows: bot.flows ? { ...cloneFlows(), ...bot.flows } : cloneFlows(),
+    }));
+    return { ...bots[0], bots };
+  }
+
+  const ctaType = (parsed?.ctaType || DEFAULT_CONFIG.ctaType) as CtaType;
+  const flows = parsed?.flows
+    ? { ...cloneFlows(), ...parsed.flows }
+    : parsed?.flow?.length
+      ? { ...cloneFlows(), [ctaType]: parsed.flow }
+      : cloneFlows();
+  const primary = createInviteBot({
+    ...parsed,
+    id: "principal",
+    name: parsed?.name || "Convite principal",
+    slug: parsed?.slug || "principal",
+    ctaType,
+    flows,
+  });
+  return { ...primary, bots: [primary] };
+};
 
 const AI_STRATEGY_INFO: Record<string, { title: string; description: string }> = {
   internal: {
@@ -36,7 +101,8 @@ const AI_STRATEGY_INFO: Record<string, { title: string; description: string }> =
 
 export default function AdminInviteTab() {
   const { toast } = useToast();
-  const [config, setConfig] = useState<InviteChatConfig>({ ...DEFAULT_CONFIG });
+  const [config, setConfig] = useState<InviteChatConfig>(() => migrateInviteConfig(DEFAULT_CONFIG));
+  const [activeBotId, setActiveBotId] = useState("principal");
   const [saving, setSaving] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [openSteps, setOpenSteps] = useState<Set<string>>(new Set(["start", "greet", "choice_experience"]));
@@ -51,23 +117,9 @@ export default function AdminInviteTab() {
       if (data?.value) {
         try {
           const parsed = JSON.parse(data.value);
-          const cfg = { ...DEFAULT_CONFIG };
-          if (parsed.attendantName) cfg.attendantName = parsed.attendantName;
-          if (parsed.attendantAvatar) cfg.attendantAvatar = parsed.attendantAvatar;
-          if (parsed.ctaText) cfg.ctaText = parsed.ctaText;
-          if (parsed.ctaUrl) cfg.ctaUrl = parsed.ctaUrl;
-          if (parsed.ctaType) cfg.ctaType = parsed.ctaType;
-          if (parsed.chatMode) cfg.chatMode = parsed.chatMode;
-          if (parsed.crmRedirectUrl !== undefined) cfg.crmRedirectUrl = parsed.crmRedirectUrl;
-          if (parsed.crmButtonText) cfg.crmButtonText = parsed.crmButtonText;
-          // Migrate: old single flow → per-CTA flows
-          if (parsed.flows) {
-            cfg.flows = { ...DEFAULT_FLOWS, ...parsed.flows };
-          } else if (parsed.flow?.length) {
-            cfg.flows = { ...DEFAULT_FLOWS, [cfg.ctaType]: parsed.flow };
-          }
-          cfg.flow = cfg.flows[cfg.ctaType] || DEFAULT_FLOWS[cfg.ctaType];
+          const cfg = migrateInviteConfig(parsed);
           setConfig(cfg);
+          setActiveBotId(cfg.bots?.[0]?.id || "principal");
         } catch {}
       }
       setLoaded(true);
@@ -76,7 +128,9 @@ export default function AdminInviteTab() {
 
   const handleSave = async () => {
     setSaving(true);
-    const value = JSON.stringify(config);
+    const bots = config.bots?.length ? config.bots : [createInviteBot(config as InviteBotConfig)];
+    const primary = bots[0];
+    const value = JSON.stringify({ ...primary, bots });
     const { error } = await supabase
       .from("platform_settings")
       .upsert({ key: "invite_chat_config", value, updated_at: new Date().toISOString() } as any, { onConflict: "key" });
@@ -85,11 +139,39 @@ export default function AdminInviteTab() {
     else toast({ title: "Convite salvo com sucesso!" });
   };
 
-  const resetToDefault = () => {
+  const bots = config.bots?.length ? config.bots : [createInviteBot(config as InviteBotConfig)];
+  const activeBot = bots.find((bot) => bot.id === activeBotId) || bots[0];
+
+  const updateActiveBot = (updater: (bot: InviteBotConfig) => InviteBotConfig) => {
     setConfig((prev) => {
-      const ctaFlows = { ...prev.flows };
-      ctaFlows[prev.ctaType] = [...DEFAULT_FLOWS[prev.ctaType]];
-      return { ...prev, flows: ctaFlows, flow: ctaFlows[prev.ctaType] };
+      const currentBots = prev.bots?.length ? prev.bots : [createInviteBot(prev as InviteBotConfig)];
+      const nextBots = currentBots.map((bot) => (bot.id === activeBot.id ? updater(bot) : bot));
+      return { ...nextBots[0], bots: nextBots };
+    });
+  };
+
+  const addBot = () => {
+    const nextIndex = bots.length + 1;
+    const bot = createInviteBot({ name: `Convite ${nextIndex}`, slug: `convite-${nextIndex}` });
+    setConfig((prev) => {
+      const currentBots = prev.bots?.length ? prev.bots : [createInviteBot(prev as InviteBotConfig)];
+      const nextBots = [...currentBots, bot];
+      return { ...nextBots[0], bots: nextBots };
+    });
+    setActiveBotId(bot.id);
+  };
+
+  const removeBot = (id: string) => {
+    if (bots.length <= 1) return;
+    const nextBots = bots.filter((bot) => bot.id !== id);
+    setConfig({ ...nextBots[0], bots: nextBots });
+    setActiveBotId(nextBots[0].id);
+  };
+
+  const resetToDefault = () => {
+    updateActiveBot((bot) => {
+      const ctaFlows = { ...bot.flows, [bot.ctaType]: DEFAULT_FLOWS[bot.ctaType].map((step) => ({ ...step })) };
+      return { ...bot, flows: ctaFlows, flow: ctaFlows[bot.ctaType] };
     });
     toast({ title: "Fluxo restaurado ao padrão" });
   };
@@ -103,13 +185,13 @@ export default function AdminInviteTab() {
     });
   };
 
-  const activeFlow = config.flows[config.ctaType] || DEFAULT_FLOWS[config.ctaType];
+  const activeFlow = activeBot.flows[activeBot.ctaType] || DEFAULT_FLOWS[activeBot.ctaType];
 
   const updateStep = (id: string, updater: (step: FlowStep) => FlowStep) => {
-    setConfig((prev) => {
-      const ctaFlows = { ...prev.flows };
-      ctaFlows[prev.ctaType] = (ctaFlows[prev.ctaType] || []).map((s) => (s.id === id ? updater(s) : s));
-      return { ...prev, flows: ctaFlows, flow: ctaFlows[prev.ctaType] };
+    updateActiveBot((bot) => {
+      const ctaFlows = { ...bot.flows };
+      ctaFlows[bot.ctaType] = (ctaFlows[bot.ctaType] || []).map((s) => (s.id === id ? updater(s) : s));
+      return { ...bot, flows: ctaFlows, flow: ctaFlows[bot.ctaType] };
     });
   };
 
@@ -154,7 +236,8 @@ export default function AdminInviteTab() {
   };
 
   const copyUrl = () => {
-    const url = `${window.location.origin}/convite`;
+    const path = activeBot.slug === "principal" ? "/convite" : `/convite/${activeBot.slug}`;
+    const url = `${window.location.origin}${path}`;
     navigator.clipboard.writeText(url);
     toast({ title: "URL copiada!", description: url });
   };
@@ -176,7 +259,7 @@ export default function AdminInviteTab() {
         </div>
         <div className="flex gap-2">
           <Button variant="secondary" size="sm" onClick={copyUrl}><Copy size={14} /> URL</Button>
-          <a href="/convite" target="_blank" rel="noopener">
+          <a href={activeBot.slug === "principal" ? "/convite" : `/convite/${activeBot.slug}`} target="_blank" rel="noopener">
             <Button variant="secondary" size="sm"><ExternalLink size={14} /> Visualizar</Button>
           </a>
         </div>
@@ -187,9 +270,9 @@ export default function AdminInviteTab() {
         <h3 className="text-sm font-semibold flex items-center gap-2 text-foreground">🧠 Modo do Chat</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <button
-            onClick={() => setConfig((p) => ({ ...p, chatMode: "flow" }))}
+            onClick={() => updateActiveBot((p) => ({ ...p, chatMode: "flow" }))}
             className={`flex items-start gap-3 p-4 rounded-xl border-2 transition-all text-left ${
-              config.chatMode === "flow"
+              activeBot.chatMode === "flow"
                 ? "border-primary bg-primary/5"
                 : "border-border hover:border-primary/30"
             }`}
@@ -203,9 +286,9 @@ export default function AdminInviteTab() {
             </div>
           </button>
           <button
-            onClick={() => setConfig((p) => ({ ...p, chatMode: "ai" }))}
+            onClick={() => updateActiveBot((p) => ({ ...p, chatMode: "ai" }))}
             className={`flex items-start gap-3 p-4 rounded-xl border-2 transition-all text-left ${
-              config.chatMode === "ai"
+              activeBot.chatMode === "ai"
                 ? "border-primary bg-primary/5"
                 : "border-border hover:border-primary/30"
             }`}
@@ -219,7 +302,7 @@ export default function AdminInviteTab() {
             </div>
           </button>
         </div>
-        {config.chatMode === "ai" && (
+        {activeBot.chatMode === "ai" && (
           <div className="bg-primary/5 border border-primary/20 rounded-lg p-3 text-xs text-foreground space-y-2">
             <p className="font-semibold">🤖 Modo IA ativado</p>
             <p className="text-muted-foreground">
@@ -229,10 +312,10 @@ export default function AdminInviteTab() {
             {/* Strategy preview per CTA type */}
             <div className="mt-2 p-2.5 rounded-lg bg-background/80 border border-border">
               <p className="font-semibold text-[11px] uppercase tracking-wider text-muted-foreground mb-1.5">
-                Estratégia IA ativa: {AI_STRATEGY_INFO[config.ctaType]?.title || "Padrão"}
+                Estratégia IA ativa: {AI_STRATEGY_INFO[activeBot.ctaType]?.title || "Padrão"}
               </p>
               <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
-                {AI_STRATEGY_INFO[config.ctaType]?.description || "Estratégia padrão de cadastro."}
+                {AI_STRATEGY_INFO[activeBot.ctaType]?.description || "Estratégia padrão de cadastro."}
               </p>
             </div>
           </div>
@@ -245,11 +328,11 @@ export default function AdminInviteTab() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-muted-foreground">Nome</label>
-            <Input value={config.attendantName} onChange={(e) => setConfig((p) => ({ ...p, attendantName: e.target.value }))} />
+            <Input value={activeBot.attendantName} onChange={(e) => updateActiveBot((p) => ({ ...p, attendantName: e.target.value }))} />
           </div>
           <div>
             <label className="text-xs text-muted-foreground">Avatar URL (opcional)</label>
-            <Input value={config.attendantAvatar} onChange={(e) => setConfig((p) => ({ ...p, attendantAvatar: e.target.value }))} placeholder="https://..." />
+            <Input value={activeBot.attendantAvatar} onChange={(e) => updateActiveBot((p) => ({ ...p, attendantAvatar: e.target.value }))} placeholder="https://..." />
           </div>
         </div>
       </div>
@@ -261,13 +344,14 @@ export default function AdminInviteTab() {
           <div>
             <label className="text-xs text-muted-foreground">Tipo de link</label>
             <select
-              value={config.ctaType}
+              value={activeBot.ctaType}
               onChange={(e) => {
                 const v = e.target.value as InviteChatConfig["ctaType"];
-                setConfig((p) => ({
+                updateActiveBot((p) => ({
                   ...p,
                   ctaType: v,
                   ctaUrl: v === "internal" ? "/anunciar" : v === "whatsapp" ? "https://wa.me/55" : v === "crm" || v === "captacao_imobiliaria" ? "" : "https://",
+                  flow: p.flows[v] || DEFAULT_FLOWS[v],
                 }));
               }}
               className="w-full text-sm bg-card text-foreground border border-border rounded px-3 py-2 mt-1"
@@ -280,12 +364,12 @@ export default function AdminInviteTab() {
               <option value="captacao_imobiliaria">🏢 Captação de Imobiliárias</option>
             </select>
           </div>
-          {(config.ctaType === "crm" || config.ctaType === "captacao_imobiliaria") ? (
+          {(activeBot.ctaType === "crm" || activeBot.ctaType === "captacao_imobiliaria") ? (
             <div className="sm:col-span-2 space-y-3">
               <div className="bg-primary/5 border border-primary/20 rounded-lg p-3 text-xs text-foreground">
-                <p className="font-semibold mb-1">{config.ctaType === "captacao_imobiliaria" ? "🏢 Modo Captação Imobiliárias" : "📋 Modo CRM ativado"}</p>
+                <p className="font-semibold mb-1">{activeBot.ctaType === "captacao_imobiliaria" ? "🏢 Modo Captação Imobiliárias" : "📋 Modo CRM ativado"}</p>
                 <p className="text-muted-foreground">
-                  {config.ctaType === "captacao_imobiliaria"
+                  {activeBot.ctaType === "captacao_imobiliaria"
                     ? "O visitante preencherá nome, WhatsApp e tipo (Imobiliária/Construtora/Corretor). Os dados serão salvos no CRM e um botão de WhatsApp aparecerá com mensagem pré-preenchida."
                     : "O visitante preencherá nome e WhatsApp. Os dados serão salvos no CRM e um botão aparecerá para continuar."}
                 </p>
@@ -293,8 +377,8 @@ export default function AdminInviteTab() {
               <div>
                 <label className="text-xs text-muted-foreground">Texto do botão após envio</label>
                 <Input
-                  value={config.crmButtonText || ""}
-                  onChange={(e) => setConfig((p) => ({ ...p, crmButtonText: e.target.value }))}
+                  value={activeBot.crmButtonText || ""}
+                  onChange={(e) => updateActiveBot((p) => ({ ...p, crmButtonText: e.target.value }))}
                   placeholder="🚀 Criar Minha Conta Agora"
                   className="mt-1"
                 />
@@ -302,8 +386,8 @@ export default function AdminInviteTab() {
               <div>
                 <label className="text-xs text-muted-foreground">URL do botão após envio</label>
                 <Input
-                  value={config.crmRedirectUrl || ""}
-                  onChange={(e) => setConfig((p) => ({ ...p, crmRedirectUrl: e.target.value }))}
+                  value={activeBot.crmRedirectUrl || ""}
+                  onChange={(e) => updateActiveBot((p) => ({ ...p, crmRedirectUrl: e.target.value }))}
                   placeholder="/anunciar ou https://wa.me/5527999999999"
                   className="mt-1"
                 />
@@ -314,11 +398,11 @@ export default function AdminInviteTab() {
             <>
               <div>
                 <label className="text-xs text-muted-foreground">Texto do botão</label>
-                <Input value={config.ctaText} onChange={(e) => setConfig((p) => ({ ...p, ctaText: e.target.value }))} className="mt-1" />
+                <Input value={activeBot.ctaText} onChange={(e) => updateActiveBot((p) => ({ ...p, ctaText: e.target.value }))} className="mt-1" />
               </div>
               <div>
-                <label className="text-xs text-muted-foreground">{config.ctaType === "internal" ? "Rota" : "URL"}</label>
-                <Input value={config.ctaUrl} onChange={(e) => setConfig((p) => ({ ...p, ctaUrl: e.target.value }))} className="mt-1" />
+                <label className="text-xs text-muted-foreground">{activeBot.ctaType === "internal" ? "Rota" : "URL"}</label>
+                <Input value={activeBot.ctaUrl} onChange={(e) => updateActiveBot((p) => ({ ...p, ctaUrl: e.target.value }))} className="mt-1" />
               </div>
             </>
           )}
@@ -326,11 +410,11 @@ export default function AdminInviteTab() {
       </div>
 
       {/* Flow editor — hidden in AI mode */}
-      {config.chatMode !== "ai" && (
+      {activeBot.chatMode !== "ai" && (
       <div className="bg-card border border-border rounded-xl p-4 space-y-3">
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-semibold text-foreground">🔀 Fluxo da Conversa — {
-            { internal: "📱 Cadastro", crm: "📋 CRM", whatsapp: "💬 WhatsApp", whatsapp_group: "👥 Grupo", url: "🔗 URL", captacao_imobiliaria: "🏢 Imobiliárias" }[config.ctaType]
+            { internal: "📱 Cadastro", crm: "📋 CRM", whatsapp: "💬 WhatsApp", whatsapp_group: "👥 Grupo", url: "🔗 URL", captacao_imobiliaria: "🏢 Imobiliárias" }[activeBot.ctaType]
           }</h3>
           <Button variant="ghost" size="sm" onClick={resetToDefault} className="text-xs text-muted-foreground">Restaurar padrão</Button>
         </div>
