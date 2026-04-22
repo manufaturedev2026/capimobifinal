@@ -15,6 +15,7 @@ interface WhatsAppLeadCaptureProps {
   extraNotes?: string;
   leadSource?: string;
   teamMemberId?: string | null;
+  teamMemberName?: string | null;
   /** For partnership brokers: route lead to their own CRM */
   partnerBrokerSellerId?: string | null;
   partnerBrokerUserId?: string | null;
@@ -30,6 +31,7 @@ export default function WhatsAppLeadCapture({
   extraNotes,
   leadSource,
   teamMemberId,
+  teamMemberName,
   partnerBrokerSellerId,
   partnerBrokerUserId,
 }: WhatsAppLeadCaptureProps) {
@@ -45,6 +47,7 @@ export default function WhatsAppLeadCapture({
     try {
       const notes = [
         `📍 ${city.trim() || "Não informada"}`,
+        teamMemberName && !partnerBrokerSellerId ? `👤 Loja espelho: ${teamMemberName}` : null,
         extraNotes,
         `🔗 ${sourceUrl}`,
       ].filter(Boolean).join("\n");
@@ -70,7 +73,7 @@ export default function WhatsAppLeadCapture({
         body: {
           target_user_id: targetUserId,
           title: "Novo lead no CRM 🎯",
-          body: `${name.trim()} entrou em contato via WhatsApp.`,
+          body: `${name.trim()} entrou em contato via WhatsApp${teamMemberName && !partnerBrokerSellerId ? ` pela loja espelho de ${teamMemberName}` : ""}.`,
           url: "/painel?tab=crm",
         },
       }).catch(() => {});
