@@ -991,10 +991,26 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
                 <SelectContent>{propertyTypes.map((type) => <SelectItem key={type} value={type}>{type}</SelectItem>)}</SelectContent>
               </Select>
             </div>
-            <Field label="Endereço opcional" value={propertyForm.address} onChange={(value) => setPropertyForm((prev) => ({ ...prev, address: value }))} />
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_auto]">
+              <Field label="CEP *" value={propertyForm.cep} onChange={(value) => setPropertyForm((prev) => ({ ...prev, cep: value }))} />
+              <Button type="button" onClick={fillAddressByCep} className={`mt-5 h-12 rounded-2xl ${themedOutlineButton}`} variant="outline">Buscar CEP</Button>
+            </div>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <Field label="Cidade" value={propertyForm.city} onChange={(value) => setPropertyForm((prev) => ({ ...prev, city: value }))} />
-              <Field label="Bairro" value={propertyForm.neighborhood} onChange={(value) => setPropertyForm((prev) => ({ ...prev, neighborhood: value }))} />
+              <Field label="Rua *" value={propertyForm.street} onChange={(value) => setPropertyForm((prev) => ({ ...prev, street: value }))} />
+              <Field label="Número *" value={propertyForm.number} onChange={(value) => setPropertyForm((prev) => ({ ...prev, number: value }))} />
+              <Field label="Complemento" value={propertyForm.complement} onChange={(value) => setPropertyForm((prev) => ({ ...prev, complement: value }))} />
+              <Field label="Referência" value={propertyForm.reference_point} onChange={(value) => setPropertyForm((prev) => ({ ...prev, reference_point: value }))} />
+              <Field label="Bairro *" value={propertyForm.neighborhood} onChange={(value) => setPropertyForm((prev) => ({ ...prev, neighborhood: value }))} />
+              <Field label="Cidade *" value={propertyForm.city} onChange={(value) => setPropertyForm((prev) => ({ ...prev, city: value }))} />
+              <Field label="Estado *" value={propertyForm.state} onChange={(value) => setPropertyForm((prev) => ({ ...prev, state: value.toUpperCase() }))} />
+            </div>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+              <Field label="Valor pedido" value={propertyForm.asking_price} onChange={(value) => setPropertyForm((prev) => ({ ...prev, asking_price: value }))} />
+              <Field label="Quartos" value={propertyForm.bedrooms} onChange={(value) => setPropertyForm((prev) => ({ ...prev, bedrooms: value }))} />
+              <Field label="Banheiros" value={propertyForm.bathrooms} onChange={(value) => setPropertyForm((prev) => ({ ...prev, bathrooms: value }))} />
+              <Field label="Vagas" value={propertyForm.parking_spaces} onChange={(value) => setPropertyForm((prev) => ({ ...prev, parking_spaces: value }))} />
+              <Field label="IPTU" value={propertyForm.iptu} onChange={(value) => setPropertyForm((prev) => ({ ...prev, iptu: value }))} />
+              <Field label="Condomínio" value={propertyForm.condominium_fee} onChange={(value) => setPropertyForm((prev) => ({ ...prev, condominium_fee: value }))} />
             </div>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
               <Field label="Largura terreno (m)" value={propertyForm.land_width} onChange={(value) => setPropertyForm((prev) => ({ ...prev, land_width: value }))} />
@@ -1102,13 +1118,13 @@ function TextArea({ label, value, onChange }: { label: string; value: string; on
   );
 }
 
-function Picker({ label, value, options, onChange }: { label: string; value: string; options: string[]; onChange: (value: string) => void }) {
+function Picker({ label, value, options, optionLabels, onChange }: { label: string; value: string; options: string[]; optionLabels?: Record<string, string>; onChange: (value: string) => void }) {
   return (
     <div>
       <label className="mb-1 block text-xs font-semibold text-muted-foreground">{label}</label>
       <Select value={value} onValueChange={onChange}>
         <SelectTrigger className="h-12 rounded-2xl"><SelectValue /></SelectTrigger>
-        <SelectContent>{options.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent>
+        <SelectContent>{options.map((option) => <SelectItem key={option} value={option}>{optionLabels?.[option] || option}</SelectItem>)}</SelectContent>
       </Select>
     </div>
   );
