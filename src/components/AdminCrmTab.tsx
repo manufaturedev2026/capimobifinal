@@ -74,7 +74,10 @@ export default function AdminCrmTab() {
       supabase.from("crm_templates").select("*").order("sort_order") as any,
     ]);
     setContacts(contactsRes.data || []);
-    setStages(stagesRes.data || []);
+    const uniqueStages = Array.from(
+      new Map((stagesRes.data || []).map((stage: FunnelStage) => [stage.name.toLowerCase(), stage])).values()
+    ) as FunnelStage[];
+    setStages(uniqueStages);
     setTemplates(templatesRes.data || []);
     setLoading(false);
   };
