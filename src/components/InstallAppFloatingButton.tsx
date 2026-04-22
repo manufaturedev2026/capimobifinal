@@ -17,13 +17,13 @@ export default function InstallAppFloatingButton({ primaryColor }: Props) {
   const [showGuide, setShowGuide] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // Hide if already installed, or if running inside Lovable preview iframe
-  if (installed || isPreview) return null;
+  // Hide only if already installed. In preview we still show the action and open the guide.
+  if (installed) return null;
 
   // On iOS we show the guide because there's no install prompt
   // On other platforms we need either canPrompt or fall back to manual guide
   const handleClick = async () => {
-    if (isIOS || !canPrompt) {
+    if (isPreview || isIOS || !canPrompt) {
       setShowGuide(true);
       return;
     }
