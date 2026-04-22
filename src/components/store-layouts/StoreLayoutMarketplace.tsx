@@ -504,7 +504,7 @@ export default function StoreLayoutMarketplace({
                   whileHover={{ y: -4, transition: { duration: 0.2 } }}
                   whileTap={{ scale: 0.97 }}
                   onClick={() => { setActiveCategory(isActive ? "todos" : action.slug); scrollToGrid(); }}
-                  className="flex-shrink-0 flex flex-col items-center gap-1.5 md:gap-2.5 p-3 md:p-4 rounded-2xl transition-all min-w-[85px] md:min-w-[100px] relative overflow-hidden"
+                  className="flex-shrink-0 flex flex-col items-center justify-start gap-1.5 md:gap-2.5 p-3 md:p-4 rounded-2xl transition-all w-[92px] h-[132px] md:w-auto md:h-auto md:min-w-[100px] relative overflow-hidden"
                   style={{
                     background: isActive ? `${storeTheme.primary}18` : `${storeTheme.card}`,
                     border: `1.5px solid ${isActive ? storeTheme.primary : storeTheme.border}`,
@@ -530,10 +530,10 @@ export default function StoreLayoutMarketplace({
                   >
                     <Icon size={20} />
                   </div>
-                  <span className="text-xs font-bold" style={{ color: isActive ? storeTheme.primary : storeTheme.text }}>
+                  <span className="text-xs font-bold text-center leading-tight min-h-[30px] flex items-center" style={{ color: isActive ? storeTheme.primary : storeTheme.text }}>
                     {action.name}
                   </span>
-                  <span className="text-[10px] leading-tight" style={{ color: storeTheme.textMuted }}>
+                  <span className="text-[10px] leading-tight text-center line-clamp-2 min-h-[24px]" style={{ color: storeTheme.textMuted }}>
                     {count > 0 ? `${count} imóveis` : action.desc}
                   </span>
                 </motion.button>
