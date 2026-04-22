@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { BRAZIL_STATES } from "@/data/brazilStates";
+import { usePushSubscription } from "@/hooks/usePushSubscription";
 
 interface AdminPushTabProps {
   userId: string;
@@ -47,6 +48,26 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
   const stateCities = filterState !== "all" ? (regionData[filterState] || []) : [];
   const [estimate, setEstimate] = useState<number | null>(null);
   const [estimating, setEstimating] = useState(false);
+  const [adminPushSellerId, setAdminPushSellerId] = useState<string | undefined>();
+  const adminPush = usePushSubscription(adminPushSellerId);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("user_id", userId)
+        .maybeSingle();
+
+      if (cancelled || !data?.id) return;
+      setAdminPushSellerId(data.id);
+      await supabase
+        .from("platform_settings")
+        .upsert({ key: "admin_push_seller_id", value: data.id, updated_at: new Date().toISOString() } as any, { onConflict: "key" });
+    })();
+    return () => { cancelled = true; };
+  }, [userId]);
 
   // Estimate number of recipients when filters change
   useEffect(() => {
@@ -262,6 +283,35 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
         <p className="text-sm text-muted-foreground mt-1">
           Envie notificações push para todos os corretores que instalaram o app
         </p>
+      </div>
+
+      <div className="p-4 rounded-xl border border-primary/20 bg-primary/5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-start gap-3">
+          <div className="h-10 w-10 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
+            <Bell className="w-5 h-5" />
+          </div>
+          <div>
+            <h3 className="text-sm font-bold text-foreground">Receber push no admin</h3>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Ative neste dispositivo para receber os leads dos bots e convites do painel admin.
+            </p>
+            {!adminPush.isSupported && adminPush.unsupportedReason && (
+              <p className="text-xs text-muted-foreground mt-1">{adminPush.unsupportedReason}</p>
+            )}
+          </div>
+        </div>
+        <Button
+          onClick={async () => {
+            const ok = await adminPush.subscribe();
+            if (ok) fetchData();
+          }}
+          disabled={!adminPushSellerId || !adminPush.isSupported || adminPush.loading || adminPush.isSubscribed}
+          className="gap-2 shrink-0"
+          variant={adminPush.isSubscribed ? "secondary" : "default"}
+        >
+          {adminPush.loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Bell className="w-4 h-4" />}
+          {adminPush.isSubscribed ? "Push admin ativo" : "Ativar push admin"}
+        </Button>
       </div>
 
       {/* Stats */}
