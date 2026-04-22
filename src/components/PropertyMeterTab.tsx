@@ -232,7 +232,7 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
     };
 
     if (editingPropertyId) {
-      const { data, error } = await supabase.from(measuredPropertiesTable).update(payload).eq("id", editingPropertyId).select("*").single();
+      const { data, error } = await db.from(measuredPropertiesTable).update(payload).eq("id", editingPropertyId).select("*").single();
       if (error) {
         toast({ title: "Erro ao salvar imóvel", description: error.message, variant: "destructive" });
         return;
@@ -240,7 +240,7 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
       setSelectedProperty(data as MeasuredProperty);
       toast({ title: "Imóvel atualizado" });
     } else {
-      const { data, error } = await supabase.from(measuredPropertiesTable).insert(payload).select("*").single();
+      const { data, error } = await db.from(measuredPropertiesTable).insert(payload).select("*").single();
       if (error) {
         toast({ title: "Erro ao criar imóvel", description: error.message, variant: "destructive" });
         return;
@@ -256,7 +256,7 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
 
   const deleteProperty = async (property: MeasuredProperty) => {
     if (!confirm(`Excluir "${property.name}" e todos os ambientes?`)) return;
-    const { error } = await supabase.from(measuredPropertiesTable).delete().eq("id", property.id).eq("user_id", userId);
+    const { error } = await db.from(measuredPropertiesTable).delete().eq("id", property.id).eq("user_id", userId);
     if (error) {
       toast({ title: "Erro ao excluir imóvel", description: error.message, variant: "destructive" });
       return;
@@ -270,7 +270,7 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
   };
 
   const duplicateProperty = async (property: MeasuredProperty) => {
-    const { data: copiedProperty, error } = await supabase
+    const { data: copiedProperty, error } = await db
       .from(measuredPropertiesTable)
       .insert({
         user_id: userId,
@@ -289,10 +289,10 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
       return;
     }
 
-    const { data: originalRooms } = await supabase.from(measuredRoomsTable).select("*").eq("property_id", property.id).eq("user_id", userId);
+    const { data: originalRooms } = await db.from(measuredRoomsTable).select("*").eq("property_id", property.id).eq("user_id", userId);
     if (originalRooms?.length) {
-      await supabase.from(measuredRoomsTable).insert(
-        originalRooms.map((room: MeasuredRoom) => ({
+      await db.from(measuredRoomsTable).insert(
+        (originalRooms as MeasuredRoom[]).map((room) => ({
           property_id: (copiedProperty as MeasuredProperty).id,
           user_id: userId,
           name: room.name,
