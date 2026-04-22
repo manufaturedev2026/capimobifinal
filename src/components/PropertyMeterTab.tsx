@@ -23,6 +23,15 @@ type MeasuredProperty = {
   land_length: number | null;
   land_area_manual: number | null;
   measured_by: string | null;
+  measurement_mode: string | null;
+  external_shape: string | null;
+  external_width: number | null;
+  external_length: number | null;
+  external_base: number | null;
+  external_height: number | null;
+  external_side_a: number | null;
+  external_side_b: number | null;
+  external_area_manual: number | null;
   created_at: string;
   updated_at: string;
 };
@@ -64,6 +73,15 @@ type PropertyForm = {
   land_length: string;
   land_area_manual: string;
   measured_by: string;
+  measurement_mode: string;
+  external_shape: string;
+  external_width: string;
+  external_length: string;
+  external_base: string;
+  external_height: string;
+  external_side_a: string;
+  external_side_b: string;
+  external_area_manual: string;
   notes: string;
 };
 
@@ -86,6 +104,8 @@ const propertyTypes = ["Casa", "Apartamento", "Terreno", "Comercial", "Rural"];
 const roomTypes = ["Sala", "Quarto", "Suíte", "Cozinha", "Banheiro", "Corredor", "Garagem", "Varanda", "Área gourmet", "Área de serviço", "Escritório", "Outro"];
 const shapes = ["Retângulo / Quadrado", "Triângulo Retângulo", "Formato em L", "Trapézio", "Circular", "Manual"];
 const areaTypes = ["Interna útil", "Construída coberta", "Externa descoberta", "Terreno"];
+const measurementModes = ["Medição por Ambientes", "Medição Externa da Construção", "Medição do Terreno"];
+const externalShapes = ["Retângulo", "L", "Triângulo", "Trapézio", "Irregular"];
 const photoCategories = ["Fachada", "Sala", "Quartos", "Cozinha", "Banheiros", "Área externa", "Garagem", "Outros"];
 const themedPrimaryButton = "bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/20";
 const themedOutlineButton = "border-primary/25 bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground";
@@ -100,6 +120,15 @@ const emptyPropertyForm: PropertyForm = {
   land_length: "",
   land_area_manual: "",
   measured_by: "",
+  measurement_mode: "Medição por Ambientes",
+  external_shape: "Retângulo",
+  external_width: "",
+  external_length: "",
+  external_base: "",
+  external_height: "",
+  external_side_a: "",
+  external_side_b: "",
+  external_area_manual: "",
   notes: "",
 };
 
