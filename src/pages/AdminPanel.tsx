@@ -500,7 +500,6 @@ export default function AdminPanel() {
     { key: "plans" as const, label: "Planos", icon: Package },
     { key: "crm" as const, label: "CRM WhatsApp", icon: MessageCircle },
     { key: "ads" as const, label: "CRM de ADS", icon: Megaphone },
-    { key: "receivePush" as const, label: "Receber Push", icon: Bell },
     { key: "push" as const, label: "Push Broadcast", icon: Bell },
     { key: "seo" as const, label: "SEO / Sitemaps", icon: Globe },
     { key: "vendas" as const, label: "Página de Vendas", icon: Rocket },
@@ -512,6 +511,7 @@ export default function AdminPanel() {
     { key: "apify" as const, label: "Apify Leads", icon: Database },
     { key: "valuation" as const, label: "Avaliação IA — Preços", icon: DollarSign },
     { key: "invite" as const, label: "Convite", icon: MessageCircle },
+    { key: "receivePush" as const, label: "Receber Push", icon: Bell },
   ];
 
   return (
