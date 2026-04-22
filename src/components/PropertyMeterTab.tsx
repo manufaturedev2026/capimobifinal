@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { ArrowLeft, Camera, Copy, Edit3, FileText, Home, ImagePlus, MoveDown, MoveUp, Plus, Ruler, Save, Trash2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -288,7 +288,7 @@ const roomToForm = (room: MeasuredRoom): RoomForm => ({
   notes: room.notes || "",
 });
 
-export default function PropertyMeterTab({ userId }: { userId: string }) {
+export default function PropertyMeterTab({ userId, themeVars }: { userId: string; themeVars?: CSSProperties }) {
   const { toast } = useToast();
   const navigate = useNavigate();
   const db = useMemo(() => supabase as any, []);
@@ -954,7 +954,7 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
       )}
 
       <Dialog open={propertyDialogOpen} onOpenChange={setPropertyDialogOpen}>
-        <DialogContent className="max-h-[90vh] overflow-y-auto rounded-3xl border-primary/20 bg-card text-card-foreground shadow-2xl shadow-primary/10 sm:max-w-xl">
+        <DialogContent style={themeVars} className="max-h-[90vh] overflow-y-auto rounded-3xl border-primary/20 bg-card text-card-foreground shadow-2xl shadow-primary/10 sm:max-w-xl">
           <DialogHeader className="rounded-2xl border border-primary/15 bg-primary/10 p-4">
             <DialogTitle className="flex items-center gap-2 font-display text-xl font-extrabold text-primary">
               <Edit3 size={18} /> {editingPropertyId ? "Editar imóvel" : "Novo imóvel"}
@@ -966,7 +966,7 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
               <label className="mb-1 block text-xs font-semibold text-muted-foreground">Tipo</label>
               <Select value={propertyForm.property_type} onValueChange={(value) => setPropertyForm((prev) => ({ ...prev, property_type: value }))}>
                 <SelectTrigger className="h-12 rounded-2xl border-primary/20 bg-primary/5 focus:ring-primary"><SelectValue /></SelectTrigger>
-                <SelectContent className="border-primary/20 bg-popover text-popover-foreground">{propertyTypes.map((type) => <SelectItem key={type} value={type}>{type}</SelectItem>)}</SelectContent>
+                <SelectContent style={themeVars} className="border-primary/20 bg-popover text-popover-foreground">{propertyTypes.map((type) => <SelectItem key={type} value={type}>{type}</SelectItem>)}</SelectContent>
               </Select>
             </div>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_auto]">
@@ -995,9 +995,9 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
               <Field label="Comprimento terreno (m)" value={propertyForm.land_length} onChange={(value) => setPropertyForm((prev) => ({ ...prev, land_length: value }))} />
               <Field label="Área terreno manual" value={propertyForm.land_area_manual} onChange={(value) => setPropertyForm((prev) => ({ ...prev, land_area_manual: value }))} />
             </div>
-            <Picker label="Modo de medição" value={propertyForm.measurement_mode} options={measurementModes} onChange={(value) => setPropertyForm((prev) => ({ ...prev, measurement_mode: value }))} />
+            <Picker themeVars={themeVars} label="Modo de medição" value={propertyForm.measurement_mode} options={measurementModes} onChange={(value) => setPropertyForm((prev) => ({ ...prev, measurement_mode: value }))} />
             <div className="rounded-2xl border border-primary/15 bg-primary/10 p-3">
-              <Picker label="Formato externo da construção" value={propertyForm.external_shape} options={externalShapes} onChange={(value) => setPropertyForm((prev) => ({ ...prev, external_shape: value }))} />
+              <Picker themeVars={themeVars} label="Formato externo da construção" value={propertyForm.external_shape} options={externalShapes} onChange={(value) => setPropertyForm((prev) => ({ ...prev, external_shape: value }))} />
               <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {propertyForm.external_shape === "Retângulo" && <><Field label="Largura construção" value={propertyForm.external_width} onChange={(value) => setPropertyForm((prev) => ({ ...prev, external_width: value }))} /><Field label="Comprimento construção" value={propertyForm.external_length} onChange={(value) => setPropertyForm((prev) => ({ ...prev, external_length: value }))} /></>}
                 {propertyForm.external_shape === "L" && <><Field label="Largura bloco 1" value={propertyForm.external_width} onChange={(value) => setPropertyForm((prev) => ({ ...prev, external_width: value }))} /><Field label="Comprimento bloco 1" value={propertyForm.external_length} onChange={(value) => setPropertyForm((prev) => ({ ...prev, external_length: value }))} /><Field label="Largura bloco 2" value={propertyForm.external_side_a} onChange={(value) => setPropertyForm((prev) => ({ ...prev, external_side_a: value }))} /><Field label="Comprimento bloco 2" value={propertyForm.external_side_b} onChange={(value) => setPropertyForm((prev) => ({ ...prev, external_side_b: value }))} /></>}
@@ -1014,17 +1014,17 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
       </Dialog>
 
       <Dialog open={roomDialogOpen} onOpenChange={setRoomDialogOpen}>
-        <DialogContent className="max-h-[90vh] overflow-y-auto rounded-3xl sm:max-w-xl">
+        <DialogContent style={themeVars} className="max-h-[90vh] overflow-y-auto rounded-3xl border-primary/20 bg-card text-card-foreground shadow-2xl shadow-primary/10 sm:max-w-xl">
           <DialogHeader>
             <DialogTitle>{editingRoomId ? "Editar ambiente" : "Adicionar ambiente"}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <Field label="Nome do ambiente" value={roomForm.name} onChange={(value) => setRoomForm((prev) => ({ ...prev, name: value }))} />
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <Picker label="Tipo" value={roomForm.room_type} options={roomTypes} onChange={(value) => setRoomForm((prev) => ({ ...prev, room_type: value }))} />
-              <Picker label="Formato" value={roomForm.shape} options={shapes} onChange={(value) => setRoomForm((prev) => ({ ...prev, shape: value }))} />
+              <Picker themeVars={themeVars} label="Tipo" value={roomForm.room_type} options={roomTypes} onChange={(value) => setRoomForm((prev) => ({ ...prev, room_type: value }))} />
+              <Picker themeVars={themeVars} label="Formato" value={roomForm.shape} options={shapes} onChange={(value) => setRoomForm((prev) => ({ ...prev, shape: value }))} />
             </div>
-            <Picker label="Tipo da área" value={roomForm.area_type} options={areaTypes} onChange={(value) => setRoomForm((prev) => ({ ...prev, area_type: value }))} />
+            <Picker themeVars={themeVars} label="Tipo da área" value={roomForm.area_type} options={areaTypes} onChange={(value) => setRoomForm((prev) => ({ ...prev, area_type: value }))} />
             {measurementFields()}
             <div className="rounded-2xl border border-primary/20 bg-primary/10 p-4">
               <p className="text-xs font-bold uppercase text-primary">Área calculada</p>
