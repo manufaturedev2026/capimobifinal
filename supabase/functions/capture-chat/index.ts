@@ -305,7 +305,7 @@ REGRAS:
       // Registrar uso (best-effort, não bloqueia resposta)
       if (sellerId) {
         await admin.from("ai_text_generations_log").insert({
-          user_id: user.id,
+          user_id: userId,
           seller_id: sellerId,
           action: "generate_ad_copy",
         });
