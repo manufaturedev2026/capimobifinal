@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
-import { ArrowLeft, Camera, Copy, Edit3, FileText, Home, ImagePlus, Link2, Mail, MessageCircle, MoveDown, MoveUp, Plus, Ruler, Save, Share2, Trash2 } from "lucide-react";
+import { ArrowLeft, Camera, Copy, Edit3, FileText, Home, ImagePlus, MoveDown, MoveUp, Plus, Ruler, Save, Trash2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -299,8 +299,6 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
   const [loading, setLoading] = useState(true);
   const [propertyDialogOpen, setPropertyDialogOpen] = useState(false);
   const [roomDialogOpen, setRoomDialogOpen] = useState(false);
-  const [reportDialogOpen, setReportDialogOpen] = useState(false);
-  const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [editingPropertyId, setEditingPropertyId] = useState<string | null>(null);
   const [editingRoomId, setEditingRoomId] = useState<string | null>(null);
   const [photoCategory, setPhotoCategory] = useState("Fachada");
@@ -724,32 +722,11 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
     if (error) toast({ title: "Erro ao alterar modo", description: error.message, variant: "destructive" });
   };
 
-  const shareText = selectedProperty ? `${selectedProperty.name}\nÁrea total: ${formatArea(livePropertyTotal)}\n${selectedProperty.address ? `${selectedProperty.address}\n` : ""}${selectedProperty.neighborhood}, ${selectedProperty.city}\nAmbientes: ${rooms.map((room) => `${room.name} (${formatArea(room.area)})`).join(", ")}` : "";
-  const shareUrl = selectedProperty ? `${window.location.origin}/painel?medidor=${selectedProperty.id}` : window.location.href;
-
-  const copyShareLink = async () => {
-    await navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
-    toast({ title: "Link copiado" });
-  };
-
   const sendToValuation = () => {
     if (!selectedProperty) return;
     sessionStorage.setItem("meter_property_for_valuation", JSON.stringify({ property: selectedProperty, rooms, photos, areas: technicalAreas }));
     navigate(`/avaliacao-ia?imovel=${selectedProperty.id}`);
   };
-
-  const reportRows = selectedProperty ? [
-    ["Imóvel", selectedProperty.name],
-    ["Tipo", selectedProperty.property_type],
-    ["Endereço", selectedProperty.address || "Não informado"],
-    ["Cidade / Bairro", `${selectedProperty.city} / ${selectedProperty.neighborhood}`],
-    ["Data da medição", formatDateTime(selectedProperty.updated_at)],
-    ["Área construída", formatArea(technicalAreas.builtArea)],
-    ["Área útil interna", formatArea(technicalAreas.usefulArea)],
-    ["Terreno total", formatArea(technicalAreas.landArea)],
-    ["Área externa descoberta", formatArea(technicalAreas.uncoveredArea)],
-    ["Responsável", selectedProperty.measured_by || "Não informado"],
-  ] : [];
 
   const measurementFields = () => {
     if (roomForm.shape === "Manual") {
@@ -887,8 +864,6 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
             <div className="mt-4 flex flex-wrap gap-2">
               <Button onClick={openNewRoom} className={`rounded-2xl ${themedPrimaryButton}`}><Plus size={16} /> Adicionar ambiente</Button>
               <Button variant="outline" onClick={() => openEditProperty(selectedProperty)} className={`rounded-2xl ${themedOutlineButton}`}><Edit3 size={16} /> Editar imóvel</Button>
-              <Button variant="outline" onClick={() => setReportDialogOpen(true)} className={`rounded-2xl ${themedOutlineButton}`}><FileText size={16} /> Gerar Laudo</Button>
-              <Button variant="outline" onClick={() => setShareDialogOpen(true)} className={`rounded-2xl ${themedOutlineButton}`}><Share2 size={16} /> Compartilhar Imóvel</Button>
               <Button onClick={sendToValuation} className={`rounded-2xl ${themedPrimaryButton}`}><FileText size={16} /> Enviar para Avaliador</Button>
             </div>
           </div>
@@ -1055,35 +1030,6 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
             </div>
             <TextArea label="Observações" value={roomForm.notes} onChange={(value) => setRoomForm((prev) => ({ ...prev, notes: value }))} />
             <Button onClick={saveRoom} className={`h-12 w-full rounded-2xl font-bold ${themedPrimaryButton}`}><Save size={16} /> Salvar ambiente</Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={reportDialogOpen} onOpenChange={setReportDialogOpen}>
-        <DialogContent className="max-h-[90vh] overflow-y-auto rounded-3xl sm:max-w-2xl">
-          <DialogHeader><DialogTitle>Laudo profissional de medição</DialogTitle></DialogHeader>
-          <div className="space-y-5 rounded-2xl border border-border bg-card p-4">
-            <p className="text-sm text-muted-foreground">Este imóvel possui área medida de forma digital com base nas informações inseridas no sistema.</p>
-            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-              {reportRows.map(([label, value]) => <div key={label} className="rounded-2xl bg-secondary/60 p-3"><p className="text-xs font-bold uppercase text-muted-foreground">{label}</p><p className="font-semibold text-foreground">{value}</p></div>)}
-            </div>
-            <div>
-              <h4 className="mb-2 font-display text-lg font-bold text-foreground">Ambientes medidos</h4>
-              <div className="space-y-2">{rooms.map((room) => <div key={room.id} className="flex justify-between rounded-xl border border-border p-3 text-sm"><span>{room.name} • {room.area_type}</span><strong>{formatArea(room.area)}</strong></div>)}</div>
-            </div>
-            {selectedProperty?.notes && <p className="rounded-2xl bg-primary/10 p-3 text-sm text-foreground"><strong>Observações:</strong> {selectedProperty.notes}</p>}
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={shareDialogOpen} onOpenChange={setShareDialogOpen}>
-        <DialogContent className="rounded-3xl sm:max-w-md">
-          <DialogHeader><DialogTitle>Compartilhar imóvel</DialogTitle></DialogHeader>
-          <div className="grid gap-3">
-            <Button onClick={copyShareLink} className={`rounded-2xl ${themedPrimaryButton}`}><Link2 size={16} /> Copiar link</Button>
-            <Button asChild variant="outline" className={`rounded-2xl ${themedOutlineButton}`}><a href={`https://wa.me/?text=${encodeURIComponent(`${shareText}\n${shareUrl}`)}`} target="_blank" rel="noreferrer"><MessageCircle size={16} /> WhatsApp</a></Button>
-            <Button asChild variant="outline" className={`rounded-2xl ${themedOutlineButton}`}><a href={`mailto:?subject=${encodeURIComponent(selectedProperty?.name || "Imóvel medido")}&body=${encodeURIComponent(`${shareText}\n${shareUrl}`)}`}><Mail size={16} /> Email</a></Button>
-            <Button disabled variant="outline" className="rounded-2xl opacity-70"><FileText size={16} /> PDF futuro</Button>
           </div>
         </DialogContent>
       </Dialog>
