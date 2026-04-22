@@ -203,7 +203,7 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { messages, ctaType } = await req.json();
+    const { messages, ctaType, customPrompt } = await req.json();
     
     if (!messages || !Array.isArray(messages)) {
       return new Response(JSON.stringify({ error: "Messages array required" }), {
@@ -216,7 +216,11 @@ serve(async (req) => {
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
     // Select strategy based on CTA type
-    const strategy = STRATEGY_PROMPTS[ctaType || "internal"] || STRATEGY_PROMPTS.internal;
+    const baseStrategy = STRATEGY_PROMPTS[ctaType || "internal"] || STRATEGY_PROMPTS.internal;
+    const extraPrompt = typeof customPrompt === "string" && customPrompt.trim()
+      ? `\n\nINSTRUÇÕES ESPECÍFICAS DESTE BOT:\n${customPrompt.trim()}`
+      : "";
+    const strategy = `${baseStrategy}${extraPrompt}`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
