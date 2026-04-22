@@ -345,6 +345,7 @@ export default function CompanyProfile() {
             : (teamMember ? teamMember.full_name : (dbProfile.company_name || dbProfile.full_name)),
           logo: teamMember?.photo_url || activeBrokerProfile?.logo_url || dbProfile.logo_url || "",
           address: [dbProfile.address, dbProfile.city, dbProfile.state].filter(Boolean).join(", "),
+          cep: dbProfile.cep || null,
           rating: "5.0",
           reviewCount: 0,
           whatsapp: activeBrokerProfile?.phone || teamMember?.phone || dbProfile.phone || "",
