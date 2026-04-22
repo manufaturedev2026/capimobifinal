@@ -8,11 +8,12 @@ interface StoryViewerProps {
   sellers: SellerWithStories[];
   initialSellerIndex: number;
   onClose: () => void;
+  corretorSlug?: string | null;
 }
 
 const STORY_DURATION = 6000;
 
-export default function StoryViewer({ sellers, initialSellerIndex, onClose }: StoryViewerProps) {
+export default function StoryViewer({ sellers, initialSellerIndex, onClose, corretorSlug }: StoryViewerProps) {
   const [sellerIdx, setSellerIdx] = useState(initialSellerIndex);
   const [storyIdx, setStoryIdx] = useState(0);
   const [progress, setProgress] = useState(0);
@@ -89,13 +90,19 @@ export default function StoryViewer({ sellers, initialSellerIndex, onClose }: St
 
   // Resolve CTA URL: button_url from DB uses /imovel/slug but route is /imoveis/produto/:id
   const resolveCtaUrl = () => {
+    const withCorretorContext = (url: string) => {
+      if (!corretorSlug) return url;
+      const separator = url.includes("?") ? "&" : "?";
+      return `${url}${separator}corretor=${encodeURIComponent(corretorSlug)}`;
+    };
+
     if (currentStory.button_url) {
       // Convert /imovel/slug → /imoveis/produto/slug
       const match = currentStory.button_url.match(/^\/imovel\/(.+)/);
-      if (match) return `/imoveis/produto/${match[1]}`;
-      return currentStory.button_url;
+      if (match) return withCorretorContext(`/imoveis/produto/${match[1]}`);
+      return withCorretorContext(currentStory.button_url);
     }
-    if (currentStory.item_id) return `/imoveis/produto/${currentStory.item_id}`;
+    if (currentStory.item_id) return withCorretorContext(`/imoveis/produto/${currentStory.item_id}`);
     return null;
   };
   const ctaUrl = resolveCtaUrl();

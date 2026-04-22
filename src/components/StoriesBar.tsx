@@ -8,9 +8,10 @@ interface StoriesBarProps {
   onAddStory?: () => void;
   textColor?: string;
   sellerId?: string;
+  corretorSlug?: string | null;
 }
 
-export default function StoriesBar({ onAddStory, textColor, sellerId }: StoriesBarProps) {
+export default function StoriesBar({ onAddStory, textColor, sellerId, corretorSlug }: StoriesBarProps) {
   const { sellerStories, loading } = useStories(sellerId);
   const { user } = useAuth();
   const [viewerOpen, setViewerOpen] = useState(false);
@@ -78,6 +79,7 @@ export default function StoriesBar({ onAddStory, textColor, sellerId }: StoriesB
           sellers={sellerStories}
           initialSellerIndex={selectedIndex}
           onClose={() => setViewerOpen(false)}
+          corretorSlug={corretorSlug}
         />
       )}
     </>
