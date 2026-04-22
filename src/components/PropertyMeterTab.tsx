@@ -805,6 +805,12 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
               <Field label="Cidade" value={propertyForm.city} onChange={(value) => setPropertyForm((prev) => ({ ...prev, city: value }))} />
               <Field label="Bairro" value={propertyForm.neighborhood} onChange={(value) => setPropertyForm((prev) => ({ ...prev, neighborhood: value }))} />
             </div>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+              <Field label="Largura terreno (m)" value={propertyForm.land_width} onChange={(value) => setPropertyForm((prev) => ({ ...prev, land_width: value }))} />
+              <Field label="Comprimento terreno (m)" value={propertyForm.land_length} onChange={(value) => setPropertyForm((prev) => ({ ...prev, land_length: value }))} />
+              <Field label="Área terreno manual" value={propertyForm.land_area_manual} onChange={(value) => setPropertyForm((prev) => ({ ...prev, land_area_manual: value }))} />
+            </div>
+            <Field label="Responsável pela medição" value={propertyForm.measured_by} onChange={(value) => setPropertyForm((prev) => ({ ...prev, measured_by: value }))} />
             <TextArea label="Observações" value={propertyForm.notes} onChange={(value) => setPropertyForm((prev) => ({ ...prev, notes: value }))} />
             <Button onClick={saveProperty} className={`h-12 w-full rounded-2xl font-bold ${themedPrimaryButton}`}><Save size={16} /> {editingPropertyId ? "Salvar imóvel" : "Salvar e Abrir"}</Button>
           </div>
@@ -822,6 +828,7 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
               <Picker label="Tipo" value={roomForm.room_type} options={roomTypes} onChange={(value) => setRoomForm((prev) => ({ ...prev, room_type: value }))} />
               <Picker label="Formato" value={roomForm.shape} options={shapes} onChange={(value) => setRoomForm((prev) => ({ ...prev, shape: value }))} />
             </div>
+            <Picker label="Tipo da área" value={roomForm.area_type} options={areaTypes} onChange={(value) => setRoomForm((prev) => ({ ...prev, area_type: value }))} />
             {measurementFields()}
             <div className="rounded-2xl border border-primary/20 bg-primary/10 p-4">
               <p className="text-xs font-bold uppercase text-primary">Área calculada</p>
@@ -833,8 +840,41 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
           </div>
         </DialogContent>
       </Dialog>
+
+      <Dialog open={reportDialogOpen} onOpenChange={setReportDialogOpen}>
+        <DialogContent className="max-h-[90vh] overflow-y-auto rounded-3xl sm:max-w-2xl">
+          <DialogHeader><DialogTitle>Laudo profissional de medição</DialogTitle></DialogHeader>
+          <div className="space-y-5 rounded-2xl border border-border bg-card p-4">
+            <p className="text-sm text-muted-foreground">Este imóvel possui área medida de forma digital com base nas informações inseridas no sistema.</p>
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+              {reportRows.map(([label, value]) => <div key={label} className="rounded-2xl bg-secondary/60 p-3"><p className="text-xs font-bold uppercase text-muted-foreground">{label}</p><p className="font-semibold text-foreground">{value}</p></div>)}
+            </div>
+            <div>
+              <h4 className="mb-2 font-display text-lg font-bold text-foreground">Ambientes medidos</h4>
+              <div className="space-y-2">{rooms.map((room) => <div key={room.id} className="flex justify-between rounded-xl border border-border p-3 text-sm"><span>{room.name} • {room.area_type}</span><strong>{formatArea(room.area)}</strong></div>)}</div>
+            </div>
+            {selectedProperty?.notes && <p className="rounded-2xl bg-primary/10 p-3 text-sm text-foreground"><strong>Observações:</strong> {selectedProperty.notes}</p>}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={shareDialogOpen} onOpenChange={setShareDialogOpen}>
+        <DialogContent className="rounded-3xl sm:max-w-md">
+          <DialogHeader><DialogTitle>Compartilhar imóvel</DialogTitle></DialogHeader>
+          <div className="grid gap-3">
+            <Button onClick={copyShareLink} className={`rounded-2xl ${themedPrimaryButton}`}><Link2 size={16} /> Copiar link</Button>
+            <Button asChild variant="outline" className={`rounded-2xl ${themedOutlineButton}`}><a href={`https://wa.me/?text=${encodeURIComponent(`${shareText}\n${shareUrl}`)}`} target="_blank" rel="noreferrer"><MessageCircle size={16} /> WhatsApp</a></Button>
+            <Button asChild variant="outline" className={`rounded-2xl ${themedOutlineButton}`}><a href={`mailto:?subject=${encodeURIComponent(selectedProperty?.name || "Imóvel medido")}&body=${encodeURIComponent(`${shareText}\n${shareUrl}`)}`}><Mail size={16} /> Email</a></Button>
+            <Button disabled variant="outline" className="rounded-2xl opacity-70"><FileText size={16} /> PDF futuro</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
+}
+
+function MetricCard({ title, value }: { title: string; value: number }) {
+  return <div className="rounded-3xl border border-primary/15 bg-primary/10 p-4 shadow-sm"><p className="text-xs font-bold uppercase text-muted-foreground">{title}</p><p className="mt-1 font-display text-2xl font-extrabold text-primary">{formatArea(value)}</p></div>;
 }
 
 function Field({ label, value, onChange }: { label: string; value: string; onChange: (value: string) => void }) {
