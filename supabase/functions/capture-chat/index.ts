@@ -400,6 +400,7 @@ REGRAS:
     });
 
     if (!response.ok) {
+      if (chatCredit?.ok) await refundAiCredits(chatCredit.admin, chatCredit.userId, chatCredit.sellerId, chatCredit.cost, "capture_bot_chat");
       if (response.status === 429) {
         return new Response(JSON.stringify({ error: "Muitas mensagens. Aguarde um momento." }), {
           status: 429,
@@ -450,7 +451,11 @@ REGRAS:
       finalReply = "Desculpe, não consegui processar sua mensagem. Tente novamente!";
     }
 
-    return new Response(JSON.stringify({ reply: finalReply, extractedData }), {
+    return new Response(JSON.stringify({
+      reply: finalReply,
+      extractedData,
+      aiCredits: chatCredit?.ok ? { charged: chatCredit.cost, balance: chatCredit.balance } : null,
+    }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
