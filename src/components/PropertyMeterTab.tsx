@@ -606,6 +606,7 @@ export default function PropertyMeterTab({ userId, themeVars }: { userId: string
 
   const openNewRoom = () => {
     setEditingRoomId(null);
+    setRoomScope("Interna");
     setRoomForm(emptyRoomForm);
     setRoomDialogOpen(true);
   };
@@ -621,6 +622,7 @@ export default function PropertyMeterTab({ userId, themeVars }: { userId: string
 
   const openEditRoom = (room: MeasuredRoom) => {
     setEditingRoomId(room.id);
+    setRoomScope(room.area_type === "Externa descoberta" ? "Externa" : "Interna");
     setRoomForm(roomToForm(room));
     setRoomDialogOpen(true);
   };
