@@ -722,32 +722,11 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
     if (error) toast({ title: "Erro ao alterar modo", description: error.message, variant: "destructive" });
   };
 
-  const shareText = selectedProperty ? `${selectedProperty.name}\nÁrea total: ${formatArea(livePropertyTotal)}\n${selectedProperty.address ? `${selectedProperty.address}\n` : ""}${selectedProperty.neighborhood}, ${selectedProperty.city}\nAmbientes: ${rooms.map((room) => `${room.name} (${formatArea(room.area)})`).join(", ")}` : "";
-  const shareUrl = selectedProperty ? `${window.location.origin}/painel?medidor=${selectedProperty.id}` : window.location.href;
-
-  const copyShareLink = async () => {
-    await navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
-    toast({ title: "Link copiado" });
-  };
-
   const sendToValuation = () => {
     if (!selectedProperty) return;
     sessionStorage.setItem("meter_property_for_valuation", JSON.stringify({ property: selectedProperty, rooms, photos, areas: technicalAreas }));
     navigate(`/avaliacao-ia?imovel=${selectedProperty.id}`);
   };
-
-  const reportRows = selectedProperty ? [
-    ["Imóvel", selectedProperty.name],
-    ["Tipo", selectedProperty.property_type],
-    ["Endereço", selectedProperty.address || "Não informado"],
-    ["Cidade / Bairro", `${selectedProperty.city} / ${selectedProperty.neighborhood}`],
-    ["Data da medição", formatDateTime(selectedProperty.updated_at)],
-    ["Área construída", formatArea(technicalAreas.builtArea)],
-    ["Área útil interna", formatArea(technicalAreas.usefulArea)],
-    ["Terreno total", formatArea(technicalAreas.landArea)],
-    ["Área externa descoberta", formatArea(technicalAreas.uncoveredArea)],
-    ["Responsável", selectedProperty.measured_by || "Não informado"],
-  ] : [];
 
   const measurementFields = () => {
     if (roomForm.shape === "Manual") {
