@@ -13,7 +13,7 @@ export default function PropertyFieldsCasa({ form, setForm }: Props) {
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-2 gap-3">
+      <div>
         <div>
           <label className={labelClass}>Subtipo</label>
           <select value={form.property_subtype || ""} onChange={(e) => update("property_subtype", e.target.value)} className={selectClass}>
@@ -21,13 +21,6 @@ export default function PropertyFieldsCasa({ form, setForm }: Props) {
             <option value="terrea">Térrea</option>
             <option value="sobrado">Sobrado</option>
             <option value="condominio">Condomínio</option>
-          </select>
-        </div>
-        <div>
-          <label className={labelClass}>Finalidade</label>
-          <select value={form.finality || "venda"} onChange={(e) => update("finality", e.target.value)} className={selectClass}>
-            <option value="venda">Venda</option>
-            <option value="aluguel">Aluguel</option>
           </select>
         </div>
       </div>
