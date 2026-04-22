@@ -376,25 +376,19 @@ export default function SellerDashboard() {
   const maxTeamMembers = ["prime_empresa", "black"].includes(currentTier) ? 9999 : currentTier === "premium_empresa" ? 10 : currentTier === "essencial_empresa" ? 5 : isImobiliaria ? 3 : 0;
   const lockedTabs: DashboardTab[] = isFreePlan ? ["domain"] : [];
 
-  const sidebarNav: { id: DashboardTab; label: string; icon: any; locked?: boolean; tourId?: string }[] = [
-    { id: "overview", label: "Visão Geral", icon: Home, tourId: "tour-overview" },
-    { id: "items", label: "Meus Anúncios", icon: Package },
-    { id: "stats", label: "Estatísticas", icon: BarChart3, tourId: "tour-stats" },
-    { id: "events", label: "Efeitos", icon: Sparkles },
-    
-    { id: "crm" as DashboardTab, label: "Meu CRM", icon: MessageCircle, tourId: "tour-crm" },
-    { id: "gallery" as DashboardTab, label: "Galeria de Anúncios", icon: Image },
-    { id: "rentals" as DashboardTab, label: "Aluguéis", icon: Building2 },
-    { id: "contracts" as DashboardTab, label: "Contratos", icon: FileText },
-    { id: "captacao" as DashboardTab, label: "Captação", icon: Magnet },
-    { id: "stories" as DashboardTab, label: "Stories", icon: Camera },
-    { id: "notifications" as DashboardTab, label: "Push", icon: Bell },
-    { id: "profit" as DashboardTab, label: "Calculadora de Lucro", icon: Calculator },
-    { id: "meter" as DashboardTab, label: "Medidor de Imóveis", icon: Ruler },
-    { id: "domain", label: "Meu Domínio", icon: Globe, locked: lockedTabs.includes("domain") },
-    { id: "ads" as DashboardTab, label: "Fazer ADS", icon: Megaphone, tourId: "tour-ads" },
-    { id: "imobiliarias" as DashboardTab, label: "Imobiliárias", icon: Building2 },
-    { id: "parcerias" as DashboardTab, label: "Parcerias", icon: Handshake },
+  const tabNav = (id: DashboardTab, label: string, icon: any, options: { locked?: boolean; tourId?: string } = {}) => ({ type: "tab" as const, id, label, icon, ...options });
+  const linkNav = (href: string, label: string, icon: any, options: { className?: string; tourId?: string; badge?: string } = {}) => ({ type: "link" as const, href, label, icon, ...options });
+  const actionNav = (key: string, label: string, icon: any, onClick: () => void | Promise<void>, options: { disabled?: boolean; className?: string } = {}) => ({ type: "action" as const, key, label, icon, onClick, ...options });
+
+  const sidebarGroups = [
+    { key: "principal", title: "Principal", emoji: "🏠", items: [tabNav("overview", "Visão Geral", Home, { tourId: "tour-overview" }), tabNav("stats", "Estatísticas", BarChart3, { tourId: "tour-stats" }), linkNav("/agenda", "Agenda", CalendarIcon), tabNav("crm" as DashboardTab, "Meu CRM", MessageCircle, { tourId: "tour-crm" })] },
+    { key: "imoveis", title: "Imóveis", emoji: "🏘️", items: [tabNav("items", "Meus Anúncios", Package), linkNav("/painel/novo", "Novo Anúncio", Plus, { tourId: "tour-new-listing" }), tabNav("gallery" as DashboardTab, "Galeria de Anúncios", Image), tabNav("rentals" as DashboardTab, "Aluguéis", Building2), tabNav("contracts" as DashboardTab, "Contratos", FileText), linkNav("/avaliacao-ia", "Avaliação de Imóveis", Sparkles, { badge: "NEW" }), tabNav("meter" as DashboardTab, "Medidor de Imóveis", Ruler)] },
+    { key: "marketing", title: "Marketing", emoji: "🚀", items: [tabNav("stories" as DashboardTab, "Stories", Camera), tabNav("notifications" as DashboardTab, "Push", Bell), tabNav("ads" as DashboardTab, "Fazer ADS", Megaphone, { tourId: "tour-ads" }), tabNav("events", "Efeitos", Sparkles), tabNav("captacao" as DashboardTab, "Captação", Magnet)] },
+    { key: "network", title: "Network", emoji: "🤝", items: [tabNav("parcerias" as DashboardTab, "Parcerias", Handshake), tabNav("imobiliarias" as DashboardTab, "Imobiliárias", Building2)] },
+    { key: "loja", title: "Loja/Site", emoji: "🛒", items: [...(profile?.id ? [linkNav(getStoreUrl(profile), "Ver Minha Loja", Eye, { tourId: "tour-store" })] : []), tabNav("domain", "Meu Domínio", Globe, { locked: lockedTabs.includes("domain") }), tabNav("customization", "Personalização", Palette, { tourId: "tour-customization" })] },
+    { key: "financeiro", title: "Financeiro", emoji: "💰", items: [tabNav("profit" as DashboardTab, "Calculadora de Lucro", Calculator), linkNav("/pacotes", "Pacotes", Package)] },
+    { key: "conta", title: "Conta", emoji: "👤", items: [tabNav("profile", "Meu Perfil", UserCircle), ...(!installed ? [actionNav("install", "Instalar APP", Download, async () => { const result = await requestInstall(); if (result.outcome === "unavailable") setShowInstallGuide(true); })] : []), ...(!pushSub.isSubscribed ? [actionNav("push", pushSub.loading ? "Ativando..." : "Ativar Notificações", Bell, async () => { if (!pushSub.isSupported) { toast({ title: "Notificações não suportadas", description: pushSub.unsupportedReason || "Este navegador não suporta push notifications. Tente pelo app instalado.", variant: "destructive" }); return; } if (pushSub.permission === "denied") { toast({ title: "Notificações bloqueadas", description: "Desbloqueie nas configurações do navegador.", variant: "destructive" }); return; } await pushSub.subscribe(); }, { disabled: pushSub.loading })] : [actionNav("push-active", "Notificações ativas ✓", Bell, () => {}, { disabled: true })])] },
+    ...(isAdmin ? [{ key: "admin", title: "Admin", emoji: "⚙️", items: [linkNav("/admin", "Painel Admin", Shield)] }] : []),
   ];
 
   const handleTabClick = (tabId: DashboardTab) => {
