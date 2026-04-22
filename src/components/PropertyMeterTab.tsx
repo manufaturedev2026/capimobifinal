@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
-import { ArrowLeft, Copy, Edit3, Home, Plus, Ruler, Save, Trash2 } from "lucide-react";
+import { ArrowLeft, Camera, Copy, Edit3, FileText, Home, ImagePlus, Link2, Mail, MessageCircle, MoveDown, MoveUp, Plus, Ruler, Save, Share2, Trash2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,10 @@ type MeasuredProperty = {
   neighborhood: string;
   notes: string | null;
   total_area: number;
+  land_width: number | null;
+  land_length: number | null;
+  land_area_manual: number | null;
+  measured_by: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -37,7 +41,17 @@ type MeasuredRoom = {
   side_a: number | null;
   side_b: number | null;
   area: number;
+  area_type: string;
   notes: string | null;
+};
+
+type MeasuredPhoto = {
+  id: string;
+  property_id: string;
+  user_id: string;
+  image_url: string;
+  category: string;
+  sort_order: number;
 };
 
 type PropertyForm = {
@@ -46,6 +60,10 @@ type PropertyForm = {
   address: string;
   city: string;
   neighborhood: string;
+  land_width: string;
+  land_length: string;
+  land_area_manual: string;
+  measured_by: string;
   notes: string;
 };
 
@@ -53,6 +71,7 @@ type RoomForm = {
   name: string;
   room_type: string;
   shape: string;
+  area_type: string;
   width: string;
   length: string;
   height: string;
@@ -66,6 +85,8 @@ type RoomForm = {
 const propertyTypes = ["Casa", "Apartamento", "Terreno", "Comercial", "Rural"];
 const roomTypes = ["Sala", "Quarto", "Suíte", "Cozinha", "Banheiro", "Corredor", "Garagem", "Varanda", "Área gourmet", "Área de serviço", "Escritório", "Outro"];
 const shapes = ["Retângulo / Quadrado", "Triângulo Retângulo", "Formato em L", "Trapézio", "Circular", "Manual"];
+const areaTypes = ["Interna útil", "Construída coberta", "Externa descoberta", "Terreno"];
+const photoCategories = ["Fachada", "Sala", "Quartos", "Cozinha", "Banheiros", "Área externa", "Garagem", "Outros"];
 const themedPrimaryButton = "bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/20";
 const themedOutlineButton = "border-primary/25 bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground";
 
@@ -75,6 +96,10 @@ const emptyPropertyForm: PropertyForm = {
   address: "",
   city: "",
   neighborhood: "",
+  land_width: "",
+  land_length: "",
+  land_area_manual: "",
+  measured_by: "",
   notes: "",
 };
 
@@ -82,6 +107,7 @@ const emptyRoomForm: RoomForm = {
   name: "",
   room_type: "Sala",
   shape: "Retângulo / Quadrado",
+  area_type: "Interna útil",
   width: "",
   length: "",
   height: "",
@@ -135,6 +161,10 @@ const propertyToForm = (property: MeasuredProperty): PropertyForm => ({
   address: property.address || "",
   city: property.city,
   neighborhood: property.neighborhood,
+  land_width: property.land_width?.toString() || "",
+  land_length: property.land_length?.toString() || "",
+  land_area_manual: property.land_area_manual?.toString() || "",
+  measured_by: property.measured_by || "",
   notes: property.notes || "",
 });
 
@@ -142,6 +172,7 @@ const roomToForm = (room: MeasuredRoom): RoomForm => ({
   name: room.name,
   room_type: room.room_type,
   shape: room.shape,
+  area_type: room.area_type || "Interna útil",
   width: room.width?.toString() || "",
   length: room.length?.toString() || "",
   height: room.height?.toString() || "",
@@ -157,18 +188,32 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
   const db = useMemo(() => supabase as any, []);
   const [properties, setProperties] = useState<MeasuredProperty[]>([]);
   const [rooms, setRooms] = useState<MeasuredRoom[]>([]);
+  const [photos, setPhotos] = useState<MeasuredPhoto[]>([]);
   const [selectedProperty, setSelectedProperty] = useState<MeasuredProperty | null>(null);
   const [loading, setLoading] = useState(true);
   const [propertyDialogOpen, setPropertyDialogOpen] = useState(false);
   const [roomDialogOpen, setRoomDialogOpen] = useState(false);
+  const [reportDialogOpen, setReportDialogOpen] = useState(false);
+  const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [editingPropertyId, setEditingPropertyId] = useState<string | null>(null);
   const [editingRoomId, setEditingRoomId] = useState<string | null>(null);
+  const [photoCategory, setPhotoCategory] = useState("Fachada");
   const [propertyForm, setPropertyForm] = useState<PropertyForm>(emptyPropertyForm);
   const [roomForm, setRoomForm] = useState<RoomForm>(emptyRoomForm);
 
   const measuredPropertiesTable = "measured_properties" as any;
   const measuredRoomsTable = "measured_rooms" as any;
+  const measuredPhotosTable = "measured_property_photos" as any;
   const computedArea = useMemo(() => calculateRoomArea(roomForm), [roomForm]);
+  const technicalAreas = useMemo(() => {
+    const landArea = selectedProperty ? Number(selectedProperty.land_area_manual || 0) || Number(selectedProperty.land_width || 0) * Number(selectedProperty.land_length || 0) : 0;
+    const usefulArea = rooms.filter((room) => room.area_type === "Interna útil").reduce((sum, room) => sum + Number(room.area || 0), 0);
+    const coveredArea = rooms.filter((room) => room.area_type === "Construída coberta").reduce((sum, room) => sum + Number(room.area || 0), 0);
+    const openArea = rooms.filter((room) => room.area_type === "Externa descoberta").reduce((sum, room) => sum + Number(room.area || 0), 0);
+    const builtArea = usefulArea + coveredArea;
+    const uncoveredArea = Math.max(landArea - builtArea, openArea, 0);
+    return { builtArea, usefulArea, landArea, uncoveredArea };
+  }, [rooms, selectedProperty]);
   const livePropertyTotal = useMemo(() => {
     const savedTotal = rooms.reduce((sum, room) => sum + Number(room.area || 0), 0);
     if (!editingRoomId && roomDialogOpen) return savedTotal + computedArea;
@@ -218,13 +263,31 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
     }
   }, [db, measuredRoomsTable, toast, userId]);
 
+  const fetchPhotos = useCallback(async (propertyId: string) => {
+    const { data, error } = await db
+      .from(measuredPhotosTable)
+      .select("*")
+      .eq("property_id", propertyId)
+      .eq("user_id", userId)
+      .order("sort_order", { ascending: true });
+
+    if (error) {
+      toast({ title: "Erro ao carregar fotos", description: error.message, variant: "destructive" });
+    } else {
+      setPhotos((data || []) as MeasuredPhoto[]);
+    }
+  }, [db, measuredPhotosTable, toast, userId]);
+
   useEffect(() => {
     fetchProperties();
   }, [fetchProperties]);
 
   useEffect(() => {
-    if (selectedProperty?.id) fetchRooms(selectedProperty.id);
-  }, [fetchRooms, selectedProperty?.id]);
+    if (selectedProperty?.id) {
+      fetchRooms(selectedProperty.id);
+      fetchPhotos(selectedProperty.id);
+    }
+  }, [fetchPhotos, fetchRooms, selectedProperty?.id]);
 
   const openNewProperty = () => {
     setEditingPropertyId(null);
@@ -251,6 +314,10 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
       address: propertyForm.address.trim() || null,
       city: propertyForm.city.trim(),
       neighborhood: propertyForm.neighborhood.trim(),
+      land_width: toNumber(propertyForm.land_width) || null,
+      land_length: toNumber(propertyForm.land_length) || null,
+      land_area_manual: toNumber(propertyForm.land_area_manual) || null,
+      measured_by: propertyForm.measured_by.trim() || null,
       notes: propertyForm.notes.trim() || null,
     };
 
@@ -302,6 +369,10 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
         address: property.address,
         city: property.city,
         neighborhood: property.neighborhood,
+        land_width: property.land_width,
+        land_length: property.land_length,
+        land_area_manual: property.land_area_manual,
+        measured_by: property.measured_by,
         notes: property.notes,
       })
       .select("*")
@@ -321,6 +392,7 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
           name: room.name,
           room_type: room.room_type,
           shape: room.shape,
+          area_type: room.area_type,
           width: room.width,
           length: room.length,
           height: room.height,
@@ -378,6 +450,7 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
       name: roomForm.name.trim(),
       room_type: roomForm.room_type,
       shape: roomForm.shape,
+      area_type: roomForm.area_type,
       width: toNumber(roomForm.width) || null,
       length: toNumber(roomForm.length) || null,
       height: toNumber(roomForm.height) || null,
@@ -424,6 +497,7 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
       name: `${room.name} - Cópia`,
       room_type: room.room_type,
       shape: room.shape,
+      area_type: room.area_type,
       width: room.width,
       length: room.length,
       height: room.height,
@@ -443,6 +517,60 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
     await fetchRooms(selectedProperty.id);
     await fetchProperties();
   };
+
+  const uploadPhotos = async (files: FileList | null) => {
+    if (!selectedProperty || !files?.length) return;
+    for (const file of Array.from(files)) {
+      const path = `${userId}/measurements/${selectedProperty.id}/${Date.now()}-${file.name.replace(/\s+/g, "-")}`;
+      const { error: uploadError } = await supabase.storage.from("seller-uploads").upload(path, file, { upsert: false });
+      if (uploadError) {
+        toast({ title: "Erro ao enviar foto", description: uploadError.message, variant: "destructive" });
+        continue;
+      }
+      const { data: publicUrl } = supabase.storage.from("seller-uploads").getPublicUrl(path);
+      await db.from(measuredPhotosTable).insert({ property_id: selectedProperty.id, user_id: userId, image_url: publicUrl.publicUrl, category: photoCategory, sort_order: photos.length + 1 });
+    }
+    toast({ title: "Fotos adicionadas" });
+    fetchPhotos(selectedProperty.id);
+  };
+
+  const deletePhoto = async (photo: MeasuredPhoto) => {
+    const { error } = await db.from(measuredPhotosTable).delete().eq("id", photo.id).eq("user_id", userId);
+    if (error) return toast({ title: "Erro ao excluir foto", description: error.message, variant: "destructive" });
+    setPhotos((prev) => prev.filter((item) => item.id !== photo.id));
+  };
+
+  const movePhoto = async (photo: MeasuredPhoto, direction: -1 | 1) => {
+    const index = photos.findIndex((item) => item.id === photo.id);
+    const swap = photos[index + direction];
+    if (!swap) return;
+    await Promise.all([
+      db.from(measuredPhotosTable).update({ sort_order: swap.sort_order }).eq("id", photo.id).eq("user_id", userId),
+      db.from(measuredPhotosTable).update({ sort_order: photo.sort_order }).eq("id", swap.id).eq("user_id", userId),
+    ]);
+    if (selectedProperty) fetchPhotos(selectedProperty.id);
+  };
+
+  const shareText = selectedProperty ? `${selectedProperty.name}\nÁrea total: ${formatArea(livePropertyTotal)}\n${selectedProperty.address ? `${selectedProperty.address}\n` : ""}${selectedProperty.neighborhood}, ${selectedProperty.city}\nAmbientes: ${rooms.map((room) => `${room.name} (${formatArea(room.area)})`).join(", ")}` : "";
+  const shareUrl = selectedProperty ? `${window.location.origin}/painel?medidor=${selectedProperty.id}` : window.location.href;
+
+  const copyShareLink = async () => {
+    await navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
+    toast({ title: "Link copiado" });
+  };
+
+  const reportRows = selectedProperty ? [
+    ["Imóvel", selectedProperty.name],
+    ["Tipo", selectedProperty.property_type],
+    ["Endereço", selectedProperty.address || "Não informado"],
+    ["Cidade / Bairro", `${selectedProperty.city} / ${selectedProperty.neighborhood}`],
+    ["Data da medição", formatDateTime(selectedProperty.updated_at)],
+    ["Área construída", formatArea(technicalAreas.builtArea)],
+    ["Área útil interna", formatArea(technicalAreas.usefulArea)],
+    ["Terreno total", formatArea(technicalAreas.landArea)],
+    ["Área externa descoberta", formatArea(technicalAreas.uncoveredArea)],
+    ["Responsável", selectedProperty.measured_by || "Não informado"],
+  ] : [];
 
   const measurementFields = () => {
     if (roomForm.shape === "Manual") {
@@ -580,7 +708,51 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
             <div className="mt-4 flex flex-wrap gap-2">
               <Button onClick={openNewRoom} className={`rounded-2xl ${themedPrimaryButton}`}><Plus size={16} /> Adicionar ambiente</Button>
               <Button variant="outline" onClick={() => openEditProperty(selectedProperty)} className={`rounded-2xl ${themedOutlineButton}`}><Edit3 size={16} /> Editar imóvel</Button>
+              <Button variant="outline" onClick={() => setReportDialogOpen(true)} className={`rounded-2xl ${themedOutlineButton}`}><FileText size={16} /> Gerar Laudo</Button>
+              <Button variant="outline" onClick={() => setShareDialogOpen(true)} className={`rounded-2xl ${themedOutlineButton}`}><Share2 size={16} /> Compartilhar Imóvel</Button>
             </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+            <MetricCard title="Área Construída" value={technicalAreas.builtArea} />
+            <MetricCard title="Área Útil" value={technicalAreas.usefulArea} />
+            <MetricCard title="Terreno" value={technicalAreas.landArea} />
+            <MetricCard title="Área Externa" value={technicalAreas.uncoveredArea} />
+          </div>
+
+          <div className="rounded-3xl border border-border bg-card p-4 shadow-sm">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-xs font-bold uppercase text-primary">Fotos do imóvel</p>
+                <h3 className="font-display text-xl font-extrabold text-foreground">Galeria técnica</h3>
+              </div>
+              <div className="flex flex-col gap-2 sm:flex-row">
+                <Picker label="Categoria" value={photoCategory} options={photoCategories} onChange={setPhotoCategory} />
+                <label className={`inline-flex h-12 cursor-pointer items-center justify-center gap-2 rounded-2xl px-4 text-sm font-bold ${themedPrimaryButton}`}>
+                  <ImagePlus size={16} /> Adicionar fotos
+                  <input type="file" multiple accept="image/*" className="hidden" onChange={(event) => uploadPhotos(event.target.files)} />
+                </label>
+              </div>
+            </div>
+            {photos.length === 0 ? (
+              <div className="mt-4 rounded-2xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground"><Camera className="mx-auto mb-2 text-primary" />Nenhuma foto adicionada.</div>
+            ) : (
+              <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-4">
+                {photos.map((photo) => (
+                  <div key={photo.id} className="group overflow-hidden rounded-2xl border border-border bg-secondary/40">
+                    <img src={photo.image_url} alt={`Foto ${photo.category}`} className="aspect-[4/3] w-full object-cover" loading="lazy" />
+                    <div className="flex items-center justify-between gap-1 p-2">
+                      <span className="truncate text-xs font-bold text-foreground">{photo.category}</span>
+                      <div className="flex gap-1">
+                        <button type="button" onClick={() => movePhoto(photo, -1)} className="text-primary"><MoveUp size={14} /></button>
+                        <button type="button" onClick={() => movePhoto(photo, 1)} className="text-primary"><MoveDown size={14} /></button>
+                        <button type="button" onClick={() => deletePhoto(photo)} className="text-destructive"><Trash2 size={14} /></button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {rooms.length === 0 ? (
@@ -596,6 +768,7 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="text-xs font-bold text-primary">{room.room_type} • {room.shape}</p>
+                      <p className="text-[11px] font-semibold text-muted-foreground">{room.area_type}</p>
                       <h3 className="font-display text-lg font-bold text-foreground">{room.name}</h3>
                     </div>
                     <p className="rounded-2xl bg-primary/10 px-3 py-2 font-display text-lg font-extrabold text-primary">{formatArea(room.area)}</p>
@@ -632,6 +805,12 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
               <Field label="Cidade" value={propertyForm.city} onChange={(value) => setPropertyForm((prev) => ({ ...prev, city: value }))} />
               <Field label="Bairro" value={propertyForm.neighborhood} onChange={(value) => setPropertyForm((prev) => ({ ...prev, neighborhood: value }))} />
             </div>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+              <Field label="Largura terreno (m)" value={propertyForm.land_width} onChange={(value) => setPropertyForm((prev) => ({ ...prev, land_width: value }))} />
+              <Field label="Comprimento terreno (m)" value={propertyForm.land_length} onChange={(value) => setPropertyForm((prev) => ({ ...prev, land_length: value }))} />
+              <Field label="Área terreno manual" value={propertyForm.land_area_manual} onChange={(value) => setPropertyForm((prev) => ({ ...prev, land_area_manual: value }))} />
+            </div>
+            <Field label="Responsável pela medição" value={propertyForm.measured_by} onChange={(value) => setPropertyForm((prev) => ({ ...prev, measured_by: value }))} />
             <TextArea label="Observações" value={propertyForm.notes} onChange={(value) => setPropertyForm((prev) => ({ ...prev, notes: value }))} />
             <Button onClick={saveProperty} className={`h-12 w-full rounded-2xl font-bold ${themedPrimaryButton}`}><Save size={16} /> {editingPropertyId ? "Salvar imóvel" : "Salvar e Abrir"}</Button>
           </div>
@@ -649,6 +828,7 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
               <Picker label="Tipo" value={roomForm.room_type} options={roomTypes} onChange={(value) => setRoomForm((prev) => ({ ...prev, room_type: value }))} />
               <Picker label="Formato" value={roomForm.shape} options={shapes} onChange={(value) => setRoomForm((prev) => ({ ...prev, shape: value }))} />
             </div>
+            <Picker label="Tipo da área" value={roomForm.area_type} options={areaTypes} onChange={(value) => setRoomForm((prev) => ({ ...prev, area_type: value }))} />
             {measurementFields()}
             <div className="rounded-2xl border border-primary/20 bg-primary/10 p-4">
               <p className="text-xs font-bold uppercase text-primary">Área calculada</p>
@@ -660,8 +840,41 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
           </div>
         </DialogContent>
       </Dialog>
+
+      <Dialog open={reportDialogOpen} onOpenChange={setReportDialogOpen}>
+        <DialogContent className="max-h-[90vh] overflow-y-auto rounded-3xl sm:max-w-2xl">
+          <DialogHeader><DialogTitle>Laudo profissional de medição</DialogTitle></DialogHeader>
+          <div className="space-y-5 rounded-2xl border border-border bg-card p-4">
+            <p className="text-sm text-muted-foreground">Este imóvel possui área medida de forma digital com base nas informações inseridas no sistema.</p>
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+              {reportRows.map(([label, value]) => <div key={label} className="rounded-2xl bg-secondary/60 p-3"><p className="text-xs font-bold uppercase text-muted-foreground">{label}</p><p className="font-semibold text-foreground">{value}</p></div>)}
+            </div>
+            <div>
+              <h4 className="mb-2 font-display text-lg font-bold text-foreground">Ambientes medidos</h4>
+              <div className="space-y-2">{rooms.map((room) => <div key={room.id} className="flex justify-between rounded-xl border border-border p-3 text-sm"><span>{room.name} • {room.area_type}</span><strong>{formatArea(room.area)}</strong></div>)}</div>
+            </div>
+            {selectedProperty?.notes && <p className="rounded-2xl bg-primary/10 p-3 text-sm text-foreground"><strong>Observações:</strong> {selectedProperty.notes}</p>}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={shareDialogOpen} onOpenChange={setShareDialogOpen}>
+        <DialogContent className="rounded-3xl sm:max-w-md">
+          <DialogHeader><DialogTitle>Compartilhar imóvel</DialogTitle></DialogHeader>
+          <div className="grid gap-3">
+            <Button onClick={copyShareLink} className={`rounded-2xl ${themedPrimaryButton}`}><Link2 size={16} /> Copiar link</Button>
+            <Button asChild variant="outline" className={`rounded-2xl ${themedOutlineButton}`}><a href={`https://wa.me/?text=${encodeURIComponent(`${shareText}\n${shareUrl}`)}`} target="_blank" rel="noreferrer"><MessageCircle size={16} /> WhatsApp</a></Button>
+            <Button asChild variant="outline" className={`rounded-2xl ${themedOutlineButton}`}><a href={`mailto:?subject=${encodeURIComponent(selectedProperty?.name || "Imóvel medido")}&body=${encodeURIComponent(`${shareText}\n${shareUrl}`)}`}><Mail size={16} /> Email</a></Button>
+            <Button disabled variant="outline" className="rounded-2xl opacity-70"><FileText size={16} /> PDF futuro</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
+}
+
+function MetricCard({ title, value }: { title: string; value: number }) {
+  return <div className="rounded-3xl border border-primary/15 bg-primary/10 p-4 shadow-sm"><p className="text-xs font-bold uppercase text-muted-foreground">{title}</p><p className="mt-1 font-display text-2xl font-extrabold text-primary">{formatArea(value)}</p></div>;
 }
 
 function Field({ label, value, onChange }: { label: string; value: string; onChange: (value: string) => void }) {

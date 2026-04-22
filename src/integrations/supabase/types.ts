@@ -1036,6 +1036,10 @@ export type Database = {
           city: string
           created_at: string
           id: string
+          land_area_manual: number | null
+          land_length: number | null
+          land_width: number | null
+          measured_by: string | null
           name: string
           neighborhood: string
           notes: string | null
@@ -1049,6 +1053,10 @@ export type Database = {
           city: string
           created_at?: string
           id?: string
+          land_area_manual?: number | null
+          land_length?: number | null
+          land_width?: number | null
+          measured_by?: string | null
           name: string
           neighborhood: string
           notes?: string | null
@@ -1062,6 +1070,10 @@ export type Database = {
           city?: string
           created_at?: string
           id?: string
+          land_area_manual?: number | null
+          land_length?: number | null
+          land_width?: number | null
+          measured_by?: string | null
           name?: string
           neighborhood?: string
           notes?: string | null
@@ -1072,9 +1084,51 @@ export type Database = {
         }
         Relationships: []
       }
+      measured_property_photos: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          image_url: string
+          property_id: string
+          sort_order: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          id?: string
+          image_url: string
+          property_id: string
+          sort_order?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          image_url?: string
+          property_id?: string
+          sort_order?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "measured_property_photos_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "measured_properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       measured_rooms: {
         Row: {
           area: number
+          area_type: string
           base: number | null
           created_at: string
           height: number | null
@@ -1093,6 +1147,7 @@ export type Database = {
         }
         Insert: {
           area?: number
+          area_type?: string
           base?: number | null
           created_at?: string
           height?: number | null
@@ -1111,6 +1166,7 @@ export type Database = {
         }
         Update: {
           area?: number
+          area_type?: string
           base?: number | null
           created_at?: string
           height?: number | null
