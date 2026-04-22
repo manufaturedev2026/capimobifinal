@@ -141,13 +141,13 @@ const PLANS = [
   {
     key: "basico", name: "Básico", subtitle: "Para experimentar", price: 0, priceLabel: "Gratuito",
     setupFee: null, popular: false,
-    benefits: ["Até 5 anúncios ativos", "Vitrine própria (sua loja online)", "URL personalizada /seu-nome", "1 Layout (Marketplace) + 1 Tema", "Painel do vendedor completo", "Estatísticas básicas", "Gerador de contratos (1 modelo)", "QR Code dos anúncios e propostas PDF", "Calculadora de Lucro (ROI)", "Sistema de Parcerias entre corretores", "Push: 1 envio por dia", "Gerador de Texto IA: 5/dia"],
+    benefits: ["Até 5 anúncios ativos", "Vitrine própria (sua loja online)", "URL personalizada /seu-nome", "1 Layout (Marketplace) + 1 Tema", "Painel do vendedor completo", "Estatísticas básicas", "Busca de endereço por CEP no cadastro", "Gerador de contratos (1 modelo)", "QR Code dos anúncios e propostas PDF", "Calculadora de Lucro (ROI)", "Sistema de Parcerias entre corretores", "Push: 1 envio por dia", "Gerador de Texto IA: 5/dia"],
     cta: "Criar conta grátis",
   },
   {
     key: "start", name: "Start", subtitle: "Para corretores iniciantes", price: 24.99, priceLabel: "R$24,99",
     setupFee: 299, popular: false,
-    benefits: ["Até 25 anúncios ativos", "Vitrine Lvl 1 — mais visibilidade", "1 Layout (Showcase) + 3 Temas", "CRM Kanban completo", "Stories (estilo Instagram)", "Página de Captação de imóveis", "Todos os modelos de contrato", "Simulador de Financiamento", "PDF de Proposta profissional", "Selo Start + Hero Banner", "Destaque na listagem", "Push: 1 envio por dia", "Gerador de Texto IA: 10/dia"],
+    benefits: ["Até 25 anúncios ativos", "Vitrine Lvl 1 — mais visibilidade", "1 Layout (Showcase) + 3 Temas", "CRM Kanban completo", "Ferramenta de calcular tamanho do imóvel", "Stories (estilo Instagram)", "Página de Captação de imóveis", "Todos os modelos de contrato", "Simulador de Financiamento", "PDF de Proposta profissional", "Selo Start + Hero Banner", "Destaque na listagem", "Push: 1 envio por dia", "Gerador de Texto IA: 10/dia"],
     cta: "Começar agora",
   },
   {
@@ -159,7 +159,7 @@ const PLANS = [
   {
     key: "vip", name: "Premium", subtitle: "Para dominar o mercado", price: 114.99, priceLabel: "R$114,99",
     setupFee: 1379, popular: false,
-    benefits: ["Até 115 anúncios ativos", "Vitrine Lvl 3 — máximo individual", "Todos os 7 Layouts + Temas", "Tudo do VIP +", "Captação com IA Inteligente", "Instagram na loja", "SEO otimizado (cidade/bairro)", "Destaque Épico (até 5 imóveis)", "Galeria Showroom + Copywriting", "Selo Premium exclusivo", "Push Notifications: 3 envios por dia", "Suporte VIP dedicado", "Gerador de Texto IA: 50/dia"],
+    benefits: ["Até 115 anúncios ativos", "Vitrine Lvl 3 — máximo individual", "Todos os 7 Layouts + Temas", "Tudo do VIP +", "Avaliação Profissional com laudo PDF", "CRECI e CNAI no laudo", "Captação com IA Inteligente", "Instagram na loja", "SEO otimizado (cidade/bairro)", "Destaque Épico (até 5 imóveis)", "Galeria Showroom + Copywriting", "Selo Premium exclusivo", "Push Notifications: 3 envios por dia", "Suporte VIP dedicado", "Gerador de Texto IA: 50/dia"],
     cta: "Assinar Premium",
   },
 ];
