@@ -290,6 +290,7 @@ const roomToForm = (room: MeasuredRoom): RoomForm => ({
 
 export default function PropertyMeterTab({ userId }: { userId: string }) {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const db = useMemo(() => supabase as any, []);
   const [properties, setProperties] = useState<MeasuredProperty[]>([]);
   const [rooms, setRooms] = useState<MeasuredRoom[]>([]);
@@ -303,6 +304,7 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
   const [editingPropertyId, setEditingPropertyId] = useState<string | null>(null);
   const [editingRoomId, setEditingRoomId] = useState<string | null>(null);
   const [photoCategory, setPhotoCategory] = useState("Fachada");
+  const [photoRoomId, setPhotoRoomId] = useState("geral");
   const [propertyForm, setPropertyForm] = useState<PropertyForm>(emptyPropertyForm);
   const [roomForm, setRoomForm] = useState<RoomForm>(emptyRoomForm);
 
@@ -408,19 +410,46 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
     setPropertyDialogOpen(true);
   };
 
+  const fillAddressByCep = async () => {
+    const cep = propertyForm.cep.replace(/\D/g, "");
+    if (cep.length !== 8) return toast({ title: "CEP inválido", description: "Informe um CEP com 8 dígitos.", variant: "destructive" });
+    try {
+      const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+      const data = await res.json();
+      if (data?.erro) throw new Error("CEP não encontrado");
+      setPropertyForm((prev) => ({ ...prev, street: data.logradouro || prev.street, neighborhood: data.bairro || prev.neighborhood, city: data.localidade || prev.city, state: data.uf || prev.state }));
+      toast({ title: "Endereço preenchido pelo CEP" });
+    } catch (e: any) {
+      toast({ title: "Erro ao buscar CEP", description: e.message, variant: "destructive" });
+    }
+  };
+
   const saveProperty = async () => {
-    if (!propertyForm.name.trim() || !propertyForm.city.trim() || !propertyForm.neighborhood.trim()) {
-      toast({ title: "Preencha nome, cidade e bairro", variant: "destructive" });
+    if (!propertyForm.name.trim() || !propertyForm.property_type || !propertyForm.cep.trim() || !propertyForm.street.trim() || !propertyForm.number.trim() || !propertyForm.neighborhood.trim() || !propertyForm.city.trim() || !propertyForm.state.trim()) {
+      toast({ title: "Preencha os campos obrigatórios", description: "Nome, tipo, CEP, rua, número, bairro, cidade e estado são obrigatórios.", variant: "destructive" });
       return;
     }
 
+    const fullAddress = `${propertyForm.street.trim()}, ${propertyForm.number.trim()}${propertyForm.complement.trim() ? ` - ${propertyForm.complement.trim()}` : ""}`;
     const payload = {
       user_id: userId,
       name: propertyForm.name.trim(),
       property_type: propertyForm.property_type,
-      address: propertyForm.address.trim() || null,
+      address: fullAddress,
+      cep: propertyForm.cep.trim(),
+      street: propertyForm.street.trim(),
+      number: propertyForm.number.trim(),
+      complement: propertyForm.complement.trim() || null,
+      state: propertyForm.state.trim(),
+      reference_point: propertyForm.reference_point.trim() || null,
       city: propertyForm.city.trim(),
       neighborhood: propertyForm.neighborhood.trim(),
+      asking_price: toNumber(propertyForm.asking_price) || null,
+      bedrooms: toNumber(propertyForm.bedrooms) || null,
+      bathrooms: toNumber(propertyForm.bathrooms) || null,
+      parking_spaces: toNumber(propertyForm.parking_spaces) || null,
+      iptu: toNumber(propertyForm.iptu) || null,
+      condominium_fee: toNumber(propertyForm.condominium_fee) || null,
       land_width: toNumber(propertyForm.land_width) || null,
       land_length: toNumber(propertyForm.land_length) || null,
       land_area_manual: toNumber(propertyForm.land_area_manual) || null,
