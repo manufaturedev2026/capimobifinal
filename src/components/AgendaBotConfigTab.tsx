@@ -260,7 +260,12 @@ export default function AgendaBotConfigTab({ sellerId, sellerSlug }: Props) {
         </div>
 
         <div className="rounded-2xl border bg-card p-4 space-y-3">
-          <p className="text-sm font-bold">Botão pós-agendamento</p>
+          <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-sm font-bold">Botão pós-agendamento</p>
+            <span className="rounded-full border border-primary/20 bg-primary/10 px-2.5 py-1 text-[11px] font-bold text-primary">
+              IA: 1 crédito por resposta
+            </span>
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="text-xs text-muted-foreground">Texto</label>

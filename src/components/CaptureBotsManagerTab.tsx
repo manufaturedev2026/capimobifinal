@@ -326,7 +326,7 @@ export default function CaptureBotsManagerTab({ sellerId, sellerSlug }: Props) {
             </p>
             <p className="text-xs text-muted-foreground mt-0.5">
               {editing.use_ai
-                ? "O atendente conversa naturalmente com o lead usando IA."
+                ? "O atendente conversa naturalmente com o lead usando IA — consome 1 crédito por resposta."
                 : "Pergunta os campos em ordem fixa — não consome créditos de IA."}
             </p>
           </div>
