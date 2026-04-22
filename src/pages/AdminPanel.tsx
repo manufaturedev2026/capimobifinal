@@ -509,7 +509,7 @@ export default function AdminPanel() {
     { key: "funnel" as const, label: "Funil de E-mails", icon: Send },
     { key: "broadcast" as const, label: "Broadcast E-mail", icon: Megaphone },
     { key: "apify" as const, label: "Apify Leads", icon: Database },
-    { key: "valuation" as const, label: "Avaliação IA — Preços", icon: DollarSign },
+    { key: "valuation" as const, label: "Avaliação de Imóveis — Preços", icon: DollarSign },
     { key: "invite" as const, label: "Convite", icon: MessageCircle },
     { key: "receivePush" as const, label: "Receber Push", icon: Bell },
   ];

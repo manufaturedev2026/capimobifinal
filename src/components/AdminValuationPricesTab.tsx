@@ -135,7 +135,7 @@ export default function AdminValuationPricesTab() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="text-2xl font-bold flex items-center gap-2 text-foreground">
-            <DollarSign className="h-6 w-6 text-primary" /> Avaliação IA — Preços por m²
+            <DollarSign className="h-6 w-6 text-primary" /> Avaliação de Imóveis — Preços por m²
           </h2>
           <p className="text-sm text-muted-foreground">
             Configure o preço base por estado, cidade e bairro. O sistema usa fallback automático.
