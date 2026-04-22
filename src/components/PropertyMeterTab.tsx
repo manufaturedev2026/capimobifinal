@@ -347,10 +347,11 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
       toast({ title: "Erro ao carregar imóveis", description: error.message, variant: "destructive" });
     } else {
       setProperties((data || []) as MeasuredProperty[]);
-      if (selectedProperty) {
-        const updated = (data || []).find((p: any) => p.id === selectedProperty.id) as MeasuredProperty | undefined;
-        if (updated) setSelectedProperty(updated);
-      }
+      setSelectedProperty((prev) => {
+        if (!prev) return null;
+        const updated = (data || []).find((p: any) => p.id === prev.id) as MeasuredProperty | undefined;
+        return updated ?? null;
+      });
     }
     setLoading(false);
   }, [db, measuredPropertiesTable, selectedProperty, toast, userId]);
