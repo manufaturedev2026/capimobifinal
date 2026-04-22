@@ -250,6 +250,17 @@ const calculateExternalArea = (property: Pick<MeasuredProperty, "external_shape"
 const calculateRoomsTotal = (items: Pick<MeasuredRoom, "area">[]) => items.reduce((sum, room) => sum + Number(room.area || 0), 0);
 const calculateCombinedTotal = (items: Pick<MeasuredRoom, "area">[], property: Pick<MeasuredProperty, "external_shape" | "external_width" | "external_length" | "external_base" | "external_height" | "external_side_a" | "external_side_b" | "external_area_manual"> | null) => calculateRoomsTotal(items) + (property ? calculateExternalArea(property) : 0);
 
+const getExternalFeatures = (notes: string | null | undefined) => {
+  const line = (notes || "").split("\n").find((item) => item.startsWith(externalFeaturesPrefix));
+  return line ? line.replace(externalFeaturesPrefix, "").split(",").map((item) => item.trim()).filter(Boolean) : [];
+};
+
+const mergeExternalFeatures = (notes: string | null | undefined, features: string[]) => {
+  const baseNotes = (notes || "").split("\n").filter((item) => !item.startsWith(externalFeaturesPrefix)).join("\n").trim();
+  const featureLine = features.length ? `${externalFeaturesPrefix} ${features.join(", ")}` : "";
+  return [baseNotes, featureLine].filter(Boolean).join("\n") || null;
+};
+
 const propertyToForm = (property: MeasuredProperty): PropertyForm => ({
   name: property.name,
   property_type: property.property_type,
