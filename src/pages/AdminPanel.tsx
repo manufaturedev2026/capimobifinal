@@ -582,28 +582,45 @@ export default function AdminPanel() {
         </aside>
 
         {/* Mobile tabs */}
-        <div className="md:hidden flex flex-wrap gap-2 p-3 border-b border-border bg-card shrink-0">
-          {sidebarItems.map((item) => (
-            <button
-              key={item.key}
-              onClick={() => setTab(item.key)}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
-                tab === item.key ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
-              }`}
-            >
-              <item.icon size={14} />
-              {item.label}
-              {'badge' in item && (item as any).badge > 0 && (
-                <span className="bg-destructive text-destructive-foreground text-[10px] px-1.5 py-0.5 rounded-full font-bold">
-                  {(item as any).badge}
-                </span>
-              )}
-            </button>
-          ))}
+        <div className="md:hidden sticky top-0 z-30 border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80 shrink-0">
+          <div className="p-3 space-y-3">
+            <div className="flex items-center gap-2">
+              <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                <ActiveSidebarIcon size={18} />
+              </div>
+              <label className="sr-only" htmlFor="admin-mobile-tab">Selecionar seção</label>
+              <select
+                id="admin-mobile-tab"
+                value={tab}
+                onChange={(e) => setTab(e.target.value as typeof tab)}
+                className="min-w-0 flex-1 h-10 rounded-xl border border-input bg-background px-3 text-sm font-semibold text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+              >
+                {sidebarItems.map((item) => (
+                  <option key={item.key} value={item.key}>{item.label}</option>
+                ))}
+              </select>
+            </div>
+            <div className="-mx-3 overflow-x-auto px-3 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              <div className="flex w-max gap-2">
+                {sidebarItems.map((item) => (
+                  <button
+                    key={item.key}
+                    onClick={() => setTab(item.key)}
+                    className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
+                      tab === item.key ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
+                    }`}
+                  >
+                    <item.icon size={14} />
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Main content */}
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 w-full min-w-0">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden p-3 md:p-6 w-full min-w-0">
 
 
         {tab === "clientes" && (
