@@ -45,6 +45,24 @@ const categoryLabels: Record<string, string> = {
   construtora: "Construtora",
 };
 
+const tabHelp = {
+  "loja-espelho": "Cadastre e edite os corretores da sua empresa. Cada corretor ganha uma loja espelho com URL própria, usando o tema da imobiliária e os dados dele.",
+  vinculados: "Veja os corretores parceiros já aprovados, acompanhe acessos, cliques no WhatsApp e copie o link da loja espelho vinculada.",
+  solicitacoes: "Analise os pedidos de vínculo enviados por corretores e aprove ou recuse quem poderá representar sua imobiliária.",
+};
+
+function HelpBubble({ text }: { text: string }) {
+  return (
+    <span
+      title={text}
+      aria-label={text}
+      className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-border bg-muted text-[11px] font-bold text-muted-foreground"
+    >
+      ?
+    </span>
+  );
+}
+
 export default function PartnerAgencyTab({ profileId, userId, maxMembers }: { profileId: string; userId: string; maxMembers: number }) {
   const { toast } = useToast();
   const [requests, setRequests] = useState<RequestWithProfile[]>([]);
