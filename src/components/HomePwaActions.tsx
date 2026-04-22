@@ -39,7 +39,16 @@ export default function HomePwaActions({ primaryColor }: { primaryColor?: string
         .limit(1)
         .maybeSingle();
 
-      if (!adminRole?.user_id) return;
+      if (!adminRole?.user_id) {
+        const { data: firstProfile } = await supabase
+          .from("profiles")
+          .select("id")
+          .limit(1)
+          .maybeSingle();
+
+        if (!cancelled && firstProfile?.id) setAdminSellerId(firstProfile.id);
+        return;
+      }
 
       const { data: profile } = await supabase
         .from("profiles")
