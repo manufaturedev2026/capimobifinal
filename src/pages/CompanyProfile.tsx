@@ -341,7 +341,7 @@ export default function CompanyProfile() {
       ? {
           id: dbProfile.id,
           name: activeBrokerProfile
-            ? (activeBrokerProfile.company_name || activeBrokerProfile.full_name || teamMember?.full_name)
+            ? (activeBrokerProfile.full_name || activeBrokerProfile.company_name || teamMember?.full_name)
             : (teamMember ? teamMember.full_name : (dbProfile.company_name || dbProfile.full_name)),
           logo: teamMember?.photo_url || activeBrokerProfile?.logo_url || dbProfile.logo_url || "",
           address: [dbProfile.address, dbProfile.city, dbProfile.state].filter(Boolean).join(", "),
@@ -511,6 +511,20 @@ export default function CompanyProfile() {
   if (!company) {
     return <Navigate to="/login" replace />;
   }
+
+  const displayProfile = teamMember
+    ? {
+        ...dbProfile,
+        full_name: company.name,
+        company_name: company.name,
+        logo_url: company.logo,
+        phone: company.whatsapp,
+        instagram: company.instagram,
+        bio: activeBio,
+        creci: activeCreci,
+        seller_category: activeSellerCategory,
+      }
+    : dbProfile;
 
   const featuredItemId = isDbProfile ? dbProfile?.featured_item_id : null;
   const heroProduct = featuredItemId
@@ -1459,7 +1473,7 @@ export default function CompanyProfile() {
                 corretorSlug,
                 sellerDisplayName: company?.name || dbProfile?.company_name || dbProfile?.full_name || "o corretor",
                 isDbProfile,
-                dbProfile,
+                dbProfile: displayProfile,
                 handleWhatsApp,
                 formatPrice: (p: number) => `R$ ${p.toLocaleString("pt-BR")}`,
                 getTagStyle,
