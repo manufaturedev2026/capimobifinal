@@ -391,6 +391,15 @@ export default function SellerDashboard() {
     ...(isAdmin ? [{ key: "admin", title: "Admin", emoji: "⚙️", items: [linkNav("/admin", "Painel Admin", Shield)] }] : []),
   ];
 
+  const sidebarNav = sidebarGroups.flatMap((group) => group.items).filter((item) => item.type === "tab") as ReturnType<typeof tabNav>[];
+
+  const getSidebarBadge = (id?: DashboardTab) => {
+    if (id === "crm" && newCrmCount > 0) return newCrmCount;
+    if (id === "captacao" && newCaptureCount > 0) return newCaptureCount;
+    if (id === "parcerias" && newPartnershipCount > 0) return newPartnershipCount;
+    return null;
+  };
+
   const handleTabClick = (tabId: DashboardTab) => {
     if (lockedTabs.includes(tabId)) {
       toast({
