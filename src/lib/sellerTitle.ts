@@ -21,3 +21,21 @@ export function getSellerProfessionalTitle(profile: {
   if (cat && CATEGORY_DEFAULT_TITLE[cat]) return CATEGORY_DEFAULT_TITLE[cat];
   return "Corretor de Imóveis";
 }
+
+const VERIFIED_LABELS: Record<string, { title: string; full: string; active: string; premium: string }> = {
+  corretor: { title: "Corretor Verificado", full: "Corretor verificado", active: "Corretor ativo na plataforma", premium: "Corretor verificado e premium" },
+  imobiliaria: { title: "Imobiliária Verificada", full: "Imobiliária verificada", active: "Imobiliária ativa na plataforma", premium: "Imobiliária verificada e premium" },
+  construtora: { title: "Construtora Verificada", full: "Construtora verificada", active: "Construtora ativa na plataforma", premium: "Construtora verificada e premium" },
+  proprietario: { title: "Proprietário Verificado", full: "Proprietário verificado", active: "Proprietário ativo na plataforma", premium: "Proprietário verificado e premium" },
+  loja_veiculos: { title: "Loja Verificada", full: "Loja verificada", active: "Loja ativa na plataforma", premium: "Loja verificada e premium" },
+  autonomo: { title: "Vendedor Verificado", full: "Vendedor verificado", active: "Vendedor ativo na plataforma", premium: "Vendedor verificado e premium" },
+  concessionaria: { title: "Concessionária Verificada", full: "Concessionária verificada", active: "Concessionária ativa na plataforma", premium: "Concessionária verificada e premium" },
+};
+
+export function getSellerVerifiedLabel(
+  category: string | null | undefined,
+  variant: "title" | "full" | "active" | "premium" = "full"
+): string {
+  const labels = VERIFIED_LABELS[category || "autonomo"] || VERIFIED_LABELS.autonomo;
+  return labels[variant];
+}

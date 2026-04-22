@@ -33,7 +33,7 @@ import PushSubscribeButton from "@/components/PushSubscribeButton";
 import InstallAppFloatingButton from "@/components/InstallAppFloatingButton";
 import { PoolBallButton } from "@/components/PoolBallButton";
 import { isIOSStandaloneApp } from "@/lib/pwaInstall";
-import { getSellerProfessionalTitle } from "@/lib/sellerTitle";
+import { getSellerProfessionalTitle, getSellerVerifiedLabel } from "@/lib/sellerTitle";
 
 const propertySubcategories = [
   { slug: "todos", name: "Todos", icon: Store, img: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=300&h=200&fit=crop" },
@@ -1413,7 +1413,7 @@ export default function CompanyProfile() {
                   </div>
                   <div className="flex items-center gap-2">
                     <Shield size={13} className="flex-shrink-0" />
-                    <span>{isPaid ? "Vendedor verificado e premium" : "Vendedor ativo na plataforma"}</span>
+                    <span>{isPaid ? getSellerVerifiedLabel(activeSellerCategory, "premium") : getSellerVerifiedLabel(activeSellerCategory, "active")}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Clock size={13} className="flex-shrink-0" />
@@ -2073,7 +2073,7 @@ export default function CompanyProfile() {
             }}
           >
             <h5 className="text-[11px] font-black uppercase tracking-widest mb-3 flex items-center gap-1.5" style={{ color: storeTheme.primary }}>
-              <BadgeCheck size={12} /> Profissional Verificado
+              <BadgeCheck size={12} /> {activeSellerCategory ? getSellerVerifiedLabel(activeSellerCategory, "title") : "Profissional Verificado"}
             </h5>
             <div className="flex items-start gap-3.5 lg:flex-col lg:items-center lg:text-center">
               {company.logo ? (
