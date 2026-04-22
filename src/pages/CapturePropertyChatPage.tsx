@@ -331,7 +331,7 @@ export default function CapturePropertyChatPage() {
     try {
       const sellerName = sellerProfile?.company_name || sellerProfile?.full_name || "";
       const { data, error } = await supabase.functions.invoke("capture-chat", {
-        body: { messages: [], sellerName, flowType },
+        body: { messages: [], sellerName, flowType, attendantName: config.attendantName, openingMessage: config.openingMessage },
       });
       if (error) throw error;
       const reply = data?.reply || "Olá! 👋 Vou te ajudar a cadastrar seu imóvel. Qual é o seu nome? 😊";
@@ -409,7 +409,7 @@ export default function CapturePropertyChatPage() {
     try {
       const sellerName = sellerProfile?.company_name || sellerProfile?.full_name || "";
       const { data, error } = await supabase.functions.invoke("capture-chat", {
-        body: { messages: updatedMessages, sellerName, flowType },
+        body: { messages: updatedMessages, sellerName, flowType, attendantName: config.attendantName },
       });
       if (error) throw error;
       const reply = data?.reply || "Desculpe, tente novamente!";
