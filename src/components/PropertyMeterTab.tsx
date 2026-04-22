@@ -1126,11 +1126,20 @@ export default function PropertyMeterTab({ userId, themeVars }: { userId: string
           </DialogHeader>
           <div className="space-y-4">
             <Field label="Nome do ambiente" value={roomForm.name} onChange={(value) => setRoomForm((prev) => ({ ...prev, name: value }))} />
+            <div className="grid grid-cols-2 gap-2 rounded-2xl border border-primary/15 bg-primary/10 p-2">
+              {(["Interna", "Externa"] as const).map((scope) => (
+                <button key={scope} type="button" onClick={() => {
+                  setRoomScope(scope);
+                  setRoomForm((prev) => ({ ...prev, area_type: scope === "Externa" ? "Externa descoberta" : "Interna útil", room_type: scope === "Externa" ? "Piscina" : "Sala" }));
+                  setPhotoCategory(scope === "Externa" ? "Área externa" : "Sala");
+                }} className={`rounded-xl px-3 py-2 text-sm font-extrabold transition-all ${roomScope === scope ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "text-foreground hover:bg-primary/10"}`}>Área {scope}</button>
+              ))}
+            </div>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <Picker themeVars={themeVars} label="Tipo" value={roomForm.room_type} options={roomTypes} onChange={(value) => setRoomForm((prev) => ({ ...prev, room_type: value }))} />
+              <Picker themeVars={themeVars} label="Tipo" value={roomForm.room_type} options={roomScope === "Externa" ? externalRoomTypes : internalRoomTypes} onChange={(value) => setRoomForm((prev) => ({ ...prev, room_type: value }))} />
               <Picker themeVars={themeVars} label="Formato" value={roomForm.shape} options={shapes} onChange={(value) => setRoomForm((prev) => ({ ...prev, shape: value }))} />
             </div>
-            <Picker themeVars={themeVars} label="Tipo da área" value={roomForm.area_type} options={areaTypes} onChange={(value) => setRoomForm((prev) => ({ ...prev, area_type: value }))} />
+            <Picker themeVars={themeVars} label="Tipo da área" value={roomForm.area_type} options={roomScope === "Externa" ? ["Externa descoberta", "Construída coberta"] : ["Interna útil", "Construída coberta"]} onChange={(value) => setRoomForm((prev) => ({ ...prev, area_type: value }))} />
             {measurementFields()}
             <div className="rounded-2xl border border-primary/20 bg-primary/10 p-4">
               <p className="text-xs font-bold uppercase text-primary">Área calculada</p>
