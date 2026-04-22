@@ -1226,9 +1226,6 @@ export default function AiValuationPage() {
                 </Button>
               </div>
 
-              <div className="text-xs text-muted-foreground text-center pt-4 pb-8">
-                ⚠️ Avaliação automatizada. Para fins de transação, consulte um avaliador credenciado.
-              </div>
             </motion.div>
           )}
         </AnimatePresence>
