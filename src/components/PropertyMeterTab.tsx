@@ -1049,7 +1049,7 @@ function Field({ label, value, onChange }: { label: string; value: string; onCha
   return (
     <div>
       <label className="mb-1 block text-xs font-semibold text-muted-foreground">{label}</label>
-      <Input value={value} onChange={(event) => onChange(event.target.value)} className="h-12 rounded-2xl" />
+      <Input value={value} onChange={(event) => onChange(event.target.value)} className="h-12 rounded-2xl border-primary/20 bg-primary/5 focus-visible:ring-primary" />
     </div>
   );
 }
@@ -1061,7 +1061,7 @@ function TextArea({ label, value, onChange }: { label: string; value: string; on
       <textarea
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="min-h-24 w-full rounded-2xl border border-input bg-background px-3 py-3 text-sm text-foreground outline-none ring-offset-background transition-all placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        className="min-h-24 w-full rounded-2xl border border-primary/20 bg-primary/5 px-3 py-3 text-sm text-foreground outline-none ring-offset-background transition-all placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
       />
     </div>
   );
@@ -1072,8 +1072,8 @@ function Picker({ label, value, options, optionLabels, onChange }: { label: stri
     <div>
       <label className="mb-1 block text-xs font-semibold text-muted-foreground">{label}</label>
       <Select value={value} onValueChange={onChange}>
-        <SelectTrigger className="h-12 rounded-2xl"><SelectValue /></SelectTrigger>
-        <SelectContent>{options.map((option) => <SelectItem key={option} value={option}>{optionLabels?.[option] || option}</SelectItem>)}</SelectContent>
+        <SelectTrigger className="h-12 rounded-2xl border-primary/20 bg-primary/5 focus:ring-primary"><SelectValue /></SelectTrigger>
+        <SelectContent className="border-primary/20 bg-popover text-popover-foreground">{options.map((option) => <SelectItem key={option} value={option}>{optionLabels?.[option] || option}</SelectItem>)}</SelectContent>
       </Select>
     </div>
   );
