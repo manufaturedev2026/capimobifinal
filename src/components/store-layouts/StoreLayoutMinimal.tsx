@@ -11,6 +11,7 @@ import type { StoreLayoutProps } from "./types";
 import { useAuth } from "@/hooks/useAuth";
 import { isIOSStandaloneApp } from "@/lib/pwaInstall";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { getSellerVerifiedLabel } from "@/lib/sellerTitle";
 import MapEmbed from "@/components/MapEmbed";
 
 /* ── Color helpers ── */

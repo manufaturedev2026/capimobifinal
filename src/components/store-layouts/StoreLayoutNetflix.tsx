@@ -12,6 +12,7 @@ import { useAuth } from "@/hooks/useAuth";
 import type { StoreLayoutProps } from "./types";
 import { isIOSStandaloneApp } from "@/lib/pwaInstall";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { getSellerVerifiedLabel } from "@/lib/sellerTitle";
 
 /* ═══════════════════════════════════════════
    Netflix-style horizontal content row
