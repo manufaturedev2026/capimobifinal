@@ -357,8 +357,8 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
     };
 
     const request = editingRoomId
-      ? supabase.from(measuredRoomsTable).update(payload).eq("id", editingRoomId).eq("user_id", userId)
-      : supabase.from(measuredRoomsTable).insert(payload);
+      ? db.from(measuredRoomsTable).update(payload).eq("id", editingRoomId).eq("user_id", userId)
+      : db.from(measuredRoomsTable).insert(payload);
     const { error } = await request;
 
     if (error) {
@@ -374,7 +374,7 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
 
   const deleteRoom = async (room: MeasuredRoom) => {
     if (!confirm(`Excluir ambiente "${room.name}"?`)) return;
-    const { error } = await supabase.from(measuredRoomsTable).delete().eq("id", room.id).eq("user_id", userId);
+    const { error } = await db.from(measuredRoomsTable).delete().eq("id", room.id).eq("user_id", userId);
     if (error) {
       toast({ title: "Erro ao excluir ambiente", description: error.message, variant: "destructive" });
       return;
