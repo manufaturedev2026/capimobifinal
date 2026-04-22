@@ -24,6 +24,7 @@ import AdminApifyLeadsTab from "@/components/AdminApifyLeadsTab";
 import AdminPlansTab from "@/components/AdminPlansTab";
 import AdminManagersTab from "@/components/AdminManagersTab";
 import AdminValuationPricesTab from "@/components/AdminValuationPricesTab";
+import AdminReceivePushTab from "@/components/AdminReceivePushTab";
 import { LOGIN_HERO_PRESETS, normalizeLoginHeroSetting, resolveLoginHeroImage } from "@/data/loginHeroPresets";
 
 interface SellerWithSub {
@@ -61,7 +62,7 @@ export default function AdminPanel() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [tierFilter, setTierFilter] = useState<string>("todos");
-  const [tab, setTab] = useState<"dashboard" | "clientes" | "managers" | "billing" | "plans" | "referrals" | "crm" | "seo" | "vendas" | "config" | "push" | "site" | "smtp" | "funnel" | "broadcast" | "ads" | "invite" | "apify" | "valuation">("dashboard");
+  const [tab, setTab] = useState<"dashboard" | "clientes" | "managers" | "billing" | "plans" | "referrals" | "crm" | "seo" | "vendas" | "config" | "push" | "receivePush" | "site" | "smtp" | "funnel" | "broadcast" | "ads" | "invite" | "apify" | "valuation">("dashboard");
   const [managersList, setManagersList] = useState<Array<{ id: string; name: string; phone: string | null; photo_url: string | null }>>([]);
   // Category edit dialog
   const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
@@ -499,6 +500,7 @@ export default function AdminPanel() {
     { key: "plans" as const, label: "Planos", icon: Package },
     { key: "crm" as const, label: "CRM WhatsApp", icon: MessageCircle },
     { key: "ads" as const, label: "CRM de ADS", icon: Megaphone },
+    { key: "receivePush" as const, label: "Receber Push", icon: Bell },
     { key: "push" as const, label: "Push Broadcast", icon: Bell },
     { key: "seo" as const, label: "SEO / Sitemaps", icon: Globe },
     { key: "vendas" as const, label: "Página de Vendas", icon: Rocket },
@@ -818,6 +820,10 @@ export default function AdminPanel() {
 
         {tab === "push" && user && (
           <AdminPushTab userId={user.id} />
+        )}
+
+        {tab === "receivePush" && user && (
+          <AdminReceivePushTab userId={user.id} />
         )}
 
         {tab === "seo" && (
