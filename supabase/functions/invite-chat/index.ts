@@ -5,7 +5,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const BASE_CONTEXT = `Você é a Ana, consultora digital da Capimobi — uma plataforma completa para corretores, imobiliárias e construtoras criarem suas lojas online de imóveis.
+const BASE_CONTEXT = `Você é {ATTENDANT_NAME}, consultora digital da Capimobi — uma plataforma completa para corretores, imobiliárias e construtoras criarem suas lojas online de imóveis.
 
 REGRAS GERAIS:
 - Responda SEMPRE em português brasileiro, de forma clara e envolvente (máximo 5-6 linhas por mensagem)
@@ -203,7 +203,7 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { messages, ctaType, customPrompt } = await req.json();
+    const { messages, ctaType, customPrompt, attendantName } = await req.json();
     
     if (!messages || !Array.isArray(messages)) {
       return new Response(JSON.stringify({ error: "Messages array required" }), {
@@ -220,7 +220,16 @@ serve(async (req) => {
     const extraPrompt = typeof customPrompt === "string" && customPrompt.trim()
       ? `\n\nINSTRUÇÕES ESPECÍFICAS DESTE BOT:\n${customPrompt.trim()}`
       : "";
-    const strategy = `${baseStrategy}${extraPrompt}`;
+    const assistantName = typeof attendantName === "string" && attendantName.trim() ? attendantName.trim() : "Ana";
+    const strategy = `${baseStrategy}${extraPrompt}`
+      .replaceAll("{ATTENDANT_NAME}", assistantName)
+      .replaceAll("Ana", assistantName);
+
+    if (messages.length === 0) {
+      return new Response(JSON.stringify({
+        reply: `Olá! É um prazer receber você por aqui na Capimobi. Eu sou ${assistantName}, sua consultora digital, e estou pronta para te ajudar a transformar sua presença no mercado imobiliário. 🏠\n\nPara começarmos, como você se chama?`,
+      }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
