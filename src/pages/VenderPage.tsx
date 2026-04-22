@@ -33,11 +33,29 @@ const FEATURES = [
     ],
   },
   {
-    icon: Brain, emoji: "🧠", title: "CRM Inteligente para Corretores",
+    icon: Award, emoji: "🏅", title: "Avaliação Profissional de Imóveis",
+    items: [
+      "Gere laudos profissionais em PDF",
+      "Inclua dados do avaliador com CRECI e CNAI",
+      "Análise de fotos para apoiar padrão de acabamento e conservação",
+      "Regenere o laudo sempre que precisar corrigir detalhes",
+    ],
+  },
+  {
+    icon: Home, emoji: "📐", title: "Calculadora de Tamanho do Imóvel",
+    items: [
+      "Calcule área total e ambientes do imóvel",
+      "Organize medidas por cômodos e áreas externas",
+      "Use os dados na avaliação e no cadastro do anúncio",
+      "Mais precisão para venda, locação e laudos",
+    ],
+  },
+  {
+    icon: Brain, emoji: "🧠", title: "Gestão Completa para Corretores",
     items: [
       "Gestão completa de leads",
-      "Histórico de clientes",
-      "Lembretes automáticos de follow-up",
+      "CRM Kanban com histórico de clientes",
+      "Contratos, propostas, visitas e parcerias",
       "Organização total do funil de vendas",
     ],
   },
@@ -69,9 +87,10 @@ const FEATURES = [
     ],
   },
   {
-    icon: Home, emoji: "🏠", title: "Galeria de Imóveis Profissional",
+    icon: Home, emoji: "🏠", title: "Cadastro Profissional de Imóveis",
     items: [
       "Cadastre imóveis com fotos e detalhes completos",
+      "Localize rua, bairro, cidade e estado pelo CEP",
       "Páginas otimizadas para aparecer no Google",
       "Filtros inteligentes (cidade, preço, tipo)",
       "Destaque seus melhores imóveis",
