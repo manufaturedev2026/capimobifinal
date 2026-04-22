@@ -276,8 +276,8 @@ export default function VenderPage() {
   return (
     <>
       <Helmet>
-        <title>Site Imobiliário Profissional com CRM | Capimobi</title>
-        <meta name="description" content="Crie seu site imobiliário profissional com CRM completo, gestão de leads, contratos, stories e muito mais. Comece gratuitamente." />
+        <title>Site Imobiliário com Gestão Completa | Capimobi</title>
+        <meta name="description" content="Crie seu site imobiliário com CRM, avaliação profissional, laudos, cálculo de área, contratos, stories e gestão completa. Comece gratuitamente." />
       </Helmet>
 
       <div className="min-h-screen text-white overflow-x-hidden relative" style={{ ...themeVars, background: theme.darkBase }}>
@@ -342,15 +342,14 @@ export default function VenderPage() {
               </div>
 
               <h1 className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black leading-[1.1]">
-                Crie Seu Site Imobiliário Profissional com{" "}
+                Crie Seu Site Imobiliário com{" "}
                 <span className="text-transparent bg-clip-text" style={{ backgroundImage: `linear-gradient(to right, ${theme.primary}, ${theme.promoAccent || theme.primary})` }}>
-                  CRM Completo
+                  Gestão Completa
                 </span>
               </h1>
 
               <p className="text-sm md:text-base lg:text-lg text-white/60 max-w-lg leading-relaxed">
-                Pare de depender de plataformas e portais caros.
-                Tenha seu próprio site, seus próprios clientes e controle total das suas vendas.
+                Tenha site próprio, CRM, avaliação profissional, cálculo de área, contratos, propostas e controle total dos seus imóveis.
               </p>
 
               <div className="flex flex-row gap-2 sm:gap-3">
@@ -486,10 +485,10 @@ export default function VenderPage() {
               <Rocket className="w-4 h-4" /> Tudo que você precisa em um só lugar
             </div>
             <h2 className="font-display text-xl sm:text-2xl md:text-3xl font-black">
-              Com nossa plataforma, você cria um site imobiliário completo
+              Com nossa plataforma, você anuncia, avalia e gerencia imóveis em um só lugar
             </h2>
             <p className="text-white/50 text-sm md:text-base max-w-2xl mx-auto">
-              Ferramentas avançadas para corretores e imobiliárias crescerem de verdade.
+              Ferramentas avançadas para corretores e imobiliárias venderem, alugarem, captarem e entregarem laudos profissionais.
             </p>
           </div>
         </section>
