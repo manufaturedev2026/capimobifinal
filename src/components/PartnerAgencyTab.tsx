@@ -282,28 +282,29 @@ export default function PartnerAgencyTab({ profileId, userId, maxMembers }: { pr
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
-            <Building2 size={22} className="text-primary" />
-            Corretores Parceiros
-          </h2>
-          <p className="text-sm text-muted-foreground mt-1">
-            Gerencie os corretores vinculados via convite à sua imobiliária.
-          </p>
-        </div>
-        <div className="flex items-center gap-2 text-xs font-medium">
-          <span className="px-2.5 py-1 rounded-full bg-green-500/10 text-green-600 border border-green-500/20">
-            {approvedCount} vinculados
-          </span>
-          {pendingCount > 0 && (
-            <span className="px-2.5 py-1 rounded-full bg-yellow-500/10 text-yellow-600 border border-yellow-500/20">
-              {pendingCount} pendentes
+      {activeSubTab !== "loja-espelho" && (
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
+              <Building2 size={22} className="text-primary" />
+              Corretores Parceiros
+            </h2>
+            <p className="text-sm text-muted-foreground mt-1">
+              Gerencie os corretores vinculados via convite à sua imobiliária.
+            </p>
+          </div>
+          <div className="flex items-center gap-2 text-xs font-medium">
+            <span className="px-2.5 py-1 rounded-full bg-green-500/10 text-green-600 border border-green-500/20">
+              {approvedCount} vinculados
             </span>
-          )}
+            {pendingCount > 0 && (
+              <span className="px-2.5 py-1 rounded-full bg-yellow-500/10 text-yellow-600 border border-yellow-500/20">
+                {pendingCount} pendentes
+              </span>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Sub-tabs */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-1 bg-secondary/50 p-1 rounded-xl">
