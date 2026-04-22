@@ -20,6 +20,7 @@ type MeasuredProperty = {
   notes: string | null;
   total_area: number;
   created_at: string;
+  updated_at: string;
 };
 
 type MeasuredRoom = {
@@ -63,8 +64,8 @@ type RoomForm = {
 };
 
 const propertyTypes = ["Casa", "Apartamento", "Terreno", "Comercial", "Rural"];
-const roomTypes = ["Sala", "Quarto", "Suíte", "Cozinha", "Banheiro", "Varanda", "Garagem", "Área externa", "Terreno", "Comercial", "Outro"];
-const shapes = ["Retângulo", "Triângulo", "L", "Trapézio", "Manual"];
+const roomTypes = ["Sala", "Quarto", "Suíte", "Cozinha", "Banheiro", "Corredor", "Garagem", "Varanda", "Área gourmet", "Área de serviço", "Escritório", "Outro"];
+const shapes = ["Retângulo / Quadrado", "Triângulo Retângulo", "Formato em L", "Trapézio", "Circular", "Manual"];
 
 const emptyPropertyForm: PropertyForm = {
   name: "",
@@ -78,7 +79,7 @@ const emptyPropertyForm: PropertyForm = {
 const emptyRoomForm: RoomForm = {
   name: "",
   room_type: "Sala",
-  shape: "Retângulo",
+  shape: "Retângulo / Quadrado",
   width: "",
   length: "",
   height: "",
@@ -106,15 +107,20 @@ const calculateRoomArea = (room: RoomForm) => {
 
   switch (room.shape) {
     case "Retângulo":
+    case "Retângulo / Quadrado":
       return width * length;
     case "Triângulo":
+    case "Triângulo Retângulo":
       return (base * height) / 2;
     case "L":
+    case "Formato em L":
       return width * length + sideA * sideB;
     case "Trapézio":
       return ((base + sideA) * height) / 2;
     case "Manual":
       return toNumber(room.area);
+    case "Circular":
+      return 3.1416 * sideA * sideA;
     default:
       return 0;
   }
