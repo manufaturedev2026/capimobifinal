@@ -137,7 +137,7 @@ export default function SellerItemForm() {
         .then(({ data }) => {
           if (data) {
             const d = data as any;
-            const editIsAluguel = (d.tags as string[] || []).includes("aluguel_flex") || d.category === "aluguel";
+            const editIsAluguel = d.finality === "aluguel" || (d.tags as string[] || []).includes("aluguel_flex") || d.category === "aluguel";
             setIsAluguel(editIsAluguel);
             setForm({
               title: d.title || "",
@@ -165,7 +165,7 @@ export default function SellerItemForm() {
               parking_spots: d.parking_spots?.toString() || "",
               video_url: d.video_url || "",
               property_subtype: d.property_subtype || "",
-              finality: d.finality || "venda",
+              finality: editIsAluguel ? "aluguel" : "venda",
               built_area: d.built_area?.toString() || "",
               suites: d.suites?.toString() || "",
               living_rooms: d.living_rooms?.toString() || "",
@@ -347,7 +347,7 @@ export default function SellerItemForm() {
       video_url: strOrNull(form.video_url),
       // New fields
       property_subtype: strOrNull(form.property_subtype),
-      finality: strOrNull(form.finality),
+      finality: isAluguel ? "aluguel" : "venda",
       built_area: numOrNull(form.built_area),
       suites: intOrNull(form.suites),
       living_rooms: intOrNull(form.living_rooms),
