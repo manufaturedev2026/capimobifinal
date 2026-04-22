@@ -535,6 +535,7 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
                     <div className="rounded-2xl bg-primary/8 p-4">
                       <p className="text-xs font-semibold uppercase text-muted-foreground">Metragem total</p>
                       <p className="mt-1 font-display text-3xl font-extrabold text-primary">{formatArea(property.total_area)}</p>
+                      <p className="mt-2 text-[11px] font-medium text-muted-foreground">Última edição: {formatDateTime(property.updated_at)}</p>
                     </div>
                   </button>
                   <div className="mt-4 grid grid-cols-4 gap-2">
@@ -561,8 +562,8 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
                 <p className="mt-1 text-sm text-muted-foreground">{selectedProperty.neighborhood}, {selectedProperty.city}</p>
               </div>
               <div className="rounded-2xl bg-primary px-5 py-4 text-primary-foreground shadow-lg shadow-primary/20">
-                <p className="text-xs font-semibold opacity-80">Total calculado</p>
-                <p className="font-display text-3xl font-extrabold">{formatArea(selectedProperty.total_area)}</p>
+                <p className="text-xs font-semibold opacity-80">Área Total Atual</p>
+                <p className="font-display text-3xl font-extrabold">{formatArea(livePropertyTotal)}</p>
               </div>
             </div>
             <div className="mt-4 flex flex-wrap gap-2">
@@ -591,6 +592,7 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
                   {room.notes && <p className="mt-3 text-sm text-muted-foreground">{room.notes}</p>}
                   <div className="mt-4 flex gap-2">
                     <Button size="sm" variant="outline" onClick={() => openEditRoom(room)} className="flex-1 rounded-xl"><Edit3 size={14} /> Editar</Button>
+                    <Button size="sm" variant="outline" onClick={() => duplicateRoom(room)} className="rounded-xl"><Copy size={14} /></Button>
                     <Button size="sm" variant="outline" onClick={() => deleteRoom(room)} className="rounded-xl text-destructive hover:text-destructive"><Trash2 size={14} /></Button>
                   </div>
                 </div>
@@ -620,7 +622,7 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
               <Field label="Bairro" value={propertyForm.neighborhood} onChange={(value) => setPropertyForm((prev) => ({ ...prev, neighborhood: value }))} />
             </div>
             <TextArea label="Observações" value={propertyForm.notes} onChange={(value) => setPropertyForm((prev) => ({ ...prev, notes: value }))} />
-            <Button onClick={saveProperty} className="h-12 w-full rounded-2xl font-bold"><Save size={16} /> Salvar imóvel</Button>
+            <Button onClick={saveProperty} className="h-12 w-full rounded-2xl font-bold"><Save size={16} /> {editingPropertyId ? "Salvar imóvel" : "Salvar e Abrir"}</Button>
           </div>
         </DialogContent>
       </Dialog>
@@ -640,6 +642,7 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
             <div className="rounded-2xl border border-primary/20 bg-primary/10 p-4">
               <p className="text-xs font-bold uppercase text-primary">Área calculada</p>
               <p className="font-display text-3xl font-extrabold text-primary">{formatArea(computedArea)}</p>
+              <p className="mt-2 text-xs font-semibold text-muted-foreground">Total do imóvel em tempo real: {formatArea(livePropertyTotal)}</p>
             </div>
             <TextArea label="Observações" value={roomForm.notes} onChange={(value) => setRoomForm((prev) => ({ ...prev, notes: value }))} />
             <Button onClick={saveRoom} className="h-12 w-full rounded-2xl font-bold"><Save size={16} /> Salvar ambiente</Button>
