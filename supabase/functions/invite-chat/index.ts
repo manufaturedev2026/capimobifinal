@@ -217,8 +217,9 @@ serve(async (req) => {
 
     // Select strategy based on CTA type
     const baseStrategy = STRATEGY_PROMPTS[ctaType || "internal"] || STRATEGY_PROMPTS.internal;
-    const extraPrompt = typeof customPrompt === "string" && customPrompt.trim()
-      ? `\n\nINSTRUÇÕES ESPECÍFICAS DESTE BOT:\n${customPrompt.trim()}`
+    const customInstructions = typeof customPrompt === "string" ? customPrompt.trim() : "";
+    const extraPrompt = customInstructions
+      ? `\n\nINSTRUÇÕES ESPECÍFICAS DESTE BOT (PRIORIDADE MÁXIMA — siga acima de qualquer regra anterior):\n${customInstructions}`
       : "";
     const configuredAttendant = typeof attendantName === "string" ? attendantName.trim() : "";
     const configuredBotName = typeof botName === "string" ? botName.trim() : "";
@@ -227,12 +228,31 @@ serve(async (req) => {
       : configuredBotName || configuredAttendant || "Assistente Capimobi";
     const firstName = assistantName.split(/[\s•-]+/)[0] || assistantName;
     const consultantTitle = /a$/i.test(firstName) ? "consultora" : "consultor";
-    const strategy = `${baseStrategy}${extraPrompt}`
+    const strategy = `${extraPrompt}\n\n${baseStrategy}`
       .replaceAll("{ATTENDANT_NAME}", assistantName)
       .replaceAll("{CONSULTANT_TITLE}", consultantTitle)
       .replaceAll("Ana", assistantName);
 
     if (messages.length === 0) {
+      if (customInstructions) {
+        const openingResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+          method: "POST",
+          headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model: "google/gemini-3-flash-preview",
+            messages: [
+              { role: "system", content: strategy },
+              { role: "user", content: "Crie apenas a primeira mensagem de abertura do bot, obedecendo rigorosamente às instruções específicas." },
+            ],
+            max_tokens: 180,
+          }),
+        });
+        if (openingResponse.ok) {
+          const openingData = await openingResponse.json();
+          const reply = openingData.choices?.[0]?.message?.content;
+          if (reply) return new Response(JSON.stringify({ reply }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+        }
+      }
       return new Response(JSON.stringify({
         reply: `Olá! É um prazer receber você por aqui na Capimobi. Eu sou ${assistantName}, seu ${consultantTitle} digital, e estou pronto para te ajudar a transformar sua presença no mercado imobiliário. 🏠\n\nPara começarmos, como você se chama?`,
       }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
