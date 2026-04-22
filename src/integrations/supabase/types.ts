@@ -1035,11 +1035,20 @@ export type Database = {
           address: string | null
           city: string
           created_at: string
+          external_area_manual: number | null
+          external_base: number | null
+          external_height: number | null
+          external_length: number | null
+          external_shape: string | null
+          external_side_a: number | null
+          external_side_b: number | null
+          external_width: number | null
           id: string
           land_area_manual: number | null
           land_length: number | null
           land_width: number | null
           measured_by: string | null
+          measurement_mode: string
           name: string
           neighborhood: string
           notes: string | null
@@ -1052,11 +1061,20 @@ export type Database = {
           address?: string | null
           city: string
           created_at?: string
+          external_area_manual?: number | null
+          external_base?: number | null
+          external_height?: number | null
+          external_length?: number | null
+          external_shape?: string | null
+          external_side_a?: number | null
+          external_side_b?: number | null
+          external_width?: number | null
           id?: string
           land_area_manual?: number | null
           land_length?: number | null
           land_width?: number | null
           measured_by?: string | null
+          measurement_mode?: string
           name: string
           neighborhood: string
           notes?: string | null
@@ -1069,11 +1087,20 @@ export type Database = {
           address?: string | null
           city?: string
           created_at?: string
+          external_area_manual?: number | null
+          external_base?: number | null
+          external_height?: number | null
+          external_length?: number | null
+          external_shape?: string | null
+          external_side_a?: number | null
+          external_side_b?: number | null
+          external_width?: number | null
           id?: string
           land_area_manual?: number | null
           land_length?: number | null
           land_width?: number | null
           measured_by?: string | null
+          measurement_mode?: string
           name?: string
           neighborhood?: string
           notes?: string | null
