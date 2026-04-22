@@ -769,7 +769,7 @@ export default function AdminPanel() {
         )}
 
         {tab === "billing" && (() => {
-          const BILLING_ORDER = ["basico", "start", "premium", "vip", "essencial_empresa", "premium_empresa", "prime_empresa", "black"] as const;
+          const BILLING_ORDER = ["basico", "start", "premium", "vip", "essencial_empresa", "premium_empresa", "prime_empresa"] as const;
           const BILLING_LABEL_OVERRIDES: Record<string, string> = { prime_empresa: "Black Empresa" };
           const orderedTiers = BILLING_ORDER.filter((t) => (PACKAGE_CONFIG as any)[t]);
           return (
@@ -800,7 +800,7 @@ export default function AdminPanel() {
                 <strong>Receita mensal total estimada: </strong>
                 <span className="text-green-500 font-bold text-lg">
                   R$ {(
-                    Object.keys(PACKAGE_CONFIG).reduce((sum, t) => sum + (totalByTier[t] || 0) * PACKAGE_CONFIG[t as keyof typeof PACKAGE_CONFIG].price, 0)
+                    orderedTiers.reduce((sum, t) => sum + (totalByTier[t] || 0) * PACKAGE_CONFIG[t as keyof typeof PACKAGE_CONFIG].price, 0)
                   ).toFixed(2).replace(".", ",")}
                 </span>
               </p>
