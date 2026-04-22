@@ -13,6 +13,8 @@ Deno.serve(async (req) => {
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY missing");
 
     const data = await req.json();
+    const credit = await consumeAiCredits(req, "valuation_ad", corsHeaders);
+    if (!credit.ok) return credit.response;
     const userPrompt = `Crie um anúncio profissional, persuasivo e curto para este imóvel (estilo OLX/Imovelweb).
 
 Localização: ${data.bairro}, ${data.cidade}/${data.estado}
