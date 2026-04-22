@@ -280,7 +280,7 @@ export default function SellerProfile({ embedded }: { embedded?: boolean }) {
                 setSlugError("");
               }}
               className="w-full pl-10 pr-4 py-3 rounded-xl border border-input bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:outline-none"
-              placeholder="ex: gabriel01"
+              placeholder="ex: Gabrielcorretor"
               maxLength={30}
             />
           </div>
