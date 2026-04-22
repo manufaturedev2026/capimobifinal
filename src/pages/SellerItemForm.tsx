@@ -496,19 +496,27 @@ export default function SellerItemForm() {
               placeholder="Ex: Casa 3 quartos com piscina no Centro" />
           </div>
 
-          {/* Aluguel Toggle */}
-          <button type="button" onClick={() => setIsAluguel(!isAluguel)}
-            className={`flex items-center gap-3 w-full px-4 py-3 rounded-xl border-2 transition-all ${
-              isAluguel ? "border-primary bg-primary/10 shadow-sm" : "border-input bg-background hover:border-primary/30"
-            }`}>
-            <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all ${isAluguel ? "border-primary bg-primary" : "border-muted-foreground"}`}>
-              {isAluguel && <span className="text-primary-foreground text-xs font-bold">✓</span>}
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-2">Tipo de anúncio</label>
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                { label: "Para Venda", value: false, emoji: "💰" },
+                { label: "Para Aluguel", value: true, emoji: "🏠" },
+              ].map((option) => (
+                <button
+                  key={option.label}
+                  type="button"
+                  onClick={() => setIsAluguel(option.value)}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl border-2 transition-all ${
+                    isAluguel === option.value ? "border-primary bg-primary/10 shadow-sm" : "border-input bg-background hover:border-primary/30"
+                  }`}
+                >
+                  <span className="text-xl">{option.emoji}</span>
+                  <span className={`text-sm font-semibold ${isAluguel === option.value ? "text-primary" : "text-foreground"}`}>{option.label}</span>
+                </button>
+              ))}
             </div>
-            <div className="text-left">
-              <span className={`text-sm font-semibold ${isAluguel ? "text-primary" : "text-foreground"}`}>🏠 Para Aluguel</span>
-              <p className="text-[11px] text-muted-foreground">Marque se este imóvel é para alugar</p>
-            </div>
-          </button>
+          </div>
 
           <div>
             <label className="block text-sm font-medium text-foreground mb-1.5">Preço (R$) {isAluguel && <span className="text-primary font-normal">/Mês</span>}</label>
