@@ -918,7 +918,7 @@ export default function PropertyMeterTab({ userId, themeVars }: { userId: string
 
           <div className="rounded-3xl border border-border bg-card p-4 shadow-sm">
             <p className="text-xs font-bold uppercase text-primary">Modo de cálculo da metragem</p>
-            <div className="mt-3 grid gap-2 md:grid-cols-3">
+            <div className="mt-3 grid gap-2 md:grid-cols-2">
               {measurementModes.map((mode) => {
                 const active = (selectedProperty.measurement_mode || "Medição por Ambientes") === mode;
                 return (
@@ -938,7 +938,7 @@ export default function PropertyMeterTab({ userId, themeVars }: { userId: string
                 );
               })}
             </div>
-            <p className="mt-3 rounded-2xl border border-primary/15 bg-primary/10 px-3 py-2 text-sm font-semibold text-foreground">Selecionado: <strong className="text-primary">{selectedProperty.measurement_mode || "Medição por Ambientes"}</strong></p>
+            <p className="mt-3 rounded-2xl border border-primary/15 bg-primary/10 px-3 py-2 text-sm font-semibold text-foreground">As duas etapas podem ser usadas juntas: ambientes internos + construção externa entram automaticamente no total enviado ao avaliador.</p>
           </div>
 
           <div className="rounded-3xl border border-border bg-card p-4 shadow-sm">
