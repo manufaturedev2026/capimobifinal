@@ -44,7 +44,7 @@ Deno.serve(async (req) => {
 
     // Limite de segurança: 12 fotos
     const photosLimited = photos.slice(0, 12).filter(
-      (p) => typeof p?.dataUrl === "string" && p.dataUrl.startsWith("data:image/"),
+      (p) => typeof p?.dataUrl === "string" && (p.dataUrl.startsWith("data:image/") || p.dataUrl.startsWith("https://") || p.dataUrl.startsWith("http://")),
     );
 
     const cats = photosLimited.map((p, i) =>

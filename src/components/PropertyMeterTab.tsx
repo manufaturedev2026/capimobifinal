@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import { ArrowLeft, Camera, Copy, Edit3, FileText, Home, ImagePlus, Link2, Mail, MessageCircle, MoveDown, MoveUp, Plus, Ruler, Save, Share2, Trash2 } from "lucide-react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,9 +16,21 @@ type MeasuredProperty = {
   name: string;
   property_type: string;
   address: string | null;
+  cep: string | null;
+  street: string | null;
+  number: string | null;
+  complement: string | null;
+  state: string | null;
+  reference_point: string | null;
   city: string;
   neighborhood: string;
   notes: string | null;
+  asking_price: number | null;
+  bedrooms: number | null;
+  bathrooms: number | null;
+  parking_spaces: number | null;
+  iptu: number | null;
+  condominium_fee: number | null;
   total_area: number;
   land_width: number | null;
   land_length: number | null;
@@ -60,6 +73,7 @@ type MeasuredPhoto = {
   user_id: string;
   image_url: string;
   category: string;
+  room_id: string | null;
   sort_order: number;
 };
 
@@ -67,8 +81,20 @@ type PropertyForm = {
   name: string;
   property_type: string;
   address: string;
+  cep: string;
+  street: string;
+  number: string;
+  complement: string;
+  state: string;
+  reference_point: string;
   city: string;
   neighborhood: string;
+  asking_price: string;
+  bedrooms: string;
+  bathrooms: string;
+  parking_spaces: string;
+  iptu: string;
+  condominium_fee: string;
   land_width: string;
   land_length: string;
   land_area_manual: string;
@@ -114,8 +140,20 @@ const emptyPropertyForm: PropertyForm = {
   name: "",
   property_type: "Casa",
   address: "",
+  cep: "",
+  street: "",
+  number: "",
+  complement: "",
+  state: "",
+  reference_point: "",
   city: "",
   neighborhood: "",
+  asking_price: "",
+  bedrooms: "",
+  bathrooms: "",
+  parking_spaces: "",
+  iptu: "",
+  condominium_fee: "",
   land_width: "",
   land_length: "",
   land_area_manual: "",
@@ -205,8 +243,20 @@ const propertyToForm = (property: MeasuredProperty): PropertyForm => ({
   name: property.name,
   property_type: property.property_type,
   address: property.address || "",
+  cep: property.cep || "",
+  street: property.street || "",
+  number: property.number || "",
+  complement: property.complement || "",
+  state: property.state || "",
+  reference_point: property.reference_point || "",
   city: property.city,
   neighborhood: property.neighborhood,
+  asking_price: property.asking_price?.toString() || "",
+  bedrooms: property.bedrooms?.toString() || "",
+  bathrooms: property.bathrooms?.toString() || "",
+  parking_spaces: property.parking_spaces?.toString() || "",
+  iptu: property.iptu?.toString() || "",
+  condominium_fee: property.condominium_fee?.toString() || "",
   land_width: property.land_width?.toString() || "",
   land_length: property.land_length?.toString() || "",
   land_area_manual: property.land_area_manual?.toString() || "",
@@ -240,6 +290,7 @@ const roomToForm = (room: MeasuredRoom): RoomForm => ({
 
 export default function PropertyMeterTab({ userId }: { userId: string }) {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const db = useMemo(() => supabase as any, []);
   const [properties, setProperties] = useState<MeasuredProperty[]>([]);
   const [rooms, setRooms] = useState<MeasuredRoom[]>([]);
@@ -253,6 +304,7 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
   const [editingPropertyId, setEditingPropertyId] = useState<string | null>(null);
   const [editingRoomId, setEditingRoomId] = useState<string | null>(null);
   const [photoCategory, setPhotoCategory] = useState("Fachada");
+  const [photoRoomId, setPhotoRoomId] = useState("geral");
   const [propertyForm, setPropertyForm] = useState<PropertyForm>(emptyPropertyForm);
   const [roomForm, setRoomForm] = useState<RoomForm>(emptyRoomForm);
 
@@ -358,19 +410,46 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
     setPropertyDialogOpen(true);
   };
 
+  const fillAddressByCep = async () => {
+    const cep = propertyForm.cep.replace(/\D/g, "");
+    if (cep.length !== 8) return toast({ title: "CEP inválido", description: "Informe um CEP com 8 dígitos.", variant: "destructive" });
+    try {
+      const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+      const data = await res.json();
+      if (data?.erro) throw new Error("CEP não encontrado");
+      setPropertyForm((prev) => ({ ...prev, street: data.logradouro || prev.street, neighborhood: data.bairro || prev.neighborhood, city: data.localidade || prev.city, state: data.uf || prev.state }));
+      toast({ title: "Endereço preenchido pelo CEP" });
+    } catch (e: any) {
+      toast({ title: "Erro ao buscar CEP", description: e.message, variant: "destructive" });
+    }
+  };
+
   const saveProperty = async () => {
-    if (!propertyForm.name.trim() || !propertyForm.city.trim() || !propertyForm.neighborhood.trim()) {
-      toast({ title: "Preencha nome, cidade e bairro", variant: "destructive" });
+    if (!propertyForm.name.trim() || !propertyForm.property_type || !propertyForm.cep.trim() || !propertyForm.street.trim() || !propertyForm.number.trim() || !propertyForm.neighborhood.trim() || !propertyForm.city.trim() || !propertyForm.state.trim()) {
+      toast({ title: "Preencha os campos obrigatórios", description: "Nome, tipo, CEP, rua, número, bairro, cidade e estado são obrigatórios.", variant: "destructive" });
       return;
     }
 
+    const fullAddress = `${propertyForm.street.trim()}, ${propertyForm.number.trim()}${propertyForm.complement.trim() ? ` - ${propertyForm.complement.trim()}` : ""}`;
     const payload = {
       user_id: userId,
       name: propertyForm.name.trim(),
       property_type: propertyForm.property_type,
-      address: propertyForm.address.trim() || null,
+      address: fullAddress,
+      cep: propertyForm.cep.trim(),
+      street: propertyForm.street.trim(),
+      number: propertyForm.number.trim(),
+      complement: propertyForm.complement.trim() || null,
+      state: propertyForm.state.trim(),
+      reference_point: propertyForm.reference_point.trim() || null,
       city: propertyForm.city.trim(),
       neighborhood: propertyForm.neighborhood.trim(),
+      asking_price: toNumber(propertyForm.asking_price) || null,
+      bedrooms: toNumber(propertyForm.bedrooms) || null,
+      bathrooms: toNumber(propertyForm.bathrooms) || null,
+      parking_spaces: toNumber(propertyForm.parking_spaces) || null,
+      iptu: toNumber(propertyForm.iptu) || null,
+      condominium_fee: toNumber(propertyForm.condominium_fee) || null,
       land_width: toNumber(propertyForm.land_width) || null,
       land_length: toNumber(propertyForm.land_length) || null,
       land_area_manual: toNumber(propertyForm.land_area_manual) || null,
@@ -433,8 +512,20 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
         name: `${property.name} - Cópia`,
         property_type: property.property_type,
         address: property.address,
+        cep: property.cep,
+        street: property.street,
+        number: property.number,
+        complement: property.complement,
+        state: property.state,
+        reference_point: property.reference_point,
         city: property.city,
         neighborhood: property.neighborhood,
+        asking_price: property.asking_price,
+        bedrooms: property.bedrooms,
+        bathrooms: property.bathrooms,
+        parking_spaces: property.parking_spaces,
+        iptu: property.iptu,
+        condominium_fee: property.condominium_fee,
         land_width: property.land_width,
         land_length: property.land_length,
         land_area_manual: property.land_area_manual,
@@ -603,7 +694,7 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
         continue;
       }
       const { data: publicUrl } = supabase.storage.from("seller-uploads").getPublicUrl(path);
-      await db.from(measuredPhotosTable).insert({ property_id: selectedProperty.id, user_id: userId, image_url: publicUrl.publicUrl, category: photoCategory, sort_order: photos.length + 1 });
+      await db.from(measuredPhotosTable).insert({ property_id: selectedProperty.id, user_id: userId, image_url: publicUrl.publicUrl, category: photoCategory, room_id: photoRoomId === "geral" ? null : photoRoomId, sort_order: photos.length + 1 });
     }
     toast({ title: "Fotos adicionadas" });
     fetchPhotos(selectedProperty.id);
@@ -639,6 +730,12 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
   const copyShareLink = async () => {
     await navigator.clipboard.writeText(`${shareText}\n${shareUrl}`);
     toast({ title: "Link copiado" });
+  };
+
+  const sendToValuation = () => {
+    if (!selectedProperty) return;
+    sessionStorage.setItem("meter_property_for_valuation", JSON.stringify({ property: selectedProperty, rooms, photos, areas: technicalAreas }));
+    navigate(`/avaliacao-ia?imovel=${selectedProperty.id}`);
   };
 
   const reportRows = selectedProperty ? [
@@ -780,7 +877,7 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
               <div>
                 <p className="mb-2 inline-flex rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary">{selectedProperty.property_type}</p>
                 <h2 className="font-display text-3xl font-extrabold text-foreground">{selectedProperty.name}</h2>
-                <p className="mt-1 text-sm text-muted-foreground">{selectedProperty.neighborhood}, {selectedProperty.city}</p>
+                <p className="mt-1 text-sm text-muted-foreground">{selectedProperty.address || selectedProperty.street} • {selectedProperty.neighborhood}, {selectedProperty.city}/{selectedProperty.state}</p>
               </div>
               <div className="rounded-2xl bg-primary px-5 py-4 text-primary-foreground shadow-lg shadow-primary/20">
                 <p className="text-xs font-semibold opacity-80">Área Total Atual</p>
@@ -792,6 +889,7 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
               <Button variant="outline" onClick={() => openEditProperty(selectedProperty)} className={`rounded-2xl ${themedOutlineButton}`}><Edit3 size={16} /> Editar imóvel</Button>
               <Button variant="outline" onClick={() => setReportDialogOpen(true)} className={`rounded-2xl ${themedOutlineButton}`}><FileText size={16} /> Gerar Laudo</Button>
               <Button variant="outline" onClick={() => setShareDialogOpen(true)} className={`rounded-2xl ${themedOutlineButton}`}><Share2 size={16} /> Compartilhar Imóvel</Button>
+              <Button onClick={sendToValuation} className={`rounded-2xl ${themedPrimaryButton}`}><FileText size={16} /> Enviar para Avaliador</Button>
             </div>
           </div>
 
@@ -820,6 +918,7 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
               </div>
               <div className="flex flex-col gap-2 sm:flex-row">
                 <Picker label="Categoria" value={photoCategory} options={photoCategories} onChange={setPhotoCategory} />
+                <Picker label="Ambiente" value={photoRoomId} options={["geral", ...rooms.map((room) => room.id)]} optionLabels={{ geral: "Imóvel geral", ...Object.fromEntries(rooms.map((room) => [room.id, room.name])) }} onChange={setPhotoRoomId} />
                 <label className={`inline-flex h-12 cursor-pointer items-center justify-center gap-2 rounded-2xl px-4 text-sm font-bold ${themedPrimaryButton}`}>
                   <ImagePlus size={16} /> Adicionar fotos
                   <input type="file" multiple accept="image/*" className="hidden" onChange={(event) => uploadPhotos(event.target.files)} />
@@ -834,7 +933,7 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
                   <div key={photo.id} className="group overflow-hidden rounded-2xl border border-border bg-secondary/40">
                     <img src={photo.image_url} alt={`Foto ${photo.category}`} className="aspect-[4/3] w-full object-cover" loading="lazy" />
                     <div className="flex items-center justify-between gap-1 p-2">
-                      <span className="truncate text-xs font-bold text-foreground">{photo.category}</span>
+                      <span className="truncate text-xs font-bold text-foreground">{photo.category}{photo.room_id ? ` • ${rooms.find((room) => room.id === photo.room_id)?.name || "Ambiente"}` : ""}</span>
                       <div className="flex gap-1">
                         <button type="button" onClick={() => movePhoto(photo, -1)} className="text-primary"><MoveUp size={14} /></button>
                         <button type="button" onClick={() => movePhoto(photo, 1)} className="text-primary"><MoveDown size={14} /></button>
@@ -892,10 +991,26 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
                 <SelectContent>{propertyTypes.map((type) => <SelectItem key={type} value={type}>{type}</SelectItem>)}</SelectContent>
               </Select>
             </div>
-            <Field label="Endereço opcional" value={propertyForm.address} onChange={(value) => setPropertyForm((prev) => ({ ...prev, address: value }))} />
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_auto]">
+              <Field label="CEP *" value={propertyForm.cep} onChange={(value) => setPropertyForm((prev) => ({ ...prev, cep: value }))} />
+              <Button type="button" onClick={fillAddressByCep} className={`mt-5 h-12 rounded-2xl ${themedOutlineButton}`} variant="outline">Buscar CEP</Button>
+            </div>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <Field label="Cidade" value={propertyForm.city} onChange={(value) => setPropertyForm((prev) => ({ ...prev, city: value }))} />
-              <Field label="Bairro" value={propertyForm.neighborhood} onChange={(value) => setPropertyForm((prev) => ({ ...prev, neighborhood: value }))} />
+              <Field label="Rua *" value={propertyForm.street} onChange={(value) => setPropertyForm((prev) => ({ ...prev, street: value }))} />
+              <Field label="Número *" value={propertyForm.number} onChange={(value) => setPropertyForm((prev) => ({ ...prev, number: value }))} />
+              <Field label="Complemento" value={propertyForm.complement} onChange={(value) => setPropertyForm((prev) => ({ ...prev, complement: value }))} />
+              <Field label="Referência" value={propertyForm.reference_point} onChange={(value) => setPropertyForm((prev) => ({ ...prev, reference_point: value }))} />
+              <Field label="Bairro *" value={propertyForm.neighborhood} onChange={(value) => setPropertyForm((prev) => ({ ...prev, neighborhood: value }))} />
+              <Field label="Cidade *" value={propertyForm.city} onChange={(value) => setPropertyForm((prev) => ({ ...prev, city: value }))} />
+              <Field label="Estado *" value={propertyForm.state} onChange={(value) => setPropertyForm((prev) => ({ ...prev, state: value.toUpperCase() }))} />
+            </div>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+              <Field label="Valor pedido" value={propertyForm.asking_price} onChange={(value) => setPropertyForm((prev) => ({ ...prev, asking_price: value }))} />
+              <Field label="Quartos" value={propertyForm.bedrooms} onChange={(value) => setPropertyForm((prev) => ({ ...prev, bedrooms: value }))} />
+              <Field label="Banheiros" value={propertyForm.bathrooms} onChange={(value) => setPropertyForm((prev) => ({ ...prev, bathrooms: value }))} />
+              <Field label="Vagas" value={propertyForm.parking_spaces} onChange={(value) => setPropertyForm((prev) => ({ ...prev, parking_spaces: value }))} />
+              <Field label="IPTU" value={propertyForm.iptu} onChange={(value) => setPropertyForm((prev) => ({ ...prev, iptu: value }))} />
+              <Field label="Condomínio" value={propertyForm.condominium_fee} onChange={(value) => setPropertyForm((prev) => ({ ...prev, condominium_fee: value }))} />
             </div>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
               <Field label="Largura terreno (m)" value={propertyForm.land_width} onChange={(value) => setPropertyForm((prev) => ({ ...prev, land_width: value }))} />
@@ -1003,13 +1118,13 @@ function TextArea({ label, value, onChange }: { label: string; value: string; on
   );
 }
 
-function Picker({ label, value, options, onChange }: { label: string; value: string; options: string[]; onChange: (value: string) => void }) {
+function Picker({ label, value, options, optionLabels, onChange }: { label: string; value: string; options: string[]; optionLabels?: Record<string, string>; onChange: (value: string) => void }) {
   return (
     <div>
       <label className="mb-1 block text-xs font-semibold text-muted-foreground">{label}</label>
       <Select value={value} onValueChange={onChange}>
         <SelectTrigger className="h-12 rounded-2xl"><SelectValue /></SelectTrigger>
-        <SelectContent>{options.map((option) => <SelectItem key={option} value={option}>{option}</SelectItem>)}</SelectContent>
+        <SelectContent>{options.map((option) => <SelectItem key={option} value={option}>{optionLabels?.[option] || option}</SelectItem>)}</SelectContent>
       </Select>
     </div>
   );

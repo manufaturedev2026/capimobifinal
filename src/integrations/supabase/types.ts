@@ -1033,7 +1033,13 @@ export type Database = {
       measured_properties: {
         Row: {
           address: string | null
+          asking_price: number | null
+          bathrooms: number | null
+          bedrooms: number | null
+          cep: string | null
           city: string
+          complement: string | null
+          condominium_fee: number | null
           created_at: string
           external_area_manual: number | null
           external_base: number | null
@@ -1044,6 +1050,7 @@ export type Database = {
           external_side_b: number | null
           external_width: number | null
           id: string
+          iptu: number | null
           land_area_manual: number | null
           land_length: number | null
           land_width: number | null
@@ -1052,14 +1059,25 @@ export type Database = {
           name: string
           neighborhood: string
           notes: string | null
+          number: string | null
+          parking_spaces: number | null
           property_type: string
+          reference_point: string | null
+          state: string | null
+          street: string | null
           total_area: number
           updated_at: string
           user_id: string
         }
         Insert: {
           address?: string | null
+          asking_price?: number | null
+          bathrooms?: number | null
+          bedrooms?: number | null
+          cep?: string | null
           city: string
+          complement?: string | null
+          condominium_fee?: number | null
           created_at?: string
           external_area_manual?: number | null
           external_base?: number | null
@@ -1070,6 +1088,7 @@ export type Database = {
           external_side_b?: number | null
           external_width?: number | null
           id?: string
+          iptu?: number | null
           land_area_manual?: number | null
           land_length?: number | null
           land_width?: number | null
@@ -1078,14 +1097,25 @@ export type Database = {
           name: string
           neighborhood: string
           notes?: string | null
+          number?: string | null
+          parking_spaces?: number | null
           property_type?: string
+          reference_point?: string | null
+          state?: string | null
+          street?: string | null
           total_area?: number
           updated_at?: string
           user_id: string
         }
         Update: {
           address?: string | null
+          asking_price?: number | null
+          bathrooms?: number | null
+          bedrooms?: number | null
+          cep?: string | null
           city?: string
+          complement?: string | null
+          condominium_fee?: number | null
           created_at?: string
           external_area_manual?: number | null
           external_base?: number | null
@@ -1096,6 +1126,7 @@ export type Database = {
           external_side_b?: number | null
           external_width?: number | null
           id?: string
+          iptu?: number | null
           land_area_manual?: number | null
           land_length?: number | null
           land_width?: number | null
@@ -1104,7 +1135,12 @@ export type Database = {
           name?: string
           neighborhood?: string
           notes?: string | null
+          number?: string | null
+          parking_spaces?: number | null
           property_type?: string
+          reference_point?: string | null
+          state?: string | null
+          street?: string | null
           total_area?: number
           updated_at?: string
           user_id?: string
@@ -1118,6 +1154,7 @@ export type Database = {
           id: string
           image_url: string
           property_id: string
+          room_id: string | null
           sort_order: number
           updated_at: string
           user_id: string
@@ -1128,6 +1165,7 @@ export type Database = {
           id?: string
           image_url: string
           property_id: string
+          room_id?: string | null
           sort_order?: number
           updated_at?: string
           user_id: string
@@ -1138,6 +1176,7 @@ export type Database = {
           id?: string
           image_url?: string
           property_id?: string
+          room_id?: string | null
           sort_order?: number
           updated_at?: string
           user_id?: string
@@ -1148,6 +1187,13 @@ export type Database = {
             columns: ["property_id"]
             isOneToOne: false
             referencedRelation: "measured_properties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "measured_property_photos_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "measured_rooms"
             referencedColumns: ["id"]
           },
         ]
@@ -1702,6 +1748,7 @@ export type Database = {
           lavabos: number | null
           lavanderia: boolean | null
           liquidez_mercado: string | null
+          measured_property_id: string | null
           modo_avaliacao: string | null
           numero: string | null
           pintura_qualidade: string | null
@@ -1786,6 +1833,7 @@ export type Database = {
           lavabos?: number | null
           lavanderia?: boolean | null
           liquidez_mercado?: string | null
+          measured_property_id?: string | null
           modo_avaliacao?: string | null
           numero?: string | null
           pintura_qualidade?: string | null
@@ -1870,6 +1918,7 @@ export type Database = {
           lavabos?: number | null
           lavanderia?: boolean | null
           liquidez_mercado?: string | null
+          measured_property_id?: string | null
           modo_avaliacao?: string | null
           numero?: string | null
           pintura_qualidade?: string | null
@@ -1910,7 +1959,15 @@ export type Database = {
           venda_rapida?: number | null
           vista_privilegiada?: boolean | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "property_valuations_measured_property_id_fkey"
+            columns: ["measured_property_id"]
+            isOneToOne: false
+            referencedRelation: "measured_properties"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       push_notifications_log: {
         Row: {

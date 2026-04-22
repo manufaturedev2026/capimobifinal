@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { getMarketplaceTheme } from "@/lib/marketplaceThemes";
@@ -97,6 +97,7 @@ const fmtBRL = (v: number) =>
 export default function AiValuationPage() {
   const { toast } = useToast();
   const { user, profile } = useAuth();
+  const [searchParams] = useSearchParams();
 
   // Tema visual (segue o tema da loja do usuário ou o tema do marketplace)
   const [marketplaceThemeId, setMarketplaceThemeId] = useState(
@@ -128,6 +129,10 @@ export default function AiValuationPage() {
   const [rua, setRua] = useState("");
   const [numero, setNumero] = useState("");
   const [cep, setCep] = useState("");
+  const [nomeImovel, setNomeImovel] = useState("");
+  const [complemento, setComplemento] = useState("");
+  const [referencia, setReferencia] = useState("");
+  const [measuredPropertyId, setMeasuredPropertyId] = useState<string | null>(null);
 
   // Avaliador (persistido localmente para reuso)
   const [avaliadorNome, setAvaliadorNome] = useState<string>(() => {
@@ -176,6 +181,9 @@ export default function AiValuationPage() {
   const [salas, setSalas] = useState("1");
   const [cozinhas, setCozinhas] = useState("1");
   const [escritorios, setEscritorios] = useState("0");
+  const [valorPedido, setValorPedido] = useState("");
+  const [iptu, setIptu] = useState("");
+  const [condominio, setCondominio] = useState("");
 
   const [extras, setExtras] = useState<string[]>([]);
   const [acabamento, setAcabamento] = useState("Médio");
@@ -239,6 +247,37 @@ export default function AiValuationPage() {
 
   const { cities } = useCitiesByState(estado);
 
+  useEffect(() => {
+    const propertyId = searchParams.get("imovel");
+    const raw = sessionStorage.getItem("meter_property_for_valuation");
+    if (!propertyId || !raw) return;
+    try {
+      const payload = JSON.parse(raw);
+      const property = payload.property || {};
+      if (property.id !== propertyId) return;
+      setMeasuredPropertyId(property.id || null);
+      setNomeImovel(property.name || "");
+      setCep(property.cep || "");
+      setRua(property.street || property.address || "");
+      setNumero(property.number || "");
+      setComplemento(property.complement || "");
+      setReferencia(property.reference_point || "");
+      setBairro(property.neighborhood || "");
+      setCidade(property.city || "");
+      setEstado(property.state || "");
+      setAreaTerreno(String(payload.areas?.landArea || property.land_area_manual || ""));
+      setAreaTerreo(String(payload.areas?.builtArea || property.total_area || ""));
+      setQuartos(String(property.bedrooms || "0"));
+      setBanheiros(String(property.bathrooms || "0"));
+      setGaragem(String(property.parking_spaces || "0"));
+      setValorPedido(property.asking_price?.toString?.() || "");
+      setIptu(property.iptu?.toString?.() || "");
+      setCondominio(property.condominium_fee?.toString?.() || "");
+      setFotos((payload.photos || []).slice(0, 10).map((photo: any) => ({ id: photo.id || crypto.randomUUID(), file: new File([], "foto-medidor.jpg", { type: "image/jpeg" }), dataUrl: photo.image_url, categoria: "outro" as const })));
+      toast({ title: "Imóvel importado do Medidor", description: "Dados, medidas e fotos foram enviados para o Avaliador." });
+    } catch {}
+  }, [searchParams, toast]);
+
   const isTerreno = tipo === "Terreno";
   const areaConstruidaTotal = (Number(areaTerreo) || 0) + (Number(areaSuperior) || 0);
   // areaTotal compatível: para terreno usa areaTerreno; demais usa construída total ou terreno
@@ -250,8 +289,8 @@ export default function AiValuationPage() {
     setter(arr.includes(val) ? arr.filter((x) => x !== val) : [...arr, val]);
 
   const handleCalculate = async () => {
-    if (!estado || !cidade || !bairro) {
-      toast({ title: "Preencha estado, cidade e bairro", variant: "destructive" });
+    if (!nomeImovel.trim() || !estado || !cidade || !bairro || !cep.trim() || !rua.trim() || !numero.trim()) {
+      toast({ title: "Preencha os dados obrigatórios", description: "Nome do imóvel, CEP, rua, número, bairro, cidade e estado são obrigatórios.", variant: "destructive" });
       return;
     }
     if (!areaTotalCompat) {
@@ -305,6 +344,7 @@ export default function AiValuationPage() {
       const { data, error } = await supabase.functions.invoke("ai-property-valuation", {
         body: {
           estado, cidade, bairro, rua, numero, cep,
+          nomeImovel, complemento, referencia, measuredPropertyId,
           categoria, subtipo,
           tipo, tipoEstrutura: isTerreno ? null : tipoEstrutura,
           areaTotal: areaTotalCompat,
@@ -314,6 +354,11 @@ export default function AiValuationPage() {
           areaConstruida: areaConstruidaTotal || null,
           quartos: Number(quartos), banheiros: Number(banheiros),
           suites: Number(suites), garagem: Number(garagem),
+          valorPedido: Number(valorPedido) || null,
+          iptu: Number(iptu) || null,
+          condominio: Number(condominio) || null,
+          ambientesMedidos: measuredPropertyId ? JSON.parse(sessionStorage.getItem("meter_property_for_valuation") || "{}").rooms || [] : [],
+          fotosMedidor: measuredPropertyId ? JSON.parse(sessionStorage.getItem("meter_property_for_valuation") || "{}").photos || [] : [],
           salas: Number(salas), cozinhas: Number(cozinhas), escritorios: Number(escritorios),
           extras, acabamento, conservacao, documentacao,
           modoAvaliacao: modoAvancado ? "avancado" : "simples",
@@ -604,6 +649,9 @@ export default function AiValuationPage() {
         <Card className="p-6 md:p-8 shadow-xl border-border/50 backdrop-blur-sm bg-card/95">
           <Section icon={<MapPin className="h-4 w-4" />} title="Localização">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Field label="Nome do imóvel *">
+                <Input value={nomeImovel} onChange={(e) => setNomeImovel(e.target.value)} placeholder="Ex: Casa Jardim Europa" />
+              </Field>
               <Field label="Estado *">
                 <Select value={estado} onValueChange={(v) => { setEstado(v); setCidade(""); }}>
                   <SelectTrigger><SelectValue placeholder="UF" /></SelectTrigger>
@@ -623,14 +671,20 @@ export default function AiValuationPage() {
               <Field label="Bairro *">
                 <Input value={bairro} onChange={(e) => setBairro(e.target.value)} placeholder="Ex: Praia do Canto" />
               </Field>
-              <Field label="CEP (opcional)">
+              <Field label="CEP *">
                 <Input value={cep} onChange={(e) => setCep(e.target.value)} placeholder="00000-000" />
               </Field>
-              <Field label="Rua (opcional)">
+              <Field label="Rua *">
                 <Input value={rua} onChange={(e) => setRua(e.target.value)} placeholder="Nome da rua" />
               </Field>
-              <Field label="Número (opcional)">
+              <Field label="Número *">
                 <Input value={numero} onChange={(e) => setNumero(e.target.value)} placeholder="Ex: 123" />
+              </Field>
+              <Field label="Complemento">
+                <Input value={complemento} onChange={(e) => setComplemento(e.target.value)} placeholder="Apto, bloco, lote" />
+              </Field>
+              <Field label="Referência">
+                <Input value={referencia} onChange={(e) => setReferencia(e.target.value)} placeholder="Próximo a..." />
               </Field>
             </div>
           </Section>
@@ -708,6 +762,9 @@ export default function AiValuationPage() {
                 <Field label="Salas"><Input type="number" value={salas} onChange={(e) => setSalas(e.target.value)} /></Field>
                 <Field label="Cozinhas"><Input type="number" value={cozinhas} onChange={(e) => setCozinhas(e.target.value)} /></Field>
                 <Field label="Escritórios"><Input type="number" value={escritorios} onChange={(e) => setEscritorios(e.target.value)} /></Field>
+                <Field label="Valor pedido"><Input type="number" value={valorPedido} onChange={(e) => setValorPedido(e.target.value)} /></Field>
+                <Field label="IPTU"><Input type="number" value={iptu} onChange={(e) => setIptu(e.target.value)} /></Field>
+                <Field label="Condomínio"><Input type="number" value={condominio} onChange={(e) => setCondominio(e.target.value)} /></Field>
               </div>
             </Section>
           )}
