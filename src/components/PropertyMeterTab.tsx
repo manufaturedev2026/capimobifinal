@@ -130,11 +130,10 @@ const propertyTypes = ["Casa", "Apartamento", "Terreno", "Comercial", "Rural"];
 const roomTypes = ["Sala", "Quarto", "Suíte", "Cozinha", "Banheiro", "Corredor", "Garagem", "Varanda", "Área gourmet", "Área de serviço", "Escritório", "Outro"];
 const shapes = ["Retângulo / Quadrado", "Triângulo Retângulo", "Formato em L", "Trapézio", "Circular", "Manual"];
 const areaTypes = ["Interna útil", "Construída coberta", "Externa descoberta", "Terreno"];
-const measurementModes = ["Medição por Ambientes", "Medição Externa da Construção", "Medição do Terreno"];
+const measurementModes = ["Medição por Ambientes", "Medição Externa da Construção"];
 const measurementModeDescriptions: Record<string, string> = {
   "Medição por Ambientes": "Some cômodos e áreas cadastradas.",
   "Medição Externa da Construção": "Use medidas externas da construção.",
-  "Medição do Terreno": "Priorize largura, comprimento ou área manual do terreno.",
 };
 const externalShapes = ["Retângulo", "L", "Triângulo", "Trapézio", "Irregular"];
 const photoCategories = ["Fachada", "Sala", "Quartos", "Cozinha", "Banheiros", "Área externa", "Garagem", "Outros"];
@@ -244,6 +243,9 @@ const calculateExternalArea = (property: Pick<MeasuredProperty, "external_shape"
   }
 };
 
+const calculateRoomsTotal = (items: Pick<MeasuredRoom, "area">[]) => items.reduce((sum, room) => sum + Number(room.area || 0), 0);
+const calculateCombinedTotal = (items: Pick<MeasuredRoom, "area">[], property: Pick<MeasuredProperty, "external_shape" | "external_width" | "external_length" | "external_base" | "external_height" | "external_side_a" | "external_side_b" | "external_area_manual"> | null) => calculateRoomsTotal(items) + (property ? calculateExternalArea(property) : 0);
+
 const propertyToForm = (property: MeasuredProperty): PropertyForm => ({
   name: property.name,
   property_type: property.property_type,
@@ -322,20 +324,20 @@ export default function PropertyMeterTab({ userId, themeVars }: { userId: string
     const usefulArea = rooms.filter((room) => room.area_type === "Interna útil").reduce((sum, room) => sum + Number(room.area || 0), 0);
     const coveredArea = rooms.filter((room) => room.area_type === "Construída coberta").reduce((sum, room) => sum + Number(room.area || 0), 0);
     const openArea = rooms.filter((room) => room.area_type === "Externa descoberta").reduce((sum, room) => sum + Number(room.area || 0), 0);
-    const builtArea = externalBuiltArea || usefulArea + coveredArea;
+    const builtArea = externalBuiltArea + usefulArea + coveredArea;
     const uncoveredArea = Math.max(landArea - builtArea, openArea, 0);
     const occupancyRate = landArea > 0 ? (builtArea / landArea) * 100 : 0;
     return { builtArea, usefulArea, landArea, uncoveredArea, occupancyRate };
   }, [rooms, selectedProperty]);
   const livePropertyTotal = useMemo(() => {
-    const savedTotal = rooms.reduce((sum, room) => sum + Number(room.area || 0), 0);
+    const savedTotal = calculateCombinedTotal(rooms, selectedProperty);
     if (!editingRoomId && roomDialogOpen) return savedTotal + computedArea;
     if (editingRoomId && roomDialogOpen) {
       const currentRoomArea = rooms.find((room) => room.id === editingRoomId)?.area || 0;
       return savedTotal - Number(currentRoomArea) + computedArea;
     }
-    return selectedProperty?.total_area ?? savedTotal;
-  }, [computedArea, editingRoomId, roomDialogOpen, rooms, selectedProperty?.total_area]);
+    return savedTotal;
+  }, [computedArea, editingRoomId, roomDialogOpen, rooms, selectedProperty]);
 
   const syncSelectedTotal = (propertyId: string, area: number) => {
     setSelectedProperty((prev) => (prev?.id === propertyId ? { ...prev, total_area: Number(area.toFixed(2)), updated_at: new Date().toISOString() } : prev));
@@ -374,7 +376,9 @@ export default function PropertyMeterTab({ userId, themeVars }: { userId: string
       toast({ title: "Erro ao carregar ambientes", description: error.message, variant: "destructive" });
     } else {
       setRooms((data || []) as MeasuredRoom[]);
+      return (data || []) as MeasuredRoom[];
     }
+    return [];
   }, [db, measuredRoomsTable, toast, userId]);
 
   const fetchPhotos = useCallback(async (propertyId: string) => {
@@ -645,7 +649,8 @@ export default function PropertyMeterTab({ userId, themeVars }: { userId: string
 
     setRoomDialogOpen(false);
     toast({ title: editingRoomId ? "Ambiente atualizado" : "Ambiente adicionado" });
-    await fetchRooms(selectedProperty.id);
+    const refreshedRooms = await fetchRooms(selectedProperty.id);
+    syncSelectedTotal(selectedProperty.id, calculateCombinedTotal(refreshedRooms, selectedProperty));
     await fetchProperties();
   };
 
@@ -656,7 +661,9 @@ export default function PropertyMeterTab({ userId, themeVars }: { userId: string
       toast({ title: "Erro ao excluir ambiente", description: error.message, variant: "destructive" });
       return;
     }
-    setRooms((prev) => prev.filter((r) => r.id !== room.id));
+    const nextRooms = rooms.filter((r) => r.id !== room.id);
+    setRooms(nextRooms);
+    if (selectedProperty) syncSelectedTotal(selectedProperty.id, calculateCombinedTotal(nextRooms, selectedProperty));
     toast({ title: "Ambiente excluído" });
     await fetchProperties();
   };
@@ -683,7 +690,7 @@ export default function PropertyMeterTab({ userId, themeVars }: { userId: string
       toast({ title: "Erro ao duplicar ambiente", description: error.message, variant: "destructive" });
       return;
     }
-    const updatedTotal = rooms.reduce((sum, item) => sum + Number(item.area || 0), 0) + Number(room.area || 0);
+    const updatedTotal = calculateCombinedTotal([...rooms, room], selectedProperty);
     syncSelectedTotal(selectedProperty.id, updatedTotal);
     toast({ title: "Ambiente duplicado" });
     await fetchRooms(selectedProperty.id);
@@ -750,7 +757,8 @@ export default function PropertyMeterTab({ userId, themeVars }: { userId: string
       external_side_b: toNumber(next.external_side_b) || null,
       external_area_manual: toNumber(next.external_area_manual) || null,
     };
-    const { data, error } = await db.from(measuredPropertiesTable).update(payload).eq("id", selectedProperty.id).eq("user_id", userId).select("*").single();
+    const totalArea = calculateCombinedTotal(rooms, { ...selectedProperty, ...payload });
+    const { data, error } = await db.from(measuredPropertiesTable).update({ ...payload, total_area: Number(totalArea.toFixed(2)) }).eq("id", selectedProperty.id).eq("user_id", userId).select("*").single();
     if (error) toast({ title: "Erro ao salvar medidas", description: error.message, variant: "destructive" });
     else setSelectedProperty(data as MeasuredProperty);
   };
@@ -910,7 +918,7 @@ export default function PropertyMeterTab({ userId, themeVars }: { userId: string
 
           <div className="rounded-3xl border border-border bg-card p-4 shadow-sm">
             <p className="text-xs font-bold uppercase text-primary">Modo de cálculo da metragem</p>
-            <div className="mt-3 grid gap-2 md:grid-cols-3">
+            <div className="mt-3 grid gap-2 md:grid-cols-2">
               {measurementModes.map((mode) => {
                 const active = (selectedProperty.measurement_mode || "Medição por Ambientes") === mode;
                 return (
@@ -930,7 +938,7 @@ export default function PropertyMeterTab({ userId, themeVars }: { userId: string
                 );
               })}
             </div>
-            <p className="mt-3 rounded-2xl border border-primary/15 bg-primary/10 px-3 py-2 text-sm font-semibold text-foreground">Selecionado: <strong className="text-primary">{selectedProperty.measurement_mode || "Medição por Ambientes"}</strong></p>
+            <p className="mt-3 rounded-2xl border border-primary/15 bg-primary/10 px-3 py-2 text-sm font-semibold text-foreground">As duas etapas podem ser usadas juntas: ambientes internos + construção externa entram automaticamente no total enviado ao avaliador.</p>
           </div>
 
           <div className="rounded-3xl border border-border bg-card p-4 shadow-sm">
