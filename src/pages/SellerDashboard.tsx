@@ -377,6 +377,7 @@ export default function SellerDashboard() {
     { id: "stories" as DashboardTab, label: "Stories", icon: Camera },
     { id: "notifications" as DashboardTab, label: "Push", icon: Bell },
     { id: "profit" as DashboardTab, label: "Calculadora de Lucro", icon: Calculator },
+    { id: "meter" as DashboardTab, label: "Medidor de Imóveis", icon: Ruler },
     { id: "domain", label: "Meu Domínio", icon: Globe, locked: lockedTabs.includes("domain") },
     { id: "ads" as DashboardTab, label: "Fazer ADS", icon: Megaphone, tourId: "tour-ads" },
     { id: "imobiliarias" as DashboardTab, label: "Imobiliárias", icon: Building2 },
@@ -1171,6 +1172,10 @@ export default function SellerDashboard() {
             {/* Profit Calculator Tab */}
             {activeTab === "profit" && (
               <ProfitCalculatorTab />
+            )}
+
+            {activeTab === "meter" && user?.id && (
+              <PropertyMeterTab userId={user.id} />
             )}
 
             {/* Customization Tab */}
