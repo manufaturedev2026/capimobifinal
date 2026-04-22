@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 import { CheckCircle2, XCircle, Clock, User, Phone, Mail, MessageSquare, Trash2, Search, MapPin, Instagram, FileText, Shield, Building2, ExternalLink, Eye, MousePointerClick, BarChart3, Users, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -67,6 +68,7 @@ function HelpBubble({ text }: { text: string }) {
 
 export default function PartnerAgencyTab({ profileId, userId, maxMembers }: { profileId: string; userId: string; maxMembers: number }) {
   const { toast } = useToast();
+  const { refreshProfile } = useAuth();
   const [requests, setRequests] = useState<RequestWithProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [processingId, setProcessingId] = useState<string | null>(null);
@@ -114,6 +116,7 @@ export default function PartnerAgencyTab({ profileId, userId, maxMembers }: { pr
       open_for_partnerships: companyInfo.open_for_partnerships,
     }).eq("id", profileId).eq("user_id", userId);
     setSavingProfile(false);
+    if (!error) await refreshProfile();
     toast(error ? { title: "Erro ao salvar", description: error.message, variant: "destructive" } : { title: "Informações salvas!" });
   };
 
