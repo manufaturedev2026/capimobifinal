@@ -1,4 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { consumeAiCreditsForUser, refundAiCredits } from "../_shared/ai-credits.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -220,7 +222,7 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { messages, ctaType, customPrompt, attendantName, botName } = await req.json();
+    const { messages, ctaType, customPrompt, attendantName, botName, ownerUserId, sellerId } = await req.json();
     
     if (!messages || !Array.isArray(messages)) {
       return new Response(JSON.stringify({ error: "Messages array required" }), {
@@ -231,6 +233,13 @@ serve(async (req) => {
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+    const admin = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+
+    let credit: Awaited<ReturnType<typeof consumeAiCreditsForUser>> | null = null;
+    if (ownerUserId && messages.length > 0) {
+      credit = await consumeAiCreditsForUser(admin, ownerUserId, sellerId || null, "invite_chat", corsHeaders);
+      if (!credit.ok) return credit.response;
+    }
 
     // Select strategy based on CTA type
     const baseStrategy = STRATEGY_PROMPTS[ctaType || "internal"] || STRATEGY_PROMPTS.internal;
@@ -292,6 +301,7 @@ serve(async (req) => {
     });
 
     if (!response.ok) {
+      if (credit?.ok) await refundAiCredits(credit.admin, credit.userId, credit.sellerId, credit.cost, "invite_chat");
       if (response.status === 429) {
         return new Response(JSON.stringify({ error: "Muitas mensagens. Aguarde um momento." }), {
           status: 429,

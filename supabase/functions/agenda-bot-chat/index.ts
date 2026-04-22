@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { consumeAiCreditsForUser, refundAiCredits } from "../_shared/ai-credits.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -202,6 +203,14 @@ serve(async (req) => {
     }
     if (sellerName) systemPrompt += `\n\nVocê representa "${sellerName}".`;
 
+    const { data: sellerProfile } = await supabase.from("profiles").select("user_id").eq("id", sellerId).maybeSingle();
+    const sellerUserId = sellerProfile?.user_id as string | undefined;
+    if (!sellerUserId) {
+      return new Response(JSON.stringify({ error: "Loja não encontrada" }), { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+    const credit = await consumeAiCreditsForUser(supabase, sellerUserId, sellerId, "agenda_bot_chat", corsHeaders);
+    if (!credit.ok) return credit.response;
+
     const aiResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
@@ -214,6 +223,7 @@ serve(async (req) => {
     });
 
     if (!aiResp.ok) {
+      await refundAiCredits(credit.admin, credit.userId, credit.sellerId, credit.cost, "agenda_bot_chat");
       if (aiResp.status === 429) {
         return new Response(JSON.stringify({ error: "Muitas mensagens. Aguarde." }), { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       }
