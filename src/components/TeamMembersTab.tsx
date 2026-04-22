@@ -37,6 +37,18 @@ function slugify(text: string) {
     .replace(/^-+|-+$/g, "");
 }
 
+function HelpBubble({ text }: { text: string }) {
+  return (
+    <span
+      title={text}
+      aria-label={text}
+      className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-border bg-muted text-[11px] font-bold text-muted-foreground"
+    >
+      ?
+    </span>
+  );
+}
+
 export default function TeamMembersTab({ profileId, userId, maxMembers }: Props) {
   const { toast } = useToast();
   const [members, setMembers] = useState<TeamMember[]>([]);
@@ -286,6 +298,7 @@ export default function TeamMembersTab({ profileId, userId, maxMembers }: Props)
 
   const activeCount = members.filter(m => m.is_active).length;
   const inactiveCount = members.filter(m => !m.is_active).length;
+  const teamHelpText = "Aqui você cadastra a equipe da empresa. Cada corretor ativo ganha uma loja espelho com link próprio, usando o tema da imobiliária e os dados profissionais dele.";
 
   return (
     <div className="space-y-6">
@@ -294,6 +307,7 @@ export default function TeamMembersTab({ profileId, userId, maxMembers }: Props)
         <div>
           <h2 className="font-display font-bold text-xl text-foreground flex items-center gap-2">
             <Users size={22} className="text-primary" /> Equipe da Empresa
+            <HelpBubble text={teamHelpText} />
           </h2>
           <p className="text-muted-foreground text-sm mt-1">
             {members.length}/{maxMembers} corretores vinculados.
