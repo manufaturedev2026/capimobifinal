@@ -790,9 +790,19 @@ export default function PropertyMeterTab({ userId }: { userId: string }) {
 
           <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
             <MetricCard title="Área Construída" value={technicalAreas.builtArea} />
-            <MetricCard title="Área Útil" value={technicalAreas.usefulArea} />
             <MetricCard title="Terreno" value={technicalAreas.landArea} />
             <MetricCard title="Área Externa" value={technicalAreas.uncoveredArea} />
+            <MetricCard title="Taxa de Ocupação" value={technicalAreas.occupancyRate} suffix="%" />
+          </div>
+
+          <div className="rounded-3xl border border-border bg-card p-4 shadow-sm">
+            <p className="text-xs font-bold uppercase text-primary">Modos de medição</p>
+            <div className="mt-3 grid gap-2 md:grid-cols-3">
+              {measurementModes.map((mode) => (
+                <button key={mode} type="button" onClick={() => setPropertyForm((prev) => ({ ...prev, measurement_mode: mode }))} className={`rounded-2xl border p-3 text-left text-sm font-bold transition-all ${selectedProperty.measurement_mode === mode ? "border-primary bg-primary text-primary-foreground" : "border-primary/20 bg-primary/10 text-primary"}`}>{mode}</button>
+              ))}
+            </div>
+            <p className="mt-3 text-sm text-muted-foreground">Modo atual: <strong className="text-foreground">{selectedProperty.measurement_mode || "Medição por Ambientes"}</strong></p>
           </div>
 
           <div className="rounded-3xl border border-border bg-card p-4 shadow-sm">
