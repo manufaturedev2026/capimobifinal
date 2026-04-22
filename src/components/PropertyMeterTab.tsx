@@ -338,6 +338,7 @@ export default function PropertyMeterTab({ userId, themeVars }: { userId: string
     const landArea = selectedProperty ? Number(selectedProperty.land_area_manual || 0) || Number(selectedProperty.land_width || 0) * Number(selectedProperty.land_length || 0) : 0;
     const externalBuiltArea = selectedProperty ? calculateExternalArea(selectedProperty) : 0;
     const usefulArea = rooms.filter((room) => room.area_type === "Interna útil").reduce((sum, room) => sum + Number(room.area || 0), 0);
+    const coveredArea = rooms.filter((room) => room.area_type === "Construída coberta").reduce((sum, room) => sum + Number(room.area || 0), 0);
     const externalRoomsArea = rooms.filter((room) => room.area_type === "Externa descoberta").reduce((sum, room) => sum + Number(room.area || 0), 0);
     const builtArea = externalBuiltArea + usefulArea + coveredArea;
     const externalArea = externalBuiltArea + externalRoomsArea;
