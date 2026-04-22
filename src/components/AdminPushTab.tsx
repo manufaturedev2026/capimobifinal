@@ -208,8 +208,18 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
 
     setSending(true);
     try {
-      const { data, error } = await supabase.functions.invoke("send-push-admin", {
-        body: {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const accessToken = sessionData.session?.access_token;
+      if (!accessToken) throw new Error("Sessão expirada. Entre novamente para enviar notificações.");
+
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/send-push-admin`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+        },
+        body: JSON.stringify({
           title: title.trim(),
           body: body.trim(),
           url: url.trim() || undefined,
@@ -217,10 +227,11 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
           audience,
           state: filterState !== "all" ? filterState : undefined,
           city: filterCity !== "all" ? filterCity : undefined,
-        },
+        }),
       });
 
-      if (error) throw error;
+      const data = await response.json();
+      if (!response.ok) throw new Error(data?.error || `Erro ${response.status} ao enviar notificação`);
 
       toast({
         title: "Notificação enviada para todos! 🚀",
