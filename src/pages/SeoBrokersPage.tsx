@@ -17,12 +17,11 @@ const SELLER_CATEGORY_LABELS: Record<string, string> = {
 };
 
 const TIER_WEIGHT: Record<string, number> = {
-  black: 250, prime_empresa: 200, premium_empresa: 140, essencial_empresa: 100,
+  prime_empresa: 200, premium_empresa: 140, essencial_empresa: 100,
   vip: 70, premium: 40, start: 20, basico: 10,
 };
 
 const TIER_GLOW: Record<string, string> = {
-  black: "0 0 30px rgba(234,179,8,0.3), 0 0 60px rgba(234,179,8,0.12)",
   prime_empresa: "0 0 30px rgba(100,100,100,0.4), 0 0 60px rgba(100,100,100,0.15)",
   premium_empresa: "0 0 30px rgba(14,165,233,0.35), 0 0 60px rgba(14,165,233,0.12)",
   essencial_empresa: "0 0 30px rgba(225,29,72,0.3), 0 0 60px rgba(225,29,72,0.1)",

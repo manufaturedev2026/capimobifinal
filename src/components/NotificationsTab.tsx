@@ -18,7 +18,6 @@ const PUSH_DAILY_LIMITS: Record<string, number> = {
   essencial_empresa: 4,
   premium_empresa: 5,
   prime_empresa: 6,
-  black: 6,
 };
 
 interface NotificationsTabProps {
