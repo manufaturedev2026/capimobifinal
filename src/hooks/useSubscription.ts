@@ -18,8 +18,8 @@ export interface Subscription {
 export const PACKAGE_CONFIG = {
   start: {
     name: "Start",
-    price: 24.99,
-    setupFee: 299,
+    price: 49.99,
+    setupFee: 0,
     maxItems: 25,
     aiGenerationsPerDay: 10,
     color: "from-emerald-500 to-teal-600",
@@ -65,8 +65,8 @@ export const PACKAGE_CONFIG = {
   },
   premium: {
     name: "VIP",
-    price: 59.99,
-    setupFee: 719,
+    price: 119.99,
+    setupFee: 0,
     maxItems: 60,
     aiGenerationsPerDay: 20,
     color: "from-amber-500 to-orange-600",
@@ -91,8 +91,8 @@ export const PACKAGE_CONFIG = {
   },
   vip: {
     name: "Premium",
-    price: 114.99,
-    setupFee: 1379,
+    price: 229.99,
+    setupFee: 0,
     maxItems: 115,
     aiGenerationsPerDay: 50,
     color: "from-purple-600 to-indigo-700",
@@ -115,7 +115,7 @@ export const PACKAGE_CONFIG = {
   },
   essencial_empresa: {
     name: "Exclusive",
-    price: 199.99,
+    price: 399.99,
     setupFee: 0,
     maxItems: 9999,
     aiGenerationsPerDay: 100,
@@ -138,7 +138,7 @@ export const PACKAGE_CONFIG = {
   },
   premium_empresa: {
     name: "Prime",
-    price: 349.99,
+    price: 699.99,
     setupFee: 0,
     maxItems: 9999,
     aiGenerationsPerDay: 200,
@@ -158,7 +158,7 @@ export const PACKAGE_CONFIG = {
   },
   prime_empresa: {
     name: "Black",
-    price: 599.99,
+    price: 1199.99,
     setupFee: 0,
     maxItems: 9999,
     aiGenerationsPerDay: 400,
@@ -178,7 +178,7 @@ export const PACKAGE_CONFIG = {
   },
   black: {
     name: "Black",
-    price: 899.99,
+    price: 1799.99,
     setupFee: 0,
     maxItems: 9999,
     aiGenerationsPerDay: 400,
