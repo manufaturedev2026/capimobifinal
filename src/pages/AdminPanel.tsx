@@ -547,7 +547,7 @@ export default function AdminPanel() {
               { label: "Start", value: totalByTier["start"] || 0, icon: Rocket, color: "text-emerald-500" },
               { label: "VIP", value: totalByTier["premium"] || 0, icon: Star, color: "text-amber-500" },
               { label: "Premium", value: totalByTier["vip"] || 0, icon: Crown, color: "text-purple-500" },
-              { label: "Empresa", value: (totalByTier["essencial_empresa"] || 0) + (totalByTier["premium_empresa"] || 0) + (totalByTier["prime_empresa"] || 0) + (totalByTier["black"] || 0), icon: Building2, color: "text-rose-500" },
+              { label: "Empresa", value: (totalByTier["essencial_empresa"] || 0) + (totalByTier["premium_empresa"] || 0) + (totalByTier["prime_empresa"] || 0), icon: Building2, color: "text-rose-500" },
             ].map((s) => (
               <div key={s.label} className="bg-secondary rounded-xl p-2.5 text-center">
                 <s.icon size={14} className={`${s.color} mx-auto mb-0.5`} />

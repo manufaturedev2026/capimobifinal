@@ -11,7 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 
 const tierIcons: Record<string, any> = {
   basico: Zap, start: Zap, premium: Star, vip: Crown,
-  essencial_empresa: Shield, premium_empresa: Gem, prime_empresa: Diamond, black: Crown,
+  essencial_empresa: Shield, premium_empresa: Gem, prime_empresa: Diamond,
 };
 
 const aiMonthlyCredits: Record<string, number> = {
@@ -22,7 +22,6 @@ const aiMonthlyCredits: Record<string, number> = {
   essencial_empresa: 2000,
   premium_empresa: 2000,
   prime_empresa: 3500,
-  black: 6800,
 };
 
 const formatCredits = (credits: number) => credits.toLocaleString("pt-BR");

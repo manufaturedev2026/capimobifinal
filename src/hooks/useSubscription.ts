@@ -5,7 +5,7 @@ export interface Subscription {
   id: string;
   user_id: string;
   seller_id: string;
-  tier: "start" | "basico" | "premium" | "vip" | "essencial_empresa" | "premium_empresa" | "prime_empresa" | "black";
+  tier: "start" | "basico" | "premium" | "vip" | "essencial_empresa" | "premium_empresa" | "prime_empresa";
   max_items: number;
   started_at: string;
   expires_at: string;
@@ -169,25 +169,6 @@ export const PACKAGE_CONFIG = {
       "Suporte 24/7 prioritário",
     ],
   },
-  black: {
-    name: "Black",
-    price: 1799.99,
-    setupFee: 0,
-    maxItems: 9999,
-    color: "from-zinc-900 to-black",
-    borderColor: "border-yellow-500",
-    badgeColor: "bg-gradient-to-r from-zinc-900 to-black text-yellow-400 border border-yellow-500/50",
-    benefits: [
-      "Anúncios ilimitados",
-      "Vitrine Lvl 6 — máximo absoluto",
-      "Tudo do Prime +",
-      "Até 30 corretores vinculados",
-      "Gerente de conta VIP dedicado",
-      "Selo Black ★ exclusivo",
-      "Push Notifications: 6 envios por dia",
-      "Suporte 24/7 prioritário",
-    ],
-  },
 } as const;
 
 export function useSubscription(userId?: string) {
@@ -265,7 +246,7 @@ export function useSubscription(userId?: string) {
 }
 
 export function useSellerSubscription(sellerId?: string) {
-  const [tier, setTier] = useState<"start" | "basico" | "premium" | "vip" | "essencial_empresa" | "premium_empresa" | "prime_empresa" | "black">("basico");
+  const [tier, setTier] = useState<"start" | "basico" | "premium" | "vip" | "essencial_empresa" | "premium_empresa" | "prime_empresa">("basico");
 
   useEffect(() => {
     if (!sellerId) return;
