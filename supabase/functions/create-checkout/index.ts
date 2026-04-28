@@ -18,11 +18,11 @@ const TIER_PRICES: Record<string, string> = {
   prime_empresa: "price_1THDqhA3teTHF5ONtDLVuFVT",
 };
 
-// Setup fee (implementação) in centavos - charged upfront in full
+// Setup fees removidos - apenas mensalidade recorrente
 const SETUP_FEES: Record<string, number> = {
-  start: 29900,       // R$ 299,00
-  premium: 71900,     // R$ 719,00
-  vip: 137900,        // R$ 1.379,00
+  start: 0,
+  premium: 0,
+  vip: 0,
   essencial_empresa: 0,
   premium_empresa: 0,
   prime_empresa: 0,
