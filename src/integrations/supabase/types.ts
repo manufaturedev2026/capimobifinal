@@ -3388,6 +3388,7 @@ export type Database = {
         }
         Returns: Json
       }
+      cron_reset_all_monthly_credits: { Args: never; Returns: Json }
       decrypt_smtp_password: {
         Args: { p_encrypted: string; p_key: string }
         Returns: string
@@ -3445,6 +3446,10 @@ export type Database = {
         }[]
       }
       refresh_ai_monthly_credits: {
+        Args: { p_seller_id?: string; p_user_id: string }
+        Returns: Json
+      }
+      refresh_ai_monthly_credits_admin: {
         Args: { p_seller_id?: string; p_user_id: string }
         Returns: Json
       }
