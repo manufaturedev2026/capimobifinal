@@ -177,9 +177,6 @@ export default function AdminPlansTab() {
                 <span className="px-2 py-1 rounded bg-secondary text-foreground font-medium">
                   {p.max_items >= 9999 ? "∞" : p.max_items} anúncios
                 </span>
-                <span className="px-2 py-1 rounded bg-secondary text-foreground font-medium">
-                  IA: {p.ai_generations_per_day}/dia
-                </span>
               </div>
               <p className="text-xs text-muted-foreground">{p.benefits.length} benefícios</p>
 
@@ -264,7 +261,7 @@ export default function AdminPlansTab() {
                   </Field>
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                   <Field label="Preço/mês (R$)">
                     <input
                       type="number" step="0.01"
@@ -286,14 +283,6 @@ export default function AdminPlansTab() {
                       type="number"
                       value={editing.max_items ?? 5}
                       onChange={(e) => setEditing({ ...editing, max_items: parseInt(e.target.value) || 0 })}
-                      className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm"
-                    />
-                  </Field>
-                  <Field label="IA / dia">
-                    <input
-                      type="number"
-                      value={editing.ai_generations_per_day ?? 0}
-                      onChange={(e) => setEditing({ ...editing, ai_generations_per_day: parseInt(e.target.value) || 0 })}
                       className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm"
                     />
                   </Field>
