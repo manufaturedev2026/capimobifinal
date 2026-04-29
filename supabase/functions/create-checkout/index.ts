@@ -29,20 +29,41 @@ serve(async (req) => {
     const user = data.user;
     if (!user?.email) throw new Error("Usuário não autenticado");
 
-    const { tier, billing_period = "monthly", coupon_code = null } = await req.json();
+    const { tier, billing_period = "monthly", coupon_code = null, founder_lot_id = null } = await req.json();
     if (!tier) throw new Error("Plano inválido");
     if (!["monthly", "annual"].includes(billing_period)) throw new Error("Período inválido");
 
-    // Busca o plano no banco
+    const isFounder = tier === "fundador_corretor" || tier === "fundador_empresa";
+
+    // Busca o plano no banco (planos Fundador são is_active=false, então não filtramos por isso)
     const { data: plan, error: planErr } = await supabaseAdmin
       .from("subscription_plans")
-      .select("tier, name, price, max_items, is_active")
+      .select("tier, name, price, max_items, is_active, category")
       .eq("tier", tier)
-      .eq("is_active", true)
       .maybeSingle();
     if (planErr) throw planErr;
     if (!plan) throw new Error(`Plano ${tier} não encontrado`);
-    if (Number(plan.price) <= 0) throw new Error("Plano gratuito não exige checkout");
+    if (!isFounder && !plan.is_active) throw new Error(`Plano ${tier} indisponível`);
+    if (!isFounder && Number(plan.price) <= 0) throw new Error("Plano gratuito não exige checkout");
+
+    // ==== Validação especial para Fundador ====
+    let founderLot: any = null;
+    if (isFounder) {
+      if (!founder_lot_id) throw new Error("Lote do plano Fundador não informado");
+      const { data: lot, error: lotErr } = await supabaseAdmin
+        .from("founder_lots")
+        .select("id, category, lot_number, price, total_slots, used_slots, is_active")
+        .eq("id", founder_lot_id)
+        .maybeSingle();
+      if (lotErr) throw lotErr;
+      if (!lot) throw new Error("Lote Fundador não encontrado");
+      if (!lot.is_active) throw new Error("Lote Fundador desativado");
+      if (lot.used_slots >= lot.total_slots) throw new Error("Lote Fundador esgotado");
+
+      const expectedCat = tier === "fundador_corretor" ? "individual" : "enterprise";
+      if (lot.category !== expectedCat) throw new Error("Lote não corresponde ao plano");
+      founderLot = lot;
+    }
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2025-08-27.basil",
