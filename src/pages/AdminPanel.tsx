@@ -26,6 +26,7 @@ import AdminManagersTab from "@/components/AdminManagersTab";
 import AdminValuationPricesTab from "@/components/AdminValuationPricesTab";
 import AdminReceivePushTab from "@/components/AdminReceivePushTab";
 import AdminAiCostsTab from "@/components/AdminAiCostsTab";
+import AdminFoundersTab from "@/components/AdminFoundersTab";
 import AdminCouponsTab from "@/components/AdminCouponsTab";
 import { LOGIN_HERO_PRESETS, normalizeLoginHeroSetting, resolveLoginHeroImage } from "@/data/loginHeroPresets";
 import { invalidateRegistrationsClosed } from "@/hooks/useRegistrationsClosed";
@@ -65,7 +66,7 @@ export default function AdminPanel() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [tierFilter, setTierFilter] = useState<string>("todos");
-  const [tab, setTab] = useState<"dashboard" | "clientes" | "managers" | "billing" | "plans" | "coupons" | "referrals" | "crm" | "seo" | "vendas" | "config" | "push" | "receivePush" | "site" | "smtp" | "funnel" | "broadcast" | "ads" | "invite" | "apify" | "valuation" | "aiCosts">("dashboard");
+  const [tab, setTab] = useState<"dashboard" | "clientes" | "managers" | "billing" | "plans" | "coupons" | "founders" | "referrals" | "crm" | "seo" | "vendas" | "config" | "push" | "receivePush" | "site" | "smtp" | "funnel" | "broadcast" | "ads" | "invite" | "apify" | "valuation" | "aiCosts">("dashboard");
   const [managersList, setManagersList] = useState<Array<{ id: string; name: string; phone: string | null; photo_url: string | null }>>([]);
   // Category edit dialog
   const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
@@ -507,6 +508,7 @@ export default function AdminPanel() {
     { key: "billing" as const, label: "Faturamento", icon: DollarSign },
     { key: "plans" as const, label: "Planos", icon: Package },
     { key: "coupons" as const, label: "Cupons & Anual", icon: Ticket },
+    { key: "founders" as const, label: "Fundadores", icon: Crown },
     { key: "crm" as const, label: "CRM WhatsApp", icon: MessageCircle },
     { key: "ads" as const, label: "CRM de ADS", icon: Megaphone },
     { key: "push" as const, label: "Push Broadcast", icon: Bell },
@@ -1546,6 +1548,13 @@ export default function AdminPanel() {
       {tab === "aiCosts" && (
         <div className="px-4 lg:px-8 py-6">
           <AdminAiCostsTab />
+        </div>
+      )}
+
+      {/* Founders Tab */}
+      {tab === "founders" && (
+        <div className="px-4 lg:px-8 py-6">
+          <AdminFoundersTab />
         </div>
       )}
 
