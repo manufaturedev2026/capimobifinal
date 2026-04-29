@@ -752,6 +752,9 @@ export default function SellerItemForm() {
         {/* Dynamic Property Fields */}
         {renderPropertyFields()}
 
+        {/* Dados profissionais para auto-preenchimento da Avaliação IA */}
+        <ListingValuationFields form={form} setForm={setForm} />
+
         {/* Tags */}
         <div className="bg-card border border-border rounded-2xl p-5 space-y-5">
           <div>
