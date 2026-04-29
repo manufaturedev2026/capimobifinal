@@ -240,30 +240,10 @@ export default function AdminPlansTab() {
         </div>
       )}
 
-      {/* Aba Fundadores: aviso direcionando */}
+      {/* Aba Fundadores: gestão completa de lotes */}
       {view === "founder" && (
-        <div className="rounded-2xl border-2 border-amber-500/30 bg-gradient-to-br from-amber-500/10 to-orange-500/5 p-6">
-          <div className="flex items-start gap-4">
-            <div className="p-3 rounded-xl bg-amber-500/20 text-amber-600">
-              <Crown size={24} />
-            </div>
-            <div className="flex-1">
-              <h4 className="font-display font-bold text-lg text-foreground">Planos Fundador são gerenciados em outra aba</h4>
-              <p className="text-sm text-muted-foreground mt-1">
-                Os lotes Fundador (Start, VIP, Premium, Black, etc.) não vivem aqui — eles têm preço, vagas e tier herdado próprios.
-              </p>
-              <div className="mt-4 p-4 rounded-xl bg-background border border-border">
-                <p className="text-sm text-foreground">
-                  👉 Acesse a aba <strong className="text-amber-600">"Fundadores"</strong> 👑 no menu lateral do painel admin para criar, editar e desativar lotes Fundador.
-                </p>
-                <ul className="mt-3 text-xs text-muted-foreground space-y-1 list-disc list-inside">
-                  <li>Cada lote tem um <strong>tier herdado</strong> (Start, VIP, Premium, Black) que define os benefícios</li>
-                  <li>Cada lote tem <strong>número de vagas</strong> e <strong>preço próprio</strong></li>
-                  <li>Pagamento único válido por <strong>1 ano</strong> (não recorrente)</li>
-                </ul>
-              </div>
-            </div>
-          </div>
+        <div className="space-y-4">
+          <AdminFoundersTab />
         </div>
       )}
 
