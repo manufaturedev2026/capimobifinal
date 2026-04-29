@@ -8,8 +8,10 @@ import { getMarketplaceTheme } from "@/lib/marketplaceThemes";
 import { getMarketplaceThemeCssVars } from "@/lib/marketplaceThemeCssVars";
 import { normalizeLoginHeroSetting, resolveLoginHeroImage } from "@/data/loginHeroPresets";
 import heroImgDefault from "@/assets/hero-anunciar.jpg";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 export default function ResetPasswordPage() {
+  const { site_name } = useSiteSettings();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
