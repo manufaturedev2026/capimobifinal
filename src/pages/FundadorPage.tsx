@@ -191,6 +191,11 @@ export default function FundadorPage() {
       ? (TIER_LABEL[lot.inherited_tier] || fallbackPlan)
       : fallbackPlan;
     const credits = lot?.ia_credits ?? (category === "individual" ? 1000 : 3500);
+    // Benefícios reais do plano herdado (vindos do banco de dados de planos)
+    const inheritedPlan = lot?.inherited_tier
+      ? plans.find((p) => p.tier === lot.inherited_tier)
+      : null;
+    const planBenefits: string[] = (inheritedPlan?.benefits as string[]) || [];
     const remaining = lot ? lot.total_slots - lot.used_slots : 0;
     const percentSold = lot ? (lot.used_slots / lot.total_slots) * 100 : 100;
     const nextLots = getNextLots(category);
