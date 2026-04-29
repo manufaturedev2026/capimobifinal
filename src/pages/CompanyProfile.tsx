@@ -642,7 +642,7 @@ export default function CompanyProfile() {
                 <meta property="og:description" content={seoDesc} />
                 <meta property="og:url" content={canonicalUrl} />
                 {ogImage && <meta property="og:image" content={ogImage} />}
-                <meta property="og:site_name" content="Capimobi" />
+                <meta property="og:site_name" content={site_name} />
                 <meta property="og:locale" content="pt_BR" />
 
                 <meta name="twitter:card" content="summary_large_image" />
