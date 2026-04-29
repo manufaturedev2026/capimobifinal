@@ -489,17 +489,19 @@ export default function PackagesPage() {
                 </span>
               )}
             </button>
-            <button
-              onClick={() => setBillingPeriod("founder")}
-              className={`px-5 sm:px-8 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${
-                billingPeriod === "founder"
-                  ? "bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-md"
-                  : "text-amber-600 hover:text-amber-700"
-              }`}
-            >
-              <Crown size={14} />
-              Fundador
-            </button>
+            {founderEnabled && (
+              <button
+                onClick={() => setBillingPeriod("founder")}
+                className={`px-5 sm:px-8 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${
+                  billingPeriod === "founder"
+                    ? "bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-md"
+                    : "text-amber-600 hover:text-amber-700"
+                }`}
+              >
+                <Crown size={14} />
+                Fundador
+              </button>
+            )}
           </div>
         </div>
 
