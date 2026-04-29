@@ -667,7 +667,7 @@ export default function PackagesPage() {
                           Fundador {userInheritedPlan.name}
                         </h4>
                         <p className="text-white/80 text-sm mt-2">
-                          📦 {userInheritedPlan.maxItems} anúncios<br/>
+                          📦 {userInheritedPlan.max_items} anúncios<br/>
                           🪙 {formatCredits(aiMonthlyCredits[userInheritedPlan.tier] ?? 250)} créditos IA
                         </p>
                       </div>
@@ -681,7 +681,7 @@ export default function PackagesPage() {
                           Fundador {newInheritedPlan.name}
                         </h4>
                         <p className="text-white/95 text-sm mt-2">
-                          📦 {newInheritedPlan.maxItems} anúncios<br/>
+                          📦 {newInheritedPlan.max_items} anúncios<br/>
                           🪙 {formatCredits(credits)} créditos IA
                         </p>
                       </div>
