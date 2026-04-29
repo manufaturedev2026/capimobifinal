@@ -359,8 +359,8 @@ export default function InvitePage() {
   return (
     <>
       <Helmet>
-        <title>Crie sua loja de imóveis grátis | Capimobi</title>
-        <meta name="description" content="Cadastre-se gratuitamente na Capimobi e tenha sua loja de imóveis online em minutos!" />
+        <title>Crie sua loja de imóveis grátis | {site_name}</title>
+        <meta name="description" content={`Cadastre-se gratuitamente na ${site_name} e tenha sua loja de imóveis online em minutos!`} />
         <link rel="canonical" href={`${SITE_URL}/convite`} />
       </Helmet>
 
