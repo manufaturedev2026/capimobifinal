@@ -78,6 +78,7 @@ const categories = ["Todos", "Guias", "Investimento", "Finanças", "Decoração"
 export default function BlogPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("Todos");
+  const { site_name } = useSiteSettings();
 
   const filtered = blogArticles.filter((a) => {
     const matchesSearch =
