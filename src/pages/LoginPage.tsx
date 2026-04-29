@@ -366,14 +366,23 @@ export default function LoginPage() {
           </form>
 
           {!signedUp && isLogin && (
-            <p className="text-center text-sm mt-6 flex items-center justify-center gap-3" style={{ color: theme.textMuted }}>
+            <p className="text-center text-sm mt-6 flex items-center justify-center gap-3 flex-wrap" style={{ color: theme.textMuted }}>
               <button onClick={() => { setShowForgot(true); setForgotEmail(email); }} className="font-medium hover:underline" style={{ color: theme.textMuted }}>
                 Esqueci minha senha
               </button>
-              <span style={{ color: theme.border }}>•</span>
-              <button onClick={() => setIsLogin(false)} className="font-semibold hover:underline" style={{ color: theme.primary }}>
-                Quero me Cadastrar
-              </button>
+              {!registrationsClosed && (
+                <>
+                  <span style={{ color: theme.border }}>•</span>
+                  <button onClick={() => setIsLogin(false)} className="font-semibold hover:underline" style={{ color: theme.primary }}>
+                    Quero me Cadastrar
+                  </button>
+                </>
+              )}
+            </p>
+          )}
+          {!signedUp && isLogin && registrationsClosed && (
+            <p className="text-center text-xs mt-3" style={{ color: theme.textMuted }}>
+              🔒 Cadastros temporariamente encerrados.
             </p>
           )}
 
