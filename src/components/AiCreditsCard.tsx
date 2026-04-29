@@ -48,7 +48,7 @@ export default function AiCreditsCard({ userId, sellerId }: { userId?: string; s
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-2 md:min-w-[300px]">
+        <div className="grid grid-cols-2 gap-2 md:min-w-[340px]">
           <div className="rounded-xl border border-border bg-background/60 p-3">
             <div className="mb-1 flex items-center gap-1.5 text-xs text-muted-foreground">
               <Sparkles className="h-3.5 w-3.5 text-primary" /> Limite do plano
@@ -61,8 +61,25 @@ export default function AiCreditsCard({ userId, sellerId }: { userId?: string; s
         </div>
       </div>
 
+      {/* Botão para ver consumo detalhado */}
+      <button
+        onClick={() => setUsageOpen(true)}
+        className="relative mt-4 w-full group flex items-center justify-between gap-3 rounded-xl border border-primary/30 bg-gradient-to-r from-primary/10 via-accent/5 to-primary/10 px-4 py-3 hover:from-primary/20 hover:to-accent/15 transition-all"
+      >
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-md group-hover:scale-110 transition-transform">
+            <BarChart3 className="h-4 w-4 text-white" />
+          </div>
+          <div className="text-left">
+            <p className="text-sm font-bold text-foreground">Ver consumo da IA</p>
+            <p className="text-[11px] text-muted-foreground">Hoje, últimos 7 dias e mês completo</p>
+          </div>
+        </div>
+        <span className="text-xs font-bold text-primary group-hover:translate-x-1 transition-transform">→</span>
+      </button>
+
       {transactions.length > 0 && (
-        <div className="relative mt-4 rounded-xl border border-border bg-background/50 p-3">
+        <div className="relative mt-3 rounded-xl border border-border bg-background/50 p-3">
           <div className="mb-2 flex items-center gap-2 text-xs font-bold text-muted-foreground">
             <History className="h-3.5 w-3.5" /> Últimos usos
           </div>
@@ -78,6 +95,8 @@ export default function AiCreditsCard({ userId, sellerId }: { userId?: string; s
           </div>
         </div>
       )}
+
+      <AiCreditsUsageModal open={usageOpen} onClose={() => setUsageOpen(false)} userId={userId} />
     </Card>
   );
 }
