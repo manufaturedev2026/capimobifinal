@@ -3338,6 +3338,7 @@ export type Database = {
       }
       subscription_plans: {
         Row: {
+          ai_credits_per_month: number
           ai_generations_per_day: number
           badge_color: string
           benefits: Json
@@ -3349,14 +3350,17 @@ export type Database = {
           is_active: boolean
           is_popular: boolean
           max_items: number
+          max_photos_per_listing: number
           name: string
           price: number
           setup_fee: number
           sort_order: number
+          storage_mb: number
           tier: string
           updated_at: string
         }
         Insert: {
+          ai_credits_per_month?: number
           ai_generations_per_day?: number
           badge_color?: string
           benefits?: Json
@@ -3368,14 +3372,17 @@ export type Database = {
           is_active?: boolean
           is_popular?: boolean
           max_items?: number
+          max_photos_per_listing?: number
           name: string
           price?: number
           setup_fee?: number
           sort_order?: number
+          storage_mb?: number
           tier: string
           updated_at?: string
         }
         Update: {
+          ai_credits_per_month?: number
           ai_generations_per_day?: number
           badge_color?: string
           benefits?: Json
@@ -3387,10 +3394,12 @@ export type Database = {
           is_active?: boolean
           is_popular?: boolean
           max_items?: number
+          max_photos_per_listing?: number
           name?: string
           price?: number
           setup_fee?: number
           sort_order?: number
+          storage_mb?: number
           tier?: string
           updated_at?: string
         }
@@ -3772,6 +3781,7 @@ export type Database = {
         Args: { p_tier: string }
         Returns: number
       }
+      get_user_plan_usage: { Args: { p_user_id: string }; Returns: Json }
       grant_plan_credits:
         | {
             Args: { p_seller_id?: string; p_tier?: string; p_user_id: string }
