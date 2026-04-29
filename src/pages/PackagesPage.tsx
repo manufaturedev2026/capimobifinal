@@ -117,15 +117,23 @@ export default function PackagesPage() {
 
   const isImobiliaria = profile?.seller_category === "imobiliaria" || profile?.seller_category === "construtora";
   const isFounderTier = (t: string) => t === "fundador_corretor" || t === "fundador_empresa";
+  // Categorias do banco: "corretor" / "imobiliaria" / "construtora" / "free" / "individual" / "enterprise"
+  const isIndividualCat = (c: string) => c === "individual" || c === "corretor" || c === "free";
+  const isEnterpriseCat = (c: string, sellerCat?: string) => {
+    if (c === "enterprise") return true;
+    if (sellerCat === "construtora") return c === "construtora";
+    // imobiliária (default empresarial) vê planos de imobiliária
+    return c === "imobiliaria";
+  };
   const individualPlans = isImobiliaria || billingPeriod === "founder"
     ? []
     : plans.filter((p) =>
         !isFounderTier(p.tier) && (billingPeriod === "annual"
-          ? p.category === "individual" && p.price > 0
-          : p.category === "individual" || p.category === "free")
+          ? isIndividualCat(p.category) && p.price > 0
+          : isIndividualCat(p.category))
       );
   const enterprisePlans = isImobiliaria && billingPeriod !== "founder"
-    ? plans.filter((p) => !isFounderTier(p.tier) && p.category === "enterprise" && (billingPeriod === "monthly" || p.price > 0))
+    ? plans.filter((p) => !isFounderTier(p.tier) && isEnterpriseCat(p.category, profile?.seller_category) && (billingPeriod === "monthly" || p.price > 0))
     : [];
   const activePlan = plans.find((p) => p.tier === currentTier);
 
