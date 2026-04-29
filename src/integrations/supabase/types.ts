@@ -311,6 +311,45 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_tool_costs: {
+        Row: {
+          category: string
+          cost: number
+          created_at: string
+          description: string | null
+          id: string
+          is_session_based: boolean
+          label: string
+          session_window_minutes: number
+          tool_key: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          cost?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_session_based?: boolean
+          label: string
+          session_window_minutes?: number
+          tool_key: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          cost?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_session_based?: boolean
+          label?: string
+          session_window_minutes?: number
+          tool_key?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       apify_search_runs: {
         Row: {
           actor_id: string | null
