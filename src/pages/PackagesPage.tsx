@@ -95,7 +95,6 @@ export default function PackagesPage() {
         (supabase as any)
           .from("founder_lots")
           .select("id, category, lot_number, price, total_slots, used_slots, is_active, inherited_tier, ia_credits")
-          .eq("is_active", true)
           .order("category")
           .order("lot_number"),
         (supabase as any)
