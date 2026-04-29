@@ -8,10 +8,12 @@ import { useAuth } from "@/hooks/useAuth";
 import { useFavorites } from "@/hooks/useFavorites";
 import { formatPrice } from "@/data/products";
 import PropertyCardSkeleton from "@/components/PropertyCardSkeleton";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 export default function FavoritesPage() {
   const { user } = useAuth();
   const { toggleFavorite, favoriteIds } = useFavorites();
+  const { site_name } = useSiteSettings();
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
