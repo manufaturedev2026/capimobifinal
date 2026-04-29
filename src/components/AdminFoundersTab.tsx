@@ -177,6 +177,9 @@ export default function AdminFoundersTab() {
                       <Badge variant="secondary">Inativo</Badge>
                     )}
                     {isFull && <Badge className="bg-red-500/10 text-red-600 border-red-500/30">Esgotado</Badge>}
+                    <Badge variant="outline" className="bg-amber-500/10 text-amber-700 border-amber-500/30">
+                      Herda: {TIER_LABEL[lot.inherited_tier] || lot.inherited_tier}
+                    </Badge>
                   </div>
                   <div className="flex items-center gap-2">
                     <Switch
