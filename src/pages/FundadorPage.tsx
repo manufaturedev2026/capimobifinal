@@ -152,7 +152,7 @@ export default function FundadorPage() {
       <div className="min-h-screen bg-background">
         <MarketplaceNavbar theme={theme} user={user} />
         <div className="max-w-2xl mx-auto px-4 py-32 text-center">
-          <Crown className="w-16 h-16 text-amber-500 mx-auto mb-6 opacity-50" />
+          <Crown className="w-16 h-16 text-primary mx-auto mb-6 opacity-50" />
           <h1 className="text-3xl font-bold mb-4">Campanha Fundador encerrada</h1>
           <p className="text-muted-foreground mb-8">
             Esta campanha não está mais disponível no momento.
@@ -183,18 +183,18 @@ export default function FundadorPage() {
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative bg-gradient-to-br from-amber-500/5 via-card to-orange-500/5 border-2 border-amber-500/30 rounded-3xl overflow-hidden shadow-2xl"
+        className="relative bg-gradient-to-br from-primary/5 via-card to-accent/5 border-2 border-primary/30 rounded-3xl overflow-hidden shadow-2xl"
       >
         {/* Brilho de borda */}
-        <div className="absolute inset-0 bg-gradient-to-br from-amber-400/10 to-orange-600/10 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-accent/10 pointer-events-none" />
 
         {/* Header */}
-        <div className="relative p-8 border-b border-amber-500/20">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold mb-4">
+        <div className="relative p-8 border-b border-primary/20">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gradient-to-r from-primary to-accent text-primary-foreground text-xs font-bold mb-4">
             <Crown size={14} /> OFERTA FUNDADOR
           </div>
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center text-primary-foreground">
               <Icon className="w-6 h-6" />
             </div>
             <div>
@@ -213,7 +213,7 @@ export default function FundadorPage() {
               <div>
                 <div className="flex items-baseline gap-2 mb-2">
                   <span className="text-sm text-muted-foreground">Lote {lot.lot_number} ·</span>
-                  <span className="text-5xl font-extrabold bg-gradient-to-r from-amber-500 to-orange-600 bg-clip-text text-transparent">
+                  <span className="text-5xl font-extrabold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                     R$ {lot.price.toFixed(0)}
                   </span>
                   <span className="text-muted-foreground">/único</span>
@@ -227,8 +227,8 @@ export default function FundadorPage() {
               <div>
                 <div className="flex justify-between text-sm mb-2">
                   <span className="font-semibold flex items-center gap-1.5">
-                    <Flame className="w-4 h-4 text-orange-500" />
-                    Restam <strong className="text-amber-600">{remaining}</strong> de {lot.total_slots} vagas
+                    <Flame className="w-4 h-4 text-accent" />
+                    Restam <strong className="text-primary">{remaining}</strong> de {lot.total_slots} vagas
                   </span>
                   <span className="text-muted-foreground">{percentSold.toFixed(0)}% vendido</span>
                 </div>
@@ -243,10 +243,10 @@ export default function FundadorPage() {
               </div>
 
               {/* Créditos IA */}
-              <div className="flex items-center gap-3 p-4 rounded-xl bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/20">
-                <Sparkles className="w-5 h-5 text-amber-500 shrink-0" />
+              <div className="flex items-center gap-3 p-4 rounded-xl bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20">
+                <Sparkles className="w-5 h-5 text-primary shrink-0" />
                 <div className="text-sm">
-                  <strong className="text-amber-700 dark:text-amber-400">
+                  <strong className="text-amber-700 dark:text-primary">
                     +{credits.toLocaleString("pt-BR")} créditos de IA
                   </strong>{" "}
                   <span className="text-muted-foreground">como bônus de boas-vindas</span>
@@ -268,7 +268,7 @@ export default function FundadorPage() {
                 onClick={() => handlePurchase(category)}
                 disabled={purchasing === tier}
                 size="lg"
-                className="w-full bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-bold text-lg h-14 shadow-lg shadow-amber-500/30"
+                className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90 text-primary-foreground font-bold text-lg h-14 shadow-lg shadow-primary/30"
               >
                 {purchasing === tier ? (
                   <>
@@ -297,7 +297,7 @@ export default function FundadorPage() {
                         className="px-3 py-1.5 rounded-lg bg-muted text-sm"
                       >
                         Lote {l.lot_number}:{" "}
-                        <strong className="text-amber-600">R$ {l.price.toFixed(0)}</strong>
+                        <strong className="text-primary">R$ {l.price.toFixed(0)}</strong>
                       </div>
                     ))}
                   </div>
@@ -331,7 +331,7 @@ export default function FundadorPage() {
       <MarketplaceNavbar theme={theme} user={user} />
 
       {/* HERO */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-amber-950 via-background to-orange-950/40 border-b border-amber-500/20">
+      <section className="relative overflow-hidden bg-gradient-to-br from-primary/20 via-background to-accent/10 border-b border-primary/20">
         <ThemeParticles color={theme.primary} glowColor={theme.promoAccent} count={40} />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,hsl(var(--primary)/0.15),transparent_70%)]" />
 
@@ -339,10 +339,10 @@ export default function FundadorPage() {
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/40 backdrop-blur-sm mb-6"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary/20 to-accent/20 border border-primary/40 backdrop-blur-sm mb-6"
           >
-            <Crown className="w-4 h-4 text-amber-400" />
-            <span className="text-sm font-bold text-amber-300 uppercase tracking-wider">
+            <Crown className="w-4 h-4 text-primary" />
+            <span className="text-sm font-bold text-primary uppercase tracking-wider">
               Edição Fundador · Vagas Limitadas
             </span>
           </motion.div>
@@ -353,9 +353,9 @@ export default function FundadorPage() {
             transition={{ delay: 0.1 }}
             className="text-4xl md:text-6xl lg:text-7xl font-extrabold mb-6 leading-tight"
           >
-            Pague <span className="bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">uma vez</span>.
+            Pague <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">uma vez</span>.
             <br />
-            Use para <span className="bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">sempre</span>.
+            Use para <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">sempre</span>.
           </motion.h1>
 
           <motion.p
@@ -380,7 +380,7 @@ export default function FundadorPage() {
               { icon: Shield, label: "Acesso garantido", value: "Vitalício" },
             ].map((s, i) => (
               <div key={i} className="text-center">
-                <s.icon className="w-6 h-6 text-amber-400 mx-auto mb-2" />
+                <s.icon className="w-6 h-6 text-primary mx-auto mb-2" />
                 <div className="text-2xl font-bold">{s.value}</div>
                 <div className="text-xs text-muted-foreground uppercase tracking-wide">
                   {s.label}
@@ -398,7 +398,7 @@ export default function FundadorPage() {
             <Button
               size="lg"
               onClick={() => document.getElementById("lotes")?.scrollIntoView({ behavior: "smooth" })}
-              className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-bold h-14 px-8 text-base shadow-xl shadow-amber-500/30"
+              className="bg-gradient-to-r from-primary to-accent hover:opacity-90 text-primary-foreground font-bold h-14 px-8 text-base shadow-xl shadow-primary/30"
             >
               <Crown className="w-5 h-5 mr-2" />
               Ver lote atual
@@ -439,7 +439,7 @@ export default function FundadorPage() {
       <section id="comparativo" className="py-16 lg:py-24 bg-muted/30 border-y border-border">
         <div className="max-w-5xl mx-auto px-4">
           <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-amber-600 text-xs font-bold mb-4">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-primary text-xs font-bold mb-4">
               <TrendingUp className="w-3.5 h-3.5" /> ECONOMIA REAL
             </div>
             <h2 className="text-3xl md:text-5xl font-bold mb-4">
@@ -455,7 +455,7 @@ export default function FundadorPage() {
             {individualLot && vipPlan && (
               <div className="bg-card border-2 border-border rounded-2xl p-6 lg:p-8">
                 <div className="flex items-center gap-3 mb-6">
-                  <Award className="w-8 h-8 text-amber-500" />
+                  <Award className="w-8 h-8 text-primary" />
                   <div>
                     <h3 className="text-xl font-bold">Corretor</h3>
                     <p className="text-xs text-muted-foreground">VIP vs Fundador</p>
@@ -476,7 +476,7 @@ export default function FundadorPage() {
                   </div>
                   <div className="border-t border-border pt-4 flex justify-between items-baseline">
                     <span className="text-sm font-semibold">Fundador (único)</span>
-                    <span className="text-2xl font-extrabold bg-gradient-to-r from-amber-500 to-orange-600 bg-clip-text text-transparent">
+                    <span className="text-2xl font-extrabold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                       R$ {individualLot.price.toFixed(0)}
                     </span>
                   </div>
@@ -494,12 +494,12 @@ export default function FundadorPage() {
 
             {/* Empresa */}
             {enterpriseLot && blackPlan && (
-              <div className="bg-card border-2 border-amber-500/50 rounded-2xl p-6 lg:p-8 relative">
-                <div className="absolute -top-3 left-6 px-3 py-1 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold">
+              <div className="bg-card border-2 border-primary/50 rounded-2xl p-6 lg:p-8 relative">
+                <div className="absolute -top-3 left-6 px-3 py-1 rounded-full bg-gradient-to-r from-primary to-accent text-primary-foreground text-xs font-bold">
                   MAIOR ECONOMIA
                 </div>
                 <div className="flex items-center gap-3 mb-6">
-                  <Diamond className="w-8 h-8 text-amber-500" />
+                  <Diamond className="w-8 h-8 text-primary" />
                   <div>
                     <h3 className="text-xl font-bold">Imobiliária</h3>
                     <p className="text-xs text-muted-foreground">Black vs Fundador</p>
@@ -520,7 +520,7 @@ export default function FundadorPage() {
                   </div>
                   <div className="border-t border-border pt-4 flex justify-between items-baseline">
                     <span className="text-sm font-semibold">Fundador (único)</span>
-                    <span className="text-2xl font-extrabold bg-gradient-to-r from-amber-500 to-orange-600 bg-clip-text text-transparent">
+                    <span className="text-2xl font-extrabold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                       R$ {enterpriseLot.price.toFixed(0)}
                     </span>
                   </div>
@@ -559,10 +559,10 @@ export default function FundadorPage() {
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.05 }}
-                className="flex items-start gap-3 p-5 rounded-2xl bg-card border border-border hover:border-amber-500/40 hover:shadow-lg transition-all"
+                className="flex items-start gap-3 p-5 rounded-2xl bg-card border border-border hover:border-primary/40 hover:shadow-lg transition-all"
               >
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500/20 to-orange-500/20 flex items-center justify-center shrink-0">
-                  <Check className="w-5 h-5 text-amber-600" />
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center shrink-0">
+                  <Check className="w-5 h-5 text-primary" />
                 </div>
                 <span className="font-semibold pt-1.5">{b}</span>
               </motion.div>
@@ -572,9 +572,9 @@ export default function FundadorPage() {
       </section>
 
       {/* CTA FINAL */}
-      <section className="py-16 lg:py-24 bg-gradient-to-br from-amber-950 via-background to-orange-950/40 border-t border-amber-500/20">
+      <section className="py-16 lg:py-24 bg-gradient-to-br from-primary/20 via-background to-accent/10 border-t border-primary/20">
         <div className="max-w-3xl mx-auto px-4 text-center">
-          <Crown className="w-16 h-16 text-amber-400 mx-auto mb-6" />
+          <Crown className="w-16 h-16 text-primary mx-auto mb-6" />
           <h2 className="text-3xl md:text-5xl font-bold mb-6">
             Sua vaga não espera você decidir.
           </h2>
@@ -586,7 +586,7 @@ export default function FundadorPage() {
             size="lg"
             onClick={() => handlePurchase(isImobiliaria ? "enterprise" : "individual")}
             disabled={!!purchasing}
-            className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-bold h-16 px-10 text-lg shadow-xl shadow-amber-500/40"
+            className="bg-gradient-to-r from-primary to-accent hover:opacity-90 text-primary-foreground font-bold h-16 px-10 text-lg shadow-xl shadow-primary/40"
           >
             {purchasing ? (
               <>
