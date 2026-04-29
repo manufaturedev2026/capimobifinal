@@ -278,7 +278,7 @@ export default function VenderPage() {
   return (
     <>
       <Helmet>
-        <title>Site Imobiliário com Gestão Completa | Capimobi</title>
+        <title>Site Imobiliário com Gestão Completa | {site_name}</title>
         <meta name="description" content="Crie seu site imobiliário com CRM, avaliação profissional, laudos, cálculo de área, contratos, stories e gestão completa. Comece gratuitamente." />
       </Helmet>
 
