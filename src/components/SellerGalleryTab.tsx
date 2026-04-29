@@ -1371,7 +1371,7 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
    SUBCOMPONENTES
    ═══════════════════════════════════════════════════════════════ */
 
-function Section({ title, icon: Icon, extra, children }: { title: string; icon: any; extra?: React.ReactNode; children: React.ReactNode }) {
+function Section({ title, icon: Icon, extra, children }: { title: string; icon: LucideIcon; extra?: React.ReactNode; children: React.ReactNode }) {
   return (
     <div className="rounded-2xl border border-border p-3 bg-card">
       <div className="flex items-center justify-between mb-2">
