@@ -28,7 +28,7 @@ export default function SearchPage() {
       setLoading(true);
       const { data } = await supabase
         .from("seller_items")
-        .select("id, title, price, photos, city, neighborhood, category, status, slug, seller_id")
+        .select("id, title, price, photos, thumbnail_url, city, neighborhood, category, status, slug, seller_id")
         .eq("status", "ativo")
         .ilike("title", `%${query}%`)
         .limit(60);
@@ -96,7 +96,7 @@ export default function SearchPage() {
                 return (
                   <Link key={item.id} to={`/imoveis/produto/${item.slug || item.id}`} className="group bg-card border border-border rounded-2xl overflow-hidden hover:shadow-lg transition-all">
                     <div className="aspect-[4/3] overflow-hidden relative">
-                      <img src={item.photos?.[0] || ""} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                      <img src={item.thumbnail_url || item.photos?.[0] || ""} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform" loading="lazy" />
                       {tier !== "basico" && (
                         <div className="absolute top-2 left-2">
                           <PackageBadge tier={tier as any} size="sm" />

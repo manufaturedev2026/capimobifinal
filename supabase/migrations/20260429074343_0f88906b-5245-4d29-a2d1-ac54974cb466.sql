@@ -1,0 +1,1 @@
+ALTER TABLE public.seller_items ADD COLUMN IF NOT EXISTS thumbnail_url text;

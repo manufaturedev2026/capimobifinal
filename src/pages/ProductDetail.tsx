@@ -218,7 +218,7 @@ export default function ProductDetail() {
     trackSellerEvent(item.seller_id, "view", item.id, undefined);
 
     const { data: related } = await supabase
-      .from("seller_items").select("id, title, price, photos, city, neighborhood, category, finality, slug")
+      .from("seller_items").select("id, title, price, photos, thumbnail_url, city, neighborhood, category, finality, slug")
       .eq("seller_id", item.seller_id).eq("status", "ativo").neq("id", item.id)
       .order("created_at", { ascending: false }).limit(8);
     setRelatedItems((related || []).map((r: any) => ({

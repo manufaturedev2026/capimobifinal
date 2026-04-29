@@ -51,6 +51,7 @@ const INITIAL_FORM = {
   cep: "",
   tags: [] as ItemTag[],
   photos: [] as string[],
+  thumbnail_url: "" as string,
   brand: "",
   model: "",
   year: "",
@@ -153,6 +154,7 @@ export default function SellerItemForm() {
               cep: d.cep || "",
               tags: (d.tags as ItemTag[]) || [],
               photos: d.photos || [],
+              thumbnail_url: d.thumbnail_url || "",
               brand: d.brand || "",
               model: d.model || "",
               year: d.year?.toString() || "",
@@ -266,19 +268,35 @@ export default function SellerItemForm() {
     }
     const filesToUpload = filesArray.slice(0, remaining);
     setUploading(true);
-    const { compressImages } = await import("@/lib/imageCompression");
+    const { compressImages, generateThumbnail, STORAGE_CACHE_HEADERS } = await import("@/lib/imageCompression");
     const compressed = await compressImages(filesToUpload);
     const newPhotos = [...form.photos];
-    for (const file of compressed) {
+    let firstThumbnailUrl: string | null = null;
+    for (let i = 0; i < compressed.length; i++) {
+      const file = compressed[i];
       const ext = file.name.split(".").pop();
-      const path = `${user.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-      const { error } = await supabase.storage.from("seller-uploads").upload(path, file, { contentType: file.type });
+      const baseId = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+      const path = `${user.id}/${baseId}.${ext}`;
+      const { error } = await supabase.storage.from("seller-uploads").upload(path, file, { contentType: file.type, ...STORAGE_CACHE_HEADERS });
       if (!error) {
         const { data: urlData } = supabase.storage.from("seller-uploads").getPublicUrl(path);
         newPhotos.push(urlData.publicUrl);
+
+        // Gera e sobe thumbnail apenas para a PRIMEIRA foto nova (usado em listagens)
+        if (i === 0 && form.photos.length === 0 && !firstThumbnailUrl) {
+          try {
+            const thumb = await generateThumbnail(filesToUpload[i]);
+            const thumbPath = `${user.id}/${baseId}-thumb.webp`;
+            const { error: thumbError } = await supabase.storage.from("seller-uploads").upload(thumbPath, thumb, { contentType: "image/webp", ...STORAGE_CACHE_HEADERS });
+            if (!thumbError) {
+              const { data: thumbUrlData } = supabase.storage.from("seller-uploads").getPublicUrl(thumbPath);
+              firstThumbnailUrl = thumbUrlData.publicUrl;
+            }
+          } catch (e) { console.warn("[thumbnail] falhou:", e); }
+        }
       }
     }
-    setForm((f) => ({ ...f, photos: newPhotos }));
+    setForm((f) => ({ ...f, photos: newPhotos, ...(firstThumbnailUrl ? { thumbnail_url: firstThumbnailUrl } : {}) }));
     setUploading(false);
     e.target.value = "";
   };
@@ -348,6 +366,7 @@ export default function SellerItemForm() {
       cep: strOrNull(form.cep),
       tags: isAluguel ? [...new Set([...form.tags, "aluguel_flex" as ItemTag])] : form.tags.filter(t => t !== "aluguel_flex"),
       photos: form.photos,
+      thumbnail_url: form.thumbnail_url || form.photos[0] || null,
       brand: strOrNull(form.brand),
       model: strOrNull(form.model),
       year: intOrNull(form.year),

@@ -120,8 +120,8 @@ export default function StoryUploadDialog({ open, onOpenChange, sellerId, onUplo
     try {
       // Comprime apenas se for imagem (não comprime vídeos de stories)
       let uploadFile = file;
+      const { STORAGE_CACHE_HEADERS, compressImage } = await import("@/lib/imageCompression");
       if (file.type.startsWith("image/")) {
-        const { compressImage } = await import("@/lib/imageCompression");
         uploadFile = await compressImage(file, { maxSizeMB: 0.5, maxWidthOrHeight: 1080 });
       }
       const ext = uploadFile.name.split(".").pop();
@@ -129,7 +129,7 @@ export default function StoryUploadDialog({ open, onOpenChange, sellerId, onUplo
 
       const { error: uploadError } = await supabase.storage
         .from("seller-uploads")
-        .upload(path, uploadFile, { contentType: uploadFile.type });
+        .upload(path, uploadFile, { contentType: uploadFile.type, ...STORAGE_CACHE_HEADERS });
       if (uploadError) throw uploadError;
 
       const { data: { publicUrl } } = supabase.storage

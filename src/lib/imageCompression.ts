@@ -1,13 +1,7 @@
 import imageCompression from "browser-image-compression";
 
 /**
- * Comprime uma imagem antes do upload para reduzir storage e bandwidth.
- *
- * Padrão:
- * - Converte para WebP (suporte universal moderno)
- * - Máximo 1600px no maior lado (suficiente para galerias HD)
- * - Tamanho alvo ~400KB por imagem (qualidade visual praticamente idêntica)
- *
+ * Compressão de imagens antes de upload.
  * Reduz custo do Lovable Cloud em ~70-80%.
  */
 export async function compressImage(
@@ -18,15 +12,13 @@ export async function compressImage(
     useWebp?: boolean;
   }
 ): Promise<File> {
-  // Ignora tipos não suportados (svg, gif animado, etc.)
   if (!file.type.startsWith("image/")) return file;
   if (file.type === "image/svg+xml" || file.type === "image/gif") return file;
 
-  const maxSizeMB = options?.maxSizeMB ?? 0.4; // 400KB
+  const maxSizeMB = options?.maxSizeMB ?? 0.4;
   const maxWidthOrHeight = options?.maxWidthOrHeight ?? 1600;
   const useWebp = options?.useWebp ?? true;
 
-  // Se já está pequena o suficiente E não precisamos converter formato, retorna original
   if (file.size <= maxSizeMB * 1024 * 1024 && !useWebp) return file;
 
   try {
@@ -38,7 +30,6 @@ export async function compressImage(
       initialQuality: 0.82,
     });
 
-    // Renomeia para .webp se converteu
     if (useWebp) {
       const baseName = file.name.replace(/\.[^.]+$/, "");
       return new File([compressed], `${baseName}.webp`, {
@@ -57,9 +48,6 @@ export async function compressImage(
   }
 }
 
-/**
- * Comprime múltiplas imagens em paralelo (limite de 4 simultâneas para não travar).
- */
 export async function compressImages(
   files: File[],
   options?: Parameters<typeof compressImage>[1]
@@ -75,13 +63,46 @@ export async function compressImages(
 }
 
 /**
- * Para covers/avatares: tamanho menor.
+ * Gera uma thumbnail muito pequena (320px, ~30KB) para uso em listagens/cards.
+ * Reduz drasticamente o egress em vitrines com muitos cards.
  */
+export async function generateThumbnail(file: File): Promise<File> {
+  return compressImage(file, {
+    maxSizeMB: 0.04, // ~40KB
+    maxWidthOrHeight: 320,
+    useWebp: true,
+  });
+}
+
 export const compressAvatar = (file: File) =>
   compressImage(file, { maxSizeMB: 0.15, maxWidthOrHeight: 600 });
 
-/**
- * Para banners hero: máxima qualidade mas otimizado.
- */
 export const compressHero = (file: File) =>
   compressImage(file, { maxSizeMB: 0.6, maxWidthOrHeight: 1920 });
+
+/**
+ * Headers padrão para upload em Supabase Storage:
+ * - cacheControl: 1 ano (navegador e CDN guardam, reduz egress)
+ * - upsert opcional
+ */
+export const STORAGE_CACHE_HEADERS = {
+  cacheControl: "31536000", // 1 ano
+} as const;
+
+/**
+ * Limites de upload de vídeo (stories, hero):
+ * - máximo 10MB para evitar consumo descontrolado
+ */
+export const MAX_VIDEO_SIZE_MB = 10;
+
+export function validateVideoSize(file: File): { valid: boolean; error?: string } {
+  if (!file.type.startsWith("video/")) return { valid: true };
+  const sizeMB = file.size / (1024 * 1024);
+  if (sizeMB > MAX_VIDEO_SIZE_MB) {
+    return {
+      valid: false,
+      error: `Vídeo muito grande (${sizeMB.toFixed(1)}MB). Máximo: ${MAX_VIDEO_SIZE_MB}MB. Comprima antes de enviar.`,
+    };
+  }
+  return { valid: true };
+}
