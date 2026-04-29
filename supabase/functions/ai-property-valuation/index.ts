@@ -473,8 +473,16 @@ async function fetchExternalMarket(
     "imovelweb.com.br",
     "wimoveis.com.br",
   ];
+  // Queries hiper-locais: CEP e rua (quando disponíveis) ajudam a achar imóveis vizinhos
+  const cepDigits = (p.cep || "").replace(/\D/g, "");
+  const cepQ = cepDigits.length === 8 ? `${cepDigits.slice(0, 5)}-${cepDigits.slice(5)}` : "";
+  const ruaQ = (p.rua || "").trim();
+  const hyperLocal: string[] = [];
+  if (ruaQ) hyperLocal.push(`${termoBusca}${finalidadeLabel ? " " + finalidadeLabel : ""} "${ruaQ}" ${p.bairro} ${p.cidade}`);
+  if (cepQ) hyperLocal.push(`${termoBusca} ${finalidadeLabel} ${cepQ}`);
   const searchQueries = [
     queryBase,
+    ...hyperLocal,
     ...targetSites.map((site) => `${queryBase} site:${site}`),
   ];
 
