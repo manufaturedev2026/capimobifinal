@@ -648,119 +648,196 @@ export default function VenderPage() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
-              {PLANS.map((plan, i) => (
-                <motion.div
-                  key={plan.key}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                  className={`relative bg-white/[0.04] backdrop-blur rounded-2xl border ${plan.popular ? "border-amber-400/60 ring-1 ring-amber-400/30 shadow-xl shadow-amber-500/10" : "border-white/10"} p-5 md:p-6 flex flex-col`}
-                >
-                  {plan.popular && (
-                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-[10px] font-bold uppercase px-4 py-1 rounded-full tracking-wide">
-                      Recomendado
-                    </span>
-                  )}
+            {loadingPlans ? (
+              <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-white/30" /></div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
+                {individualPlans.map((plan, i) => {
+                  const style = getTierStyle(plan.tier);
+                  const Icon = style.icon;
+                  const isPopular = plan.is_popular || !!style.badge;
+                  return (
+                    <motion.div
+                      key={plan.id}
+                      initial={{ opacity: 0, y: 30 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: i * 0.08, duration: 0.5 }}
+                      whileHover={{ y: -6, transition: { duration: 0.2 } }}
+                      className={`group relative overflow-hidden bg-gradient-to-br ${style.gradient} backdrop-blur-xl rounded-2xl border ${style.ring} ${style.glow} shadow-2xl p-5 md:p-6 flex flex-col`}
+                    >
+                      {/* Glow ambient */}
+                      <div className="absolute -top-20 -right-20 w-40 h-40 bg-white/5 rounded-full blur-3xl group-hover:bg-white/10 transition-all duration-500" />
 
-                  <h3 className="font-display font-bold text-lg md:text-xl">{plan.name}</h3>
-                  <p className="text-[11px] md:text-xs text-white/40 mt-1">{plan.subtitle}</p>
+                      {style.badge && (
+                        <span className={`absolute -top-3 left-1/2 -translate-x-1/2 z-10 ${style.ctaGradient ? `bg-gradient-to-r ${style.ctaGradient}` : "bg-gradient-to-r from-amber-500 to-orange-500"} text-white text-[10px] font-black uppercase px-4 py-1 rounded-full tracking-widest shadow-lg`}>
+                          {style.badge}
+                        </span>
+                      )}
 
-                  <div className="mt-4 md:mt-5 mb-3 md:mb-4">
-                    {plan.price === 0 ? (
-                      <p className="text-2xl md:text-3xl font-black">Gratuito</p>
-                    ) : (
-                      <>
-                        <p className="text-2xl md:text-3xl font-black">
-                          {plan.priceLabel}<span className="text-xs md:text-sm font-normal text-white/40">/mês</span>
-                        </p>
-                        <p className="text-[10px] md:text-[11px] font-bold mt-1" style={{ color: theme.primary }}>
-                          ✨ 7 dias grátis
-                        </p>
-                      </>
-                    )}
-                  </div>
+                      <div className="relative z-10 flex flex-col h-full">
+                        <div className="flex items-center gap-2 mb-3">
+                          <div className="p-2 bg-white/10 rounded-lg backdrop-blur">
+                            <Icon className="w-5 h-5 text-white" />
+                          </div>
+                          <h3 className="font-display font-black text-xl md:text-2xl">{plan.name}</h3>
+                        </div>
+                        <p className="text-[11px] md:text-xs text-white/50 mb-4">{style.subtitle}</p>
 
-                  <ul className="space-y-2 md:space-y-2.5 flex-1 mb-5 md:mb-6">
-                    {plan.benefits.map((b) => (
-                      <li key={b} className="flex items-start gap-2 text-xs md:text-sm text-white/60">
-                        <Check className="w-3.5 h-3.5 md:w-4 md:h-4 mt-0.5 shrink-0" style={{ color: theme.primary }} />
-                        {b}
-                      </li>
-                    ))}
-                  </ul>
+                        <div className="mb-4">
+                          {plan.price === 0 ? (
+                            <p className="text-3xl md:text-4xl font-black bg-gradient-to-br from-white to-white/60 bg-clip-text text-transparent">Gratuito</p>
+                          ) : (
+                            <>
+                              <div className="flex items-baseline gap-1">
+                                <span className="text-3xl md:text-4xl font-black bg-gradient-to-br from-white to-white/60 bg-clip-text text-transparent">{formatPrice(plan.price)}</span>
+                                <span className="text-xs md:text-sm font-normal text-white/40">/mês</span>
+                              </div>
+                              <p className="text-[10px] md:text-[11px] font-bold mt-1.5 flex items-center gap-1" style={{ color: theme.primary }}>
+                                <Sparkles className="w-3 h-3" /> 7 dias grátis
+                              </p>
+                            </>
+                          )}
+                        </div>
 
-                  <Button
-                    onClick={scrollToForm}
-                    className={`w-full rounded-xl font-bold text-sm ${
-                      plan.popular
-                        ? "bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white"
-                        : "bg-white/10 hover:bg-white/15 text-white"
-                    }`}
-                  >
-                    {plan.cta}
-                  </Button>
-                </motion.div>
-              ))}
-            </div>
+                        <div className="mb-4 px-3 py-2 rounded-lg bg-black/30 border border-white/5">
+                          <p className="text-[10px] uppercase tracking-wider text-white/40 mb-0.5">Limite de anúncios</p>
+                          <p className="text-sm font-bold text-white">{plan.max_items >= 9999 ? "Ilimitado" : `Até ${plan.max_items} imóveis`}</p>
+                        </div>
+
+                        <ul className="space-y-1.5 md:space-y-2 flex-1 mb-5">
+                          {plan.benefits.slice(0, 12).map((b) => (
+                            <li key={b} className="flex items-start gap-2 text-xs md:text-[13px] text-white/70">
+                              <Check className="w-3.5 h-3.5 mt-0.5 shrink-0" style={{ color: theme.primary }} />
+                              <span>{b}</span>
+                            </li>
+                          ))}
+                          {plan.benefits.length > 12 && (
+                            <li className="text-[11px] text-white/40 italic pl-5">+ {plan.benefits.length - 12} recursos adicionais</li>
+                          )}
+                        </ul>
+
+                        <Button
+                          onClick={scrollToForm}
+                          className={`w-full rounded-xl font-bold text-sm transition-all ${
+                            style.ctaGradient
+                              ? `bg-gradient-to-r ${style.ctaGradient} hover:brightness-110 text-white shadow-lg`
+                              : "bg-white/10 hover:bg-white/20 text-white border border-white/10"
+                          }`}
+                        >
+                          {plan.price === 0 ? "Criar conta grátis" : `Assinar ${plan.name}`}
+                          <ArrowRight className="w-4 h-4 ml-1" />
+                        </Button>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            )}
 
             {/* Enterprise Plans */}
-            <div className="mt-12 md:mt-16">
-              <div className="text-center mb-8">
-                <p className="font-semibold text-xs md:text-sm uppercase tracking-wide mb-2" style={{ color: theme.primary }}>Para Empresas</p>
-                <h3 className="font-display text-xl sm:text-2xl md:text-3xl font-black">
-                  Planos para Imobiliárias e Construtoras
-                </h3>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-5">
-                {ENTERPRISE_PLANS.map((plan, i) => (
+            {enterprisePlans.length > 0 && (
+              <div className="mt-16 md:mt-24">
+                <div className="text-center mb-10">
                   <motion.div
-                    key={plan.key}
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    transition={{ delay: i * 0.1 }}
-                    className={`relative bg-white/[0.04] backdrop-blur rounded-2xl border ${plan.key === "prime_empresa" ? "border-yellow-500/60 ring-1 ring-yellow-500/30 shadow-xl shadow-yellow-500/10" : "border-white/10"} p-5 md:p-6 flex flex-col`}
+                    className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-cyan-500/10 to-violet-500/10 border border-white/10 mb-4"
                   >
-                    {plan.key === "prime_empresa" && (
-                      <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-zinc-800 to-black text-yellow-400 text-[10px] font-bold uppercase px-4 py-1 rounded-full tracking-wide border border-yellow-500/50">
-                        ★ Top
-                      </span>
-                    )}
-
-                    <h3 className="font-display font-bold text-lg md:text-xl">{plan.name}</h3>
-                    <p className="text-[11px] md:text-xs text-white/40 mt-1">{plan.subtitle}</p>
-
-                    <div className="mt-4 md:mt-5 mb-3 md:mb-4">
-                      <p className="text-2xl md:text-3xl font-black">
-                        {plan.priceLabel}<span className="text-xs md:text-sm font-normal text-white/40">/mês</span>
-                      </p>
-                    </div>
-
-                    <ul className="space-y-2 md:space-y-2.5 flex-1 mb-5 md:mb-6">
-                      {plan.benefits.map((b) => (
-                        <li key={b} className="flex items-start gap-2 text-xs md:text-sm text-white/60">
-                          <Check className="w-3.5 h-3.5 md:w-4 md:h-4 mt-0.5 shrink-0" style={{ color: theme.primary }} />
-                          {b}
-                        </li>
-                      ))}
-                    </ul>
-
-                    <Button
-                      onClick={scrollToForm}
-                      className={`w-full rounded-xl font-bold text-sm ${
-                        plan.key === "prime_empresa"
-                          ? "bg-gradient-to-r from-zinc-800 to-black text-yellow-400 border border-yellow-500/30 hover:from-zinc-700 hover:to-zinc-900"
-                          : "bg-white/10 hover:bg-white/15 text-white"
-                      }`}
-                    >
-                      {plan.cta}
-                    </Button>
+                    <Building2 className="w-3.5 h-3.5 text-cyan-300" />
+                    <span className="text-[11px] font-bold uppercase tracking-widest bg-gradient-to-r from-cyan-300 to-violet-300 bg-clip-text text-transparent">Para Empresas</span>
                   </motion.div>
-                ))}
+                  <h3 className="font-display text-2xl sm:text-3xl md:text-4xl font-black bg-gradient-to-br from-white to-white/60 bg-clip-text text-transparent">
+                    Planos para Imobiliárias e Construtoras
+                  </h3>
+                  <p className="text-white/40 mt-3 text-sm md:text-base max-w-xl mx-auto">
+                    Múltiplos corretores, lojas-espelho, CRM compartilhado e analytics por equipe
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
+                  {enterprisePlans.map((plan, i) => {
+                    const style = getTierStyle(plan.tier);
+                    const Icon = style.icon;
+                    return (
+                      <motion.div
+                        key={plan.id}
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: i * 0.08, duration: 0.5 }}
+                        whileHover={{ y: -6, transition: { duration: 0.2 } }}
+                        className={`group relative overflow-hidden bg-gradient-to-br ${style.gradient} backdrop-blur-xl rounded-2xl border ${style.ring} ${style.glow} shadow-2xl p-5 md:p-6 flex flex-col`}
+                      >
+                        <div className="absolute -top-20 -right-20 w-40 h-40 bg-white/5 rounded-full blur-3xl group-hover:bg-white/10 transition-all duration-500" />
+
+                        {style.badge && (
+                          <span className={`absolute -top-3 left-1/2 -translate-x-1/2 z-10 ${style.ctaGradient ? `bg-gradient-to-r ${style.ctaGradient}` : "bg-gradient-to-r from-violet-500 to-fuchsia-500"} text-white text-[10px] font-black uppercase px-4 py-1 rounded-full tracking-widest shadow-lg`}>
+                            {style.badge}
+                          </span>
+                        )}
+
+                        <div className="relative z-10 flex flex-col h-full">
+                          <div className="flex items-center gap-2 mb-3">
+                            <div className="p-2 bg-white/10 rounded-lg backdrop-blur">
+                              <Icon className="w-5 h-5 text-white" />
+                            </div>
+                            <h3 className="font-display font-black text-xl md:text-2xl">{plan.name}</h3>
+                          </div>
+                          <p className="text-[11px] md:text-xs text-white/50 mb-4">{style.subtitle}</p>
+
+                          <div className="mb-4">
+                            {plan.price === 0 ? (
+                              <p className="text-3xl md:text-4xl font-black bg-gradient-to-br from-white to-white/60 bg-clip-text text-transparent">Gratuito</p>
+                            ) : (
+                              <>
+                                <div className="flex items-baseline gap-1">
+                                  <span className="text-3xl md:text-4xl font-black bg-gradient-to-br from-white to-white/60 bg-clip-text text-transparent">{formatPrice(plan.price)}</span>
+                                  <span className="text-xs md:text-sm font-normal text-white/40">/mês</span>
+                                </div>
+                                <p className="text-[10px] md:text-[11px] font-bold mt-1.5 flex items-center gap-1" style={{ color: theme.primary }}>
+                                  <Sparkles className="w-3 h-3" /> 7 dias grátis
+                                </p>
+                              </>
+                            )}
+                          </div>
+
+                          <div className="mb-4 px-3 py-2 rounded-lg bg-black/30 border border-white/5">
+                            <p className="text-[10px] uppercase tracking-wider text-white/40 mb-0.5">Limite de anúncios</p>
+                            <p className="text-sm font-bold text-white">{plan.max_items >= 9999 ? "Ilimitado" : `Até ${plan.max_items} imóveis`}</p>
+                          </div>
+
+                          <ul className="space-y-1.5 md:space-y-2 flex-1 mb-5">
+                            {plan.benefits.slice(0, 12).map((b) => (
+                              <li key={b} className="flex items-start gap-2 text-xs md:text-[13px] text-white/70">
+                                <Check className="w-3.5 h-3.5 mt-0.5 shrink-0" style={{ color: theme.primary }} />
+                                <span>{b}</span>
+                              </li>
+                            ))}
+                            {plan.benefits.length > 12 && (
+                              <li className="text-[11px] text-white/40 italic pl-5">+ {plan.benefits.length - 12} recursos adicionais</li>
+                            )}
+                          </ul>
+
+                          <Button
+                            onClick={scrollToForm}
+                            className={`w-full rounded-xl font-bold text-sm transition-all ${
+                              style.ctaGradient
+                                ? `bg-gradient-to-r ${style.ctaGradient} hover:brightness-110 shadow-lg`
+                                : "bg-white/10 hover:bg-white/20 text-white border border-white/10"
+                            }`}
+                          >
+                            {plan.price === 0 ? "Criar conta grátis" : `Assinar ${plan.name}`}
+                            <ArrowRight className="w-4 h-4 ml-1" />
+                          </Button>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </section>
 
