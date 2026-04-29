@@ -622,7 +622,7 @@ export default function CompanyProfile() {
             const stateName = dbProfile?.state || "";
             const sellerName = company.name;
             const totalItems = products.length;
-            const seoTitle = `${sellerName} — Imóveis em ${cityName}${stateName ? `, ${stateName}` : ""} | Capimobi`;
+            const seoTitle = `${sellerName} — Imóveis em ${cityName}${stateName ? `, ${stateName}` : ""} | ${site_name}`;
             const seoDesc = activeBio
               ? `${activeBio.slice(0, 130)} — ${totalItems} imóveis em ${cityName}.`
               : `Encontre ${totalItems}+ imóveis com ${sellerName} em ${cityName}. Casas, apartamentos, terrenos à venda. Contato direto via WhatsApp.`;
