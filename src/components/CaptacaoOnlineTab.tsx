@@ -137,7 +137,7 @@ const AD_TEMPLATES: AdTemplate[] = [
 ];
 
 export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, sellerName, currentTier = "basico", onUnreadCountChange }: CaptacaoOnlineTabProps) {
-  const TIER_ORDER = ["basico", "start", "premium", "vip", "essencial_empresa", "premium_empresa", "prime_empresa"];
+  const TIER_ORDER = ["basico", "start", "premium", "vip", "basico_empresa", "essencial_empresa", "premium_empresa", "prime_empresa"];
   const tierLevel = TIER_ORDER.indexOf(currentTier);
   const hasLandingPage = tierLevel >= 1;
   const hasBot = tierLevel >= 2;
