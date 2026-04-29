@@ -16,6 +16,7 @@ import PropertyFieldsApartamento from "@/components/PropertyFieldsApartamento";
 import PropertyFieldsTerreno from "@/components/PropertyFieldsTerreno";
 import PropertyFieldsComercial from "@/components/PropertyFieldsComercial";
 import ListingValuationFields from "@/components/ListingValuationFields";
+import LimitReachedDialog, { type LimitKind } from "@/components/LimitReachedDialog";
 
 type ItemCategory = Database["public"]["Enums"]["item_category"];
 type ItemTag = Database["public"]["Enums"]["item_tag"];
@@ -162,6 +163,9 @@ export default function SellerItemForm() {
   const { subscription, currentTier, config: pkgConfig, isExpired } = useSubscription(user?.id);
   const { usage: planUsage } = usePlanUsage(user?.id);
   const MAX_PHOTOS = planUsage?.limits.max_photos_per_listing ?? DEFAULT_MAX_PHOTOS;
+  const [limitDialog, setLimitDialog] = useState<{ open: boolean; kind: LimitKind }>({ open: false, kind: "items" });
+
+  const openLimit = (kind: LimitKind) => setLimitDialog({ open: true, kind });
 
   const [form, setForm] = useState(INITIAL_FORM);
   const { cities: ibgeCities, loading: citiesLoading } = useCitiesByState(form.state);
@@ -338,9 +342,19 @@ export default function SellerItemForm() {
     if (!e.target.files?.length || !user) return;
     const remaining = MAX_PHOTOS - form.photos.length;
     if (remaining <= 0) {
-      toast({ title: `Máximo de ${MAX_PHOTOS} fotos por imóvel`, description: "Remova alguma foto antes de adicionar outra.", variant: "destructive" });
+      openLimit("photos");
       e.target.value = "";
       return;
+    }
+    // Bloqueio de armazenamento do plano
+    if (planUsage && planUsage.limits.storage_mb > 0) {
+      const usedMb = planUsage.usage.storage_mb || 0;
+      const limitMb = planUsage.limits.storage_mb;
+      if (usedMb >= limitMb) {
+        openLimit("storage");
+        e.target.value = "";
+        return;
+      }
     }
     const filesArray = Array.from(e.target.files);
     if (filesArray.length > remaining) {
@@ -420,7 +434,10 @@ export default function SellerItemForm() {
     if (!profile) { toast({ title: "Erro", description: "Perfil não encontrado.", variant: "destructive" }); return; }
     if (!isAluguel && !form.category) { toast({ title: "Erro", description: "Selecione uma categoria.", variant: "destructive" }); return; }
     if (!form.title.trim()) { toast({ title: "Erro", description: "Preencha o título.", variant: "destructive" }); return; }
-    if (!isEdit && activeItemCount >= pkgConfig.maxItems) { toast({ title: "Limite atingido!", description: `Plano ${pkgConfig.name} permite até ${pkgConfig.maxItems} anúncios.`, variant: "destructive" }); return; }
+    if (!isEdit && activeItemCount >= pkgConfig.maxItems) {
+      openLimit("items");
+      return;
+    }
     if (isExpired && subscription) { toast({ title: "Assinatura expirada!", description: "Renove seu plano.", variant: "destructive" }); return; }
 
     setSaving(true);
@@ -981,6 +998,24 @@ export default function SellerItemForm() {
           )}
         </button>
       </form>
+      <LimitReachedDialog
+        open={limitDialog.open}
+        onOpenChange={(o) => setLimitDialog((d) => ({ ...d, open: o }))}
+        kind={limitDialog.kind}
+        used={
+          limitDialog.kind === "items" ? activeItemCount :
+          limitDialog.kind === "photos" ? form.photos.length :
+          limitDialog.kind === "storage" ? Math.round(planUsage?.usage.storage_mb || 0) :
+          undefined
+        }
+        limit={
+          limitDialog.kind === "items" ? pkgConfig.maxItems :
+          limitDialog.kind === "photos" ? MAX_PHOTOS :
+          limitDialog.kind === "storage" ? planUsage?.limits.storage_mb :
+          undefined
+        }
+        planName={planUsage?.plan_name || pkgConfig.name}
+      />
     </div>
   );
 }
