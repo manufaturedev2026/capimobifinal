@@ -117,6 +117,15 @@ export default function AgendaPage() {
     }
   };
 
+  const confirmQuick = async (v: VisitAppointment) => {
+    try {
+      await updateVisit(v.id, { status: "confirmada" });
+      toast({ title: "Visita confirmada ✅" });
+    } catch (e: any) {
+      toast({ title: "Erro", description: e.message, variant: "destructive" });
+    }
+  };
+
   const remove = async (v: VisitAppointment) => {
     if (!confirm("Excluir esta visita?")) return;
     try {
