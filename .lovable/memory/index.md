@@ -16,3 +16,5 @@ Homepage mode controlado pelo admin (marketplace ou single).
 - [Auto Stories](mem://features/auto-stories) — Stories automáticos no marketplace para VIP+, 24h expiry, limites por tier
 - [Push daily limits](mem://features/notifications/push-daily-limits) — Limite diário de envios push por plano (1 a 6/dia), validado no edge function send-push
 - [Professional title](mem://features/store/professional-title) — Campo professional_title em profiles + fallback por categoria via getSellerProfessionalTitle() em src/lib/sellerTitle.ts
+- [Initial Setup](mem://project/initial-setup) — Configurações obrigatórias após Remix: homepage_mode=marketplace, branding, layouts, roles
+- [Marketplace Sidebar](mem://features/store/marketplace-city-sidebar) — Sidebar lateral de cidades agrupadas por estado nas páginas Marketplace (home e loja), visível em lg+
