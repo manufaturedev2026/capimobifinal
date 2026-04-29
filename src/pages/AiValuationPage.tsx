@@ -222,19 +222,37 @@ export default function AiValuationPage() {
   const subtiposDisponiveis = getSubtiposByCategoria(categoria);
   const estruturasDisponiveis = getEstruturasBySubtipo(subtipo);
 
-  const handleCategoriaChange = (novaCat: CategoriaImovel) => {
-    setCategoria(novaCat);
+  // Mantém a posição visual estável quando o conteúdo acima
+  // (campos contextuais por tipo) aparece ou desaparece.
+  const preserveScroll = (anchorEl: HTMLElement | null, action: () => void) => {
+    const beforeTop = anchorEl?.getBoundingClientRect().top ?? null;
+    action();
+    if (anchorEl && beforeTop !== null) {
+      requestAnimationFrame(() => {
+        const afterTop = anchorEl.getBoundingClientRect().top;
+        const delta = afterTop - beforeTop;
+        if (Math.abs(delta) > 1) window.scrollBy({ top: delta, left: 0, behavior: "auto" });
+      });
+    }
+  };
+
+  const handleCategoriaChange = (novaCat: CategoriaImovel, anchor?: HTMLElement | null) => {
+    preserveScroll(anchor ?? null, () => {
+      setCategoria(novaCat);
     const subs = getSubtiposByCategoria(novaCat);
     const novoSub = subs[0] || "";
     setSubtipo(novoSub);
     const ests = getEstruturasBySubtipo(novoSub);
     setTipoEstrutura(ests[0] || "");
+    });
   };
 
-  const handleSubtipoChange = (novoSub: string) => {
-    setSubtipo(novoSub);
-    const ests = getEstruturasBySubtipo(novoSub);
-    setTipoEstrutura(ests[0] || "");
+  const handleSubtipoChange = (novoSub: string, anchor?: HTMLElement | null) => {
+    preserveScroll(anchor ?? null, () => {
+      setSubtipo(novoSub);
+      const ests = getEstruturasBySubtipo(novoSub);
+      setTipoEstrutura(ests[0] || "");
+    });
   };
 
 
