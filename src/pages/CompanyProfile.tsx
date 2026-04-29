@@ -1300,7 +1300,7 @@ export default function CompanyProfile() {
 
 
       {/* ═══════════ MAIN LAYOUT ═══════════ */}
-      <div className={`${isNetflix ? "w-full px-0" : isMarketplace ? "w-full px-4 md:px-8" : "max-w-[1800px] mx-auto px-4 md:px-8"} ${isMinimal || isMarketplace || isNetflix ? "py-0" : "py-6"}`}>
+      <div className={`${isNetflix ? "w-full px-0" : isMarketplace ? "w-full px-0" : "max-w-[1800px] mx-auto px-4 md:px-8"} ${isMinimal || isMarketplace || isNetflix ? "py-0" : "py-6"}`}>
         <div className={`flex ${isNetflix ? "gap-0" : "gap-8"}`}>
           {/* ═══════════ DESKTOP SIDEBAR ═══════════ */}
           <aside className={`hidden lg:block w-[280px] flex-shrink-0 ${isMarketplace || isNetflix || isElegant || isMagazine || isMinimal || false || isGallery ? "!hidden" : ""}`}>
