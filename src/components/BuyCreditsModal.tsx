@@ -1,4 +1,5 @@
-import { CSSProperties, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
+import type { CSSProperties } from "react";
 import { Coins, Sparkles, Check, X, Tag, Calculator } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
