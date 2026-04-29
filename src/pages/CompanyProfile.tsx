@@ -1172,7 +1172,7 @@ export default function CompanyProfile() {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-48">
                     <DropdownMenuItem onClick={() => {
-                      const text = `Confira ${company.name} no Capimobi: ${window.location.href}`;
+                      const text = `Confira ${company.name} no ${site_name}: ${window.location.href}`;
                       window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
                     }}>
                       <MessageCircle size={16} className="mr-2 text-[#25d366]" /> Enviar via WhatsApp
