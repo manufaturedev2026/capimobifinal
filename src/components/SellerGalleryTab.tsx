@@ -586,7 +586,11 @@ async function generateMarketingImage(o: GenOpts): Promise<string> {
   }
 
   /* ── 9. Bottom area (footer + details + location + title) ── */
-  let y = height - pad - (t.bottomBarColor ? Math.round(10 * scale) : 0);
+  // Margem extra do bottom quando density="minimal" (sem footer/details/location)
+  // garante que o título não fique colado/cortado na borda inferior.
+  const bottomBarOffset = t.bottomBarColor ? Math.round(10 * scale) : 0;
+  const minimalBottomBreath = o.density === "minimal" ? Math.round(28 * scale) : 0;
+  let y = height - pad - bottomBarOffset - minimalBottomBreath;
 
   // Footer (corretor)
   if (o.density !== "minimal") {
@@ -618,23 +622,31 @@ async function generateMarketingImage(o: GenOpts): Promise<string> {
     }
   }
 
-  // Localização
-  const location = o.item.neighborhood ? `📍 ${o.item.neighborhood}, ${o.item.city}` : o.item.city ? `📍 ${o.item.city}` : "";
-  if (location) {
-    const lfs = Math.round((isStory ? 44 : 36) * scale);
-    ctx.font = `600 ${lfs}px ${baseFont}`;
-    ctx.fillStyle = t.textSub;
-    ctx.fillText(location, pad, y);
-    y -= lfs + Math.round(14 * scale);
+  // Localização (oculta no modo minimal)
+  if (o.density !== "minimal") {
+    const location = o.item.neighborhood ? `📍 ${o.item.neighborhood}, ${o.item.city}` : o.item.city ? `📍 ${o.item.city}` : "";
+    if (location) {
+      const lfs = Math.round((isStory ? 44 : 36) * scale);
+      ctx.font = `600 ${lfs}px ${baseFont}`;
+      ctx.fillStyle = t.textSub;
+      ctx.fillText(location, pad, y);
+      y -= lfs + Math.round(14 * scale);
+    }
   }
 
   // Título (negrito grande, com encaixe automático para não cortar)
   const isMinimalTemplate = t.id === "minimalista_clean";
-  const titleFontSize = Math.round((isStory ? 76 : isA4 ? 64 : 60) * scale);
+  // No modo minimal o título é o ÚNICO texto — reduzimos o tamanho inicial
+  // para garantir que múltiplas linhas caibam confortavelmente.
+  const titleFontSize = o.density === "minimal"
+    ? Math.round((isStory ? 64 : isA4 ? 56 : 52) * scale)
+    : Math.round((isStory ? 76 : isA4 ? 64 : 60) * scale);
   ctx.fillStyle = t.textTop;
   const maxTitleWidth = width - pad * (isMinimalTemplate ? 2.35 : 2);
   const maxLines = isMinimalTemplate ? (isStory ? 3 : 2) : (isStory ? 4 : 3);
-  const minTitleSize = Math.round((isStory ? 48 : isA4 ? 42 : 38) * scale);
+  const minTitleSize = o.density === "minimal"
+    ? Math.round((isStory ? 40 : isA4 ? 36 : 32) * scale)
+    : Math.round((isStory ? 48 : isA4 ? 42 : 38) * scale);
   const fittedTitle = fitCanvasTextLines(
     ctx,
     (o.titleOverride && o.titleOverride.trim()) || o.item.title,
@@ -647,10 +659,16 @@ async function generateMarketingImage(o: GenOpts): Promise<string> {
   );
   const titleLineGap = Math.round((isMinimalTemplate ? 12 : 6) * scale);
   ctx.font = `${fontDef.weight} ${fittedTitle.size}px ${titleFont}`;
-  ctx.textBaseline = "bottom";
+  ctx.textAlign = "left";
+  ctx.textBaseline = "alphabetic";
+  // Desenha linha por linha de baixo para cima, usando alphabetic baseline para
+  // controle preciso. Reservamos uma "descender margin" para letras como g/p/ç
+  // não serem cortadas pela borda inferior do canvas.
+  const descenderMargin = Math.round(fittedTitle.size * 0.22);
+  let titleY = y - descenderMargin;
   for (let i = fittedTitle.lines.length - 1; i >= 0; i--) {
-    ctx.fillText(fittedTitle.lines[i], pad, y);
-    y -= fittedTitle.size + titleLineGap;
+    ctx.fillText(fittedTitle.lines[i], pad, titleY);
+    titleY -= fittedTitle.size + titleLineGap;
   }
 
   // Aggressive: CTA "FALE AGORA"
