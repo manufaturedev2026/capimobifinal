@@ -24,6 +24,14 @@ const aiMonthlyCredits: Record<string, number> = {
   prime_empresa: 3500,
   fundador_corretor: 500,
   fundador_empresa: 1750,
+  imob_basico: 25,
+  imob_start: 1500,
+  imob_pro: 3000,
+  imob_elite: 6000,
+  const_basico: 25,
+  const_start: 2000,
+  const_pro: 4500,
+  const_master: 10000,
 };
 
 interface FounderLot {
