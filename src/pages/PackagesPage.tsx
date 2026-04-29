@@ -328,7 +328,11 @@ export default function PackagesPage() {
           )}
           <div className="mt-3 flex items-center justify-center gap-2 rounded-xl bg-white/15 px-3 py-2 text-center">
             <Coins size={16} className="text-white" />
-            <span className="text-sm font-bold text-white">{formatCredits(credits)} créditos IA/mês</span>
+            <span className="text-sm font-bold text-white">
+              {billingPeriod === "annual"
+                ? `${formatCredits(credits * 12)} créditos IA/ano`
+                : `${formatCredits(credits)} créditos IA/mês`}
+            </span>
           </div>
         </div>
 
