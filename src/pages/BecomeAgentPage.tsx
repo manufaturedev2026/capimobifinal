@@ -379,7 +379,7 @@ export default function BecomeAgentPage() {
               {/* Glow behind mockup */}
               <div className="absolute -inset-6 bg-gradient-to-br from-primary/20 via-accent/10 to-primary/20 rounded-[2rem] blur-3xl opacity-60" />
               <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-primary/20 border border-border">
-                <img src={lojaNetflixImg} alt="Loja estilo Netflix do {{site}}" loading="lazy" className="w-full h-auto" width={1440} height={960} />
+                <img src={lojaNetflixImg} alt={`Loja estilo Netflix do ${site_name}`} loading="lazy" className="w-full h-auto" width={1440} height={960} />
               </div>
               {/* Floating badge */}
               <motion.div
