@@ -621,8 +621,8 @@ async function generateMarketingImage(o: GenOpts): Promise<string> {
     }
   }
 
-  // Localização (oculta no modo minimal)
-  if (o.density !== "minimal") {
+  // Localização — exibida apenas no modo "completo" e "aggressive"
+  if (o.density === "complete" || o.density === "aggressive") {
     const location = o.item.neighborhood ? `📍 ${o.item.neighborhood}, ${o.item.city}` : o.item.city ? `📍 ${o.item.city}` : "";
     if (location) {
       const lfs = Math.round((isStory ? 44 : 36) * scale);
