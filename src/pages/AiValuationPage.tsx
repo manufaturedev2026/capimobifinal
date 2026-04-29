@@ -21,6 +21,7 @@ import {
   AlertCircle, Loader2, Brain, MapPin, Home, Maximize2, Bed, FileText,
   Megaphone, Download, History, Wand2, FileBadge, Printer, Share2, Mail,
   Building2, Award, KeyRound, Trash2, Search, Settings2, ChevronDown, ChevronUp,
+  MapPinned,
 } from "lucide-react";
 import { generateValuationReport, getLaudoCode } from "@/lib/generateValuationReport";
 import AdvancedValuationFields, { ADVANCED_INITIAL, type AdvancedState } from "@/components/AdvancedValuationFields";
@@ -254,7 +255,37 @@ export default function AiValuationPage() {
   const [adLoading, setAdLoading] = useState(false);
   const [adContent, setAdContent] = useState<{ titulo: string; descricao: string } | null>(null);
 
+  const [cepLoading, setCepLoading] = useState(false);
+
   const { cities } = useCitiesByState(estado);
+
+  const handleBuscarCep = async () => {
+    const onlyDigits = cep.replace(/\D/g, "");
+    if (onlyDigits.length !== 8) {
+      toast({ title: "CEP inválido", description: "Digite o CEP com 8 dígitos.", variant: "destructive" });
+      return;
+    }
+    setCepLoading(true);
+    try {
+      const res = await fetch(`https://viacep.com.br/ws/${onlyDigits}/json/`);
+      const data = await res.json();
+      if (data.erro) {
+        toast({ title: "CEP não encontrado", description: "Verifique o CEP digitado.", variant: "destructive" });
+        return;
+      }
+      const formatted = `${onlyDigits.slice(0, 5)}-${onlyDigits.slice(5)}`;
+      setCep(formatted);
+      if (data.uf) setEstado(data.uf);
+      if (data.localidade) setCidade(data.localidade);
+      if (data.bairro) setBairro(data.bairro);
+      if (data.logradouro) setRua(data.logradouro);
+      toast({ title: "Endereço encontrado", description: `${data.logradouro || ""}${data.bairro ? " - " + data.bairro : ""}, ${data.localidade}/${data.uf}` });
+    } catch (e) {
+      toast({ title: "Erro ao buscar CEP", description: "Tente novamente em instantes.", variant: "destructive" });
+    } finally {
+      setCepLoading(false);
+    }
+  };
 
   useEffect(() => {
     const propertyId = searchParams.get("imovel");
@@ -695,14 +726,34 @@ export default function AiValuationPage() {
                   </SelectContent>
                 </Select>
               </Field>
-              <Field label="Bairro *">
-                <Input value={bairro} onChange={(e) => setBairro(e.target.value)} placeholder="Ex: Praia do Canto" />
+              <Field label="CEP * (preenche endereço automaticamente)">
+                <div className="flex gap-2">
+                  <Input
+                    value={cep}
+                    onChange={(e) => setCep(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleBuscarCep(); } }}
+                    placeholder="00000-000"
+                    inputMode="numeric"
+                  />
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={handleBuscarCep}
+                    disabled={cepLoading || !cep.trim()}
+                    className="shrink-0 gap-1.5"
+                  >
+                    {cepLoading
+                      ? <Loader2 className="h-4 w-4 animate-spin" />
+                      : <MapPinned className="h-4 w-4" />}
+                    Buscar
+                  </Button>
+                </div>
               </Field>
-              <Field label="CEP *">
-                <Input value={cep} onChange={(e) => setCep(e.target.value)} placeholder="00000-000" />
+              <Field label="Bairro *">
+                <Input value={bairro} onChange={(e) => setBairro(e.target.value)} placeholder="Preenchido pelo CEP" />
               </Field>
               <Field label="Rua *">
-                <Input value={rua} onChange={(e) => setRua(e.target.value)} placeholder="Nome da rua" />
+                <Input value={rua} onChange={(e) => setRua(e.target.value)} placeholder="Preenchido pelo CEP" />
               </Field>
               <Field label="Número *">
                 <Input value={numero} onChange={(e) => setNumero(e.target.value)} placeholder="Ex: 123" />
