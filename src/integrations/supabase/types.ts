@@ -3740,6 +3740,8 @@ export type Database = {
         | "premium_empresa"
         | "prime_empresa"
         | "black"
+        | "fundador_corretor"
+        | "fundador_empresa"
       rental_contract_status: "ativo" | "encerrado" | "cancelado" | "renovacao"
       rental_payment_status: "pago" | "pendente" | "atrasado" | "parcial"
       rental_reminder_type: "antes_vencimento" | "no_vencimento" | "atrasado"
@@ -3944,6 +3946,8 @@ export const Constants = {
         "premium_empresa",
         "prime_empresa",
         "black",
+        "fundador_corretor",
+        "fundador_empresa",
       ],
       rental_contract_status: ["ativo", "encerrado", "cancelado", "renovacao"],
       rental_payment_status: ["pago", "pendente", "atrasado", "parcial"],
