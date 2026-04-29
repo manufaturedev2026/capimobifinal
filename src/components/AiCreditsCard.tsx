@@ -1,8 +1,10 @@
-import { Coins, CreditCard, History, Sparkles } from "lucide-react";
+import { useState } from "react";
+import { Coins, CreditCard, History, Sparkles, BarChart3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useAiCredits } from "@/hooks/useAiCredits";
+import AiCreditsUsageModal from "./AiCreditsUsageModal";
 
 const TOOL_LABELS: Record<string, string> = {
   monthly_plan_reset: "Créditos do plano",
