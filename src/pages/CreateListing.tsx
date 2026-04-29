@@ -362,7 +362,7 @@ export default function CreateListing() {
               Pronto para vender <span className="text-accent">mais</span>?
             </h2>
             <p className="text-muted-foreground text-sm sm:text-base mb-6 sm:mb-8 max-w-lg mx-auto">
-              Cadastre-se gratuitamente e teste por 7 dias grátis no Capimobi.
+              Cadastre-se gratuitamente e teste por 7 dias grátis no {site_name}.
             </p>
             <Link to="/login" className="inline-flex items-center justify-center gap-2 px-6 sm:px-10 py-3 sm:py-4 rounded-xl bg-accent text-accent-foreground font-bold text-xs sm:text-sm hover:bg-accent/90 transition-all shadow-lg shadow-accent/20 w-full sm:w-auto">
               Cadastrar e Testar 7 Dias Grátis <ArrowRight size={14} />
