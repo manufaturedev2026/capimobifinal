@@ -315,7 +315,7 @@ export default function PackagesPage() {
   const inheritedTier = activeFounderLot?.inherited_tier;
   const founderPlan = plans.find((p) => p.tier === inheritedTier) || plans.find((p) => p.tier === founderTier);
 
-  const handleSelectFounder = async () => {
+  const handleSelectFounder = async (asUpgrade = false) => {
     if (!user || !profile) {
       navigate("/auth");
       return;
@@ -331,6 +331,7 @@ export default function PackagesPage() {
           tier: founderTier,
           billing_period: "annual",
           founder_lot_id: activeFounderLot.id,
+          is_founder_upgrade: asUpgrade,
         },
       });
       if (error) throw error;
@@ -594,13 +595,42 @@ export default function PackagesPage() {
           </>
         )}
 
-        {/* ===== Plano Fundador (apenas na aba Anual) ===== */}
+        {/* ===== Plano Fundador (apenas na aba Fundador) ===== */}
         {billingPeriod === "founder" && activeFounderLot && founderPlan && (() => {
           const slotsLeft = activeFounderLot.total_slots - activeFounderLot.used_slots;
           const pct = (activeFounderLot.used_slots / activeFounderLot.total_slots) * 100;
           const credits = activeFounderLot.ia_credits ?? aiMonthlyCredits[founderTier];
           const isCurrent = String(currentTier) === founderTier;
           const inheritedLabel = TIER_LABEL[activeFounderLot.inherited_tier] || (isImobiliaria ? "Black Empresa" : "VIP");
+
+          // ==== Detecta lote atual do usuário (para upgrade entre Fundadores) ====
+          const userFounderLot = isCurrent
+            ? founderLots
+                .filter((l) => l.category === founderCategory && l.id !== activeFounderLot.id)
+                .sort((a, b) => a.lot_number - b.lot_number)
+                .find((l) => l.inherited_tier !== activeFounderLot.inherited_tier)
+              ?? founderLots
+                .filter((l) => l.category === founderCategory)
+                .sort((a, b) => a.lot_number - b.lot_number)[0]
+            : null;
+          const userInheritedPlan = userFounderLot?.inherited_tier
+            ? plans.find((p) => p.tier === userFounderLot.inherited_tier)
+            : null;
+          const newInheritedPlan = plans.find((p) => p.tier === activeFounderLot.inherited_tier);
+          const isUpgradeAvailable =
+            isCurrent &&
+            userFounderLot != null &&
+            Number(activeFounderLot.price) > Number(userFounderLot.price);
+
+          // Estimativa de crédito proporcional (front: assume validade restante de 1 ano cheio se sem subscription)
+          const remainingYears = subscription?.expires_at
+            ? Math.max(0, (new Date(subscription.expires_at).getTime() - Date.now()) / (365 * 24 * 3600 * 1000))
+            : 1;
+          const estimatedCredit = userFounderLot
+            ? Number(userFounderLot.price) * Math.min(1, remainingYears)
+            : 0;
+          const upgradeDiff = Math.max(0, Number(activeFounderLot.price) - estimatedCredit);
+
           return (
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -613,7 +643,7 @@ export default function PackagesPage() {
               <div className="relative p-6 md:p-10 text-white">
                 <div className="flex flex-wrap items-center gap-3 mb-4">
                   <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-xs font-extrabold uppercase tracking-wider">
-                    <Crown size={14} /> Oferta Fundador
+                    <Crown size={14} /> {isUpgradeAvailable ? "Upgrade Fundador" : "Oferta Fundador"}
                   </span>
                   <span className="inline-flex items-center gap-1 px-3 py-1 bg-black/30 backdrop-blur-sm rounded-full text-xs font-bold">
                     Lote {activeFounderLot.lot_number}
@@ -623,14 +653,74 @@ export default function PackagesPage() {
                   </span>
                 </div>
 
+                {/* ===== MODO UPGRADE: Comparativo entre planos ===== */}
+                {isUpgradeAvailable && userInheritedPlan && newInheritedPlan && (
+                  <div className="mb-8 bg-black/25 backdrop-blur-md border border-white/20 rounded-2xl p-5">
+                    <p className="text-white/80 text-xs uppercase font-extrabold tracking-wider mb-3">
+                      ✨ Faça upgrade do seu plano Fundador
+                    </p>
+                    <div className="grid md:grid-cols-[1fr_auto_1fr] gap-4 items-center">
+                      {/* Plano atual */}
+                      <div className="bg-white/10 rounded-xl p-4 border border-white/20">
+                        <p className="text-white/70 text-[11px] uppercase font-bold tracking-wider">Você tem hoje</p>
+                        <h4 className="font-display font-extrabold text-xl text-white mt-1">
+                          Fundador {userInheritedPlan.name}
+                        </h4>
+                        <p className="text-white/80 text-sm mt-2">
+                          📦 {userInheritedPlan.max_items} anúncios<br/>
+                          🪙 {formatCredits(aiMonthlyCredits[userInheritedPlan.tier] ?? 250)} créditos IA
+                        </p>
+                      </div>
+                      {/* Seta */}
+                      <div className="text-center text-white text-3xl font-bold hidden md:block">→</div>
+                      <div className="text-center text-white text-2xl font-bold md:hidden">↓</div>
+                      {/* Novo plano */}
+                      <div className="bg-emerald-500/30 rounded-xl p-4 border-2 border-emerald-300">
+                        <p className="text-emerald-100 text-[11px] uppercase font-bold tracking-wider">Você passa a ter</p>
+                        <h4 className="font-display font-extrabold text-xl text-white mt-1">
+                          Fundador {newInheritedPlan.name}
+                        </h4>
+                        <p className="text-white/95 text-sm mt-2">
+                          📦 {newInheritedPlan.max_items} anúncios<br/>
+                          🪙 {formatCredits(credits)} créditos IA
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Diferenças e benefícios extras */}
+                    <div className="mt-4 grid sm:grid-cols-2 gap-2 text-sm">
+                      {newInheritedPlan.benefits
+                        .filter((b) => !userInheritedPlan.benefits.includes(b))
+                        .slice(0, 6)
+                        .map((b, i) => (
+                          <div key={i} className="flex items-start gap-2 text-white/95">
+                            <Sparkles size={14} className="text-emerald-200 mt-0.5 flex-shrink-0" />
+                            <span><strong className="text-emerald-200">NOVO:</strong> {b}</span>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                )}
+
                 <div className="grid lg:grid-cols-[1.2fr_1fr] gap-8 items-center">
                   <div>
                     <h2 className="font-display font-extrabold text-3xl md:text-4xl leading-tight">
-                      Seja um {isImobiliaria ? "Imobiliária" : "Corretor"} Fundador
+                      {isUpgradeAvailable
+                        ? `Suba para Fundador ${newInheritedPlan?.name || inheritedLabel}`
+                        : `Seja um ${isImobiliaria ? "Imobiliária" : "Corretor"} Fundador`}
                     </h2>
                     <p className="mt-3 text-white/90 text-base md:text-lg max-w-xl">
-                      Pagamento único, acesso por <strong>1 ano completo</strong> aos benefícios do plano{" "}
-                      <strong>{inheritedLabel}</strong> + selo exclusivo de Membro Fundador.
+                      {isUpgradeAvailable ? (
+                        <>
+                          Migre do seu Fundador atual para o <strong>{inheritedLabel}</strong> pagando apenas a diferença proporcional.
+                          Validade renovada por 1 ano completo a partir do upgrade.
+                        </>
+                      ) : (
+                        <>
+                          Pagamento único, acesso por <strong>1 ano completo</strong> aos benefícios do plano{" "}
+                          <strong>{inheritedLabel}</strong> + selo exclusivo de Membro Fundador.
+                        </>
+                      )}
                     </p>
 
                     <ul className="mt-5 grid sm:grid-cols-2 gap-2.5 text-sm">
@@ -650,13 +740,25 @@ export default function PackagesPage() {
                   </div>
 
                   <div className="bg-white/15 backdrop-blur-md border border-white/30 rounded-2xl p-6 text-center">
-                    <p className="text-white/80 text-sm font-semibold uppercase tracking-wider">Pagamento único</p>
+                    <p className="text-white/80 text-sm font-semibold uppercase tracking-wider">
+                      {isUpgradeAvailable ? "Diferença a pagar" : "Pagamento único"}
+                    </p>
+                    {isUpgradeAvailable && (
+                      <p className="text-white/70 text-xs line-through mt-1">
+                        de R$ {Number(activeFounderLot.price).toFixed(0)}
+                      </p>
+                    )}
                     <div className="mt-2 flex items-baseline justify-center gap-1">
                       <span className="text-white/70 text-2xl font-bold">R$</span>
                       <span className="font-display font-extrabold text-6xl">
-                        {Number(activeFounderLot.price).toFixed(0)}
+                        {isUpgradeAvailable ? upgradeDiff.toFixed(0) : Number(activeFounderLot.price).toFixed(0)}
                       </span>
                     </div>
+                    {isUpgradeAvailable && (
+                      <p className="text-emerald-200 text-xs mt-1 font-bold">
+                        ✓ Crédito de R$ {estimatedCredit.toFixed(0)} aplicado
+                      </p>
+                    )}
                     <p className="text-white/80 text-xs mt-1">à vista · sem renovação automática</p>
 
                     <div className="mt-4">
@@ -672,12 +774,14 @@ export default function PackagesPage() {
                     </div>
 
                     <button
-                      onClick={handleSelectFounder}
-                      disabled={isCurrent || selecting === founderTier}
+                      onClick={() => handleSelectFounder(isUpgradeAvailable)}
+                      disabled={(isCurrent && !isUpgradeAvailable) || selecting === founderTier}
                       className="mt-5 w-full py-3.5 rounded-xl bg-white text-amber-700 font-extrabold text-base hover:bg-amber-50 transition-all shadow-xl disabled:opacity-60"
                     >
                       {selecting === founderTier
                         ? "Processando..."
+                        : isUpgradeAvailable
+                        ? `🚀 Fazer upgrade por R$ ${upgradeDiff.toFixed(0)}`
                         : isCurrent
                         ? "Você é Fundador 🏆"
                         : `🏆 Garantir minha vaga`}

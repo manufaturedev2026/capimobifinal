@@ -29,7 +29,7 @@ serve(async (req) => {
     const user = data.user;
     if (!user?.email) throw new Error("Usuário não autenticado");
 
-    const { tier, billing_period = "monthly", coupon_code = null, founder_lot_id = null } = await req.json();
+    const { tier, billing_period = "monthly", coupon_code = null, founder_lot_id = null, is_founder_upgrade = false } = await req.json();
     if (!tier) throw new Error("Plano inválido");
     if (!["monthly", "annual"].includes(billing_period)) throw new Error("Período inválido");
 
@@ -48,6 +48,8 @@ serve(async (req) => {
 
     // ==== Validação especial para Fundador ====
     let founderLot: any = null;
+    let upgradeCreditCents = 0; // crédito proporcional do lote anterior (em centavos)
+    let previousFounderLot: any = null;
     if (isFounder) {
       if (!founder_lot_id) throw new Error("Lote do plano Fundador não informado");
       const { data: lot, error: lotErr } = await supabaseAdmin
@@ -63,7 +65,52 @@ serve(async (req) => {
       const expectedCat = tier === "fundador_corretor" ? "individual" : "enterprise";
       if (lot.category !== expectedCat) throw new Error("Lote não corresponde ao plano");
       founderLot = lot;
+
+      // ==== UPGRADE entre lotes Fundador: calcula crédito proporcional ====
+      if (is_founder_upgrade) {
+        const { data: currentSub } = await supabaseAdmin
+          .from("seller_subscriptions")
+          .select("id, tier, started_at, expires_at, notes, payment_reference")
+          .eq("user_id", user.id)
+          .eq("is_active", true)
+          .maybeSingle();
+        if (!currentSub) throw new Error("Você não possui assinatura Fundador ativa para fazer upgrade");
+        if (currentSub.tier !== tier) {
+          throw new Error("Upgrade Fundador só é permitido para a mesma categoria (corretor ou empresa)");
+        }
+
+        // Tenta extrair o lote anterior pelo notes/payment_reference
+        const refMatch = (currentSub.payment_reference || currentSub.notes || "").match(/lot[_:]?([a-f0-9-]{8,})/i);
+        if (refMatch?.[1]) {
+          const { data: prevLot } = await supabaseAdmin
+            .from("founder_lots")
+            .select("id, lot_number, price")
+            .eq("id", refMatch[1])
+            .maybeSingle();
+          if (prevLot) previousFounderLot = prevLot;
+        }
+
+        // Calcula valor proporcional do tempo restante
+        const now = Date.now();
+        const startMs = new Date(currentSub.started_at).getTime();
+        const endMs = new Date(currentSub.expires_at).getTime();
+        const totalMs = endMs - startMs;
+        const remainingMs = Math.max(0, endMs - now);
+        const remainingRatio = totalMs > 0 ? remainingMs / totalMs : 0;
+
+        // Se temos o lote anterior, usa o preço dele; senão estima pelo lote atual menos 1
+        const previousPrice = previousFounderLot?.price
+          ?? Math.max(0, Number(founderLot.price) - 100); // fallback conservador
+
+        upgradeCreditCents = Math.round(Number(previousPrice) * remainingRatio * 100);
+
+        // Garante que o upgrade só é permitido para um lote SUPERIOR (preço maior)
+        if (Number(founderLot.price) <= Number(previousPrice)) {
+          throw new Error("Upgrade só é permitido para um lote Fundador de valor superior");
+        }
+      }
     }
+
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2025-08-27.basil",
@@ -130,8 +177,13 @@ serve(async (req) => {
     if (isFounder) {
       // Fundador: preço fixo do lote, sem desconto, vale 1 ano
       grossTotal = Number(founderLot.price);
-      finalTotal = grossTotal;
-      periodLabel = `Fundador Lote ${founderLot.lot_number} · 1 ano`;
+      // Para upgrade Fundador→Fundador: desconta o crédito proporcional do lote anterior
+      finalTotal = is_founder_upgrade
+        ? Math.max(0.5, grossTotal - upgradeCreditCents / 100)
+        : grossTotal;
+      periodLabel = is_founder_upgrade
+        ? `Upgrade Fundador → Lote ${founderLot.lot_number} · validade renovada`
+        : `Fundador Lote ${founderLot.lot_number} · 1 ano`;
     } else {
       const basePrice = Number(plan.price);
       const months = billing_period === "annual" ? 12 : 1;
@@ -145,7 +197,9 @@ serve(async (req) => {
 
     const productName = `${plan.name} - ${periodLabel}`;
     const productDescription = isFounder
-      ? `🏆 Membro Fundador · Acesso por 1 ano · Pagamento único, sem renovação automática.`
+      ? (is_founder_upgrade
+        ? `🏆 Upgrade Fundador · Crédito de R$ ${(upgradeCreditCents / 100).toFixed(2)} aplicado. Acesso renovado por 1 ano.`
+        : `🏆 Membro Fundador · Acesso por 1 ano · Pagamento único, sem renovação automática.`)
       : (totalDiscount > 0
         ? `${couponDescription} aplicado. Pagamento único, sem renovação automática.`
         : `Pagamento único, sem renovação automática.`);
@@ -187,6 +241,8 @@ serve(async (req) => {
         tier,
         billing_period: isFounder ? "annual" : billing_period,
         is_founder: isFounder ? "1" : "0",
+        is_founder_upgrade: is_founder_upgrade ? "1" : "0",
+        upgrade_credit_brl: is_founder_upgrade ? (upgradeCreditCents / 100).toFixed(2) : "0",
         founder_lot_id: isFounder ? founderLot.id : "",
         founder_lot_number: isFounder ? String(founderLot.lot_number) : "",
         applied_coupon_code: appliedCouponCode || "",
