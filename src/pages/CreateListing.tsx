@@ -87,11 +87,12 @@ const companyPlans = [
   { name: "Black Empresa", price: "R$ 1.899,00/mês", items: "Anúncios ilimitados", features: ["Selo Empresa Verificada", "10 Stories por 24h", "Destaque na homepage", "Destaque no topo da listagem", "Estatísticas completas", "Campanha Google Ads ampliada", "Anúncios Dinâmicos Google ADS", "Gerente de conta dedicado", "Suporte VIP dedicado", "Instagram na loja", "Botão Modo Cinema na loja", "Até 30 corretores vinculados", "Prioridade total em destaque"] },
 ];
 export default function CreateListing() {
+  const { site_name } = useSiteSettings();
   return (
     <div className="min-h-screen bg-background">
       {/* Hero */}
       <div className="relative h-[55vh] sm:h-[65vh] md:h-[80vh] overflow-hidden">
-        <img src={heroImg} alt="Anuncie no Capimobi" className="absolute inset-0 w-full h-full object-cover" />
+        <img src={heroImg} alt={`Anuncie no ${site_name}`} className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-r from-background/80 to-transparent" />
 
