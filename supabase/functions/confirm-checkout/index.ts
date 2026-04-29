@@ -60,10 +60,12 @@ serve(async (req) => {
     const tier = String(meta.tier || "");
     const billingPeriod = String(meta.billing_period || "monthly");
     const maxItems = parseInt(String(meta.max_items || "5")) || 5;
+    const isFounder = String(meta.is_founder || "0") === "1";
+    const founderLotId = String(meta.founder_lot_id || "");
 
     if (!tier) throw new Error("Tier ausente na sessão");
 
-    // Idempotência: se já existe assinatura ativa criada por esta session, não duplica
+    // Idempotência
     const { data: existingForSession } = await supabaseAdmin
       .from("seller_subscriptions")
       .select("id")
@@ -77,7 +79,6 @@ serve(async (req) => {
       );
     }
 
-    // Pega seller_id (profile)
     const { data: profile } = await supabaseAdmin
       .from("profiles")
       .select("id")
@@ -85,18 +86,25 @@ serve(async (req) => {
       .maybeSingle();
     if (!profile) throw new Error("Perfil não encontrado");
 
-    // Desativa qualquer plano ativo (substituição imediata)
+    // Consome vaga do lote Fundador (atomic)
+    if (isFounder && founderLotId) {
+      const { data: consumed, error: consErr } = await supabaseAdmin.rpc("consume_founder_slot", {
+        p_lot_id: founderLotId,
+      });
+      if (consErr) throw consErr;
+      if (!consumed) throw new Error("Lote Fundador esgotado ou desativado");
+    }
+
     await supabaseAdmin
       .from("seller_subscriptions")
       .update({ is_active: false })
       .eq("user_id", user.id)
       .eq("is_active", true);
 
-    // Calcula expiração
-    const days = billingPeriod === "annual" ? 365 : 30;
+    // Fundador sempre vale 365 dias
+    const days = (isFounder || billingPeriod === "annual") ? 365 : 30;
     const expiresAt = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString();
 
-    // Insere o novo plano (one-time, sem renovação automática)
     const { error: insErr } = await supabaseAdmin
       .from("seller_subscriptions")
       .insert({
@@ -113,7 +121,8 @@ serve(async (req) => {
       });
     if (insErr) throw insErr;
 
-    // Concede créditos IA do novo plano (acumula com saldo atual)
+    // Concede créditos IA do plano (acumula com saldo atual)
+    // Para Fundador são concedidos uma única vez aqui (não renovam)
     const { data: creditsResult } = await supabaseAdmin.rpc("grant_plan_credits", {
       p_user_id: user.id,
       p_seller_id: profile.id,
