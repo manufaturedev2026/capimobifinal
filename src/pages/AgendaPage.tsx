@@ -36,6 +36,7 @@ type Quick = "todas" | "hoje" | "amanha" | "semana" | "mes";
 
 export default function AgendaPage() {
   const { user, profile } = useAuth();
+  const { site_name } = useSiteSettings();
   const navigate = useNavigate();
   const { toast } = useToast();
   const { visits, loading, createVisit, updateVisit, deleteVisit } = useVisitAppointments(user?.id, profile?.id);
