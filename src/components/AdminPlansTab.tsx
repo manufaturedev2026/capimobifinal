@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAllPlans, type Plan } from "@/hooks/usePlans";
 import {
   Pencil, Plus, Trash2, X, Check, GripVertical, Eye, EyeOff, Star, Save,
+  Calendar, CalendarDays, Crown, Info,
 } from "lucide-react";
 
 const CATEGORY_OPTIONS = [
