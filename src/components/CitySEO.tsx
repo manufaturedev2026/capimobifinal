@@ -1,5 +1,6 @@
 import { Helmet } from "react-helmet-async";
 import { SITE_URL } from "@/lib/siteUrl";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 interface CitySEOProps {
   city: string;
@@ -13,10 +14,11 @@ function capitalize(str: string) {
 }
 
 export default function CitySEO({ city, segment = "imoveis", itemCount, items = [] }: CitySEOProps) {
+  const { site_name } = useSiteSettings();
   const cityName = capitalize(city);
   const baseUrl = SITE_URL;
 
-  const title = `Imóveis em ${cityName} - Casas e Apartamentos à Venda | Capimobi`;
+  const title = `Imóveis em ${cityName} - Casas e Apartamentos à Venda | ${site_name}`;
   const description = `Encontre ${itemCount}+ imóveis em ${cityName}. Casas, apartamentos, terrenos e comerciais à venda e para alugar. Os melhores preços de ${cityName}.`;
 
   const slug = city.toLowerCase().replace(/\s+/g, "-");
