@@ -726,14 +726,34 @@ export default function AiValuationPage() {
                   </SelectContent>
                 </Select>
               </Field>
-              <Field label="Bairro *">
-                <Input value={bairro} onChange={(e) => setBairro(e.target.value)} placeholder="Ex: Praia do Canto" />
+              <Field label="CEP * (preenche endereço automaticamente)">
+                <div className="flex gap-2">
+                  <Input
+                    value={cep}
+                    onChange={(e) => setCep(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleBuscarCep(); } }}
+                    placeholder="00000-000"
+                    inputMode="numeric"
+                  />
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={handleBuscarCep}
+                    disabled={cepLoading || !cep.trim()}
+                    className="shrink-0 gap-1.5"
+                  >
+                    {cepLoading
+                      ? <Loader2 className="h-4 w-4 animate-spin" />
+                      : <MapPinned className="h-4 w-4" />}
+                    Buscar
+                  </Button>
+                </div>
               </Field>
-              <Field label="CEP *">
-                <Input value={cep} onChange={(e) => setCep(e.target.value)} placeholder="00000-000" />
+              <Field label="Bairro *">
+                <Input value={bairro} onChange={(e) => setBairro(e.target.value)} placeholder="Preenchido pelo CEP" />
               </Field>
               <Field label="Rua *">
-                <Input value={rua} onChange={(e) => setRua(e.target.value)} placeholder="Nome da rua" />
+                <Input value={rua} onChange={(e) => setRua(e.target.value)} placeholder="Preenchido pelo CEP" />
               </Field>
               <Field label="Número *">
                 <Input value={numero} onChange={(e) => setNumero(e.target.value)} placeholder="Ex: 123" />
