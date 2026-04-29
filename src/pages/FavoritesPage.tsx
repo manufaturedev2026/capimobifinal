@@ -33,7 +33,7 @@ export default function FavoritesPage() {
   return (
     <div className="min-h-screen bg-secondary/50">
       <Helmet>
-        <title>Meus Favoritos | Capimobi</title>
+        <title>Meus Favoritos | {site_name}</title>
       </Helmet>
 
       <div className="max-w-6xl mx-auto px-4 py-8">
