@@ -174,6 +174,7 @@ export default function AdminFunnelTab() {
   const [previewStep, setPreviewStep] = useState<Step | null>(null);
   const [showTemplates, setShowTemplates] = useState<string | null>(null); // step id
   const [historyFilter, setHistoryFilter] = useState<"all" | "enviado" | "falhou">("all");
+  const [clearingHistory, setClearingHistory] = useState(false);
   const [recipients, setRecipients] = useState<Recipient[]>([]);
   const [excluded, setExcluded] = useState<Excluded[]>([]);
   const [recipientFilter, setRecipientFilter] = useState<"all" | "active" | "excluded">("all");
@@ -340,6 +341,20 @@ export default function AdminFunnelTab() {
     setBusyEmail(null);
     if (error) toast({ title: "Erro", description: error.message, variant: "destructive" });
     else { toast({ title: "E-mail reincluído no funil", description: clean }); load(); }
+  };
+
+  const clearHistory = async () => {
+    const scope = historyFilter === "all" ? "TODO o histórico" : historyFilter === "enviado" ? "todos os ENVIADOS" : "todas as FALHAS";
+    if (!confirm(`Tem certeza que deseja apagar ${scope} (${filteredSends.length} registro(s))?\n\nEsta ação não pode ser desfeita.`)) return;
+    setClearingHistory(true);
+    let query = supabase.from("funnel_sends").delete();
+    if (historyFilter === "enviado") query = query.eq("status", "enviado");
+    else if (historyFilter === "falhou") query = query.neq("status", "enviado");
+    else query = query.not("id", "is", null);
+    const { error } = await query;
+    setClearingHistory(false);
+    if (error) toast({ title: "Erro", description: error.message, variant: "destructive" });
+    else { toast({ title: "Histórico limpo!", description: `${filteredSends.length} registro(s) removido(s)` }); load(); }
   };
 
   const addManualExclusion = async () => {
@@ -687,13 +702,20 @@ export default function AdminFunnelTab() {
         </div>
       ) : (
         <div className="space-y-3">
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap items-center">
             {(["all", "enviado", "falhou"] as const).map(f => (
               <button key={f} onClick={() => setHistoryFilter(f)}
                 className={`px-3 py-1.5 rounded-lg text-sm ${historyFilter === f ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
                 {f === "all" ? "Todos" : f === "enviado" ? "Enviados" : "Falhas"}
               </button>
             ))}
+            <button
+              onClick={clearHistory}
+              disabled={clearingHistory || filteredSends.length === 0}
+              className="ml-auto px-3 py-1.5 rounded-lg text-sm bg-destructive/10 text-destructive hover:bg-destructive/20 flex items-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed">
+              {clearingHistory ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+              Limpar histórico ({filteredSends.length})
+            </button>
           </div>
           <div className="bg-card text-card-foreground border border-border rounded-xl overflow-hidden shadow-sm overflow-x-auto">
             <table className="w-full text-sm">
