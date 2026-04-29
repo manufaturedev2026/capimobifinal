@@ -122,6 +122,9 @@ serve(async (req) => {
     const days = (isFounder || billingPeriod === "annual") ? 365 : 30;
     const expiresAt = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString();
 
+    // Define o billing_period efetivo (Fundador = 'founder', senão segue meta)
+    const effectiveBillingPeriod = isFounder ? "founder" : billingPeriod;
+
     const { error: insErr } = await supabaseAdmin
       .from("seller_subscriptions")
       .insert({
@@ -135,12 +138,14 @@ serve(async (req) => {
         payment_status: "confirmado",
         payment_reference: session.id,
         started_at: new Date().toISOString(),
+        billing_period: effectiveBillingPeriod,
       });
     if (insErr) throw insErr;
 
     // Créditos IA:
     // - Fundador: usa quantidade configurada no lote (uma única vez)
-    // - Demais planos: usa grant_plan_credits (lookup por tier)
+    // - Anual: grant_plan_credits entrega 12× o valor mensal de uma vez
+    // - Mensal: grant_plan_credits entrega o valor mensal e recarrega todo mês
     let creditsResult: unknown = null;
     if (isFounder && founderIaCredits && founderIaCredits > 0) {
       const { data } = await supabaseAdmin.rpc("add_ai_credits", {
@@ -159,6 +164,7 @@ serve(async (req) => {
         p_user_id: user.id,
         p_seller_id: profile.id,
         p_tier: tier,
+        p_billing_period: effectiveBillingPeriod,
       });
       creditsResult = data;
     }
