@@ -77,6 +77,28 @@ function rr(pdf: jsPDF, x: number, y: number, w: number, h: number, r: number, s
   pdf.roundedRect(x, y, w, h, r, r, style);
 }
 
+async function loadStaticMap(location: string): Promise<string | null> {
+  // 1) Geocode via Nominatim (OpenStreetMap) — no API key required
+  try {
+    const geo = await fetch(
+      `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(location)}`,
+      { headers: { "Accept": "application/json" } }
+    );
+    if (!geo.ok) return null;
+    const arr = await geo.json();
+    if (!Array.isArray(arr) || arr.length === 0) return null;
+    const lat = parseFloat(arr[0].lat);
+    const lon = parseFloat(arr[0].lon);
+    if (isNaN(lat) || isNaN(lon)) return null;
+
+    // 2) Static map via staticmap.openstreetmap.de (no key)
+    const url = `https://staticmap.openstreetmap.de/staticmap.php?center=${lat},${lon}&zoom=15&size=600x360&maptype=mapnik&markers=${lat},${lon},red-pushpin`;
+    return await loadImg(url);
+  } catch {
+    return null;
+  }
+}
+
 function setFill(pdf: jsPDF, c: [number, number, number]) { pdf.setFillColor(c[0], c[1], c[2]); }
 function setDraw(pdf: jsPDF, c: [number, number, number]) { pdf.setDrawColor(c[0], c[1], c[2]); }
 function setText(pdf: jsPDF, c: [number, number, number]) { pdf.setTextColor(c[0], c[1], c[2]); }
@@ -174,9 +196,7 @@ export async function generateProposalPdf(data: ProposalData) {
   const heroImg = await loadImg(data.image);
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(data.propertyUrl)}&format=png&margin=2`;
   const qrImg = await loadImg(qrUrl);
-  const mapImg = data.location
-    ? await loadImg(`https://maps.googleapis.com/maps/api/staticmap?center=${encodeURIComponent(data.location)}&zoom=15&size=600x400&markers=color:0x1E40AF|${encodeURIComponent(data.location)}&scale=2&maptype=roadmap`)
-    : null;
+  const mapImg = data.location ? await loadStaticMap(data.location) : null;
 
   const rental = isRental(data);
   // Pages: Cover, Specs, Differentials, (Financial only for sale), Location, CTA
