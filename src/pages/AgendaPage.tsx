@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useVisitAppointments, STATUS_META, VisitStatus, VisitAppointment } from "@/hooks/useVisitAppointments";
@@ -16,6 +16,10 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { supabase } from "@/integrations/supabase/client";
+import { getMarketplaceTheme } from "@/lib/marketplaceThemes";
+import { getMarketplaceThemeCssVars, getStoreThemeCssVars } from "@/lib/marketplaceThemeCssVars";
+import { getStoreTheme } from "@/components/StoreThemePicker";
 
 const todayISO = () => new Date().toISOString().slice(0, 10);
 const weekRange = () => {
@@ -48,6 +52,20 @@ export default function AgendaPage() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [openForm, setOpenForm] = useState(false);
   const [editing, setEditing] = useState<VisitAppointment | null>(null);
+  const [dashThemeId, setDashThemeId] = useState<string>("default");
+
+  useEffect(() => {
+    supabase.from("platform_settings").select("value").eq("key", "homepage_theme").maybeSingle().then(({ data }) => {
+      if (data?.value) setDashThemeId(data.value as string);
+    });
+  }, []);
+
+  const dashTheme = getMarketplaceTheme(dashThemeId);
+  const brokerStoreTheme = getStoreTheme((profile as any)?.store_theme);
+  const hasBrokerTheme = !!(profile as any)?.store_theme && (profile as any)?.store_theme !== "default";
+  const dashThemeVars = hasBrokerTheme
+    ? getStoreThemeCssVars(brokerStoreTheme)
+    : getMarketplaceThemeCssVars(dashTheme);
 
   const filtered = useMemo(() => {
     let list = [...visits];
@@ -151,7 +169,7 @@ export default function AgendaPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background" style={dashThemeVars}>
       <Helmet>
         <title>Agenda de Visitas — {site_name}</title>
         <meta name="description" content="Organize visitas a imóveis, leads e compromissos imobiliários em um só lugar." />
@@ -325,7 +343,7 @@ export default function AgendaPage() {
                             size="sm"
                             onClick={() => confirmQuick(v)}
                             title="Confirmar visita"
-                            className="px-0 sm:px-3 bg-emerald-600 hover:bg-emerald-700 text-white"
+                            className="px-0 sm:px-3 bg-primary hover:bg-primary/90 text-primary-foreground"
                           >
                             <CheckCircle2 className="w-4 h-4" />
                             <span className="hidden sm:inline ml-1 text-xs font-semibold">Confirmar</span>
