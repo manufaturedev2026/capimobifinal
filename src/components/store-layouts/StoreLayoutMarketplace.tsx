@@ -22,11 +22,14 @@ const QUICK_ACTIONS = [
   { slug: "flat", name: "Flats", desc: "Compactos", icon: Landmark },
 ];
 
-const getBenefits = (cityName?: string, creci?: string | null) => [
+const getBenefitsRow = () => [
   { icon: Phone, title: "Contato Direto", desc: "Fale direto com o corretor via WhatsApp" },
-  { icon: Globe, title: "Cobertura Regional", desc: `Imóveis em toda${cityName ? ` ${cityName}` : " a região"}` },
-  { icon: ShieldCheck, title: "Corretor Verificado", desc: creci ? `CRECI ${creci}` : "Corretor com CRECI ativo" },
   { icon: Megaphone, title: "Anuncie seu Imóvel", desc: "Cadastre o seu imóvel em nosso site sem custo" },
+];
+
+const getBenefitsStack = (cityName?: string, creci?: string | null, verifiedTitle: string = "Corretor(a) Verificado(a)") => [
+  { icon: ShieldCheck, title: verifiedTitle, desc: creci ? `CRECI ${creci}` : "Profissional com registro ativo" },
+  { icon: Globe, title: "Cobertura Regional", desc: `Imóveis em toda${cityName ? ` ${cityName}` : " a região"}` },
 ];
 
 /* ── Floating particles component ── */
