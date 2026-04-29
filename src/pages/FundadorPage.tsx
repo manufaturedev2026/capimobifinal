@@ -321,10 +321,10 @@ export default function FundadorPage() {
   return (
     <div className="min-h-screen bg-background" style={themeVars}>
       <Helmet>
-        <title>Seja Fundador Capimobi · Plano vitalício por pagamento único</title>
+        <title>Seja Fundador Capimobi · Pagamento único válido por 1 ano</title>
         <meta
           name="description"
-          content="Garanta acesso vitalício à plataforma Capimobi com pagamento único. Vagas limitadas — quando o lote esgota, o preço sobe automaticamente."
+          content="Garanta 12 meses de acesso premium à plataforma Capimobi com pagamento único. Vagas limitadas — quando o lote esgota, o preço sobe automaticamente."
         />
       </Helmet>
 
