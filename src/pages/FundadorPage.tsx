@@ -331,26 +331,103 @@ export default function FundadorPage() {
         />
       </Helmet>
 
+      {/* ✨ Partículas globais épicas (cobrem a página inteira) */}
+      <ThemeParticles color={theme.primary} glowColor={theme.promoAccent} count={90} />
+
+      {/* Keyframes épicos locais */}
+      <style>{`
+        @keyframes epicPulse {
+          0%, 100% { opacity: 0.4; transform: scale(1); }
+          50% { opacity: 0.9; transform: scale(1.15); }
+        }
+        @keyframes epicFloat {
+          0%, 100% { transform: translateY(0) rotate(0deg); }
+          50% { transform: translateY(-20px) rotate(5deg); }
+        }
+        @keyframes epicSpin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        @keyframes epicGlowRing {
+          0%, 100% { box-shadow: 0 0 40px var(--epic-glow), 0 0 80px var(--epic-glow), inset 0 0 20px var(--epic-glow); }
+          50% { box-shadow: 0 0 80px var(--epic-glow), 0 0 160px var(--epic-glow), inset 0 0 40px var(--epic-glow); }
+        }
+        @keyframes epicShimmer {
+          0% { background-position: -200% 0; }
+          100% { background-position: 200% 0; }
+        }
+        @keyframes epicRayRotate {
+          from { transform: translate(-50%, -50%) rotate(0deg); }
+          to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        .epic-shimmer-text {
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+          background-size: 200% 100%;
+          -webkit-background-clip: text;
+          background-clip: text;
+          animation: epicShimmer 3s linear infinite;
+        }
+      `}</style>
+
       <MarketplaceNavbar theme={theme} user={user} />
 
       {/* HERO */}
-      <section className="relative overflow-hidden border-b border-white/10">
-        <ThemeParticles color={theme.primary} glowColor={theme.promoAccent} count={40} />
-        <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${theme.primary}20, transparent 60%, ${theme.promoAccent || theme.primary}15)` }} />
-        <div className="absolute top-20 left-1/4 w-64 md:w-96 h-64 md:h-96 rounded-full blur-[120px]" style={{ background: `${theme.primary}25` }} />
-        <div className="absolute bottom-0 right-1/4 w-52 md:w-80 h-52 md:h-80 rounded-full blur-[100px]" style={{ background: `${theme.promoAccent || theme.primary}18` }} />
+      <section className="relative overflow-hidden border-b border-white/10 min-h-[90vh] flex items-center">
+        {/* Raios de luz rotacionando */}
+        <div
+          className="absolute top-1/2 left-1/2 w-[200%] h-[200%] pointer-events-none opacity-20"
+          style={{
+            background: `conic-gradient(from 0deg, transparent 0deg, ${theme.primary}40 20deg, transparent 40deg, transparent 180deg, ${theme.promoAccent || theme.primary}30 200deg, transparent 220deg)`,
+            animation: "epicRayRotate 30s linear infinite",
+          }}
+        />
 
-        <div className="relative max-w-6xl mx-auto px-4 py-20 lg:py-28 text-center">
+        {/* Grid radial */}
+        <div className="absolute inset-0 opacity-[0.05]" style={{ backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
+
+        {/* Orbs flutuantes */}
+        <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${theme.primary}25, transparent 60%, ${theme.promoAccent || theme.primary}20)` }} />
+        <div
+          className="absolute top-20 left-1/4 w-64 md:w-96 h-64 md:h-96 rounded-full blur-[120px]"
+          style={{ background: `${theme.primary}40`, animation: "epicPulse 5s ease-in-out infinite" }}
+        />
+        <div
+          className="absolute bottom-0 right-1/4 w-52 md:w-80 h-52 md:h-80 rounded-full blur-[100px]"
+          style={{ background: `${theme.promoAccent || theme.primary}30`, animation: "epicPulse 7s ease-in-out infinite", animationDelay: "1s" }}
+        />
+        <div
+          className="absolute top-1/2 right-10 w-32 md:w-48 h-32 md:h-48 rounded-full blur-[80px]"
+          style={{ background: `${theme.primary}30`, animation: "epicFloat 8s ease-in-out infinite" }}
+        />
+
+        {/* Coroas decorativas flutuantes */}
+        <div className="absolute top-32 left-10 opacity-10 hidden md:block" style={{ animation: "epicFloat 6s ease-in-out infinite" }}>
+          <Crown className="w-16 h-16" style={{ color: theme.primary }} />
+        </div>
+        <div className="absolute bottom-40 right-10 opacity-10 hidden md:block" style={{ animation: "epicFloat 9s ease-in-out infinite", animationDelay: "2s" }}>
+          <Diamond className="w-14 h-14" style={{ color: theme.promoAccent || theme.primary }} />
+        </div>
+        <div className="absolute top-1/3 right-1/4 opacity-10 hidden md:block" style={{ animation: "epicFloat 7s ease-in-out infinite", animationDelay: "1s" }}>
+          <Sparkles className="w-10 h-10" style={{ color: theme.primary }} />
+        </div>
+
+        <div className="relative max-w-6xl mx-auto px-4 py-20 lg:py-28 text-center w-full">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-sm mb-6"
-            style={{ background: `${theme.primary}25`, border: `1px solid ${theme.primary}50` }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-sm mb-6 relative"
+            style={{
+              background: `${theme.primary}25`,
+              border: `1px solid ${theme.primary}80`,
+              ["--epic-glow" as any]: `${theme.primary}60`,
+              animation: "epicGlowRing 3s ease-in-out infinite",
+            }}
           >
-            <Crown className="w-4 h-4" style={{ color: theme.primary }} />
+            <Crown className="w-4 h-4" style={{ color: theme.primary, animation: "epicPulse 2s ease-in-out infinite" }} />
             <span className="text-sm font-bold uppercase tracking-wider" style={{ color: theme.primary }}>
               Edição Fundador · Vagas Limitadas
             </span>
+            <Sparkles className="w-4 h-4" style={{ color: theme.promoAccent || theme.primary, animation: "epicPulse 2s ease-in-out infinite", animationDelay: "0.5s" }} />
           </motion.div>
 
           <motion.h1
@@ -358,10 +435,11 @@ export default function FundadorPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
             className="font-display text-4xl md:text-6xl lg:text-7xl font-extrabold mb-6 leading-[1.1] text-white"
+            style={{ textShadow: `0 0 60px ${theme.primary}80, 0 0 120px ${theme.primary}40` }}
           >
-            Pague <span className="text-transparent bg-clip-text" style={{ backgroundImage: `linear-gradient(to right, ${theme.primary}, ${theme.promoAccent || theme.primary})` }}>uma vez</span>.
+            Pague <span className="text-transparent bg-clip-text" style={{ backgroundImage: `linear-gradient(to right, ${theme.primary}, ${theme.promoAccent || theme.primary})`, filter: `drop-shadow(0 0 30px ${theme.primary})` }}>uma vez</span>.
             <br />
-            Use por <span className="text-transparent bg-clip-text" style={{ backgroundImage: `linear-gradient(to right, ${theme.primary}, ${theme.promoAccent || theme.primary})` }}>12 meses</span>.
+            Use por <span className="text-transparent bg-clip-text" style={{ backgroundImage: `linear-gradient(to right, ${theme.primary}, ${theme.promoAccent || theme.primary})`, filter: `drop-shadow(0 0 30px ${theme.promoAccent || theme.primary})` }}>12 meses</span>.
           </motion.h1>
 
           <motion.p
