@@ -538,6 +538,29 @@ export async function generateValuationReport(d: ValuationReportData): Promise<j
 
   y = Math.max(yL, yR) + 4;
 
+  // ===== Valores informados (opcional) =====
+  const _valorPedido = Number(d.valorPedido) || 0;
+  const _iptu = Number(d.iptu) || 0;
+  const _condominio = Number(d.condominio) || 0;
+  if (_valorPedido > 0 || _iptu > 0 || _condominio > 0) {
+    y = sectionTitle("Valores Informados", y);
+    yL = y; yR = y;
+    const fmtBRL = (n: number) =>
+      n.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
+    if (_valorPedido > 0) rowL("Valor pedido", fmtBRL(_valorPedido));
+    if (_iptu > 0) rowR("IPTU (anual)", fmtBRL(_iptu));
+    if (_condominio > 0) rowL("Condomínio (mensal)", fmtBRL(_condominio));
+    if (_valorPedido > 0 && d.result?.valor_estimado) {
+      const diff = ((_valorPedido - d.result.valor_estimado) / d.result.valor_estimado) * 100;
+      const sinal = diff >= 0 ? "+" : "";
+      rowR(
+        "Pedido vs avaliado",
+        `${sinal}${diff.toFixed(1)}% ${diff > 5 ? "(acima)" : diff < -5 ? "(abaixo)" : "(alinhado)"}`,
+      );
+    }
+    y = Math.max(yL, yR) + 4;
+  }
+
   y = sectionTitle("Diferenciais", y);
   if (d.extras.length === 0) {
     y = para("Nenhum diferencial declarado.", y, { color: GRAY });
