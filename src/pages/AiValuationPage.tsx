@@ -786,12 +786,20 @@ export default function AiValuationPage() {
           </Section>
 
           <Section icon={<Home className="h-4 w-4" />} title="Categoria do imóvel">
-            <ChipGroup options={CATEGORIAS as unknown as string[]} value={categoria} onChange={(v) => handleCategoriaChange(v as CategoriaImovel)} />
+            <ChipGroup
+              options={CATEGORIAS as unknown as string[]}
+              value={categoria}
+              onChange={(v, el) => handleCategoriaChange(v as CategoriaImovel, el)}
+            />
           </Section>
 
           {subtiposDisponiveis.length > 0 && (
             <Section icon={<Building2 className="h-4 w-4" />} title="Subtipo">
-              <ChipGroup options={subtiposDisponiveis} value={subtipo} onChange={handleSubtipoChange} />
+              <ChipGroup
+                options={subtiposDisponiveis}
+                value={subtipo}
+                onChange={(v, el) => handleSubtipoChange(v, el)}
+              />
             </Section>
           )}
 
