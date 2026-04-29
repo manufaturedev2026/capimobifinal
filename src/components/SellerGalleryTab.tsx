@@ -666,8 +666,12 @@ async function generateMarketingImage(o: GenOpts): Promise<string> {
     ctx.fillText(fittedTitle.lines[i], pad, titleY);
     titleY -= fittedTitle.size + titleLineGap;
   }
+  // Topo real do bloco do título (linha mais alta, considerando ascender)
+  // titleY já está acima da primeira linha desenhada — usamos como referência
+  // para empilhar o CTA acima sem sobreposição.
+  const titleTopY = titleY + fittedTitle.size + titleLineGap;
 
-  // Aggressive: CTA "FALE AGORA"
+  // Aggressive: CTA "FALE AGORA" (acima do título)
   if (o.density === "aggressive") {
     const cta = "👉 FALE AGORA";
     const ctaFs = Math.round(34 * scale);
@@ -677,7 +681,8 @@ async function generateMarketingImage(o: GenOpts): Promise<string> {
     const cw = cm.width + cp * 2;
     const ch = ctaFs + cp;
     const cx = pad;
-    const cy = y - ch - Math.round(14 * scale);
+    // Posiciona o CTA acima do TOPO do título (não em cima dele)
+    const cy = titleTopY - fittedTitle.size - ch - Math.round(18 * scale);
     ctx.fillStyle = t.accent;
     drawRoundedRect(ctx, cx, cy, cw, ch, Math.round(10 * scale));
     ctx.fill();
@@ -1154,13 +1159,12 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
             </button>
           </div>
 
-          {/* Headline IA — gerada por Lovable AI */}
-          <div className="mt-3 rounded-xl border-2 border-dashed border-primary/30 bg-gradient-to-br from-violet-500/5 via-fuchsia-500/5 to-pink-500/5 p-3">
+          {/* Editar Título — manual, sem IA */}
+          <div className="mt-3 rounded-xl border-2 border-dashed border-primary/30 bg-primary/5 p-3">
             <div className="flex items-center justify-between gap-2 mb-2">
               <div className="flex items-center gap-1.5">
-                <Sparkles size={14} className="text-fuchsia-500" />
-                <span className="text-xs font-bold text-foreground">Headline IA</span>
-                <span className="text-[9px] font-bold text-fuchsia-600 bg-fuchsia-500/10 px-1.5 py-0.5 rounded">1 crédito</span>
+                <Wand2 size={14} className="text-primary" />
+                <span className="text-xs font-bold text-foreground">Editar título da arte</span>
               </div>
               {aiHeadline && (
                 <button onClick={() => setAiHeadline(null)} className="text-[10px] text-muted-foreground hover:text-foreground">
@@ -1168,22 +1172,17 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
                 </button>
               )}
             </div>
-            {aiHeadline ? (
-              <div className="space-y-2">
-                <p className="text-sm font-bold text-foreground leading-snug">"{aiHeadline}"</p>
-                <button onClick={handleGenerateAiHeadline} disabled={aiHeadlineLoading} className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white font-bold text-[11px] hover:opacity-90 transition disabled:opacity-50">
-                  {aiHeadlineLoading ? <Loader2 size={12} className="animate-spin" /> : <Wand2 size={12} />}
-                  Gerar outra
-                </button>
-              </div>
-            ) : (
-              <button onClick={handleGenerateAiHeadline} disabled={aiHeadlineLoading || !selectedItem} className="w-full flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg bg-gradient-to-br from-violet-500 via-fuchsia-500 to-pink-500 text-white font-bold text-xs hover:opacity-90 transition disabled:opacity-50">
-                {aiHeadlineLoading ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
-                {aiHeadlineLoading ? "Criando chamada perfeita..." : "Gerar Headline com IA ✨"}
-              </button>
-            )}
+            <textarea
+              value={aiHeadline ?? ""}
+              onChange={(e) => setAiHeadline(e.target.value || null)}
+              placeholder={selectedItem?.title || "Digite uma chamada personalizada..."}
+              maxLength={80}
+              rows={2}
+              className="w-full px-2.5 py-2 rounded-lg border border-border bg-background text-sm font-bold text-foreground resize-none focus:outline-none focus:ring-2 focus:ring-primary/30"
+              style={{ fontFamily: `'${FONTS[selectedFont]?.family || "Inter"}', sans-serif` }}
+            />
             <p className="text-[10px] text-muted-foreground mt-1.5 leading-tight">
-              Cria uma chamada de marketing curta e persuasiva para substituir o título cru do imóvel na arte.
+              Personalize o título que aparece na arte. Usa a mesma fonte selecionada acima. Deixe em branco para usar o título original.
             </p>
           </div>
         </div>
