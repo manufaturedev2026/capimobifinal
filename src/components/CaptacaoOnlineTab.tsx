@@ -1027,7 +1027,7 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
               </div>
               <p className="text-base font-bold text-foreground mb-1">Bots de Captação</p>
               <p className="text-sm text-muted-foreground mb-4">Disponível a partir do plano VIP</p>
-              <Button size="sm" variant="outline" className="gap-1.5 text-xs rounded-xl">Upgrade</Button>
+              <Button size="sm" className="gap-1.5 text-xs rounded-xl bg-primary text-primary-foreground hover:bg-primary/90">Upgrade</Button>
             </div>
           ) : (
             <CaptureBotsManagerTab sellerId={sellerId} sellerSlug={sellerSlug} />
