@@ -639,13 +639,14 @@ export default function PackagesPage() {
           const upgradeDiff = Math.max(0, Number(activeFounderLot.price) - estimatedCredit);
 
           return (
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mt-12 relative overflow-hidden rounded-3xl border-2 border-amber-400/60 shadow-[0_20px_60px_-15px_rgba(245,158,11,0.5)]"
-            >
-              <div className="absolute inset-0 bg-gradient-to-br from-amber-500 via-orange-500 to-yellow-600" />
-              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.25),transparent_60%)]" />
+             <motion.div
+               initial={{ opacity: 0, y: 30 }}
+               animate={{ opacity: 1, y: 0 }}
+               className="mt-12 relative overflow-hidden rounded-3xl border-2 border-white/30 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.4)]"
+             >
+               <div className={`absolute inset-0 bg-gradient-to-br ${founderColor}`} />
+               <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.25),transparent_60%)]" />
+               <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.25),transparent_60%)]" />
 
               <div className="relative p-6 md:p-10 text-white">
                 <div className="flex flex-wrap items-center gap-3 mb-4">
