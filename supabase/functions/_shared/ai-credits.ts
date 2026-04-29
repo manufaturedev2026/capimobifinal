@@ -120,6 +120,18 @@ export async function consumeAiCredits(
     p_seller_id: sellerId,
   });
 
+  // Cobrança por janela de atendimento (apenas para bots de chat)
+  const charge = await shouldChargeForSession(admin, userId, sellerId, toolKey, visitorKey ?? null);
+  if (!charge) {
+    // Janela ainda aberta — sem cobrança
+    const { data: walletRow } = await (admin as any)
+      .from("ai_credit_wallets")
+      .select("balance")
+      .eq("user_id", userId)
+      .maybeSingle();
+    return { ok: true, admin, userId, sellerId, cost: 0, balance: Number(walletRow?.balance ?? 0) };
+  }
+
   const { data: debit, error } = await admin.rpc("consume_ai_credits", {
     p_user_id: userId,
     p_amount: cost,
