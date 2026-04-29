@@ -343,7 +343,9 @@ REGRAS:
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
-      chatCredit = await consumeAiCreditsForUser(admin, ownerUserId, typeof sellerId === "string" ? sellerId : null, "capture_bot_chat", corsHeaders);
+      const visitorIp = (req.headers.get("x-forwarded-for") || "").split(",")[0].trim() || req.headers.get("cf-connecting-ip") || "unknown";
+      const visitorKey = `${visitorIp}:${typeof sellerId === "string" ? sellerId : ownerUserId}`;
+      chatCredit = await consumeAiCreditsForUser(admin, ownerUserId, typeof sellerId === "string" ? sellerId : null, "capture_bot_chat", corsHeaders, visitorKey);
       if (!chatCredit.ok) return chatCredit.response;
     }
 
