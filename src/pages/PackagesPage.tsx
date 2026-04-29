@@ -63,6 +63,7 @@ export default function PackagesPage() {
   const [validatingCoupon, setValidatingCoupon] = useState(false);
   const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null);
   const [founderLots, setFounderLots] = useState<FounderLot[]>([]);
+  const [founderEnabled, setFounderEnabled] = useState<boolean>(true);
 
   // Carrega o desconto anual configurado pelo admin
   useEffect(() => {
@@ -76,16 +77,24 @@ export default function PackagesPage() {
     })();
   }, []);
 
-  // Carrega lotes Fundador ativos
+  // Carrega lotes Fundador ativos + setting global
   useEffect(() => {
     (async () => {
-      const { data } = await (supabase as any)
-        .from("founder_lots")
-        .select("id, category, lot_number, price, total_slots, used_slots, is_active")
-        .eq("is_active", true)
-        .order("category")
-        .order("lot_number");
-      if (data) setFounderLots(data as FounderLot[]);
+      const [{ data: lots }, { data: settings }] = await Promise.all([
+        (supabase as any)
+          .from("founder_lots")
+          .select("id, category, lot_number, price, total_slots, used_slots, is_active")
+          .eq("is_active", true)
+          .order("category")
+          .order("lot_number"),
+        (supabase as any)
+          .from("founder_settings")
+          .select("is_enabled")
+          .eq("id", 1)
+          .maybeSingle(),
+      ]);
+      if (lots) setFounderLots(lots as FounderLot[]);
+      if (settings) setFounderEnabled(settings.is_enabled !== false);
     })();
   }, []);
 
