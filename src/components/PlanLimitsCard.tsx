@@ -76,13 +76,8 @@ export default function PlanLimitsCard({ userId }: { userId?: string }) {
       <div className="space-y-4">
         {items.map((item) => {
           const Icon = item.icon;
-          const percent = item.reverse
-            ? getUsagePercent(Math.max(0, item.limit - item.used), item.limit)
-            : getUsagePercent(item.used, item.limit);
-          const displayPercent = item.reverse ? 100 - percent : percent;
-          const color = item.reverse
-            ? (item.used <= item.limit * 0.05 ? "bg-red-500" : item.used <= item.limit * 0.2 ? "bg-amber-500" : "bg-emerald-500")
-            : getUsageColor(displayPercent);
+          const displayPercent = getUsagePercent(item.used, item.limit);
+          const color = getUsageColor(displayPercent);
           const isUnlimited = !item.limit || item.limit >= 9999;
 
           return (
