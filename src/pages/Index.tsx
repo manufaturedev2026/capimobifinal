@@ -115,6 +115,7 @@ const PLANS_PREVIEW = [
 
 export default function Index() {
   const { user } = useAuth();
+  const { site_name } = useSiteSettings();
   const [activeScreen, setActiveScreen] = useState(0);
   const [phoneScreen, setPhoneScreen] = useState(0);
   const [cinemaMode, setCinemaMode] = useState<number | null>(null);
