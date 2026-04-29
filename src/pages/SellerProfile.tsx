@@ -135,6 +135,7 @@ export default function SellerProfile({ embedded }: { embedded?: boolean }) {
       slug: cleanSlug || null,
       seller_type: "imoveis",
       state: form.state || null,
+      professional_title: form.professional_title.trim() || null,
     };
 
     if (!profileData.seller_category) delete profileData.seller_category;
