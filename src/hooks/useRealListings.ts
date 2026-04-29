@@ -194,12 +194,13 @@ export function useRealListings(segment?: "imoveis" | "automoveis") {
       // Tier weight: higher = more priority in sorting (appears first more often)
       // All items appear, but higher tiers get weighted shuffle priority
       const tierWeight: Record<string, number> = {
-        prime_empresa: 200,
-        premium_empresa: 140,
-        essencial_empresa: 100,
-        vip: 70,       // Display: "Premium" (plano mais caro individual)
-        premium: 40,   // Display: "VIP"
+        prime_empresa: 70,    // Pareado com VIP individual ("Premium")
+        vip: 70,              // Display: "Premium"
+        premium_empresa: 40,  // Pareado com Premium individual ("VIP")
+        premium: 40,          // Display: "VIP"
+        essencial_empresa: 20, // Pareado com Start
         start: 20,
+        basico_empresa: 10,
         basico: 10,
       };
 
@@ -208,19 +209,19 @@ export function useRealListings(segment?: "imoveis" | "automoveis") {
       // But lower tiers still have a chance to appear near the top
       const weightedItems = mapped.map((item: any) => {
         let weight = tierWeight[item.sellerTier] ?? 10;
-        // Gamification: Black Tag 24h gives same priority as prime_empresa (200)
+        // Gamification: Black Tag 24h gives top priority (same as prime_empresa/vip)
         if (blackTagSellers.has(item.sellerId)) {
-          weight = Math.max(weight, 200);
+          weight = Math.max(weight, 70);
           item.hasBlackTag = true;
         }
-        // Gamification: Destaque 24h boosts to essencial_empresa level (100)
+        // Gamification: Destaque 24h boosts to mid level (essencial_empresa/start)
         if (destaqueSellers.has(item.sellerId)) {
-          weight = Math.max(weight, 100);
+          weight = Math.max(weight, 20);
           item.hasDestaque = true;
         }
         // Manual destaque from seller profile (up to 5 items)
         if (destaqueItemIds.has(item.id)) {
-          weight = Math.max(weight, 100);
+          weight = Math.max(weight, 20);
           item.hasDestaque = true;
         }
         const randomFactor = Math.random();
