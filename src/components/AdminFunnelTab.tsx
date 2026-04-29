@@ -174,6 +174,7 @@ export default function AdminFunnelTab() {
   const [previewStep, setPreviewStep] = useState<Step | null>(null);
   const [showTemplates, setShowTemplates] = useState<string | null>(null); // step id
   const [historyFilter, setHistoryFilter] = useState<"all" | "enviado" | "falhou">("all");
+  const [clearingHistory, setClearingHistory] = useState(false);
   const [recipients, setRecipients] = useState<Recipient[]>([]);
   const [excluded, setExcluded] = useState<Excluded[]>([]);
   const [recipientFilter, setRecipientFilter] = useState<"all" | "active" | "excluded">("all");
