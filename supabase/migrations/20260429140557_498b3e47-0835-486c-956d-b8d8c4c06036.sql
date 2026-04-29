@@ -1,0 +1,1 @@
+INSERT INTO platform_settings (key, value) VALUES ('homepage_mode', 'marketplace') ON CONFLICT (key) DO UPDATE SET value = 'marketplace';
