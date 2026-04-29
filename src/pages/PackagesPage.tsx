@@ -571,7 +571,7 @@ export default function PackagesPage() {
         )}
 
         {/* ===== Plano Fundador (apenas na aba Anual) ===== */}
-        {billingPeriod === "annual" && activeFounderLot && founderPlan && (() => {
+        {billingPeriod === "founder" && activeFounderLot && founderPlan && (() => {
           const slotsLeft = activeFounderLot.total_slots - activeFounderLot.used_slots;
           const pct = (activeFounderLot.used_slots / activeFounderLot.total_slots) * 100;
           const credits = aiMonthlyCredits[founderTier];
