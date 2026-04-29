@@ -91,7 +91,7 @@ export default function BuyCreditsModal({ open, onClose }: Props) {
                   </span>
                 )}
                 {pkg.discount > 0 && (
-                  <span className="absolute top-2 left-2 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-emerald-500/15 text-emerald-600">
+                  <span className="absolute top-2 left-2 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-accent/20 text-accent-foreground border border-accent/30">
                     <Tag className="h-3 w-3" /> -{pkg.discount}%
                   </span>
                 )}
