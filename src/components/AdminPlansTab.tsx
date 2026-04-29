@@ -357,8 +357,10 @@ export default function AdminPlansTab() {
               </div>
             </div>
           </motion.div>
-        ))}
+        );
+        })}
       </div>
+      )}
 
       {/* Editor Modal */}
       <AnimatePresence>
