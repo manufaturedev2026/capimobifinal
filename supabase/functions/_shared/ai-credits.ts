@@ -215,7 +215,7 @@ export async function consumeAiCreditsForUser(
   corsHeaders: Record<string, string>,
   visitorKey?: string | null,
 ): Promise<CreditCheck> {
-  const cost = AI_CREDIT_COSTS[toolKey];
+  const cost = (await getToolConfig(admin, toolKey)).cost;
   await admin.rpc("refresh_ai_monthly_credits", { p_user_id: userId, p_seller_id: sellerId });
 
   const charge = await shouldChargeForSession(admin, userId, sellerId, toolKey, visitorKey ?? null);
