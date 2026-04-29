@@ -117,6 +117,15 @@ export default function AgendaPage() {
     }
   };
 
+  const confirmQuick = async (v: VisitAppointment) => {
+    try {
+      await updateVisit(v.id, { status: "confirmada" });
+      toast({ title: "Visita confirmada ✅" });
+    } catch (e: any) {
+      toast({ title: "Erro", description: e.message, variant: "destructive" });
+    }
+  };
+
   const remove = async (v: VisitAppointment) => {
     if (!confirm("Excluir esta visita?")) return;
     try {
@@ -301,7 +310,7 @@ export default function AgendaPage() {
                         {v.notes && <p className="text-xs text-muted-foreground mt-1 italic break-words">"{v.notes}"</p>}
                       </div>
 
-                      <div className="grid grid-cols-5 sm:flex sm:flex-wrap gap-1.5 sm:shrink-0">
+                      <div className="grid grid-cols-6 sm:flex sm:flex-wrap gap-1.5 sm:shrink-0">
                         <Button size="sm" variant="outline" onClick={() => openWhatsApp(v.client_phone, v.client_name)} title="WhatsApp" className="px-0 sm:px-3">
                           <MessageCircle className="w-4 h-4" />
                         </Button>
@@ -311,8 +320,19 @@ export default function AgendaPage() {
                         <Button size="sm" variant="outline" onClick={() => { setEditing(v); setOpenForm(true); }} title="Editar" className="px-0 sm:px-3">
                           <Edit3 className="w-4 h-4" />
                         </Button>
+                        {v.status !== "confirmada" && v.status !== "fechada" ? (
+                          <Button
+                            size="sm"
+                            onClick={() => confirmQuick(v)}
+                            title="Confirmar visita"
+                            className="px-0 sm:px-3 bg-emerald-600 hover:bg-emerald-700 text-white"
+                          >
+                            <CheckCircle2 className="w-4 h-4" />
+                            <span className="hidden sm:inline ml-1 text-xs font-semibold">Confirmar</span>
+                          </Button>
+                        ) : <span className="hidden sm:inline" />}
                         {v.status !== "fechada" ? (
-                          <Button size="sm" onClick={() => finalize(v)} title="Finalizar" className="px-0 sm:px-3">
+                          <Button size="sm" variant="secondary" onClick={() => finalize(v)} title="Finalizar" className="px-0 sm:px-3">
                             <CheckCircle2 className="w-4 h-4" />
                           </Button>
                         ) : <span className="hidden sm:inline" />}
