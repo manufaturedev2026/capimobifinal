@@ -1324,23 +1324,6 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
             </div>
           </Section>
 
-          {/* Ajustes avançados */}
-          <Section title="Ajustes de Imagem" icon={Sliders} extra={
-            <button onClick={() => setShowAdvancedAdjust(v => !v)} className="text-[10px] font-bold text-primary hover:underline">
-              {showAdvancedAdjust ? "Ocultar" : "Mostrar"}
-            </button>
-          }>
-            {showAdvancedAdjust && (
-              <div className="space-y-2.5">
-                <Slider label="Brilho" value={brightness} min={0.7} max={1.4} step={0.05} onChange={setBrightness} />
-                <Slider label="Contraste" value={contrast} min={0.7} max={1.4} step={0.05} onChange={setContrast} />
-                <Slider label="Saturação" value={saturate} min={0.5} max={1.6} step={0.05} onChange={setSaturate} />
-                <button onClick={() => { setBrightness(1); setContrast(1); setSaturate(1); setHdr(false); }} className="w-full text-[10px] font-bold text-muted-foreground hover:text-foreground py-1">
-                  Resetar ajustes
-                </button>
-              </div>
-            )}
-          </Section>
         </div>
       </div>
 
