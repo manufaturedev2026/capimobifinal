@@ -754,88 +754,29 @@ export default function ProductDetail() {
         </div>
       )}
 
-      {/* ── Gallery Mosaic (desktop only) ── */}
+      {/* ── Compact desktop thumbnails ── */}
       {images.length > 0 && (
-        <div className="container max-w-6xl mx-auto px-4 -mt-10 md:-mt-12 z-10 relative">
-          {/* Desktop */}
-          <div className="hidden md:block">
-            {images.length === 1 && (
-              <motion.button initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} onClick={() => { setActiveImage(0); setLightboxOpen(true); }}
-                className="w-full h-[clamp(160px,22vw,260px)] rounded-2xl overflow-hidden border-2 border-border hover:border-primary/50 transition-all group relative">
-                <img loading="lazy" decoding="async" src={images[0]} alt="Foto 1" className="w-full h-full object-cover bg-muted transition-transform duration-500 group-hover:scale-105" />
-                <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/10 transition-colors flex items-center justify-center">
-                  <ZoomIn size={32} className="text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg" />
-                </div>
-              </motion.button>
-            )}
-            {images.length === 2 && (
-              <div className="grid grid-cols-2 gap-2 h-[clamp(140px,18vw,220px)]">
-                {images.slice(0, 2).map((img, i) => (
-                  <motion.button key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
-                    onClick={() => { setActiveImage(i); setLightboxOpen(true); }}
-                    className="rounded-2xl overflow-hidden border-2 border-border hover:border-primary/50 transition-all group relative">
-                    <img loading="lazy" decoding="async" src={img} alt={`Foto ${i + 1}`} className="w-full h-full object-cover bg-muted transition-transform duration-500 group-hover:scale-105" />
-                    <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/10 transition-colors flex items-center justify-center">
-                      <ZoomIn size={24} className="text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg" />
-                    </div>
-                  </motion.button>
-                ))}
-              </div>
-            )}
-            {images.length === 3 && (
-              <div className="grid grid-cols-3 gap-2 h-[clamp(150px,20vw,240px)]">
-                <motion.button initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-                  onClick={() => { setActiveImage(0); setLightboxOpen(true); }}
-                  className="col-span-2 rounded-2xl overflow-hidden border-2 border-border hover:border-primary/50 transition-all group relative">
-                  <img loading="lazy" decoding="async" src={images[0]} alt="Foto 1" className="w-full h-full object-cover bg-muted transition-transform duration-500 group-hover:scale-105" />
-                  <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/10 transition-colors flex items-center justify-center">
-                    <ZoomIn size={28} className="text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg" />
-                  </div>
-                </motion.button>
-                <div className="grid grid-rows-2 gap-2">
-                  {images.slice(1, 3).map((img, i) => (
-                    <motion.button key={i + 1} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: (i + 1) * 0.05 }}
-                      onClick={() => { setActiveImage(i + 1); setLightboxOpen(true); }}
-                      className="rounded-2xl overflow-hidden border-2 border-border hover:border-primary/50 transition-all group relative">
-                      <img loading="lazy" decoding="async" src={img} alt={`Foto ${i + 2}`} className="w-full h-full object-cover bg-muted transition-transform duration-500 group-hover:scale-105" />
-                      <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/10 transition-colors flex items-center justify-center">
-                        <ZoomIn size={20} className="text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg" />
-                      </div>
-                    </motion.button>
-                  ))}
-                </div>
-              </div>
-            )}
-            {images.length >= 4 && (
-              <div className="grid grid-cols-4 grid-rows-2 gap-2 h-[clamp(170px,22vw,260px)]">
-                <motion.button initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-                  onClick={() => { setActiveImage(0); setLightboxOpen(true); }}
-                  className="col-span-2 row-span-2 rounded-2xl overflow-hidden border-2 border-border hover:border-primary/50 transition-all group relative">
-                  <img loading="lazy" decoding="async" src={images[0]} alt="Foto 1" className="w-full h-full object-cover bg-muted transition-transform duration-500 group-hover:scale-105" />
-                  <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/10 transition-colors flex items-center justify-center">
-                    <ZoomIn size={32} className="text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg" />
-                  </div>
-                  <span className="absolute bottom-3 left-3 px-3 py-1 rounded-lg bg-card/80 backdrop-blur-md text-xs font-bold text-foreground">
-                    <Image size={12} className="inline mr-1.5 mb-0.5" />{images.length} fotos
+        <div className="container max-w-6xl mx-auto px-4 py-4 z-10 relative">
+          <div className="hidden md:flex items-center gap-2 overflow-x-auto scrollbar-hide">
+            {images.map((img, i) => (
+              <motion.button
+                key={i}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: Math.min(i, 8) * 0.03 }}
+                onClick={() => { setActiveImage(i); setLightboxOpen(true); }}
+                className={`relative h-20 w-28 flex-shrink-0 overflow-hidden rounded-xl border-2 transition-all ${
+                  activeImage === i ? "border-primary shadow-lg" : "border-border hover:border-primary/50"
+                }`}
+              >
+                <img loading="lazy" decoding="async" src={img} alt={`Foto ${i + 1}`} className="w-full h-full object-cover bg-muted" />
+                {i === 0 && (
+                  <span className="absolute bottom-1.5 left-1.5 px-2 py-0.5 rounded-md bg-card/80 backdrop-blur-md text-[10px] font-bold text-foreground">
+                    <Image size={10} className="inline mr-1 mb-0.5" />{images.length}
                   </span>
-                </motion.button>
-                {images.slice(1, 5).map((img, i) => (
-                  <motion.button key={i + 1} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: (i + 1) * 0.06 }}
-                    onClick={() => { setActiveImage(i + 1); setLightboxOpen(true); }}
-                    className="rounded-2xl overflow-hidden border-2 border-border hover:border-primary/50 transition-all group relative">
-                    <img loading="lazy" decoding="async" src={img} alt={`Foto ${i + 2}`} className="w-full h-full object-cover bg-muted transition-transform duration-500 group-hover:scale-105" />
-                    <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/10 transition-colors flex items-center justify-center">
-                      <ZoomIn size={20} className="text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg" />
-                    </div>
-                    {i === 3 && images.length > 5 && (
-                      <div className="absolute inset-0 bg-foreground/50 flex items-center justify-center">
-                        <span className="text-white text-lg font-black">+{images.length - 5}</span>
-                      </div>
-                    )}
-                  </motion.button>
-                ))}
-              </div>
-            )}
+                )}
+              </motion.button>
+            ))}
           </div>
         </div>
       )}
