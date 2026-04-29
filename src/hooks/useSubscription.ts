@@ -172,7 +172,7 @@ export const PACKAGE_CONFIG = {
     badgeColor: "bg-gradient-to-r from-rose-600 to-red-600 text-white",
     benefits: [
       "Anúncios ilimitados",
-      "Vitrine Lvl 4 — prioridade empresa",
+      "Vitrine Lvl 1 — pareada com Start",
       "Todos os 7 Layouts + Temas",
       "Até 5 corretores vinculados",
       "Lojas espelho por corretor",
