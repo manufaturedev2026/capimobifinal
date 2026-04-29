@@ -755,7 +755,7 @@ export default function VenderPage() {
                             <p className="text-3xl md:text-4xl font-black bg-gradient-to-br from-white to-white/60 bg-clip-text text-transparent">Gratuito</p>
                           ) : (
                             <>
-                              <div className="flex items-baseline gap-1 flex-wrap">
+                              <div className="flex items-baseline gap-1 flex-nowrap whitespace-nowrap">
                                 <span className="text-2xl md:text-3xl lg:text-4xl font-black bg-gradient-to-br from-white to-white/60 bg-clip-text text-transparent whitespace-nowrap">{formatPrice(plan.price)}</span>
                                 <span className="text-xs md:text-sm font-normal text-white/40">/mês</span>
                               </div>
@@ -878,7 +878,7 @@ export default function VenderPage() {
                               <p className="text-3xl md:text-4xl font-black bg-gradient-to-br from-white to-white/60 bg-clip-text text-transparent">Gratuito</p>
                             ) : (
                               <>
-                                <div className="flex items-baseline gap-1 flex-wrap">
+                                <div className="flex items-baseline gap-1 flex-nowrap whitespace-nowrap">
                                   <span className="text-2xl md:text-3xl lg:text-4xl font-black bg-gradient-to-br from-white to-white/60 bg-clip-text text-transparent whitespace-nowrap">{formatPrice(plan.price)}</span>
                                   <span className="text-xs md:text-sm font-normal text-white/40">/mês</span>
                                 </div>
