@@ -95,7 +95,6 @@ export default function PackagesPage() {
         (supabase as any)
           .from("founder_lots")
           .select("id, category, lot_number, price, total_slots, used_slots, is_active, inherited_tier, ia_credits")
-          .eq("is_active", true)
           .order("category")
           .order("lot_number"),
         (supabase as any)
@@ -722,20 +721,38 @@ export default function PackagesPage() {
                 <div>
                   <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Plano Ativo</p>
                   <h3 className="font-display font-extrabold text-xl text-foreground">{activePlan.name}</h3>
-                  <p className="text-sm text-muted-foreground">
-                    {activePlan.price === 0 ? "Grátis" : `R$ ${activePlan.price.toFixed(2).replace(".", ",")}/mês`}
-                    {subscription.expires_at && (
-                      <span className="ml-2">
-                        · Válido até {new Date(subscription.expires_at).toLocaleDateString("pt-BR")}
-                      </span>
-                    )}
-                  </p>
+                  {(() => {
+                    const isFounder = isFounderTier(currentTier);
+                    // Para Fundador: busca o lote correspondente à categoria do usuário (preço real pago)
+                    const founderLotForUser = isFounder
+                      ? founderLots
+                          .filter((l) => l.category === founderCategory)
+                          .sort((a, b) => b.lot_number - a.lot_number)[0]
+                      : null;
+                    const displayPrice = isFounder
+                      ? (founderLotForUser?.price ?? activePlan.price)
+                      : activePlan.price;
+                    const suffix = isFounder ? "/ano" : "/mês";
+                    return (
+                      <p className="text-sm text-muted-foreground">
+                        {activePlan.price === 0
+                          ? "Grátis"
+                          : `R$ ${Number(displayPrice).toFixed(2).replace(".", ",")}${suffix}`}
+                        {subscription.expires_at && (
+                          <span className="ml-2">
+                            · Válido até {new Date(subscription.expires_at).toLocaleDateString("pt-BR")}
+                          </span>
+                        )}
+                      </p>
+                    );
+                  })()}
                   {activePlan.price > 0 && (
                     <p className="text-xs text-muted-foreground mt-1">
                       ✨ Sem renovação automática · Troque de plano quando quiser
                     </p>
                   )}
                 </div>
+
               </div>
             </div>
           </motion.div>
