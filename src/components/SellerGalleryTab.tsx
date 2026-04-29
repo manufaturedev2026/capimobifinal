@@ -1024,7 +1024,7 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
               {items.map((item) => (
                 <button
                   key={item.id}
-                  onClick={() => setSelectedItemId(item.id)}
+                  onClick={() => { setSelectedItemId(item.id); setAiHeadline(null); }}
                   className="group text-left rounded-2xl overflow-hidden border border-border hover:border-primary/60 hover:shadow-xl transition-all bg-card"
                 >
                   <div className="aspect-[4/3] relative overflow-hidden">
