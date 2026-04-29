@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useVisitAppointments, STATUS_META, VisitStatus, VisitAppointment } from "@/hooks/useVisitAppointments";
@@ -16,6 +16,10 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { supabase } from "@/integrations/supabase/client";
+import { getMarketplaceTheme } from "@/lib/marketplaceThemes";
+import { getMarketplaceThemeCssVars, getStoreThemeCssVars } from "@/lib/marketplaceThemeCssVars";
+import { getStoreTheme } from "@/components/StoreThemePicker";
 
 const todayISO = () => new Date().toISOString().slice(0, 10);
 const weekRange = () => {
