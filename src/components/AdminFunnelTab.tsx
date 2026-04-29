@@ -32,61 +32,134 @@ type Recipient = {
 
 type Excluded = { id: string; email: string; reason: string | null; created_at: string };
 
-const DEFAULT_HTML = `<div style="font-family:system-ui,sans-serif;max-width:560px;margin:auto;padding:24px;background:#f8fafc;border-radius:12px;color:#0f172a">
-  <h2>Olá {{nome}}, bem-vindo(a) à Capimobi!</h2>
-  <p>Estamos felizes em ter você conosco. Acesse seu painel e comece a anunciar agora.</p>
-  <p style="margin-top:20px"><a href="https://capimobi.com.br/painel" style="background:#2563eb;color:#fff;padding:12px 20px;border-radius:8px;text-decoration:none">Acessar Painel</a></p>
+// Wrapper helper produces a consistent, responsive (max-width:640px), bulletproof email shell.
+// Uses tables for layout (best email-client compatibility), inline styles, and Capimobi branding.
+const buildTemplate = (opts: {
+  hero: { gradient: string; badge: string; title: string; subtitle: string };
+  bodyHtml: string;
+  ctaText: string;
+  ctaUrl: string;
+  ctaSubtext?: string;
+  accent: string;
+}) => `<div style="font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;max-width:640px;margin:0 auto;padding:0;background:#0f172a;">
+  <div style="background:${opts.hero.gradient};border-radius:20px 20px 0 0;text-align:center;">
+    <div style="padding:44px 24px 38px;">
+      <div style="display:inline-block;background:rgba(255,255,255,0.18);padding:7px 16px;border-radius:999px;margin-bottom:16px;border:1px solid rgba(255,255,255,0.25);">
+        <span style="color:#ffffff;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;">${opts.hero.badge}</span>
+      </div>
+      <h1 style="margin:0 0 10px;font-size:30px;color:#ffffff;font-weight:800;letter-spacing:-0.5px;line-height:1.2;">${opts.hero.title}</h1>
+      <p style="margin:0;color:rgba(255,255,255,0.92);font-size:15px;font-weight:500;line-height:1.5;">${opts.hero.subtitle}</p>
+    </div>
+  </div>
+  <div style="background:#ffffff;padding:36px 28px 32px;">
+    ${opts.bodyHtml}
+    <div style="text-align:center;margin:28px 0 8px;">
+      <a href="${opts.ctaUrl}" style="background:${opts.accent};color:#ffffff;padding:16px 38px;text-decoration:none;border-radius:12px;font-weight:700;display:inline-block;font-size:15px;letter-spacing:0.3px;box-shadow:0 8px 18px rgba(0,0,0,0.18);">${opts.ctaText} →</a>
+    </div>
+    ${opts.ctaSubtext ? `<p style="text-align:center;margin:0 0 24px;font-size:12px;color:#94a3b8;">${opts.ctaSubtext}</p>` : '<div style="height:20px;"></div>'}
+    <div style="border-top:1px solid #e2e8f0;padding-top:18px;text-align:center;">
+      <p style="margin:0;font-size:12px;color:#94a3b8;line-height:1.6;">Você está recebendo este e-mail como corretor cadastrado na Capimobi.</p>
+    </div>
+  </div>
+  <div style="background:#0f172a;padding:22px;border-radius:0 0 20px 20px;text-align:center;">
+    <p style="margin:0 0 4px;font-size:14px;color:#ffffff;font-weight:700;">Cap<span style="color:#22c55e;">i</span>mobi</p>
+    <p style="margin:0;font-size:11px;color:#64748b;">© 2026 Capimobi • Tecnologia que impulsiona resultados</p>
+  </div>
 </div>`;
+
+const featureRow = (icon: string, title: string, desc: string) =>
+  `<tr><td style="padding:9px 0;vertical-align:top;width:38px;"><div style="width:32px;height:32px;background:#dcfce7;border-radius:8px;text-align:center;line-height:32px;font-size:16px;">${icon}</div></td><td style="padding:9px 0 9px 12px;font-size:14px;color:#334155;line-height:1.5;"><strong style="color:#0f172a;">${title}</strong> ${desc}</td></tr>`;
+
+const DEFAULT_HTML = buildTemplate({
+  hero: { gradient: "linear-gradient(135deg,#1e3a8a 0%,#2563eb 100%)", badge: "Capimobi", title: "Olá, {{nome}} 👋", subtitle: "Bem-vindo(a) à plataforma" },
+  bodyHtml: `<p style="font-size:16px;line-height:1.7;color:#475569;margin:0 0 14px;">Estamos felizes em ter você conosco. Acesse seu painel e comece a anunciar agora mesmo.</p>`,
+  ctaText: "Acessar Painel",
+  ctaUrl: "https://capimobi.com.br/painel",
+  accent: "linear-gradient(135deg,#2563eb 0%,#1d4ed8 100%)",
+});
 
 const TEMPLATES: { name: string; subject: string; html: string }[] = [
   {
     name: "Boas-vindas",
     subject: "Bem-vindo(a) à Capimobi, {{nome}}! 🎉",
-    html: `<div style="font-family:system-ui,sans-serif;max-width:560px;margin:auto;padding:24px;background:#f8fafc;border-radius:12px;color:#0f172a">
-  <h2>Olá {{nome}}, seja muito bem-vindo(a)! 👋</h2>
-  <p>Sua conta foi criada com sucesso. Agora você tem acesso a uma plataforma completa para vender mais imóveis.</p>
-  <p><strong>O que fazer agora?</strong></p>
-  <ul>
-    <li>✅ Personalize sua loja virtual</li>
-    <li>✅ Cadastre seus primeiros imóveis</li>
-    <li>✅ Configure seu CRM</li>
-  </ul>
-  <p style="margin-top:20px"><a href="https://capimobi.com.br/painel" style="background:#2563eb;color:#fff;padding:12px 20px;border-radius:8px;text-decoration:none">Acessar Painel</a></p>
-</div>`,
+    html: buildTemplate({
+      hero: { gradient: "linear-gradient(135deg,#064e3b 0%,#16a34a 50%,#22c55e 100%)", badge: "✨ Bem-vindo(a)", title: "Olá {{nome}}!", subtitle: "Sua jornada na Capimobi começa agora" },
+      bodyHtml: `
+    <h2 style="margin:0 0 14px;font-size:22px;color:#0f172a;font-weight:700;letter-spacing:-0.3px;">Sua conta está pronta 🎉</h2>
+    <p style="font-size:15px;line-height:1.7;color:#475569;margin:0 0 24px;">{{nome}}, sua conta foi criada com sucesso. Agora você tem acesso a uma plataforma completa para vender mais imóveis e gerenciar seus clientes em um só lugar.</p>
+    <h3 style="margin:0 0 14px;font-size:13px;color:#0f172a;font-weight:700;text-transform:uppercase;letter-spacing:1px;">Próximos passos:</h3>
+    <table cellpadding="0" cellspacing="0" border="0" style="width:100%;margin-bottom:8px;">
+      ${featureRow("🎨", "Personalize sua loja", "virtual com tema e cores próprias")}
+      ${featureRow("🏠", "Cadastre seus imóveis", "com fotos, descrição e localização")}
+      ${featureRow("📊", "Configure seu CRM", "para acompanhar leads e clientes")}
+    </table>`,
+      ctaText: "Acessar Meu Painel",
+      ctaUrl: "https://capimobi.com.br/painel",
+      ctaSubtext: "Acesso imediato • Sem complicações",
+      accent: "linear-gradient(135deg,#16a34a 0%,#15803d 100%)",
+    }),
   },
   {
     name: "Dica de uso",
     subject: "{{nome}}, uma dica para vender mais 💡",
-    html: `<div style="font-family:system-ui,sans-serif;max-width:560px;margin:auto;padding:24px;background:#f8fafc;border-radius:12px;color:#0f172a">
-  <h2>Dica do dia, {{nome}} 💡</h2>
-  <p>Imóveis com pelo menos <strong>5 fotos de qualidade</strong> recebem 3x mais visualizações.</p>
-  <p>Que tal revisar seus anúncios agora?</p>
-  <p style="margin-top:20px"><a href="https://capimobi.com.br/painel" style="background:#2563eb;color:#fff;padding:12px 20px;border-radius:8px;text-decoration:none">Revisar anúncios</a></p>
-</div>`,
+    html: buildTemplate({
+      hero: { gradient: "linear-gradient(135deg,#78350f 0%,#d97706 50%,#fbbf24 100%)", badge: "💡 Dica do dia", title: "Mais visualizações, {{nome}}", subtitle: "Pequenas mudanças, grandes resultados" },
+      bodyHtml: `
+    <h2 style="margin:0 0 14px;font-size:22px;color:#0f172a;font-weight:700;letter-spacing:-0.3px;">Suas fotos importam 📸</h2>
+    <p style="font-size:15px;line-height:1.7;color:#475569;margin:0 0 18px;">Imóveis com pelo menos <strong style="color:#d97706;">5 fotos de qualidade</strong> recebem em média <strong>3x mais visualizações</strong> do que anúncios com poucas imagens.</p>
+    <div style="background:linear-gradient(135deg,#fffbeb 0%,#fef3c7 100%);border:1px solid #fde68a;padding:18px;border-radius:14px;margin:0 0 22px;">
+      <p style="margin:0;font-size:14px;color:#78350f;line-height:1.6;font-weight:500;">⚡ <strong>Dica rápida:</strong> tire fotos com luz natural, na vertical, mostrando os ambientes principais — sala, cozinha, quartos e fachada.</p>
+    </div>
+    <p style="font-size:15px;line-height:1.7;color:#475569;margin:0;">Que tal revisar seus anúncios agora?</p>`,
+      ctaText: "Revisar Meus Anúncios",
+      ctaUrl: "https://capimobi.com.br/painel",
+      accent: "linear-gradient(135deg,#d97706 0%,#b45309 100%)",
+    }),
   },
   {
     name: "Upgrade de plano",
     subject: "{{nome}}, libere todo o potencial da sua loja 🚀",
-    html: `<div style="font-family:system-ui,sans-serif;max-width:560px;margin:auto;padding:24px;background:#f8fafc;border-radius:12px;color:#0f172a">
-  <h2>Está na hora de crescer, {{nome}}!</h2>
-  <p>Com o plano <strong>Start</strong> a partir de R$24,99/mês você desbloqueia:</p>
-  <ul>
-    <li>📦 Até 25 imóveis</li>
-    <li>🎨 Layouts premium</li>
-    <li>📊 Analytics avançado</li>
-    <li>📱 Push notifications ilimitados</li>
-  </ul>
-  <p style="margin-top:20px"><a href="https://capimobi.com.br/pacotes" style="background:#2563eb;color:#fff;padding:12px 20px;border-radius:8px;text-decoration:none">Ver planos</a></p>
-</div>`,
+    html: buildTemplate({
+      hero: { gradient: "linear-gradient(135deg,#1e1b4b 0%,#7c3aed 50%,#a855f7 100%)", badge: "🚀 Upgrade Premium", title: "Está na hora, {{nome}}", subtitle: "Desbloqueie ferramentas profissionais" },
+      bodyHtml: `
+    <h2 style="margin:0 0 14px;font-size:22px;color:#0f172a;font-weight:700;letter-spacing:-0.3px;">Plano Start a partir de R$24,99/mês</h2>
+    <p style="font-size:15px;line-height:1.7;color:#475569;margin:0 0 22px;">{{nome}}, com o plano <strong style="color:#7c3aed;">Start</strong> você desbloqueia recursos que vão transformar sua atuação como corretor:</p>
+    <table cellpadding="0" cellspacing="0" border="0" style="width:100%;margin-bottom:22px;">
+      ${featureRow("📦", "Até 25 imóveis", "ativos simultaneamente")}
+      ${featureRow("🎨", "Layouts premium", "com design profissional")}
+      ${featureRow("📊", "Analytics avançado", "veja quem visita seus anúncios")}
+      ${featureRow("📱", "Push ilimitado", "alcance seus clientes na hora certa")}
+    </table>
+    <div style="background:linear-gradient(135deg,#faf5ff 0%,#f3e8ff 100%);border:1px solid #e9d5ff;padding:16px;border-radius:14px;margin:0 0 12px;">
+      <p style="margin:0;font-size:14px;color:#581c87;line-height:1.6;font-weight:500;">💎 <strong>Investimento mínimo:</strong> menos de R$1/dia para multiplicar seus resultados.</p>
+    </div>`,
+      ctaText: "Ver Todos os Planos",
+      ctaUrl: "https://capimobi.com.br/pacotes",
+      ctaSubtext: "Cancele quando quiser • Sem fidelidade",
+      accent: "linear-gradient(135deg,#7c3aed 0%,#6d28d9 100%)",
+    }),
   },
   {
     name: "Reengajamento",
     subject: "Sentimos sua falta, {{nome}} 💙",
-    html: `<div style="font-family:system-ui,sans-serif;max-width:560px;margin:auto;padding:24px;background:#f8fafc;border-radius:12px;color:#0f172a">
-  <h2>Faz tempo que não te vemos, {{nome}}!</h2>
-  <p>Voltamos com novidades incríveis na plataforma. Que tal dar uma olhada?</p>
-  <p style="margin-top:20px"><a href="https://capimobi.com.br/painel" style="background:#2563eb;color:#fff;padding:12px 20px;border-radius:8px;text-decoration:none">Voltar ao painel</a></p>
-</div>`,
+    html: buildTemplate({
+      hero: { gradient: "linear-gradient(135deg,#0c4a6e 0%,#0284c7 50%,#38bdf8 100%)", badge: "💙 Sentimos sua falta", title: "Faz tempo, {{nome}}!", subtitle: "Voltamos com novidades incríveis" },
+      bodyHtml: `
+    <h2 style="margin:0 0 14px;font-size:22px;color:#0f172a;font-weight:700;letter-spacing:-0.3px;">Você precisa ver isso 👀</h2>
+    <p style="font-size:15px;line-height:1.7;color:#475569;margin:0 0 22px;">{{nome}}, faz um tempinho que não te vemos por aqui. Aproveitamos para deixar a plataforma ainda melhor para você:</p>
+    <table cellpadding="0" cellspacing="0" border="0" style="width:100%;margin-bottom:22px;">
+      ${featureRow("🤖", "IA integrada", "para criar anúncios e captar imóveis")}
+      ${featureRow("🎬", "Stories e Cinema Mode", "para destacar seus imóveis")}
+      ${featureRow("📈", "Novos layouts", "Netflix, Showcase, Magazine e mais")}
+      ${featureRow("🎯", "CRM Kanban", "para gerenciar leads visualmente")}
+    </table>
+    <div style="background:linear-gradient(135deg,#f0f9ff 0%,#e0f2fe 100%);border:1px solid #bae6fd;padding:16px;border-radius:14px;margin:0 0 12px;">
+      <p style="margin:0;font-size:14px;color:#075985;line-height:1.6;font-weight:500;">👋 Sua conta continua ativa e seus dados estão preservados. É só voltar!</p>
+    </div>`,
+      ctaText: "Voltar ao Painel",
+      ctaUrl: "https://capimobi.com.br/painel",
+      accent: "linear-gradient(135deg,#0284c7 0%,#0369a1 100%)",
+    }),
   },
 ];
 
