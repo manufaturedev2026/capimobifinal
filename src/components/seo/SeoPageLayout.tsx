@@ -176,7 +176,7 @@ export default function SeoPageLayout({
           <h2 className="font-display font-bold text-xl mb-4" style={{ color: TEXT }}>{title}</h2>
           <div className="text-sm leading-relaxed space-y-3" style={{ color: TEXT_MUTED }}>
             <p>{metaDescription}</p>
-            <p>O Capimobi é a plataforma que conecta compradores diretamente com corretores e imobiliárias verificadas de todo o Brasil. Encontre seu imóvel ideal com contato direto via WhatsApp.</p>
+            <p>O {site_name} é a plataforma que conecta compradores diretamente com corretores e imobiliárias verificadas de todo o Brasil. Encontre seu imóvel ideal com contato direto via WhatsApp.</p>
           </div>
         </div>
       </section>
