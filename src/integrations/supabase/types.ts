@@ -3842,6 +3842,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_seller_visit_blocked: {
+        Args: { p_seller_id: string }
+        Returns: boolean
+      }
       move_to_dlq: {
         Args: {
           dlq_name: string
