@@ -312,7 +312,9 @@ export default function PackagesPage() {
   const activeFounderLot = founderLots
     .filter((l) => l.category === founderCategory && l.is_active && l.used_slots < l.total_slots)
     .sort((a, b) => a.lot_number - b.lot_number)[0];
-  const founderPlan = plans.find((p) => p.tier === founderTier);
+  // Plano herdado configurado no lote ativo (Start, VIP, Prime, etc.)
+  const inheritedTier = activeFounderLot?.inherited_tier;
+  const founderPlan = plans.find((p) => p.tier === inheritedTier) || plans.find((p) => p.tier === founderTier);
 
   const handleSelectFounder = async () => {
     if (!user || !profile) {
