@@ -377,7 +377,9 @@ export default function PackagesPage() {
   const renderCard = (plan: Plan, idx: number, opts: { showPartners?: boolean } = {}) => {
     const Icon = tierIcons[plan.tier] || Zap;
     const isCurrent = currentTier === plan.tier;
-    const credits = aiMonthlyCredits[plan.tier] ?? 25;
+    // Fonte preferencial: valor cadastrado no banco (ai_generations_per_day = créditos/mês);
+    // fallback no mapa local apenas se o banco não tiver valor.
+    const credits = (plan as any).ai_generations_per_day || aiMonthlyCredits[plan.tier] || 25;
     const { final, discount } = calculateFinalPrice(plan.price, plan.tier);
     const hasDiscount = discount > 0 && plan.price > 0;
 
