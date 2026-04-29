@@ -22,7 +22,19 @@ const aiMonthlyCredits: Record<string, number> = {
   essencial_empresa: 2000,
   premium_empresa: 2000,
   prime_empresa: 3500,
+  fundador_corretor: 500,
+  fundador_empresa: 1750,
 };
+
+interface FounderLot {
+  id: string;
+  category: "individual" | "enterprise";
+  lot_number: number;
+  price: number;
+  total_slots: number;
+  used_slots: number;
+  is_active: boolean;
+}
 
 const formatCredits = (credits: number) => credits.toLocaleString("pt-BR");
 
