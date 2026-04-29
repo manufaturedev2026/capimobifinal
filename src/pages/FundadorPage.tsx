@@ -435,10 +435,11 @@ export default function FundadorPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
             className="font-display text-4xl md:text-6xl lg:text-7xl font-extrabold mb-6 leading-[1.1] text-white"
+            style={{ textShadow: `0 0 60px ${theme.primary}80, 0 0 120px ${theme.primary}40` }}
           >
-            Pague <span className="text-transparent bg-clip-text" style={{ backgroundImage: `linear-gradient(to right, ${theme.primary}, ${theme.promoAccent || theme.primary})` }}>uma vez</span>.
+            Pague <span className="text-transparent bg-clip-text" style={{ backgroundImage: `linear-gradient(to right, ${theme.primary}, ${theme.promoAccent || theme.primary})`, filter: `drop-shadow(0 0 30px ${theme.primary})` }}>uma vez</span>.
             <br />
-            Use por <span className="text-transparent bg-clip-text" style={{ backgroundImage: `linear-gradient(to right, ${theme.primary}, ${theme.promoAccent || theme.primary})` }}>12 meses</span>.
+            Use por <span className="text-transparent bg-clip-text" style={{ backgroundImage: `linear-gradient(to right, ${theme.primary}, ${theme.promoAccent || theme.primary})`, filter: `drop-shadow(0 0 30px ${theme.promoAccent || theme.primary})` }}>12 meses</span>.
           </motion.h1>
 
           <motion.p
