@@ -9,12 +9,14 @@ import { formatPrice } from "@/data/products";
 import PropertyCardSkeleton from "@/components/PropertyCardSkeleton";
 import FavoriteButton from "@/components/FavoriteButton";
 import { useFavorites } from "@/hooks/useFavorites";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 export default function NeighborhoodPage() {
   const { cidade, bairro } = useParams<{ cidade: string; bairro: string }>();
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const { toggleFavorite, isFavorite } = useFavorites();
+  const { site_name } = useSiteSettings();
 
   const cityName = cidade?.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase()) || "";
   const neighborhoodName = bairro?.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase()) || "";
