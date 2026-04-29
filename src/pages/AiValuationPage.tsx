@@ -20,7 +20,7 @@ import {
   Sparkles, ArrowLeft, TrendingUp, Clock, Crown, Zap, Target, CheckCircle2,
   AlertCircle, Loader2, Brain, MapPin, Home, Maximize2, Bed, FileText,
   Megaphone, Download, History, Wand2, FileBadge, Printer, Share2, Mail,
-  Building2, Award, KeyRound, Trash2, Search,
+  Building2, Award, KeyRound, Trash2, Search, Settings2, ChevronDown, ChevronUp,
 } from "lucide-react";
 import { generateValuationReport, getLaudoCode } from "@/lib/generateValuationReport";
 import AdvancedValuationFields, { ADVANCED_INITIAL, type AdvancedState } from "@/components/AdvancedValuationFields";
@@ -832,6 +832,35 @@ export default function AiValuationPage() {
               analise={analiseVisual}
               onAnaliseChange={setAnaliseVisual}
             />
+          </div>
+
+          {/* ===== Modo Avançado (antes do cálculo, evita gastar créditos 2x) ===== */}
+          <div className="mt-6 rounded-2xl border border-primary/30 bg-primary/5 overflow-hidden">
+            <button
+              type="button"
+              onClick={() => setModoAvancado((v) => !v)}
+              className="w-full flex items-center justify-between px-4 py-4 hover:bg-primary/10 transition-colors"
+            >
+              <div className="flex items-center gap-3 text-left">
+                <div className="h-10 w-10 rounded-xl bg-primary/15 flex items-center justify-center text-primary">
+                  <Settings2 className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-foreground">Opções Avançadas (opcional)</p>
+                  <p className="text-xs text-muted-foreground">
+                    Refine ambientes, acabamentos item-a-item, localização e documentação para um laudo ainda mais preciso.
+                  </p>
+                </div>
+              </div>
+              {modoAvancado
+                ? <ChevronUp className="h-5 w-5 text-primary shrink-0" />
+                : <ChevronDown className="h-5 w-5 text-primary shrink-0" />}
+            </button>
+            {modoAvancado && (
+              <div className="px-4 pb-4 pt-2 border-t border-primary/20 bg-card">
+                <AdvancedValuationFields state={adv} onChange={updateAdv} />
+              </div>
+            )}
           </div>
 
           <Button
