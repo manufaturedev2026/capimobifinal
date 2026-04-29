@@ -197,7 +197,7 @@ export default function AdminBroadcastTab() {
           <Send className="w-4 h-4" /> Compor
         </button>
         <button onClick={() => setTab("templates")} className={`px-4 py-2 font-medium flex items-center gap-2 ${tab === "templates" ? "border-b-2 border-primary text-primary" : "text-muted-foreground"}`}>
-          <FileText className="w-4 h-4" /> Templates ({templates.length})
+          <FileText className="w-4 h-4" /> Templates ({templates.length + BUILTIN_TEMPLATES.length})
         </button>
         <button onClick={() => setTab("history")} className={`px-4 py-2 font-medium flex items-center gap-2 ${tab === "history" ? "border-b-2 border-primary text-primary" : "text-muted-foreground"}`}>
           <History className="w-4 h-4" /> Histórico ({sends.length})
