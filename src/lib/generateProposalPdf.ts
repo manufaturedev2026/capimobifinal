@@ -75,6 +75,26 @@ async function loadImg(url: string): Promise<string | null> {
 
 function rr(pdf: jsPDF, x: number, y: number, w: number, h: number, r: number, style: "F" | "S" | "FD") {
   pdf.roundedRect(x, y, w, h, r, r, style);
+async function loadStaticMap(location: string): Promise<string | null> {
+  // 1) Geocode via Nominatim (OpenStreetMap) — no API key required
+  try {
+    const geo = await fetch(
+      `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(location)}`,
+      { headers: { "Accept": "application/json" } }
+    );
+    if (!geo.ok) return null;
+    const arr = await geo.json();
+    if (!Array.isArray(arr) || arr.length === 0) return null;
+    const lat = parseFloat(arr[0].lat);
+    const lon = parseFloat(arr[0].lon);
+    if (isNaN(lat) || isNaN(lon)) return null;
+
+    // 2) Static map via staticmap.openstreetmap.de (no key)
+    const url = `https://staticmap.openstreetmap.de/staticmap.php?center=${lat},${lon}&zoom=15&size=600x360&maptype=mapnik&markers=${lat},${lon},red-pushpin`;
+    return await loadImg(url);
+  } catch {
+    return null;
+  }
 }
 
 function setFill(pdf: jsPDF, c: [number, number, number]) { pdf.setFillColor(c[0], c[1], c[2]); }
