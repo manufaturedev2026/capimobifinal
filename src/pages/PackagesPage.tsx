@@ -64,8 +64,16 @@ export default function PackagesPage() {
   }, []);
 
   const isImobiliaria = profile?.seller_category === "imobiliaria" || profile?.seller_category === "construtora";
-  const individualPlans = isImobiliaria ? [] : plans.filter((p) => p.category === "individual" || p.category === "free");
-  const enterprisePlans = isImobiliaria ? plans.filter((p) => p.category === "enterprise") : [];
+  const individualPlans = isImobiliaria
+    ? []
+    : plans.filter((p) =>
+        billingPeriod === "annual"
+          ? p.category === "individual" && p.price > 0
+          : p.category === "individual" || p.category === "free"
+      );
+  const enterprisePlans = isImobiliaria
+    ? plans.filter((p) => p.category === "enterprise" && (billingPeriod === "monthly" || p.price > 0))
+    : [];
   const activePlan = plans.find((p) => p.tier === currentTier);
 
   // Calcula preço final com descontos cumulativos
