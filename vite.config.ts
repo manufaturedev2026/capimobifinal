@@ -33,6 +33,40 @@ export default defineConfig(({ mode }) => ({
               cacheableResponse: { statuses: [0, 200] },
             },
           },
+          // Supabase Storage images (property photos, thumbnails, avatars)
+          {
+            urlPattern: /^https:\/\/[a-z0-9]+\.supabase\.co\/storage\/v1\/object\/public\/.*\.(?:png|jpg|jpeg|webp|avif|gif)/i,
+            handler: "CacheFirst",
+            options: {
+              cacheName: "supabase-storage-images",
+              expiration: {
+                maxEntries: 300,
+                maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+                purgeOnQuotaError: true,
+              },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+          // Google Fonts CSS + files
+          {
+            urlPattern: /^https:\/\/fonts\.(?:googleapis|gstatic)\.com\/.*/i,
+            handler: "CacheFirst",
+            options: {
+              cacheName: "google-fonts",
+              expiration: { maxEntries: 30, maxAgeSeconds: 60 * 60 * 24 * 365 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+          // Google Static Maps used in PDFs / property views
+          {
+            urlPattern: /^https:\/\/maps\.googleapis\.com\/maps\/api\/staticmap.*/i,
+            handler: "CacheFirst",
+            options: {
+              cacheName: "static-maps",
+              expiration: { maxEntries: 50, maxAgeSeconds: 60 * 60 * 24 * 7 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
         ],
       },
       manifest: {
