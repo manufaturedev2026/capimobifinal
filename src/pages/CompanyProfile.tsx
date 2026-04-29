@@ -502,6 +502,21 @@ export default function CompanyProfile() {
     }
   }, [galleryLightbox]);
 
+  // Apply store theme background to <html> and <body> so any overscroll/footer area
+  // matches the storefront theme (avoids a white strip below the content).
+  // MUST be declared before any conditional return to keep hook order stable.
+  const themeBg = getStoreTheme((dbProfile as any)?.store_theme)?.bg;
+  useEffect(() => {
+    if (!themeBg) return;
+    const prevHtml = document.documentElement.style.background;
+    const prevBody = document.body.style.background;
+    document.documentElement.style.background = themeBg;
+    document.body.style.background = themeBg;
+    return () => {
+      document.documentElement.style.background = prevHtml;
+      document.body.style.background = prevBody;
+    };
+  }, [themeBg]);
 
   if (loading) {
     return (
