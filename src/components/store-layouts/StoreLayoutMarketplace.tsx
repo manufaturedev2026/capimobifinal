@@ -111,7 +111,7 @@ function getDarkMid(primary: string): string {
 }
 
 export default function StoreLayoutMarketplace({
-  filteredProducts, subcategories, activeCategory, setActiveCategory,
+  products, filteredProducts, subcategories, activeCategory, setActiveCategory,
   categoryCounts, storeTheme, corretorSlug, dbProfile, getTagStyle, getTagLabel, handleWhatsApp,
   filterCity, setFilterCity, availableCities, storiesBar, formatPrice, onCinemaMode,
 }: StoreLayoutProps) {
@@ -137,10 +137,10 @@ export default function StoreLayoutMarketplace({
   const heroY = useTransform(scrollYProgress, [0, 1], [0, 120]);
   const heroScale = useTransform(scrollYProgress, [0, 1], [1, 1.15]);
 
-  // Group cities by state (derived from listings)
+  // Group cities by state (derived from ALL listings of this seller, not filtered)
   const citiesByState = useMemo(() => {
     const map = new Map<string, Set<string>>();
-    filteredProducts.forEach((item: any) => {
+    (products || filteredProducts).forEach((item: any) => {
       if (item.city) {
         const st = (item.state?.trim?.() || "Outros") as string;
         if (!map.has(st)) map.set(st, new Set());
@@ -153,7 +153,7 @@ export default function StoreLayoutMarketplace({
     });
     result.sort((a, b) => a.state.localeCompare(b.state));
     return result;
-  }, [filteredProducts]);
+  }, [products, filteredProducts]);
 
   // Auto-expand the state of the active city
   useEffect(() => {
