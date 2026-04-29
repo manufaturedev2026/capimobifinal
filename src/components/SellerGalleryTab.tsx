@@ -128,7 +128,7 @@ const TEMPLATES: TemplateDef[] = [
     description: "Branco premium, máximo respiro, foco na foto.",
     accent: "#0f172a", accentSoft: "rgba(15,23,42,0.92)",
     textTop: "#ffffff", textSub: "rgba(255,255,255,0.9)", textFooter: "rgba(255,255,255,0.7)",
-    gradientStart: "rgba(0,0,0,0)", gradientMid: "rgba(0,0,0,0.35)", gradientEnd: "rgba(0,0,0,0.85)",
+    gradientStart: "rgba(0,0,0,0)", gradientMid: "rgba(0,0,0,0.65)", gradientEnd: "rgba(0,0,0,0.97)",
     topBarColor: null, bottomBarColor: null,
     badgeStyle: "outline", priceStyle: "minimal",
     filterBrightness: 1.06, filterContrast: 1.05, filterSaturate: 1.0,
@@ -382,11 +382,11 @@ async function generateMarketingImage(o: GenOpts): Promise<string> {
     ctx.fillRect(0, 0, width, Math.round(6 * scale));
   }
 
-  /* ── 3. Gradient inferior ── */
-  const gradH = isA4 ? height * 0.42 : height * (isStory ? 0.6 : 0.55);
+  /* ── 3. Gradient inferior (mais alto para garantir backdrop do título) ── */
+  const gradH = isA4 ? height * 0.55 : height * (isStory ? 0.7 : 0.68);
   const grad = ctx.createLinearGradient(0, height - gradH, 0, height);
   grad.addColorStop(0, t.gradientStart);
-  grad.addColorStop(0.35, t.gradientMid);
+  grad.addColorStop(0.45, t.gradientMid);
   grad.addColorStop(1, t.gradientEnd);
   ctx.fillStyle = grad;
   ctx.fillRect(0, height - gradH, width, gradH);
