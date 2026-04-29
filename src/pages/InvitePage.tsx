@@ -31,6 +31,7 @@ interface VisibleBubble {
 
 export default function InvitePage() {
   const { botSlug } = useParams();
+  const { site_name } = useSiteSettings();
   const [config, setConfig] = useState<InviteChatConfig>(DEFAULT_CONFIG);
   const [flow, setFlow] = useState<FlowStep[]>([]);
   const [bubbles, setBubbles] = useState<VisibleBubble[]>([]);
