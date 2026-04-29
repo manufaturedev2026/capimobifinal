@@ -1,11 +1,11 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import {
   MapPin, Image, Search, Bed, Bath, Ruler, Home, Building2,
   Store, Trees, Key, Landmark, Phone, ShieldCheck, Globe, Megaphone,
-  ArrowRight, X, Sparkles, Crown, Star, LayoutDashboard, Clapperboard,
+  ArrowRight, X, Sparkles, Crown, Star, LayoutDashboard, Clapperboard, ChevronDown,
 } from "lucide-react";
 import type { StoreLayoutProps } from "./types";
 import { isIOSStandaloneApp } from "@/lib/pwaInstall";
@@ -124,6 +124,7 @@ export default function StoreLayoutMarketplace({
   const [promoIdx, setPromoIdx] = useState(0);
   const [desktopPromoPage, setDesktopPromoPage] = useState(0);
   const [showCityPicker, setShowCityPicker] = useState(false);
+  const [openStates, setOpenStates] = useState<Set<string>>(new Set());
   const promoScrollRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
   const isIOSStandalone = isIOSStandaloneApp();
@@ -135,6 +136,34 @@ export default function StoreLayoutMarketplace({
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const heroY = useTransform(scrollYProgress, [0, 1], [0, 120]);
   const heroScale = useTransform(scrollYProgress, [0, 1], [1, 1.15]);
+
+  // Group cities by state (derived from listings)
+  const citiesByState = useMemo(() => {
+    const map = new Map<string, Set<string>>();
+    filteredProducts.forEach((item: any) => {
+      if (item.city) {
+        const st = (item.state?.trim?.() || "Outros") as string;
+        if (!map.has(st)) map.set(st, new Set());
+        map.get(st)!.add(item.city.trim());
+      }
+    });
+    const result: { state: string; cities: string[] }[] = [];
+    map.forEach((cities, state) => {
+      result.push({ state, cities: Array.from(cities).sort() });
+    });
+    result.sort((a, b) => a.state.localeCompare(b.state));
+    return result;
+  }, [filteredProducts]);
+
+  // Auto-expand the state of the active city
+  useEffect(() => {
+    if (filterCity && citiesByState.length > 0) {
+      const stateGroup = citiesByState.find((g) => g.cities.includes(filterCity));
+      if (stateGroup) {
+        setOpenStates((prev) => (prev.has(stateGroup.state) ? prev : new Set([stateGroup.state])));
+      }
+    }
+  }, [filterCity, citiesByState]);
 
   const visibleProducts = searchTerm
     ? filteredProducts.filter((p: any) =>
@@ -474,7 +503,84 @@ export default function StoreLayoutMarketplace({
         </div>
       )}
 
-      <div className="px-2 md:px-8">
+      <div className="px-2 md:px-8 flex gap-6">
+
+        {/* ── Desktop City Sidebar ── */}
+        {citiesByState.length > 0 && setFilterCity && (
+          <aside className="hidden lg:block w-[220px] flex-shrink-0 sticky top-4 self-start mt-8">
+            <div className="rounded-2xl overflow-hidden" style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}>
+              <div className="px-4 py-3 flex items-center gap-2" style={{ borderBottom: `1px solid ${storeTheme.border}` }}>
+                <MapPin size={14} style={{ color: storeTheme.primary }} />
+                <p className="text-xs font-bold uppercase tracking-wider" style={{ color: storeTheme.text }}>Localização</p>
+              </div>
+              <div className="max-h-[65vh] overflow-y-auto overscroll-contain">
+                <button
+                  onClick={() => setFilterCity("")}
+                  className="w-full text-left px-4 py-2.5 text-sm font-medium flex items-center gap-2 transition-colors"
+                  style={{
+                    color: !filterCity ? storeTheme.primary : storeTheme.text,
+                    background: !filterCity ? `${storeTheme.primary}12` : "transparent",
+                  }}
+                >
+                  <Globe size={14} style={{ color: !filterCity ? storeTheme.primary : storeTheme.textMuted }} />
+                  Todas
+                </button>
+                {citiesByState.map(({ state: uf, cities }) => {
+                  const isOpen = openStates.has(uf);
+                  const hasActive = cities.includes(filterCity || "");
+                  return (
+                    <div key={uf}>
+                      <button
+                        onClick={() => {
+                          setOpenStates((prev) => {
+                            if (prev.has(uf)) return new Set();
+                            return new Set([uf]);
+                          });
+                        }}
+                        className="w-full text-left px-4 py-2.5 text-xs font-bold uppercase tracking-wider flex items-center justify-between transition-colors"
+                        style={{
+                          color: hasActive ? storeTheme.primary : storeTheme.text,
+                          borderTop: `1px solid ${storeTheme.border}30`,
+                          background: hasActive ? `${storeTheme.primary}08` : "transparent",
+                        }}
+                      >
+                        <span className="flex items-center gap-2">
+                          <MapPin size={12} style={{ color: hasActive ? storeTheme.primary : storeTheme.textMuted }} />
+                          {uf}
+                        </span>
+                        <ChevronDown
+                          size={14}
+                          style={{
+                            color: storeTheme.textMuted,
+                            transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
+                            transition: "transform 0.2s",
+                          }}
+                        />
+                      </button>
+                      {isOpen && cities.map((city) => (
+                        <button
+                          key={city}
+                          onClick={() => { setFilterCity(city); setHeroIdx(0); }}
+                          className="w-full text-left pl-8 pr-4 py-2 text-sm font-medium flex items-center gap-2 transition-colors"
+                          style={{
+                            color: filterCity === city ? storeTheme.primary : storeTheme.text,
+                            background: filterCity === city ? `${storeTheme.primary}12` : "transparent",
+                          }}
+                        >
+                          <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: filterCity === city ? storeTheme.primary : storeTheme.textMuted }} />
+                          {city}
+                        </button>
+                      ))}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </aside>
+        )}
+
+        {/* ── Main Content ── */}
+        <div className="flex-1 min-w-0">
 
         {/* ═══ QUICK ACTIONS — Glass morphism cards ═══ */}
         <motion.section
@@ -956,6 +1062,7 @@ export default function StoreLayoutMarketplace({
         <ShimmerLine color={storeTheme.primary} />
 
 
+        </div>{/* end main content */}
       </div>
     </div>
   );
