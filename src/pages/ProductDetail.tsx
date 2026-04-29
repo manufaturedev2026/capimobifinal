@@ -652,18 +652,13 @@ export default function ProductDetail() {
     <div className="min-h-screen bg-background pb-24 lg:pb-0 relative overflow-hidden" style={themeVars}>
       {isDb && dbSeller?.id && <StoreEffects sellerId={dbSeller.id} />}
       <ThemeParticles color={getStoreTheme(dbSeller?.store_theme).primary} sellerId={dbSeller?.id} />
-      {/* ── Hero Banner ── */}
+      {/* ── Main Photo (single, no duplicated hero) ── */}
       <section className="relative">
         {(() => {
-          const o = imgOrientation[activeImage];
-          // Mobile keeps a stable 4:3 frame; desktop stays compact so broker data never disappears below the fold.
+          // Single fixed-frame main photo. object-contain keeps any photo format intact.
           const heroClass = isMobile
             ? "aspect-[4/3]"
-            : o === "portrait"
-              ? "h-[min(56vh,430px)] min-h-[320px]"
-              : o === "square"
-                ? "h-[min(56vh,430px)] min-h-[320px]"
-                : "aspect-[21/9] max-h-[430px]";
+            : "h-[min(60vh,520px)] min-h-[340px]";
           return (
             <div className={`overflow-hidden bg-muted ${heroClass}`}>
               {images.length > 0 ? (
