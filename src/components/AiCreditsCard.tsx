@@ -96,7 +96,7 @@ export default function AiCreditsCard({ userId, sellerId, themeVars, onPurchased
       )}
 
       <AiCreditsUsageModal open={usageOpen} onClose={() => setUsageOpen(false)} userId={userId} />
-      <BuyCreditsModal open={buyOpen} onClose={() => setBuyOpen(false)} themeVars={themeVars} userId={userId} sellerId={sellerId} onPurchased={refresh} />
+      <BuyCreditsModal open={buyOpen} onClose={() => setBuyOpen(false)} themeVars={themeVars} userId={userId} sellerId={sellerId} onPurchased={handlePurchased} />
     </Card>
   );
 }
