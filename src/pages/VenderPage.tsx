@@ -9,7 +9,7 @@ import {
   User, Phone, Mail, Lock, Loader2,
   Globe, Brain, Megaphone, Wallet, FileText, Home,
   Smartphone, Camera, Target, Flame, Diamond, ChevronRight, MapPin,
-  Shield, Users, TrendingUp, Award,
+  Shield, Users, TrendingUp, Award, MessageCircle, Film, Sparkles, Building2, BarChart3, Bot,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import MarketplaceNavbar from "@/components/MarketplaceNavbar";
@@ -22,6 +22,7 @@ import { useToast } from "@/hooks/use-toast";
 import { BRAZIL_STATES } from "@/data/brazilStates";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { useRegistrationsClosed } from "@/hooks/useRegistrationsClosed";
+import { useActivePlans } from "@/hooks/usePlans";
 import RegistrationsClosedNotice from "@/components/RegistrationsClosedNotice";
 
 const FEATURES = [
@@ -124,6 +125,51 @@ const FEATURES = [
       "Aumente seu estoque sem esforço",
     ],
   },
+  {
+    icon: Bot, emoji: "🤖", title: "Bot WhatsApp com IA Inteligente",
+    items: [
+      "Atende leads 24h por dia, 7 dias por semana",
+      "Conversa natural usando IA generativa",
+      "Captura nome, telefone e interesse automaticamente",
+      "Encaminha o lead pronto direto pro seu CRM",
+    ],
+  },
+  {
+    icon: Film, emoji: "🎬", title: "Modo Cinema Imersivo",
+    items: [
+      "Apresentação fullscreen estilo Netflix dos seus imóveis",
+      "Reverse-zoom automático em cada foto",
+      "Wow factor instantâneo nas reuniões",
+      "Compartilhe um link e impressione o cliente",
+    ],
+  },
+  {
+    icon: Sparkles, emoji: "✨", title: "Galeria Showroom + Copywriting IA",
+    items: [
+      "Landing cinematográfica para cada imóvel",
+      "Copywriting automático gerado por IA",
+      "Stories estilo Instagram com 24h de duração",
+      "Auto-criação ao publicar novos imóveis",
+    ],
+  },
+  {
+    icon: BarChart3, emoji: "📊", title: "Analytics e Estatísticas Avançadas",
+    items: [
+      "Visitas por imóvel e por loja em tempo real",
+      "Cliques no WhatsApp por corretor",
+      "Origem do tráfego e conversões",
+      "Relatórios para entender o que vende",
+    ],
+  },
+  {
+    icon: Building2, emoji: "🏢", title: "Gestão de Equipe (Imobiliárias)",
+    items: [
+      "Cadastre vários corretores em uma só conta",
+      "Cada corretor com sua loja-espelho personalizada",
+      "WhatsApp Team Picker — distribui leads aleatoriamente",
+      "CRM compartilhado e analytics por corretor",
+    ],
+  },
 ];
 
 const IDEAL_FOR = [
@@ -140,54 +186,27 @@ const STATS = [
   { value: "100%", label: "Responsivo", icon: Smartphone },
 ];
 
-const PLANS = [
-  {
-    key: "basico", name: "Básico", subtitle: "Para experimentar", price: 0, priceLabel: "Gratuito",
-    setupFee: null, popular: false,
-    benefits: ["Até 5 anúncios ativos", "Vitrine própria (sua loja online)", "URL personalizada /seu-nome", "1 Layout (Marketplace) + 1 Tema", "Painel do vendedor completo", "Estatísticas básicas", "Busca de endereço por CEP no cadastro", "Gerador de contratos (1 modelo)", "QR Code dos anúncios e propostas PDF", "Calculadora de Lucro (ROI)", "Sistema de Parcerias entre corretores", "Push: 1 envio por dia"],
-    cta: "Criar conta grátis",
-  },
-  {
-    key: "start", name: "Start", subtitle: "Para corretores iniciantes", price: 24.99, priceLabel: "R$24,99",
-    setupFee: 299, popular: false,
-    benefits: ["Até 25 anúncios ativos", "Vitrine Lvl 1 — mais visibilidade", "1 Layout (Showcase) + 3 Temas", "CRM Kanban completo", "Ferramenta de calcular tamanho do imóvel", "Stories (estilo Instagram)", "Página de Captação de imóveis", "Todos os modelos de contrato", "Simulador de Financiamento", "PDF de Proposta profissional", "Selo Start + Hero Banner", "Destaque na listagem", "Push: 1 envio por dia"],
-    cta: "Começar agora",
-  },
-  {
-    key: "premium", name: "VIP", subtitle: "⭐ Mais popular", price: 59.99, priceLabel: "R$59,99",
-    setupFee: 719, popular: true,
-    benefits: ["Até 60 anúncios ativos", "Vitrine Lvl 2 — destaque superior", "4 Layouts + 6 Temas", "Tudo do Start +", "Bot de Captação (fluxo fixo)", "Push Notifications: 2 envios por dia", "Vídeo banner hero (autoplay)", "Modo Cinema imersivo", "Efeitos visuais na loja", "Gestão de Aluguéis completa", "Sistema de ADS integrado", "Estatísticas avançadas", "Selo VIP nos anúncios", "Suporte prioritário"],
-    cta: "Assinar VIP",
-  },
-  {
-    key: "vip", name: "Premium", subtitle: "Para dominar o mercado", price: 114.99, priceLabel: "R$114,99",
-    setupFee: 1379, popular: false,
-    benefits: ["Até 115 anúncios ativos", "Vitrine Lvl 3 — máximo individual", "Todos os 7 Layouts + Temas", "Tudo do VIP +", "Avaliação Profissional com laudo PDF", "CRECI e CNAI no laudo", "Captação com IA Inteligente", "Instagram na loja", "SEO otimizado (cidade/bairro)", "Destaque Épico (até 5 imóveis)", "Galeria Showroom + Copywriting", "Selo Premium exclusivo", "Push Notifications: 3 envios por dia", "Suporte VIP dedicado"],
-    cta: "Assinar Premium",
-  },
-];
+// Estilo épico por tier (gradientes, glow e ícones) — aplicado dinamicamente sobre os planos do banco
+const TIER_STYLES: Record<string, { gradient: string; glow: string; ring: string; icon: any; badge?: string; ctaGradient?: string; subtitle: string }> = {
+  basico:            { gradient: "from-slate-500/20 to-slate-700/10",     glow: "shadow-slate-500/10",   ring: "border-white/10",                                                            icon: Rocket,    subtitle: "Para começar agora" },
+  basico_empresa:    { gradient: "from-slate-500/20 to-blue-700/10",      glow: "shadow-blue-500/10",    ring: "border-white/10",                                                            icon: Building2, subtitle: "Para imobiliárias começarem" },
+  start:             { gradient: "from-emerald-500/30 to-teal-700/10",    glow: "shadow-emerald-500/20", ring: "border-emerald-400/30",                                                      icon: Zap,       subtitle: "Para corretores em ascensão" },
+  premium:           { gradient: "from-amber-500/40 to-orange-600/20",    glow: "shadow-amber-500/30",   ring: "border-amber-400/60 ring-1 ring-amber-400/40",                               icon: Star,      subtitle: "⭐ Mais popular",            badge: "Mais Popular", ctaGradient: "from-amber-500 to-orange-500" },
+  vip:               { gradient: "from-fuchsia-500/30 to-purple-700/20",  glow: "shadow-fuchsia-500/30", ring: "border-fuchsia-400/50",                                                      icon: Crown,     subtitle: "Para dominar o mercado" },
+  essencial_empresa: { gradient: "from-cyan-500/30 to-blue-700/20",       glow: "shadow-cyan-500/20",    ring: "border-cyan-400/40",                                                         icon: Building2, subtitle: "Para imobiliárias médias" },
+  premium_empresa:   { gradient: "from-violet-500/30 to-indigo-700/20",   glow: "shadow-violet-500/30",  ring: "border-violet-400/50",                                                       icon: Diamond,   subtitle: "Para grandes imobiliárias" },
+  prime_empresa:     { gradient: "from-yellow-500/30 to-amber-700/30",    glow: "shadow-yellow-500/30",  ring: "border-yellow-500/60 ring-1 ring-yellow-500/40",                             icon: Crown,     subtitle: "★ Para construtoras e redes", badge: "★ TOP",        ctaGradient: "from-zinc-800 to-black text-yellow-400 border border-yellow-500/40" },
+};
 
-const ENTERPRISE_PLANS = [
-  {
-    key: "essencial_empresa", name: "Exclusive", subtitle: "Para imobiliárias", price: 199.99, priceLabel: "R$199,99",
-    benefits: ["Anúncios ilimitados", "Vitrine Lvl 4 — prioridade empresa", "Todos os layouts + temas", "Tudo do Premium +", "Até 5 corretores vinculados", "Lojas espelho por corretor", "WhatsApp Team Picker", "Analytics por corretor", "Selo Exclusive", "Push Notifications: 4 envios por dia", "Suporte dedicado"],
-    cta: "Assinar Exclusive",
-  },
-  {
-    key: "premium_empresa", name: "Prime", subtitle: "Para grandes imobiliárias", price: 349.99, priceLabel: "R$349,99",
-    benefits: ["Anúncios ilimitados", "Vitrine Lvl 5 — destaque premium", "Tudo do Exclusive +", "Até 10 corretores vinculados", "Domínio personalizado", "Selo Prime", "Push Notifications: 5 envios por dia", "Suporte premium dedicado"],
-    cta: "Assinar Prime",
-  },
-  {
-    key: "prime_empresa", name: "Black", subtitle: "★ Para construtoras e redes", price: 599.99, priceLabel: "R$599,99",
-    benefits: ["Anúncios ilimitados", "Vitrine Lvl 6 — máximo absoluto", "Tudo do Prime +", "Corretores ilimitados", "Gerente de conta VIP dedicado", "Selo Black ★ exclusivo", "Push Notifications: 6 envios por dia", "Suporte 24/7 prioritário"],
-    cta: "Assinar Black",
-  },
-];
+const formatPrice = (price: number) => price === 0 ? "Gratuito" : `R$ ${price.toFixed(2).replace(".", ",")}`;
+const getTierStyle = (tier: string) => TIER_STYLES[tier] || TIER_STYLES.basico;
 
 export default function VenderPage() {
   const navigate = useNavigate();
   const { user, signUp } = useAuth();
+  const { plans: dbPlans, loading: loadingPlans } = useActivePlans();
+  const individualPlans = dbPlans.filter(p => p.category === "free" || p.category === "individual").sort((a, b) => a.sort_order - b.sort_order);
+  const enterprisePlans = dbPlans.filter(p => p.category === "enterprise").sort((a, b) => a.sort_order - b.sort_order);
   const { site_name } = useSiteSettings();
   const { closed: registrationsClosed } = useRegistrationsClosed();
   const { toast } = useToast();
@@ -629,119 +648,196 @@ export default function VenderPage() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
-              {PLANS.map((plan, i) => (
-                <motion.div
-                  key={plan.key}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                  className={`relative bg-white/[0.04] backdrop-blur rounded-2xl border ${plan.popular ? "border-amber-400/60 ring-1 ring-amber-400/30 shadow-xl shadow-amber-500/10" : "border-white/10"} p-5 md:p-6 flex flex-col`}
-                >
-                  {plan.popular && (
-                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-[10px] font-bold uppercase px-4 py-1 rounded-full tracking-wide">
-                      Recomendado
-                    </span>
-                  )}
+            {loadingPlans ? (
+              <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-white/30" /></div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
+                {individualPlans.map((plan, i) => {
+                  const style = getTierStyle(plan.tier);
+                  const Icon = style.icon;
+                  const isPopular = plan.is_popular || !!style.badge;
+                  return (
+                    <motion.div
+                      key={plan.id}
+                      initial={{ opacity: 0, y: 30 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: i * 0.08, duration: 0.5 }}
+                      whileHover={{ y: -6, transition: { duration: 0.2 } }}
+                      className={`group relative overflow-hidden bg-gradient-to-br ${style.gradient} backdrop-blur-xl rounded-2xl border ${style.ring} ${style.glow} shadow-2xl p-5 md:p-6 flex flex-col`}
+                    >
+                      {/* Glow ambient */}
+                      <div className="absolute -top-20 -right-20 w-40 h-40 bg-white/5 rounded-full blur-3xl group-hover:bg-white/10 transition-all duration-500" />
 
-                  <h3 className="font-display font-bold text-lg md:text-xl">{plan.name}</h3>
-                  <p className="text-[11px] md:text-xs text-white/40 mt-1">{plan.subtitle}</p>
+                      {style.badge && (
+                        <span className={`absolute -top-3 left-1/2 -translate-x-1/2 z-10 ${style.ctaGradient ? `bg-gradient-to-r ${style.ctaGradient}` : "bg-gradient-to-r from-amber-500 to-orange-500"} text-white text-[10px] font-black uppercase px-4 py-1 rounded-full tracking-widest shadow-lg`}>
+                          {style.badge}
+                        </span>
+                      )}
 
-                  <div className="mt-4 md:mt-5 mb-3 md:mb-4">
-                    {plan.price === 0 ? (
-                      <p className="text-2xl md:text-3xl font-black">Gratuito</p>
-                    ) : (
-                      <>
-                        <p className="text-2xl md:text-3xl font-black">
-                          {plan.priceLabel}<span className="text-xs md:text-sm font-normal text-white/40">/mês</span>
-                        </p>
-                        <p className="text-[10px] md:text-[11px] font-bold mt-1" style={{ color: theme.primary }}>
-                          ✨ 7 dias grátis
-                        </p>
-                      </>
-                    )}
-                  </div>
+                      <div className="relative z-10 flex flex-col h-full">
+                        <div className="flex items-center gap-2 mb-3">
+                          <div className="p-2 bg-white/10 rounded-lg backdrop-blur">
+                            <Icon className="w-5 h-5 text-white" />
+                          </div>
+                          <h3 className="font-display font-black text-xl md:text-2xl">{plan.name}</h3>
+                        </div>
+                        <p className="text-[11px] md:text-xs text-white/50 mb-4">{style.subtitle}</p>
 
-                  <ul className="space-y-2 md:space-y-2.5 flex-1 mb-5 md:mb-6">
-                    {plan.benefits.map((b) => (
-                      <li key={b} className="flex items-start gap-2 text-xs md:text-sm text-white/60">
-                        <Check className="w-3.5 h-3.5 md:w-4 md:h-4 mt-0.5 shrink-0" style={{ color: theme.primary }} />
-                        {b}
-                      </li>
-                    ))}
-                  </ul>
+                        <div className="mb-4">
+                          {plan.price === 0 ? (
+                            <p className="text-3xl md:text-4xl font-black bg-gradient-to-br from-white to-white/60 bg-clip-text text-transparent">Gratuito</p>
+                          ) : (
+                            <>
+                              <div className="flex items-baseline gap-1">
+                                <span className="text-3xl md:text-4xl font-black bg-gradient-to-br from-white to-white/60 bg-clip-text text-transparent">{formatPrice(plan.price)}</span>
+                                <span className="text-xs md:text-sm font-normal text-white/40">/mês</span>
+                              </div>
+                              <p className="text-[10px] md:text-[11px] font-bold mt-1.5 flex items-center gap-1" style={{ color: theme.primary }}>
+                                <Sparkles className="w-3 h-3" /> 7 dias grátis
+                              </p>
+                            </>
+                          )}
+                        </div>
 
-                  <Button
-                    onClick={scrollToForm}
-                    className={`w-full rounded-xl font-bold text-sm ${
-                      plan.popular
-                        ? "bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white"
-                        : "bg-white/10 hover:bg-white/15 text-white"
-                    }`}
-                  >
-                    {plan.cta}
-                  </Button>
-                </motion.div>
-              ))}
-            </div>
+                        <div className="mb-4 px-3 py-2 rounded-lg bg-black/30 border border-white/5">
+                          <p className="text-[10px] uppercase tracking-wider text-white/40 mb-0.5">Limite de anúncios</p>
+                          <p className="text-sm font-bold text-white">{plan.max_items >= 9999 ? "Ilimitado" : `Até ${plan.max_items} imóveis`}</p>
+                        </div>
+
+                        <ul className="space-y-1.5 md:space-y-2 flex-1 mb-5">
+                          {plan.benefits.slice(0, 12).map((b) => (
+                            <li key={b} className="flex items-start gap-2 text-xs md:text-[13px] text-white/70">
+                              <Check className="w-3.5 h-3.5 mt-0.5 shrink-0" style={{ color: theme.primary }} />
+                              <span>{b}</span>
+                            </li>
+                          ))}
+                          {plan.benefits.length > 12 && (
+                            <li className="text-[11px] text-white/40 italic pl-5">+ {plan.benefits.length - 12} recursos adicionais</li>
+                          )}
+                        </ul>
+
+                        <Button
+                          onClick={scrollToForm}
+                          className={`w-full rounded-xl font-bold text-sm transition-all ${
+                            style.ctaGradient
+                              ? `bg-gradient-to-r ${style.ctaGradient} hover:brightness-110 text-white shadow-lg`
+                              : "bg-white/10 hover:bg-white/20 text-white border border-white/10"
+                          }`}
+                        >
+                          {plan.price === 0 ? "Criar conta grátis" : `Assinar ${plan.name}`}
+                          <ArrowRight className="w-4 h-4 ml-1" />
+                        </Button>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            )}
 
             {/* Enterprise Plans */}
-            <div className="mt-12 md:mt-16">
-              <div className="text-center mb-8">
-                <p className="font-semibold text-xs md:text-sm uppercase tracking-wide mb-2" style={{ color: theme.primary }}>Para Empresas</p>
-                <h3 className="font-display text-xl sm:text-2xl md:text-3xl font-black">
-                  Planos para Imobiliárias e Construtoras
-                </h3>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-5">
-                {ENTERPRISE_PLANS.map((plan, i) => (
+            {enterprisePlans.length > 0 && (
+              <div className="mt-16 md:mt-24">
+                <div className="text-center mb-10">
                   <motion.div
-                    key={plan.key}
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    transition={{ delay: i * 0.1 }}
-                    className={`relative bg-white/[0.04] backdrop-blur rounded-2xl border ${plan.key === "prime_empresa" ? "border-yellow-500/60 ring-1 ring-yellow-500/30 shadow-xl shadow-yellow-500/10" : "border-white/10"} p-5 md:p-6 flex flex-col`}
+                    className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-cyan-500/10 to-violet-500/10 border border-white/10 mb-4"
                   >
-                    {plan.key === "prime_empresa" && (
-                      <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-zinc-800 to-black text-yellow-400 text-[10px] font-bold uppercase px-4 py-1 rounded-full tracking-wide border border-yellow-500/50">
-                        ★ Top
-                      </span>
-                    )}
-
-                    <h3 className="font-display font-bold text-lg md:text-xl">{plan.name}</h3>
-                    <p className="text-[11px] md:text-xs text-white/40 mt-1">{plan.subtitle}</p>
-
-                    <div className="mt-4 md:mt-5 mb-3 md:mb-4">
-                      <p className="text-2xl md:text-3xl font-black">
-                        {plan.priceLabel}<span className="text-xs md:text-sm font-normal text-white/40">/mês</span>
-                      </p>
-                    </div>
-
-                    <ul className="space-y-2 md:space-y-2.5 flex-1 mb-5 md:mb-6">
-                      {plan.benefits.map((b) => (
-                        <li key={b} className="flex items-start gap-2 text-xs md:text-sm text-white/60">
-                          <Check className="w-3.5 h-3.5 md:w-4 md:h-4 mt-0.5 shrink-0" style={{ color: theme.primary }} />
-                          {b}
-                        </li>
-                      ))}
-                    </ul>
-
-                    <Button
-                      onClick={scrollToForm}
-                      className={`w-full rounded-xl font-bold text-sm ${
-                        plan.key === "prime_empresa"
-                          ? "bg-gradient-to-r from-zinc-800 to-black text-yellow-400 border border-yellow-500/30 hover:from-zinc-700 hover:to-zinc-900"
-                          : "bg-white/10 hover:bg-white/15 text-white"
-                      }`}
-                    >
-                      {plan.cta}
-                    </Button>
+                    <Building2 className="w-3.5 h-3.5 text-cyan-300" />
+                    <span className="text-[11px] font-bold uppercase tracking-widest bg-gradient-to-r from-cyan-300 to-violet-300 bg-clip-text text-transparent">Para Empresas</span>
                   </motion.div>
-                ))}
+                  <h3 className="font-display text-2xl sm:text-3xl md:text-4xl font-black bg-gradient-to-br from-white to-white/60 bg-clip-text text-transparent">
+                    Planos para Imobiliárias e Construtoras
+                  </h3>
+                  <p className="text-white/40 mt-3 text-sm md:text-base max-w-xl mx-auto">
+                    Múltiplos corretores, lojas-espelho, CRM compartilhado e analytics por equipe
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
+                  {enterprisePlans.map((plan, i) => {
+                    const style = getTierStyle(plan.tier);
+                    const Icon = style.icon;
+                    return (
+                      <motion.div
+                        key={plan.id}
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: i * 0.08, duration: 0.5 }}
+                        whileHover={{ y: -6, transition: { duration: 0.2 } }}
+                        className={`group relative overflow-hidden bg-gradient-to-br ${style.gradient} backdrop-blur-xl rounded-2xl border ${style.ring} ${style.glow} shadow-2xl p-5 md:p-6 flex flex-col`}
+                      >
+                        <div className="absolute -top-20 -right-20 w-40 h-40 bg-white/5 rounded-full blur-3xl group-hover:bg-white/10 transition-all duration-500" />
+
+                        {style.badge && (
+                          <span className={`absolute -top-3 left-1/2 -translate-x-1/2 z-10 ${style.ctaGradient ? `bg-gradient-to-r ${style.ctaGradient}` : "bg-gradient-to-r from-violet-500 to-fuchsia-500"} text-white text-[10px] font-black uppercase px-4 py-1 rounded-full tracking-widest shadow-lg`}>
+                            {style.badge}
+                          </span>
+                        )}
+
+                        <div className="relative z-10 flex flex-col h-full">
+                          <div className="flex items-center gap-2 mb-3">
+                            <div className="p-2 bg-white/10 rounded-lg backdrop-blur">
+                              <Icon className="w-5 h-5 text-white" />
+                            </div>
+                            <h3 className="font-display font-black text-xl md:text-2xl">{plan.name}</h3>
+                          </div>
+                          <p className="text-[11px] md:text-xs text-white/50 mb-4">{style.subtitle}</p>
+
+                          <div className="mb-4">
+                            {plan.price === 0 ? (
+                              <p className="text-3xl md:text-4xl font-black bg-gradient-to-br from-white to-white/60 bg-clip-text text-transparent">Gratuito</p>
+                            ) : (
+                              <>
+                                <div className="flex items-baseline gap-1">
+                                  <span className="text-3xl md:text-4xl font-black bg-gradient-to-br from-white to-white/60 bg-clip-text text-transparent">{formatPrice(plan.price)}</span>
+                                  <span className="text-xs md:text-sm font-normal text-white/40">/mês</span>
+                                </div>
+                                <p className="text-[10px] md:text-[11px] font-bold mt-1.5 flex items-center gap-1" style={{ color: theme.primary }}>
+                                  <Sparkles className="w-3 h-3" /> 7 dias grátis
+                                </p>
+                              </>
+                            )}
+                          </div>
+
+                          <div className="mb-4 px-3 py-2 rounded-lg bg-black/30 border border-white/5">
+                            <p className="text-[10px] uppercase tracking-wider text-white/40 mb-0.5">Limite de anúncios</p>
+                            <p className="text-sm font-bold text-white">{plan.max_items >= 9999 ? "Ilimitado" : `Até ${plan.max_items} imóveis`}</p>
+                          </div>
+
+                          <ul className="space-y-1.5 md:space-y-2 flex-1 mb-5">
+                            {plan.benefits.slice(0, 12).map((b) => (
+                              <li key={b} className="flex items-start gap-2 text-xs md:text-[13px] text-white/70">
+                                <Check className="w-3.5 h-3.5 mt-0.5 shrink-0" style={{ color: theme.primary }} />
+                                <span>{b}</span>
+                              </li>
+                            ))}
+                            {plan.benefits.length > 12 && (
+                              <li className="text-[11px] text-white/40 italic pl-5">+ {plan.benefits.length - 12} recursos adicionais</li>
+                            )}
+                          </ul>
+
+                          <Button
+                            onClick={scrollToForm}
+                            className={`w-full rounded-xl font-bold text-sm transition-all ${
+                              style.ctaGradient
+                                ? `bg-gradient-to-r ${style.ctaGradient} hover:brightness-110 shadow-lg`
+                                : "bg-white/10 hover:bg-white/20 text-white border border-white/10"
+                            }`}
+                          >
+                            {plan.price === 0 ? "Criar conta grátis" : `Assinar ${plan.name}`}
+                            <ArrowRight className="w-4 h-4 ml-1" />
+                          </Button>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </section>
 
