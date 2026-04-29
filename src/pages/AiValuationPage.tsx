@@ -99,6 +99,11 @@ export default function AiValuationPage() {
   const { user, profile } = useAuth();
   const [searchParams] = useSearchParams();
 
+  // Modal de créditos IA insuficientes (mensagem didática, não tratar como erro)
+  const [creditsModal, setCreditsModal] = useState<{ open: boolean; balance: number; required: number }>({
+    open: false, balance: 0, required: 0,
+  });
+
   // Tema visual (segue o tema da loja do usuário ou o tema do marketplace)
   const [marketplaceThemeId, setMarketplaceThemeId] = useState(
     () => localStorage.getItem("marketplace_theme") || "azul"
@@ -424,11 +429,7 @@ export default function AiValuationPage() {
       // Créditos IA insuficientes — aviso amigável, sem crash
       if (payload?.aiCredits && (payload?.error?.includes?.("Cr") || payload?.error?.includes?.("insufic"))) {
         const { balance, required } = payload.aiCredits;
-        toast({
-          title: "Créditos IA insuficientes",
-          description: `Você tem ${balance} crédito(s) e esta avaliação custa ${required}. Compre mais créditos no painel para continuar.`,
-          variant: "destructive",
-        });
+        setCreditsModal({ open: true, balance: Number(balance) || 0, required: Number(required) || 0 });
         return;
       }
       if (error) throw error;
