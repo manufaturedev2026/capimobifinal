@@ -789,8 +789,21 @@ export default function VenderPage() {
                               </span>
                             ))}
                           </div>
-                        </div>
+                          </div>
 
+                          <div className="mb-4 px-3 py-2.5 rounded-lg bg-gradient-to-br from-purple-500/10 via-fuchsia-500/5 to-transparent border border-purple-400/20">
+                            <p className="text-[9px] uppercase tracking-wider text-purple-200/80 mb-1.5 flex items-center gap-1 font-bold">
+                              <Bot className="w-3 h-3" /> Bots de IA inclusos
+                            </p>
+                            <div className="flex flex-wrap gap-1">
+                              {getAiBots(plan.tier).map((bot) => (
+                                <span key={bot.name} className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-white/5 border border-white/10 text-[10px] text-white/80">
+                                  <span>{bot.emoji}</span>
+                                  <span className="font-medium">{bot.name}</span>
+                                </span>
+                              ))}
+                            </div>
+                          </div>
 
                         <ul className="space-y-1.5 md:space-y-2 flex-1 mb-5">
                           {plan.benefits.slice(0, 12).map((b) => (
