@@ -557,7 +557,7 @@ export default function CompanyProfile() {
       const phone = company.whatsapp.replace(/\D/g, "");
       const msg = productId
         ? `Olá ${company.name}! 🏠 Vi o imóvel *${title}* na sua loja e gostaria de mais informações.\n\n🔗 ${link}`
-        : `Olá ${company.name}! 🏠 Vim da sua loja Capimobi e gostaria de mais informações sobre seus imóveis.\n\n🔗 ${link}`;
+        : `Olá ${company.name}! 🏠 Vim da sua loja ${site_name} e gostaria de mais informações sobre seus imóveis.\n\n🔗 ${link}`;
       openUrl(`https://wa.me/55${phone}?text=${encodeURIComponent(msg)}`);
       return;
     }
