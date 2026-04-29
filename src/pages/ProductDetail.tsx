@@ -119,6 +119,15 @@ export default function ProductDetail() {
   const isMobile = useIsMobile();
   const [activeImage, setActiveImage] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [imgOrientation, setImgOrientation] = useState<Record<number, "portrait" | "landscape" | "square">>({});
+
+  // Detect orientation of the active image so the hero adapts to any photo format
+  const handleImgLoad = (idx: number) => (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const img = e.currentTarget;
+    const ratio = img.naturalWidth / img.naturalHeight;
+    const o = ratio > 1.15 ? "landscape" : ratio < 0.85 ? "portrait" : "square";
+    setImgOrientation((prev) => (prev[idx] === o ? prev : { ...prev, [idx]: o }));
+  };
   const carouselRef = useRef<HTMLDivElement>(null);
   const [dbItem, setDbItem] = useState<any>(null);
   const [dbSeller, setDbSeller] = useState<any>(null);
@@ -645,29 +654,43 @@ export default function ProductDetail() {
       <ThemeParticles color={getStoreTheme(dbSeller?.store_theme).primary} sellerId={dbSeller?.id} />
       {/* ── Hero Banner ── */}
       <section className="relative">
-        <div className={`overflow-hidden bg-muted ${isMobile ? "aspect-[4/3]" : "aspect-[21/9] max-h-[70vh]"}`}>
-          {images.length > 0 ? (
-            <AnimatePresence mode="wait">
-              <motion.img
-                key={activeImage}
-                initial={{ opacity: 0, scale: 1.02 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.4 }}
-                src={images[activeImage]}
-                alt={title}
-                className="w-full h-full object-contain bg-muted cursor-pointer"
-                onClick={() => isMobile && setLightboxOpen(true)}
-                onTouchStart={isMobile ? handleTouchStart : undefined}
-                onTouchEnd={isMobile ? handleTouchEnd : undefined}
-              />
-            </AnimatePresence>
-          ) : (
-            <div className="w-full h-full flex items-center justify-center bg-muted">
-              <Image size={64} className="text-muted-foreground" />
+        {(() => {
+          const o = imgOrientation[activeImage];
+          // Mobile: keep portrait-friendly 4:3, desktop adapts
+          const heroClass = isMobile
+            ? "aspect-[4/3]"
+            : o === "portrait"
+              ? "h-[78vh] max-h-[820px] min-h-[480px]"
+              : o === "square"
+                ? "aspect-square max-h-[70vh]"
+                : "aspect-[21/9] max-h-[70vh]";
+          return (
+            <div className={`overflow-hidden bg-muted ${heroClass}`}>
+              {images.length > 0 ? (
+                <AnimatePresence mode="wait">
+                  <motion.img
+                    key={activeImage}
+                    initial={{ opacity: 0, scale: 1.02 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.4 }}
+                    src={images[activeImage]}
+                    alt={title}
+                    onLoad={handleImgLoad(activeImage)}
+                    className="w-full h-full object-contain bg-muted cursor-pointer"
+                    onClick={() => isMobile && setLightboxOpen(true)}
+                    onTouchStart={isMobile ? handleTouchStart : undefined}
+                    onTouchEnd={isMobile ? handleTouchEnd : undefined}
+                  />
+                </AnimatePresence>
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-muted">
+                  <Image size={64} className="text-muted-foreground" />
+                </div>
+              )}
             </div>
-          )}
-        </div>
+          );
+        })()}
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/30 to-transparent pointer-events-none" />
         <div className="absolute top-4 left-4 z-20">
           <Link to={companyUrl} className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-card/70 backdrop-blur-md text-foreground text-sm font-medium hover:bg-card/90 transition-colors">
@@ -739,7 +762,7 @@ export default function ProductDetail() {
             {images.length === 1 && (
               <motion.button initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} onClick={() => { setActiveImage(0); setLightboxOpen(true); }}
                 className="w-full aspect-[16/7] rounded-2xl overflow-hidden border-2 border-border hover:border-primary/50 transition-all group relative">
-                <img loading="lazy" decoding="async" src={images[0]} alt="Foto 1" className="w-full h-full object-contain bg-muted transition-transform duration-500 group-hover:scale-105" />
+                <img loading="lazy" decoding="async" src={images[0]} alt="Foto 1" className="w-full h-full object-cover bg-muted transition-transform duration-500 group-hover:scale-105" />
                 <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/10 transition-colors flex items-center justify-center">
                   <ZoomIn size={32} className="text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg" />
                 </div>
@@ -751,7 +774,7 @@ export default function ProductDetail() {
                   <motion.button key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
                     onClick={() => { setActiveImage(i); setLightboxOpen(true); }}
                     className="rounded-2xl overflow-hidden border-2 border-border hover:border-primary/50 transition-all group relative">
-                    <img loading="lazy" decoding="async" src={img} alt={`Foto ${i + 1}`} className="w-full h-full object-contain bg-muted transition-transform duration-500 group-hover:scale-105" />
+                    <img loading="lazy" decoding="async" src={img} alt={`Foto ${i + 1}`} className="w-full h-full object-cover bg-muted transition-transform duration-500 group-hover:scale-105" />
                     <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/10 transition-colors flex items-center justify-center">
                       <ZoomIn size={24} className="text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg" />
                     </div>
@@ -764,7 +787,7 @@ export default function ProductDetail() {
                 <motion.button initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
                   onClick={() => { setActiveImage(0); setLightboxOpen(true); }}
                   className="col-span-2 rounded-2xl overflow-hidden border-2 border-border hover:border-primary/50 transition-all group relative">
-                  <img loading="lazy" decoding="async" src={images[0]} alt="Foto 1" className="w-full h-full object-contain bg-muted transition-transform duration-500 group-hover:scale-105" />
+                  <img loading="lazy" decoding="async" src={images[0]} alt="Foto 1" className="w-full h-full object-cover bg-muted transition-transform duration-500 group-hover:scale-105" />
                   <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/10 transition-colors flex items-center justify-center">
                     <ZoomIn size={28} className="text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg" />
                   </div>
@@ -774,7 +797,7 @@ export default function ProductDetail() {
                     <motion.button key={i + 1} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: (i + 1) * 0.05 }}
                       onClick={() => { setActiveImage(i + 1); setLightboxOpen(true); }}
                       className="rounded-2xl overflow-hidden border-2 border-border hover:border-primary/50 transition-all group relative">
-                      <img loading="lazy" decoding="async" src={img} alt={`Foto ${i + 2}`} className="w-full h-full object-contain bg-muted transition-transform duration-500 group-hover:scale-105" />
+                      <img loading="lazy" decoding="async" src={img} alt={`Foto ${i + 2}`} className="w-full h-full object-cover bg-muted transition-transform duration-500 group-hover:scale-105" />
                       <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/10 transition-colors flex items-center justify-center">
                         <ZoomIn size={20} className="text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg" />
                       </div>
@@ -788,7 +811,7 @@ export default function ProductDetail() {
                 <motion.button initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
                   onClick={() => { setActiveImage(0); setLightboxOpen(true); }}
                   className="col-span-2 row-span-2 rounded-2xl overflow-hidden border-2 border-border hover:border-primary/50 transition-all group relative">
-                  <img loading="lazy" decoding="async" src={images[0]} alt="Foto 1" className="w-full h-full object-contain bg-muted transition-transform duration-500 group-hover:scale-105" />
+                  <img loading="lazy" decoding="async" src={images[0]} alt="Foto 1" className="w-full h-full object-cover bg-muted transition-transform duration-500 group-hover:scale-105" />
                   <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/10 transition-colors flex items-center justify-center">
                     <ZoomIn size={32} className="text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg" />
                   </div>
@@ -800,7 +823,7 @@ export default function ProductDetail() {
                   <motion.button key={i + 1} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: (i + 1) * 0.06 }}
                     onClick={() => { setActiveImage(i + 1); setLightboxOpen(true); }}
                     className="rounded-2xl overflow-hidden border-2 border-border hover:border-primary/50 transition-all group relative">
-                    <img loading="lazy" decoding="async" src={img} alt={`Foto ${i + 2}`} className="w-full h-full object-contain bg-muted transition-transform duration-500 group-hover:scale-105" />
+                    <img loading="lazy" decoding="async" src={img} alt={`Foto ${i + 2}`} className="w-full h-full object-cover bg-muted transition-transform duration-500 group-hover:scale-105" />
                     <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/10 transition-colors flex items-center justify-center">
                       <ZoomIn size={20} className="text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg" />
                     </div>
