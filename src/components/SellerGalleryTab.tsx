@@ -384,6 +384,8 @@ interface GenOpts {
   contrast: number;
   saturate: number;
   hdr: boolean;
+  // Override do título (headline gerada por IA)
+  titleOverride?: string | null;
 }
 
 async function generateMarketingImage(o: GenOpts): Promise<string> {
@@ -635,7 +637,7 @@ async function generateMarketingImage(o: GenOpts): Promise<string> {
   const minTitleSize = Math.round((isStory ? 48 : isA4 ? 42 : 38) * scale);
   const fittedTitle = fitCanvasTextLines(
     ctx,
-    o.item.title,
+    (o.titleOverride && o.titleOverride.trim()) || o.item.title,
     titleFont,
     fontDef.weight,
     titleFontSize,
@@ -734,6 +736,8 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
   const [batchHighlight, setBatchHighlight] = useState(false);
   const [copiedAdText, setCopiedAdText] = useState(false);
   const [showAdvancedAdjust, setShowAdvancedAdjust] = useState(false);
+  const [aiHeadline, setAiHeadline] = useState<string | null>(null);
+  const [aiHeadlineLoading, setAiHeadlineLoading] = useState(false);
 
   useEffect(() => { ensureGoogleFonts(); }, []);
 
@@ -791,9 +795,10 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
       showWatermark,
       sellerName, sellerPhone, sellerCreci, sellerLogo,
       brightness, contrast, saturate, hdr,
+      titleOverride: aiHeadline,
       ...overrides,
     };
-  }, [selectedItem, photos, selectedPhotoIndex, selectedFormat, template, selectedFont, selectedDensity, effectiveBadge, showLogo, showWatermark, sellerName, sellerPhone, sellerCreci, sellerLogo, brightness, contrast, saturate, hdr]);
+  }, [selectedItem, photos, selectedPhotoIndex, selectedFormat, template, selectedFont, selectedDensity, effectiveBadge, showLogo, showWatermark, sellerName, sellerPhone, sellerCreci, sellerLogo, brightness, contrast, saturate, hdr, aiHeadline]);
 
   /* ── Preview ao vivo (debounced) ── */
   useEffect(() => {
@@ -866,6 +871,44 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
     if (!selectedItem) return;
     const text = `🏠 *${selectedItem.title}*\n${selectedItem.price ? `💰 R$ ${selectedItem.price.toLocaleString("pt-BR")}` : ""}\n📍 ${selectedItem.neighborhood ? `${selectedItem.neighborhood}, ${selectedItem.city}` : selectedItem.city || ""}\n\n👉 ${galleryUrl}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
+  };
+
+  /* ── Headline IA (chamada Lovable AI via edge function) ── */
+  const handleGenerateAiHeadline = async () => {
+    if (!selectedItem || aiHeadlineLoading) return;
+    setAiHeadlineLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("gallery-ai-headline", {
+        body: {
+          title: selectedItem.title,
+          category: selectedItem.category,
+          location: selectedItem.neighborhood
+            ? `${selectedItem.neighborhood}, ${selectedItem.city || ""}`
+            : selectedItem.city || "",
+          price: selectedItem.price,
+          bedrooms: selectedItem.bedrooms,
+          bathrooms: selectedItem.bathrooms,
+          parking: selectedItem.parking_spots,
+          area: selectedItem.area,
+          operation: (selectedItem as any).operation || "venda",
+        },
+      });
+      if (error) throw error;
+      const headline: string | undefined = data?.headline;
+      if (!headline) throw new Error("Sem retorno");
+      setAiHeadline(headline);
+      toast({ title: "Headline IA gerada ✨", description: headline });
+    } catch (e: any) {
+      const msg = e?.message || "Erro ao gerar headline";
+      const isCredits = /402|cr\u00e9dito|credits/i.test(msg);
+      toast({
+        title: isCredits ? "Sem créditos IA" : "Erro ao gerar headline",
+        description: isCredits ? "Recarregue créditos para usar a IA." : msg,
+        variant: "destructive",
+      });
+    } finally {
+      setAiHeadlineLoading(false);
+    }
   };
 
   /* ── Geração em lote: 10 versões automáticas ── */
@@ -981,7 +1024,7 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
               {items.map((item) => (
                 <button
                   key={item.id}
-                  onClick={() => setSelectedItemId(item.id)}
+                  onClick={() => { setSelectedItemId(item.id); setAiHeadline(null); }}
                   className="group text-left rounded-2xl overflow-hidden border border-border hover:border-primary/60 hover:shadow-xl transition-all bg-card"
                 >
                   <div className="aspect-[4/3] relative overflow-hidden">
@@ -1095,6 +1138,39 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
             <button onClick={handleGenerateAllFormats} disabled={batchGenerating} className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 text-white font-bold text-xs hover:opacity-90 transition disabled:opacity-50">
               {batchGenerating ? <Loader2 size={14} className="animate-spin" /> : <Package size={14} />} Pacote
             </button>
+          </div>
+
+          {/* Headline IA — gerada por Lovable AI */}
+          <div className="mt-3 rounded-xl border-2 border-dashed border-primary/30 bg-gradient-to-br from-violet-500/5 via-fuchsia-500/5 to-pink-500/5 p-3">
+            <div className="flex items-center justify-between gap-2 mb-2">
+              <div className="flex items-center gap-1.5">
+                <Sparkles size={14} className="text-fuchsia-500" />
+                <span className="text-xs font-bold text-foreground">Headline IA</span>
+                <span className="text-[9px] font-bold text-fuchsia-600 bg-fuchsia-500/10 px-1.5 py-0.5 rounded">1 crédito</span>
+              </div>
+              {aiHeadline && (
+                <button onClick={() => setAiHeadline(null)} className="text-[10px] text-muted-foreground hover:text-foreground">
+                  Usar título original
+                </button>
+              )}
+            </div>
+            {aiHeadline ? (
+              <div className="space-y-2">
+                <p className="text-sm font-bold text-foreground leading-snug">"{aiHeadline}"</p>
+                <button onClick={handleGenerateAiHeadline} disabled={aiHeadlineLoading} className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white font-bold text-[11px] hover:opacity-90 transition disabled:opacity-50">
+                  {aiHeadlineLoading ? <Loader2 size={12} className="animate-spin" /> : <Wand2 size={12} />}
+                  Gerar outra
+                </button>
+              </div>
+            ) : (
+              <button onClick={handleGenerateAiHeadline} disabled={aiHeadlineLoading || !selectedItem} className="w-full flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg bg-gradient-to-br from-violet-500 via-fuchsia-500 to-pink-500 text-white font-bold text-xs hover:opacity-90 transition disabled:opacity-50">
+                {aiHeadlineLoading ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
+                {aiHeadlineLoading ? "Criando chamada perfeita..." : "Gerar Headline com IA ✨"}
+              </button>
+            )}
+            <p className="text-[10px] text-muted-foreground mt-1.5 leading-tight">
+              Cria uma chamada de marketing curta e persuasiva para substituir o título cru do imóvel na arte.
+            </p>
           </div>
         </div>
 
