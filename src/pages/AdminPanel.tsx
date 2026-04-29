@@ -26,6 +26,7 @@ import AdminManagersTab from "@/components/AdminManagersTab";
 import AdminValuationPricesTab from "@/components/AdminValuationPricesTab";
 import AdminReceivePushTab from "@/components/AdminReceivePushTab";
 import { LOGIN_HERO_PRESETS, normalizeLoginHeroSetting, resolveLoginHeroImage } from "@/data/loginHeroPresets";
+import { invalidateRegistrationsClosed } from "@/hooks/useRegistrationsClosed";
 
 interface SellerWithSub {
   id: string;
