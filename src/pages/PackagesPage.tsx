@@ -88,6 +88,13 @@ export default function PackagesPage() {
     })();
   }, []);
 
+  // Remove cupom automaticamente ao sair da aba Mensal (cupons só valem para Mensal)
+  useEffect(() => {
+    if (billingPeriod !== "monthly" && appliedCoupon) {
+      setAppliedCoupon(null);
+    }
+  }, [billingPeriod, appliedCoupon]);
+
   // Carrega lotes Fundador ativos + setting global
   useEffect(() => {
     (async () => {
