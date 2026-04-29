@@ -68,10 +68,10 @@ export default function BlogArticlePage() {
   return (
     <div className="min-h-screen bg-secondary/50">
       <Helmet>
-        <title>{article.title} | Blog Capimobi</title>
+        <title>{article.title} | Blog {site_name}</title>
         <meta name="description" content={article.body.substring(0, 155)} />
         <link rel="canonical" href={`${SITE_URL}/blog/${slug}`} />
-        <meta property="og:title" content={`${article.title} | Blog Capimobi`} />
+        <meta property="og:title" content={`${article.title} | Blog ${site_name}`} />
         <meta property="og:description" content={article.body.substring(0, 155)} />
         <meta property="og:url" content={`${SITE_URL}/blog/${slug}`} />
         <meta property="og:image" content={article.cover} />
