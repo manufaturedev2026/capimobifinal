@@ -14,13 +14,13 @@ const styles: Record<string, { bg: string; icon: any; label: string; glow?: stri
   premium: {
     bg: "bg-gradient-to-r from-amber-500 to-orange-500",
     icon: Star,
-    label: "VIP",
+    label: "Premium",
     glow: "shadow-amber-500/30",
   },
   vip: {
     bg: "bg-gradient-to-r from-purple-600 to-indigo-600",
     icon: Crown,
-    label: "Premium",
+    label: "VIP",
     glow: "shadow-purple-500/30",
   },
   essencial_empresa: {
