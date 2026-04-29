@@ -789,7 +789,7 @@ function calcular(p: Payload, precoM2: number, market: MarketContext) {
     // Ambientes extras
     let ambExtra = 0;
     const ambs: Array<[boolean | undefined, string]> = [
-      [p.salaJantar, "sala de jantar"], [p.salaTv, "sala de TV"], [p.copa, "copa"],
+      [p.salaEstar, "sala de estar"], [p.salaJantar, "sala de jantar"], [p.salaTv, "sala de TV"], [p.copa, "copa"],
       [p.lavanderia, "lavanderia"], [p.areaServico, "área de serviço"],
       [p.closet, "closet"], [p.despensa, "despensa"], [p.varandaInterna, "varanda interna"],
     ];
