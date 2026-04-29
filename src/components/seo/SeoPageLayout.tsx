@@ -85,7 +85,7 @@ export default function SeoPageLayout({
   return (
     <div style={{ ...themeVars, background: DARK_BASE, color: TEXT, overflowX: "clip", maxWidth: "100%" }} className="min-h-screen">
       <Helmet>
-        <title>{`${title} | Capimobi`}</title>
+        <title>{`${title} | ${site_name}`}</title>
         <meta name="description" content={metaDescription} />
         <link rel="canonical" href={canonical} />
         <meta property="og:title" content={title} />
