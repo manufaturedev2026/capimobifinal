@@ -519,6 +519,7 @@ export default function AdminPanel() {
     { key: "valuation" as const, label: "Avaliação de Imóveis — Preços", icon: DollarSign },
     { key: "invite" as const, label: "Convite", icon: MessageCircle },
     { key: "receivePush" as const, label: "Receber Push", icon: Bell },
+    { key: "aiCosts" as const, label: "Custos de IA", icon: Brain },
   ];
   const activeSidebarItem = sidebarItems.find((item) => item.key === tab) || sidebarItems[0];
   const ActiveSidebarIcon = activeSidebarItem.icon;
