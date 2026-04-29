@@ -489,13 +489,13 @@ function drawDifferentials(pdf: jsPDF, data: ProposalData, y: number) {
     pdf.setLineWidth(0.3);
     rr(pdf, x, cy, colW, rowH, 2.5, "S");
 
-    // Check disc
+    // Check disc with drawn checkmark
     setFill(pdf, C.green);
     pdf.circle(x + 9, cy + 9, 3.5, "F");
-    pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(8);
-    setText(pdf, C.white);
-    pdf.text("v", x + 9, cy + 10.5, { align: "center" });
+    setDraw(pdf, C.white);
+    pdf.setLineWidth(0.7);
+    pdf.line(x + 7.2, cy + 9.2, x + 8.5, cy + 10.4);
+    pdf.line(x + 8.5, cy + 10.4, x + 10.8, cy + 7.8);
 
     pdf.setFont("helvetica", "bold");
     pdf.setFontSize(10);
