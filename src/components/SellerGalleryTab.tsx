@@ -384,6 +384,8 @@ interface GenOpts {
   contrast: number;
   saturate: number;
   hdr: boolean;
+  // Override do título (headline gerada por IA)
+  titleOverride?: string | null;
 }
 
 async function generateMarketingImage(o: GenOpts): Promise<string> {
@@ -635,7 +637,7 @@ async function generateMarketingImage(o: GenOpts): Promise<string> {
   const minTitleSize = Math.round((isStory ? 48 : isA4 ? 42 : 38) * scale);
   const fittedTitle = fitCanvasTextLines(
     ctx,
-    o.item.title,
+    (o.titleOverride && o.titleOverride.trim()) || o.item.title,
     titleFont,
     fontDef.weight,
     titleFontSize,
