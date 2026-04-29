@@ -293,7 +293,7 @@ export default function Index() {
                               <span className="text-primary-foreground text-[9px] font-bold">CM</span>
                             </div>
                             <div className="min-w-0">
-                              <p className="text-white text-[10px] font-semibold truncate">Capimobi</p>
+                              <p className="text-white text-[10px] font-semibold truncate">{site_name}</p>
                               <p className="text-white/60 text-[8px] truncate">Seu app instalado</p>
                             </div>
                           </div>
