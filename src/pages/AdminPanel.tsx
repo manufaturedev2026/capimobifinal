@@ -1551,12 +1551,8 @@ export default function AdminPanel() {
         </div>
       )}
 
-      {/* Founders Tab */}
-      {tab === "founders" && (
-        <div className="px-4 lg:px-8 py-6">
-          <AdminFoundersTab />
-        </div>
-      )}
+
+
 
         </main>
       </div>
