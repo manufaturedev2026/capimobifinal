@@ -152,6 +152,11 @@ export default function PackagesPage() {
       toast({ title: "Digite um código de cupom", variant: "destructive" });
       return;
     }
+    if (billingPeriod !== "monthly") {
+      toast({ title: "Cupons indisponíveis", description: "Cupons só podem ser aplicados em planos Mensais.", variant: "destructive" });
+      setValidatingCoupon(false);
+      return;
+    }
     setValidatingCoupon(true);
     try {
       const { data, error } = await (supabase as any)
