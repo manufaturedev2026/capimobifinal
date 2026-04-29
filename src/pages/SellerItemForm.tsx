@@ -998,6 +998,24 @@ export default function SellerItemForm() {
           )}
         </button>
       </form>
+      <LimitReachedDialog
+        open={limitDialog.open}
+        onOpenChange={(o) => setLimitDialog((d) => ({ ...d, open: o }))}
+        kind={limitDialog.kind}
+        used={
+          limitDialog.kind === "items" ? activeItemCount :
+          limitDialog.kind === "photos" ? form.photos.length :
+          limitDialog.kind === "storage" ? Math.round(planUsage?.usage.storage_mb || 0) :
+          undefined
+        }
+        limit={
+          limitDialog.kind === "items" ? pkgConfig.maxItems :
+          limitDialog.kind === "photos" ? MAX_PHOTOS :
+          limitDialog.kind === "storage" ? planUsage?.limits.storage_mb :
+          undefined
+        }
+        planName={planUsage?.plan_name || pkgConfig.name}
+      />
     </div>
   );
 }
