@@ -9,12 +9,14 @@ export interface PlanUsage {
     total_photos: number;
     storage_mb: number;
     ai_credits_balance: number;
+    monthly_visits: number;
   };
   limits: {
     max_items: number;
     max_photos_per_listing: number;
     storage_mb: number;
     ai_credits_per_month: number;
+    monthly_visits_limit: number;
   };
 }
 
