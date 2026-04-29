@@ -241,6 +241,8 @@ serve(async (req) => {
         tier,
         billing_period: isFounder ? "annual" : billing_period,
         is_founder: isFounder ? "1" : "0",
+        is_founder_upgrade: is_founder_upgrade ? "1" : "0",
+        upgrade_credit_brl: is_founder_upgrade ? (upgradeCreditCents / 100).toFixed(2) : "0",
         founder_lot_id: isFounder ? founderLot.id : "",
         founder_lot_number: isFounder ? String(founderLot.lot_number) : "",
         applied_coupon_code: appliedCouponCode || "",
