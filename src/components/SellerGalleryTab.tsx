@@ -1207,11 +1207,7 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
           </Section>
 
           {/* Templates */}
-          <Section title="Template" icon={Award} extra={
-            <button onClick={() => { if (selectedItem) { setSelectedTemplate(autoDetectTemplate(selectedItem)); setAutoTemplateUsed(true); toast({ title: "IA aplicou o melhor template ✨" }); } }} className="text-[10px] font-bold text-primary hover:underline flex items-center gap-1">
-              <Wand2 size={10} /> IA
-            </button>
-          }>
+          <Section title="Template" icon={Award}>
             <div className="grid grid-cols-2 gap-1.5 max-h-72 overflow-y-auto pr-1">
               {TEMPLATES.map((tpl) => {
                 const active = selectedTemplate === tpl.id;
