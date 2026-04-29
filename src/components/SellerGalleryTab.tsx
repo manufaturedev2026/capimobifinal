@@ -819,7 +819,10 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
         results.push({ format: opts.format, templateId: tpl.id, url, name: tpl.name });
         setBatchResults([...results]);
       }
-      toast({ title: "10 versões geradas! ✨", description: "Escolha sua favorita e baixe." });
+      toast({ title: "10 versões geradas! ✨", description: "Role para baixo para ver os resultados." });
+      setBatchHighlight(true);
+      setTimeout(() => batchResultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 120);
+      setTimeout(() => setBatchHighlight(false), 2500);
     } catch (e) {
       console.error(e);
       toast({ title: "Erro ao gerar versões", variant: "destructive" });
