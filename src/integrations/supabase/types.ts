@@ -927,6 +927,42 @@ export type Database = {
           },
         ]
       }
+      founder_lots: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          is_active: boolean
+          lot_number: number
+          price: number
+          total_slots: number
+          updated_at: string
+          used_slots: number
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          lot_number: number
+          price: number
+          total_slots?: number
+          updated_at?: string
+          used_slots?: number
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          lot_number?: number
+          price?: number
+          total_slots?: number
+          updated_at?: string
+          used_slots?: number
+        }
+        Relationships: []
+      }
       funnel_excluded_emails: {
         Row: {
           created_at: string
@@ -3552,6 +3588,7 @@ export type Database = {
         }
         Returns: Json
       }
+      consume_founder_slot: { Args: { p_lot_id: string }; Returns: boolean }
       cron_reset_all_monthly_credits: { Args: never; Returns: Json }
       decrypt_smtp_password: {
         Args: { p_encrypted: string; p_key: string }
