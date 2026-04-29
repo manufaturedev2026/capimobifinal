@@ -15,6 +15,7 @@ import {
   Download, Phone, Clock, Trash2, Flame, TrendingUp, Home as HomeIcon, DollarSign, Bot, Sparkles
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 const todayISO = () => new Date().toISOString().slice(0, 10);
 const weekRange = () => {
