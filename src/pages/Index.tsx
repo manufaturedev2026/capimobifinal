@@ -83,7 +83,7 @@ const PLANS_PREVIEW = [
     name: "Start",
     price: "R$ 24,99",
     setupFee: "R$ 299",
-    items: "25 anúncios",
+    items: "30 anúncios",
     layouts: "1 Layout (Netflix)",
     highlight: false,
     color: "from-emerald-500 to-teal-600",
