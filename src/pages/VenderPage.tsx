@@ -760,7 +760,7 @@ export default function VenderPage() {
         {/* Footer */}
         <footer className="bg-black/30 border-t border-white/5 py-6 md:py-8">
           <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-3 md:gap-4 text-xs text-white/30">
-            <p>© {new Date().getFullYear()} Capimobi. Todos os direitos reservados.</p>
+            <p>© {new Date().getFullYear()} {site_name}. Todos os direitos reservados.</p>
             <div className="flex gap-4">
               <Link to="/privacidade" className="hover:text-white/60 transition-colors">Privacidade</Link>
               <Link to="/termos" className="hover:text-white/60 transition-colors">Termos</Link>
