@@ -62,6 +62,7 @@ export default function PackagesPage() {
   const [couponInput, setCouponInput] = useState("");
   const [validatingCoupon, setValidatingCoupon] = useState(false);
   const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null);
+  const [founderLots, setFounderLots] = useState<FounderLot[]>([]);
 
   // Carrega o desconto anual configurado pelo admin
   useEffect(() => {
@@ -72,6 +73,19 @@ export default function PackagesPage() {
         .eq("key", "annual_discount_percent")
         .maybeSingle();
       if (data?.value) setAnnualDiscount(parseInt(data.value) || 20);
+    })();
+  }, []);
+
+  // Carrega lotes Fundador ativos
+  useEffect(() => {
+    (async () => {
+      const { data } = await (supabase as any)
+        .from("founder_lots")
+        .select("id, category, lot_number, price, total_slots, used_slots, is_active")
+        .eq("is_active", true)
+        .order("category")
+        .order("lot_number");
+      if (data) setFounderLots(data as FounderLot[]);
     })();
   }, []);
 
