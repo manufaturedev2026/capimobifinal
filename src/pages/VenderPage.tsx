@@ -171,6 +171,69 @@ const FEATURES = [
       "CRM compartilhado e analytics por corretor",
     ],
   },
+  {
+    icon: Palette, emoji: "🎨", title: "7 Layouts + Temas Personalizáveis",
+    items: [
+      "Marketplace, Showcase, Netflix, Magazine, Elegant e mais",
+      "Editor visual de cores e identidade da loja",
+      "Salva instantaneamente — sem precisar publicar",
+      "Cada loja com personalidade única",
+    ],
+  },
+  {
+    icon: Handshake, emoji: "🤝", title: "Sistema de Parcerias entre Corretores",
+    items: [
+      "Compartilhe imóveis com outros corretores",
+      "Divida comissões de forma transparente",
+      "Aumente seu estoque sem captar sozinho",
+      "Estatísticas de parcerias em tempo real",
+    ],
+  },
+  {
+    icon: QrCode, emoji: "📱", title: "QR Code + Proposta em PDF",
+    items: [
+      "QR Code automático para cada imóvel",
+      "Proposta profissional em PDF com mapa estático",
+      "Use em panfletos, placas e apresentações",
+      "Cliente acessa o anúncio com 1 leitura",
+    ],
+  },
+  {
+    icon: Calculator, emoji: "🧮", title: "Calculadora de Lucro + Simulador de Financiamento",
+    items: [
+      "Calcule ROI de cada negócio em segundos",
+      "Comparativo de taxas entre principais bancos",
+      "Simulação de parcelas para o cliente",
+      "Decisões financeiras mais inteligentes",
+    ],
+  },
+  {
+    icon: Calendar, emoji: "📅", title: "Agenda de Visitas + Bot IA",
+    items: [
+      "Agendamento de visitas integrado ao CRM",
+      "Bot IA confirma horários automaticamente",
+      "Lembretes via WhatsApp para o cliente",
+      "Nunca mais perca uma visita por esquecimento",
+    ],
+  },
+  {
+    icon: Link2, emoji: "🌍", title: "URL Personalizada + Domínio Próprio",
+    items: [
+      "Sua loja em /seu-nome — fácil de divulgar",
+      "Conecte seu domínio próprio (ex: corretorxyz.com.br)",
+      "Tutorial passo a passo de configuração",
+      "Mais autoridade e confiança na marca",
+    ],
+  },
+  {
+    icon: Shield, emoji: "🛡️", title: "Hospedagem, SSL e Backups Inclusos",
+    items: [
+      "Site sempre no ar com servidores rápidos",
+      "Certificado HTTPS automático (cadeado verde)",
+      "Backups automáticos dos seus dados",
+      "Sem custos extras de servidor ou manutenção",
+    ],
+  },
 ];
 
 const IDEAL_FOR = [
