@@ -225,6 +225,7 @@ export default function ProductDetail() {
     if (subData && subData.length > 0) setSellerTier(subData[0].tier);
 
     trackSellerEvent(item.seller_id, "view", item.id, undefined);
+    supabase.rpc("increment_item_views" as any, { _item_id: item.id });
 
     const { data: related } = await supabase
       .from("seller_items").select("id, title, price, photos, thumbnail_url, city, neighborhood, category, finality, slug")
