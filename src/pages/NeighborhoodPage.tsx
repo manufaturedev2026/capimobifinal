@@ -159,7 +159,7 @@ export default function NeighborhoodPage() {
               {stats && stats.count > 0 ? ` Atualmente há ${stats.count} imóveis disponíveis nesta região, com preços variando de ${formatPrice(stats.minPrice)} a ${formatPrice(stats.maxPrice)}.` : " Fique de olho nas novas oportunidades que surgem constantemente."}
             </p>
             <p>
-              O Capimobi é a plataforma que conecta compradores diretamente com corretores e imobiliárias de todo o Brasil. Encontre seu imóvel ideal em {neighborhoodName} com contato direto via WhatsApp.
+              O {site_name} é a plataforma que conecta compradores diretamente com corretores e imobiliárias de todo o Brasil. Encontre seu imóvel ideal em {neighborhoodName} com contato direto via WhatsApp.
             </p>
           </div>
         </div>
