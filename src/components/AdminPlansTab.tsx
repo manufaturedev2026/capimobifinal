@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAllPlans, type Plan } from "@/hooks/usePlans";
 import {
   Pencil, Plus, Trash2, X, Check, GripVertical, Eye, EyeOff, Star, Save,
+  Calendar, CalendarDays, Crown, Info,
 } from "lucide-react";
 
 const CATEGORY_OPTIONS = [
@@ -49,6 +50,37 @@ export default function AdminPlansTab() {
   const [editing, setEditing] = useState<Partial<Plan> | null>(null);
   const [isNew, setIsNew] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [view, setView] = useState<"monthly" | "annual" | "founder">("monthly");
+  const [annualDiscount, setAnnualDiscount] = useState<number>(20);
+  const [savingDiscount, setSavingDiscount] = useState(false);
+
+  // Carrega o desconto anual configurado
+  useEffect(() => {
+    (async () => {
+      const { data } = await (supabase as any)
+        .from("platform_settings")
+        .select("value")
+        .eq("key", "annual_discount_percent")
+        .maybeSingle();
+      if (data?.value !== undefined && data?.value !== null) {
+        const v = typeof data.value === "string" ? parseInt(data.value) : Number(data.value);
+        if (!Number.isNaN(v)) setAnnualDiscount(v);
+      }
+    })();
+  }, []);
+
+  const saveAnnualDiscount = async () => {
+    setSavingDiscount(true);
+    const { error } = await (supabase as any)
+      .from("platform_settings")
+      .upsert({ key: "annual_discount_percent", value: annualDiscount }, { onConflict: "key" });
+    setSavingDiscount(false);
+    if (error) {
+      toast({ title: "Erro ao salvar", description: error.message, variant: "destructive" });
+      return;
+    }
+    toast({ title: "Desconto anual atualizado", description: `${annualDiscount}% aplicado a todos os planos anuais.` });
+  };
 
   const openEdit = (p: Plan) => { setEditing({ ...p, benefits: [...p.benefits] }); setIsNew(false); };
   const openNew = () => { setEditing(emptyPlan()); setIsNew(true); };
@@ -126,6 +158,9 @@ export default function AdminPlansTab() {
     );
   }
 
+  const isFounderTier = (t?: string) => t === "fundador_corretor" || t === "fundador_empresa";
+  const visiblePlans = plans.filter((p) => !isFounderTier(p.tier));
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between flex-wrap gap-3">
@@ -133,16 +168,112 @@ export default function AdminPlansTab() {
           <h3 className="font-display font-bold text-lg text-foreground">Planos da Plataforma</h3>
           <p className="text-sm text-muted-foreground">Edite preços, benefícios e visibilidade. Alterações refletem em <code className="px-1.5 py-0.5 bg-secondary rounded">/pacotes</code>.</p>
         </div>
-        <button
-          onClick={openNew}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:opacity-90"
-        >
-          <Plus size={16} /> Novo Plano
-        </button>
+        {view !== "founder" && (
+          <button
+            onClick={openNew}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:opacity-90"
+          >
+            <Plus size={16} /> Novo Plano
+          </button>
+        )}
       </div>
 
+      {/* Tabs internas: Mensais / Anuais / Fundadores */}
+      <div className="inline-flex rounded-xl bg-secondary p-1 gap-1 flex-wrap">
+        {[
+          { key: "monthly" as const, label: "Mensais", icon: Calendar },
+          { key: "annual" as const, label: "Anuais", icon: CalendarDays },
+          { key: "founder" as const, label: "Fundadores", icon: Crown },
+        ].map(({ key, label, icon: Icon }) => (
+          <button
+            key={key}
+            onClick={() => setView(key)}
+            className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-colors ${
+              view === key
+                ? "bg-primary text-primary-foreground shadow"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <Icon size={14} /> {label}
+          </button>
+        ))}
+      </div>
+
+      {/* Aba Anuais: campo de % desconto editável */}
+      {view === "annual" && (
+        <div className="rounded-2xl border-2 border-emerald-500/30 bg-emerald-500/5 p-5 space-y-3">
+          <div className="flex items-start gap-3">
+            <div className="p-2 rounded-lg bg-emerald-500/15 text-emerald-600">
+              <CalendarDays size={20} />
+            </div>
+            <div className="flex-1">
+              <h4 className="font-display font-bold text-foreground">Desconto Anual Global</h4>
+              <p className="text-sm text-muted-foreground">
+                Aplicado a todos os planos quando o usuário escolhe a cobrança anual em <code className="px-1 bg-secondary rounded">/pacotes</code>.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-end gap-3 flex-wrap">
+            <div className="flex-1 min-w-[200px]">
+              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">% de desconto no anual</label>
+              <div className="mt-1 flex items-center gap-2">
+                <input
+                  type="number"
+                  min={0}
+                  max={90}
+                  value={annualDiscount}
+                  onChange={(e) => setAnnualDiscount(Math.max(0, Math.min(90, Number(e.target.value) || 0)))}
+                  className="w-32 px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm font-bold"
+                />
+                <span className="text-2xl font-bold text-emerald-600">%</span>
+              </div>
+            </div>
+            <button
+              onClick={saveAnnualDiscount}
+              disabled={savingDiscount}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 text-white font-bold text-sm hover:bg-emerald-700 disabled:opacity-60"
+            >
+              <Save size={14} /> {savingDiscount ? "Salvando..." : "Salvar desconto"}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Aba Fundadores: aviso direcionando */}
+      {view === "founder" && (
+        <div className="rounded-2xl border-2 border-amber-500/30 bg-gradient-to-br from-amber-500/10 to-orange-500/5 p-6">
+          <div className="flex items-start gap-4">
+            <div className="p-3 rounded-xl bg-amber-500/20 text-amber-600">
+              <Crown size={24} />
+            </div>
+            <div className="flex-1">
+              <h4 className="font-display font-bold text-lg text-foreground">Planos Fundador são gerenciados em outra aba</h4>
+              <p className="text-sm text-muted-foreground mt-1">
+                Os lotes Fundador (Start, VIP, Premium, Black, etc.) não vivem aqui — eles têm preço, vagas e tier herdado próprios.
+              </p>
+              <div className="mt-4 p-4 rounded-xl bg-background border border-border">
+                <p className="text-sm text-foreground">
+                  👉 Acesse a aba <strong className="text-amber-600">"Fundadores"</strong> 👑 no menu lateral do painel admin para criar, editar e desativar lotes Fundador.
+                </p>
+                <ul className="mt-3 text-xs text-muted-foreground space-y-1 list-disc list-inside">
+                  <li>Cada lote tem um <strong>tier herdado</strong> (Start, VIP, Premium, Black) que define os benefícios</li>
+                  <li>Cada lote tem <strong>número de vagas</strong> e <strong>preço próprio</strong></li>
+                  <li>Pagamento único válido por <strong>1 ano</strong> (não recorrente)</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Grade de planos (mensal/anual) */}
+      {view !== "founder" && (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {plans.map((p) => (
+        {visiblePlans.map((p) => {
+          const monthlyPrice = p.price;
+          const annualMonthly = monthlyPrice * (1 - annualDiscount / 100);
+          const annualTotal = annualMonthly * 12;
+          return (
           <motion.div
             key={p.id}
             layout
@@ -161,12 +292,29 @@ export default function AdminPlansTab() {
                   #{p.sort_order}
                 </span>
               </div>
-              <div className="mt-2">
-                <span className="font-display font-bold text-2xl">
-                  R$ {p.price.toFixed(2).replace(".", ",")}
-                </span>
-                <span className="text-white/70 text-xs">/mês</span>
-              </div>
+              {view === "monthly" ? (
+                <div className="mt-2">
+                  <span className="font-display font-bold text-2xl">
+                    R$ {monthlyPrice.toFixed(2).replace(".", ",")}
+                  </span>
+                  <span className="text-white/70 text-xs">/mês</span>
+                </div>
+              ) : (
+                <div className="mt-2">
+                  <div className="flex items-baseline gap-1">
+                    <span className="font-display font-bold text-2xl">
+                      R$ {annualMonthly.toFixed(2).replace(".", ",")}
+                    </span>
+                    <span className="text-white/70 text-xs">/mês</span>
+                  </div>
+                  <p className="text-[11px] text-white/80 mt-0.5">
+                    Total: R$ {annualTotal.toFixed(2).replace(".", ",")}/ano
+                    {monthlyPrice > 0 && annualDiscount > 0 && (
+                      <span className="ml-1 px-1.5 py-0.5 rounded bg-emerald-400/30 font-bold">-{annualDiscount}%</span>
+                    )}
+                  </p>
+                </div>
+              )}
             </div>
 
             <div className="p-4 space-y-3">
@@ -209,8 +357,10 @@ export default function AdminPlansTab() {
               </div>
             </div>
           </motion.div>
-        ))}
+        );
+        })}
       </div>
+      )}
 
       {/* Editor Modal */}
       <AnimatePresence>
