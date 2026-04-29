@@ -95,6 +95,18 @@ export default {
           "0%, 100%": { boxShadow: "0 0 20px rgba(0, 174, 239, 0.3)" },
           "50%": { boxShadow: "0 0 40px rgba(0, 174, 239, 0.6)" },
         },
+        "badge-shine": {
+          "0%": { backgroundPosition: "-200% 0" },
+          "100%": { backgroundPosition: "200% 0" },
+        },
+        "badge-glow-soft": {
+          "0%, 100%": { boxShadow: "0 0 6px rgba(255,255,255,0.2)" },
+          "50%": { boxShadow: "0 0 14px rgba(255,255,255,0.45)" },
+        },
+        "badge-glow-strong": {
+          "0%, 100%": { boxShadow: "0 0 10px rgba(168,85,247,0.45)" },
+          "50%": { boxShadow: "0 0 22px rgba(168,85,247,0.85)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -103,6 +115,9 @@ export default {
         "slide-up": "slide-up 0.5s ease-out forwards",
         "float": "float 3s ease-in-out infinite",
         "pulse-glow": "pulse-glow 2s ease-in-out infinite",
+        "badge-shine": "badge-shine 3s linear infinite",
+        "badge-glow-soft": "badge-glow-soft 2.4s ease-in-out infinite",
+        "badge-glow-strong": "badge-glow-strong 2s ease-in-out infinite",
       },
     },
   },
