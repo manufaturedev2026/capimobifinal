@@ -1067,6 +1067,17 @@ Deno.serve(async (req) => {
       });
     }
 
+    // Mescla checklist "Infraestrutura próxima do imóvel" (sempre disponível) com os
+    // campos avançados proximo*. Garante que marcar os checks SEMPRE gere ajuste no laudo,
+    // mesmo fora do modo avançado.
+    const infra = (data as any).infraestrutura ?? {};
+    if (infra.escola) data.proximoEscola = true;
+    if (infra.hospital) data.proximoHospital = true;
+    if (infra.comercio) data.proximoComercio = true;
+    if (infra.transporte) data.proximoTransporte = true;
+    if (infra.parque) data.proximoParque = true;
+    if (infra.bancos) data.proximoBancos = true;
+
     credit = await consumeAiCredits(req, "property_valuation", corsHeaders);
     if (!credit.ok) return credit.response;
 
