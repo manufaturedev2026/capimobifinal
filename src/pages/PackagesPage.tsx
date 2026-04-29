@@ -784,7 +784,7 @@ export default function PackagesPage() {
                     <button
                       onClick={() => handleSelectFounder(isUpgradeAvailable)}
                       disabled={(isCurrent && !isUpgradeAvailable) || selecting === founderTier}
-                      className="mt-5 w-full py-3.5 rounded-xl bg-white text-amber-700 font-extrabold text-base hover:bg-amber-50 transition-all shadow-xl disabled:opacity-60"
+                      className={`mt-5 w-full py-3.5 rounded-xl bg-white ${buttonTextColor} font-extrabold text-base hover:bg-white/90 transition-all shadow-xl disabled:opacity-60`}
                     >
                       {selecting === founderTier
                         ? "Processando..."
