@@ -39,12 +39,13 @@ export function useCityData(city: string, segment?: "imoveis") {
 
       const { data: rawItems } = await supabase
         .from("seller_items")
-        .select("*")
+        .select("id, seller_id, title, price, photos, thumbnail_url, tags, category, city, neighborhood, description, bedrooms, bathrooms, area, furnished, accepts_financing")
         .ilike("city", `%${normalizedCity}%`)
         .eq("seller_type", "imoveis")
         .eq("status", "ativo")
         .or("is_owner_listing.is.null,is_owner_listing.eq.false")
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
+        .limit(200);
 
       const sellerIds = [...new Set((rawItems || []).map((item: any) => item.seller_id).filter(Boolean))];
 
