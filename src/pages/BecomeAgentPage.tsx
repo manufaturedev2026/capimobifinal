@@ -434,7 +434,7 @@ export default function BecomeAgentPage() {
                   <item.icon size={26} />
                 </div>
                 <h3 className="font-display font-bold text-xl text-foreground mb-2">{item.title}</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">{item.description}</p>
+                <p className="text-muted-foreground text-sm leading-relaxed">{r(item.description)}</p>
               </motion.div>
             ))}
           </div>
