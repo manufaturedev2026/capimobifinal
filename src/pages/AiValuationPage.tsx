@@ -336,6 +336,61 @@ export default function AiValuationPage() {
     } catch {}
   }, [searchParams, toast]);
 
+  // Importação direta de "Meus Anúncios" (seller_items)
+  useEffect(() => {
+    const listingId = searchParams.get("listing");
+    if (!listingId) return;
+    let cancelled = false;
+    (async () => {
+      const { data: it, error } = await supabase
+        .from("seller_items")
+        .select("*")
+        .eq("id", listingId)
+        .maybeSingle();
+      if (cancelled || error || !it) return;
+      setNomeImovel(it.title || "");
+      if (it.cep) setCep(String(it.cep));
+      if (it.address) setRua(String(it.address));
+      if (it.neighborhood) setBairro(String(it.neighborhood));
+      if (it.city) setCidade(String(it.city));
+      if (it.state) setEstado(String(it.state));
+      if (it.bedrooms != null) setQuartos(String(it.bedrooms));
+      if (it.bathrooms != null) setBanheiros(String(it.bathrooms));
+      if (it.parking_spots != null) setGaragem(String(it.parking_spots));
+      if (it.built_area != null) setAreaTerreo(String(it.built_area));
+      if (it.area != null && !it.built_area) setAreaTerreo(String(it.area));
+      if (it.price != null) setValorPedido(String(it.price));
+      if (it.iptu != null) setIptu(String(it.iptu));
+      if (it.condo_fee != null) setCondominio(String(it.condo_fee));
+      // Mapeia categoria do anúncio para categoria do avaliador (best-effort)
+      const cat = String(it.category || "").toLowerCase();
+      if (cat.includes("apart")) handleCategoriaChange("Residencial" as CategoriaImovel);
+      else if (cat.includes("terren") || cat.includes("lote")) handleCategoriaChange("Terreno" as CategoriaImovel);
+      else if (cat.includes("comerc") || cat.includes("sala") || cat.includes("loja") || cat.includes("galp")) handleCategoriaChange("Comercial" as CategoriaImovel);
+      else if (cat.includes("rural") || cat.includes("sítio") || cat.includes("sitio") || cat.includes("chácara") || cat.includes("chacara") || cat.includes("fazenda")) handleCategoriaChange("Rural" as CategoriaImovel);
+      else handleCategoriaChange("Residencial" as CategoriaImovel);
+
+      // Importa fotos (até 10) como FotoItem usando dataUrl da URL pública
+      const photoUrls: string[] = Array.isArray(it.photos) ? it.photos.slice(0, 10) : [];
+      if (photoUrls.length > 0) {
+        setFotos(
+          photoUrls.map((url) => ({
+            id: crypto.randomUUID(),
+            file: new File([], "foto-anuncio.jpg", { type: "image/jpeg" }),
+            dataUrl: url,
+            categoria: "outro" as const,
+          }))
+        );
+      }
+      toast({
+        title: "Anúncio importado",
+        description: "Dados e fotos do seu anúncio foram preenchidos. Confira o CEP e clique em Calcular.",
+      });
+    })();
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
+
   const isTerreno = tipo === "Terreno";
   const areaConstruidaTotal = (Number(areaTerreo) || 0) + (Number(areaSuperior) || 0);
   // areaTotal compatível: para terreno usa areaTerreno; demais usa construída total ou terreno

@@ -857,6 +857,13 @@ export default function SellerDashboard() {
                               className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg bg-primary/10 text-primary text-xs font-semibold hover:bg-primary/20 transition-all">
                               <Edit size={12} /> Editar
                             </Link>
+                            <Link
+                              to={`/avaliacao-ia?listing=${item.id}`}
+                              title="Importar este anúncio para o Avaliador IA"
+                              className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg bg-gradient-to-r from-violet-500/15 to-fuchsia-500/15 text-violet-700 dark:text-violet-300 text-xs font-semibold hover:from-violet-500/25 hover:to-fuchsia-500/25 transition-all"
+                            >
+                              <Sparkles size={12} /> Avaliar IA
+                            </Link>
                             <button onClick={() => duplicateItem(item)}
                               className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg bg-secondary text-secondary-foreground text-xs font-medium hover:bg-secondary/80 transition-all">
                               <Copy size={12} /> Duplicar
