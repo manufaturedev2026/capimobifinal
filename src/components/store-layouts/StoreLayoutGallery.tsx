@@ -75,7 +75,7 @@ export default function StoreLayoutGallery({
                   }}
                 >
                   {bgImage ? (
-                    <img src={bgImage} alt={cat.name}
+                    <img loading="lazy" decoding="async" src={bgImage} alt={cat.name}
                       className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                   ) : (
                     <div className="absolute inset-0"

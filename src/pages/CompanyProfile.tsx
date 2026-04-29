@@ -717,7 +717,7 @@ export default function CompanyProfile() {
                   const sellerStoryData = sellerStories.find(s => s.sellerId === dbProfile?.id);
                   const hasActiveStory = !!sellerStoryData;
                   const logoEl = company.logo ? (
-                    <img src={company.logo} alt={company.name} className="w-full h-full rounded-full object-cover" />
+                    <img loading="lazy" decoding="async" src={company.logo} alt={company.name} className="w-full h-full rounded-full object-cover" />
                   ) : (
                     <div className="w-full h-full rounded-full bg-white/20 flex items-center justify-center">
                       <span className="text-white font-bold text-xl">{company.name?.charAt(0)}</span>
@@ -847,7 +847,7 @@ export default function CompanyProfile() {
             const hasActiveStory = !!sellerStoryData;
             
             const logoContent = company.logo ? (
-              <img src={company.logo} alt={company.name} className="w-full h-full rounded-full object-cover" />
+              <img loading="lazy" decoding="async" src={company.logo} alt={company.name} className="w-full h-full rounded-full object-cover" />
             ) : (
               <div className="w-full h-full rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center">
                 <span className="text-white font-bold text-3xl">{company.name?.charAt(0)}</span>
@@ -1097,7 +1097,7 @@ export default function CompanyProfile() {
                   const hasActiveStory = !!sellerStoryData;
                   
                   const logoContent = company.logo ? (
-                    <img src={company.logo} alt={company.name} className="w-full h-full rounded-full object-cover" />
+                    <img loading="lazy" decoding="async" src={company.logo} alt={company.name} className="w-full h-full rounded-full object-cover" />
                   ) : (
                     <div className="w-full h-full rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center">
                       <span className="text-white font-bold text-2xl">{company.name?.charAt(0)}</span>
@@ -1316,7 +1316,7 @@ export default function CompanyProfile() {
                 {/* Mini banner */}
                 <div className="h-20 relative" style={{ background: dbProfile?.cover_color || storeTheme.preview.heroBg }}>
                   {company.logo && (
-                    <img src={company.logo} alt="" className="absolute -bottom-6 left-4 w-14 h-14 rounded-xl object-cover border-3 border-card shadow-lg" />
+                    <img loading="lazy" decoding="async" src={company.logo} alt="" className="absolute -bottom-6 left-4 w-14 h-14 rounded-xl object-cover border-3 border-card shadow-lg" />
                   )}
                 </div>
                 <div className="p-4 pt-8">
@@ -1382,7 +1382,7 @@ export default function CompanyProfile() {
                 </h3>
                 {teamMember && dbProfile?.logo_url && (
                   <div className="flex items-center gap-3 mb-3 p-2 rounded-xl" style={{ background: `${storeTheme.primary}10` }}>
-                    <img src={dbProfile.logo_url} alt={dbProfile.company_name || dbProfile.full_name} className="w-10 h-10 rounded-lg object-cover" style={{ border: `1px solid ${storeTheme.border}` }} />
+                    <img loading="lazy" decoding="async" src={dbProfile.logo_url} alt={dbProfile.company_name || dbProfile.full_name} className="w-10 h-10 rounded-lg object-cover" style={{ border: `1px solid ${storeTheme.border}` }} />
                     <div>
                       <p className="text-xs font-bold" style={{ color: storeTheme.text }}>{dbProfile.company_name || dbProfile.full_name}</p>
                       {dbProfile.cnpj && <p className="text-[10px]" style={{ color: storeTheme.textMuted }}>CNPJ: {dbProfile.cnpj}</p>}
@@ -1971,7 +1971,7 @@ export default function CompanyProfile() {
                         {/* Store info */}
                         <div className="flex items-center gap-3 mb-3">
                           {company.logo && (
-                            <img src={company.logo} alt="" className="w-9 h-9 rounded-lg object-cover border border-white/20" />
+                            <img loading="lazy" decoding="async" src={company.logo} alt="" className="w-9 h-9 rounded-lg object-cover border border-white/20" />
                           )}
                           <div>
                             <p className="font-display font-bold text-sm text-white/90">{company.name}</p>
@@ -2079,7 +2079,7 @@ export default function CompanyProfile() {
             </h5>
             <div className="flex items-start gap-3.5 lg:flex-col lg:items-center lg:text-center">
               {company.logo ? (
-                <img src={company.logo} alt={company.name} className="w-16 h-16 rounded-xl object-cover shadow-lg" style={{ border: `2px solid ${storeTheme.primary}`, boxShadow: `0 0 20px ${storeTheme.primary}40` }} />
+                <img loading="lazy" decoding="async" src={company.logo} alt={company.name} className="w-16 h-16 rounded-xl object-cover shadow-lg" style={{ border: `2px solid ${storeTheme.primary}`, boxShadow: `0 0 20px ${storeTheme.primary}40` }} />
               ) : (
                 <div className="w-16 h-16 rounded-xl flex items-center justify-center shadow-lg" style={{ background: storeTheme.primary, boxShadow: `0 0 20px ${storeTheme.primary}40` }}>
                   <span className="text-white font-bold text-xl">{company.name?.charAt(0)}</span>
@@ -2145,7 +2145,7 @@ export default function CompanyProfile() {
             </div>
             {teamMember && dbProfile?.logo_url && (
               <div className="flex items-center gap-3 mt-3 p-2.5 rounded-lg" style={{ background: `${storeTheme.primary}08`, border: `1px solid ${storeTheme.primary}20` }}>
-                <img src={dbProfile.logo_url} alt={dbProfile.company_name || dbProfile.full_name} className="w-10 h-10 rounded-lg object-cover" style={{ border: `1px solid ${storeTheme.primary}40` }} />
+                <img loading="lazy" decoding="async" src={dbProfile.logo_url} alt={dbProfile.company_name || dbProfile.full_name} className="w-10 h-10 rounded-lg object-cover" style={{ border: `1px solid ${storeTheme.primary}40` }} />
                 <div>
                   <p className="text-xs font-bold" style={{ color: storeTheme.text }}>{dbProfile.company_name || dbProfile.full_name}</p>
                   {dbProfile.cnpj && <p className="text-[10px]" style={{ color: storeTheme.textMuted }}>CNPJ: {dbProfile.cnpj}</p>}
@@ -2286,7 +2286,7 @@ export default function CompanyProfile() {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center gap-3">
-                {company.logo && <img src={company.logo} alt="" className="w-8 h-8 rounded-lg object-cover border border-white/20" />}
+                {company.logo && <img loading="lazy" decoding="async" src={company.logo} alt="" className="w-8 h-8 rounded-lg object-cover border border-white/20" />}
                 <div>
                   <p className="text-white font-display font-bold text-sm md:text-base">{(dbProfile as any)?.video_title || company.name}</p>
                   {(dbProfile as any)?.video_description && (

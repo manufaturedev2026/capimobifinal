@@ -215,7 +215,7 @@ export default function AgendaBotChatPage() {
         </button>
         <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center overflow-hidden shrink-0">
           {config.attendant_avatar ? (
-            <img src={config.attendant_avatar} alt="" className="w-full h-full object-cover" />
+            <img loading="lazy" decoding="async" src={config.attendant_avatar} alt="" className="w-full h-full object-cover" />
           ) : (
             <CalendarIcon className="w-5 h-5" />
           )}
@@ -229,7 +229,7 @@ export default function AgendaBotChatPage() {
       {prelinkedItem && (
         <div className="bg-white border-b px-3 py-2 flex items-center gap-2 text-xs">
           {prelinkedItem.photos?.[0] && (
-            <img src={prelinkedItem.photos[0]} alt="" className="w-10 h-10 rounded object-cover" />
+            <img loading="lazy" decoding="async" src={prelinkedItem.photos[0]} alt="" className="w-10 h-10 rounded object-cover" />
           )}
           <div className="flex-1 min-w-0">
             <p className="font-semibold truncate">🏡 {prelinkedItem.title}</p>

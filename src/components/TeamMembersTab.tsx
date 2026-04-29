@@ -369,7 +369,7 @@ export default function TeamMembersTab({ profileId, userId, maxMembers }: Props)
             <div className="flex items-center gap-4">
               <div className="w-16 h-16 rounded-xl bg-secondary flex items-center justify-center overflow-hidden border border-border">
                 {form.photo_url ? (
-                  <img src={form.photo_url} alt="" className="w-full h-full object-cover" />
+                  <img loading="lazy" decoding="async" src={form.photo_url} alt="" className="w-full h-full object-cover" />
                 ) : (
                   <Users size={24} className="text-muted-foreground" />
                 )}
@@ -503,7 +503,7 @@ export default function TeamMembersTab({ profileId, userId, maxMembers }: Props)
                   {/* Photo - larger */}
                   <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-secondary flex items-center justify-center overflow-hidden flex-shrink-0 border border-border mx-auto sm:mx-0">
                     {m.photo_url ? (
-                      <img src={m.photo_url} alt={m.full_name} className="w-full h-full object-cover" />
+                      <img loading="lazy" decoding="async" src={m.photo_url} alt={m.full_name} className="w-full h-full object-cover" />
                     ) : (
                       <span className="font-bold text-2xl text-muted-foreground">{m.full_name.charAt(0)}</span>
                     )}

@@ -56,10 +56,10 @@ function FooterContent({ theme }: { theme?: FooterSimpleProps["theme"] }) {
         <div className="col-span-2 md:col-span-1">
           <Link to="/" className="flex items-center gap-2.5 mb-3">
             {site_logo_url ? (
-              <img src={site_logo_url} alt={site_name} className="h-9 max-w-[140px] object-contain" />
+              <img loading="lazy" decoding="async" src={site_logo_url} alt={site_name} className="h-9 max-w-[140px] object-contain" />
             ) : (
               <>
-                <img src="/pwa-icon-512.png" alt={site_name} className="w-9 h-9 rounded-xl shadow-md object-contain" />
+                <img loading="lazy" decoding="async" src="/pwa-icon-512.png" alt={site_name} className="w-9 h-9 rounded-xl shadow-md object-contain" />
                 <span className="text-lg tracking-wide uppercase" style={{ fontFamily: "'Orbitron', sans-serif", fontWeight: 800 }}>
                   <span style={primaryStyle} className={primaryClass}>Cap</span>
                   <span style={{ color: '#ffffff' }}>i</span>

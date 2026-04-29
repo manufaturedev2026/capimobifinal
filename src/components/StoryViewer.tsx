@@ -151,7 +151,7 @@ export default function StoryViewer({ sellers, initialSellerIndex, onClose, corr
         <div className="absolute top-6 left-0 right-0 z-40 flex items-center gap-3 px-4">
           <div className="w-9 h-9 rounded-full overflow-hidden bg-white/20 shrink-0 ring-2 ring-white/30">
             {currentSeller.sellerLogo ? (
-              <img src={currentSeller.sellerLogo} alt="" className="w-full h-full object-cover" />
+              <img loading="lazy" decoding="async" src={currentSeller.sellerLogo} alt="" className="w-full h-full object-cover" />
             ) : (
               <div className="w-full h-full flex items-center justify-center text-white text-sm font-bold">
                 {currentSeller.sellerName.charAt(0)}

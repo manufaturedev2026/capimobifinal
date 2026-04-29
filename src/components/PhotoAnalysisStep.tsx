@@ -215,7 +215,7 @@ export default function PhotoAnalysisStep({
               className="relative group"
             >
               <div className="aspect-square rounded-lg overflow-hidden bg-muted">
-                <img src={f.dataUrl} alt="" className="h-full w-full object-cover" />
+                <img loading="lazy" decoding="async" src={f.dataUrl} alt="" className="h-full w-full object-cover" />
               </div>
               <button
                 type="button"

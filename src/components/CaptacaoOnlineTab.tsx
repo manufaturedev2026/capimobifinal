@@ -703,7 +703,7 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
                                     <div className="flex items-center gap-1 flex-wrap">
                                       {lead.photos.slice(0, 3).map((url, i) => (
                                         <a key={i} href={url} target="_blank" rel="noopener noreferrer">
-                                          <img src={url} alt="" className="w-10 h-10 rounded-lg object-cover border border-border" />
+                                          <img loading="lazy" decoding="async" src={url} alt="" className="w-10 h-10 rounded-lg object-cover border border-border" />
                                         </a>
                                       ))}
                                       {lead.photos.length > 3 && (
@@ -818,7 +818,7 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
                           <div className="flex items-center gap-2 flex-wrap">
                             {lead.photos.map((url, i) => (
                               <a key={i} href={url} target="_blank" rel="noopener noreferrer">
-                                <img src={url} alt="" className="w-16 h-16 rounded-xl object-cover border border-border" />
+                                <img loading="lazy" decoding="async" src={url} alt="" className="w-16 h-16 rounded-xl object-cover border border-border" />
                               </a>
                             ))}
                           </div>

@@ -513,8 +513,8 @@ export default function ContractsTab({ userId, sellerId }: { userId: string; sel
         @media print { body { padding: 40px; } }
       </style></head><body>
       <pre>${getFilledContent()}</pre>
-      ${signatureLocador ? `<p style="margin-top:40px;"><strong>Assinatura Locador/Vendedor:</strong><br/><img class="sig-img" src="${signatureLocador}" /></p>` : ""}
-      ${signatureLocatario ? `<p><strong>Assinatura Locatário/Comprador:</strong><br/><img class="sig-img" src="${signatureLocatario}" /></p>` : ""}
+      ${signatureLocador ? `<p style="margin-top:40px;"><strong>Assinatura Locador/Vendedor:</strong><br/><img loading="lazy" decoding="async" class="sig-img" src="${signatureLocador}" /></p>` : ""}
+      ${signatureLocatario ? `<p><strong>Assinatura Locatário/Comprador:</strong><br/><img loading="lazy" decoding="async" class="sig-img" src="${signatureLocatario}" /></p>` : ""}
       </body></html>
     `);
     win.document.close();
@@ -937,13 +937,13 @@ export default function ContractsTab({ userId, sellerId }: { userId: string; sel
                 {signatureLocador && (
                   <div>
                     <p className="text-xs text-gray-500 font-bold mb-1">Assinatura Locador/Vendedor:</p>
-                    <img src={signatureLocador} alt="Assinatura" className="h-16 object-contain" />
+                    <img loading="lazy" decoding="async" src={signatureLocador} alt="Assinatura" className="h-16 object-contain" />
                   </div>
                 )}
                 {signatureLocatario && (
                   <div>
                     <p className="text-xs text-gray-500 font-bold mb-1">Assinatura Locatário/Comprador:</p>
-                    <img src={signatureLocatario} alt="Assinatura" className="h-16 object-contain" />
+                    <img loading="lazy" decoding="async" src={signatureLocatario} alt="Assinatura" className="h-16 object-contain" />
                   </div>
                 )}
               </div>

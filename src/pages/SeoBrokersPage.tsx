@@ -92,7 +92,7 @@ function FeaturedBrokerCard({ profile, tier, theme, delay }: { profile: any; tie
           <motion.div className="absolute -top-10 -right-10 w-40 h-40 rounded-full blur-3xl pointer-events-none" style={{ background: PRIMARY, opacity: 0.08 }} animate={{ scale: [1, 1.4, 1], opacity: [0.05, 0.12, 0.05] }} transition={{ duration: 5, repeat: Infinity }} />
 
           {profile.logo_url ? (
-            <img src={profile.logo_url} alt={displayName} className="w-20 h-20 md:w-24 md:h-24 rounded-2xl object-cover border-4 shadow-2xl z-10 group-hover:scale-110 transition-transform duration-500" style={{ borderColor: `${PRIMARY}30` }} />
+            <img loading="lazy" decoding="async" src={profile.logo_url} alt={displayName} className="w-20 h-20 md:w-24 md:h-24 rounded-2xl object-cover border-4 shadow-2xl z-10 group-hover:scale-110 transition-transform duration-500" style={{ borderColor: `${PRIMARY}30` }} />
           ) : (
             <div className="w-20 h-20 md:w-24 md:h-24 rounded-2xl flex items-center justify-center border-4 shadow-2xl z-10" style={{ background: `linear-gradient(135deg, ${PRIMARY}30, ${PRIMARY}10)`, color: PRIMARY, borderColor: `${PRIMARY}30` }}>
               <Building2 size={32} />
@@ -167,7 +167,7 @@ function BrokerCard({ profile, tier, theme, index }: { profile: any; tier?: stri
         <div className="relative h-36 flex items-center justify-center overflow-hidden" style={{ background: `linear-gradient(135deg, ${PRIMARY}18, ${PRIMARY}05)` }}>
           {isPaid && <FloatingParticles color={PRIMARY} />}
           {profile.logo_url ? (
-            <img src={profile.logo_url} alt={displayName} className="w-20 h-20 md:w-24 md:h-24 rounded-xl object-cover border-3 shadow-xl z-10 group-hover:scale-110 transition-transform duration-500" style={{ borderColor: CARD_BG }} />
+            <img loading="lazy" decoding="async" src={profile.logo_url} alt={displayName} className="w-20 h-20 md:w-24 md:h-24 rounded-xl object-cover border-3 shadow-xl z-10 group-hover:scale-110 transition-transform duration-500" style={{ borderColor: CARD_BG }} />
           ) : (
             <div className="w-20 h-20 md:w-24 md:h-24 rounded-xl flex items-center justify-center border-3 shadow-xl z-10" style={{ background: `${PRIMARY}15`, color: PRIMARY, borderColor: CARD_BG }}>
               <Building2 size={32} />

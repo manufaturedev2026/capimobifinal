@@ -78,7 +78,7 @@ export default function BlogArticlePage() {
       </Helmet>
 
       <div className="relative h-[300px] md:h-[400px] overflow-hidden">
-        <img src={article.cover} alt={article.title} className="w-full h-full object-cover" />
+        <img loading="lazy" decoding="async" src={article.cover} alt={article.title} className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
         <div className="absolute bottom-0 left-0 right-0 p-6 md:p-12 max-w-4xl mx-auto">
           <span className="px-3 py-1 rounded-full bg-primary text-primary-foreground text-xs font-bold">{article.category}</span>

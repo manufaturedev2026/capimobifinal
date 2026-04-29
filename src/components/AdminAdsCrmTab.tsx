@@ -295,7 +295,7 @@ function AdCard({
       {req.itemTitle && (
         <div className="flex items-center gap-2 mt-1.5 bg-secondary/60 rounded-lg p-1.5">
           {req.itemPhoto ? (
-            <img src={req.itemPhoto} alt="" className="w-10 h-10 rounded-md object-cover shrink-0" />
+            <img loading="lazy" decoding="async" src={req.itemPhoto} alt="" className="w-10 h-10 rounded-md object-cover shrink-0" />
           ) : (
             <div className="w-10 h-10 rounded-md bg-muted flex items-center justify-center shrink-0">
               <ImageIcon size={14} className="text-muted-foreground" />

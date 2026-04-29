@@ -276,7 +276,7 @@ export default function PartnerBrokerTab({ profileId, userId }: { profileId: str
                     <div className="flex items-start gap-4">
                       <div className="w-16 h-16 rounded-xl bg-secondary flex items-center justify-center overflow-hidden shrink-0">
                         {agency.logo_url ? (
-                          <img src={agency.logo_url} alt="" className="w-full h-full object-cover" />
+                          <img loading="lazy" decoding="async" src={agency.logo_url} alt="" className="w-full h-full object-cover" />
                         ) : (
                           <Building2 className="text-muted-foreground" size={28} />
                         )}
@@ -414,7 +414,7 @@ export default function PartnerBrokerTab({ profileId, userId }: { profileId: str
                   <div key={req.id} className="rounded-xl border border-yellow-500/20 bg-card/50 p-4 flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center overflow-hidden shrink-0">
                       {agency.logo_url ? (
-                        <img src={agency.logo_url} alt="" className="w-full h-full object-cover" />
+                        <img loading="lazy" decoding="async" src={agency.logo_url} alt="" className="w-full h-full object-cover" />
                       ) : (
                         <Building2 className="text-muted-foreground" size={18} />
                       )}
@@ -459,7 +459,7 @@ export default function PartnerBrokerTab({ profileId, userId }: { profileId: str
                   <div className="flex items-start gap-3">
                   <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center overflow-hidden shrink-0">
                     {agency.logo_url ? (
-                      <img src={agency.logo_url} alt="" className="w-full h-full object-cover" />
+                      <img loading="lazy" decoding="async" src={agency.logo_url} alt="" className="w-full h-full object-cover" />
                     ) : (
                       <Building2 className="text-muted-foreground" size={22} />
                     )}
@@ -556,7 +556,7 @@ export default function PartnerBrokerTab({ profileId, userId }: { profileId: str
                   <div key={req.id} className="rounded-xl border border-border bg-card/50 p-4 flex items-center gap-3 opacity-60">
                     <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center overflow-hidden shrink-0">
                       {agency.logo_url ? (
-                        <img src={agency.logo_url} alt="" className="w-full h-full object-cover" />
+                        <img loading="lazy" decoding="async" src={agency.logo_url} alt="" className="w-full h-full object-cover" />
                       ) : (
                         <Building2 className="text-muted-foreground" size={18} />
                       )}

@@ -543,7 +543,7 @@ export default function RentalManagementTab({ userId, sellerId }: Props) {
                 <div key={rp.id} className="rounded-xl border border-border bg-card overflow-hidden group cursor-pointer hover:border-primary/50 transition-colors"
                   onClick={() => { setEditingRentalProp(rp); setView("rental-property-form"); }}>
                   {rp.photo_url ? (
-                    <img src={rp.photo_url} alt={rp.title} className="w-full h-24 object-cover" />
+                    <img loading="lazy" decoding="async" src={rp.photo_url} alt={rp.title} className="w-full h-24 object-cover" />
                   ) : (
                     <div className="w-full h-24 bg-secondary flex items-center justify-center">
                       <Home size={24} className="text-muted-foreground/30" />
@@ -598,7 +598,7 @@ export default function RentalManagementTab({ userId, sellerId }: Props) {
             {rentalProperties.map(rp => (
               <div key={rp.id} className="rounded-2xl border border-border bg-card overflow-hidden">
                 {rp.photo_url ? (
-                  <img src={rp.photo_url} alt={rp.title} className="w-full h-32 object-cover" />
+                  <img loading="lazy" decoding="async" src={rp.photo_url} alt={rp.title} className="w-full h-32 object-cover" />
                 ) : (
                   <div className="w-full h-32 bg-secondary flex items-center justify-center">
                     <Home size={32} className="text-muted-foreground/30" />
@@ -1368,7 +1368,7 @@ function RentalPropertyForm({ userId, sellerId, editing, onSave, onCancel }: {
           <label className={labelCls}>Foto do Imóvel</label>
           {form.photo_url ? (
             <div className="relative w-full h-40 rounded-xl overflow-hidden border border-border mb-2">
-              <img src={form.photo_url} alt="" className="w-full h-full object-cover" />
+              <img loading="lazy" decoding="async" src={form.photo_url} alt="" className="w-full h-full object-cover" />
               <button onClick={() => set("photo_url", "")} className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-black/80">
                 <X size={14} />
               </button>

@@ -220,7 +220,7 @@ export default function BecomeAgentPage() {
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       {/* ═══════════ HERO ═══════════ */}
       <div className="relative h-screen min-h-[600px] overflow-hidden">
-        <img src={heroImg} alt="Mercado imobiliário do Brasil" className="absolute inset-0 w-full h-full object-cover" width={1920} height={1080} />
+        <img loading="lazy" decoding="async" src={heroImg} alt="Mercado imobiliário do Brasil" className="absolute inset-0 w-full h-full object-cover" width={1920} height={1080} />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/20" />
         <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-transparent to-transparent" />
 

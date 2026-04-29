@@ -899,9 +899,9 @@ export default function CapturePropertyChatPage() {
           </button>
           <div className="w-10 h-10 rounded-full bg-[#128c7e] flex items-center justify-center text-white font-bold text-lg overflow-hidden shrink-0">
             {config.attendantAvatar ? (
-              <img src={config.attendantAvatar} alt="" className="w-full h-full object-cover" />
+              <img loading="lazy" decoding="async" src={config.attendantAvatar} alt="" className="w-full h-full object-cover" />
             ) : sellerProfile.logo_url ? (
-              <img src={sellerProfile.logo_url} alt="" className="w-full h-full object-cover" />
+              <img loading="lazy" decoding="async" src={sellerProfile.logo_url} alt="" className="w-full h-full object-cover" />
             ) : (
               displayName.charAt(0).toUpperCase()
             )}

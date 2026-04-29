@@ -722,7 +722,7 @@ export default function AdminPanel() {
                           className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-input bg-background text-xs font-medium text-foreground hover:bg-secondary transition-colors"
                         >
                           {seller.manager_photo ? (
-                            <img src={seller.manager_photo} alt="" className="w-5 h-5 rounded-full object-cover" />
+                            <img loading="lazy" decoding="async" src={seller.manager_photo} alt="" className="w-5 h-5 rounded-full object-cover" />
                           ) : (
                             <UserCog size={14} className="text-muted-foreground" />
                           )}
@@ -1092,7 +1092,7 @@ export default function AdminPanel() {
                       }`}
                     >
                       {m.photo_url ? (
-                        <img src={m.photo_url} alt="" className="w-10 h-10 rounded-full object-cover" />
+                        <img loading="lazy" decoding="async" src={m.photo_url} alt="" className="w-10 h-10 rounded-full object-cover" />
                       ) : (
                         <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
                           <UserCog size={16} className="text-muted-foreground" />
@@ -1453,7 +1453,7 @@ export default function AdminPanel() {
             <div className="flex flex-col sm:flex-row items-start gap-4">
               {loginHeroUrl && (
                 <div className="relative w-40 h-28 rounded-xl overflow-hidden border border-border shrink-0">
-                  <img src={resolveLoginHeroImage(loginHeroUrl) || ""} alt="Login hero" className="w-full h-full object-cover" />
+                  <img loading="lazy" decoding="async" src={resolveLoginHeroImage(loginHeroUrl) || ""} alt="Login hero" className="w-full h-full object-cover" />
                   <button
                     onClick={async () => {
                       setLoginHeroUrl("");

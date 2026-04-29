@@ -147,7 +147,7 @@ export default function AdminManagersTab() {
               className={`bg-card border border-border rounded-2xl p-4 flex items-center gap-4 ${!m.is_active ? "opacity-60" : ""}`}
             >
               {m.photo_url ? (
-                <img src={m.photo_url} alt={m.name} className="w-14 h-14 rounded-full object-cover" />
+                <img loading="lazy" decoding="async" src={m.photo_url} alt={m.name} className="w-14 h-14 rounded-full object-cover" />
               ) : (
                 <div className="w-14 h-14 rounded-full bg-muted flex items-center justify-center">
                   <UserCog size={24} className="text-muted-foreground" />
@@ -215,7 +215,7 @@ export default function AdminManagersTab() {
                 className="relative w-24 h-24 rounded-full bg-muted overflow-hidden border-2 border-dashed border-border hover:border-primary transition"
               >
                 {photoUrl ? (
-                  <img src={photoUrl} alt="" className="w-full h-full object-cover" />
+                  <img loading="lazy" decoding="async" src={photoUrl} alt="" className="w-full h-full object-cover" />
                 ) : (
                   <Camera className="m-auto text-muted-foreground" size={28} />
                 )}

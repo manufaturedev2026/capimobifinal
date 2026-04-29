@@ -430,7 +430,7 @@ export default function ProductDetail() {
     <div className={compact ? "" : "bg-card border border-border rounded-2xl p-6"}>
       <Link to={companyUrl} className="flex items-center gap-3 mb-4 group">
         {company.logo ? (
-          <img src={company.logo} alt={company.name} className="w-14 h-14 rounded-xl object-cover border border-border" />
+          <img loading="lazy" decoding="async" src={company.logo} alt={company.name} className="w-14 h-14 rounded-xl object-cover border border-border" />
         ) : (
           <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center border border-border">
             <span className="font-bold text-primary text-lg">{company.name?.charAt(0)}</span>
@@ -470,7 +470,7 @@ export default function ProductDetail() {
                 <div className="mt-3 pt-3 border-t border-border">
                   <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider mb-1">Empresa</p>
                   <div className="flex items-center gap-2">
-                    {dbSeller.logo_url && <img src={dbSeller.logo_url} alt="" className="w-6 h-6 rounded object-cover" />}
+                    {dbSeller.logo_url && <img loading="lazy" decoding="async" src={dbSeller.logo_url} alt="" className="w-6 h-6 rounded object-cover" />}
                     <span className="text-xs text-muted-foreground">{dbSeller.company_name || dbSeller.full_name}</span>
                   </div>
                   {dbSeller.cnpj && <p className="text-[10px] text-muted-foreground mt-1">CNPJ {dbSeller.cnpj}</p>}
@@ -739,7 +739,7 @@ export default function ProductDetail() {
             {images.length === 1 && (
               <motion.button initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} onClick={() => { setActiveImage(0); setLightboxOpen(true); }}
                 className="w-full aspect-[16/7] rounded-2xl overflow-hidden border-2 border-border hover:border-primary/50 transition-all group relative">
-                <img src={images[0]} alt="Foto 1" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                <img loading="lazy" decoding="async" src={images[0]} alt="Foto 1" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                 <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/10 transition-colors flex items-center justify-center">
                   <ZoomIn size={32} className="text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg" />
                 </div>
@@ -751,7 +751,7 @@ export default function ProductDetail() {
                   <motion.button key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
                     onClick={() => { setActiveImage(i); setLightboxOpen(true); }}
                     className="rounded-2xl overflow-hidden border-2 border-border hover:border-primary/50 transition-all group relative">
-                    <img src={img} alt={`Foto ${i + 1}`} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                    <img loading="lazy" decoding="async" src={img} alt={`Foto ${i + 1}`} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                     <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/10 transition-colors flex items-center justify-center">
                       <ZoomIn size={24} className="text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg" />
                     </div>
@@ -764,7 +764,7 @@ export default function ProductDetail() {
                 <motion.button initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
                   onClick={() => { setActiveImage(0); setLightboxOpen(true); }}
                   className="col-span-2 rounded-2xl overflow-hidden border-2 border-border hover:border-primary/50 transition-all group relative">
-                  <img src={images[0]} alt="Foto 1" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                  <img loading="lazy" decoding="async" src={images[0]} alt="Foto 1" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                   <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/10 transition-colors flex items-center justify-center">
                     <ZoomIn size={28} className="text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg" />
                   </div>
@@ -774,7 +774,7 @@ export default function ProductDetail() {
                     <motion.button key={i + 1} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: (i + 1) * 0.05 }}
                       onClick={() => { setActiveImage(i + 1); setLightboxOpen(true); }}
                       className="rounded-2xl overflow-hidden border-2 border-border hover:border-primary/50 transition-all group relative">
-                      <img src={img} alt={`Foto ${i + 2}`} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                      <img loading="lazy" decoding="async" src={img} alt={`Foto ${i + 2}`} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                       <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/10 transition-colors flex items-center justify-center">
                         <ZoomIn size={20} className="text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg" />
                       </div>
@@ -788,7 +788,7 @@ export default function ProductDetail() {
                 <motion.button initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
                   onClick={() => { setActiveImage(0); setLightboxOpen(true); }}
                   className="col-span-2 row-span-2 rounded-2xl overflow-hidden border-2 border-border hover:border-primary/50 transition-all group relative">
-                  <img src={images[0]} alt="Foto 1" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                  <img loading="lazy" decoding="async" src={images[0]} alt="Foto 1" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                   <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/10 transition-colors flex items-center justify-center">
                     <ZoomIn size={32} className="text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg" />
                   </div>
@@ -800,7 +800,7 @@ export default function ProductDetail() {
                   <motion.button key={i + 1} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: (i + 1) * 0.06 }}
                     onClick={() => { setActiveImage(i + 1); setLightboxOpen(true); }}
                     className="rounded-2xl overflow-hidden border-2 border-border hover:border-primary/50 transition-all group relative">
-                    <img src={img} alt={`Foto ${i + 2}`} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                    <img loading="lazy" decoding="async" src={img} alt={`Foto ${i + 2}`} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                     <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/10 transition-colors flex items-center justify-center">
                       <ZoomIn size={20} className="text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg" />
                     </div>
@@ -1028,7 +1028,7 @@ export default function ProductDetail() {
         <div className="flex items-center gap-3">
           <Link to={companyUrl} className="flex-shrink-0">
             {company.logo ? (
-              <img src={company.logo} alt={company.name} className="w-10 h-10 rounded-xl object-cover border border-border" />
+              <img loading="lazy" decoding="async" src={company.logo} alt={company.name} className="w-10 h-10 rounded-xl object-cover border border-border" />
             ) : (
               <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center border border-border">
                 <span className="font-bold text-primary text-sm">{company.name?.charAt(0)}</span>

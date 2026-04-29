@@ -92,7 +92,7 @@ export default function CreateListing() {
     <div className="min-h-screen bg-background">
       {/* Hero */}
       <div className="relative h-[55vh] sm:h-[65vh] md:h-[80vh] overflow-hidden">
-        <img src={heroImg} alt={`Anuncie no ${site_name}`} className="absolute inset-0 w-full h-full object-cover" />
+        <img loading="lazy" decoding="async" src={heroImg} alt={`Anuncie no ${site_name}`} className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-r from-background/80 to-transparent" />
 
@@ -210,7 +210,7 @@ export default function CreateListing() {
               <motion.div animate={{ y: [0, -8, 0] }} transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
                 className="absolute bottom-2 left-2 sm:-bottom-4 sm:-left-4 md:bottom-4 md:left-4 bg-card/90 backdrop-blur-xl rounded-xl sm:rounded-2xl p-2.5 sm:p-4 border border-border shadow-xl max-w-[200px] sm:max-w-none">
                 <div className="flex items-center gap-2 sm:gap-3">
-                  <img src={avatarCorretorImg} alt="Corretor" className="w-8 h-8 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl object-cover shadow-md" />
+                  <img loading="lazy" decoding="async" src={avatarCorretorImg} alt="Corretor" className="w-8 h-8 sm:w-11 sm:h-11 rounded-lg sm:rounded-xl object-cover shadow-md" />
                   <div>
                     <div className="text-[10px] sm:text-xs text-muted-foreground">Corretor verificado</div>
                     <div className="font-display font-bold text-xs sm:text-sm text-foreground">Sua loja pronta 24/7</div>

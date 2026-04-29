@@ -952,7 +952,7 @@ export default function MarketplaceHome() {
                         {seller && (
                           <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between">
                             <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-black/60 backdrop-blur-sm">
-                              {seller.logo && <img src={seller.logo} alt="" className="w-4 h-4 rounded-full object-cover" />}
+                              {seller.logo && <img loading="lazy" decoding="async" src={seller.logo} alt="" className="w-4 h-4 rounded-full object-cover" />}
                               <span className="text-[10px] text-white font-medium truncate max-w-[100px]">{seller.name}</span>
                             </div>
                             {seller.tier && seller.tier !== "basico" && (
@@ -1054,7 +1054,7 @@ export default function MarketplaceHome() {
                     onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.boxShadow = isPaid ? `0 0 12px ${PRIMARY}15` : "none"; }}
                   >
                     {seller.logo ? (
-                      <img src={seller.logo} alt={seller.name} className="w-14 h-14 rounded-full object-cover ring-2 transition-all" style={{ borderColor: isPaid ? PRIMARY : BORDER }} />
+                      <img loading="lazy" decoding="async" src={seller.logo} alt={seller.name} className="w-14 h-14 rounded-full object-cover ring-2 transition-all" style={{ borderColor: isPaid ? PRIMARY : BORDER }} />
                     ) : (
                       <div className="w-14 h-14 rounded-full flex items-center justify-center font-bold text-lg" style={{ background: `${PRIMARY}20`, color: PRIMARY }}>
                         {seller.name.charAt(0)}
@@ -1206,7 +1206,7 @@ export default function MarketplaceHome() {
                   transition={{ duration: 0.8 }}
                   className="absolute inset-0"
                 >
-                  <img src={img} alt={current.title} className="w-full h-full object-cover" />
+                  <img loading="lazy" decoding="async" src={img} alt={current.title} className="w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/40" />
                 </motion.div>
               </AnimatePresence>
@@ -1243,7 +1243,7 @@ export default function MarketplaceHome() {
                 >
                   {seller && (
                     <div className="flex items-center gap-2 mb-3">
-                      {seller.logo && <img src={seller.logo} className="w-7 h-7 rounded-full object-cover border border-white/20" alt="" />}
+                      {seller.logo && <img loading="lazy" decoding="async" src={seller.logo} className="w-7 h-7 rounded-full object-cover border border-white/20" alt="" />}
                       <span className="text-white/60 text-sm font-medium">{seller.name}</span>
                     </div>
                   )}
