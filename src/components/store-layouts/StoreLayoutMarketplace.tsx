@@ -124,6 +124,7 @@ export default function StoreLayoutMarketplace({
   const [promoIdx, setPromoIdx] = useState(0);
   const [desktopPromoPage, setDesktopPromoPage] = useState(0);
   const [showCityPicker, setShowCityPicker] = useState(false);
+  const [openStates, setOpenStates] = useState<Set<string>>(new Set());
   const promoScrollRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
   const isIOSStandalone = isIOSStandaloneApp();
@@ -135,6 +136,34 @@ export default function StoreLayoutMarketplace({
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const heroY = useTransform(scrollYProgress, [0, 1], [0, 120]);
   const heroScale = useTransform(scrollYProgress, [0, 1], [1, 1.15]);
+
+  // Group cities by state (derived from listings)
+  const citiesByState = useMemo(() => {
+    const map = new Map<string, Set<string>>();
+    filteredProducts.forEach((item: any) => {
+      if (item.city) {
+        const st = (item.state?.trim?.() || "Outros") as string;
+        if (!map.has(st)) map.set(st, new Set());
+        map.get(st)!.add(item.city.trim());
+      }
+    });
+    const result: { state: string; cities: string[] }[] = [];
+    map.forEach((cities, state) => {
+      result.push({ state, cities: Array.from(cities).sort() });
+    });
+    result.sort((a, b) => a.state.localeCompare(b.state));
+    return result;
+  }, [filteredProducts]);
+
+  // Auto-expand the state of the active city
+  useEffect(() => {
+    if (filterCity && citiesByState.length > 0) {
+      const stateGroup = citiesByState.find((g) => g.cities.includes(filterCity));
+      if (stateGroup) {
+        setOpenStates((prev) => (prev.has(stateGroup.state) ? prev : new Set([stateGroup.state])));
+      }
+    }
+  }, [filterCity, citiesByState]);
 
   const visibleProducts = searchTerm
     ? filteredProducts.filter((p: any) =>
