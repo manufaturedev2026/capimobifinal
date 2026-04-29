@@ -65,6 +65,7 @@ export default function SeoPageLayout({
 }: SeoPageLayoutProps) {
   const { primary: PRIMARY, darkBase: DARK_BASE, darkMid: DARK_MID, cardBg: CARD_BG, border: BORDER, text: TEXT, textMuted: TEXT_MUTED } = theme;
   const themeVars = getMarketplaceThemeCssVars(theme);
+  const { site_name } = useSiteSettings();
 
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
