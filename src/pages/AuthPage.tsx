@@ -10,6 +10,8 @@ import logoImg from "@/assets/logo-es-corretores.png";
 import { BRAZIL_STATES } from "@/data/brazilStates";
 import { useCitiesByState } from "@/hooks/useCitiesByState";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { useRegistrationsClosed } from "@/hooks/useRegistrationsClosed";
+import RegistrationsClosedNotice from "@/components/RegistrationsClosedNotice";
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(() => {
@@ -30,6 +32,7 @@ export default function AuthPage() {
   const { cities: stateCities, loading: loadingCities } = useCitiesByState(selectedState);
   const { user, profile, signIn, signUp } = useAuth();
   const { site_name } = useSiteSettings();
+  const { closed: registrationsClosed } = useRegistrationsClosed();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const trialDays = searchParams.get("trial");
@@ -46,6 +49,11 @@ export default function AuthPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!isLogin && registrationsClosed) {
+      toast({ title: "Cadastros encerrados", description: "Não estamos aceitando novos cadastros no momento.", variant: "destructive" });
+      return;
+    }
 
     if (!isLogin) {
       if (password !== confirmPassword) {
