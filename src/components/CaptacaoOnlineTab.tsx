@@ -620,7 +620,7 @@ export default function CaptacaoOnlineTab({ userId, sellerId, sellerSlug, seller
               <p className="text-sm text-muted-foreground max-w-xs">
                 Compartilhe seus links nas redes sociais para começar a receber leads.
               </p>
-              <Button size="sm" variant="outline" className="mt-4 gap-1.5 text-xs" onClick={() => setMainTab("links")}>
+              <Button size="sm" className="mt-4 gap-1.5 text-xs bg-primary text-primary-foreground hover:bg-primary/90" onClick={() => setMainTab("links")}>
                 <Link2 size={12} /> Ver meus links
               </Button>
             </div>
