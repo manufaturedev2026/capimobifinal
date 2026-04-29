@@ -656,9 +656,9 @@ export default function AiValuationPage() {
             }
           : undefined,
       infraestrutura: {
-        escola: infraEscola,
-        hospital: infraHospital,
-        comercio: infraComercio,
+        escola: infraEscola || (modoAvancado && adv.proximoEscola),
+        hospital: infraHospital || (modoAvancado && adv.proximoHospital),
+        comercio: infraComercio || (modoAvancado && adv.proximoComercio),
         transporte: infraTransporte,
         parque: infraParque,
         bancos: infraBancos,
