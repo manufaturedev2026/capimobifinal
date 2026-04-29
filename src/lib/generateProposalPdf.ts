@@ -1,4 +1,5 @@
 import jsPDF from "jspdf";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ProposalData {
   id: string;
@@ -22,6 +23,7 @@ interface ProposalData {
   parking_spots?: number;
   sellerInstagram?: string;
   sellerSiteUrl?: string;
+  cep?: string | null;
 }
 
 // ─── CAPIMOBI Premium Palette ───────────────────────────────────────────
@@ -57,46 +59,244 @@ async function loadImg(url: string): Promise<string | null> {
   try {
     return await new Promise<string | null>((resolve) => {
       const img = new window.Image();
+      let settled = false;
+      const finish = (value: string | null) => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timer);
+        resolve(value);
+      };
+      const timer = window.setTimeout(() => finish(null), 9000);
       img.crossOrigin = "anonymous";
       img.onload = () => {
         const canvas = document.createElement("canvas");
         canvas.width = img.naturalWidth;
         canvas.height = img.naturalHeight;
         const ctx = canvas.getContext("2d");
-        if (!ctx) { resolve(null); return; }
+        if (!ctx) { finish(null); return; }
         ctx.drawImage(img, 0, 0);
-        try { resolve(canvas.toDataURL("image/jpeg", 0.88)); } catch { resolve(null); }
+        try { finish(canvas.toDataURL("image/jpeg", 0.88)); } catch { finish(null); }
       };
-      img.onerror = () => resolve(null);
+      img.onerror = () => finish(null);
       img.src = url;
     });
   } catch { return null; }
+}
+
+type MapCoords = { lat: number; lng: number };
+
+function normalizeAddressForGeocoding(address: string) {
+  return address
+    .replace(/\bAv\.?\b/gi, "Avenida")
+    .replace(/\bR\.?\b/gi, "Rua")
+    .replace(/\bRod\.?\b/gi, "Rodovia")
+    .replace(/\bTv\.?\b/gi, "Travessa")
+    .replace(/\bAl\.?\b/gi, "Alameda")
+    .replace(/\bEst\.?\b/gi, "Estrada")
+    .replace(/\bES\b/gi, "Espírito Santo")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+async function buildMapCandidates(location: string, cep?: string | null): Promise<string[]> {
+  const normalized = normalizeAddressForGeocoding(location);
+  const parts = normalized.split(",").map((part) => part.trim()).filter(Boolean);
+  const [street, number, neighborhood, city, state] = parts;
+  const cleanCep = (cep || "").replace(/\D/g, "");
+  const candidates: string[] = [];
+  const add = (value: string) => {
+    const clean = value.replace(/\s+/g, " ").trim();
+    if (clean && !candidates.includes(clean)) candidates.push(clean);
+  };
+  const br = (value: string) => value.toLowerCase().includes("brasil") ? value : `${value}, Brasil`;
+
+  if (cleanCep.length === 8) {
+    try {
+      const res = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
+      if (res.ok) {
+        const viaCep = await res.json();
+        if (!viaCep.erro && viaCep.logradouro) {
+          const cepStreet = viaCep.logradouro as string;
+          const cepDistrict = (viaCep.bairro as string) || neighborhood || "";
+          const cepCity = (viaCep.localidade as string) || city || "";
+          const cepState = (viaCep.uf as string) || state || "";
+          const cepFmt = `${cleanCep.slice(0, 5)}-${cleanCep.slice(5)}`;
+          const streetWithNumber = number ? `${cepStreet}, ${number}` : cepStreet;
+          add(br([streetWithNumber, cepDistrict, cepCity, cepState, cepFmt].filter(Boolean).join(", ")));
+          add(br([cepStreet, cepDistrict, cepCity, cepState].filter(Boolean).join(", ")));
+        }
+      }
+    } catch {
+      /* CEP lookup is only a fallback source */
+    }
+  }
+
+  add(br(normalized));
+  add(br([street, number, neighborhood, city, state].filter(Boolean).join(", ")));
+  add(br([street, neighborhood, city, state].filter(Boolean).join(", ")));
+  add(br([neighborhood, city, state].filter(Boolean).join(", ")));
+  add(br([city, state].filter(Boolean).join(", ")));
+  return candidates;
+}
+
+async function geocodeWithGoogle(candidate: string): Promise<MapCoords | null> {
+  try {
+    const { data } = await supabase.functions.invoke("geocode-address", { body: { address: candidate } });
+    const lat = Number((data as { lat?: number | string })?.lat);
+    const lng = Number((data as { lng?: number | string })?.lng);
+    return Number.isFinite(lat) && Number.isFinite(lng) ? { lat, lng } : null;
+  } catch {
+    return null;
+  }
+}
+
+async function geocodeWithNominatim(candidate: string): Promise<MapCoords | null> {
+  try {
+    const geo = await fetch(
+      `https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=br&q=${encodeURIComponent(candidate)}`,
+      { headers: { Accept: "application/json" } },
+    );
+    if (!geo.ok) return null;
+    const arr = await geo.json();
+    if (!Array.isArray(arr) || arr.length === 0) return null;
+    const lat = parseFloat(arr[0].lat);
+    const lng = parseFloat(arr[0].lon);
+    return Number.isFinite(lat) && Number.isFinite(lng) ? { lat, lng } : null;
+  } catch {
+    return null;
+  }
+}
+
+async function resolveMapCoords(location: string, cep?: string | null): Promise<MapCoords | null> {
+  const candidates = await buildMapCandidates(location, cep);
+  for (const candidate of candidates) {
+    const coords = await geocodeWithGoogle(candidate);
+    if (coords) return coords;
+  }
+  for (const candidate of candidates) {
+    const coords = await geocodeWithNominatim(candidate);
+    if (coords) return coords;
+  }
+  return null;
+}
+
+function loadTile(url: string): Promise<HTMLImageElement | null> {
+  return new Promise((resolve) => {
+    const img = new window.Image();
+    let settled = false;
+    const finish = (value: HTMLImageElement | null) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      resolve(value);
+    };
+    const timer = window.setTimeout(() => finish(null), 7000);
+    img.crossOrigin = "anonymous";
+    img.onload = () => finish(img);
+    img.onerror = () => finish(null);
+    img.src = url;
+  });
+}
+
+async function renderOsmTileMap({ lat, lng }: MapCoords): Promise<string | null> {
+  try {
+    const zoom = 15;
+    const tileSize = 256;
+    const width = 1200;
+    const height = 720;
+    const scale = 2 ** zoom;
+    const lonToX = (lon: number) => ((lon + 180) / 360) * tileSize * scale;
+    const latToY = (la: number) => {
+      const sin = Math.sin((la * Math.PI) / 180);
+      return (0.5 - Math.log((1 + sin) / (1 - sin)) / (4 * Math.PI)) * tileSize * scale;
+    };
+    const centerX = lonToX(lng);
+    const centerY = latToY(lat);
+    const startX = Math.floor((centerX - width / 2) / tileSize);
+    const endX = Math.floor((centerX + width / 2) / tileSize);
+    const startY = Math.floor((centerY - height / 2) / tileSize);
+    const endY = Math.floor((centerY + height / 2) / tileSize);
+
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return null;
+    ctx.fillStyle = "#eef2f7";
+    ctx.fillRect(0, 0, width, height);
+
+    let loaded = 0;
+    const maxTile = scale - 1;
+    const jobs: Promise<void>[] = [];
+    for (let x = startX; x <= endX; x++) {
+      for (let y = startY; y <= endY; y++) {
+        if (y < 0 || y > maxTile) continue;
+        const wrappedX = ((x % scale) + scale) % scale;
+        const drawX = Math.round(x * tileSize - (centerX - width / 2));
+        const drawY = Math.round(y * tileSize - (centerY - height / 2));
+        jobs.push(loadTile(`https://tile.openstreetmap.org/${zoom}/${wrappedX}/${y}.png`).then((tile) => {
+          if (!tile) return;
+          loaded += 1;
+          ctx.drawImage(tile, drawX, drawY, tileSize, tileSize);
+        }));
+      }
+    }
+    await Promise.all(jobs);
+    if (loaded === 0) return null;
+
+    const pinX = width / 2;
+    const pinY = height / 2;
+    ctx.fillStyle = "rgba(10, 15, 30, 0.18)";
+    ctx.beginPath();
+    ctx.ellipse(pinX, pinY + 54, 34, 11, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#dc2626";
+    ctx.beginPath();
+    ctx.arc(pinX, pinY - 18, 31, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(pinX - 20, pinY + 2);
+    ctx.lineTo(pinX + 20, pinY + 2);
+    ctx.lineTo(pinX, pinY + 54);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = "#ffffff";
+    ctx.beginPath();
+    ctx.arc(pinX, pinY - 18, 12, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "rgba(255,255,255,0.86)";
+    ctx.fillRect(16, height - 38, 188, 24);
+    ctx.fillStyle = "#475569";
+    ctx.font = "18px Arial";
+    ctx.fillText("© OpenStreetMap", 28, height - 18);
+    return canvas.toDataURL("image/jpeg", 0.88);
+  } catch {
+    return null;
+  }
 }
 
 function rr(pdf: jsPDF, x: number, y: number, w: number, h: number, r: number, style: "F" | "S" | "FD") {
   pdf.roundedRect(x, y, w, h, r, r, style);
 }
 
-async function loadStaticMap(location: string): Promise<string | null> {
-  // 1) Geocode via Nominatim (OpenStreetMap) — no API key required
-  try {
-    const geo = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(location)}`,
-      { headers: { "Accept": "application/json" } }
-    );
-    if (!geo.ok) return null;
-    const arr = await geo.json();
-    if (!Array.isArray(arr) || arr.length === 0) return null;
-    const lat = parseFloat(arr[0].lat);
-    const lon = parseFloat(arr[0].lon);
-    if (isNaN(lat) || isNaN(lon)) return null;
+async function loadStaticMap(data: ProposalData): Promise<string | null> {
+  if (!data.location) return null;
+  const coords = await resolveMapCoords(data.location, data.cep);
+  if (!coords) return null;
 
-    // 2) Static map via staticmap.openstreetmap.de (no key)
-    const url = `https://staticmap.openstreetmap.de/staticmap.php?center=${lat},${lon}&zoom=15&size=600x360&maptype=mapnik&markers=${lat},${lon},red-pushpin`;
-    return await loadImg(url);
+  try {
+    const { data: keyData } = await supabase.functions.invoke("get-maps-key");
+    const key = (keyData as { key?: string })?.key || "";
+    if (key) {
+      const googleUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${coords.lat},${coords.lng}&zoom=15&size=1200x720&scale=2&maptype=roadmap&markers=color:red%7C${coords.lat},${coords.lng}&key=${encodeURIComponent(key)}`;
+      const googleMap = await loadImg(googleUrl);
+      if (googleMap) return googleMap;
+    }
   } catch {
-    return null;
+    /* OSM tile render below is the resilient fallback */
   }
+
+  return await renderOsmTileMap(coords);
 }
 
 function setFill(pdf: jsPDF, c: [number, number, number]) { pdf.setFillColor(c[0], c[1], c[2]); }
