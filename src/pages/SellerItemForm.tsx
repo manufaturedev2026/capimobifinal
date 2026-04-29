@@ -51,6 +51,7 @@ const INITIAL_FORM = {
   cep: "",
   tags: [] as ItemTag[],
   photos: [] as string[],
+  thumbnail_url: "" as string,
   brand: "",
   model: "",
   year: "",
