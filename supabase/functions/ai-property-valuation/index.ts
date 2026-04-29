@@ -56,6 +56,9 @@ type Payload = {
   proximoComercio?: boolean;
   proximoEscola?: boolean;
   proximoHospital?: boolean;
+  proximoTransporte?: boolean;
+  proximoParque?: boolean;
+  proximoBancos?: boolean;
   vistaPrivilegiada?: boolean;
   areaRisco?: boolean;
   // Acabamento item-a-item
