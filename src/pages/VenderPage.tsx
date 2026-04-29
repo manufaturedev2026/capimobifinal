@@ -125,6 +125,51 @@ const FEATURES = [
       "Aumente seu estoque sem esforço",
     ],
   },
+  {
+    icon: Bot, emoji: "🤖", title: "Bot WhatsApp com IA Inteligente",
+    items: [
+      "Atende leads 24h por dia, 7 dias por semana",
+      "Conversa natural usando IA generativa",
+      "Captura nome, telefone e interesse automaticamente",
+      "Encaminha o lead pronto direto pro seu CRM",
+    ],
+  },
+  {
+    icon: Film, emoji: "🎬", title: "Modo Cinema Imersivo",
+    items: [
+      "Apresentação fullscreen estilo Netflix dos seus imóveis",
+      "Reverse-zoom automático em cada foto",
+      "Wow factor instantâneo nas reuniões",
+      "Compartilhe um link e impressione o cliente",
+    ],
+  },
+  {
+    icon: Sparkles, emoji: "✨", title: "Galeria Showroom + Copywriting IA",
+    items: [
+      "Landing cinematográfica para cada imóvel",
+      "Copywriting automático gerado por IA",
+      "Stories estilo Instagram com 24h de duração",
+      "Auto-criação ao publicar novos imóveis",
+    ],
+  },
+  {
+    icon: BarChart3, emoji: "📊", title: "Analytics e Estatísticas Avançadas",
+    items: [
+      "Visitas por imóvel e por loja em tempo real",
+      "Cliques no WhatsApp por corretor",
+      "Origem do tráfego e conversões",
+      "Relatórios para entender o que vende",
+    ],
+  },
+  {
+    icon: Building2, emoji: "🏢", title: "Gestão de Equipe (Imobiliárias)",
+    items: [
+      "Cadastre vários corretores em uma só conta",
+      "Cada corretor com sua loja-espelho personalizada",
+      "WhatsApp Team Picker — distribui leads aleatoriamente",
+      "CRM compartilhado e analytics por corretor",
+    ],
+  },
 ];
 
 const IDEAL_FOR = [
