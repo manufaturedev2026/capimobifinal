@@ -143,6 +143,9 @@ export default function AdminPanel() {
       supabase.from("platform_settings").select("value").eq("key", "sales_video_title").maybeSingle().then(({ data }) => {
         if (data?.value) setSalesVideoTitle(data.value);
       });
+      supabase.from("platform_settings").select("value").eq("key", "registrations_closed").maybeSingle().then(({ data }) => {
+        setRegistrationsClosed(String((data as any)?.value || "false").toLowerCase() === "true");
+      });
     }
   }, [isAdmin]);
 
