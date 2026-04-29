@@ -154,6 +154,7 @@ export default function SellerItemForm() {
               cep: d.cep || "",
               tags: (d.tags as ItemTag[]) || [],
               photos: d.photos || [],
+              thumbnail_url: d.thumbnail_url || "",
               brand: d.brand || "",
               model: d.model || "",
               year: d.year?.toString() || "",
