@@ -933,17 +933,7 @@ export default function VenderPage() {
                             </div>
                           </div>
 
-                          <ul className="space-y-1.5 md:space-y-2 flex-1 mb-5">
-                            {plan.benefits.slice(0, 12).map((b) => (
-                              <li key={b} className="flex items-start gap-2 text-xs md:text-[13px] text-white/70">
-                                <Check className="w-3.5 h-3.5 mt-0.5 shrink-0" style={{ color: theme.primary }} />
-                                <span>{b}</span>
-                              </li>
-                            ))}
-                            {plan.benefits.length > 12 && (
-                              <li className="text-[11px] text-white/40 italic pl-5">+ {plan.benefits.length - 12} recursos adicionais</li>
-                            )}
-                          </ul>
+                          <PlanBenefitsList benefits={plan.benefits} primaryColor={theme.primary} />
 
                           <Button
                             onClick={scrollToForm}
