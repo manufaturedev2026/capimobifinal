@@ -846,7 +846,10 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
         results.push({ format: fmt, templateId: template.id, url, name: FORMAT_CONFIG[fmt].label });
         setBatchResults([...results]);
       }
-      toast({ title: "Pacote completo gerado! 🎁", description: "Post, Story, Banner, Feed e Flyer prontos." });
+      toast({ title: "Pacote completo gerado! 🎁", description: "Role para baixo: Post, Story, Banner, Feed e Flyer prontos." });
+      setBatchHighlight(true);
+      setTimeout(() => batchResultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 120);
+      setTimeout(() => setBatchHighlight(false), 2500);
     } catch (e) {
       console.error(e);
       toast({ title: "Erro ao gerar pacote", variant: "destructive" });
