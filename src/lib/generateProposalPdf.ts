@@ -267,7 +267,7 @@ function drawCoverImpl(pdf: jsPDF, data: ProposalData, heroImg: string | null) {
   pdf.setFont("helvetica", "bold");
   pdf.setFontSize(8);
   setText(pdf, C.white);
-  pdf.text("◆  OPORTUNIDADE EXCLUSIVA", W - M - 28, 22, { align: "center" });
+  pdf.text("■  OPORTUNIDADE EXCLUSIVA", W - M - 28, 22, { align: "center" });
 
   // Property type chip on hero
   pdf.setFont("helvetica", "bold");
@@ -291,7 +291,7 @@ function drawCoverImpl(pdf: jsPDF, data: ProposalData, heroImg: string | null) {
     pdf.setFont("helvetica", "normal");
     pdf.setFontSize(10);
     setText(pdf, C.white);
-    pdf.text(`◆  ${data.location}`, M, heroH - 14);
+    pdf.text(`■  ${data.location}`, M, heroH - 14);
   }
 
   // White info panel below
@@ -495,7 +495,7 @@ function drawDifferentials(pdf: jsPDF, data: ProposalData, y: number) {
     pdf.setFont("helvetica", "bold");
     pdf.setFontSize(8);
     setText(pdf, C.white);
-    pdf.text("✓", x + 9, cy + 10.5, { align: "center" });
+    pdf.text("v", x + 9, cy + 10.5, { align: "center" });
 
     pdf.setFont("helvetica", "bold");
     pdf.setFontSize(10);
@@ -701,7 +701,7 @@ function drawLocation(pdf: jsPDF, data: ProposalData, mapImg: string | null, y: 
   pdf.setFont("helvetica", "bold");
   pdf.setFontSize(11);
   setText(pdf, C.ink);
-  pdf.text(`◆  ${data.location}`, M, y);
+  pdf.text(`■  ${data.location}`, M, y);
   y += 8;
 
   // Map card
@@ -762,7 +762,7 @@ function drawLocation(pdf: jsPDF, data: ProposalData, mapImg: string | null, y: 
   pdf.setFont("helvetica", "bold");
   pdf.setFontSize(10);
   setText(pdf, C.white);
-  pdf.text("Abrir no Google Maps  →", W / 2, y + 8, { align: "center" });
+  pdf.text("Abrir no Google Maps  >", W / 2, y + 8, { align: "center" });
   pdf.link(M, y, W - M * 2, 12, { url: mapsUrl });
 }
 
@@ -904,7 +904,7 @@ function drawClosingCta(pdf: jsPDF, data: ProposalData, qrImg: string | null) {
   pdf.setFont("helvetica", "bold");
   pdf.setFontSize(12);
   setText(pdf, C.white);
-  pdf.text("Agendar visita pelo WhatsApp  →", W / 2, cy + 10.5, { align: "center" });
+  pdf.text("Agendar visita pelo WhatsApp  >", W / 2, cy + 10.5, { align: "center" });
   pdf.link(M, cy, W - M * 2, 16, { url: waUrl });
 
   // Secondary button — view online
@@ -915,7 +915,7 @@ function drawClosingCta(pdf: jsPDF, data: ProposalData, qrImg: string | null) {
   pdf.setFont("helvetica", "bold");
   pdf.setFontSize(10);
   setText(pdf, C.gold);
-  pdf.text("Ver imóvel completo no site  →", W / 2, cy + 9, { align: "center" });
+  pdf.text("Ver imóvel completo no site  >", W / 2, cy + 9, { align: "center" });
   pdf.link(M, cy, W - M * 2, 14, { url: data.propertyUrl });
 }
 
