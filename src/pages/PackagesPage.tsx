@@ -129,9 +129,8 @@ export default function PackagesPage() {
     if (billingPeriod === "annual" && annualDiscount > 0) {
       totalDiscount += annualDiscount;
     }
-    if (appliedCoupon) {
-      const tiersAllowed = appliedCoupon as any;
-      // O cupom já foi validado server-side, aplica direto
+    if (appliedCoupon && billingPeriod === "monthly") {
+      // Cupons só são aplicados em planos Mensais
       totalDiscount += appliedCoupon.discount_percent;
     }
     if (totalDiscount > 0) {
