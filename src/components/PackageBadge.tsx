@@ -41,10 +41,15 @@ const styles: Record<string, { bg: string; icon: any; label: string; glow?: stri
     label: "Black",
     glow: "shadow-zinc-500/30",
   },
+  basico_empresa: {
+    bg: "bg-slate-500",
+    icon: Zap,
+    label: "Básico Empresa",
+  },
 };
 
 export default function PackageBadge({ tier, size = "sm" }: PackageBadgeProps) {
-  if (tier === "basico") return null;
+  if (tier === "basico" || tier === "basico_empresa") return null;
 
   const config = styles[tier];
   if (!config) return null;
