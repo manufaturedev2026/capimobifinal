@@ -645,7 +645,7 @@ export default function ProductDetail() {
       <ThemeParticles color={getStoreTheme(dbSeller?.store_theme).primary} sellerId={dbSeller?.id} />
       {/* ── Hero Banner ── */}
       <section className="relative">
-        <div className={`overflow-hidden bg-muted ${isMobile ? "aspect-[4/3]" : "aspect-[21/7]"}`}>
+        <div className={`overflow-hidden bg-muted ${isMobile ? "aspect-[4/3]" : "aspect-[21/9] max-h-[70vh]"}`}>
           {images.length > 0 ? (
             <AnimatePresence mode="wait">
               <motion.img
@@ -656,7 +656,7 @@ export default function ProductDetail() {
                 transition={{ duration: 0.4 }}
                 src={images[activeImage]}
                 alt={title}
-                className="w-full h-full object-cover cursor-pointer"
+                className="w-full h-full object-contain bg-muted cursor-pointer"
                 onClick={() => isMobile && setLightboxOpen(true)}
                 onTouchStart={isMobile ? handleTouchStart : undefined}
                 onTouchEnd={isMobile ? handleTouchEnd : undefined}
