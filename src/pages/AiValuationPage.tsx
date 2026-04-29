@@ -1315,11 +1315,11 @@ export default function AiValuationPage() {
             <div className="space-y-4">
               <div>
                 <Label className="text-xs">Título</Label>
-                <div className="p-3 bg-muted rounded-lg font-semibold">{adContent.titulo}</div>
+                <div className="p-3 bg-background border border-border rounded-lg font-semibold text-foreground">{adContent.titulo}</div>
               </div>
               <div>
                 <Label className="text-xs">Descrição</Label>
-                <div className="p-3 bg-muted rounded-lg whitespace-pre-line text-sm">{adContent.descricao}</div>
+                <div className="p-3 bg-background border border-border rounded-lg whitespace-pre-line text-sm text-foreground">{adContent.descricao}</div>
               </div>
               <Button
                 className="w-full"
