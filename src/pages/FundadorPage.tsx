@@ -237,7 +237,7 @@ export default function FundadorPage() {
                     initial={{ width: 0 }}
                     animate={{ width: `${percentSold}%` }}
                     transition={{ duration: 1, ease: "easeOut" }}
-                    className="h-full bg-gradient-to-r from-amber-500 to-orange-600"
+                    className="h-full bg-gradient-to-r from-primary to-accent"
                   />
                 </div>
               </div>
@@ -246,7 +246,7 @@ export default function FundadorPage() {
               <div className="flex items-center gap-3 p-4 rounded-xl bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20">
                 <Sparkles className="w-5 h-5 text-primary shrink-0" />
                 <div className="text-sm">
-                  <strong className="text-amber-700 dark:text-primary">
+                  <strong className="text-primary">
                     +{credits.toLocaleString("pt-BR")} créditos de IA
                   </strong>{" "}
                   <span className="text-muted-foreground">como bônus de boas-vindas</span>
@@ -439,7 +439,7 @@ export default function FundadorPage() {
       <section id="comparativo" className="py-16 lg:py-24 bg-muted/30 border-y border-border">
         <div className="max-w-5xl mx-auto px-4">
           <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 text-primary text-xs font-bold mb-4">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold mb-4">
               <TrendingUp className="w-3.5 h-3.5" /> ECONOMIA REAL
             </div>
             <h2 className="text-3xl md:text-5xl font-bold mb-4">
