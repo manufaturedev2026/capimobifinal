@@ -122,7 +122,7 @@ const TEMPLATES: { name: string; subject: string; html: string }[] = [
     html: buildTemplate({
       hero: { gradient: "linear-gradient(135deg,#1e1b4b 0%,#7c3aed 50%,#a855f7 100%)", badge: "🚀 Upgrade Premium", title: "Está na hora, {{nome}}", subtitle: "Desbloqueie ferramentas profissionais" },
       bodyHtml: `
-    <h2 style="margin:0 0 14px;font-size:22px;color:#0f172a;font-weight:700;letter-spacing:-0.3px;">Plano Start a partir de R$24,99/mês</h2>
+    <h2 style="margin:0 0 14px;font-size:22px;color:#0f172a;font-weight:700;letter-spacing:-0.3px;">Plano Start a partir de R$29,90/mês</h2>
     <p style="font-size:15px;line-height:1.7;color:#475569;margin:0 0 22px;">{{nome}}, com o plano <strong style="color:#7c3aed;">Start</strong> você desbloqueia recursos que vão transformar sua atuação como corretor:</p>
     <table cellpadding="0" cellspacing="0" border="0" style="width:100%;margin-bottom:22px;">
       ${featureRow("📦", "Até 25 imóveis", "ativos simultaneamente")}
