@@ -183,7 +183,7 @@ export default function LoginPage() {
     <div className="min-h-screen flex flex-col lg:flex-row" style={{ ...themeVars, background: theme.darkBase }}>
       {/* Image Panel */}
       <div className="relative w-full lg:w-1/2 h-[40vh] lg:h-auto lg:min-h-screen overflow-hidden">
-        <img src={heroImg} alt="Capimobi" className="absolute inset-0 w-full h-full object-cover" />
+        <img src={heroImg} alt={site_name} className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0" style={{ background: `linear-gradient(to bottom, transparent, transparent, ${theme.darkBase})` }} />
         <div className="absolute inset-0 lg:hidden" style={{ background: `linear-gradient(to bottom, transparent 60%, ${theme.darkBase})` }} />
         <div className="hidden lg:block absolute inset-0" style={{ background: `linear-gradient(to right, transparent 60%, ${theme.darkBase})` }} />

@@ -51,7 +51,7 @@ export default function PanelSplash() {
       />
       <img
         src="/pwa-icon-512.png"
-        alt="Capimobi"
+        alt={site_name}
         style={{
           width: "9rem",
           height: "9rem",
