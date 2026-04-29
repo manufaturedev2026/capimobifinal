@@ -1,8 +1,17 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Image, X, ChevronLeft, ChevronRight, Eye, Share2, Copy, CheckCircle2, Sparkles, Download, Palette, FileText } from "lucide-react";
+import {
+  Image, X, ChevronLeft, ChevronRight, Eye, Share2, Copy, CheckCircle2, Sparkles,
+  Download, Palette, FileText, Layers, Wand2, Loader2, Package, Type, Sliders,
+  Award, Crown, Building2, Home, Trees, Store, ShieldCheck, Zap,
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
+import jsPDF from "jspdf";
+
+/* ═══════════════════════════════════════════════════════════════
+   GALERIA DE ANÚNCIOS — CENTRAL PREMIUM DE ARTES IMOBILIÁRIAS
+   ═══════════════════════════════════════════════════════════════ */
 
 interface GalleryItem {
   id: string;
@@ -42,69 +51,205 @@ interface Props {
   sellerCreci: string | null;
 }
 
-type ImageFormat = "card" | "banner" | "story";
-type ImageStyle = "verde" | "azul" | "vermelho" | "rosa" | "gold" | "roxo";
-type FontStyle = "moderna" | "elegante" | "suave" | "tech" | "classica" | "manuscrita";
+/* ── Formatos ─────────────────────────────────────────────────── */
+type ImageFormat = "post" | "feed45" | "banner" | "story" | "a4";
 
-const FONT_CONFIG: Record<FontStyle, { label: string; family: string; preview: string }> = {
-  moderna: { label: "Moderna", family: "'Trebuchet MS', 'Helvetica Neue', Arial, sans-serif", preview: "Aa" },
-  elegante: { label: "Elegante", family: "'Georgia', 'Times New Roman', serif", preview: "Aa" },
-  suave: { label: "Suave", family: "'Segoe UI', 'Verdana', sans-serif", preview: "Aa" },
-  tech: { label: "Tech", family: "'Courier New', 'Lucida Console', monospace", preview: "Aa" },
-  classica: { label: "Clássica", family: "'Palatino Linotype', 'Book Antiqua', Palatino, serif", preview: "Aa" },
-  manuscrita: { label: "Manuscrita", family: "'Brush Script MT', 'Comic Sans MS', cursive", preview: "Aa" },
+const FORMAT_CONFIG: Record<ImageFormat, {
+  label: string; short: string; width: number; height: number;
+  description: string; icon: string; ratio: string;
+}> = {
+  post:    { label: "Post Quadrado",       short: "1:1",  width: 1080, height: 1080, description: "Instagram Feed / Facebook", icon: "▢", ratio: "aspect-square" },
+  feed45:  { label: "Feed Premium",        short: "4:5",  width: 1080, height: 1350, description: "Maior alcance no Instagram", icon: "▯", ratio: "aspect-[4/5]" },
+  banner:  { label: "Banner Horizontal",   short: "16:9", width: 1920, height: 1080, description: "Facebook Ads / Site / WhatsApp", icon: "▭", ratio: "aspect-video" },
+  story:   { label: "Story Vertical",      short: "9:16", width: 1080, height: 1920, description: "Stories / Reels Cover / Status", icon: "▮", ratio: "aspect-[9/16]" },
+  a4:      { label: "Flyer A4",            short: "A4",   width: 1240, height: 1754, description: "Impressão / PDF Profissional", icon: "▤", ratio: "aspect-[1240/1754]" },
 };
 
-const FORMAT_CONFIG: Record<ImageFormat, { label: string; width: number; height: number; description: string }> = {
-  card: { label: "Post (1:1)", width: 1080, height: 1080, description: "Instagram / Facebook" },
-  banner: { label: "Banner (16:9)", width: 1920, height: 1080, description: "Facebook Ads / WhatsApp" },
-  story: { label: "Story (9:16)", width: 1080, height: 1920, description: "Instagram Stories / Status" },
-};
+/* ── Templates Profissionais ──────────────────────────────────── */
+type TemplateId =
+  | "moderno_premium" | "luxo_imobiliario" | "minimalista_clean" | "popular_vendas"
+  | "black_gold" | "viral_instagram" | "construtora_lancamento" | "alto_padrao"
+  | "apartamento_urbano" | "comercial_corporativo";
 
-function makeStyle(
-  label: string,
-  accent: string,
-  accentRgba: string,
-  bgClass: string,
-): typeof STYLE_CONFIG[ImageStyle] {
-  return {
-    label,
-    priceBg: accent,
-    priceFg: "#ffffff",
-    gradientStops: ["rgba(0,0,0,0)", "rgba(0,0,0,0.65)", "rgba(0,0,0,0.95)"],
-    titleColor: "#f0f0f0",
-    detailColor: accentRgba,
-    sellerColor: "rgba(255,255,255,0.5)",
-    locationColor: "rgba(255,255,255,0.75)",
-    accentBar: accent,
-    fontFamily: "'Trebuchet MS', 'Helvetica Neue', Arial, sans-serif",
-    preview: { bg: bgClass },
-  };
+interface TemplateDef {
+  id: TemplateId;
+  name: string;
+  emoji: string;
+  description: string;
+  /* Cores */
+  accent: string;          // cor principal (preço/CTA)
+  accentSoft: string;      // versão translúcida
+  textTop: string;         // cor do título
+  textSub: string;         // cor de subtítulos / detalhes
+  textFooter: string;      // cor do rodapé
+  /* Layout */
+  gradientStart: string;   // topo do gradient inferior (transparente)
+  gradientMid: string;
+  gradientEnd: string;     // base
+  topBarColor: string | null;     // barra superior decorativa
+  bottomBarColor: string | null;  // barra inferior decorativa
+  badgeStyle: "glass" | "solid" | "outline" | "luxury";
+  priceStyle: "glass" | "solid" | "luxury" | "minimal";
+  /* Filtros visuais aplicados na foto */
+  filterBrightness: number; // 1 = neutro
+  filterContrast: number;
+  filterSaturate: number;
+  /* Preview chip */
+  previewBg: string;
+  premium?: boolean;
 }
 
-const STYLE_CONFIG: Record<ImageStyle, {
-  label: string;
-  priceBg: string;
-  priceFg: string;
-  gradientStops: [string, string, string];
-  titleColor: string;
-  detailColor: string;
-  sellerColor: string;
-  locationColor: string;
-  accentBar: string | null;
-  fontFamily: string;
-  preview: { bg: string };
-}> = {
-  verde: makeStyle("Verde", "#10b981", "rgba(16,185,129,0.8)", "bg-emerald-500"),
-  azul: makeStyle("Azul", "#2563eb", "rgba(37,99,235,0.8)", "bg-blue-600"),
-  vermelho: makeStyle("Vermelho", "#ef4444", "rgba(239,68,68,0.8)", "bg-red-500"),
-  rosa: makeStyle("Rosa", "#ec4899", "rgba(236,72,153,0.8)", "bg-pink-500"),
-  gold: makeStyle("Gold", "#d97706", "rgba(217,119,6,0.8)", "bg-amber-600"),
-  roxo: makeStyle("Roxo", "#8b5cf6", "rgba(139,92,246,0.8)", "bg-violet-500"),
+const TEMPLATES: TemplateDef[] = [
+  {
+    id: "moderno_premium", name: "Moderno Premium", emoji: "🌟",
+    description: "Layout limpo e contemporâneo com glass blur.",
+    accent: "#0ea5e9", accentSoft: "rgba(14,165,233,0.85)",
+    textTop: "#ffffff", textSub: "rgba(255,255,255,0.85)", textFooter: "rgba(255,255,255,0.6)",
+    gradientStart: "rgba(0,0,0,0)", gradientMid: "rgba(8,15,30,0.55)", gradientEnd: "rgba(8,15,30,0.96)",
+    topBarColor: null, bottomBarColor: "#0ea5e9",
+    badgeStyle: "glass", priceStyle: "glass",
+    filterBrightness: 1.05, filterContrast: 1.08, filterSaturate: 1.1,
+    previewBg: "linear-gradient(135deg,#0ea5e9,#0369a1)",
+  },
+  {
+    id: "luxo_imobiliario", name: "Luxo Imobiliário", emoji: "💎",
+    description: "Tipografia serifada elegante, dourado discreto.",
+    accent: "#c8a45c", accentSoft: "rgba(200,164,92,0.85)",
+    textTop: "#fff8e7", textSub: "rgba(255,248,231,0.85)", textFooter: "rgba(255,248,231,0.55)",
+    gradientStart: "rgba(0,0,0,0)", gradientMid: "rgba(20,15,5,0.6)", gradientEnd: "rgba(15,10,2,0.97)",
+    topBarColor: "#c8a45c", bottomBarColor: "#c8a45c",
+    badgeStyle: "luxury", priceStyle: "luxury",
+    filterBrightness: 1.02, filterContrast: 1.12, filterSaturate: 0.95,
+    previewBg: "linear-gradient(135deg,#1a1206,#c8a45c)",
+    premium: true,
+  },
+  {
+    id: "minimalista_clean", name: "Minimalista Clean", emoji: "⚪",
+    description: "Branco premium, máximo respiro, foco na foto.",
+    accent: "#0f172a", accentSoft: "rgba(15,23,42,0.92)",
+    textTop: "#ffffff", textSub: "rgba(255,255,255,0.9)", textFooter: "rgba(255,255,255,0.7)",
+    gradientStart: "rgba(0,0,0,0)", gradientMid: "rgba(0,0,0,0.35)", gradientEnd: "rgba(0,0,0,0.85)",
+    topBarColor: null, bottomBarColor: null,
+    badgeStyle: "outline", priceStyle: "minimal",
+    filterBrightness: 1.06, filterContrast: 1.05, filterSaturate: 1.0,
+    previewBg: "linear-gradient(135deg,#f8fafc,#0f172a)",
+  },
+  {
+    id: "popular_vendas", name: "Popular Vendas Rápidas", emoji: "🔥",
+    description: "Vermelho impactante para giro rápido de estoque.",
+    accent: "#ef4444", accentSoft: "rgba(239,68,68,0.92)",
+    textTop: "#ffffff", textSub: "rgba(255,255,255,0.92)", textFooter: "rgba(255,255,255,0.7)",
+    gradientStart: "rgba(0,0,0,0)", gradientMid: "rgba(60,10,10,0.55)", gradientEnd: "rgba(40,5,5,0.97)",
+    topBarColor: "#ef4444", bottomBarColor: "#ef4444",
+    badgeStyle: "solid", priceStyle: "solid",
+    filterBrightness: 1.08, filterContrast: 1.15, filterSaturate: 1.2,
+    previewBg: "linear-gradient(135deg,#ef4444,#7f1d1d)",
+  },
+  {
+    id: "black_gold", name: "Black Gold Luxury", emoji: "🏆",
+    description: "Black absoluto com ouro vintage. Imóveis exclusivos.",
+    accent: "#d4af37", accentSoft: "rgba(212,175,55,0.95)",
+    textTop: "#fff7d6", textSub: "rgba(255,247,214,0.85)", textFooter: "rgba(212,175,55,0.85)",
+    gradientStart: "rgba(0,0,0,0)", gradientMid: "rgba(0,0,0,0.7)", gradientEnd: "rgba(0,0,0,0.99)",
+    topBarColor: "#d4af37", bottomBarColor: "#d4af37",
+    badgeStyle: "luxury", priceStyle: "luxury",
+    filterBrightness: 0.95, filterContrast: 1.18, filterSaturate: 0.85,
+    previewBg: "linear-gradient(135deg,#000,#d4af37)",
+    premium: true,
+  },
+  {
+    id: "viral_instagram", name: "Viral Instagram", emoji: "💜",
+    description: "Gradient roxo/rosa, ideal para engajamento.",
+    accent: "#a855f7", accentSoft: "rgba(168,85,247,0.92)",
+    textTop: "#ffffff", textSub: "rgba(255,255,255,0.92)", textFooter: "rgba(255,255,255,0.72)",
+    gradientStart: "rgba(0,0,0,0)", gradientMid: "rgba(60,15,80,0.6)", gradientEnd: "rgba(40,5,60,0.97)",
+    topBarColor: "#ec4899", bottomBarColor: "#a855f7",
+    badgeStyle: "glass", priceStyle: "solid",
+    filterBrightness: 1.1, filterContrast: 1.12, filterSaturate: 1.25,
+    previewBg: "linear-gradient(135deg,#a855f7,#ec4899)",
+  },
+  {
+    id: "construtora_lancamento", name: "Construtora Lançamento", emoji: "🏗️",
+    description: "Azul corporativo para empreendimentos novos.",
+    accent: "#2563eb", accentSoft: "rgba(37,99,235,0.92)",
+    textTop: "#ffffff", textSub: "rgba(255,255,255,0.9)", textFooter: "rgba(255,255,255,0.7)",
+    gradientStart: "rgba(0,0,0,0)", gradientMid: "rgba(10,25,55,0.6)", gradientEnd: "rgba(5,15,40,0.97)",
+    topBarColor: "#2563eb", bottomBarColor: "#1e40af",
+    badgeStyle: "solid", priceStyle: "solid",
+    filterBrightness: 1.05, filterContrast: 1.1, filterSaturate: 1.05,
+    previewBg: "linear-gradient(135deg,#2563eb,#1e3a8a)",
+  },
+  {
+    id: "alto_padrao", name: "Alto Padrão Mansão", emoji: "🏰",
+    description: "Verde escuro elite com tipografia serifada.",
+    accent: "#0f766e", accentSoft: "rgba(15,118,110,0.92)",
+    textTop: "#f0fdf4", textSub: "rgba(240,253,244,0.85)", textFooter: "rgba(240,253,244,0.65)",
+    gradientStart: "rgba(0,0,0,0)", gradientMid: "rgba(5,30,25,0.6)", gradientEnd: "rgba(2,20,15,0.97)",
+    topBarColor: "#0f766e", bottomBarColor: "#0f766e",
+    badgeStyle: "luxury", priceStyle: "luxury",
+    filterBrightness: 1.0, filterContrast: 1.12, filterSaturate: 1.0,
+    previewBg: "linear-gradient(135deg,#064e3b,#0f766e)",
+    premium: true,
+  },
+  {
+    id: "apartamento_urbano", name: "Apartamento Urbano", emoji: "🏙️",
+    description: "Cinza moderno e clean para city living.",
+    accent: "#475569", accentSoft: "rgba(71,85,105,0.92)",
+    textTop: "#ffffff", textSub: "rgba(255,255,255,0.88)", textFooter: "rgba(255,255,255,0.65)",
+    gradientStart: "rgba(0,0,0,0)", gradientMid: "rgba(15,23,42,0.55)", gradientEnd: "rgba(10,15,25,0.96)",
+    topBarColor: null, bottomBarColor: "#64748b",
+    badgeStyle: "glass", priceStyle: "minimal",
+    filterBrightness: 1.04, filterContrast: 1.08, filterSaturate: 1.05,
+    previewBg: "linear-gradient(135deg,#334155,#0f172a)",
+  },
+  {
+    id: "comercial_corporativo", name: "Comercial Corporativo", emoji: "🏢",
+    description: "Identidade séria para lojas, salas e galpões.",
+    accent: "#1e293b", accentSoft: "rgba(30,41,59,0.95)",
+    textTop: "#ffffff", textSub: "rgba(255,255,255,0.9)", textFooter: "rgba(255,255,255,0.7)",
+    gradientStart: "rgba(0,0,0,0)", gradientMid: "rgba(10,15,25,0.55)", gradientEnd: "rgba(5,10,20,0.97)",
+    topBarColor: "#1e293b", bottomBarColor: "#334155",
+    badgeStyle: "solid", priceStyle: "solid",
+    filterBrightness: 1.02, filterContrast: 1.1, filterSaturate: 0.95,
+    previewBg: "linear-gradient(135deg,#1e293b,#0f172a)",
+  },
+];
+
+/* ── Fontes Premium (Google Fonts) ─────────────────────────────── */
+type FontId = "playfair" | "montserrat" | "poppins" | "inter" | "lora" | "dmsans";
+
+const FONTS: Record<FontId, { label: string; family: string; weight: number; serif: boolean }> = {
+  playfair:   { label: "Playfair Display", family: "'Playfair Display', Georgia, serif",       weight: 800, serif: true },
+  montserrat: { label: "Montserrat",       family: "'Montserrat', 'Helvetica Neue', sans-serif", weight: 800, serif: false },
+  poppins:    { label: "Poppins",          family: "'Poppins', sans-serif",                     weight: 800, serif: false },
+  inter:      { label: "Inter",            family: "'Inter', sans-serif",                       weight: 800, serif: false },
+  lora:       { label: "Lora",             family: "'Lora', Georgia, serif",                    weight: 700, serif: true },
+  dmsans:     { label: "DM Sans",          family: "'DM Sans', sans-serif",                     weight: 700, serif: false },
 };
 
-function formatPrice(price: number): string {
-  return `R$ ${price.toLocaleString("pt-BR")}`;
+/* ── Selos / Tags ─────────────────────────────────────────────── */
+type BadgeKind = "venda" | "aluguel" | "exclusivo" | "oportunidade" | "lancamento" | "auto";
+const BADGE_LABELS: Record<Exclude<BadgeKind, "auto">, string> = {
+  venda: "VENDA",
+  aluguel: "ALUGUEL",
+  exclusivo: "EXCLUSIVO",
+  oportunidade: "OPORTUNIDADE",
+  lancamento: "LANÇAMENTO",
+};
+
+/* ── Densidade de texto ───────────────────────────────────────── */
+type TextDensity = "minimal" | "medium" | "complete" | "aggressive";
+
+const DENSITY_LABEL: Record<TextDensity, string> = {
+  minimal: "Minimalista",
+  medium: "Médio",
+  complete: "Completo",
+  aggressive: "Agressivo Vendas",
+};
+
+/* ── Helpers ──────────────────────────────────────────────────── */
+function formatPrice(price: number, isRent = false): string {
+  return `R$ ${price.toLocaleString("pt-BR")}${isRent ? "/mês" : ""}`;
 }
 
 async function loadImage(src: string): Promise<HTMLImageElement> {
@@ -131,31 +276,75 @@ function drawRoundedRect(ctx: CanvasRenderingContext2D, x: number, y: number, w:
   ctx.closePath();
 }
 
-async function generateMarketingImage(
-  item: GalleryItem,
-  format: ImageFormat,
-  sellerName: string,
-  sellerPhone: string | null,
-  sellerCreci: string | null,
-  sellerLogo: string | null,
-  style: ImageStyle = "verde",
-  photoUrl?: string,
-  fontStyle: FontStyle = "moderna",
-): Promise<string> {
-  const { width, height } = FORMAT_CONFIG[format];
-  const s = STYLE_CONFIG[style];
-  const titleFont = FONT_CONFIG[fontStyle].family;
-  const baseFont = "'Trebuchet MS', 'Helvetica Neue', Arial, sans-serif";
+function autoBadge(item: GalleryItem): Exclude<BadgeKind, "auto"> {
+  const isRent = item.finality === "aluguel" || item.category === "aluguel";
+  if (isRent) return "aluguel";
+  if (item.price && item.price > 1500000) return "exclusivo";
+  if (item.price && item.price < 250000) return "oportunidade";
+  return "venda";
+}
+
+/* ── Detecção automática do template (IA simples baseada em metadata) ── */
+function autoDetectTemplate(item: GalleryItem): TemplateId {
+  const cat = (item.category || "").toLowerCase();
+  const title = (item.title || "").toLowerCase();
+  const price = item.price || 0;
+
+  if (cat.includes("comercial") || cat.includes("loja") || cat.includes("sala") || cat.includes("galpao")) return "comercial_corporativo";
+  if (cat.includes("terreno") || cat.includes("lote")) return "minimalista_clean";
+  if (title.includes("lançamento") || title.includes("lancamento") || cat.includes("lancamento")) return "construtora_lancamento";
+  if (price >= 2500000 || title.includes("mansão") || title.includes("mansao") || title.includes("alto padrão")) return "alto_padrao";
+  if (price >= 1500000 || title.includes("luxo") || title.includes("cobertura")) return "luxo_imobiliario";
+  if (cat.includes("apartamento")) return "apartamento_urbano";
+  if (price < 250000) return "popular_vendas";
+  return "moderno_premium";
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   GERADOR DE IMAGENS
+   ═══════════════════════════════════════════════════════════════ */
+
+interface GenOpts {
+  item: GalleryItem;
+  format: ImageFormat;
+  template: TemplateDef;
+  font: FontId;
+  density: TextDensity;
+  badge: Exclude<BadgeKind, "auto"> | null;
+  photoUrl: string;
+  showLogo: boolean;
+  showWatermark: boolean;
+  sellerName: string;
+  sellerPhone: string | null;
+  sellerCreci: string | null;
+  sellerLogo: string | null;
+  // Ajustes de imagem
+  brightness: number;
+  contrast: number;
+  saturate: number;
+  hdr: boolean;
+}
+
+async function generateMarketingImage(o: GenOpts): Promise<string> {
+  const { width, height } = FORMAT_CONFIG[o.format];
+  const t = o.template;
+  const fontDef = FONTS[o.font];
+  const titleFont = fontDef.family;
+  const baseFont = "'Inter', 'Helvetica Neue', Arial, sans-serif";
+  const isStory = o.format === "story" || o.format === "feed45";
+  const isA4 = o.format === "a4";
+  const scale = width / 1080;
+  const isRent = o.item.finality === "aluguel" || o.item.category === "aluguel";
+
   const canvas = document.createElement("canvas");
   canvas.width = width;
   canvas.height = height;
   const ctx = canvas.getContext("2d")!;
 
-  // Draw background photo
-  const imgSrc = photoUrl || item.photos?.[0];
-  if (imgSrc) {
+  /* ── 1. Foto de fundo com filtros ── */
+  if (o.photoUrl) {
     try {
-      const img = await loadImage(imgSrc);
+      const img = await loadImage(o.photoUrl);
       const imgRatio = img.width / img.height;
       const canvasRatio = width / height;
       let sx = 0, sy = 0, sw = img.width, sh = img.height;
@@ -166,157 +355,287 @@ async function generateMarketingImage(
         sh = img.width / canvasRatio;
         sy = (img.height - sh) / 2;
       }
+      const bright = o.brightness * t.filterBrightness;
+      const cont   = o.contrast   * t.filterContrast;
+      const sat    = o.saturate   * t.filterSaturate;
+      ctx.filter = `brightness(${bright}) contrast(${cont}) saturate(${sat})`;
       ctx.drawImage(img, sx, sy, sw, sh, 0, 0, width, height);
+      // HDR leve = segunda passada com blend overlay
+      if (o.hdr) {
+        ctx.globalAlpha = 0.15;
+        ctx.globalCompositeOperation = "overlay";
+        ctx.drawImage(img, sx, sy, sw, sh, 0, 0, width, height);
+        ctx.globalAlpha = 1;
+        ctx.globalCompositeOperation = "source-over";
+      }
+      ctx.filter = "none";
     } catch {
-      ctx.fillStyle = "#1a1a2e";
-      ctx.fillRect(0, 0, width, height);
+      ctx.fillStyle = "#1a1a2e"; ctx.fillRect(0, 0, width, height);
     }
   } else {
-    ctx.fillStyle = "#1a1a2e";
-    ctx.fillRect(0, 0, width, height);
+    ctx.fillStyle = "#1a1a2e"; ctx.fillRect(0, 0, width, height);
   }
 
-  // Gradient overlay using style
-  const gradH = height * 0.55;
+  /* ── 2. Top bar decorativa ── */
+  if (t.topBarColor) {
+    ctx.fillStyle = t.topBarColor;
+    ctx.fillRect(0, 0, width, Math.round(6 * scale));
+  }
+
+  /* ── 3. Gradient inferior ── */
+  const gradH = isA4 ? height * 0.42 : height * (isStory ? 0.6 : 0.55);
   const grad = ctx.createLinearGradient(0, height - gradH, 0, height);
-  grad.addColorStop(0, s.gradientStops[0]);
-  grad.addColorStop(0.3, s.gradientStops[1]);
-  grad.addColorStop(1, s.gradientStops[2]);
+  grad.addColorStop(0, t.gradientStart);
+  grad.addColorStop(0.35, t.gradientMid);
+  grad.addColorStop(1, t.gradientEnd);
   ctx.fillStyle = grad;
   ctx.fillRect(0, height - gradH, width, gradH);
 
-  // Top gradient for branding
-  const topGrad = ctx.createLinearGradient(0, 0, 0, height * 0.15);
-  topGrad.addColorStop(0, "rgba(0,0,0,0.6)");
+  /* ── 4. Top gradient suave (para selo/logo) ── */
+  const topGrad = ctx.createLinearGradient(0, 0, 0, height * 0.18);
+  topGrad.addColorStop(0, "rgba(0,0,0,0.55)");
   topGrad.addColorStop(1, "rgba(0,0,0,0)");
   ctx.fillStyle = topGrad;
-  ctx.fillRect(0, 0, width, height * 0.15);
+  ctx.fillRect(0, 0, width, height * 0.18);
 
-  // Accent bar at bottom (for gold/moderno styles)
-  if (s.accentBar) {
-    ctx.fillStyle = s.accentBar;
-    ctx.fillRect(0, height - Math.round(4 * (width / 1080)), width, Math.round(4 * (width / 1080)));
+  /* ── 5. Bottom decorative bar ── */
+  if (t.bottomBarColor) {
+    ctx.fillStyle = t.bottomBarColor;
+    ctx.fillRect(0, height - Math.round(6 * scale), width, Math.round(6 * scale));
   }
 
   const pad = Math.round(width * 0.045);
-  const isStory = format === "story";
-  const scale = width / 1080;
-  // font is already set from FONT_CONFIG
 
-  // Seller photo (circular, top-left)
-  if (sellerLogo) {
+  /* ── 6. Logo do corretor (top-left) ── */
+  let logoOffset = 0;
+  if (o.showLogo && o.sellerLogo) {
     try {
-      const logoImg = await loadImage(sellerLogo);
-      const logoSize = Math.round(56 * scale);
-      const logoX = pad;
-      const logoY = pad;
+      const logoImg = await loadImage(o.sellerLogo);
+      const logoSize = Math.round(64 * scale);
+      const lx = pad, ly = pad + Math.round(8 * scale);
       ctx.save();
       ctx.beginPath();
-      ctx.arc(logoX + logoSize / 2, logoY + logoSize / 2, logoSize / 2, 0, Math.PI * 2);
+      ctx.arc(lx + logoSize / 2, ly + logoSize / 2, logoSize / 2, 0, Math.PI * 2);
       ctx.closePath();
       ctx.clip();
-      ctx.drawImage(logoImg, logoX, logoY, logoSize, logoSize);
+      ctx.drawImage(logoImg, lx, ly, logoSize, logoSize);
       ctx.restore();
-      // White border
-      ctx.strokeStyle = "rgba(255,255,255,0.4)";
-      ctx.lineWidth = Math.round(2 * scale);
+      ctx.strokeStyle = "rgba(255,255,255,0.55)";
+      ctx.lineWidth = Math.round(2.5 * scale);
       ctx.beginPath();
-      ctx.arc(logoX + logoSize / 2, logoY + logoSize / 2, logoSize / 2, 0, Math.PI * 2);
+      ctx.arc(lx + logoSize / 2, ly + logoSize / 2, logoSize / 2, 0, Math.PI * 2);
       ctx.stroke();
-    } catch { /* skip logo */ }
+      logoOffset = logoSize + Math.round(14 * scale);
+    } catch {/* ignore */}
   }
 
-  // Price badge (top-right)
-  if (item.price && item.price > 0) {
-    const priceText = formatPrice(item.price);
-    const priceFontSize = Math.round((isStory ? 52 : 42) * scale);
-    ctx.font = `900 ${priceFontSize}px ${baseFont}`;
-    const priceMetrics = ctx.measureText(priceText);
-    const badgePad = Math.round(16 * scale);
-    const badgeW = priceMetrics.width + badgePad * 2;
-    const badgeH = priceFontSize + badgePad * 1.2;
-    const badgeX = width - pad - badgeW;
-    const badgeY = pad;
+  /* ── 7. Selo / Badge (top-left ao lado do logo) ── */
+  if (o.badge) {
+    const label = BADGE_LABELS[o.badge];
+    const badgeFontSize = Math.round(26 * scale);
+    ctx.font = `900 ${badgeFontSize}px ${baseFont}`;
+    const m = ctx.measureText(label);
+    const bp = Math.round(14 * scale);
+    const bw = m.width + bp * 2;
+    const bh = badgeFontSize + bp;
+    const bx = pad + logoOffset;
+    const by = pad + Math.round(12 * scale);
 
-    ctx.fillStyle = s.priceBg;
-    drawRoundedRect(ctx, badgeX, badgeY, badgeW, badgeH, Math.round(10 * scale));
-    ctx.fill();
-
-    ctx.fillStyle = s.priceFg;
+    if (t.badgeStyle === "glass") {
+      ctx.fillStyle = "rgba(255,255,255,0.18)";
+      drawRoundedRect(ctx, bx, by, bw, bh, Math.round(8 * scale));
+      ctx.fill();
+      ctx.strokeStyle = "rgba(255,255,255,0.4)";
+      ctx.lineWidth = Math.round(1.5 * scale);
+      drawRoundedRect(ctx, bx, by, bw, bh, Math.round(8 * scale));
+      ctx.stroke();
+      ctx.fillStyle = "#ffffff";
+    } else if (t.badgeStyle === "outline") {
+      ctx.strokeStyle = "#ffffff";
+      ctx.lineWidth = Math.round(2 * scale);
+      drawRoundedRect(ctx, bx, by, bw, bh, Math.round(6 * scale));
+      ctx.stroke();
+      ctx.fillStyle = "#ffffff";
+    } else if (t.badgeStyle === "luxury") {
+      ctx.fillStyle = "rgba(0,0,0,0.55)";
+      drawRoundedRect(ctx, bx, by, bw, bh, Math.round(6 * scale));
+      ctx.fill();
+      ctx.strokeStyle = t.accent;
+      ctx.lineWidth = Math.round(1.5 * scale);
+      drawRoundedRect(ctx, bx, by, bw, bh, Math.round(6 * scale));
+      ctx.stroke();
+      ctx.fillStyle = t.accent;
+    } else { // solid
+      ctx.fillStyle = t.accent;
+      drawRoundedRect(ctx, bx, by, bw, bh, Math.round(8 * scale));
+      ctx.fill();
+      ctx.fillStyle = "#ffffff";
+    }
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText(priceText, badgeX + badgeW / 2, badgeY + badgeH / 2);
+    ctx.fillText(label, bx + bw / 2, by + bh / 2);
   }
 
-  // Bottom content area
-  let y = height - pad - (s.accentBar ? Math.round(6 * scale) : 0);
+  /* ── 8. Preço (top-right) ── */
+  if (o.item.price && o.item.price > 0) {
+    const priceText = formatPrice(o.item.price, isRent);
+    const priceFontSize = Math.round((isStory ? 56 : isA4 ? 48 : 46) * scale);
+    ctx.font = `900 ${priceFontSize}px ${baseFont}`;
+    const pm = ctx.measureText(priceText);
+    const pp = Math.round(20 * scale);
+    const pw = pm.width + pp * 2;
+    const ph = priceFontSize + pp * 1.2;
+    const px = width - pad - pw;
+    const py = pad + Math.round(12 * scale);
 
-  // Seller info
-  const sellerFontSize = Math.round((isStory ? 38 : 30) * scale);
-  ctx.font = `600 ${sellerFontSize}px ${baseFont}`;
-  ctx.fillStyle = s.sellerColor;
-  ctx.textAlign = "left";
-  ctx.textBaseline = "bottom";
-
-  let sellerLine = sellerName;
-  if (sellerCreci) sellerLine += ` • CRECI ${sellerCreci}`;
-  if (sellerPhone) sellerLine += ` • ${sellerPhone}`;
-  ctx.fillText(sellerLine, pad, y);
-  y -= sellerFontSize + Math.round(14 * scale);
-
-  // Details row
-  const details: string[] = [];
-  if (item.bedrooms) details.push(`🛏 ${item.bedrooms} quartos`);
-  if (item.bathrooms) details.push(`🚿 ${item.bathrooms} banheiros`);
-  if (item.area) details.push(`📐 ${item.area}m²`);
-
-  if (details.length > 0) {
-    const detailFontSize = Math.round((isStory ? 42 : 32) * scale);
-    ctx.font = `500 ${detailFontSize}px ${baseFont}`;
-    ctx.fillStyle = s.detailColor;
-    ctx.fillText(details.join("   "), pad, y);
-    y -= detailFontSize + Math.round(10 * scale);
+    if (t.priceStyle === "glass") {
+      ctx.fillStyle = "rgba(0,0,0,0.42)";
+      drawRoundedRect(ctx, px, py, pw, ph, Math.round(14 * scale));
+      ctx.fill();
+      ctx.strokeStyle = "rgba(255,255,255,0.35)";
+      ctx.lineWidth = Math.round(1.5 * scale);
+      drawRoundedRect(ctx, px, py, pw, ph, Math.round(14 * scale));
+      ctx.stroke();
+      ctx.fillStyle = "#ffffff";
+    } else if (t.priceStyle === "luxury") {
+      ctx.fillStyle = "rgba(0,0,0,0.7)";
+      drawRoundedRect(ctx, px, py, pw, ph, Math.round(8 * scale));
+      ctx.fill();
+      ctx.strokeStyle = t.accent;
+      ctx.lineWidth = Math.round(2 * scale);
+      drawRoundedRect(ctx, px, py, pw, ph, Math.round(8 * scale));
+      ctx.stroke();
+      ctx.fillStyle = t.accent;
+    } else if (t.priceStyle === "minimal") {
+      ctx.fillStyle = "#ffffff";
+      drawRoundedRect(ctx, px, py, pw, ph, Math.round(6 * scale));
+      ctx.fill();
+      ctx.fillStyle = t.accent;
+    } else { // solid
+      ctx.fillStyle = t.accent;
+      drawRoundedRect(ctx, px, py, pw, ph, Math.round(12 * scale));
+      ctx.fill();
+      ctx.fillStyle = "#ffffff";
+    }
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(priceText, px + pw / 2, py + ph / 2);
   }
 
-  // Location
-  const location = item.neighborhood ? `📍 ${item.neighborhood}, ${item.city}` : item.city ? `📍 ${item.city}` : "";
-  if (location) {
-    const locFontSize = Math.round((isStory ? 44 : 34) * scale);
-    ctx.font = `600 ${locFontSize}px ${baseFont}`;
-    ctx.fillStyle = s.locationColor;
-    ctx.fillText(location, pad, y);
-    y -= locFontSize + Math.round(12 * scale);
+  /* ── 9. Bottom area (footer + details + location + title) ── */
+  let y = height - pad - (t.bottomBarColor ? Math.round(10 * scale) : 0);
+
+  // Footer (corretor)
+  if (o.density !== "minimal") {
+    const footerFontSize = Math.round((isStory ? 32 : 26) * scale);
+    ctx.font = `600 ${footerFontSize}px ${baseFont}`;
+    ctx.fillStyle = t.textFooter;
+    ctx.textAlign = "left";
+    ctx.textBaseline = "bottom";
+    let footerLine = o.sellerName;
+    if (o.sellerCreci) footerLine += ` • CRECI ${o.sellerCreci}`;
+    if (o.sellerPhone) footerLine += ` • ${o.sellerPhone}`;
+    ctx.fillText(footerLine, pad, y);
+    y -= footerFontSize + Math.round(16 * scale);
   }
 
-  // Title
-  const titleFontSize = Math.round((isStory ? 68 : 54) * scale);
-  ctx.font = `800 ${titleFontSize}px ${titleFont}`;
-  ctx.fillStyle = s.titleColor;
-  const maxTitleWidth = width - pad * 2;
-  const words = item.title.split(" ");
-  const titleLines: string[] = [];
-  let currentLine = "";
-  for (const word of words) {
-    const test = currentLine ? `${currentLine} ${word}` : word;
-    if (ctx.measureText(test).width > maxTitleWidth && currentLine) {
-      titleLines.push(currentLine);
-      currentLine = word;
-    } else {
-      currentLine = test;
+  // Detalhes (ícones)
+  if (o.density !== "minimal") {
+    const details: string[] = [];
+    if (o.item.bedrooms) details.push(`🛏 ${o.item.bedrooms}`);
+    if (o.item.bathrooms) details.push(`🚿 ${o.item.bathrooms}`);
+    if (o.item.parking_spots) details.push(`🚗 ${o.item.parking_spots}`);
+    if (o.item.area) details.push(`📐 ${o.item.area}m²`);
+    if (details.length > 0) {
+      const dfs = Math.round((isStory ? 44 : 36) * scale);
+      ctx.font = `700 ${dfs}px ${baseFont}`;
+      ctx.fillStyle = t.textSub;
+      ctx.fillText(details.join("   "), pad, y);
+      y -= dfs + Math.round(12 * scale);
     }
   }
-  if (currentLine) titleLines.push(currentLine);
-  const maxLines = isStory ? 4 : 3;
-  const visibleLines = titleLines.slice(0, maxLines);
 
-  for (let i = visibleLines.length - 1; i >= 0; i--) {
-    ctx.fillText(visibleLines[i], pad, y);
-    y -= titleFontSize + Math.round(4 * scale);
+  // Localização
+  const location = o.item.neighborhood ? `📍 ${o.item.neighborhood}, ${o.item.city}` : o.item.city ? `📍 ${o.item.city}` : "";
+  if (location) {
+    const lfs = Math.round((isStory ? 44 : 36) * scale);
+    ctx.font = `600 ${lfs}px ${baseFont}`;
+    ctx.fillStyle = t.textSub;
+    ctx.fillText(location, pad, y);
+    y -= lfs + Math.round(14 * scale);
   }
 
-  return canvas.toDataURL("image/jpeg", 0.92);
+  // Título (negrito grande)
+  const titleFontSize = Math.round((isStory ? 76 : isA4 ? 64 : 60) * scale);
+  ctx.font = `${fontDef.weight} ${titleFontSize}px ${titleFont}`;
+  ctx.fillStyle = t.textTop;
+  const maxTitleWidth = width - pad * 2;
+  const words = o.item.title.split(" ");
+  const titleLines: string[] = [];
+  let line = "";
+  for (const w of words) {
+    const test = line ? `${line} ${w}` : w;
+    if (ctx.measureText(test).width > maxTitleWidth && line) {
+      titleLines.push(line); line = w;
+    } else line = test;
+  }
+  if (line) titleLines.push(line);
+  const maxLines = isStory ? 4 : 3;
+  const visible = titleLines.slice(0, maxLines);
+  for (let i = visible.length - 1; i >= 0; i--) {
+    ctx.fillText(visible[i], pad, y);
+    y -= titleFontSize + Math.round(6 * scale);
+  }
+
+  // Aggressive: CTA "FALE AGORA"
+  if (o.density === "aggressive") {
+    const cta = "👉 FALE AGORA";
+    const ctaFs = Math.round(34 * scale);
+    ctx.font = `900 ${ctaFs}px ${baseFont}`;
+    const cm = ctx.measureText(cta);
+    const cp = Math.round(18 * scale);
+    const cw = cm.width + cp * 2;
+    const ch = ctaFs + cp;
+    const cx = pad;
+    const cy = y - ch - Math.round(14 * scale);
+    ctx.fillStyle = t.accent;
+    drawRoundedRect(ctx, cx, cy, cw, ch, Math.round(10 * scale));
+    ctx.fill();
+    ctx.fillStyle = "#ffffff";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(cta, cx + cw / 2, cy + ch / 2);
+  }
+
+  /* ── 10. Watermark sutil ── */
+  if (o.showWatermark) {
+    const wmFs = Math.round(22 * scale);
+    ctx.font = `600 ${wmFs}px ${baseFont}`;
+    ctx.fillStyle = "rgba(255,255,255,0.32)";
+    ctx.textAlign = "right";
+    ctx.textBaseline = "top";
+    ctx.fillText("Capimobi", width - pad, pad - Math.round(2 * scale));
+  }
+
+  return canvas.toDataURL(o.format === "a4" ? "image/png" : "image/jpeg", 0.94);
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   FONT LOADER (carrega Google Fonts uma vez)
+   ═══════════════════════════════════════════════════════════════ */
+function ensureGoogleFonts() {
+  if (typeof document === "undefined") return;
+  if (document.getElementById("__capimobi_gallery_fonts")) return;
+  const link = document.createElement("link");
+  link.id = "__capimobi_gallery_fonts";
+  link.rel = "stylesheet";
+  link.href = "https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Montserrat:wght@600;700;800;900&family=Poppins:wght@600;700;800&family=Inter:wght@600;700;800;900&family=Lora:wght@600;700&family=DM+Sans:wght@500;700&display=swap";
+  document.head.appendChild(link);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   COMPONENTE PRINCIPAL
+   ═══════════════════════════════════════════════════════════════ */
 export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerName, sellerPhone, sellerLogo, sellerCreci }: Props) {
   const { toast } = useToast();
   const [items, setItems] = useState<GalleryItem[]>([]);
@@ -324,15 +643,33 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [copied, setCopied] = useState(false);
-  const [generating, setGenerating] = useState<ImageFormat | null>(null);
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
-  const [selectedStyle, setSelectedStyle] = useState<ImageStyle>("verde");
-  const [showBrokerPhoto, setShowBrokerPhoto] = useState(true);
-  const [selectedFont, setSelectedFont] = useState<FontStyle>("moderna");
-  const [previewFormat, setPreviewFormat] = useState<ImageFormat | null>(null);
+
+  // Editor state
+  const [selectedFormat, setSelectedFormat] = useState<ImageFormat>("post");
+  const [selectedTemplate, setSelectedTemplate] = useState<TemplateId>("moderno_premium");
+  const [selectedFont, setSelectedFont] = useState<FontId>("montserrat");
+  const [selectedDensity, setSelectedDensity] = useState<TextDensity>("medium");
+  const [selectedBadge, setSelectedBadge] = useState<BadgeKind>("auto");
+  const [showLogo, setShowLogo] = useState(true);
+  const [showWatermark, setShowWatermark] = useState(false);
+  const [autoTemplateUsed, setAutoTemplateUsed] = useState(false);
+
+  // Image adjustments
+  const [brightness, setBrightness] = useState(1);
+  const [contrast, setContrast] = useState(1);
+  const [saturate, setSaturate] = useState(1);
+  const [hdr, setHdr] = useState(false);
+
+  // Preview
   const [previewDataUrl, setPreviewDataUrl] = useState<string | null>(null);
   const [generatingPreview, setGeneratingPreview] = useState(false);
+  const [batchGenerating, setBatchGenerating] = useState(false);
+  const [batchResults, setBatchResults] = useState<{ format: ImageFormat; templateId: TemplateId; url: string; name: string }[]>([]);
   const [copiedAdText, setCopiedAdText] = useState(false);
+  const [showAdvancedAdjust, setShowAdvancedAdjust] = useState(false);
+
+  useEffect(() => { ensureGoogleFonts(); }, []);
 
   useEffect(() => {
     (async () => {
@@ -347,61 +684,171 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
     })();
   }, [sellerId]);
 
-  useEffect(() => setSelectedPhotoIndex(0), [selectedItemId]);
+  useEffect(() => {
+    setSelectedPhotoIndex(0);
+    setBatchResults([]);
+    if (selectedItemId) {
+      const item = items.find(i => i.id === selectedItemId);
+      if (item) {
+        const auto = autoDetectTemplate(item);
+        setSelectedTemplate(auto);
+        setAutoTemplateUsed(true);
+      }
+    }
+  }, [selectedItemId, items]);
 
   const selectedItem = items.find((i) => i.id === selectedItemId);
   const photos = selectedItem?.photos || [];
+  const template = useMemo(() => TEMPLATES.find(t => t.id === selectedTemplate)!, [selectedTemplate]);
+  const effectiveBadge: Exclude<BadgeKind, "auto"> | null = useMemo(() => {
+    if (selectedBadge === "auto") return selectedItem ? autoBadge(selectedItem) : null;
+    return selectedBadge;
+  }, [selectedBadge, selectedItem]);
 
   const galleryUrl = selectedItem
     ? `${window.location.origin}/imoveis/produto/${(selectedItem as any).slug || selectedItem.id}${sellerSlug ? `?corretor=${sellerSlug}` : ""}`
     : "";
 
-  const copyLink = () => {
-    navigator.clipboard.writeText(galleryUrl);
-    setCopied(true);
-    toast({ title: "Link copiado!", description: "Cole no Facebook Ads, Google Ads ou WhatsApp." });
-    setTimeout(() => setCopied(false), 2000);
+  const buildOpts = useCallback((overrides: Partial<GenOpts> = {}): GenOpts | null => {
+    if (!selectedItem) return null;
+    const photoUrl = photos[selectedPhotoIndex] || photos[0];
+    if (!photoUrl) return null;
+    return {
+      item: selectedItem,
+      format: selectedFormat,
+      template,
+      font: selectedFont,
+      density: selectedDensity,
+      badge: effectiveBadge,
+      photoUrl,
+      showLogo,
+      showWatermark,
+      sellerName, sellerPhone, sellerCreci, sellerLogo,
+      brightness, contrast, saturate, hdr,
+      ...overrides,
+    };
+  }, [selectedItem, photos, selectedPhotoIndex, selectedFormat, template, selectedFont, selectedDensity, effectiveBadge, showLogo, showWatermark, sellerName, sellerPhone, sellerCreci, sellerLogo, brightness, contrast, saturate, hdr]);
+
+  /* ── Preview ao vivo (debounced) ── */
+  useEffect(() => {
+    if (!selectedItem) return;
+    let cancelled = false;
+    setGeneratingPreview(true);
+    const timer = setTimeout(async () => {
+      const opts = buildOpts();
+      if (!opts) { setGeneratingPreview(false); return; }
+      try {
+        const url = await generateMarketingImage(opts);
+        if (!cancelled) setPreviewDataUrl(url);
+      } catch (e) {
+        console.error(e);
+        if (!cancelled) toast({ title: "Erro ao gerar preview", variant: "destructive" });
+      } finally {
+        if (!cancelled) setGeneratingPreview(false);
+      }
+    }, 250);
+    return () => { cancelled = true; clearTimeout(timer); };
+  }, [buildOpts, selectedItem, toast]);
+
+  /* ── Downloads ── */
+  const downloadDataUrl = (url: string, name: string) => {
+    const link = document.createElement("a");
+    link.download = name;
+    link.href = url;
+    link.click();
   };
 
-  const shareWhatsApp = () => {
-    const text = `🏠 Confira este imóvel: *${selectedItem?.title}*\n\n📍 ${selectedItem?.city || ""}\n💰 ${selectedItem?.price ? `R$ ${selectedItem.price.toLocaleString("pt-BR")}` : "Consulte"}\n\n👉 ${galleryUrl}`;
+  const handleDownload = () => {
+    if (!previewDataUrl || !selectedItem) return;
+    const safe = selectedItem.title.replace(/[^a-zA-Z0-9À-ÿ ]/g, "").trim().replace(/\s+/g, "-");
+    const ext = selectedFormat === "a4" ? "png" : "jpg";
+    downloadDataUrl(previewDataUrl, `${safe}_${selectedFormat}.${ext}`);
+    toast({ title: "Imagem baixada! 📸", description: `${FORMAT_CONFIG[selectedFormat].label} salvo com sucesso.` });
+  };
+
+  const handleDownloadPDF = async () => {
+    if (!previewDataUrl || !selectedItem) return;
+    try {
+      const isLandscape = FORMAT_CONFIG[selectedFormat].width > FORMAT_CONFIG[selectedFormat].height;
+      const pdf = new jsPDF({
+        orientation: isLandscape ? "landscape" : "portrait",
+        unit: "mm",
+        format: selectedFormat === "a4" ? "a4" : [
+          isLandscape ? 297 : 210,
+          isLandscape ? 210 : 297,
+        ],
+      });
+      const pageW = pdf.internal.pageSize.getWidth();
+      const pageH = pdf.internal.pageSize.getHeight();
+      const fmtCfg = FORMAT_CONFIG[selectedFormat];
+      const ratio = fmtCfg.width / fmtCfg.height;
+      let imgW = pageW, imgH = pageW / ratio;
+      if (imgH > pageH) { imgH = pageH; imgW = pageH * ratio; }
+      const x = (pageW - imgW) / 2;
+      const y = (pageH - imgH) / 2;
+      pdf.addImage(previewDataUrl, selectedFormat === "a4" ? "PNG" : "JPEG", x, y, imgW, imgH);
+      const safe = selectedItem.title.replace(/[^a-zA-Z0-9À-ÿ ]/g, "").trim().replace(/\s+/g, "-");
+      pdf.save(`${safe}_${selectedFormat}.pdf`);
+      toast({ title: "PDF baixado! 📄", description: "Pronto para impressão ou WhatsApp." });
+    } catch (e) {
+      console.error(e);
+      toast({ title: "Erro ao gerar PDF", variant: "destructive" });
+    }
+  };
+
+  const handleShareWhatsApp = async () => {
+    if (!selectedItem) return;
+    const text = `🏠 *${selectedItem.title}*\n${selectedItem.price ? `💰 R$ ${selectedItem.price.toLocaleString("pt-BR")}` : ""}\n📍 ${selectedItem.neighborhood ? `${selectedItem.neighborhood}, ${selectedItem.city}` : selectedItem.city || ""}\n\n👉 ${galleryUrl}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
   };
 
-  const handlePreview = useCallback(async (format: ImageFormat) => {
+  /* ── Geração em lote: 10 versões automáticas ── */
+  const handleGenerate10Versions = async () => {
     if (!selectedItem) return;
-    setPreviewFormat(format);
-    setGeneratingPreview(true);
-    setPreviewDataUrl(null);
+    setBatchGenerating(true);
+    setBatchResults([]);
     try {
-      const chosenPhoto = photos[selectedPhotoIndex] || photos[0];
-      const dataUrl = await generateMarketingImage(selectedItem, format, sellerName, sellerPhone, sellerCreci, showBrokerPhoto ? sellerLogo : null, selectedStyle, chosenPhoto, selectedFont);
-      setPreviewDataUrl(dataUrl);
-    } catch (err) {
-      console.error("Error generating preview:", err);
-      toast({ title: "Erro ao gerar preview", variant: "destructive" });
-      setPreviewFormat(null);
+      const opts = buildOpts();
+      if (!opts) return;
+      const tpls = TEMPLATES.slice(0, 10);
+      const results: typeof batchResults = [];
+      for (const tpl of tpls) {
+        const url = await generateMarketingImage({ ...opts, template: tpl });
+        results.push({ format: opts.format, templateId: tpl.id, url, name: tpl.name });
+        setBatchResults([...results]);
+      }
+      toast({ title: "10 versões geradas! ✨", description: "Escolha sua favorita e baixe." });
+    } catch (e) {
+      console.error(e);
+      toast({ title: "Erro ao gerar versões", variant: "destructive" });
     } finally {
-      setGeneratingPreview(false);
+      setBatchGenerating(false);
     }
-  }, [selectedItem, sellerName, sellerPhone, sellerCreci, sellerLogo, selectedStyle, showBrokerPhoto, selectedFont, toast, photos, selectedPhotoIndex]);
+  };
 
-  const handleDownloadFromPreview = useCallback(() => {
-    if (!previewDataUrl || !previewFormat || !selectedItem) return;
-    const link = document.createElement("a");
-    link.download = `${selectedItem.title.replace(/[^a-zA-Z0-9À-ÿ ]/g, "").trim().replace(/\s+/g, "-")}_${previewFormat}.jpg`;
-    link.href = previewDataUrl;
-    link.click();
-    toast({ title: "Imagem baixada! 📸", description: `Formato ${FORMAT_CONFIG[previewFormat].label} baixado com sucesso.` });
-  }, [previewDataUrl, previewFormat, selectedItem, toast]);
-
-  // Regenerate preview when style/font/photo/broker changes
-  useEffect(() => {
-    if (previewFormat && selectedItem) {
-      handlePreview(previewFormat);
+  /* ── Geração em lote: Pacote completo (todos os formatos) ── */
+  const handleGenerateAllFormats = async () => {
+    if (!selectedItem) return;
+    setBatchGenerating(true);
+    setBatchResults([]);
+    try {
+      const opts = buildOpts();
+      if (!opts) return;
+      const formats: ImageFormat[] = ["post", "feed45", "banner", "story", "a4"];
+      const results: typeof batchResults = [];
+      for (const fmt of formats) {
+        const url = await generateMarketingImage({ ...opts, format: fmt });
+        results.push({ format: fmt, templateId: template.id, url, name: FORMAT_CONFIG[fmt].label });
+        setBatchResults([...results]);
+      }
+      toast({ title: "Pacote completo gerado! 🎁", description: "Post, Story, Banner, Feed e Flyer prontos." });
+    } catch (e) {
+      console.error(e);
+      toast({ title: "Erro ao gerar pacote", variant: "destructive" });
+    } finally {
+      setBatchGenerating(false);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedStyle, selectedFont, showBrokerPhoto, selectedPhotoIndex]);
+  };
 
   if (loading) {
     return (
@@ -411,336 +858,350 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
     );
   }
 
-  /* ── Step 1: Select a property ── */
+  /* ─────────────────────────────────────────────────────────────
+     STEP 1 — Seleção de imóvel
+     ───────────────────────────────────────────────────────────── */
   if (!selectedItemId) {
     return (
-      <div className="space-y-5">
-        <div>
-          <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
-            <Sparkles size={20} className="text-primary" /> Galeria de Anúncios
-          </h2>
-          <p className="text-sm text-muted-foreground mt-1">
-            Crie imagens profissionais prontas para anunciar seus imóveis. Selecione um imóvel, escolha a foto e o formato ideal para Facebook Ads, Google Ads, Instagram ou WhatsApp — tudo com seus dados de corretor já incluídos.
-          </p>
+      <div className="space-y-6">
+        {/* Hero header */}
+        <div className="relative overflow-hidden rounded-3xl p-6 sm:p-8 border border-border" style={{ background: "linear-gradient(135deg, hsl(var(--primary) / 0.12), hsl(var(--accent) / 0.08))" }}>
+          <div className="relative z-10">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/15 backdrop-blur-sm mb-3">
+              <Sparkles size={14} className="text-primary" />
+              <span className="text-[11px] font-bold text-primary tracking-wide uppercase">Central Premium</span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+              Galeria de Anúncios
+            </h2>
+            <p className="text-sm text-muted-foreground mt-2 max-w-2xl">
+              Crie artes profissionais para Instagram, Facebook, WhatsApp, Stories e Flyers PDF — em segundos. <strong className="text-foreground">10 templates premium</strong>, 5 formatos, IA de detecção automática e qualidade pronta para anúncios pagos.
+            </p>
+            <div className="flex flex-wrap gap-2 mt-4">
+              {[
+                { icon: Layers, label: "10 Templates" },
+                { icon: Type, label: "5 Formatos" },
+                { icon: Wand2, label: "IA Detecta o Estilo" },
+                { icon: Package, label: "Pacote Completo" },
+              ].map((b) => (
+                <span key={b.label} className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-background/60 border border-border text-[11px] font-bold text-foreground backdrop-blur-sm">
+                  <b.icon size={12} className="text-primary" /> {b.label}
+                </span>
+              ))}
+            </div>
+          </div>
         </div>
 
+        {/* Grid de imóveis */}
         {items.length === 0 ? (
-          <div className="text-center py-16 rounded-2xl border border-dashed border-border">
-            <Image size={40} className="mx-auto mb-3 text-muted-foreground/40" />
+          <div className="text-center py-20 rounded-3xl border border-dashed border-border">
+            <Image size={48} className="mx-auto mb-3 text-muted-foreground/40" />
             <p className="text-sm text-muted-foreground">Você ainda não possui anúncios ativos.</p>
+            <p className="text-xs text-muted-foreground/70 mt-1">Adicione um imóvel para começar a criar artes.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-            {items.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => setSelectedItemId(item.id)}
-                className="group text-left rounded-xl overflow-hidden border border-border hover:border-primary/50 hover:shadow-lg transition-all bg-card"
-              >
-                <div className="aspect-[4/3] relative overflow-hidden">
-                  {item.photos?.[0] ? (
-                    <img src={item.photos[0]} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-muted">
-                      <Image size={24} className="text-muted-foreground/40" />
+          <div>
+            <h3 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2">
+              <Home size={16} className="text-primary" /> Selecione o imóvel
+              <span className="text-[11px] font-medium text-muted-foreground">({items.length} disponíveis)</span>
+            </h3>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+              {items.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => setSelectedItemId(item.id)}
+                  className="group text-left rounded-2xl overflow-hidden border border-border hover:border-primary/60 hover:shadow-xl transition-all bg-card"
+                >
+                  <div className="aspect-[4/3] relative overflow-hidden">
+                    {item.photos?.[0] ? (
+                      <img src={item.photos[0]} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" loading="lazy" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-muted">
+                        <Image size={24} className="text-muted-foreground/40" />
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div className="absolute bottom-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-primary text-primary-foreground text-[10px] font-bold">
+                        <Wand2 size={10} /> Criar Arte
+                      </span>
                     </div>
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                  {item.photos && item.photos.length > 0 && (
-                    <span className="absolute bottom-2 right-2 bg-black/60 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md backdrop-blur-sm">
-                      {item.photos.length} fotos
-                    </span>
-                  )}
-                </div>
-                <div className="p-2.5">
-                  <h3 className="text-xs font-bold text-foreground line-clamp-2 leading-snug">{item.title}</h3>
-                  {item.price && item.price > 0 && (
-                    <p className="text-xs font-bold text-primary mt-1">R$ {item.price.toLocaleString("pt-BR")}</p>
-                  )}
-                </div>
-              </button>
-            ))}
+                    {item.photos && item.photos.length > 0 && (
+                      <span className="absolute bottom-2 right-2 bg-black/65 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md backdrop-blur-sm">
+                        {item.photos.length} fotos
+                      </span>
+                    )}
+                  </div>
+                  <div className="p-2.5">
+                    <h3 className="text-xs font-bold text-foreground line-clamp-2 leading-snug">{item.title}</h3>
+                    {item.price && item.price > 0 && (
+                      <p className="text-xs font-bold text-primary mt-1">R$ {item.price.toLocaleString("pt-BR")}</p>
+                    )}
+                  </div>
+                </button>
+              ))}
+            </div>
           </div>
         )}
       </div>
     );
   }
 
-  /* ── Step 2: Gallery showroom ── */
+  /* ─────────────────────────────────────────────────────────────
+     STEP 2 — Editor / Studio
+     ───────────────────────────────────────────────────────────── */
   return (
     <div className="space-y-5">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-3">
         <button onClick={() => setSelectedItemId(null)} className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
           <ChevronLeft size={16} /> Voltar
         </button>
-        <div className="flex items-center gap-2">
-          <button onClick={copyLink} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-secondary text-foreground hover:bg-secondary/80 transition-colors">
+        <div className="flex items-center gap-2 flex-wrap">
+          {autoTemplateUsed && (
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-primary/10 text-primary border border-primary/20 text-[11px] font-bold">
+              <Wand2 size={12} /> Template sugerido pela IA
+            </span>
+          )}
+          <button onClick={() => { navigator.clipboard.writeText(galleryUrl); setCopied(true); toast({ title: "Link copiado!" }); setTimeout(() => setCopied(false), 2000); }} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-secondary text-foreground hover:bg-secondary/80 transition-colors">
             {copied ? <CheckCircle2 size={14} className="text-green-500" /> : <Copy size={14} />}
-            {copied ? "Copiado!" : "Copiar Link"}
+            {copied ? "Copiado!" : "Link"}
           </button>
-          <button onClick={shareWhatsApp} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-green-500 text-white hover:bg-green-600 transition-colors">
+          <button onClick={handleShareWhatsApp} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-green-500 text-white hover:bg-green-600 transition-colors">
             <Share2 size={14} /> WhatsApp
           </button>
         </div>
       </div>
 
-      {/* Format Preview — shows generated image for selected format */}
-      {previewFormat && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="space-y-3"
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Eye size={16} className="text-primary" />
-              <span className="text-sm font-bold text-foreground">Preview — {FORMAT_CONFIG[previewFormat].label}</span>
-            </div>
-            <button onClick={() => { setPreviewFormat(null); setPreviewDataUrl(null); }} className="text-xs text-muted-foreground hover:text-foreground transition-colors">✕ Fechar</button>
-          </div>
-          <div className="flex justify-center rounded-2xl overflow-hidden border border-border bg-muted/30 p-4">
-            {generatingPreview ? (
-              <div className="flex flex-col items-center justify-center py-20 gap-3">
-                <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                <span className="text-xs text-muted-foreground">Gerando preview...</span>
+      {/* ═══════════════════ STUDIO ═══════════════════ */}
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr,360px] gap-5">
+        {/* Preview ao vivo */}
+        <div className="space-y-3">
+          <div className="rounded-3xl border border-border bg-gradient-to-br from-muted/50 to-muted/20 p-4 sm:p-6">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Eye size={16} className="text-primary" />
+                <span className="text-sm font-bold text-foreground">Preview ao Vivo</span>
+                <span className="text-[11px] text-muted-foreground">— {FORMAT_CONFIG[selectedFormat].label}</span>
               </div>
-            ) : previewDataUrl ? (
-              <img
-                src={previewDataUrl}
-                alt={`Preview ${FORMAT_CONFIG[previewFormat].label}`}
-                className={`rounded-xl shadow-lg ${
-                  previewFormat === "story" ? "max-h-[500px]" : previewFormat === "card" ? "max-h-[400px] max-w-[400px]" : "max-w-full"
-                }`}
-                style={{ objectFit: "contain" }}
-              />
-            ) : null}
-          </div>
-          {previewDataUrl && (
-            <button
-              onClick={handleDownloadFromPreview}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:bg-primary/90 transition-all"
-            >
-              <Download size={18} />
-              Baixar {FORMAT_CONFIG[previewFormat].label}
-            </button>
-          )}
-        </motion.div>
-      )}
-
-      {/* Hero Banner — preview da foto selecionada com estilo (hidden when format preview is active) */}
-      {!previewFormat && photos.length > 0 && (() => {
-        const stylePreview = STYLE_CONFIG[selectedStyle];
-        const fontPreview = FONT_CONFIG[selectedFont];
-        return (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="relative rounded-2xl overflow-hidden group"
-          >
-            <AnimatePresence mode="wait">
-              <motion.img
-                key={`${selectedPhotoIndex}-${selectedStyle}`}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                src={photos[selectedPhotoIndex]}
-                alt={selectedItem?.title}
-                className="w-full aspect-[16/9] sm:aspect-[21/9] object-cover group-hover:scale-[1.02] transition-transform duration-700"
-              />
-            </AnimatePresence>
-            <div className="absolute inset-0" style={{
-              background: `linear-gradient(to top, ${stylePreview.gradientStops[2]}, ${stylePreview.gradientStops[1]} 50%, ${stylePreview.gradientStops[0]})`
-            }} />
-            {stylePreview.accentBar && (
-              <div className="absolute bottom-0 left-0 right-0 h-1" style={{ backgroundColor: stylePreview.accentBar }} />
-            )}
-            <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6">
-              {showBrokerPhoto && sellerLogo && (
-                <img src={sellerLogo} alt="" className="w-10 h-10 rounded-full object-cover mb-2 border-2 border-white/30 shadow-lg" />
+              {generatingPreview && <Loader2 size={14} className="animate-spin text-primary" />}
+            </div>
+            <div className="flex justify-center items-center min-h-[300px]">
+              {previewDataUrl ? (
+                <motion.img
+                  key={previewDataUrl}
+                  initial={{ opacity: 0, scale: 0.97 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  src={previewDataUrl}
+                  alt="Preview"
+                  className={`rounded-2xl shadow-2xl ${
+                    selectedFormat === "story" || selectedFormat === "feed45" || selectedFormat === "a4" ? "max-h-[600px]" :
+                    selectedFormat === "post" ? "max-h-[500px] max-w-[500px]" : "max-w-full"
+                  }`}
+                  style={{ objectFit: "contain" }}
+                />
+              ) : (
+                <div className="flex flex-col items-center gap-2 py-10 text-muted-foreground">
+                  <Loader2 size={24} className="animate-spin" />
+                  <span className="text-xs">Gerando preview...</span>
+                </div>
               )}
-              <h2 className="font-extrabold text-lg sm:text-2xl leading-tight line-clamp-2" style={{ color: stylePreview.titleColor, fontFamily: fontPreview.family }}>{selectedItem?.title}</h2>
-              <div className="flex items-center gap-3 mt-2 flex-wrap">
-                {selectedItem?.price && selectedItem.price > 0 && (
-                  <span className="font-black text-base sm:text-xl" style={{ color: stylePreview.titleColor }}>R$ {selectedItem.price.toLocaleString("pt-BR")}</span>
-                )}
-                {selectedItem?.city && (
-                  <span className="text-sm" style={{ color: stylePreview.locationColor }}>📍 {selectedItem.neighborhood ? `${selectedItem.neighborhood}, ${selectedItem.city}` : selectedItem.city}</span>
-                )}
-              </div>
-              <div className="flex items-center gap-3 mt-1.5 text-sm" style={{ color: stylePreview.detailColor }}>
-                {selectedItem?.bedrooms && <span>🛏 {selectedItem.bedrooms} quartos</span>}
-                {selectedItem?.bathrooms && <span>🚿 {selectedItem.bathrooms} banheiros</span>}
-                {selectedItem?.area && <span>📐 {selectedItem.area}m²</span>}
-              </div>
-              <p className="mt-1.5 text-xs" style={{ color: stylePreview.sellerColor }}>
-                {sellerName}{sellerCreci ? ` • CRECI ${sellerCreci}` : ""}{sellerPhone ? ` • ${sellerPhone}` : ""}
-              </p>
             </div>
-            {selectedItem?.price && selectedItem.price > 0 && (
-              <div className="absolute top-3 right-3 text-xs font-black px-3 py-1.5 rounded-lg" style={{ backgroundColor: stylePreview.priceBg, color: stylePreview.priceFg }}>
-                {formatPrice(selectedItem.price)}
-              </div>
-            )}
-            <div className="absolute top-3 left-3 bg-black/50 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded-lg flex items-center gap-1">
-              <Eye size={12} /> Selecione um formato abaixo
-            </div>
-          </motion.div>
-        );
-      })()}
-
-      {/* Download Marketing Images */}
-      {photos.length > 0 && selectedItem && (
-        <div className="rounded-2xl border border-border p-4 sm:p-5 space-y-3">
-          <div className="flex items-center gap-2">
-            <Download size={18} className="text-primary" />
-            <h3 className="font-bold text-sm text-foreground">Baixar Imagem para Anúncio</h3>
           </div>
-          <p className="text-xs text-muted-foreground">
-            Selecione a foto e o formato para gerar uma imagem profissional com preço, localização e seus dados.
-          </p>
 
-          {/* Photo selector */}
+          {/* Botões de ação */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <button onClick={handleDownload} disabled={!previewDataUrl} className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-primary text-primary-foreground font-bold text-xs hover:opacity-90 transition disabled:opacity-50">
+              <Download size={14} /> PNG/JPG
+            </button>
+            <button onClick={handleDownloadPDF} disabled={!previewDataUrl} className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-secondary text-foreground border border-border font-bold text-xs hover:bg-secondary/70 transition disabled:opacity-50">
+              <FileText size={14} /> PDF
+            </button>
+            <button onClick={handleGenerate10Versions} disabled={batchGenerating} className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 text-white font-bold text-xs hover:opacity-90 transition disabled:opacity-50">
+              {batchGenerating ? <Loader2 size={14} className="animate-spin" /> : <Layers size={14} />} 10 Versões
+            </button>
+            <button onClick={handleGenerateAllFormats} disabled={batchGenerating} className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 text-white font-bold text-xs hover:opacity-90 transition disabled:opacity-50">
+              {batchGenerating ? <Loader2 size={14} className="animate-spin" /> : <Package size={14} />} Pacote
+            </button>
+          </div>
+        </div>
+
+        {/* Painel de controles */}
+        <div className="space-y-4">
+          {/* Foto */}
           {photos.length > 1 && (
-            <div className="space-y-1.5">
-              <p className="text-[11px] font-semibold text-muted-foreground">Selecione a foto:</p>
+            <Section title="Foto" icon={Image}>
               <div className="flex gap-2 overflow-x-auto pb-1">
-                {photos.map((photo, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setSelectedPhotoIndex(i)}
-                    className={`relative flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all ${
-                      selectedPhotoIndex === i
-                        ? "border-primary ring-2 ring-primary/30"
-                        : "border-border hover:border-primary/40"
-                    }`}
-                  >
-                    <img src={photo} alt={`Foto ${i + 1}`} className="w-full h-full object-cover" loading="lazy" />
-                    {selectedPhotoIndex === i && (
-                      <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
-                        <CheckCircle2 size={16} className="text-primary-foreground drop-shadow-md" />
-                      </div>
-                    )}
+                {photos.map((p, i) => (
+                  <button key={i} onClick={() => setSelectedPhotoIndex(i)} className={`relative flex-shrink-0 w-14 h-14 rounded-lg overflow-hidden border-2 transition-all ${selectedPhotoIndex === i ? "border-primary ring-2 ring-primary/30" : "border-border hover:border-primary/40"}`}>
+                    <img src={p} alt="" className="w-full h-full object-cover" loading="lazy" />
                   </button>
                 ))}
               </div>
-            </div>
+            </Section>
           )}
 
-          {/* Style selector */}
-          <div className="space-y-1.5">
-            <p className="text-[11px] font-semibold text-muted-foreground flex items-center gap-1">
-              <Palette size={12} /> Estilo do anúncio:
-            </p>
-            <div className="flex gap-2 flex-wrap">
-              {(Object.keys(STYLE_CONFIG) as ImageStyle[]).map((key) => {
-                const cfg = STYLE_CONFIG[key];
-                const isActive = selectedStyle === key;
+          {/* Formato */}
+          <Section title="Formato" icon={Layers}>
+            <div className="grid grid-cols-5 gap-1.5">
+              {(Object.keys(FORMAT_CONFIG) as ImageFormat[]).map((fmt) => {
+                const cfg = FORMAT_CONFIG[fmt];
+                const active = selectedFormat === fmt;
                 return (
-                  <button
-                    key={key}
-                    onClick={() => setSelectedStyle(key)}
-                    className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border-2 transition-all ${
-                      isActive
-                        ? "border-primary bg-primary/10"
-                        : "border-border hover:border-primary/40"
-                    }`}
-                  >
-                    <div className={`w-4 h-4 rounded-full ${cfg.preview.bg}`} />
-                    <span className="text-[11px] font-bold text-foreground">{cfg.label}</span>
+                  <button key={fmt} onClick={() => setSelectedFormat(fmt)} title={cfg.description} className={`flex flex-col items-center gap-1 p-2 rounded-lg border-2 transition-all ${active ? "border-primary bg-primary/10" : "border-border hover:border-primary/40"}`}>
+                    <span className="text-base leading-none">{cfg.icon}</span>
+                    <span className="text-[9px] font-bold text-foreground">{cfg.short}</span>
                   </button>
                 );
               })}
             </div>
-          </div>
+            <p className="text-[10px] text-muted-foreground mt-1.5">{FORMAT_CONFIG[selectedFormat].description}</p>
+          </Section>
 
-          {/* Font selector */}
-          <div className="space-y-1.5">
-            <p className="text-[11px] font-semibold text-muted-foreground flex items-center gap-1">
-              ✏️ Fonte:
-            </p>
-            <div className="flex gap-2 flex-wrap">
-              {(Object.keys(FONT_CONFIG) as FontStyle[]).map((key) => {
-                const cfg = FONT_CONFIG[key];
-                const isActive = selectedFont === key;
+          {/* Templates */}
+          <Section title="Template" icon={Award} extra={
+            <button onClick={() => { if (selectedItem) { setSelectedTemplate(autoDetectTemplate(selectedItem)); setAutoTemplateUsed(true); toast({ title: "IA aplicou o melhor template ✨" }); } }} className="text-[10px] font-bold text-primary hover:underline flex items-center gap-1">
+              <Wand2 size={10} /> IA
+            </button>
+          }>
+            <div className="grid grid-cols-2 gap-1.5 max-h-72 overflow-y-auto pr-1">
+              {TEMPLATES.map((tpl) => {
+                const active = selectedTemplate === tpl.id;
                 return (
-                  <button
-                    key={key}
-                    onClick={() => setSelectedFont(key)}
-                    className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border-2 transition-all ${
-                      isActive
-                        ? "border-primary bg-primary/10"
-                        : "border-border hover:border-primary/40"
-                    }`}
-                  >
-                    <span className="text-sm font-bold" style={{ fontFamily: cfg.family }}>{cfg.preview}</span>
-                    <span className="text-[11px] font-bold text-foreground">{cfg.label}</span>
+                  <button key={tpl.id} onClick={() => { setSelectedTemplate(tpl.id); setAutoTemplateUsed(false); }} className={`relative text-left p-2 rounded-lg border-2 transition-all overflow-hidden ${active ? "border-primary ring-2 ring-primary/20" : "border-border hover:border-primary/40"}`}>
+                    <div className="absolute inset-0 opacity-30" style={{ background: tpl.previewBg }} />
+                    <div className="relative">
+                      <div className="flex items-center gap-1">
+                        <span className="text-sm">{tpl.emoji}</span>
+                        {tpl.premium && <Crown size={9} className="text-amber-400" />}
+                      </div>
+                      <p className="text-[10px] font-bold text-foreground mt-0.5 leading-tight">{tpl.name}</p>
+                    </div>
                   </button>
                 );
               })}
             </div>
-          </div>
+          </Section>
 
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={showBrokerPhoto}
-              onChange={(e) => setShowBrokerPhoto(e.target.checked)}
-              className="w-4 h-4 rounded border-border text-primary focus:ring-primary"
-            />
-            <span className="text-[11px] font-semibold text-muted-foreground">Incluir foto do corretor</span>
-            {showBrokerPhoto && sellerLogo && (
-              <img src={sellerLogo} alt="" className="w-5 h-5 rounded-full object-cover border border-border" />
-            )}
-            {!sellerLogo && (
-              <span className="text-[10px] text-muted-foreground/60">(adicione logo no perfil)</span>
-            )}
-          </label>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-            {(Object.keys(FORMAT_CONFIG) as ImageFormat[]).map((fmt) => {
-              const cfg = FORMAT_CONFIG[fmt];
-              const isActive = previewFormat === fmt;
-              return (
-                <button
-                  key={fmt}
-                  onClick={() => handlePreview(fmt)}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-xl border-2 transition-all text-left ${
-                    isActive
-                      ? "border-primary bg-primary/10"
-                      : "border-border hover:border-primary/50 hover:bg-primary/5"
-                  }`}
-                >
-                  <div className="flex-shrink-0">
-                    <Eye size={18} className="text-primary" />
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-foreground">{cfg.label}</p>
-                    <p className="text-[10px] text-muted-foreground">{cfg.description}</p>
-                  </div>
+          {/* Selo */}
+          <Section title="Selo" icon={ShieldCheck}>
+            <div className="grid grid-cols-3 gap-1.5">
+              {(["auto", "venda", "aluguel", "exclusivo", "oportunidade", "lancamento"] as BadgeKind[]).map((b) => {
+                const active = selectedBadge === b;
+                const label = b === "auto" ? "Auto" : BADGE_LABELS[b as Exclude<BadgeKind, "auto">];
+                return (
+                  <button key={b} onClick={() => setSelectedBadge(b)} className={`px-2 py-1.5 rounded-lg border-2 text-[10px] font-bold transition-all ${active ? "border-primary bg-primary/10 text-primary" : "border-border text-foreground hover:border-primary/40"}`}>
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+          </Section>
+
+          {/* Fonte */}
+          <Section title="Fonte" icon={Type}>
+            <div className="grid grid-cols-3 gap-1.5">
+              {(Object.keys(FONTS) as FontId[]).map((f) => {
+                const active = selectedFont === f;
+                const cfg = FONTS[f];
+                return (
+                  <button key={f} onClick={() => setSelectedFont(f)} className={`flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-lg border-2 transition-all ${active ? "border-primary bg-primary/10" : "border-border hover:border-primary/40"}`}>
+                    <span className="text-base font-bold text-foreground" style={{ fontFamily: cfg.family }}>Aa</span>
+                    <span className="text-[9px] font-bold text-foreground leading-none">{cfg.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </Section>
+
+          {/* Densidade de texto */}
+          <Section title="Texto" icon={FileText}>
+            <div className="grid grid-cols-2 gap-1.5">
+              {(Object.keys(DENSITY_LABEL) as TextDensity[]).map((d) => {
+                const active = selectedDensity === d;
+                return (
+                  <button key={d} onClick={() => setSelectedDensity(d)} className={`px-2 py-1.5 rounded-lg border-2 text-[10px] font-bold transition-all ${active ? "border-primary bg-primary/10 text-primary" : "border-border text-foreground hover:border-primary/40"}`}>
+                    {DENSITY_LABEL[d]}
+                  </button>
+                );
+              })}
+            </div>
+          </Section>
+
+          {/* Toggles */}
+          <Section title="Identidade" icon={Crown}>
+            <div className="space-y-2">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" checked={showLogo} onChange={(e) => setShowLogo(e.target.checked)} className="w-4 h-4 rounded border-border text-primary focus:ring-primary" />
+                <span className="text-[11px] font-semibold text-foreground">Logo do corretor</span>
+                {showLogo && sellerLogo && <img src={sellerLogo} alt="" className="w-5 h-5 rounded-full object-cover border border-border" />}
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" checked={showWatermark} onChange={(e) => setShowWatermark(e.target.checked)} className="w-4 h-4 rounded border-border text-primary focus:ring-primary" />
+                <span className="text-[11px] font-semibold text-foreground">Marca d'água Capimobi</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" checked={hdr} onChange={(e) => setHdr(e.target.checked)} className="w-4 h-4 rounded border-border text-primary focus:ring-primary" />
+                <span className="text-[11px] font-semibold text-foreground flex items-center gap-1"><Zap size={11} className="text-amber-500" /> HDR leve (valoriza fachada)</span>
+              </label>
+            </div>
+          </Section>
+
+          {/* Ajustes avançados */}
+          <Section title="Ajustes de Imagem" icon={Sliders} extra={
+            <button onClick={() => setShowAdvancedAdjust(v => !v)} className="text-[10px] font-bold text-primary hover:underline">
+              {showAdvancedAdjust ? "Ocultar" : "Mostrar"}
+            </button>
+          }>
+            {showAdvancedAdjust && (
+              <div className="space-y-2.5">
+                <Slider label="Brilho" value={brightness} min={0.7} max={1.4} step={0.05} onChange={setBrightness} />
+                <Slider label="Contraste" value={contrast} min={0.7} max={1.4} step={0.05} onChange={setContrast} />
+                <Slider label="Saturação" value={saturate} min={0.5} max={1.6} step={0.05} onChange={setSaturate} />
+                <button onClick={() => { setBrightness(1); setContrast(1); setSaturate(1); setHdr(false); }} className="w-full text-[10px] font-bold text-muted-foreground hover:text-foreground py-1">
+                  Resetar ajustes
                 </button>
-              );
-            })}
+              </div>
+            )}
+          </Section>
+        </div>
+      </div>
+
+      {/* ═══════════════════ Batch Results ═══════════════════ */}
+      {batchResults.length > 0 && (
+        <div className="rounded-3xl border border-border p-4 sm:p-5">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
+              <Sparkles size={16} className="text-primary" /> Resultados ({batchResults.length})
+            </h3>
+            <button onClick={() => setBatchResults([])} className="text-[11px] text-muted-foreground hover:text-foreground">✕ Limpar</button>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+            {batchResults.map((r, i) => (
+              <div key={i} className="rounded-xl overflow-hidden border border-border group bg-card">
+                <img src={r.url} alt={r.name} className="w-full aspect-square object-cover" />
+                <div className="p-2">
+                  <p className="text-[10px] font-bold text-foreground line-clamp-1">{r.name}</p>
+                  <button onClick={() => {
+                    const safe = selectedItem!.title.replace(/[^a-zA-Z0-9À-ÿ ]/g, "").trim().replace(/\s+/g, "-");
+                    downloadDataUrl(r.url, `${safe}_${r.format}_${r.templateId}.jpg`);
+                  }} className="mt-1 w-full flex items-center justify-center gap-1 px-2 py-1 rounded-md bg-primary text-primary-foreground text-[10px] font-bold hover:opacity-90">
+                    <Download size={10} /> Baixar
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       )}
 
-
-      {photos.length === 0 && (
-        <div className="text-center py-16 rounded-2xl border border-dashed border-border">
-          <Image size={40} className="mx-auto mb-3 text-muted-foreground/40" />
-          <p className="text-sm text-muted-foreground">Este imóvel não possui fotos.</p>
-        </div>
-      )}
-
-      {/* ── Copy Ad Text ── */}
+      {/* ═══════════════════ Texto pronto para anúncio ═══════════════════ */}
       {selectedItem && (() => {
         const item = selectedItem;
         const isRent = item.finality === "aluguel" || item.category === "aluguel";
         const priceLabel = isRent ? "/mês" : "";
         const lines: string[] = [];
-        lines.push(`🏠 *${item.title}*`);
-        lines.push("");
+        lines.push(`🏠 *${item.title}*`); lines.push("");
         if (item.price && item.price > 0) lines.push(`💰 *R$ ${item.price.toLocaleString("pt-BR")}${priceLabel}*`);
         const loc = [item.neighborhood, item.city].filter(Boolean).join(", ");
         if (loc) lines.push(`📍 ${loc}`);
@@ -755,17 +1216,9 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
         if (item.built_area) specs.push(`🏗️ ${item.built_area}m² construída`);
         if (specs.length > 0) { lines.push("📋 *Detalhes:*"); specs.forEach(s => lines.push(`  ${s}`)); lines.push(""); }
         const feats: string[] = [];
-        if (item.pool) feats.push("Piscina");
-        if (item.furnished) feats.push("Mobiliado");
-        if (item.balcony) feats.push("Varanda");
-        if (item.barbecue) feats.push("Churrasqueira");
-        if (item.garden) feats.push("Jardim");
-        if (item.accepts_financing) feats.push("Aceita financiamento");
+        if (item.pool) feats.push("Piscina"); if (item.furnished) feats.push("Mobiliado"); if (item.balcony) feats.push("Varanda");
+        if (item.barbecue) feats.push("Churrasqueira"); if (item.garden) feats.push("Jardim"); if (item.accepts_financing) feats.push("Aceita financiamento");
         if (feats.length > 0) { lines.push(`✅ ${feats.join(" • ")}`); lines.push(""); }
-        const costs: string[] = [];
-        if (item.condo_fee && item.condo_fee > 0) costs.push(`Condomínio: R$ ${item.condo_fee.toLocaleString("pt-BR")}`);
-        if (item.iptu && item.iptu > 0) costs.push(`IPTU: R$ ${item.iptu.toLocaleString("pt-BR")}`);
-        if (costs.length > 0) { lines.push(`💲 ${costs.join(" | ")}`); lines.push(""); }
         if (item.description) { lines.push(item.description.length > 300 ? item.description.slice(0, 297) + "..." : item.description); lines.push(""); }
         const itemSlug = item.slug || item.id;
         lines.push(`👉 Veja mais: ${window.location.origin}/imoveis/produto/${itemSlug}${sellerSlug ? `?corretor=${sellerSlug}` : ""}`);
@@ -775,7 +1228,7 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
         const doCopy = () => {
           navigator.clipboard.writeText(adText);
           setCopiedAdText(true);
-          toast({ title: "Texto copiado! 📋", description: "Cole no WhatsApp, Instagram ou qualquer plataforma." });
+          toast({ title: "Texto copiado! 📋" });
           setTimeout(() => setCopiedAdText(false), 2500);
         };
         return (
@@ -790,76 +1243,56 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
                 {copiedAdText ? "Copiado!" : "Copiar Texto"}
               </button>
             </div>
-            <p className="text-xs text-muted-foreground">Texto gerado com os dados do imóvel. Copie e cole direto no WhatsApp, Instagram, Facebook ou qualquer plataforma.</p>
             <pre className="whitespace-pre-wrap text-xs text-foreground/80 bg-secondary/50 rounded-xl p-4 border border-border max-h-60 overflow-y-auto font-sans leading-relaxed">{adText}</pre>
           </div>
         );
       })()}
 
-      {/* Share CTA */}
-      <div className="rounded-2xl p-4 sm:p-6 text-center" style={{ background: "linear-gradient(135deg, hsl(var(--primary) / 0.08), hsl(var(--accent) / 0.06))" }}>
-        <Sparkles size={24} className="mx-auto mb-2 text-primary" />
-        <h3 className="font-bold text-sm text-foreground mb-1">Pronto para anunciar!</h3>
-        <p className="text-xs text-muted-foreground mb-3">Copie o link e cole no Facebook Ads, Google Ads ou envie pelo WhatsApp.</p>
-        <div className="flex items-center gap-2 justify-center flex-wrap">
-          <button onClick={copyLink} className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-primary text-primary-foreground hover:opacity-90 transition-opacity">
-            <Copy size={14} /> Copiar Link da Galeria
-          </button>
-          <button onClick={shareWhatsApp} className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-green-500 text-white hover:bg-green-600 transition-colors">
-            <Share2 size={14} /> Compartilhar no WhatsApp
-          </button>
-        </div>
-      </div>
-
       {/* Lightbox */}
       <AnimatePresence>
         {lightboxIndex !== null && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center"
-            onClick={() => setLightboxIndex(null)}
-          >
-            <button className="absolute top-4 right-4 text-white/70 hover:text-white z-10" onClick={() => setLightboxIndex(null)}>
-              <X size={28} />
-            </button>
-
-            {lightboxIndex > 0 && (
-              <button
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white bg-white/10 rounded-full p-2 backdrop-blur-sm z-10"
-                onClick={(e) => { e.stopPropagation(); setLightboxIndex(lightboxIndex - 1); }}
-              >
-                <ChevronLeft size={24} />
-              </button>
-            )}
-
-            {lightboxIndex < photos.length - 1 && (
-              <button
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white bg-white/10 rounded-full p-2 backdrop-blur-sm z-10"
-                onClick={(e) => { e.stopPropagation(); setLightboxIndex(lightboxIndex + 1); }}
-              >
-                <ChevronRight size={24} />
-              </button>
-            )}
-
-            <motion.img
-              key={lightboxIndex}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              src={photos[lightboxIndex]}
-              alt=""
-              className="max-w-[90vw] max-h-[85vh] object-contain rounded-lg"
-              onClick={(e) => e.stopPropagation()}
-            />
-
-            <p className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/50 text-xs font-medium">
-              {lightboxIndex + 1} / {photos.length}
-            </p>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center" onClick={() => setLightboxIndex(null)}>
+            <button className="absolute top-4 right-4 text-white/70 hover:text-white z-10" onClick={() => setLightboxIndex(null)}><X size={28} /></button>
+            <motion.img key={lightboxIndex} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} src={photos[lightboxIndex]} alt="" className="max-w-[90vw] max-h-[85vh] object-contain rounded-lg" onClick={(e) => e.stopPropagation()} />
           </motion.div>
         )}
       </AnimatePresence>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SUBCOMPONENTES
+   ═══════════════════════════════════════════════════════════════ */
+
+function Section({ title, icon: Icon, extra, children }: { title: string; icon: any; extra?: React.ReactNode; children: React.ReactNode }) {
+  return (
+    <div className="rounded-2xl border border-border p-3 bg-card">
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-1.5">
+          <Icon size={13} className="text-primary" />
+          <span className="text-[11px] font-bold text-foreground uppercase tracking-wide">{title}</span>
+        </div>
+        {extra}
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function Slider({ label, value, min, max, step, onChange }: { label: string; value: number; min: number; max: number; step: number; onChange: (n: number) => void }) {
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-1">
+        <span className="text-[10px] font-semibold text-muted-foreground">{label}</span>
+        <span className="text-[10px] font-bold text-foreground tabular-nums">{value.toFixed(2)}x</span>
+      </div>
+      <input
+        type="range"
+        min={min} max={max} step={step} value={value}
+        onChange={(e) => onChange(parseFloat(e.target.value))}
+        className="w-full h-1.5 rounded-full bg-secondary appearance-none cursor-pointer accent-primary"
+      />
     </div>
   );
 }
