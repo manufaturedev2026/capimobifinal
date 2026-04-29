@@ -38,7 +38,7 @@ interface FounderLot {
 
 const formatCredits = (credits: number) => credits.toLocaleString("pt-BR");
 
-type BillingPeriod = "monthly" | "annual";
+type BillingPeriod = "monthly" | "annual" | "founder";
 
 interface AppliedCoupon {
   id: string;
