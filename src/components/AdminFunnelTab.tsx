@@ -342,7 +342,6 @@ export default function AdminFunnelTab() {
     else { toast({ title: "E-mail reincluído no funil", description: clean }); load(); }
   };
 
-  const [clearingHistory, setClearingHistory] = useState(false);
   const clearHistory = async () => {
     const scope = historyFilter === "all" ? "TODO o histórico" : historyFilter === "enviado" ? "todos os ENVIADOS" : "todas as FALHAS";
     if (!confirm(`Tem certeza que deseja apagar ${scope} (${filteredSends.length} registro(s))?\n\nEsta ação não pode ser desfeita.`)) return;
