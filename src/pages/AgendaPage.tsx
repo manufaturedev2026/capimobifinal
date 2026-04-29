@@ -345,11 +345,21 @@ export default function AgendaPage() {
   );
 }
 
-function StatCard({ icon, label, value, color }: { icon: React.ReactNode; label: string; value: number; color: string }) {
+type StatTone = "primary" | "accent" | "primary-soft" | "accent-soft" | "gradient";
+
+const TONE_STYLES: Record<StatTone, string> = {
+  "primary": "bg-primary text-primary-foreground",
+  "accent": "bg-accent text-accent-foreground",
+  "primary-soft": "bg-primary/15 text-primary border border-primary/20",
+  "accent-soft": "bg-accent/15 text-accent-foreground border border-accent/20",
+  "gradient": "bg-gradient-to-br from-primary to-accent text-primary-foreground",
+};
+
+function StatCard({ icon, label, value, tone }: { icon: React.ReactNode; label: string; value: number; tone: StatTone }) {
   return (
     <div className="bg-card border border-border rounded-xl p-3 sm:p-4 shadow-sm">
       <div className="flex items-center gap-2 sm:gap-3">
-        <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg ${color} text-white flex items-center justify-center shrink-0`}>{icon}</div>
+        <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center shrink-0 ${TONE_STYLES[tone]}`}>{icon}</div>
         <div className="min-w-0">
           <p className="text-[10px] sm:text-xs text-muted-foreground truncate">{label}</p>
           <p className="text-lg sm:text-2xl font-bold text-foreground">{value}</p>
