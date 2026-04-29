@@ -362,6 +362,71 @@ export default function AiValuationPage() {
       if (it.price != null) setValorPedido(String(it.price));
       if (it.iptu != null) setIptu(String(it.iptu));
       if (it.condo_fee != null) setCondominio(String(it.condo_fee));
+      // === Auto-preenchimento profissional ===
+      // Padrão e estado
+      if (it.acabamento) setAcabamento(String(it.acabamento));
+      if (it.conservacao) setConservacao(String(it.conservacao));
+      // Salas / cozinhas / escritórios
+      if (it.living_rooms != null) setSalas(String(it.living_rooms));
+      if ((it as any).kitchens != null) setCozinhas(String((it as any).kitchens));
+      if ((it as any).offices != null) setEscritorios(String((it as any).offices));
+      if (it.suites != null) setSuites(String(it.suites));
+      // Apartamento — total de andares do prédio
+      if ((it as any).total_floors_building != null) {
+        setApt((s) => ({ ...s, totalAndaresPredio: String((it as any).total_floors_building) }));
+      }
+      if (it.floor_number != null) {
+        setApt((s) => ({ ...s, andarUnidade: String(it.floor_number) }));
+      }
+      // Modo Profissional Avançado: marca automaticamente se houver dados
+      const advFromItem: Partial<AdvancedState> = {};
+      if ((it as any).area_coberta_externa != null) advFromItem.areaCobertaExterna = String((it as any).area_coberta_externa);
+      if ((it as any).area_util != null) advFromItem.areaUtil = String((it as any).area_util);
+      if ((it as any).lavabos != null) advFromItem.lavabos = String((it as any).lavabos);
+      // Ambientes
+      if ((it as any).amb_sala_estar) advFromItem.salaEstar = true;
+      if ((it as any).amb_sala_jantar) advFromItem.salaJantar = true;
+      if ((it as any).amb_sala_tv) advFromItem.salaTv = true;
+      if ((it as any).amb_copa) advFromItem.copa = true;
+      if ((it as any).amb_lavanderia) advFromItem.lavanderia = true;
+      if ((it as any).amb_area_servico) advFromItem.areaServico = true;
+      if ((it as any).amb_closet) advFromItem.closet = true;
+      if ((it as any).amb_despensa) advFromItem.despensa = true;
+      if ((it as any).amb_varanda_interna) advFromItem.varandaInterna = true;
+      // Localização avançada
+      if ((it as any).loc_bairro_valorizado) advFromItem.bairroValorizado = true;
+      if ((it as any).loc_rua_tranquila) advFromItem.ruaTranquila = true;
+      if ((it as any).loc_vista_privilegiada) advFromItem.vistaPrivilegiada = true;
+      if ((it as any).loc_area_risco) advFromItem.areaRisco = true;
+      // Infra ↔ Modo avançado (escola/hospital/comércio têm equivalente)
+      if ((it as any).infra_escola) advFromItem.proximoEscola = true;
+      if ((it as any).infra_hospital) advFromItem.proximoHospital = true;
+      if ((it as any).infra_comercio) advFromItem.proximoComercio = true;
+      // Acabamento item-a-item
+      if ((it as any).finish_piso) advFromItem.pisoQualidade = String((it as any).finish_piso);
+      if ((it as any).finish_banheiro) advFromItem.banheiroQualidade = String((it as any).finish_banheiro);
+      if ((it as any).finish_cozinha) advFromItem.cozinhaQualidade = String((it as any).finish_cozinha);
+      if ((it as any).finish_pintura) advFromItem.pinturaQualidade = String((it as any).finish_pintura);
+      if ((it as any).finish_esquadrias) advFromItem.esquadriasQualidade = String((it as any).finish_esquadrias);
+      if ((it as any).finish_telhado) advFromItem.telhadoQualidade = String((it as any).finish_telhado);
+      if ((it as any).finish_eletrica) advFromItem.eletricaQualidade = String((it as any).finish_eletrica);
+      // Documentação
+      if ((it as any).habite_se) advFromItem.habiteSe = true;
+      if (it.accepts_financing) advFromItem.financiavel = true;
+      if ((it as any).sem_pendencias_judiciais) advFromItem.semPendencias = true;
+      // Liquidez
+      if ((it as any).liquidez) advFromItem.liquidezMercado = String((it as any).liquidez);
+      if (Object.keys(advFromItem).length > 0) {
+        setAdv((s) => ({ ...s, ...advFromItem }));
+        setModoAvancado(true);
+      }
+      // Infraestrutura (form pós-resultado)
+      if ((it as any).infra_escola) setInfraEscola(true);
+      if ((it as any).infra_hospital) setInfraHospital(true);
+      if ((it as any).infra_comercio) setInfraComercio(true);
+      if ((it as any).infra_transporte) setInfraTransporte(true);
+      if ((it as any).infra_parque) setInfraParque(true);
+      if ((it as any).infra_bancos) setInfraBancos(true);
       // Mapeia categoria do anúncio para categoria do avaliador (best-effort)
       const cat = String(it.category || "").toLowerCase();
       if (cat.includes("apart")) handleCategoriaChange("Residencial" as CategoriaImovel);
