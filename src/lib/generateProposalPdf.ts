@@ -267,7 +267,7 @@ function drawCoverImpl(pdf: jsPDF, data: ProposalData, heroImg: string | null) {
   pdf.setFont("helvetica", "bold");
   pdf.setFontSize(8);
   setText(pdf, C.white);
-  pdf.text("■  OPORTUNIDADE EXCLUSIVA", W - M - 28, 22, { align: "center" });
+  pdf.text("• OPORTUNIDADE EXCLUSIVA", W - M - 28, 22, { align: "center" });
 
   // Property type chip on hero
   pdf.setFont("helvetica", "bold");
@@ -291,7 +291,7 @@ function drawCoverImpl(pdf: jsPDF, data: ProposalData, heroImg: string | null) {
     pdf.setFont("helvetica", "normal");
     pdf.setFontSize(10);
     setText(pdf, C.white);
-    pdf.text(`■  ${data.location}`, M, heroH - 14);
+    pdf.text(`• ${data.location}`, M, heroH - 14);
   }
 
   // White info panel below
@@ -701,7 +701,7 @@ function drawLocation(pdf: jsPDF, data: ProposalData, mapImg: string | null, y: 
   pdf.setFont("helvetica", "bold");
   pdf.setFontSize(11);
   setText(pdf, C.ink);
-  pdf.text(`■  ${data.location}`, M, y);
+  pdf.text(`• ${data.location}`, M, y);
   y += 8;
 
   // Map card
