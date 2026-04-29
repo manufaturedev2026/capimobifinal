@@ -3842,6 +3842,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      increment_item_views: { Args: { _item_id: string }; Returns: undefined }
       is_seller_visit_blocked: {
         Args: { p_seller_id: string }
         Returns: boolean
