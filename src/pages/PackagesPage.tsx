@@ -619,10 +619,24 @@ export default function PackagesPage() {
            const newInheritedPlan = plans.find((p) => p.tier === activeFounderLot.inherited_tier);
            // Cor do lote = cor do plano herdado (Start verde, VIP laranja, etc.)
            const founderColor = newInheritedPlan?.color || founderPlan.color || "from-amber-500 to-orange-600";
-           // Cor do texto do botão (extrai a cor base do gradient: ex. "from-emerald-500 to-..." -> "emerald-700")
+           // Cor do texto do botão (mapeamento estático para o Tailwind compilar as classes)
            const buttonTextColor = (() => {
              const m = founderColor.match(/from-([a-z]+)-/);
-             return m ? `text-${m[1]}-700` : "text-amber-700";
+             const map: Record<string, string> = {
+               emerald: "text-emerald-700",
+               teal: "text-teal-700",
+               amber: "text-amber-700",
+               orange: "text-orange-700",
+               purple: "text-purple-700",
+               indigo: "text-indigo-700",
+               rose: "text-rose-700",
+               red: "text-red-700",
+               sky: "text-sky-700",
+               blue: "text-blue-700",
+               slate: "text-slate-700",
+               zinc: "text-zinc-800",
+             };
+             return (m && map[m[1]]) || "text-amber-700";
            })();
            const isUpgradeAvailable =
             isCurrent &&
