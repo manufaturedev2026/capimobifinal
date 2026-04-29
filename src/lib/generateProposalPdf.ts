@@ -174,9 +174,7 @@ export async function generateProposalPdf(data: ProposalData) {
   const heroImg = await loadImg(data.image);
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(data.propertyUrl)}&format=png&margin=2`;
   const qrImg = await loadImg(qrUrl);
-  const mapImg = data.location
-    ? await loadImg(`https://maps.googleapis.com/maps/api/staticmap?center=${encodeURIComponent(data.location)}&zoom=15&size=600x400&markers=color:0x1E40AF|${encodeURIComponent(data.location)}&scale=2&maptype=roadmap`)
-    : null;
+  const mapImg = data.location ? await loadStaticMap(data.location) : null;
 
   const rental = isRental(data);
   // Pages: Cover, Specs, Differentials, (Financial only for sale), Location, CTA
