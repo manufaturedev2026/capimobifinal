@@ -177,8 +177,13 @@ serve(async (req) => {
     if (isFounder) {
       // Fundador: preço fixo do lote, sem desconto, vale 1 ano
       grossTotal = Number(founderLot.price);
-      finalTotal = grossTotal;
-      periodLabel = `Fundador Lote ${founderLot.lot_number} · 1 ano`;
+      // Para upgrade Fundador→Fundador: desconta o crédito proporcional do lote anterior
+      finalTotal = is_founder_upgrade
+        ? Math.max(0.5, grossTotal - upgradeCreditCents / 100)
+        : grossTotal;
+      periodLabel = is_founder_upgrade
+        ? `Upgrade Fundador → Lote ${founderLot.lot_number} · validade renovada`
+        : `Fundador Lote ${founderLot.lot_number} · 1 ano`;
     } else {
       const basePrice = Number(plan.price);
       const months = billing_period === "annual" ? 12 : 1;
@@ -192,7 +197,9 @@ serve(async (req) => {
 
     const productName = `${plan.name} - ${periodLabel}`;
     const productDescription = isFounder
-      ? `🏆 Membro Fundador · Acesso por 1 ano · Pagamento único, sem renovação automática.`
+      ? (is_founder_upgrade
+        ? `🏆 Upgrade Fundador · Crédito de R$ ${(upgradeCreditCents / 100).toFixed(2)} aplicado. Acesso renovado por 1 ano.`
+        : `🏆 Membro Fundador · Acesso por 1 ano · Pagamento único, sem renovação automática.`)
       : (totalDiscount > 0
         ? `${couponDescription} aplicado. Pagamento único, sem renovação automática.`
         : `Pagamento único, sem renovação automática.`);
