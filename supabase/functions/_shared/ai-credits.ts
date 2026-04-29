@@ -180,9 +180,21 @@ export async function consumeAiCreditsForUser(
   sellerId: string | null,
   toolKey: keyof typeof AI_CREDIT_COSTS,
   corsHeaders: Record<string, string>,
+  visitorKey?: string | null,
 ): Promise<CreditCheck> {
   const cost = AI_CREDIT_COSTS[toolKey];
   await admin.rpc("refresh_ai_monthly_credits", { p_user_id: userId, p_seller_id: sellerId });
+
+  const charge = await shouldChargeForSession(admin, userId, sellerId, toolKey, visitorKey ?? null);
+  if (!charge) {
+    const { data: walletRow } = await (admin as any)
+      .from("ai_credit_wallets")
+      .select("balance")
+      .eq("user_id", userId)
+      .maybeSingle();
+    return { ok: true, admin, userId, sellerId, cost: 0, balance: Number(walletRow?.balance ?? 0) };
+  }
+
   const { data: debit, error } = await admin.rpc("consume_ai_credits", {
     p_user_id: userId,
     p_amount: cost,
