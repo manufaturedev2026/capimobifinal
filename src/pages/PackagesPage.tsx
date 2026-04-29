@@ -365,10 +365,10 @@ export default function PackagesPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: idx * 0.1 }}
         className={`relative bg-card border-2 rounded-3xl overflow-hidden shadow-lg transition-all hover:shadow-2xl ${
-          isCurrent ? "border-primary ring-4 ring-primary/20" : plan.is_popular ? "border-amber-400" : "border-border"
+          isCurrent ? "border-primary ring-4 ring-primary/20" : (plan.is_popular && !(billingPeriod === "annual" && plan.tier === "vip")) ? "border-amber-400" : "border-border"
         }`}
       >
-        {plan.is_popular && !isCurrent && (
+        {plan.is_popular && !isCurrent && !(billingPeriod === "annual" && plan.tier === "vip") && (
           <div className="absolute top-0 right-0 px-4 py-1 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold rounded-bl-xl z-10">
             POPULAR
           </div>
