@@ -616,8 +616,29 @@ export default function PackagesPage() {
           const userInheritedPlan = userFounderLot?.inherited_tier
             ? plans.find((p) => p.tier === userFounderLot.inherited_tier)
             : null;
-          const newInheritedPlan = plans.find((p) => p.tier === activeFounderLot.inherited_tier);
-          const isUpgradeAvailable =
+           const newInheritedPlan = plans.find((p) => p.tier === activeFounderLot.inherited_tier);
+           // Cor do lote = cor do plano herdado (Start verde, VIP laranja, etc.)
+           const founderColor = newInheritedPlan?.color || founderPlan.color || "from-amber-500 to-orange-600";
+           // Cor do texto do botão (mapeamento estático para o Tailwind compilar as classes)
+           const buttonTextColor = (() => {
+             const m = founderColor.match(/from-([a-z]+)-/);
+             const map: Record<string, string> = {
+               emerald: "text-emerald-700",
+               teal: "text-teal-700",
+               amber: "text-amber-700",
+               orange: "text-orange-700",
+               purple: "text-purple-700",
+               indigo: "text-indigo-700",
+               rose: "text-rose-700",
+               red: "text-red-700",
+               sky: "text-sky-700",
+               blue: "text-blue-700",
+               slate: "text-slate-700",
+               zinc: "text-zinc-800",
+             };
+             return (m && map[m[1]]) || "text-amber-700";
+           })();
+           const isUpgradeAvailable =
             isCurrent &&
             userFounderLot != null &&
             Number(activeFounderLot.price) > Number(userFounderLot.price);
@@ -632,13 +653,14 @@ export default function PackagesPage() {
           const upgradeDiff = Math.max(0, Number(activeFounderLot.price) - estimatedCredit);
 
           return (
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mt-12 relative overflow-hidden rounded-3xl border-2 border-amber-400/60 shadow-[0_20px_60px_-15px_rgba(245,158,11,0.5)]"
-            >
-              <div className="absolute inset-0 bg-gradient-to-br from-amber-500 via-orange-500 to-yellow-600" />
-              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.25),transparent_60%)]" />
+             <motion.div
+               initial={{ opacity: 0, y: 30 }}
+               animate={{ opacity: 1, y: 0 }}
+               className="mt-12 relative overflow-hidden rounded-3xl border-2 border-white/30 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.4)]"
+             >
+               <div className={`absolute inset-0 bg-gradient-to-br ${founderColor}`} />
+               <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.25),transparent_60%)]" />
+               <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(0,0,0,0.25),transparent_60%)]" />
 
               <div className="relative p-6 md:p-10 text-white">
                 <div className="flex flex-wrap items-center gap-3 mb-4">
@@ -776,7 +798,7 @@ export default function PackagesPage() {
                     <button
                       onClick={() => handleSelectFounder(isUpgradeAvailable)}
                       disabled={(isCurrent && !isUpgradeAvailable) || selecting === founderTier}
-                      className="mt-5 w-full py-3.5 rounded-xl bg-white text-amber-700 font-extrabold text-base hover:bg-amber-50 transition-all shadow-xl disabled:opacity-60"
+                      className={`mt-5 w-full py-3.5 rounded-xl bg-white ${buttonTextColor} font-extrabold text-base hover:bg-white/90 transition-all shadow-xl disabled:opacity-60`}
                     >
                       {selecting === founderTier
                         ? "Processando..."
