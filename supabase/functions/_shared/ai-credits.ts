@@ -6,10 +6,55 @@ export const AI_CREDIT_COSTS: Record<string, number> = {
   valuation_ad: 2,
   photo_analysis: 3,
   platform_help_chat: 1,
-  capture_bot_chat: 1,
-  agenda_bot_chat: 1,
-  invite_chat: 1,
+  capture_bot_chat: 3,
+  agenda_bot_chat: 3,
+  invite_chat: 3,
 };
+
+// Bots cobrados por janela de atendimento (não por mensagem).
+// Janela = primeira mensagem após 30min de inatividade do mesmo visitante.
+const SESSION_BASED_TOOLS = new Set(["capture_bot_chat", "agenda_bot_chat", "invite_chat"]);
+const SESSION_WINDOW_MINUTES = 30;
+
+async function shouldChargeForSession(
+  admin: ReturnType<typeof createClient>,
+  userId: string,
+  sellerId: string | null,
+  toolKey: string,
+  visitorKey: string | null,
+): Promise<boolean> {
+  if (!SESSION_BASED_TOOLS.has(toolKey)) return true;
+  if (!visitorKey) return true;
+
+  const cutoff = new Date(Date.now() - SESSION_WINDOW_MINUTES * 60 * 1000).toISOString();
+
+  const { data: existing } = await (admin as any)
+    .from("ai_chat_sessions")
+    .select("id")
+    .eq("user_id", userId)
+    .eq("tool_key", toolKey)
+    .eq("visitor_key", visitorKey)
+    .gte("last_activity_at", cutoff)
+    .order("last_activity_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (existing?.id) {
+    await (admin as any)
+      .from("ai_chat_sessions")
+      .update({ last_activity_at: new Date().toISOString() })
+      .eq("id", existing.id);
+    return false;
+  }
+
+  await (admin as any).from("ai_chat_sessions").insert({
+    user_id: userId,
+    seller_id: sellerId,
+    tool_key: toolKey,
+    visitor_key: visitorKey,
+  });
+  return true;
+}
 
 type CreditCheck = {
   ok: true;
