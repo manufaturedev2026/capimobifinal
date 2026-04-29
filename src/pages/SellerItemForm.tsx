@@ -160,6 +160,8 @@ export default function SellerItemForm() {
   const [activeItemCount, setActiveItemCount] = useState(0);
   const [isAluguel, setIsAluguel] = useState(false);
   const { subscription, currentTier, config: pkgConfig, isExpired } = useSubscription(user?.id);
+  const { usage: planUsage } = usePlanUsage(user?.id);
+  const MAX_PHOTOS = planUsage?.limits.max_photos_per_listing ?? DEFAULT_MAX_PHOTOS;
 
   const [form, setForm] = useState(INITIAL_FORM);
   const { cities: ibgeCities, loading: citiesLoading } = useCitiesByState(form.state);
