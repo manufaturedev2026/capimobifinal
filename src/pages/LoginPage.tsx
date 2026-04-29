@@ -12,8 +12,10 @@ import heroImgDefault from "@/assets/hero-anunciar.jpg";
 import { BRAZIL_STATES } from "@/data/brazilStates";
 import { useCitiesByState } from "@/hooks/useCitiesByState";
 import { SITE_URL } from "@/lib/siteUrl";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 export default function LoginPage() {
+  const { site_name } = useSiteSettings();
   const [isLogin, setIsLogin] = useState(() => {
     const params = new URLSearchParams(window.location.search);
     return !params.get("trial");
