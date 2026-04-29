@@ -666,6 +666,8 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
   const [generatingPreview, setGeneratingPreview] = useState(false);
   const [batchGenerating, setBatchGenerating] = useState(false);
   const [batchResults, setBatchResults] = useState<{ format: ImageFormat; templateId: TemplateId; url: string; name: string }[]>([]);
+  const batchResultsRef = useRef<HTMLDivElement | null>(null);
+  const [batchHighlight, setBatchHighlight] = useState(false);
   const [copiedAdText, setCopiedAdText] = useState(false);
   const [showAdvancedAdjust, setShowAdvancedAdjust] = useState(false);
 
