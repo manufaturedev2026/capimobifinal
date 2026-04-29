@@ -144,7 +144,7 @@ export default function AgendaPage() {
   return (
     <div className="min-h-screen bg-background">
       <Helmet>
-        <title>Agenda de Visitas — Capimobi</title>
+        <title>Agenda de Visitas — {site_name}</title>
         <meta name="description" content="Organize visitas a imóveis, leads e compromissos imobiliários em um só lugar." />
       </Helmet>
 
