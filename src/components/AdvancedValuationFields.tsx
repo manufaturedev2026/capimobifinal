@@ -75,48 +75,60 @@ interface Props {
   onChange: <K extends keyof AdvancedState>(key: K, value: AdvancedState[K]) => void;
 }
 
+const Section = ({ title, hint, children }: { title: string; hint?: string; children: React.ReactNode }) => (
+  <div className="mb-6 pb-6 border-b border-border/50 last:border-0">
+    <div className="flex items-baseline justify-between mb-3">
+      <h3 className="text-sm font-bold uppercase tracking-wide text-foreground">{title}</h3>
+      {hint && <span className="text-[11px] text-muted-foreground">{hint}</span>}
+    </div>
+    {children}
+  </div>
+);
+
+const Toggle = ({ label, val, onToggle }: { label: string; val: boolean; onToggle: () => void }) => (
+  <label className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border cursor-pointer transition-all text-sm ${
+    val ? "border-primary bg-primary/5 ring-1 ring-primary/30" : "border-border hover:border-primary/50"
+  }`}>
+    <Checkbox checked={val} onCheckedChange={onToggle} />
+    <span className="font-medium">{label}</span>
+  </label>
+);
+
+const QualPicker = ({
+  label,
+  field,
+  opts,
+  state,
+  onChange,
+}: {
+  label: string;
+  field: keyof AdvancedState;
+  opts: Array<{ v: string; l: string }>;
+  state: AdvancedState;
+  onChange: Props["onChange"];
+}) => (
+  <div>
+    <Label className="text-xs font-medium text-muted-foreground mb-1.5 block">{label}</Label>
+    <div className="flex gap-1.5">
+      {opts.map((o) => (
+        <button
+          key={o.v}
+          type="button"
+          onClick={() => onChange(field, (state[field] === o.v ? "" : o.v) as any)}
+          className={`flex-1 px-2 py-2 rounded-lg text-xs font-semibold transition-all border ${
+            state[field] === o.v
+              ? "bg-primary text-primary-foreground border-primary shadow-sm"
+              : "bg-muted/50 hover:bg-muted text-foreground border-transparent"
+          }`}
+        >
+          {o.l}
+        </button>
+      ))}
+    </div>
+  </div>
+);
+
 export default function AdvancedValuationFields({ state, onChange }: Props) {
-  const Section = ({ title, hint, children }: { title: string; hint?: string; children: React.ReactNode }) => (
-    <div className="mb-6 pb-6 border-b border-border/50 last:border-0">
-      <div className="flex items-baseline justify-between mb-3">
-        <h3 className="text-sm font-bold uppercase tracking-wide text-foreground">{title}</h3>
-        {hint && <span className="text-[11px] text-muted-foreground">{hint}</span>}
-      </div>
-      {children}
-    </div>
-  );
-
-  const Toggle = ({ label, val, onToggle }: { label: string; val: boolean; onToggle: () => void }) => (
-    <label className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border cursor-pointer transition-all text-sm ${
-      val ? "border-primary bg-primary/5 ring-1 ring-primary/30" : "border-border hover:border-primary/50"
-    }`}>
-      <Checkbox checked={val} onCheckedChange={onToggle} />
-      <span className="font-medium">{label}</span>
-    </label>
-  );
-
-  const QualPicker = ({ label, field, opts }: { label: string; field: keyof AdvancedState; opts: Array<{ v: string; l: string }> }) => (
-    <div>
-      <Label className="text-xs font-medium text-muted-foreground mb-1.5 block">{label}</Label>
-      <div className="flex gap-1.5">
-        {opts.map(o => (
-          <button
-            key={o.v}
-            type="button"
-            onClick={() => onChange(field, (state[field] === o.v ? "" : o.v) as any)}
-            className={`flex-1 px-2 py-2 rounded-lg text-xs font-semibold transition-all border ${
-              state[field] === o.v
-                ? "bg-primary text-primary-foreground border-primary shadow-sm"
-                : "bg-muted/50 hover:bg-muted text-foreground border-transparent"
-            }`}
-          >
-            {o.l}
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-
   return (
     <div className="rounded-2xl border-2 border-dashed border-primary/30 bg-primary/[0.02] p-5 md:p-6 mt-2">
       <div className="text-xs font-bold text-primary mb-4 uppercase tracking-wider">⚡ Modo Profissional Avançado</div>
@@ -169,13 +181,13 @@ export default function AdvancedValuationFields({ state, onChange }: Props) {
 
       <Section title="Acabamento item-a-item (15%)" hint="Avalie cada componente">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <QualPicker label="Piso" field="pisoQualidade" opts={QUALIDADE_OPTS.piso} />
-          <QualPicker label="Banheiros" field="banheiroQualidade" opts={QUALIDADE_OPTS.banheiro} />
-          <QualPicker label="Cozinha" field="cozinhaQualidade" opts={QUALIDADE_OPTS.cozinha} />
-          <QualPicker label="Pintura" field="pinturaQualidade" opts={QUALIDADE_OPTS.pintura} />
-          <QualPicker label="Esquadrias" field="esquadriasQualidade" opts={QUALIDADE_OPTS.esquadrias} />
-          <QualPicker label="Telhado" field="telhadoQualidade" opts={QUALIDADE_OPTS.telhado} />
-          <QualPicker label="Instalação elétrica" field="eletricaQualidade" opts={QUALIDADE_OPTS.eletrica} />
+          <QualPicker label="Piso" field="pisoQualidade" opts={QUALIDADE_OPTS.piso} state={state} onChange={onChange} />
+          <QualPicker label="Banheiros" field="banheiroQualidade" opts={QUALIDADE_OPTS.banheiro} state={state} onChange={onChange} />
+          <QualPicker label="Cozinha" field="cozinhaQualidade" opts={QUALIDADE_OPTS.cozinha} state={state} onChange={onChange} />
+          <QualPicker label="Pintura" field="pinturaQualidade" opts={QUALIDADE_OPTS.pintura} state={state} onChange={onChange} />
+          <QualPicker label="Esquadrias" field="esquadriasQualidade" opts={QUALIDADE_OPTS.esquadrias} state={state} onChange={onChange} />
+          <QualPicker label="Telhado" field="telhadoQualidade" opts={QUALIDADE_OPTS.telhado} state={state} onChange={onChange} />
+          <QualPicker label="Instalação elétrica" field="eletricaQualidade" opts={QUALIDADE_OPTS.eletrica} state={state} onChange={onChange} />
         </div>
       </Section>
 
