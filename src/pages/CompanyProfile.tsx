@@ -88,7 +88,6 @@ export default function CompanyProfile() {
   const { id } = useParams();
   const location = useLocation();
   const { user } = useAuth();
-  const { user } = useAuth();
   const { site_name } = useSiteSettings();
   const [activeCategory, setActiveCategory] = useState("todos");
   const [filterCity, setFilterCity] = useState("");
