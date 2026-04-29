@@ -328,11 +328,11 @@ export default function FundadorPage() {
         />
       </Helmet>
 
-      <MarketplaceNavbar />
+      <MarketplaceNavbar theme={theme} user={user} />
 
       {/* HERO */}
       <section className="relative overflow-hidden bg-gradient-to-br from-amber-950 via-background to-orange-950/40 border-b border-amber-500/20">
-        <ThemeParticles theme={theme} density={40} />
+        <ThemeParticles color={theme.primary} glowColor={theme.promoAccent} count={40} />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,hsl(var(--primary)/0.15),transparent_70%)]" />
 
         <div className="relative max-w-6xl mx-auto px-4 py-20 lg:py-28 text-center">
