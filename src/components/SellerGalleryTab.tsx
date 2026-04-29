@@ -1174,7 +1174,7 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
               maxLength={80}
               rows={2}
               className="w-full px-2.5 py-2 rounded-lg border border-border bg-background text-sm font-bold text-foreground resize-none focus:outline-none focus:ring-2 focus:ring-primary/30"
-              style={{ fontFamily: selectedFont === "default" ? undefined : `'${FONTS.find(f => f.id === selectedFont)?.family || "Inter"}', sans-serif` }}
+              style={{ fontFamily: `'${FONTS[selectedFont]?.family || "Inter"}', sans-serif` }}
             />
             <p className="text-[10px] text-muted-foreground mt-1.5 leading-tight">
               Personalize o título que aparece na arte. Usa a mesma fonte selecionada acima. Deixe em branco para usar o título original.
