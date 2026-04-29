@@ -27,14 +27,14 @@ interface FounderLot {
 }
 
 const FOUNDER_BENEFITS = [
-  "Plano vitalício — sem mensalidade depois",
+  "Pagamento único válido por 12 meses",
   "Selo exclusivo de Membro Fundador 🏆",
-  "Acesso a TODAS as funções premium para sempre",
-  "Bônus em créditos de Inteligência Artificial",
+  "Acesso a TODAS as funções premium por 1 ano",
+  "Bônus generoso em créditos de Inteligência Artificial",
   "Prioridade na exibição dos seus imóveis",
   "Suporte VIP prioritário",
   "Acesso antecipado a novas funções",
-  "Sem reajustes futuros — preço travado",
+  "Preço de fundador travado por todo o período",
 ];
 
 export default function FundadorPage() {
@@ -200,7 +200,7 @@ export default function FundadorPage() {
             <div>
               <h3 className="text-2xl font-bold">{label}</h3>
               <p className="text-sm text-muted-foreground">
-                Equivalente vitalício ao <strong>{equivalentPlan}</strong>
+                Equivalente por 1 ano ao <strong>{equivalentPlan}</strong>
               </p>
             </div>
           </div>
@@ -216,10 +216,10 @@ export default function FundadorPage() {
                   <span className="text-5xl font-extrabold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                     R$ {lot.price.toFixed(0)}
                   </span>
-                  <span className="text-muted-foreground">/único</span>
+                  <span className="text-muted-foreground">/ano</span>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Pagamento único · Acesso vitalício · Sem mensalidades
+                  Pagamento único · Válido por 12 meses · Sem mensalidades
                 </p>
               </div>
 
@@ -321,10 +321,10 @@ export default function FundadorPage() {
   return (
     <div className="min-h-screen bg-background" style={themeVars}>
       <Helmet>
-        <title>Seja Fundador Capimobi · Plano vitalício por pagamento único</title>
+        <title>Seja Fundador Capimobi · Pagamento único válido por 1 ano</title>
         <meta
           name="description"
-          content="Garanta acesso vitalício à plataforma Capimobi com pagamento único. Vagas limitadas — quando o lote esgota, o preço sobe automaticamente."
+          content="Garanta 12 meses de acesso premium à plataforma Capimobi com pagamento único. Vagas limitadas — quando o lote esgota, o preço sobe automaticamente."
         />
       </Helmet>
 
@@ -355,7 +355,7 @@ export default function FundadorPage() {
           >
             Pague <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">uma vez</span>.
             <br />
-            Use para <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">sempre</span>.
+            Use por <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">12 meses</span>.
           </motion.h1>
 
           <motion.p
@@ -364,7 +364,7 @@ export default function FundadorPage() {
             transition={{ delay: 0.2 }}
             className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-10"
           >
-            Seja um <strong className="text-foreground">Membro Fundador Capimobi</strong> e tenha acesso vitalício a todas as funções premium da plataforma — sem mensalidade, sem reajustes, sem prazo de validade.
+            Seja um <strong className="text-foreground">Membro Fundador Capimobi</strong> e tenha 1 ano completo de acesso a todas as funções premium da plataforma — pagamento único, sem mensalidades, sem surpresas.
           </motion.p>
 
           {/* Stats */}
@@ -377,7 +377,7 @@ export default function FundadorPage() {
             {[
               { icon: Users, label: "Vagas por lote", value: "500" },
               { icon: TrendingUp, label: "Preço sobe a cada lote", value: "+R$30" },
-              { icon: Shield, label: "Acesso garantido", value: "Vitalício" },
+              { icon: Shield, label: "Validade do acesso", value: "12 meses" },
             ].map((s, i) => (
               <div key={i} className="text-center">
                 <s.icon className="w-6 h-6 text-primary mx-auto mb-2" />
@@ -467,25 +467,24 @@ export default function FundadorPage() {
                     <span className="font-bold">R$ {vipPlan.price.toFixed(0)}/mês</span>
                   </div>
                   <div className="flex justify-between items-baseline">
-                    <span className="text-sm text-muted-foreground">Custo em 1 ano</span>
-                    <span className="font-bold">R$ {(vipPlan.price * 12).toFixed(0)}</span>
-                  </div>
-                  <div className="flex justify-between items-baseline">
-                    <span className="text-sm text-muted-foreground">Custo em 5 anos</span>
-                    <span className="font-bold text-red-500">R$ {(vipPlan.price * 60).toFixed(0)}</span>
+                    <span className="text-sm text-muted-foreground">Custo em 12 meses</span>
+                    <span className="font-bold text-red-500">R$ {(vipPlan.price * 12).toFixed(0)}</span>
                   </div>
                   <div className="border-t border-border pt-4 flex justify-between items-baseline">
-                    <span className="text-sm font-semibold">Fundador (único)</span>
+                    <span className="text-sm font-semibold">Fundador (12 meses)</span>
                     <span className="text-2xl font-extrabold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                       R$ {individualLot.price.toFixed(0)}
                     </span>
                   </div>
                   <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-4 text-center">
                     <div className="text-xs text-green-700 dark:text-green-400 font-semibold mb-1">
-                      ECONOMIA EM 5 ANOS
+                      ECONOMIA EM 12 MESES
                     </div>
                     <div className="text-3xl font-extrabold text-green-600 dark:text-green-400">
-                      R$ {(vipPlan.price * 60 - individualLot.price).toLocaleString("pt-BR")}
+                      R$ {(vipPlan.price * 12 - individualLot.price).toLocaleString("pt-BR")}
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-1">
+                      ({Math.round(((vipPlan.price * 12 - individualLot.price) / (vipPlan.price * 12)) * 100)}% mais barato)
                     </div>
                   </div>
                 </div>
@@ -511,25 +510,24 @@ export default function FundadorPage() {
                     <span className="font-bold">R$ {blackPlan.price.toFixed(0)}/mês</span>
                   </div>
                   <div className="flex justify-between items-baseline">
-                    <span className="text-sm text-muted-foreground">Custo em 1 ano</span>
-                    <span className="font-bold">R$ {(blackPlan.price * 12).toFixed(0)}</span>
-                  </div>
-                  <div className="flex justify-between items-baseline">
-                    <span className="text-sm text-muted-foreground">Custo em 5 anos</span>
-                    <span className="font-bold text-red-500">R$ {(blackPlan.price * 60).toFixed(0)}</span>
+                    <span className="text-sm text-muted-foreground">Custo em 12 meses</span>
+                    <span className="font-bold text-red-500">R$ {(blackPlan.price * 12).toFixed(0)}</span>
                   </div>
                   <div className="border-t border-border pt-4 flex justify-between items-baseline">
-                    <span className="text-sm font-semibold">Fundador (único)</span>
+                    <span className="text-sm font-semibold">Fundador (12 meses)</span>
                     <span className="text-2xl font-extrabold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                       R$ {enterpriseLot.price.toFixed(0)}
                     </span>
                   </div>
                   <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-4 text-center">
                     <div className="text-xs text-green-700 dark:text-green-400 font-semibold mb-1">
-                      ECONOMIA EM 5 ANOS
+                      ECONOMIA EM 12 MESES
                     </div>
                     <div className="text-3xl font-extrabold text-green-600 dark:text-green-400">
-                      R$ {(blackPlan.price * 60 - enterpriseLot.price).toLocaleString("pt-BR")}
+                      R$ {(blackPlan.price * 12 - enterpriseLot.price).toLocaleString("pt-BR")}
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-1">
+                      ({Math.round(((blackPlan.price * 12 - enterpriseLot.price) / (blackPlan.price * 12)) * 100)}% mais barato)
                     </div>
                   </div>
                 </div>
@@ -547,7 +545,7 @@ export default function FundadorPage() {
               Tudo que está incluído
             </h2>
             <p className="text-muted-foreground text-lg">
-              Acesso completo, vitalício, com benefícios exclusivos só para Fundadores.
+              1 ano completo de acesso premium com benefícios exclusivos só para Fundadores.
             </p>
           </div>
 
