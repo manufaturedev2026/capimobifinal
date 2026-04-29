@@ -13,7 +13,7 @@ const DEFAULT_HTML = `<div style="font-family:system-ui,sans-serif;max-width:560
   <p style="margin-top:20px"><a href="https://capimobi.com.br/painel" style="background:#2563eb;color:#fff;padding:12px 20px;border-radius:8px;text-decoration:none">Acessar Painel</a></p>
 </div>`;
 
-const TIERS = ["basico", "start", "premium", "vip", "essencial_empresa", "premium_empresa", "prime_empresa"] as const;
+const TIERS = ["basico", "start", "premium", "vip", "basico_empresa", "essencial_empresa", "premium_empresa", "prime_empresa"] as const;
 // Display overrides to disambiguate duplicated names in PACKAGE_CONFIG
 const TIER_LABEL_OVERRIDES: Record<string, string> = {
   prime_empresa: "Black Empresa",
