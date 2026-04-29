@@ -21,6 +21,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { BRAZIL_STATES } from "@/data/brazilStates";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { useRegistrationsClosed } from "@/hooks/useRegistrationsClosed";
+import RegistrationsClosedNotice from "@/components/RegistrationsClosedNotice";
 
 const FEATURES = [
   {
@@ -187,6 +189,7 @@ export default function VenderPage() {
   const navigate = useNavigate();
   const { user, signUp } = useAuth();
   const { site_name } = useSiteSettings();
+  const { closed: registrationsClosed } = useRegistrationsClosed();
   const { toast } = useToast();
   const [themeId, setThemeId] = useState("azul");
   const [fullName, setFullName] = useState("");
@@ -218,6 +221,10 @@ export default function VenderPage() {
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (registrationsClosed) {
+      toast({ title: "Cadastros encerrados", description: "Não estamos aceitando novos cadastros no momento.", variant: "destructive" });
+      return;
+    }
      if (!fullName.trim() || !email.trim() || !password.trim() || !city) {
        toast({ title: "Preencha todos os campos obrigatórios", variant: "destructive" });
        return;
