@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useAiCredits } from "@/hooks/useAiCredits";
 import AiCreditsUsageModal from "./AiCreditsUsageModal";
+import BuyCreditsModal from "./BuyCreditsModal";
 
 const TOOL_LABELS: Record<string, string> = {
   monthly_plan_reset: "Créditos do plano",
