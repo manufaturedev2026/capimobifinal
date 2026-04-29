@@ -208,7 +208,9 @@ serve(async (req) => {
     if (!sellerUserId) {
       return new Response(JSON.stringify({ error: "Loja não encontrada" }), { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
-    const credit = await consumeAiCreditsForUser(supabase, sellerUserId, sellerId, "agenda_bot_chat", corsHeaders);
+    const visitorIp = (req.headers.get("x-forwarded-for") || "").split(",")[0].trim() || req.headers.get("cf-connecting-ip") || "unknown";
+    const visitorKey = `${visitorIp}:${sellerId}`;
+    const credit = await consumeAiCreditsForUser(supabase, sellerUserId, sellerId, "agenda_bot_chat", corsHeaders, visitorKey);
     if (!credit.ok) return credit.response;
 
     const aiResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
