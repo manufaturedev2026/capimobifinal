@@ -13,6 +13,45 @@ const DEFAULT_HTML = `<div style="font-family:system-ui,sans-serif;max-width:560
   <p style="margin-top:20px"><a href="https://capimobi.com.br/painel" style="background:#2563eb;color:#fff;padding:12px 20px;border-radius:8px;text-decoration:none">Acessar Painel</a></p>
 </div>`;
 
+const CONVITE_LEADS_HTML = `<div style="font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:620px;margin:auto;padding:0;background:#f1f5f9;color:#0f172a;">
+  <div style="background:linear-gradient(135deg,#16a34a,#22c55e);padding:34px 25px;border-radius:16px 16px 0 0;text-align:center;">
+    <h1 style="margin:0;font-size:30px;color:#ffffff;">🎉 Convite Especial Capimobi</h1>
+    <p style="margin:10px 0 0;color:#dcfce7;font-size:15px;">Acesso liberado para {{nome}}</p>
+  </div>
+  <div style="background:#ffffff;padding:35px 28px;border-radius:0 0 16px 16px;box-shadow:0 8px 24px rgba(0,0,0,0.06);">
+    <h2 style="margin-top:0;font-size:24px;color:#0f172a;">Olá {{nome}} 👋</h2>
+    <p style="font-size:16px;line-height:1.7;color:#334155;"><strong>{{nome}}</strong>, preparamos um convite exclusivo para você conhecer a <strong>Capimobi</strong> e testar gratuitamente nossas ferramentas profissionais.</p>
+    <p style="font-size:16px;line-height:1.7;color:#334155;">Seu cadastro está disponível para o e-mail: <strong>{{email}}</strong></p>
+    <p style="font-size:16px;line-height:1.7;color:#334155;">Ao criar sua conta, você poderá experimentar:</p>
+    <ul style="padding-left:18px;color:#334155;line-height:1.9;font-size:15px;">
+      <li>CRM completo para leads e clientes</li>
+      <li>Site imobiliário profissional</li>
+      <li>Captação automática de imóveis</li>
+      <li>IA para anúncios e textos</li>
+      <li>Ferramentas exclusivas de vendas</li>
+      <li>Painel moderno e fácil de usar</li>
+    </ul>
+    <div style="background:#ecfdf5;border:1px solid #bbf7d0;padding:18px;border-radius:12px;margin-top:22px;">
+      <p style="margin:0;font-size:15px;color:#166534;line-height:1.6;">✅ {{nome}}, seu acesso gratuito já está ativo.<br>Entre agora e teste tudo sem compromisso.</p>
+    </div>
+    <div style="text-align:center;margin-top:30px;">
+      <a href="https://capimobi.com.br" style="background:#16a34a;color:#ffffff;padding:15px 32px;text-decoration:none;border-radius:10px;font-weight:700;display:inline-block;font-size:16px;">Criar Conta e Testar Agora</a>
+    </div>
+    <p style="margin-top:28px;font-size:14px;color:#64748b;line-height:1.6;">Convite enviado para <strong>{{nome}}</strong> • <strong>{{email}}</strong></p>
+    <hr style="border:none;border-top:1px solid #e2e8f0;margin:26px 0;">
+    <p style="font-size:13px;color:#94a3b8;text-align:center;margin:0;">© 2026 Capimobi • Tecnologia que impulsiona resultados</p>
+  </div>
+</div>`;
+
+const BUILTIN_TEMPLATES: Template[] = [
+  {
+    id: "builtin-convite-leads",
+    name: "🎁 Convite para Leads",
+    subject: "{{nome}}, seu acesso gratuito ao Capimobi está liberado 🎉",
+    content_html: CONVITE_LEADS_HTML,
+  },
+];
+
 const TIERS = ["basico", "start", "premium", "vip", "basico_empresa", "essencial_empresa", "premium_empresa", "prime_empresa"] as const;
 // Display overrides to disambiguate duplicated names in PACKAGE_CONFIG
 const TIER_LABEL_OVERRIDES: Record<string, string> = {
@@ -158,7 +197,7 @@ export default function AdminBroadcastTab() {
           <Send className="w-4 h-4" /> Compor
         </button>
         <button onClick={() => setTab("templates")} className={`px-4 py-2 font-medium flex items-center gap-2 ${tab === "templates" ? "border-b-2 border-primary text-primary" : "text-muted-foreground"}`}>
-          <FileText className="w-4 h-4" /> Templates ({templates.length})
+          <FileText className="w-4 h-4" /> Templates ({templates.length + BUILTIN_TEMPLATES.length})
         </button>
         <button onClick={() => setTab("history")} className={`px-4 py-2 font-medium flex items-center gap-2 ${tab === "history" ? "border-b-2 border-primary text-primary" : "text-muted-foreground"}`}>
           <History className="w-4 h-4" /> Histórico ({sends.length})
@@ -266,9 +305,24 @@ export default function AdminBroadcastTab() {
         </div>
       ) : tab === "templates" ? (
         <div className="space-y-3">
+          {BUILTIN_TEMPLATES.map((tpl) => (
+            <div key={tpl.id} className="bg-card border-2 border-primary/30 rounded-xl p-4 flex items-center justify-between shadow-sm">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] uppercase font-bold tracking-wider bg-primary/10 text-primary px-2 py-0.5 rounded">Padrão</span>
+                  <div className="font-bold text-foreground">{tpl.name}</div>
+                </div>
+                <div className="text-sm text-muted-foreground truncate mt-1">{tpl.subject}</div>
+              </div>
+              <button onClick={() => loadTemplate(tpl)}
+                className="px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-sm hover:opacity-90">
+                Usar
+              </button>
+            </div>
+          ))}
           {templates.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground">
-              Nenhum template salvo. Vá em "Compor" e clique em "Salvar como template".
+            <div className="text-center py-8 text-muted-foreground text-sm">
+              Nenhum template personalizado salvo ainda. Vá em "Compor" e clique em "Salvar como template".
             </div>
           ) : templates.map((tpl) => (
             <div key={tpl.id} className="bg-card border border-border rounded-xl p-4 flex items-center justify-between shadow-sm">
