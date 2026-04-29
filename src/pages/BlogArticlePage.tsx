@@ -46,6 +46,7 @@ const blogContent: Record<string, { title: string; category: string; readTime: s
 
 export default function BlogArticlePage() {
   const { slug } = useParams<{ slug: string }>();
+  const { site_name } = useSiteSettings();
   const article = slug ? blogContent[slug] : null;
 
   if (!article) {
