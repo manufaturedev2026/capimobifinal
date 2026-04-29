@@ -25,7 +25,7 @@ export default function AiCreditsCard({ userId, sellerId, themeVars }: { userId?
   const { toast } = useToast();
   const [usageOpen, setUsageOpen] = useState(false);
   const [buyOpen, setBuyOpen] = useState(false);
-  const { balance, monthlyPlanCredits, transactions, loading } = useAiCredits(userId, sellerId);
+  const { balance, monthlyPlanCredits, transactions, loading, refresh } = useAiCredits(userId, sellerId);
 
   const handleBuyCredits = () => setBuyOpen(true);
 
@@ -95,7 +95,7 @@ export default function AiCreditsCard({ userId, sellerId, themeVars }: { userId?
       )}
 
       <AiCreditsUsageModal open={usageOpen} onClose={() => setUsageOpen(false)} userId={userId} />
-      <BuyCreditsModal open={buyOpen} onClose={() => setBuyOpen(false)} themeVars={themeVars} />
+      <BuyCreditsModal open={buyOpen} onClose={() => setBuyOpen(false)} themeVars={themeVars} userId={userId} sellerId={sellerId} onPurchased={refresh} />
     </Card>
   );
 }

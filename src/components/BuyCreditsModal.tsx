@@ -1,10 +1,11 @@
 import { useMemo, useState } from "react";
 import type { CSSProperties } from "react";
-import { Coins, Sparkles, Check, X, Tag, Calculator } from "lucide-react";
+import { Coins, Sparkles, Check, X, Tag, Calculator, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 /**
  * Pacotes pré-definidos.
@@ -33,12 +34,16 @@ interface Props {
   open: boolean;
   onClose: () => void;
   themeVars?: CSSProperties;
+  userId?: string;
+  sellerId?: string;
+  onPurchased?: () => void;
 }
 
-export default function BuyCreditsModal({ open, onClose, themeVars }: Props) {
+export default function BuyCreditsModal({ open, onClose, themeVars, userId, sellerId, onPurchased }: Props) {
   const { toast } = useToast();
   const [selectedId, setSelectedId] = useState<string>("p40");
   const [customValue, setCustomValue] = useState<string>("");
+  const [processing, setProcessing] = useState(false);
 
   const customNum = parseFloat(customValue.replace(",", ".")) || 0;
   const customCredits = useMemo(() => customCreditsFor(customNum), [customNum]);
@@ -49,15 +54,41 @@ export default function BuyCreditsModal({ open, onClose, themeVars }: Props) {
   const isCustomActive = selectedId === "custom";
   const canConfirm = isCustomActive ? (customNum >= 15 && customNum <= 500) : true;
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     const pkg = isCustomActive
       ? { price: customNum, credits: customCredits }
       : PACKAGES.find((p) => p.id === selectedId)!;
-    toast({
-      title: "Pagamento em ativação",
-      description: `Você selecionou ${pkg.credits} créditos por R$ ${pkg.price.toFixed(2).replace(".", ",")}. Em breve esse pacote será cobrado automaticamente.`,
-    });
-    onClose();
+
+    if (!userId) {
+      toast({ title: "Sessão não encontrada", description: "Faça login novamente.", variant: "destructive" });
+      return;
+    }
+
+    setProcessing(true);
+    try {
+      const { error } = await (supabase as any).rpc("add_ai_credits", {
+        p_user_id: userId,
+        p_amount: pkg.credits,
+        p_transaction_type: "purchase",
+        p_tool_key: "credit_purchase",
+        p_seller_id: sellerId || null,
+        p_external_reference: `test-${Date.now()}`,
+        p_notes: `Compra de teste — R$ ${pkg.price.toFixed(2).replace(".", ",")}`,
+        p_metadata: { test_mode: true, price_brl: pkg.price },
+      });
+      if (error) throw error;
+
+      toast({
+        title: "✨ Créditos adicionados (modo teste)",
+        description: `+${pkg.credits} créditos creditados na sua conta. Valor simulado: R$ ${pkg.price.toFixed(2).replace(".", ",")}.`,
+      });
+      onPurchased?.();
+      onClose();
+    } catch (e: any) {
+      toast({ title: "Erro ao processar", description: e?.message || "Tente novamente.", variant: "destructive" });
+    } finally {
+      setProcessing(false);
+    }
   };
 
   return (
@@ -168,14 +199,15 @@ export default function BuyCreditsModal({ open, onClose, themeVars }: Props) {
         {/* Footer */}
         <div className="sticky bottom-0 mt-4 px-6 py-4 border-t border-border bg-background/95 backdrop-blur flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <p className="text-[11px] text-muted-foreground flex items-center gap-1.5">
-            <Sparkles className="h-3.5 w-3.5 text-primary" /> Créditos não expiram. Pagamento único.
+            <Sparkles className="h-3.5 w-3.5 text-primary" /> Modo teste ativo — créditos adicionados sem cobrança real.
           </p>
           <div className="flex gap-2">
-            <Button variant="outline" onClick={onClose}>
+            <Button variant="outline" onClick={onClose} disabled={processing}>
               <X className="h-4 w-4" /> Cancelar
             </Button>
-            <Button onClick={handleConfirm} disabled={!canConfirm} className="bg-gradient-to-r from-primary to-accent text-primary-foreground">
-              <Coins className="h-4 w-4" /> Comprar agora
+            <Button onClick={handleConfirm} disabled={!canConfirm || processing} className="bg-gradient-to-r from-primary to-accent text-primary-foreground">
+              {processing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Coins className="h-4 w-4" />}
+              {processing ? "Processando..." : "Comprar agora"}
             </Button>
           </div>
         </div>
