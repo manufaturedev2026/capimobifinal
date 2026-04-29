@@ -795,9 +795,10 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
       showWatermark,
       sellerName, sellerPhone, sellerCreci, sellerLogo,
       brightness, contrast, saturate, hdr,
+      titleOverride: aiHeadline,
       ...overrides,
     };
-  }, [selectedItem, photos, selectedPhotoIndex, selectedFormat, template, selectedFont, selectedDensity, effectiveBadge, showLogo, showWatermark, sellerName, sellerPhone, sellerCreci, sellerLogo, brightness, contrast, saturate, hdr]);
+  }, [selectedItem, photos, selectedPhotoIndex, selectedFormat, template, selectedFont, selectedDensity, effectiveBadge, showLogo, showWatermark, sellerName, sellerPhone, sellerCreci, sellerLogo, brightness, contrast, saturate, hdr, aiHeadline]);
 
   /* ── Preview ao vivo (debounced) ── */
   useEffect(() => {
