@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { getTagStyle, getTagLabel, getTagEmoji, TAG_CATEGORIES } from "@/data/products";
 import type { Database } from "@/integrations/supabase/types";
 import { useSubscription, PACKAGE_CONFIG } from "@/hooks/useSubscription";
+import { usePlanUsage } from "@/hooks/usePlanUsage";
 import { ES_NEIGHBORHOODS } from "@/data/esNeighborhoods";
 import { BRAZIL_STATES } from "@/data/brazilStates";
 import { useCitiesByState } from "@/hooks/useCitiesByState";
@@ -29,7 +30,7 @@ const propertyCategories: { value: ItemCategory; label: string; emoji: string }[
 ];
 
 const MAX_TAGS = 1;
-const MAX_PHOTOS = 10;
+const DEFAULT_MAX_PHOTOS = 10;
 
 const categoryHeaderStyles: Record<string, string> = {
   valor: "text-amber-600",
@@ -159,6 +160,8 @@ export default function SellerItemForm() {
   const [activeItemCount, setActiveItemCount] = useState(0);
   const [isAluguel, setIsAluguel] = useState(false);
   const { subscription, currentTier, config: pkgConfig, isExpired } = useSubscription(user?.id);
+  const { usage: planUsage } = usePlanUsage(user?.id);
+  const MAX_PHOTOS = planUsage?.limits.max_photos_per_listing ?? DEFAULT_MAX_PHOTOS;
 
   const [form, setForm] = useState(INITIAL_FORM);
   const { cities: ibgeCities, loading: citiesLoading } = useCitiesByState(form.state);

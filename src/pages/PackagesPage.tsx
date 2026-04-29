@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, Crown, Star, Zap, ArrowLeft, Shield, Gem, Diamond, Coins, Ticket, X, Sparkles, CheckCircle2 } from "lucide-react";
+import { Check, Crown, Star, Zap, ArrowLeft, Shield, Gem, Diamond, Coins, Ticket, X, Sparkles, CheckCircle2, Home, Camera, HardDrive } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
@@ -379,9 +379,12 @@ export default function PackagesPage() {
     const isCurrent = currentTier === plan.tier;
     // Fonte preferencial: valor cadastrado no banco (ai_generations_per_day = créditos/mês);
     // fallback no mapa local apenas se o banco não tiver valor.
-    const credits = (plan as any).ai_generations_per_day || aiMonthlyCredits[plan.tier] || 25;
+    const credits = (plan as any).ai_credits_per_month || (plan as any).ai_generations_per_day || aiMonthlyCredits[plan.tier] || 25;
     const { final, discount } = calculateFinalPrice(plan.price, plan.tier);
     const hasDiscount = discount > 0 && plan.price > 0;
+    const maxItems = plan.max_items >= 9999 ? "Ilimitado" : plan.max_items.toLocaleString("pt-BR");
+    const maxPhotos = plan.max_photos_per_listing;
+    const storageLabel = plan.storage_mb >= 1024 ? `${(plan.storage_mb / 1024).toFixed(1)} GB` : `${plan.storage_mb} MB`;
 
     return (
       <motion.div
@@ -442,6 +445,23 @@ export default function PackagesPage() {
                 ? `${formatCredits(credits * 12)} créditos IA/ano`
                 : `${formatCredits(credits)} créditos IA/mês`}
             </span>
+          </div>
+          <div className="mt-2 grid grid-cols-3 gap-1.5">
+            <div className="flex flex-col items-center justify-center gap-0.5 rounded-lg bg-white/15 px-2 py-2">
+              <Home size={14} className="text-white/90" />
+              <span className="text-[10px] text-white/70 font-medium">Anúncios</span>
+              <span className="text-xs font-extrabold text-white">{maxItems}</span>
+            </div>
+            <div className="flex flex-col items-center justify-center gap-0.5 rounded-lg bg-white/15 px-2 py-2">
+              <Camera size={14} className="text-white/90" />
+              <span className="text-[10px] text-white/70 font-medium">Fotos</span>
+              <span className="text-xs font-extrabold text-white">{maxPhotos}/anúncio</span>
+            </div>
+            <div className="flex flex-col items-center justify-center gap-0.5 rounded-lg bg-white/15 px-2 py-2">
+              <HardDrive size={14} className="text-white/90" />
+              <span className="text-[10px] text-white/70 font-medium">Storage</span>
+              <span className="text-xs font-extrabold text-white">{storageLabel}</span>
+            </div>
           </div>
         </div>
 

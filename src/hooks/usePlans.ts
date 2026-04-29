@@ -8,6 +8,9 @@ export interface Plan {
   price: number;
   setup_fee: number;
   max_items: number;
+  max_photos_per_listing: number;
+  storage_mb: number;
+  ai_credits_per_month: number;
   ai_generations_per_day: number;
   color: string;
   border_color: string;
@@ -27,6 +30,9 @@ function normalize(row: any): Plan {
     price: Number(row.price) || 0,
     setup_fee: Number(row.setup_fee) || 0,
     max_items: row.max_items ?? 5,
+    max_photos_per_listing: row.max_photos_per_listing ?? 10,
+    storage_mb: row.storage_mb ?? 50,
+    ai_credits_per_month: row.ai_credits_per_month ?? 25,
     ai_generations_per_day: row.ai_generations_per_day ?? 0,
     color: row.color || "from-slate-500 to-slate-600",
     border_color: row.border_color || "border-slate-400",

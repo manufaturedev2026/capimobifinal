@@ -929,7 +929,15 @@ export default function VenderPage() {
                           </div>
                           <div className="px-3 py-2 rounded-lg bg-gradient-to-br from-purple-500/20 to-fuchsia-500/10 border border-purple-400/20">
                             <p className="text-[9px] uppercase tracking-wider text-purple-200/70 mb-0.5 flex items-center gap-1"><Sparkles className="w-2.5 h-2.5" /> Créditos IA/mês</p>
-                            <p className="text-xs md:text-sm font-bold text-white">{formatCredits(getAiCredits(plan.tier, (plan as any).ai_generations_per_day))}</p>
+                            <p className="text-xs md:text-sm font-bold text-white">{formatCredits((plan as any).ai_credits_per_month || getAiCredits(plan.tier, (plan as any).ai_generations_per_day))}</p>
+                          </div>
+                          <div className="px-3 py-2 rounded-lg bg-black/30 border border-white/5">
+                            <p className="text-[9px] uppercase tracking-wider text-white/40 mb-0.5">Fotos / Anúncio</p>
+                            <p className="text-xs md:text-sm font-bold text-white">Até {plan.max_photos_per_listing}</p>
+                          </div>
+                          <div className="px-3 py-2 rounded-lg bg-black/30 border border-white/5">
+                            <p className="text-[9px] uppercase tracking-wider text-white/40 mb-0.5">Storage</p>
+                            <p className="text-xs md:text-sm font-bold text-white">{plan.storage_mb >= 1024 ? `${(plan.storage_mb / 1024).toFixed(1)} GB` : `${plan.storage_mb} MB`}</p>
                           </div>
                         </div>
 
@@ -1045,7 +1053,15 @@ export default function VenderPage() {
                             </div>
                             <div className="px-3 py-2 rounded-lg bg-gradient-to-br from-purple-500/20 to-fuchsia-500/10 border border-purple-400/20">
                               <p className="text-[9px] uppercase tracking-wider text-purple-200/70 mb-0.5 flex items-center gap-1"><Sparkles className="w-2.5 h-2.5" /> Créditos IA/mês</p>
-                              <p className="text-xs md:text-sm font-bold text-white">{formatCredits(getAiCredits(plan.tier, (plan as any).ai_generations_per_day))}</p>
+                              <p className="text-xs md:text-sm font-bold text-white">{formatCredits((plan as any).ai_credits_per_month || getAiCredits(plan.tier, (plan as any).ai_generations_per_day))}</p>
+                            </div>
+                            <div className="px-3 py-2 rounded-lg bg-black/30 border border-white/5">
+                              <p className="text-[9px] uppercase tracking-wider text-white/40 mb-0.5">Fotos / Anúncio</p>
+                              <p className="text-xs md:text-sm font-bold text-white">Até {plan.max_photos_per_listing}</p>
+                            </div>
+                            <div className="px-3 py-2 rounded-lg bg-black/30 border border-white/5">
+                              <p className="text-[9px] uppercase tracking-wider text-white/40 mb-0.5">Storage</p>
+                              <p className="text-xs md:text-sm font-bold text-white">{plan.storage_mb >= 1024 ? `${(plan.storage_mb / 1024).toFixed(1)} GB` : `${plan.storage_mb} MB`}</p>
                             </div>
                           </div>
 
