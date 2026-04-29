@@ -201,6 +201,20 @@ const TIER_STYLES: Record<string, { gradient: string; glow: string; ring: string
 const formatPrice = (price: number) => price === 0 ? "Gratuito" : `R$ ${price.toFixed(2).replace(".", ",")}`;
 const getTierStyle = (tier: string) => TIER_STYLES[tier] || TIER_STYLES.basico;
 
+// Créditos mensais de IA por tier (espelha get_ai_monthly_credits_for_tier do banco)
+const AI_CREDITS_BY_TIER: Record<string, number> = {
+  basico: 25,
+  basico_empresa: 25,
+  start: 250,
+  premium: 600,
+  vip: 1000,
+  essencial_empresa: 2000,
+  premium_empresa: 2000,
+  prime_empresa: 3500,
+};
+const getAiCredits = (tier: string) => AI_CREDITS_BY_TIER[tier] ?? 25;
+const formatCredits = (n: number) => n.toLocaleString("pt-BR");
+
 export default function VenderPage() {
   const navigate = useNavigate();
   const { user, signUp } = useAuth();
