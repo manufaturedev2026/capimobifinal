@@ -213,6 +213,8 @@ const whatsappUrl =
 
 export default function BecomeAgentPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const { site_name } = useSiteSettings();
+  const r = (s: string) => s.replace(/\{\{site\}\}/gi, site_name);
 
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
