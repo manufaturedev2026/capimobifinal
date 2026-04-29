@@ -9,6 +9,7 @@ import heroImg from "@/assets/hero-auth.jpg";
 import logoImg from "@/assets/logo-es-corretores.png";
 import { BRAZIL_STATES } from "@/data/brazilStates";
 import { useCitiesByState } from "@/hooks/useCitiesByState";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(() => {
