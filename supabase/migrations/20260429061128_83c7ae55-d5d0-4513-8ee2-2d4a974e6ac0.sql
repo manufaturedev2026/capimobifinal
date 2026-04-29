@@ -1,0 +1,1 @@
+UPDATE public.subscription_plans SET is_active = true WHERE tier IN ('fundador_corretor', 'fundador_empresa');
