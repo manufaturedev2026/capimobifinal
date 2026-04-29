@@ -1246,31 +1246,6 @@ export default function CompanyProfile() {
               <div
                 className="relative w-8 h-8 md:w-11 md:h-11 rounded-lg md:rounded-xl flex items-center justify-center flex-shrink-0"
                 style={{
-                  background: "linear-gradient(135deg, rgba(37,211,102,0.25), rgba(37,211,102,0.08))",
-                  border: "1px solid rgba(37,211,102,0.45)",
-                  boxShadow: "0 4px 16px rgba(37,211,102,0.3), inset 0 1px 0 rgba(255,255,255,0.1)",
-                }}
-              >
-                <MessageCircle size={14} className="text-[#25d366] md:hidden" />
-                <MessageCircle size={18} className="text-[#25d366] hidden md:block" />
-                <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-[#25d366] animate-pulse" />
-              </div>
-              <div className="leading-tight min-w-0">
-                <p className="font-display font-extrabold text-sm md:text-xl text-[#25d366]">
-                  Direto
-                </p>
-                <p className="text-[8px] md:text-[10px] uppercase tracking-[0.1em] md:tracking-[0.18em] font-semibold truncate" style={{ color: storeTheme.textMuted }}>
-                  WhatsApp
-                </p>
-              </div>
-            </div>
-
-            <div className="w-px h-8 md:h-11 flex-shrink-0" style={{ background: `linear-gradient(180deg, transparent, ${storeTheme.border}, transparent)` }} />
-
-            <div className="group flex items-center gap-1.5 md:gap-2.5 flex-shrink min-w-0 transition-transform hover:scale-105">
-              <div
-                className="relative w-8 h-8 md:w-11 md:h-11 rounded-lg md:rounded-xl flex items-center justify-center flex-shrink-0"
-                style={{
                   background: `linear-gradient(135deg, ${storeTheme.accent || storeTheme.primary}30, ${storeTheme.accent || storeTheme.primary}10)`,
                   border: `1px solid ${storeTheme.accent || storeTheme.primary}50`,
                   boxShadow: `0 4px 16px ${storeTheme.accent || storeTheme.primary}25, inset 0 1px 0 rgba(255,255,255,0.08)`,
