@@ -303,11 +303,16 @@ export default function AuthPage() {
             </button>
           </form>
 
-          {!signedUp && isLogin && (
+          {!signedUp && isLogin && !registrationsClosed && (
             <p className="text-center text-sm text-muted-foreground mt-8">
               <button onClick={() => setIsLogin(false)} className="text-primary font-semibold hover:underline">
                 Criar conta da loja
               </button>
+            </p>
+          )}
+          {!signedUp && isLogin && registrationsClosed && (
+            <p className="text-center text-xs text-muted-foreground mt-8">
+              🔒 Cadastros temporariamente encerrados. Apenas corretores já cadastrados podem entrar.
             </p>
           )}
           {!signedUp && !isLogin && (
