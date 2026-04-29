@@ -90,14 +90,14 @@ export default function PackagesPage() {
   }, []);
 
   const isImobiliaria = profile?.seller_category === "imobiliaria" || profile?.seller_category === "construtora";
-  const individualPlans = isImobiliaria
+  const individualPlans = isImobiliaria || billingPeriod === "founder"
     ? []
     : plans.filter((p) =>
         billingPeriod === "annual"
           ? p.category === "individual" && p.price > 0
           : p.category === "individual" || p.category === "free"
       );
-  const enterprisePlans = isImobiliaria
+  const enterprisePlans = isImobiliaria && billingPeriod !== "founder"
     ? plans.filter((p) => p.category === "enterprise" && (billingPeriod === "monthly" || p.price > 0))
     : [];
   const activePlan = plans.find((p) => p.tier === currentTier);
