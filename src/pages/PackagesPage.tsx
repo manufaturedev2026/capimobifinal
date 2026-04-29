@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
-import { Check, Crown, Star, Zap, ArrowLeft, Settings, Shield, Gem, Diamond, Coins } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Check, Crown, Star, Zap, ArrowLeft, Settings, Shield, Gem, Diamond, Coins, Ticket, X, Sparkles, CheckCircle2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
@@ -26,6 +26,15 @@ const aiMonthlyCredits: Record<string, number> = {
 
 const formatCredits = (credits: number) => credits.toLocaleString("pt-BR");
 
+type BillingPeriod = "monthly" | "annual";
+
+interface AppliedCoupon {
+  id: string;
+  code: string;
+  discount_percent: number;
+  description: string | null;
+}
+
 export default function PackagesPage() {
   const { user, profile } = useAuth();
   const { subscription, currentTier, refetch } = useSubscription(user?.id);
@@ -34,11 +43,104 @@ export default function PackagesPage() {
   const { toast } = useToast();
   const [selecting, setSelecting] = useState<string | null>(null);
   const [openingPortal, setOpeningPortal] = useState(false);
+  const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>("monthly");
+  const [annualDiscount, setAnnualDiscount] = useState<number>(20);
+  const [couponInput, setCouponInput] = useState("");
+  const [validatingCoupon, setValidatingCoupon] = useState(false);
+  const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null);
+
+  // Carrega o desconto anual configurado pelo admin
+  useEffect(() => {
+    (async () => {
+      const { data } = await (supabase as any)
+        .from("platform_settings")
+        .select("value")
+        .eq("key", "annual_discount_percent")
+        .maybeSingle();
+      if (data?.value) setAnnualDiscount(parseInt(data.value) || 20);
+    })();
+  }, []);
 
   const isImobiliaria = profile?.seller_category === "imobiliaria" || profile?.seller_category === "construtora";
   const individualPlans = isImobiliaria ? [] : plans.filter((p) => p.category === "individual" || p.category === "free");
   const enterprisePlans = isImobiliaria ? plans.filter((p) => p.category === "enterprise") : [];
   const activePlan = plans.find((p) => p.tier === currentTier);
+
+  // Calcula preço final com descontos cumulativos
+  const calculateFinalPrice = (basePrice: number, tier: string) => {
+    let price = basePrice;
+    let totalDiscount = 0;
+    if (billingPeriod === "annual" && annualDiscount > 0) {
+      totalDiscount += annualDiscount;
+    }
+    if (appliedCoupon) {
+      const tiersAllowed = appliedCoupon as any;
+      // O cupom já foi validado server-side, aplica direto
+      totalDiscount += appliedCoupon.discount_percent;
+    }
+    if (totalDiscount > 0) {
+      price = price * (1 - Math.min(totalDiscount, 95) / 100);
+    }
+    return { final: price, discount: totalDiscount };
+  };
+
+  const validateCoupon = async () => {
+    const code = couponInput.trim().toUpperCase();
+    if (!code) {
+      toast({ title: "Digite um código de cupom", variant: "destructive" });
+      return;
+    }
+    setValidatingCoupon(true);
+    try {
+      const { data, error } = await (supabase as any)
+        .from("discount_coupons")
+        .select("id, code, discount_percent, description, applies_to, applicable_tiers, max_uses, uses_count, valid_until, is_active")
+        .eq("code", code)
+        .eq("is_active", true)
+        .maybeSingle();
+
+      if (error) throw error;
+      if (!data) {
+        toast({ title: "Cupom inválido", description: "Esse código não existe ou foi desativado.", variant: "destructive" });
+        return;
+      }
+
+      // Validações client-side
+      if (data.valid_until && new Date(data.valid_until) < new Date()) {
+        toast({ title: "Cupom expirado", description: "Esse cupom não está mais válido.", variant: "destructive" });
+        return;
+      }
+      if (data.max_uses && data.uses_count >= data.max_uses) {
+        toast({ title: "Cupom esgotado", description: "Esse cupom já atingiu o limite de usos.", variant: "destructive" });
+        return;
+      }
+      if (data.applies_to === "monthly" && billingPeriod === "annual") {
+        toast({ title: "Cupom não aplicável", description: "Esse cupom só vale para planos mensais. Mude para a aba Mensal.", variant: "destructive" });
+        return;
+      }
+      if (data.applies_to === "annual" && billingPeriod === "monthly") {
+        toast({ title: "Cupom não aplicável", description: "Esse cupom só vale para planos anuais. Mude para a aba Anual.", variant: "destructive" });
+        return;
+      }
+
+      setAppliedCoupon({
+        id: data.id,
+        code: data.code,
+        discount_percent: data.discount_percent,
+        description: data.description,
+      });
+      setCouponInput("");
+      toast({ title: `🎉 Cupom aplicado!`, description: `${data.discount_percent}% de desconto adicional.` });
+    } catch (err: any) {
+      toast({ title: "Erro ao validar cupom", description: err.message, variant: "destructive" });
+    }
+    setValidatingCoupon(false);
+  };
+
+  const removeCoupon = () => {
+    setAppliedCoupon(null);
+    toast({ title: "Cupom removido" });
+  };
 
   const handleManageSubscription = async () => {
     if (!user) {
@@ -65,11 +167,27 @@ export default function PackagesPage() {
       navigate("/login");
       return;
     }
-    setSelecting(plan.tier);
 
+    // Se cupom aplicado restringe a planos específicos, validar aqui também
+    if (appliedCoupon) {
+      const { data: cpn } = await (supabase as any)
+        .from("discount_coupons")
+        .select("applicable_tiers")
+        .eq("id", appliedCoupon.id)
+        .maybeSingle();
+      if (cpn?.applicable_tiers && cpn.applicable_tiers.length > 0 && !cpn.applicable_tiers.includes(plan.tier)) {
+        toast({
+          title: "Cupom não vale para este plano",
+          description: `O cupom ${appliedCoupon.code} é válido apenas para: ${cpn.applicable_tiers.join(", ")}`,
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+
+    setSelecting(plan.tier);
     try {
       if (plan.price === 0) {
-        // Free tier - handle locally
         if (subscription) {
           await supabase
             .from("seller_subscriptions")
@@ -89,9 +207,12 @@ export default function PackagesPage() {
         await refetch();
         toast({ title: `Pacote ${plan.name} ativado!`, description: "Você pode começar a anunciar agora." });
       } else {
-        // Paid tier - redirect to Stripe Checkout
         const { data, error } = await supabase.functions.invoke("create-checkout", {
-          body: { tier: plan.tier },
+          body: {
+            tier: plan.tier,
+            billing_period: billingPeriod,
+            coupon_code: appliedCoupon?.code || null,
+          },
         });
         if (error) throw error;
         if (data?.url) {
@@ -118,6 +239,8 @@ export default function PackagesPage() {
     const Icon = tierIcons[plan.tier] || Zap;
     const isCurrent = currentTier === plan.tier;
     const credits = aiMonthlyCredits[plan.tier] ?? 25;
+    const { final, discount } = calculateFinalPrice(plan.price, plan.tier);
+    const hasDiscount = discount > 0 && plan.price > 0;
 
     return (
       <motion.div
@@ -130,13 +253,18 @@ export default function PackagesPage() {
         }`}
       >
         {plan.is_popular && !isCurrent && (
-          <div className="absolute top-0 right-0 px-4 py-1 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold rounded-bl-xl">
+          <div className="absolute top-0 right-0 px-4 py-1 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold rounded-bl-xl z-10">
             POPULAR
           </div>
         )}
         {isCurrent && (
-          <div className="absolute top-0 left-0 px-4 py-1 bg-primary text-primary-foreground text-xs font-bold rounded-br-xl">
+          <div className="absolute top-0 left-0 px-4 py-1 bg-primary text-primary-foreground text-xs font-bold rounded-br-xl z-10">
             ATUAL
+          </div>
+        )}
+        {hasDiscount && (
+          <div className="absolute top-3 right-3 px-3 py-1 bg-emerald-500 text-white text-xs font-extrabold rounded-full shadow-lg flex items-center gap-1 z-10">
+            <Sparkles size={12} /> -{discount}%
           </div>
         )}
 
@@ -144,8 +272,20 @@ export default function PackagesPage() {
           <Icon size={32} className="mb-3" />
           <h2 className="font-display font-extrabold text-2xl">{plan.name}</h2>
           <div className="mt-2">
-            <span className="font-display font-bold text-3xl">R$ {plan.price.toFixed(2).replace(".", ",")}</span>
-            <span className="text-white/70 text-sm">/mês</span>
+            {hasDiscount && (
+              <div className="text-white/60 text-sm line-through">
+                R$ {plan.price.toFixed(2).replace(".", ",")}
+              </div>
+            )}
+            <div className="flex items-baseline gap-1">
+              <span className="font-display font-bold text-3xl">R$ {final.toFixed(2).replace(".", ",")}</span>
+              <span className="text-white/70 text-sm">/mês</span>
+            </div>
+            {billingPeriod === "annual" && plan.price > 0 && (
+              <div className="text-white/80 text-xs mt-1">
+                Cobrado anualmente · R$ {(final * 12).toFixed(2).replace(".", ",")}/ano
+              </div>
+            )}
           </div>
           {opts.showPartners && (
             <div className="mt-3 px-3 py-2 bg-white/15 rounded-xl text-center">
@@ -203,6 +343,98 @@ export default function PackagesPage() {
       </div>
 
       <div className="container max-w-6xl mx-auto px-4 -mt-8 relative z-10 pb-24 lg:pb-16">
+        {/* Toggle Mensal / Anual */}
+        <div className="flex justify-center mb-6">
+          <div className="inline-flex bg-card border-2 border-border rounded-2xl p-1.5 shadow-lg">
+            <button
+              onClick={() => setBillingPeriod("monthly")}
+              className={`px-5 sm:px-8 py-2.5 rounded-xl font-bold text-sm transition-all ${
+                billingPeriod === "monthly"
+                  ? "bg-primary text-primary-foreground shadow-md"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              Mensal
+            </button>
+            <button
+              onClick={() => setBillingPeriod("annual")}
+              className={`px-5 sm:px-8 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${
+                billingPeriod === "annual"
+                  ? "bg-primary text-primary-foreground shadow-md"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              Anual
+              {annualDiscount > 0 && (
+                <span className={`px-2 py-0.5 rounded-full text-xs font-extrabold ${
+                  billingPeriod === "annual" ? "bg-white/20 text-white" : "bg-emerald-500/15 text-emerald-600"
+                }`}>
+                  -{annualDiscount}%
+                </span>
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* Campo de cupom */}
+        <div className="max-w-md mx-auto mb-8">
+          <AnimatePresence mode="wait">
+            {appliedCoupon ? (
+              <motion.div
+                key="applied"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className="flex items-center gap-3 p-4 rounded-2xl bg-emerald-500/10 border-2 border-emerald-500/30"
+              >
+                <CheckCircle2 size={20} className="text-emerald-600 flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="font-bold text-sm text-foreground">
+                    Cupom <code className="font-mono text-emerald-600">{appliedCoupon.code}</code> aplicado
+                  </p>
+                  <p className="text-xs text-muted-foreground truncate">
+                    {appliedCoupon.discount_percent}% de desconto{appliedCoupon.description ? ` · ${appliedCoupon.description}` : ""}
+                  </p>
+                </div>
+                <button
+                  onClick={removeCoupon}
+                  className="p-1.5 rounded-lg hover:bg-emerald-500/20 text-emerald-600"
+                  title="Remover cupom"
+                >
+                  <X size={16} />
+                </button>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="input"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className="flex items-stretch gap-2"
+              >
+                <div className="relative flex-1">
+                  <Ticket size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                  <input
+                    type="text"
+                    value={couponInput}
+                    onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
+                    onKeyDown={(e) => e.key === "Enter" && validateCoupon()}
+                    placeholder="Tem um cupom? Digite aqui"
+                    className="w-full pl-10 pr-3 py-2.5 rounded-xl border-2 border-border bg-card text-foreground text-sm font-mono uppercase tracking-wider focus:border-primary outline-none"
+                  />
+                </div>
+                <button
+                  onClick={validateCoupon}
+                  disabled={validatingCoupon || !couponInput.trim()}
+                  className="px-5 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:opacity-90 disabled:opacity-50"
+                >
+                  {validatingCoupon ? "..." : "Aplicar"}
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
         {individualPlans.length > 0 && (
           <>
             <h2 className="font-display font-extrabold text-xl text-foreground mb-4">Planos Individuais</h2>
@@ -273,7 +505,7 @@ export default function PackagesPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-muted-foreground">
             <div>
               <strong className="text-foreground">1. Escolha seu plano</strong>
-              <p className="mt-1">Selecione o pacote que melhor atende suas necessidades.</p>
+              <p className="mt-1">Selecione mensal ou anual e aplique um cupom se tiver.</p>
             </div>
             <div>
               <strong className="text-foreground">2. Pagamento seguro</strong>
