@@ -221,6 +221,56 @@ export default function AdminFoundersTab() {
                   </div>
                 </div>
 
+                {/* Plano herdado + créditos IA */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t">
+                  <div>
+                    <Label className="text-xs flex items-center gap-1.5">
+                      <Crown size={12} className="text-amber-500" />
+                      Plano herdado pelo comprador
+                    </Label>
+                    <Select
+                      value={lot.inherited_tier}
+                      onValueChange={(v) => {
+                        const opt = TIER_OPTIONS.find(o => o.value === v);
+                        const patch: Partial<Lot> = { inherited_tier: v as InheritedTier };
+                        if (opt && (lot.ia_credits === 0 || confirm(`Atualizar créditos de IA para o padrão do plano ${opt.label} (${opt.defaultCredits})?`))) {
+                          patch.ia_credits = opt.defaultCredits;
+                        }
+                        updateLot(lot.id, patch);
+                      }}
+                    >
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {TIER_OPTIONS
+                          .filter(t => t.category === lot.category)
+                          .map(t => (
+                            <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
+                          ))}
+                      </SelectContent>
+                    </Select>
+                    <p className="text-[10px] text-muted-foreground mt-1">
+                      Define quais funções premium o membro recebe por 12 meses.
+                    </p>
+                  </div>
+                  <div>
+                    <Label className="text-xs flex items-center gap-1.5">
+                      <Sparkles size={12} className="text-primary" />
+                      Créditos de IA (uma vez)
+                    </Label>
+                    <Input
+                      type="number"
+                      defaultValue={lot.ia_credits}
+                      onBlur={(e) => {
+                        const v = Number(e.target.value);
+                        if (v !== lot.ia_credits) updateLot(lot.id, { ia_credits: v });
+                      }}
+                    />
+                    <p className="text-[10px] text-muted-foreground mt-1">
+                      Concedidos no momento da compra; não renovam mensalmente.
+                    </p>
+                  </div>
+                </div>
+
                 <div className="w-full bg-secondary rounded-full h-2 overflow-hidden">
                   <div
                     className="h-full bg-primary transition-all"
