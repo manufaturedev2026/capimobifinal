@@ -186,6 +186,7 @@ export default function PackagesPage() {
     })();
   }, [searchParams, user]);
 
+  const handleSelect = async (plan: Plan) => {
     if (!user || !profile) {
       navigate("/login");
       return;
