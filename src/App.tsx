@@ -50,7 +50,17 @@ const AgendaPage = lazyPage(() => import("@/pages/AgendaPage"));
 const AgendaBotChatPage = lazyPage(() => import("@/pages/AgendaBotChatPage"));
 const AiValuationPage = lazyPage(() => import("@/pages/AiValuationPage"));
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5min — listings stay fresh, reduces DB hits
+      gcTime: 10 * 60 * 1000, // 10min in memory cache
+      refetchOnWindowFocus: false, // don't refetch every tab focus
+      refetchOnReconnect: false,
+      retry: 1, // fail fast instead of retrying 3x
+    },
+  },
+});
 
 const RouteLoader = () => (
   <div
