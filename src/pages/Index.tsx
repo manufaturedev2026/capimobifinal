@@ -174,7 +174,7 @@ export default function Index() {
       <Helmet>
         <title>{site_name} | Crie Seu Próprio App de Imóveis</title>
         <meta name="description" content="Monte seu próprio app de imóveis em minutos. Perfeito para corretores, imobiliárias e construtoras. Link profissional na bio do Instagram, PWA instalável e CRM integrado." />
-        <link rel="canonical" href="https://redeimoveisgb.lovable.app/" />
+        <link rel="canonical" href="https://capimobifinal.lovable.app/" />
       </Helmet>
 
       {/* ═══════════ HERO ═══════════ */}
