@@ -510,25 +510,24 @@ export default function FundadorPage() {
                     <span className="font-bold">R$ {blackPlan.price.toFixed(0)}/mês</span>
                   </div>
                   <div className="flex justify-between items-baseline">
-                    <span className="text-sm text-muted-foreground">Custo em 1 ano</span>
-                    <span className="font-bold">R$ {(blackPlan.price * 12).toFixed(0)}</span>
-                  </div>
-                  <div className="flex justify-between items-baseline">
-                    <span className="text-sm text-muted-foreground">Custo em 5 anos</span>
-                    <span className="font-bold text-red-500">R$ {(blackPlan.price * 60).toFixed(0)}</span>
+                    <span className="text-sm text-muted-foreground">Custo em 12 meses</span>
+                    <span className="font-bold text-red-500">R$ {(blackPlan.price * 12).toFixed(0)}</span>
                   </div>
                   <div className="border-t border-border pt-4 flex justify-between items-baseline">
-                    <span className="text-sm font-semibold">Fundador (único)</span>
+                    <span className="text-sm font-semibold">Fundador (12 meses)</span>
                     <span className="text-2xl font-extrabold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                       R$ {enterpriseLot.price.toFixed(0)}
                     </span>
                   </div>
                   <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-4 text-center">
                     <div className="text-xs text-green-700 dark:text-green-400 font-semibold mb-1">
-                      ECONOMIA EM 5 ANOS
+                      ECONOMIA EM 12 MESES
                     </div>
                     <div className="text-3xl font-extrabold text-green-600 dark:text-green-400">
-                      R$ {(blackPlan.price * 60 - enterpriseLot.price).toLocaleString("pt-BR")}
+                      R$ {(blackPlan.price * 12 - enterpriseLot.price).toLocaleString("pt-BR")}
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-1">
+                      ({Math.round(((blackPlan.price * 12 - enterpriseLot.price) / (blackPlan.price * 12)) * 100)}% mais barato)
                     </div>
                   </div>
                 </div>
@@ -546,7 +545,7 @@ export default function FundadorPage() {
               Tudo que está incluído
             </h2>
             <p className="text-muted-foreground text-lg">
-              Acesso completo, vitalício, com benefícios exclusivos só para Fundadores.
+              1 ano completo de acesso premium com benefícios exclusivos só para Fundadores.
             </p>
           </div>
 
