@@ -21,13 +21,14 @@ const TOOL_LABELS: Record<string, string> = {
   invite_chat: "Atendimento Bot Convite",
 };
 
-export default function AiCreditsCard({ userId, sellerId, themeVars }: { userId?: string; sellerId?: string; themeVars?: CSSProperties }) {
+export default function AiCreditsCard({ userId, sellerId, themeVars, onPurchased }: { userId?: string; sellerId?: string; themeVars?: CSSProperties; onPurchased?: () => void }) {
   const { toast } = useToast();
   const [usageOpen, setUsageOpen] = useState(false);
   const [buyOpen, setBuyOpen] = useState(false);
   const { balance, monthlyPlanCredits, transactions, loading, refresh } = useAiCredits(userId, sellerId);
 
   const handleBuyCredits = () => setBuyOpen(true);
+  const handlePurchased = () => { refresh(); onPurchased?.(); };
 
   return (
     <Card className="relative overflow-hidden border-primary/20 bg-gradient-to-br from-primary/10 via-card to-accent/10 p-5">
@@ -95,7 +96,7 @@ export default function AiCreditsCard({ userId, sellerId, themeVars }: { userId?
       )}
 
       <AiCreditsUsageModal open={usageOpen} onClose={() => setUsageOpen(false)} userId={userId} />
-      <BuyCreditsModal open={buyOpen} onClose={() => setBuyOpen(false)} themeVars={themeVars} userId={userId} sellerId={sellerId} onPurchased={refresh} />
+      <BuyCreditsModal open={buyOpen} onClose={() => setBuyOpen(false)} themeVars={themeVars} userId={userId} sellerId={sellerId} onPurchased={handlePurchased} />
     </Card>
   );
 }
