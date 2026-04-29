@@ -128,7 +128,7 @@ const TEMPLATES: TemplateDef[] = [
     description: "Branco premium, máximo respiro, foco na foto.",
     accent: "#0f172a", accentSoft: "rgba(15,23,42,0.92)",
     textTop: "#ffffff", textSub: "rgba(255,255,255,0.9)", textFooter: "rgba(255,255,255,0.7)",
-    gradientStart: "rgba(0,0,0,0)", gradientMid: "rgba(0,0,0,0.35)", gradientEnd: "rgba(0,0,0,0.85)",
+    gradientStart: "rgba(0,0,0,0)", gradientMid: "rgba(0,0,0,0.65)", gradientEnd: "rgba(0,0,0,0.97)",
     topBarColor: null, bottomBarColor: null,
     badgeStyle: "outline", priceStyle: "minimal",
     filterBrightness: 1.06, filterContrast: 1.05, filterSaturate: 1.0,
