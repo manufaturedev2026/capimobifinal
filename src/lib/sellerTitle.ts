@@ -23,7 +23,7 @@ export function getSellerProfessionalTitle(profile: {
 }
 
 const VERIFIED_LABELS: Record<string, { title: string; full: string; active: string; premium: string }> = {
-  corretor: { title: "Corretor Verificado", full: "Corretor verificado", active: "Corretor ativo na plataforma", premium: "Corretor verificado e premium" },
+  corretor: { title: "Corretor(a) Verificado(a)", full: "Corretor(a) verificado(a)", active: "Corretor(a) ativo(a) na plataforma", premium: "Corretor(a) verificado(a) e premium" },
   imobiliaria: { title: "Imobiliária Verificada", full: "Imobiliária verificada", active: "Imobiliária ativa na plataforma", premium: "Imobiliária verificada e premium" },
   construtora: { title: "Construtora Verificada", full: "Construtora verificada", active: "Construtora ativa na plataforma", premium: "Construtora verificada e premium" },
   proprietario: { title: "Proprietário Verificado", full: "Proprietário verificado", active: "Proprietário ativo na plataforma", premium: "Proprietário verificado e premium" },
