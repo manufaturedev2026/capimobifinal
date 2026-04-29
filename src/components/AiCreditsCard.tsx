@@ -1,4 +1,5 @@
-import { CSSProperties, useState } from "react";
+import { useState } from "react";
+import type { CSSProperties } from "react";
 import { Coins, CreditCard, History, Sparkles, BarChart3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
