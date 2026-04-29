@@ -10,6 +10,7 @@ import {
   Globe, Brain, Megaphone, Wallet, FileText, Home,
   Smartphone, Camera, Target, Flame, Diamond, ChevronRight, MapPin,
   Shield, Users, TrendingUp, Award, MessageCircle, Film, Sparkles, Building2, BarChart3, Bot,
+  QrCode, Calculator, Palette, Link2, Calendar, Handshake,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import MarketplaceNavbar from "@/components/MarketplaceNavbar";
