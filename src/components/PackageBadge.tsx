@@ -17,10 +17,16 @@ const styles: Record<string, { bg: string; icon: any; label: string; glow?: stri
     label: "Premium",
     glow: "shadow-amber-500/30",
   },
+  prime: {
+    bg: "bg-gradient-to-r from-purple-600 to-indigo-600",
+    icon: Crown,
+    label: "Prime",
+    glow: "shadow-purple-500/30",
+  },
   vip: {
     bg: "bg-gradient-to-r from-purple-600 to-indigo-600",
     icon: Crown,
-    label: "VIP",
+    label: "Prime",
     glow: "shadow-purple-500/30",
   },
   essencial_empresa: {
@@ -32,7 +38,7 @@ const styles: Record<string, { bg: string; icon: any; label: string; glow?: stri
   premium_empresa: {
     bg: "bg-gradient-to-r from-sky-600 to-blue-700",
     icon: Gem,
-    label: "Prime",
+    label: "Premium Empresa",
     glow: "shadow-sky-500/30",
   },
   prime_empresa: {
