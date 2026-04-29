@@ -350,7 +350,9 @@ export default function SellerItemForm() {
     if (planUsage && planUsage.limits.storage_mb > 0) {
       const usedMb = planUsage.usage.storage_mb || 0;
       const limitMb = planUsage.limits.storage_mb;
-      if (usedMb >= limitMb) {
+      // Tolerância de 30% acima do limite contratado antes de bloquear de vez
+      const hardLimitMb = limitMb * 1.3;
+      if (usedMb >= hardLimitMb) {
         openLimit("storage");
         e.target.value = "";
         return;
