@@ -180,12 +180,17 @@ export default function FundadorPage() {
     category: "individual" | "enterprise",
     lot: FounderLot | undefined,
     label: string,
-    equivalentPlan: string,
+    fallbackPlan: string,
     icon: typeof Crown,
   ) => {
     const Icon = icon;
     const tier = category === "individual" ? "fundador_corretor" : "fundador_empresa";
-    const credits = category === "individual" ? 500 : 1750;
+    // Plano herdado e créditos vêm do lote ativo (configurados no admin).
+    // Se não houver lote, usa fallback apenas para texto.
+    const equivalentPlan = lot?.inherited_tier
+      ? (TIER_LABEL[lot.inherited_tier] || fallbackPlan)
+      : fallbackPlan;
+    const credits = lot?.ia_credits ?? (category === "individual" ? 1000 : 3500);
     const remaining = lot ? lot.total_slots - lot.used_slots : 0;
     const percentSold = lot ? (lot.used_slots / lot.total_slots) * 100 : 100;
     const nextLots = getNextLots(category);
@@ -212,7 +217,7 @@ export default function FundadorPage() {
             <div>
               <h3 className="text-2xl font-bold text-white">{label}</h3>
               <p className="text-sm text-white/60">
-                Equivalente por 1 ano ao <strong className="text-white/80">{equivalentPlan}</strong>
+                Acesso completo por 1 ano ao <strong className="text-white/90">{equivalentPlan}</strong>
               </p>
             </div>
           </div>
