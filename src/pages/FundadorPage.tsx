@@ -150,7 +150,7 @@ export default function FundadorPage() {
   if (!founderEnabled) {
     return (
       <div className="min-h-screen bg-background">
-        <MarketplaceNavbar />
+        <MarketplaceNavbar theme={theme} user={user} />
         <div className="max-w-2xl mx-auto px-4 py-32 text-center">
           <Crown className="w-16 h-16 text-amber-500 mx-auto mb-6 opacity-50" />
           <h1 className="text-3xl font-bold mb-4">Campanha Fundador encerrada</h1>
