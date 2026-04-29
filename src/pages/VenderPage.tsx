@@ -367,9 +367,13 @@ export default function VenderPage() {
   const individualPlans = dbPlans
     .filter(p => p.category === "free" || p.category === "individual" || p.category === "corretor")
     .sort((a, b) => a.sort_order - b.sort_order);
-  const enterprisePlans = dbPlans
-    .filter(p => p.category === "enterprise" || p.category === "imobiliaria" || p.category === "construtora")
+  const imobiliariaPlans = dbPlans
+    .filter(p => p.category === "enterprise" || p.category === "imobiliaria")
     .sort((a, b) => a.sort_order - b.sort_order);
+  const construtoraPlans = dbPlans
+    .filter(p => p.category === "construtora")
+    .sort((a, b) => a.sort_order - b.sort_order);
+  const enterprisePlans = [...imobiliariaPlans, ...construtoraPlans];
   const { site_name } = useSiteSettings();
   const { closed: registrationsClosed } = useRegistrationsClosed();
   const { toast } = useToast();
@@ -908,29 +912,32 @@ export default function VenderPage() {
               </div>
             )}
 
-            {/* Enterprise Plans */}
-            {enterprisePlans.length > 0 && (
-              <div className="mt-16 md:mt-24">
+            {/* Enterprise Plans — Imobiliárias */}
+            {[
+              { plans: imobiliariaPlans, badge: "Para Imobiliárias", title: "Planos para Imobiliárias", subtitle: "Múltiplos corretores, lojas-espelho, CRM compartilhado e analytics por equipe", chipFrom: "from-cyan-500/10", chipTo: "to-violet-500/10", chipText: "from-cyan-300 to-violet-300", icon: Building2 },
+              { plans: construtoraPlans, badge: "Para Construtoras", title: "Planos para Construtoras", subtitle: "Lançamentos, plantas, gestão de empreendimentos e leads em alto volume", chipFrom: "from-amber-500/10", chipTo: "to-orange-500/10", chipText: "from-amber-300 to-orange-300", icon: Building2 },
+            ].map((section) => section.plans.length > 0 && (
+              <div key={section.title} className="mt-16 md:mt-24">
                 <div className="text-center mb-10">
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-cyan-500/10 to-violet-500/10 border border-white/10 mb-4"
+                    className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r ${section.chipFrom} ${section.chipTo} border border-white/10 mb-4`}
                   >
-                    <Building2 className="w-3.5 h-3.5 text-cyan-300" />
-                    <span className="text-[11px] font-bold uppercase tracking-widest bg-gradient-to-r from-cyan-300 to-violet-300 bg-clip-text text-transparent">Para Empresas</span>
+                    <section.icon className="w-3.5 h-3.5 text-white/80" />
+                    <span className={`text-[11px] font-bold uppercase tracking-widest bg-gradient-to-r ${section.chipText} bg-clip-text text-transparent`}>{section.badge}</span>
                   </motion.div>
                   <h3 className="font-display text-2xl sm:text-3xl md:text-4xl font-black bg-gradient-to-br from-white to-white/60 bg-clip-text text-transparent">
-                    Planos para Imobiliárias e Construtoras
+                    {section.title}
                   </h3>
                   <p className="text-white/40 mt-3 text-sm md:text-base max-w-xl mx-auto">
-                    Múltiplos corretores, lojas-espelho, CRM compartilhado e analytics por equipe
+                    {section.subtitle}
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
-                  {enterprisePlans.map((plan, i) => {
+                <div className={`grid grid-cols-1 sm:grid-cols-2 ${section.plans.length >= 4 ? "lg:grid-cols-4" : "lg:grid-cols-3"} gap-4 md:gap-5 ${section.plans.length < 3 ? "max-w-4xl mx-auto" : ""}`}>
+                  {section.plans.map((plan, i) => {
                     const style = getTierStyle(plan.tier);
                     const Icon = style.icon;
                     return (
@@ -1020,7 +1027,7 @@ export default function VenderPage() {
                   })}
                 </div>
               </div>
-            )}
+            ))}
           </div>
         </section>
 
