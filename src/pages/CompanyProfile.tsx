@@ -373,6 +373,7 @@ export default function CompanyProfile() {
     tags: item.tags || [],
     category: item.category,
     city: item.city,
+    state: item.state,
     neighborhood: item.neighborhood,
     description: item.description,
     specs: {} as Record<string, string>,
