@@ -40,6 +40,7 @@ export type StoreLayoutId = typeof STORE_LAYOUTS[number]["id"];
 export const LAYOUTS_BY_TIER: Record<string, string[]> = {
   basico: ["marketplace"],
   start: ["marketplace"],
+  basico_empresa: ["marketplace"],
   vip: ["marketplace", "netflix", "minimal"],
   premium: ["marketplace", "netflix", "minimal", "magazine", "gallery", "elegant"],
   essencial_empresa: ["marketplace", "netflix", "minimal"],

@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 const PUSH_DAILY_LIMITS: Record<string, number> = {
   basico: 1,
+  basico_empresa: 1,
   start: 1,
   premium: 2,
   vip: 3,
