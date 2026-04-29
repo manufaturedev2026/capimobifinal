@@ -255,7 +255,37 @@ export default function AiValuationPage() {
   const [adLoading, setAdLoading] = useState(false);
   const [adContent, setAdContent] = useState<{ titulo: string; descricao: string } | null>(null);
 
+  const [cepLoading, setCepLoading] = useState(false);
+
   const { cities } = useCitiesByState(estado);
+
+  const handleBuscarCep = async () => {
+    const onlyDigits = cep.replace(/\D/g, "");
+    if (onlyDigits.length !== 8) {
+      toast({ title: "CEP inválido", description: "Digite o CEP com 8 dígitos.", variant: "destructive" });
+      return;
+    }
+    setCepLoading(true);
+    try {
+      const res = await fetch(`https://viacep.com.br/ws/${onlyDigits}/json/`);
+      const data = await res.json();
+      if (data.erro) {
+        toast({ title: "CEP não encontrado", description: "Verifique o CEP digitado.", variant: "destructive" });
+        return;
+      }
+      const formatted = `${onlyDigits.slice(0, 5)}-${onlyDigits.slice(5)}`;
+      setCep(formatted);
+      if (data.uf) setEstado(data.uf);
+      if (data.localidade) setCidade(data.localidade);
+      if (data.bairro) setBairro(data.bairro);
+      if (data.logradouro) setRua(data.logradouro);
+      toast({ title: "Endereço encontrado", description: `${data.logradouro || ""}${data.bairro ? " - " + data.bairro : ""}, ${data.localidade}/${data.uf}` });
+    } catch (e) {
+      toast({ title: "Erro ao buscar CEP", description: "Tente novamente em instantes.", variant: "destructive" });
+    } finally {
+      setCepLoading(false);
+    }
+  };
 
   useEffect(() => {
     const propertyId = searchParams.get("imovel");
