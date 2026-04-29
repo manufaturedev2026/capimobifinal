@@ -12,6 +12,7 @@ import { useCitiesByState } from "@/hooks/useCitiesByState";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { useRegistrationsClosed } from "@/hooks/useRegistrationsClosed";
 import RegistrationsClosedNotice from "@/components/RegistrationsClosedNotice";
+import { translateAuthError } from "@/utils/translateAuthError";
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(() => {
