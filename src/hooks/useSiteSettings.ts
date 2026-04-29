@@ -27,10 +27,11 @@ const DEFAULTS: SiteSettings = {
 
 let cachedSettings: SiteSettings | null = null;
 let fetchPromise: Promise<SiteSettings> | null = null;
+const listeners = new Set<(s: SiteSettings) => void>();
 
-function fetchSettings(): Promise<SiteSettings> {
-  if (cachedSettings) return Promise.resolve(cachedSettings);
-  if (fetchPromise) return fetchPromise;
+function fetchSettings(force = false): Promise<SiteSettings> {
+  if (!force && cachedSettings) return Promise.resolve(cachedSettings);
+  if (!force && fetchPromise) return fetchPromise;
   fetchPromise = (async () => {
     const { data } = await supabase
       .from("platform_settings")
@@ -42,6 +43,7 @@ function fetchSettings(): Promise<SiteSettings> {
     });
     cachedSettings = s;
     fetchPromise = null;
+    listeners.forEach((cb) => cb(s));
     return s;
   })();
   return fetchPromise;
@@ -56,13 +58,22 @@ export function useSiteSettings() {
       setSettings(s);
       setLoaded(true);
     });
+    const cb = (s: SiteSettings) => {
+      setSettings(s);
+      setLoaded(true);
+    };
+    listeners.add(cb);
+    return () => {
+      listeners.delete(cb);
+    };
   }, []);
 
   return { ...settings, loaded };
 }
 
-/** Invalidate cache (call after admin saves) */
+/** Invalidate cache (call after admin saves) and notify all mounted components */
 export function invalidateSiteSettings() {
   cachedSettings = null;
   fetchPromise = null;
+  fetchSettings(true);
 }

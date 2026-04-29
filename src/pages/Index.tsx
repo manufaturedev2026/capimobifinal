@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import HomePwaActions from "@/components/HomePwaActions";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 import storePreviewApartment from "@/assets/store-preview-apartment.jpg";
 import storePreviewHouse from "@/assets/store-preview-house.jpg";
@@ -114,6 +115,7 @@ const PLANS_PREVIEW = [
 
 export default function Index() {
   const { user } = useAuth();
+  const { site_name } = useSiteSettings();
   const [activeScreen, setActiveScreen] = useState(0);
   const [phoneScreen, setPhoneScreen] = useState(0);
   const [cinemaMode, setCinemaMode] = useState<number | null>(null);
@@ -170,7 +172,7 @@ export default function Index() {
   return (
     <div className="min-h-screen bg-background">
       <Helmet>
-        <title>Capimobi | Crie Seu Próprio App de Imóveis</title>
+        <title>{site_name} | Crie Seu Próprio App de Imóveis</title>
         <meta name="description" content="Monte seu próprio app de imóveis em minutos. Perfeito para corretores, imobiliárias e construtoras. Link profissional na bio do Instagram, PWA instalável e CRM integrado." />
         <link rel="canonical" href="https://redeimoveisgb.lovable.app/" />
       </Helmet>
@@ -291,7 +293,7 @@ export default function Index() {
                               <span className="text-primary-foreground text-[9px] font-bold">CM</span>
                             </div>
                             <div className="min-w-0">
-                              <p className="text-white text-[10px] font-semibold truncate">Capimobi</p>
+                              <p className="text-white text-[10px] font-semibold truncate">{site_name}</p>
                               <p className="text-white/60 text-[8px] truncate">Seu app instalado</p>
                             </div>
                           </div>
@@ -596,7 +598,7 @@ export default function Index() {
               A bio mais <span className="text-accent">profissional</span> do Instagram
             </h2>
             <p className="text-muted-foreground mt-3 max-w-2xl mx-auto">
-              Pare de usar links genéricos. Com o Capimobi, seu link na bio abre diretamente
+              Pare de usar links genéricos. Com o {site_name}, seu link na bio abre diretamente
               o seu app de imóveis — com sua marca, seus imóveis e contato direto pelo WhatsApp.
             </p>
           </div>
