@@ -17,7 +17,14 @@ Aparece em duas telas com a mesma UX:
 - Setar cidade reseta `heroIdx` para 0 e `page` para 1 (na home).
 
 ## Dados
-`citiesByState` é derivado de `filteredProducts` (ou `realItems` na home), agrupando `item.city` por `item.state`.
+`citiesByState` é derivado de **`products`** (todos os imóveis do vendedor), NÃO de `filteredProducts`. Isso mantém a lista de UFs/cidades estável quando o usuário filtra. Na home, deriva de `realItems`.
+
+Agrupa `item.city` por `item.state`. Para isso funcionar, o componente pai precisa passar `state` no mapeamento dos items:
+- `src/pages/CompanyProfile.tsx` mapeia `dbDisplayItems` incluindo `state: item.state` (além de `city`, `neighborhood`).
+
+## Auto-expand
+- Se só houver 1 estado disponível (caso comum de loja individual), o `useEffect` expande automaticamente esse UF para mostrar a lista de cidades sem clique.
+- Também auto-expande o UF correspondente à `cityFilter` ativa.
 
 ## Mobile
 Mobile usa o seletor de cidade dentro do hero (botão com dropdown) — não a sidebar.
