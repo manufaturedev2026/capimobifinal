@@ -14,6 +14,7 @@ import PropertyFieldsCasa from "@/components/PropertyFieldsCasa";
 import PropertyFieldsApartamento from "@/components/PropertyFieldsApartamento";
 import PropertyFieldsTerreno from "@/components/PropertyFieldsTerreno";
 import PropertyFieldsComercial from "@/components/PropertyFieldsComercial";
+import ListingValuationFields from "@/components/ListingValuationFields";
 
 type ItemCategory = Database["public"]["Enums"]["item_category"];
 type ItemTag = Database["public"]["Enums"]["item_tag"];
@@ -106,6 +107,44 @@ const INITIAL_FORM = {
   partnership_enabled: false,
   commission_percent: "",
   partner_percent: "",
+  // === Avaliação IA (auto-preenchimento) ===
+  acabamento: "",
+  conservacao: "",
+  liquidez: "",
+  lavabos: "",
+  kitchens: "",
+  offices: "",
+  total_floors_building: "",
+  area_coberta_externa: "",
+  area_util: "",
+  amb_sala_estar: false,
+  amb_sala_jantar: false,
+  amb_sala_tv: false,
+  amb_copa: false,
+  amb_lavanderia: false,
+  amb_area_servico: false,
+  amb_closet: false,
+  amb_despensa: false,
+  amb_varanda_interna: false,
+  loc_bairro_valorizado: false,
+  loc_rua_tranquila: false,
+  loc_vista_privilegiada: false,
+  loc_area_risco: false,
+  infra_escola: false,
+  infra_hospital: false,
+  infra_comercio: false,
+  infra_transporte: false,
+  infra_parque: false,
+  infra_bancos: false,
+  finish_piso: "",
+  finish_banheiro: "",
+  finish_cozinha: "",
+  finish_pintura: "",
+  finish_esquadrias: "",
+  finish_telhado: "",
+  finish_eletrica: "",
+  habite_se: false,
+  sem_pendencias_judiciais: false,
 };
 
 export default function SellerItemForm() {
@@ -208,6 +247,44 @@ export default function SellerItemForm() {
               partnership_enabled: !!d.partnership_enabled,
               commission_percent: d.commission_percent?.toString() || "",
               partner_percent: d.partner_percent?.toString() || "",
+              // === Avaliação IA ===
+              acabamento: d.acabamento || "",
+              conservacao: d.conservacao || "",
+              liquidez: d.liquidez || "",
+              lavabos: d.lavabos?.toString() || "",
+              kitchens: d.kitchens?.toString() || "",
+              offices: d.offices?.toString() || "",
+              total_floors_building: d.total_floors_building?.toString() || "",
+              area_coberta_externa: d.area_coberta_externa?.toString() || "",
+              area_util: d.area_util?.toString() || "",
+              amb_sala_estar: !!d.amb_sala_estar,
+              amb_sala_jantar: !!d.amb_sala_jantar,
+              amb_sala_tv: !!d.amb_sala_tv,
+              amb_copa: !!d.amb_copa,
+              amb_lavanderia: !!d.amb_lavanderia,
+              amb_area_servico: !!d.amb_area_servico,
+              amb_closet: !!d.amb_closet,
+              amb_despensa: !!d.amb_despensa,
+              amb_varanda_interna: !!d.amb_varanda_interna,
+              loc_bairro_valorizado: !!d.loc_bairro_valorizado,
+              loc_rua_tranquila: !!d.loc_rua_tranquila,
+              loc_vista_privilegiada: !!d.loc_vista_privilegiada,
+              loc_area_risco: !!d.loc_area_risco,
+              infra_escola: !!d.infra_escola,
+              infra_hospital: !!d.infra_hospital,
+              infra_comercio: !!d.infra_comercio,
+              infra_transporte: !!d.infra_transporte,
+              infra_parque: !!d.infra_parque,
+              infra_bancos: !!d.infra_bancos,
+              finish_piso: d.finish_piso || "",
+              finish_banheiro: d.finish_banheiro || "",
+              finish_cozinha: d.finish_cozinha || "",
+              finish_pintura: d.finish_pintura || "",
+              finish_esquadrias: d.finish_esquadrias || "",
+              finish_telhado: d.finish_telhado || "",
+              finish_eletrica: d.finish_eletrica || "",
+              habite_se: !!d.habite_se,
+              sem_pendencias_judiciais: !!d.sem_pendencias_judiciais,
             });
           }
         });
@@ -421,6 +498,44 @@ export default function SellerItemForm() {
       partnership_enabled: form.partnership_enabled || false,
       commission_percent: numOrNull(form.commission_percent),
       partner_percent: numOrNull(form.partner_percent),
+      // === Avaliação IA (auto-preenchimento) ===
+      acabamento: strOrNull(form.acabamento),
+      conservacao: strOrNull(form.conservacao),
+      liquidez: strOrNull(form.liquidez),
+      lavabos: intOrNull(form.lavabos),
+      kitchens: intOrNull(form.kitchens),
+      offices: intOrNull(form.offices),
+      total_floors_building: intOrNull(form.total_floors_building),
+      area_coberta_externa: numOrNull(form.area_coberta_externa),
+      area_util: numOrNull(form.area_util),
+      amb_sala_estar: !!form.amb_sala_estar,
+      amb_sala_jantar: !!form.amb_sala_jantar,
+      amb_sala_tv: !!form.amb_sala_tv,
+      amb_copa: !!form.amb_copa,
+      amb_lavanderia: !!form.amb_lavanderia,
+      amb_area_servico: !!form.amb_area_servico,
+      amb_closet: !!form.amb_closet,
+      amb_despensa: !!form.amb_despensa,
+      amb_varanda_interna: !!form.amb_varanda_interna,
+      loc_bairro_valorizado: !!form.loc_bairro_valorizado,
+      loc_rua_tranquila: !!form.loc_rua_tranquila,
+      loc_vista_privilegiada: !!form.loc_vista_privilegiada,
+      loc_area_risco: !!form.loc_area_risco,
+      infra_escola: !!form.infra_escola,
+      infra_hospital: !!form.infra_hospital,
+      infra_comercio: !!form.infra_comercio,
+      infra_transporte: !!form.infra_transporte,
+      infra_parque: !!form.infra_parque,
+      infra_bancos: !!form.infra_bancos,
+      finish_piso: strOrNull(form.finish_piso),
+      finish_banheiro: strOrNull(form.finish_banheiro),
+      finish_cozinha: strOrNull(form.finish_cozinha),
+      finish_pintura: strOrNull(form.finish_pintura),
+      finish_esquadrias: strOrNull(form.finish_esquadrias),
+      finish_telhado: strOrNull(form.finish_telhado),
+      finish_eletrica: strOrNull(form.finish_eletrica),
+      habite_se: !!form.habite_se,
+      sem_pendencias_judiciais: !!form.sem_pendencias_judiciais,
     };
 
     let error;
@@ -637,6 +752,9 @@ export default function SellerItemForm() {
 
         {/* Dynamic Property Fields */}
         {renderPropertyFields()}
+
+        {/* Dados profissionais para auto-preenchimento da Avaliação IA */}
+        <ListingValuationFields form={form} setForm={setForm} />
 
         {/* Tags */}
         <div className="bg-card border border-border rounded-2xl p-5 space-y-5">

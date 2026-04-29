@@ -2695,9 +2695,21 @@ export type Database = {
       }
       seller_items: {
         Row: {
+          acabamento: string | null
           accepts_financing: boolean | null
           address: string | null
+          amb_area_servico: boolean | null
+          amb_closet: boolean | null
+          amb_copa: boolean | null
+          amb_despensa: boolean | null
+          amb_lavanderia: boolean | null
+          amb_sala_estar: boolean | null
+          amb_sala_jantar: boolean | null
+          amb_sala_tv: boolean | null
+          amb_varanda_interna: boolean | null
           area: number | null
+          area_coberta_externa: number | null
+          area_util: number | null
           backyard: boolean | null
           balcony: boolean | null
           barbecue: boolean | null
@@ -2713,35 +2725,58 @@ export type Database = {
           color: string | null
           commission_percent: number | null
           condo_fee: number | null
+          conservacao: string | null
           created_at: string
           description: string | null
           documentation: string | null
           doorman_24h: boolean | null
           finality: string | null
+          finish_banheiro: string | null
+          finish_cozinha: string | null
+          finish_eletrica: string | null
+          finish_esquadrias: string | null
+          finish_pintura: string | null
+          finish_piso: string | null
+          finish_telhado: string | null
           floor_number: number | null
           foot_traffic: string | null
           fuel: string | null
           furnished: boolean | null
           garden: boolean | null
+          habite_se: boolean | null
           has_ac: boolean | null
           has_dock: boolean | null
           has_elevator: boolean | null
           has_showcase: boolean | null
           id: string
           ideal_for: string | null
+          infra_bancos: boolean | null
+          infra_comercio: boolean | null
+          infra_escola: boolean | null
+          infra_hospital: boolean | null
+          infra_parque: boolean | null
+          infra_transporte: boolean | null
           infrastructure: string[] | null
           internal_office: boolean | null
           iptu: number | null
           is_owner_listing: boolean | null
           kitchen_type: string | null
+          kitchens: number | null
+          lavabos: number | null
           leisure_amenities: string[] | null
+          liquidez: string | null
           listing_status: Database["public"]["Enums"]["listing_status"]
           living_rooms: number | null
+          loc_area_risco: boolean | null
+          loc_bairro_valorizado: boolean | null
+          loc_rua_tranquila: boolean | null
+          loc_vista_privilegiada: boolean | null
           lot_depth: number | null
           lot_front: number | null
           mileage: number | null
           model: string | null
           neighborhood: string | null
+          offices: number | null
           owner_phone: string | null
           parking_spots: number | null
           partner_percent: number | null
@@ -2753,6 +2788,7 @@ export type Database = {
           security: string | null
           seller_id: string
           seller_type: Database["public"]["Enums"]["seller_type"]
+          sem_pendencias_judiciais: boolean | null
           service_area: boolean | null
           show_financing: boolean | null
           show_street_view: boolean
@@ -2766,6 +2802,7 @@ export type Database = {
           thumbnail_url: string | null
           title: string
           topography: string | null
+          total_floors_building: number | null
           transmission: string | null
           truck_access: boolean | null
           updated_at: string
@@ -2776,9 +2813,21 @@ export type Database = {
           zoning: string | null
         }
         Insert: {
+          acabamento?: string | null
           accepts_financing?: boolean | null
           address?: string | null
+          amb_area_servico?: boolean | null
+          amb_closet?: boolean | null
+          amb_copa?: boolean | null
+          amb_despensa?: boolean | null
+          amb_lavanderia?: boolean | null
+          amb_sala_estar?: boolean | null
+          amb_sala_jantar?: boolean | null
+          amb_sala_tv?: boolean | null
+          amb_varanda_interna?: boolean | null
           area?: number | null
+          area_coberta_externa?: number | null
+          area_util?: number | null
           backyard?: boolean | null
           balcony?: boolean | null
           barbecue?: boolean | null
@@ -2794,35 +2843,58 @@ export type Database = {
           color?: string | null
           commission_percent?: number | null
           condo_fee?: number | null
+          conservacao?: string | null
           created_at?: string
           description?: string | null
           documentation?: string | null
           doorman_24h?: boolean | null
           finality?: string | null
+          finish_banheiro?: string | null
+          finish_cozinha?: string | null
+          finish_eletrica?: string | null
+          finish_esquadrias?: string | null
+          finish_pintura?: string | null
+          finish_piso?: string | null
+          finish_telhado?: string | null
           floor_number?: number | null
           foot_traffic?: string | null
           fuel?: string | null
           furnished?: boolean | null
           garden?: boolean | null
+          habite_se?: boolean | null
           has_ac?: boolean | null
           has_dock?: boolean | null
           has_elevator?: boolean | null
           has_showcase?: boolean | null
           id?: string
           ideal_for?: string | null
+          infra_bancos?: boolean | null
+          infra_comercio?: boolean | null
+          infra_escola?: boolean | null
+          infra_hospital?: boolean | null
+          infra_parque?: boolean | null
+          infra_transporte?: boolean | null
           infrastructure?: string[] | null
           internal_office?: boolean | null
           iptu?: number | null
           is_owner_listing?: boolean | null
           kitchen_type?: string | null
+          kitchens?: number | null
+          lavabos?: number | null
           leisure_amenities?: string[] | null
+          liquidez?: string | null
           listing_status?: Database["public"]["Enums"]["listing_status"]
           living_rooms?: number | null
+          loc_area_risco?: boolean | null
+          loc_bairro_valorizado?: boolean | null
+          loc_rua_tranquila?: boolean | null
+          loc_vista_privilegiada?: boolean | null
           lot_depth?: number | null
           lot_front?: number | null
           mileage?: number | null
           model?: string | null
           neighborhood?: string | null
+          offices?: number | null
           owner_phone?: string | null
           parking_spots?: number | null
           partner_percent?: number | null
@@ -2834,6 +2906,7 @@ export type Database = {
           security?: string | null
           seller_id: string
           seller_type: Database["public"]["Enums"]["seller_type"]
+          sem_pendencias_judiciais?: boolean | null
           service_area?: boolean | null
           show_financing?: boolean | null
           show_street_view?: boolean
@@ -2847,6 +2920,7 @@ export type Database = {
           thumbnail_url?: string | null
           title: string
           topography?: string | null
+          total_floors_building?: number | null
           transmission?: string | null
           truck_access?: boolean | null
           updated_at?: string
@@ -2857,9 +2931,21 @@ export type Database = {
           zoning?: string | null
         }
         Update: {
+          acabamento?: string | null
           accepts_financing?: boolean | null
           address?: string | null
+          amb_area_servico?: boolean | null
+          amb_closet?: boolean | null
+          amb_copa?: boolean | null
+          amb_despensa?: boolean | null
+          amb_lavanderia?: boolean | null
+          amb_sala_estar?: boolean | null
+          amb_sala_jantar?: boolean | null
+          amb_sala_tv?: boolean | null
+          amb_varanda_interna?: boolean | null
           area?: number | null
+          area_coberta_externa?: number | null
+          area_util?: number | null
           backyard?: boolean | null
           balcony?: boolean | null
           barbecue?: boolean | null
@@ -2875,35 +2961,58 @@ export type Database = {
           color?: string | null
           commission_percent?: number | null
           condo_fee?: number | null
+          conservacao?: string | null
           created_at?: string
           description?: string | null
           documentation?: string | null
           doorman_24h?: boolean | null
           finality?: string | null
+          finish_banheiro?: string | null
+          finish_cozinha?: string | null
+          finish_eletrica?: string | null
+          finish_esquadrias?: string | null
+          finish_pintura?: string | null
+          finish_piso?: string | null
+          finish_telhado?: string | null
           floor_number?: number | null
           foot_traffic?: string | null
           fuel?: string | null
           furnished?: boolean | null
           garden?: boolean | null
+          habite_se?: boolean | null
           has_ac?: boolean | null
           has_dock?: boolean | null
           has_elevator?: boolean | null
           has_showcase?: boolean | null
           id?: string
           ideal_for?: string | null
+          infra_bancos?: boolean | null
+          infra_comercio?: boolean | null
+          infra_escola?: boolean | null
+          infra_hospital?: boolean | null
+          infra_parque?: boolean | null
+          infra_transporte?: boolean | null
           infrastructure?: string[] | null
           internal_office?: boolean | null
           iptu?: number | null
           is_owner_listing?: boolean | null
           kitchen_type?: string | null
+          kitchens?: number | null
+          lavabos?: number | null
           leisure_amenities?: string[] | null
+          liquidez?: string | null
           listing_status?: Database["public"]["Enums"]["listing_status"]
           living_rooms?: number | null
+          loc_area_risco?: boolean | null
+          loc_bairro_valorizado?: boolean | null
+          loc_rua_tranquila?: boolean | null
+          loc_vista_privilegiada?: boolean | null
           lot_depth?: number | null
           lot_front?: number | null
           mileage?: number | null
           model?: string | null
           neighborhood?: string | null
+          offices?: number | null
           owner_phone?: string | null
           parking_spots?: number | null
           partner_percent?: number | null
@@ -2915,6 +3024,7 @@ export type Database = {
           security?: string | null
           seller_id?: string
           seller_type?: Database["public"]["Enums"]["seller_type"]
+          sem_pendencias_judiciais?: boolean | null
           service_area?: boolean | null
           show_financing?: boolean | null
           show_street_view?: boolean
@@ -2928,6 +3038,7 @@ export type Database = {
           thumbnail_url?: string | null
           title?: string
           topography?: string | null
+          total_floors_building?: number | null
           transmission?: string | null
           truck_access?: boolean | null
           updated_at?: string
