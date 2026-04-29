@@ -26,7 +26,7 @@ export default function NeighborhoodPage() {
       setLoading(true);
       const { data } = await supabase
         .from("seller_items")
-        .select("id, title, price, photos, city, neighborhood, category, bedrooms, bathrooms, area, status")
+        .select("id, title, price, photos, thumbnail_url, city, neighborhood, category, bedrooms, bathrooms, area, status")
         .eq("status", "ativo")
         .ilike("city", `%${cityName}%`)
         .ilike("neighborhood", `%${neighborhoodName}%`)

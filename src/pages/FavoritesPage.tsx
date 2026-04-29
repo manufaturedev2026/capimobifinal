@@ -21,7 +21,7 @@ export default function FavoritesPage() {
     const fetchItems = async () => {
       if (favoriteIds.size === 0) { setItems([]); setLoading(false); return; }
       const ids = Array.from(favoriteIds);
-      const { data } = await supabase.from("seller_items").select("id, title, price, photos, city, neighborhood, category, status, slug").in("id", ids);
+      const { data } = await supabase.from("seller_items").select("id, title, price, photos, thumbnail_url, city, neighborhood, category, status, slug").in("id", ids);
       setItems(data || []);
       setLoading(false);
     };

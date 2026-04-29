@@ -66,7 +66,7 @@ export default function SeoLandingPage() {
       setLoading(true);
       let query = supabase
         .from("seller_items")
-        .select("id, title, price, photos, city, neighborhood, category, bedrooms, bathrooms, area, status, slug, seller_id, tags")
+        .select("id, title, price, photos, thumbnail_url, city, neighborhood, category, bedrooms, bathrooms, area, status, slug, seller_id, tags")
         .eq("status", "ativo").eq("seller_type", "imoveis")
         .or("is_owner_listing.is.null,is_owner_listing.eq.false")
         .order("created_at", { ascending: false }).limit(120);

@@ -128,7 +128,7 @@ export default function Index() {
     const fetchCinemaItems = async () => {
       let query = supabase
         .from("seller_items")
-        .select("id, title, slug, price, city, state, photos, bedrooms, bathrooms, area, seller_id, finality")
+        .select("id, title, slug, price, city, state, photos, thumbnail_url, bedrooms, bathrooms, area, seller_id, finality")
         .eq("status", "ativo")
         .not("photos", "is", null)
         .limit(30);
