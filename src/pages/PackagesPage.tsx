@@ -315,7 +315,7 @@ export default function PackagesPage() {
   const inheritedTier = activeFounderLot?.inherited_tier;
   const founderPlan = plans.find((p) => p.tier === inheritedTier) || plans.find((p) => p.tier === founderTier);
 
-  const handleSelectFounder = async () => {
+  const handleSelectFounder = async (asUpgrade = false) => {
     if (!user || !profile) {
       navigate("/auth");
       return;
@@ -331,6 +331,7 @@ export default function PackagesPage() {
           tier: founderTier,
           billing_period: "annual",
           founder_lot_id: activeFounderLot.id,
+          is_founder_upgrade: asUpgrade,
         },
       });
       if (error) throw error;
