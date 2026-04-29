@@ -1018,14 +1018,13 @@ export default function AdminApifyLeadsTab() {
                       <TableHead className="w-10">
                         <Checkbox
                           checked={
-                            filteredLeads.slice(0, 200).length > 0 &&
-                            filteredLeads.slice(0, 200).every((l) => selectedLeadIds.has(l.id))
+                            paginatedLeads.length > 0 &&
+                            paginatedLeads.every((l) => selectedLeadIds.has(l.id))
                           }
                           onCheckedChange={(v) => {
                             const next = new Set(selectedLeadIds);
-                            const visible = filteredLeads.slice(0, 200);
-                            if (v) visible.forEach((l) => { if (l.email) next.add(l.id); });
-                            else visible.forEach((l) => next.delete(l.id));
+                            if (v) paginatedLeads.forEach((l) => { if (l.email) next.add(l.id); });
+                            else paginatedLeads.forEach((l) => next.delete(l.id));
                             setSelectedLeadIds(next);
                           }}
                         />
@@ -1043,7 +1042,7 @@ export default function AdminApifyLeadsTab() {
                       <TableRow><TableCell colSpan={7} className="text-center py-8"><Loader2 className="h-5 w-5 animate-spin mx-auto" /></TableCell></TableRow>
                     ) : filteredLeads.length === 0 ? (
                       <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">Nenhum lead encontrado</TableCell></TableRow>
-                    ) : filteredLeads.slice(0, 200).map((l) => {
+                    ) : paginatedLeads.map((l) => {
                       const alreadySent = sentLeadIds.has(l.id);
                       return (
                       <TableRow key={l.id} className={alreadySent ? "bg-muted/30" : ""}>
@@ -1112,10 +1111,23 @@ export default function AdminApifyLeadsTab() {
                   </TableBody>
                 </Table>
               </div>
-              {filteredLeads.length > 200 && (
-                <p className="text-xs text-muted-foreground text-center">
-                  Mostrando 200 de {filteredLeads.length}. Use os filtros para refinar.
-                </p>
+              {filteredLeads.length > 0 && (
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-2 pt-1">
+                  <p className="text-xs text-muted-foreground">
+                    Mostrando <strong>{pageStart + 1}–{Math.min(pageEnd, filteredLeads.length)}</strong> de <strong>{filteredLeads.length}</strong> leads
+                  </p>
+                  {totalPages > 1 && (
+                    <div className="flex items-center gap-1">
+                      <Button size="sm" variant="outline" disabled={safePage === 1} onClick={() => setCurrentPage(1)}>«</Button>
+                      <Button size="sm" variant="outline" disabled={safePage === 1} onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}>‹ Anterior</Button>
+                      <span className="text-xs px-3 font-medium">
+                        Página {safePage} de {totalPages}
+                      </span>
+                      <Button size="sm" variant="outline" disabled={safePage === totalPages} onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}>Próxima ›</Button>
+                      <Button size="sm" variant="outline" disabled={safePage === totalPages} onClick={() => setCurrentPage(totalPages)}>»</Button>
+                    </div>
+                  )}
+                </div>
               )}
             </CardContent>
           </Card>
