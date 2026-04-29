@@ -212,6 +212,8 @@ export default function AdminApifyLeadsTab() {
   const [fSearch, setFSearch] = useState("");
   const [fHasEmail, setFHasEmail] = useState(false);
   const [fHasWhats, setFHasWhats] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const PAGE_SIZE = 100;
 
   // Campaign dialog
   const [campOpen, setCampOpen] = useState(false);
@@ -713,6 +715,14 @@ export default function AdminApifyLeadsTab() {
       return true;
     });
   }, [leads, fEstado, fTipo, fStatus, fHasEmail, fHasWhats, fSearch]);
+
+  useEffect(() => { setCurrentPage(1); }, [fEstado, fTipo, fStatus, fHasEmail, fHasWhats, fSearch]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredLeads.length / PAGE_SIZE));
+  const safePage = Math.min(currentPage, totalPages);
+  const pageStart = (safePage - 1) * PAGE_SIZE;
+  const pageEnd = pageStart + PAGE_SIZE;
+  const paginatedLeads = filteredLeads.slice(pageStart, pageEnd);
 
   const statusBadge = (s: string) => {
     const map: Record<string, string> = {
