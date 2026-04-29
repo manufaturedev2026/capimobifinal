@@ -22,19 +22,19 @@ export function getSellerProfessionalTitle(profile: {
   return "Corretor de Imóveis";
 }
 
-const VERIFIED_LABELS: Record<string, { title: string; full: string; active: string; premium: string; combined: string; combinedActive: string }> = {
-  corretor: { title: "Corretor(a) Verificado(a)", full: "Corretor(a) verificado(a)", active: "Corretor(a) ativo(a) na plataforma", premium: "Corretor(a) verificado(a) e premium", combined: "Corretor(a) Profissional Verificado(a)", combinedActive: "Corretor(a) Profissional Ativo(a)" },
-  imobiliaria: { title: "Imobiliária Verificada", full: "Imobiliária verificada", active: "Imobiliária ativa na plataforma", premium: "Imobiliária verificada e premium", combined: "Imobiliária Profissional Verificada", combinedActive: "Imobiliária Profissional Ativa" },
-  construtora: { title: "Construtora Verificada", full: "Construtora verificada", active: "Construtora ativa na plataforma", premium: "Construtora verificada e premium", combined: "Construtora Profissional Verificada", combinedActive: "Construtora Profissional Ativa" },
-  proprietario: { title: "Proprietário Verificado", full: "Proprietário verificado", active: "Proprietário ativo na plataforma", premium: "Proprietário verificado e premium", combined: "Proprietário Profissional Verificado", combinedActive: "Proprietário Profissional Ativo" },
-  loja_veiculos: { title: "Loja Verificada", full: "Loja verificada", active: "Loja ativa na plataforma", premium: "Loja verificada e premium", combined: "Loja Profissional Verificada", combinedActive: "Loja Profissional Ativa" },
-  autonomo: { title: "Vendedor Verificado", full: "Vendedor verificado", active: "Vendedor ativo na plataforma", premium: "Vendedor verificado e premium", combined: "Vendedor Profissional Verificado", combinedActive: "Vendedor Profissional Ativo" },
-  concessionaria: { title: "Concessionária Verificada", full: "Concessionária verificada", active: "Concessionária ativa na plataforma", premium: "Concessionária verificada e premium", combined: "Concessionária Profissional Verificada", combinedActive: "Concessionária Profissional Ativa" },
+const VERIFIED_LABELS: Record<string, { title: string; full: string; active: string; premium: string; role: string; subtitleVerified: string; subtitleActive: string }> = {
+  corretor: { title: "Corretor(a) Verificado(a)", full: "Corretor(a) verificado(a)", active: "Corretor(a) ativo(a) na plataforma", premium: "Corretor(a) verificado(a) e premium", role: "Corretor(a)", subtitleVerified: "Profissional Verificado(a)", subtitleActive: "Profissional Ativo(a)" },
+  imobiliaria: { title: "Imobiliária Verificada", full: "Imobiliária verificada", active: "Imobiliária ativa na plataforma", premium: "Imobiliária verificada e premium", role: "Imobiliária", subtitleVerified: "Profissional Verificada", subtitleActive: "Profissional Ativa" },
+  construtora: { title: "Construtora Verificada", full: "Construtora verificada", active: "Construtora ativa na plataforma", premium: "Construtora verificada e premium", role: "Construtora", subtitleVerified: "Profissional Verificada", subtitleActive: "Profissional Ativa" },
+  proprietario: { title: "Proprietário Verificado", full: "Proprietário verificado", active: "Proprietário ativo na plataforma", premium: "Proprietário verificado e premium", role: "Proprietário", subtitleVerified: "Profissional Verificado", subtitleActive: "Profissional Ativo" },
+  loja_veiculos: { title: "Loja Verificada", full: "Loja verificada", active: "Loja ativa na plataforma", premium: "Loja verificada e premium", role: "Loja", subtitleVerified: "Profissional Verificada", subtitleActive: "Profissional Ativa" },
+  autonomo: { title: "Vendedor Verificado", full: "Vendedor verificado", active: "Vendedor ativo na plataforma", premium: "Vendedor verificado e premium", role: "Vendedor", subtitleVerified: "Profissional Verificado", subtitleActive: "Profissional Ativo" },
+  concessionaria: { title: "Concessionária Verificada", full: "Concessionária verificada", active: "Concessionária ativa na plataforma", premium: "Concessionária verificada e premium", role: "Concessionária", subtitleVerified: "Profissional Verificada", subtitleActive: "Profissional Ativa" },
 };
 
 export function getSellerVerifiedLabel(
   category: string | null | undefined,
-  variant: "title" | "full" | "active" | "premium" | "combined" | "combinedActive" = "full"
+  variant: "title" | "full" | "active" | "premium" | "role" | "subtitleVerified" | "subtitleActive" = "full"
 ): string {
   const labels = VERIFIED_LABELS[category || "autonomo"] || VERIFIED_LABELS.autonomo;
   return labels[variant];
