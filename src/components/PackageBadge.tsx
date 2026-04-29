@@ -1,7 +1,7 @@
 import { Crown, Star, Zap, Building, Shield, Gem, Diamond } from "lucide-react";
 
 interface PackageBadgeProps {
-  tier: "start" | "basico" | "premium" | "vip" | "basico_empresa" | "essencial_empresa" | "premium_empresa" | "prime_empresa" | "fundador_corretor" | "fundador_empresa";
+  tier: "start" | "basico" | "premium" | "vip" | "basico_empresa" | "essencial_empresa" | "premium_empresa" | "prime_empresa" | "fundador_corretor" | "fundador_empresa" | "imob_basico" | "imob_start" | "imob_pro" | "imob_elite" | "const_basico" | "const_start" | "const_pro" | "const_master";
   size?: "sm" | "md" | "lg";
 }
 
@@ -58,10 +58,18 @@ const styles: Record<string, { bg: string; icon: any; label: string; glow?: stri
     label: "Fundador Empresa",
     glow: "shadow-amber-500/40",
   },
+  imob_basico: { bg: "bg-slate-500", icon: Building, label: "Imob Grátis" },
+  imob_start: { bg: "bg-gradient-to-r from-emerald-500 to-teal-500", icon: Building, label: "Imob Start" },
+  imob_pro: { bg: "bg-gradient-to-r from-amber-500 to-orange-500", icon: Building, label: "Imob Pro", glow: "shadow-amber-500/30" },
+  imob_elite: { bg: "bg-gradient-to-r from-purple-600 to-indigo-600", icon: Crown, label: "Imob Elite", glow: "shadow-purple-500/30" },
+  const_basico: { bg: "bg-slate-500", icon: Building, label: "Construtora Grátis" },
+  const_start: { bg: "bg-gradient-to-r from-emerald-600 to-teal-700", icon: Building, label: "Construtora Start" },
+  const_pro: { bg: "bg-gradient-to-r from-amber-500 to-orange-600", icon: Building, label: "Construtora Pro", glow: "shadow-amber-500/30" },
+  const_master: { bg: "bg-gradient-to-r from-zinc-800 to-zinc-950", icon: Diamond, label: "Construtora Master", glow: "shadow-zinc-500/30" },
 };
 
 export default function PackageBadge({ tier, size = "sm" }: PackageBadgeProps) {
-  if (tier === "basico" || tier === "basico_empresa") return null;
+  if (tier === "basico" || tier === "basico_empresa" || tier === "imob_basico" || tier === "const_basico") return null;
 
   const config = styles[tier];
   if (!config) return null;
