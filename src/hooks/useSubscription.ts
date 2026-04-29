@@ -172,7 +172,7 @@ export const PACKAGE_CONFIG = {
     badgeColor: "bg-gradient-to-r from-rose-600 to-red-600 text-white",
     benefits: [
       "Anúncios ilimitados",
-      "Vitrine Lvl 4 — prioridade empresa",
+      "Vitrine Lvl 1 — pareada com Start",
       "Todos os 7 Layouts + Temas",
       "Até 5 corretores vinculados",
       "Lojas espelho por corretor",
@@ -207,7 +207,7 @@ export const PACKAGE_CONFIG = {
     badgeColor: "bg-gradient-to-r from-sky-600 to-blue-700 text-white",
     benefits: [
       "Anúncios ilimitados",
-      "Vitrine Lvl 5 — destaque premium",
+      "Vitrine Lvl 2 — pareada com VIP",
       "Todos os 7 Layouts + Temas",
       "URL personalizada /seu-nome",
       "Painel do vendedor completo",
@@ -252,7 +252,7 @@ export const PACKAGE_CONFIG = {
     badgeColor: "bg-gradient-to-r from-zinc-800 to-zinc-950 text-white",
     benefits: [
       "Anúncios ilimitados",
-      "Vitrine Lvl 6 — máximo absoluto",
+      "Vitrine Lvl 3 — pareada com Premium",
       "Todos os 7 Layouts + Temas",
       "URL personalizada /seu-nome",
       "Painel do vendedor completo",
