@@ -22,7 +22,19 @@ const aiMonthlyCredits: Record<string, number> = {
   essencial_empresa: 2000,
   premium_empresa: 2000,
   prime_empresa: 3500,
+  fundador_corretor: 500,
+  fundador_empresa: 1750,
 };
+
+interface FounderLot {
+  id: string;
+  category: "individual" | "enterprise";
+  lot_number: number;
+  price: number;
+  total_slots: number;
+  used_slots: number;
+  is_active: boolean;
+}
 
 const formatCredits = (credits: number) => credits.toLocaleString("pt-BR");
 
@@ -50,6 +62,7 @@ export default function PackagesPage() {
   const [couponInput, setCouponInput] = useState("");
   const [validatingCoupon, setValidatingCoupon] = useState(false);
   const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null);
+  const [founderLots, setFounderLots] = useState<FounderLot[]>([]);
 
   // Carrega o desconto anual configurado pelo admin
   useEffect(() => {
@@ -60,6 +73,19 @@ export default function PackagesPage() {
         .eq("key", "annual_discount_percent")
         .maybeSingle();
       if (data?.value) setAnnualDiscount(parseInt(data.value) || 20);
+    })();
+  }, []);
+
+  // Carrega lotes Fundador ativos
+  useEffect(() => {
+    (async () => {
+      const { data } = await (supabase as any)
+        .from("founder_lots")
+        .select("id, category, lot_number, price, total_slots, used_slots, is_active")
+        .eq("is_active", true)
+        .order("category")
+        .order("lot_number");
+      if (data) setFounderLots(data as FounderLot[]);
     })();
   }, []);
 
@@ -253,6 +279,41 @@ export default function PackagesPage() {
           throw new Error("URL de checkout não retornada");
         }
       }
+    } catch (err: any) {
+      toast({ title: "Erro ao processar", description: err.message || "Tente novamente.", variant: "destructive" });
+    }
+    setSelecting(null);
+  };
+
+  // Lote ativo (próximo a vender) e tier de Fundador para a categoria do usuário
+  const founderCategory: "individual" | "enterprise" = isImobiliaria ? "enterprise" : "individual";
+  const founderTier = isImobiliaria ? "fundador_empresa" : "fundador_corretor";
+  const activeFounderLot = founderLots
+    .filter((l) => l.category === founderCategory && l.is_active && l.used_slots < l.total_slots)
+    .sort((a, b) => a.lot_number - b.lot_number)[0];
+  const founderPlan = plans.find((p) => p.tier === founderTier);
+
+  const handleSelectFounder = async () => {
+    if (!user || !profile) {
+      navigate("/auth");
+      return;
+    }
+    if (!activeFounderLot || !founderPlan) {
+      toast({ title: "Plano Fundador esgotado", description: "Todos os lotes foram vendidos.", variant: "destructive" });
+      return;
+    }
+    setSelecting(founderTier);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-checkout", {
+        body: {
+          tier: founderTier,
+          billing_period: "annual",
+          founder_lot_id: activeFounderLot.id,
+        },
+      });
+      if (error) throw error;
+      if (data?.url) window.open(data.url, "_blank");
+      else throw new Error("URL de checkout não retornada");
     } catch (err: any) {
       toast({ title: "Erro ao processar", description: err.message || "Tente novamente.", variant: "destructive" });
     }
@@ -497,6 +558,110 @@ export default function PackagesPage() {
             </div>
           </>
         )}
+
+        {/* ===== Plano Fundador (apenas na aba Anual) ===== */}
+        {billingPeriod === "annual" && activeFounderLot && founderPlan && (() => {
+          const slotsLeft = activeFounderLot.total_slots - activeFounderLot.used_slots;
+          const pct = (activeFounderLot.used_slots / activeFounderLot.total_slots) * 100;
+          const credits = aiMonthlyCredits[founderTier];
+          const isCurrent = String(currentTier) === founderTier;
+          return (
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-12 relative overflow-hidden rounded-3xl border-2 border-amber-400/60 shadow-[0_20px_60px_-15px_rgba(245,158,11,0.5)]"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-amber-500 via-orange-500 to-yellow-600" />
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.25),transparent_60%)]" />
+
+              <div className="relative p-6 md:p-10 text-white">
+                <div className="flex flex-wrap items-center gap-3 mb-4">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-xs font-extrabold uppercase tracking-wider">
+                    <Crown size={14} /> Oferta Fundador
+                  </span>
+                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-black/30 backdrop-blur-sm rounded-full text-xs font-bold">
+                    Lote {activeFounderLot.lot_number}
+                  </span>
+                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-emerald-500/90 rounded-full text-xs font-extrabold">
+                    {slotsLeft} de {activeFounderLot.total_slots} vagas restantes
+                  </span>
+                </div>
+
+                <div className="grid lg:grid-cols-[1.2fr_1fr] gap-8 items-center">
+                  <div>
+                    <h2 className="font-display font-extrabold text-3xl md:text-4xl leading-tight">
+                      Seja um {isImobiliaria ? "Imobiliária" : "Corretor"} Fundador
+                    </h2>
+                    <p className="mt-3 text-white/90 text-base md:text-lg max-w-xl">
+                      Pagamento único, acesso por <strong>1 ano completo</strong> aos benefícios do plano{" "}
+                      <strong>{isImobiliaria ? "Black Empresa" : "VIP"}</strong> + selo exclusivo de Membro Fundador.
+                    </p>
+
+                    <ul className="mt-5 grid sm:grid-cols-2 gap-2.5 text-sm">
+                      {founderPlan.benefits.map((b, i) => (
+                        <li key={i} className="flex items-start gap-2">
+                          <CheckCircle2 size={16} className="text-white mt-0.5 flex-shrink-0" />
+                          <span className="text-white/95">{b}</span>
+                        </li>
+                      ))}
+                    </ul>
+
+                    <div className="mt-5 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-black/30 backdrop-blur-sm">
+                      <Coins size={18} className="text-amber-200" />
+                      <span className="font-bold text-white">{formatCredits(credits)} créditos IA</span>
+                      <span className="text-white/70 text-xs">· não renováveis</span>
+                    </div>
+                  </div>
+
+                  <div className="bg-white/15 backdrop-blur-md border border-white/30 rounded-2xl p-6 text-center">
+                    <p className="text-white/80 text-sm font-semibold uppercase tracking-wider">Pagamento único</p>
+                    <div className="mt-2 flex items-baseline justify-center gap-1">
+                      <span className="text-white/70 text-2xl font-bold">R$</span>
+                      <span className="font-display font-extrabold text-6xl">
+                        {Number(activeFounderLot.price).toFixed(0)}
+                      </span>
+                    </div>
+                    <p className="text-white/80 text-xs mt-1">à vista · sem renovação automática</p>
+
+                    <div className="mt-4">
+                      <div className="h-2 w-full rounded-full bg-black/30 overflow-hidden">
+                        <div
+                          className="h-full bg-gradient-to-r from-emerald-400 to-emerald-300 transition-all"
+                          style={{ width: `${Math.max(pct, 4)}%` }}
+                        />
+                      </div>
+                      <p className="text-white/80 text-xs mt-2">
+                        {activeFounderLot.used_slots} fundadores já garantiram
+                      </p>
+                    </div>
+
+                    <button
+                      onClick={handleSelectFounder}
+                      disabled={isCurrent || selecting === founderTier}
+                      className="mt-5 w-full py-3.5 rounded-xl bg-white text-amber-700 font-extrabold text-base hover:bg-amber-50 transition-all shadow-xl disabled:opacity-60"
+                    >
+                      {selecting === founderTier
+                        ? "Processando..."
+                        : isCurrent
+                        ? "Você é Fundador 🏆"
+                        : `🏆 Garantir minha vaga`}
+                    </button>
+
+                    {founderLots.filter((l) => l.category === founderCategory).length > 1 && (
+                      <p className="text-white/70 text-[11px] mt-3">
+                        Próximos lotes:{" "}
+                        {founderLots
+                          .filter((l) => l.category === founderCategory && l.lot_number > activeFounderLot.lot_number)
+                          .map((l) => `Lote ${l.lot_number} R$ ${Number(l.price).toFixed(0)}`)
+                          .join(" · ")}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          );
+        })()}
 
         {subscription && activePlan && (
           <motion.div

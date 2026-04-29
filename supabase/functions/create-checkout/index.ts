@@ -29,20 +29,41 @@ serve(async (req) => {
     const user = data.user;
     if (!user?.email) throw new Error("Usuário não autenticado");
 
-    const { tier, billing_period = "monthly", coupon_code = null } = await req.json();
+    const { tier, billing_period = "monthly", coupon_code = null, founder_lot_id = null } = await req.json();
     if (!tier) throw new Error("Plano inválido");
     if (!["monthly", "annual"].includes(billing_period)) throw new Error("Período inválido");
 
-    // Busca o plano no banco
+    const isFounder = tier === "fundador_corretor" || tier === "fundador_empresa";
+
+    // Busca o plano no banco (planos Fundador são is_active=false, então não filtramos por isso)
     const { data: plan, error: planErr } = await supabaseAdmin
       .from("subscription_plans")
-      .select("tier, name, price, max_items, is_active")
+      .select("tier, name, price, max_items, is_active, category")
       .eq("tier", tier)
-      .eq("is_active", true)
       .maybeSingle();
     if (planErr) throw planErr;
     if (!plan) throw new Error(`Plano ${tier} não encontrado`);
-    if (Number(plan.price) <= 0) throw new Error("Plano gratuito não exige checkout");
+    if (!isFounder && !plan.is_active) throw new Error(`Plano ${tier} indisponível`);
+    if (!isFounder && Number(plan.price) <= 0) throw new Error("Plano gratuito não exige checkout");
+
+    // ==== Validação especial para Fundador ====
+    let founderLot: any = null;
+    if (isFounder) {
+      if (!founder_lot_id) throw new Error("Lote do plano Fundador não informado");
+      const { data: lot, error: lotErr } = await supabaseAdmin
+        .from("founder_lots")
+        .select("id, category, lot_number, price, total_slots, used_slots, is_active")
+        .eq("id", founder_lot_id)
+        .maybeSingle();
+      if (lotErr) throw lotErr;
+      if (!lot) throw new Error("Lote Fundador não encontrado");
+      if (!lot.is_active) throw new Error("Lote Fundador desativado");
+      if (lot.used_slots >= lot.total_slots) throw new Error("Lote Fundador esgotado");
+
+      const expectedCat = tier === "fundador_corretor" ? "individual" : "enterprise";
+      if (lot.category !== expectedCat) throw new Error("Lote não corresponde ao plano");
+      founderLot = lot;
+    }
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2025-08-27.basil",
@@ -54,7 +75,7 @@ serve(async (req) => {
     let appliedCouponCode: string | null = null;
     let couponDescription = "";
 
-    if (billing_period === "annual") {
+    if (billing_period === "annual" && !isFounder) {
       const { data: setting } = await supabaseAdmin
         .from("platform_settings")
         .select("value")
@@ -65,7 +86,7 @@ serve(async (req) => {
       if (annualPct > 0) couponDescription = `Plano Anual (-${annualPct}%)`;
     }
 
-    if (coupon_code) {
+    if (coupon_code && !isFounder) {
       const { data: cpn, error: cpnErr } = await supabaseAdmin
         .from("discount_coupons")
         .select("*")
@@ -102,19 +123,32 @@ serve(async (req) => {
     if (totalDiscount > 95) totalDiscount = 95;
 
     // ==== Calcula valor total da compra (one-time payment) ====
-    const basePrice = Number(plan.price); // preço mensal base
-    const months = billing_period === "annual" ? 12 : 1;
-    const grossTotal = basePrice * months; // total bruto antes do desconto
-    const finalTotal = grossTotal * (1 - totalDiscount / 100);
+    let grossTotal: number;
+    let finalTotal: number;
+    let periodLabel: string;
+
+    if (isFounder) {
+      // Fundador: preço fixo do lote, sem desconto, vale 1 ano
+      grossTotal = Number(founderLot.price);
+      finalTotal = grossTotal;
+      periodLabel = `Fundador Lote ${founderLot.lot_number} · 1 ano`;
+    } else {
+      const basePrice = Number(plan.price);
+      const months = billing_period === "annual" ? 12 : 1;
+      grossTotal = basePrice * months;
+      finalTotal = grossTotal * (1 - totalDiscount / 100);
+      periodLabel = billing_period === "annual" ? "Anual (12 meses)" : "Mensal (30 dias)";
+    }
     const amountCents = Math.round(finalTotal * 100);
 
     if (amountCents < 50) throw new Error("Valor final muito baixo para checkout (mínimo R$ 0,50)");
 
-    const periodLabel = billing_period === "annual" ? "Anual (12 meses)" : "Mensal (30 dias)";
     const productName = `${plan.name} - ${periodLabel}`;
-    const productDescription = totalDiscount > 0
-      ? `${couponDescription} aplicado. Pagamento único, sem renovação automática.`
-      : `Pagamento único, sem renovação automática.`;
+    const productDescription = isFounder
+      ? `🏆 Membro Fundador · Acesso por 1 ano · Pagamento único, sem renovação automática.`
+      : (totalDiscount > 0
+        ? `${couponDescription} aplicado. Pagamento único, sem renovação automática.`
+        : `Pagamento único, sem renovação automática.`);
 
     // ==== Find or create customer ====
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
@@ -151,7 +185,10 @@ serve(async (req) => {
       metadata: {
         user_id: user.id,
         tier,
-        billing_period,
+        billing_period: isFounder ? "annual" : billing_period,
+        is_founder: isFounder ? "1" : "0",
+        founder_lot_id: isFounder ? founderLot.id : "",
+        founder_lot_number: isFounder ? String(founderLot.lot_number) : "",
         applied_coupon_code: appliedCouponCode || "",
         applied_coupon_id: appliedCouponId || "",
         total_discount_percent: String(totalDiscount),
