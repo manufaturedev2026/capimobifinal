@@ -267,6 +267,35 @@ const AI_BOTS_BY_TIER: Record<string, { emoji: string; name: string }[]> = {
 };
 const getAiBots = (tier: string) => AI_BOTS_BY_TIER[tier] ?? AI_BOTS_BY_TIER.basico;
 
+function PlanBenefitsList({ benefits, primaryColor }: { benefits: string[]; primaryColor: string }) {
+  const INITIAL = 12;
+  const [expanded, setExpanded] = useState(false);
+  const visible = expanded ? benefits : benefits.slice(0, INITIAL);
+  const hiddenCount = Math.max(benefits.length - INITIAL, 0);
+  return (
+    <ul className="space-y-1.5 md:space-y-2 flex-1 mb-5">
+      {visible.map((b) => (
+        <li key={b} className="flex items-start gap-2 text-xs md:text-[13px] text-white/70">
+          <Check className="w-3.5 h-3.5 mt-0.5 shrink-0" style={{ color: primaryColor }} />
+          <span>{b}</span>
+        </li>
+      ))}
+      {hiddenCount > 0 && (
+        <li>
+          <button
+            type="button"
+            onClick={() => setExpanded((v) => !v)}
+            className="text-[11px] font-bold pl-5 hover:underline transition-colors"
+            style={{ color: primaryColor }}
+          >
+            {expanded ? "− Ver menos" : `+ Ver todos os ${benefits.length} recursos`}
+          </button>
+        </li>
+      )}
+    </ul>
+  );
+}
+
 export default function VenderPage() {
   const navigate = useNavigate();
   const { user, signUp } = useAuth();
@@ -791,17 +820,7 @@ export default function VenderPage() {
                           </div>
                         </div>
 
-                        <ul className="space-y-1.5 md:space-y-2 flex-1 mb-5">
-                          {plan.benefits.slice(0, 12).map((b) => (
-                            <li key={b} className="flex items-start gap-2 text-xs md:text-[13px] text-white/70">
-                              <Check className="w-3.5 h-3.5 mt-0.5 shrink-0" style={{ color: theme.primary }} />
-                              <span>{b}</span>
-                            </li>
-                          ))}
-                          {plan.benefits.length > 12 && (
-                            <li className="text-[11px] text-white/40 italic pl-5">+ {plan.benefits.length - 12} recursos adicionais</li>
-                          )}
-                        </ul>
+                        <PlanBenefitsList benefits={plan.benefits} primaryColor={theme.primary} />
 
                         <Button
                           onClick={scrollToForm}
@@ -914,17 +933,7 @@ export default function VenderPage() {
                             </div>
                           </div>
 
-                          <ul className="space-y-1.5 md:space-y-2 flex-1 mb-5">
-                            {plan.benefits.slice(0, 12).map((b) => (
-                              <li key={b} className="flex items-start gap-2 text-xs md:text-[13px] text-white/70">
-                                <Check className="w-3.5 h-3.5 mt-0.5 shrink-0" style={{ color: theme.primary }} />
-                                <span>{b}</span>
-                              </li>
-                            ))}
-                            {plan.benefits.length > 12 && (
-                              <li className="text-[11px] text-white/40 italic pl-5">+ {plan.benefits.length - 12} recursos adicionais</li>
-                            )}
-                          </ul>
+                          <PlanBenefitsList benefits={plan.benefits} primaryColor={theme.primary} />
 
                           <Button
                             onClick={scrollToForm}
