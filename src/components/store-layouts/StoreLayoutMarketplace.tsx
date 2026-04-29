@@ -5,13 +5,15 @@ import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion"
 import {
   MapPin, Image, Search, Bed, Bath, Ruler, Home, Building2,
   Store, Trees, Key, Landmark, Phone, ShieldCheck, Globe, Megaphone,
-  ArrowRight, X, Sparkles, Crown, Star, LayoutDashboard, Clapperboard, ChevronDown,
+  ArrowRight, X, Sparkles, Crown, Star, LayoutDashboard, Clapperboard, ChevronDown, Pencil, Check,
 } from "lucide-react";
 import type { StoreLayoutProps } from "./types";
 import { isIOSStandaloneApp } from "@/lib/pwaInstall";
 import { BRAZIL_STATES } from "@/data/brazilStates";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { getSellerProfessionalTitle } from "@/lib/sellerTitle";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
 const QUICK_ACTIONS = [
   { slug: "casa", name: "Casas", desc: "Residenciais", icon: Home },
@@ -132,6 +134,31 @@ export default function StoreLayoutMarketplace({
   const profileDisplayName = dbProfile?.seller_category === "imobiliaria" || dbProfile?.seller_category === "construtora"
     ? dbProfile?.company_name || dbProfile?.full_name || "Imobiliária"
     : dbProfile?.full_name || dbProfile?.company_name || "Corretor";
+
+  // Inline edit do título profissional (apenas dono logado)
+  const [editingTitle, setEditingTitle] = useState(false);
+  const [titleDraft, setTitleDraft] = useState<string>("");
+  const [savedTitle, setSavedTitle] = useState<string | null>(null);
+  const [savingTitle, setSavingTitle] = useState(false);
+  const currentTitle = savedTitle ?? getSellerProfessionalTitle(dbProfile);
+
+  const handleSaveTitle = async () => {
+    if (!dbProfile?.id) return;
+    const newTitle = titleDraft.trim();
+    setSavingTitle(true);
+    const { error } = await supabase
+      .from("profiles")
+      .update({ professional_title: newTitle || null })
+      .eq("id", dbProfile.id);
+    setSavingTitle(false);
+    if (error) {
+      toast({ title: "Erro ao salvar", description: error.message, variant: "destructive" });
+      return;
+    }
+    setSavedTitle(newTitle || getSellerProfessionalTitle({ ...dbProfile, professional_title: null }));
+    setEditingTitle(false);
+    toast({ title: "Título atualizado" });
+  };
 
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const heroY = useTransform(scrollYProgress, [0, 1], [0, 120]);
@@ -330,9 +357,58 @@ export default function StoreLayoutMarketplace({
           >
             <div className="flex items-center gap-2">
               <Sparkles size={14} style={{ color: storeTheme.primary }} />
-              <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest" style={{ color: storeTheme.primary }}>
-                {profileDisplayName} — {getSellerProfessionalTitle(dbProfile)}
-              </span>
+              {editingTitle && isOwner ? (
+                <span className="flex items-center gap-1.5">
+                  <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest" style={{ color: storeTheme.primary }}>
+                    {profileDisplayName} —
+                  </span>
+                  <input
+                    autoFocus
+                    value={titleDraft}
+                    onChange={(e) => setTitleDraft(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") handleSaveTitle();
+                      if (e.key === "Escape") setEditingTitle(false);
+                    }}
+                    className="text-[10px] md:text-xs font-bold uppercase tracking-widest bg-white/15 backdrop-blur-md text-white px-2 py-0.5 rounded outline-none border border-white/30 focus:border-white/60 min-w-[180px]"
+                    placeholder="Seu título profissional"
+                    maxLength={60}
+                  />
+                  <button
+                    onClick={handleSaveTitle}
+                    disabled={savingTitle}
+                    className="p-1 rounded bg-emerald-500/80 hover:bg-emerald-500 text-white transition disabled:opacity-50"
+                    aria-label="Salvar"
+                  >
+                    <Check size={12} />
+                  </button>
+                  <button
+                    onClick={() => setEditingTitle(false)}
+                    className="p-1 rounded bg-white/20 hover:bg-white/30 text-white transition"
+                    aria-label="Cancelar"
+                  >
+                    <X size={12} />
+                  </button>
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1.5 group">
+                  <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest" style={{ color: storeTheme.primary }}>
+                    {profileDisplayName} — {currentTitle}
+                  </span>
+                  {isOwner && (
+                    <button
+                      onClick={() => {
+                        setTitleDraft(currentTitle);
+                        setEditingTitle(true);
+                      }}
+                      className="opacity-70 hover:opacity-100 text-white/90 p-0.5 rounded hover:bg-white/15 transition"
+                      title="Editar título profissional"
+                    >
+                      <Pencil size={11} />
+                    </button>
+                  )}
+                </span>
+              )}
             </div>
             {dbProfile?.creci && (
               <span className="text-[10px] md:text-xs font-medium ml-[22px]" style={{ color: `${storeTheme.text}99` }}>
