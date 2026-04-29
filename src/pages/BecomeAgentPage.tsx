@@ -602,7 +602,7 @@ export default function BecomeAgentPage() {
                     </div>
                     <div>
                       <h3 className="font-display font-bold text-foreground mb-1">{skill.title}</h3>
-                      <p className="text-muted-foreground text-sm leading-relaxed">{skill.description}</p>
+                      <p className="text-muted-foreground text-sm leading-relaxed">{r(skill.description)}</p>
                     </div>
                   </motion.div>
                 ))}
