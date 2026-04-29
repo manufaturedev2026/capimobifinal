@@ -1,13 +1,1 @@
-project_id = "foqavjauorrheuytpmtj"
-
-[functions]
-  [functions.auth-email-hook]
-    verify_jwt = false
-  [functions.process-email-queue]
-    verify_jwt = true
-  [functions.send-temp-password]
-    verify_jwt = false
-  [functions.send-agenda-push]
-    verify_jwt = false
-  [functions.agenda-bot-chat]
-    verify_jwt = false
+project_id = "lzjwmpwoybtdisenuzec"
