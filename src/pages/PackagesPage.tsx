@@ -356,6 +356,15 @@ export default function PackagesPage() {
 
   return (
     <div className="min-h-screen bg-background">
+      {confirming && (
+        <div className="fixed inset-0 z-[200] bg-background/90 backdrop-blur-sm flex items-center justify-center">
+          <div className="bg-card border-2 border-primary/30 rounded-2xl p-8 shadow-2xl flex flex-col items-center gap-4 max-w-sm mx-4">
+            <div className="animate-spin w-12 h-12 border-4 border-primary border-t-transparent rounded-full" />
+            <h3 className="font-display font-extrabold text-xl text-foreground">Confirmando pagamento...</h3>
+            <p className="text-sm text-muted-foreground text-center">Estamos ativando seu plano e somando os créditos IA ao seu saldo.</p>
+          </div>
+        </div>
+      )}
       <div className="gradient-hero py-12">
         <div className="container max-w-6xl mx-auto px-4">
           <Link to="/painel" className="inline-flex items-center gap-2 text-white/70 text-sm mb-4 hover:text-white transition-colors">
