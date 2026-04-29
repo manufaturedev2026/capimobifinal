@@ -1,0 +1,1 @@
+ALTER TYPE public.package_tier ADD VALUE IF NOT EXISTS 'prime';
