@@ -629,6 +629,9 @@ export default function AiValuationPage() {
       quartos, banheiros, suites, garagem,
       salas, cozinhas, escritorios,
       extras, acabamento, conservacao, documentacao,
+      valorPedido: valorPedido || undefined,
+      iptu: iptu || undefined,
+      condominio: condominio || undefined,
       result: {
         ...result,
         comparaveis_externos: result.comparaveis_externos,
