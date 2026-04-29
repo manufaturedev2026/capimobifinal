@@ -34,7 +34,18 @@ interface FounderLot {
   total_slots: number;
   used_slots: number;
   is_active: boolean;
+  inherited_tier: string;
+  ia_credits: number;
 }
+
+const TIER_LABEL: Record<string, string> = {
+  start: "Start",
+  premium: "Premium",
+  vip: "VIP",
+  essencial_empresa: "Essencial Empresa",
+  premium_empresa: "Premium Empresa",
+  prime_empresa: "Prime Empresa (Black)",
+};
 
 const formatCredits = (credits: number) => credits.toLocaleString("pt-BR");
 
