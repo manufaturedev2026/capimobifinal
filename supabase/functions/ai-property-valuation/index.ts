@@ -56,6 +56,9 @@ type Payload = {
   proximoComercio?: boolean;
   proximoEscola?: boolean;
   proximoHospital?: boolean;
+  proximoTransporte?: boolean;
+  proximoParque?: boolean;
+  proximoBancos?: boolean;
   vistaPrivilegiada?: boolean;
   areaRisco?: boolean;
   // Acabamento item-a-item
@@ -195,6 +198,9 @@ const LOC_W = {
   proximoComercio: 3,
   proximoEscola: 3,
   proximoHospital: 2,
+  proximoTransporte: 2,
+  proximoParque: 2,
+  proximoBancos: 1.5,
   vistaPrivilegiada: 4,
   areaRisco: -10,
 };
@@ -697,6 +703,9 @@ function calcular(p: Payload, precoM2: number, market: MarketContext) {
   if (p.proximoComercio) aplica("Próximo a comércio", LOC_W.proximoComercio, "localizacao");
   if (p.proximoEscola) aplica("Próximo a escola", LOC_W.proximoEscola, "localizacao");
   if (p.proximoHospital) aplica("Próximo a hospital", LOC_W.proximoHospital, "localizacao");
+  if (p.proximoTransporte) aplica("Próximo a transporte público", LOC_W.proximoTransporte, "localizacao");
+  if (p.proximoParque) aplica("Próximo a praças / parques", LOC_W.proximoParque, "localizacao");
+  if (p.proximoBancos) aplica("Próximo a bancos / serviços", LOC_W.proximoBancos, "localizacao");
   if (p.vistaPrivilegiada) aplica("Vista privilegiada", LOC_W.vistaPrivilegiada, "localizacao");
   if (p.areaRisco) aplica("Área de risco/alagamento", LOC_W.areaRisco, "localizacao");
 
@@ -1057,6 +1066,17 @@ Deno.serve(async (req) => {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
+    // Mescla checklist "Infraestrutura próxima do imóvel" (sempre disponível) com os
+    // campos avançados proximo*. Garante que marcar os checks SEMPRE gere ajuste no laudo,
+    // mesmo fora do modo avançado.
+    const infra = (data as any).infraestrutura ?? {};
+    if (infra.escola) data.proximoEscola = true;
+    if (infra.hospital) data.proximoHospital = true;
+    if (infra.comercio) data.proximoComercio = true;
+    if (infra.transporte) data.proximoTransporte = true;
+    if (infra.parque) data.proximoParque = true;
+    if (infra.bancos) data.proximoBancos = true;
 
     credit = await consumeAiCredits(req, "property_valuation", corsHeaders);
     if (!credit.ok) return credit.response;
