@@ -50,9 +50,10 @@ export default function AiCreditsCard({ userId, sellerId, themeVars, onPurchased
         <div className="grid grid-cols-2 gap-2 md:min-w-[340px]">
           <div className="rounded-xl border border-border bg-background/60 p-3">
             <div className="mb-1 flex items-center gap-1.5 text-xs text-muted-foreground">
-              <Sparkles className="h-3.5 w-3.5 text-primary" /> Limite do plano
+              <Sparkles className="h-3.5 w-3.5 text-primary" /> Recarga mensal do plano
             </div>
-            <p className="font-bold text-foreground">{monthlyPlanCredits} créditos</p>
+            <p className="font-bold text-foreground">{monthlyPlanCredits} créditos/mês</p>
+            <p className="mt-0.5 text-[10px] leading-tight text-muted-foreground">Compras extras acumulam ao saldo</p>
           </div>
           <Button onClick={handleBuyCredits} className="h-full rounded-xl">
             <CreditCard className="h-4 w-4" /> Comprar Créditos
