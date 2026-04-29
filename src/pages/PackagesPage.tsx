@@ -674,6 +674,14 @@ export default function PackagesPage() {
           );
         })()}
 
+        {billingPeriod === "founder" && !activeFounderLot && (
+          <div className="mt-12 text-center bg-card border-2 border-dashed border-border rounded-3xl p-12">
+            <Crown size={48} className="mx-auto text-muted-foreground mb-4" />
+            <h3 className="font-display font-extrabold text-2xl text-foreground">Lotes Fundador esgotados</h3>
+            <p className="text-muted-foreground mt-2">Todas as vagas de fundador foram preenchidas. Confira os planos Mensal ou Anual.</p>
+          </div>
+        )}
+
         {subscription && activePlan && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
