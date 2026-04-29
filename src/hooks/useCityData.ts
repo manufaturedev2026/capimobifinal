@@ -129,35 +129,63 @@ export function useCityData(city: string, segment?: "imoveis") {
   return { items, loading, cityName: normalizedCity };
 }
 
-export function useAvailableCities() {
-  const [cities, setCities] = useState<string[]>([]);
+const CITIES_CACHE_KEY = "available_cities_cache_v1";
+const CITIES_TTL_MS = 60 * 60 * 1000; // 1 hour
 
-  useEffect(() => {
-    const fetchCities = async () => {
-      let allData: any[] = [];
-      let page = 0;
-      const pageSize = 1000;
-      let hasMore = true;
-      while (hasMore) {
-        const { data } = await supabase
-          .from("seller_items")
-          .select("city")
-          .eq("status", "ativo")
-          .eq("seller_type", "imoveis")
-          .range(page * pageSize, (page + 1) * pageSize - 1);
-        if (data && data.length > 0) {
-          allData = [...allData, ...data];
-          hasMore = data.length === pageSize;
-          page++;
-        } else {
-          hasMore = false;
+export function useAvailableCities() {
+  const [cities, setCities] = useState<string[]>(() => {
+    // Hydrate synchronously from localStorage
+    try {
+      const raw = localStorage.getItem(CITIES_CACHE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed?.expiresAt && Date.now() < parsed.expiresAt && Array.isArray(parsed.value)) {
+          return parsed.value;
         }
       }
+    } catch {
+      // ignore
+    }
+    return [];
+  });
+
+  useEffect(() => {
+    // Skip fetch if cache is fresh
+    try {
+      const raw = localStorage.getItem(CITIES_CACHE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed?.expiresAt && Date.now() < parsed.expiresAt) return;
+      }
+    } catch {
+      // ignore
+    }
+
+    const fetchCities = async () => {
+      // Single capped query (1000 distinct cities is more than enough)
+      const { data } = await supabase
+        .from("seller_items")
+        .select("city")
+        .eq("status", "ativo")
+        .eq("seller_type", "imoveis")
+        .not("city", "is", null)
+        .limit(1000);
+
       const unique = new Set<string>();
-      allData.forEach((item: any) => {
+      (data || []).forEach((item: any) => {
         if (item.city) unique.add(item.city.trim());
       });
-      setCities(Array.from(unique).sort());
+      const sorted = Array.from(unique).sort();
+      setCities(sorted);
+
+      try {
+        localStorage.setItem(
+          CITIES_CACHE_KEY,
+          JSON.stringify({ value: sorted, expiresAt: Date.now() + CITIES_TTL_MS })
+        );
+      } catch {
+        // ignore
+      }
     };
     fetchCities();
   }, []);
