@@ -201,6 +201,20 @@ const TIER_STYLES: Record<string, { gradient: string; glow: string; ring: string
 const formatPrice = (price: number) => price === 0 ? "Gratuito" : `R$ ${price.toFixed(2).replace(".", ",")}`;
 const getTierStyle = (tier: string) => TIER_STYLES[tier] || TIER_STYLES.basico;
 
+// Créditos mensais de IA por tier (espelha get_ai_monthly_credits_for_tier do banco)
+const AI_CREDITS_BY_TIER: Record<string, number> = {
+  basico: 25,
+  basico_empresa: 25,
+  start: 250,
+  premium: 600,
+  vip: 1000,
+  essencial_empresa: 2000,
+  premium_empresa: 2000,
+  prime_empresa: 3500,
+};
+const getAiCredits = (tier: string) => AI_CREDITS_BY_TIER[tier] ?? 25;
+const formatCredits = (n: number) => n.toLocaleString("pt-BR");
+
 export default function VenderPage() {
   const navigate = useNavigate();
   const { user, signUp } = useAuth();
@@ -700,9 +714,15 @@ export default function VenderPage() {
                           )}
                         </div>
 
-                        <div className="mb-4 px-3 py-2 rounded-lg bg-black/30 border border-white/5">
-                          <p className="text-[10px] uppercase tracking-wider text-white/40 mb-0.5">Limite de anúncios</p>
-                          <p className="text-sm font-bold text-white">{plan.max_items >= 9999 ? "Ilimitado" : `Até ${plan.max_items} imóveis`}</p>
+                        <div className="mb-3 grid grid-cols-2 gap-2">
+                          <div className="px-3 py-2 rounded-lg bg-black/30 border border-white/5">
+                            <p className="text-[9px] uppercase tracking-wider text-white/40 mb-0.5">Anúncios</p>
+                            <p className="text-xs md:text-sm font-bold text-white">{plan.max_items >= 9999 ? "Ilimitado" : `Até ${plan.max_items}`}</p>
+                          </div>
+                          <div className="px-3 py-2 rounded-lg bg-gradient-to-br from-purple-500/20 to-fuchsia-500/10 border border-purple-400/20">
+                            <p className="text-[9px] uppercase tracking-wider text-purple-200/70 mb-0.5 flex items-center gap-1"><Sparkles className="w-2.5 h-2.5" /> Créditos IA/mês</p>
+                            <p className="text-xs md:text-sm font-bold text-white">{formatCredits(getAiCredits(plan.tier))}</p>
+                          </div>
                         </div>
 
                         <ul className="space-y-1.5 md:space-y-2 flex-1 mb-5">
@@ -803,9 +823,15 @@ export default function VenderPage() {
                             )}
                           </div>
 
-                          <div className="mb-4 px-3 py-2 rounded-lg bg-black/30 border border-white/5">
-                            <p className="text-[10px] uppercase tracking-wider text-white/40 mb-0.5">Limite de anúncios</p>
-                            <p className="text-sm font-bold text-white">{plan.max_items >= 9999 ? "Ilimitado" : `Até ${plan.max_items} imóveis`}</p>
+                          <div className="mb-3 grid grid-cols-2 gap-2">
+                            <div className="px-3 py-2 rounded-lg bg-black/30 border border-white/5">
+                              <p className="text-[9px] uppercase tracking-wider text-white/40 mb-0.5">Anúncios</p>
+                              <p className="text-xs md:text-sm font-bold text-white">{plan.max_items >= 9999 ? "Ilimitado" : `Até ${plan.max_items}`}</p>
+                            </div>
+                            <div className="px-3 py-2 rounded-lg bg-gradient-to-br from-purple-500/20 to-fuchsia-500/10 border border-purple-400/20">
+                              <p className="text-[9px] uppercase tracking-wider text-purple-200/70 mb-0.5 flex items-center gap-1"><Sparkles className="w-2.5 h-2.5" /> Créditos IA/mês</p>
+                              <p className="text-xs md:text-sm font-bold text-white">{formatCredits(getAiCredits(plan.tier))}</p>
+                            </div>
                           </div>
 
                           <ul className="space-y-1.5 md:space-y-2 flex-1 mb-5">
