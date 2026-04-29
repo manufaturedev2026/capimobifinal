@@ -34,7 +34,18 @@ interface FounderLot {
   total_slots: number;
   used_slots: number;
   is_active: boolean;
+  inherited_tier: string;
+  ia_credits: number;
 }
+
+const TIER_LABEL: Record<string, string> = {
+  start: "Start",
+  premium: "Premium",
+  vip: "VIP",
+  essencial_empresa: "Essencial Empresa",
+  premium_empresa: "Premium Empresa",
+  prime_empresa: "Prime Empresa (Black)",
+};
 
 const formatCredits = (credits: number) => credits.toLocaleString("pt-BR");
 
@@ -83,7 +94,7 @@ export default function PackagesPage() {
       const [{ data: lots }, { data: settings }] = await Promise.all([
         (supabase as any)
           .from("founder_lots")
-          .select("id, category, lot_number, price, total_slots, used_slots, is_active")
+          .select("id, category, lot_number, price, total_slots, used_slots, is_active, inherited_tier, ia_credits")
           .eq("is_active", true)
           .order("category")
           .order("lot_number"),
@@ -301,7 +312,9 @@ export default function PackagesPage() {
   const activeFounderLot = founderLots
     .filter((l) => l.category === founderCategory && l.is_active && l.used_slots < l.total_slots)
     .sort((a, b) => a.lot_number - b.lot_number)[0];
-  const founderPlan = plans.find((p) => p.tier === founderTier);
+  // Plano herdado configurado no lote ativo (Start, VIP, Prime, etc.)
+  const inheritedTier = activeFounderLot?.inherited_tier;
+  const founderPlan = plans.find((p) => p.tier === inheritedTier) || plans.find((p) => p.tier === founderTier);
 
   const handleSelectFounder = async () => {
     if (!user || !profile) {
@@ -586,8 +599,9 @@ export default function PackagesPage() {
         {billingPeriod === "founder" && activeFounderLot && founderPlan && (() => {
           const slotsLeft = activeFounderLot.total_slots - activeFounderLot.used_slots;
           const pct = (activeFounderLot.used_slots / activeFounderLot.total_slots) * 100;
-          const credits = aiMonthlyCredits[founderTier];
+          const credits = activeFounderLot.ia_credits ?? aiMonthlyCredits[founderTier];
           const isCurrent = String(currentTier) === founderTier;
+          const inheritedLabel = TIER_LABEL[activeFounderLot.inherited_tier] || (isImobiliaria ? "Black Empresa" : "VIP");
           return (
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -617,7 +631,7 @@ export default function PackagesPage() {
                     </h2>
                     <p className="mt-3 text-white/90 text-base md:text-lg max-w-xl">
                       Pagamento único, acesso por <strong>1 ano completo</strong> aos benefícios do plano{" "}
-                      <strong>{isImobiliaria ? "Black Empresa" : "VIP"}</strong> + selo exclusivo de Membro Fundador.
+                      <strong>{inheritedLabel}</strong> + selo exclusivo de Membro Fundador.
                     </p>
 
                     <ul className="mt-5 grid sm:grid-cols-2 gap-2.5 text-sm">
