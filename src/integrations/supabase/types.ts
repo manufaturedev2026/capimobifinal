@@ -563,6 +563,47 @@ export type Database = {
         }
         Relationships: []
       }
+      coupon_redemptions: {
+        Row: {
+          billing_period: string
+          coupon_id: string
+          discount_percent: number
+          id: string
+          redeemed_at: string
+          stripe_session_id: string | null
+          tier: string
+          user_id: string
+        }
+        Insert: {
+          billing_period?: string
+          coupon_id: string
+          discount_percent: number
+          id?: string
+          redeemed_at?: string
+          stripe_session_id?: string | null
+          tier: string
+          user_id: string
+        }
+        Update: {
+          billing_period?: string
+          coupon_id?: string
+          discount_percent?: number
+          id?: string
+          redeemed_at?: string
+          stripe_session_id?: string | null
+          tier?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coupon_redemptions_coupon_id_fkey"
+            columns: ["coupon_id"]
+            isOneToOne: false
+            referencedRelation: "discount_coupons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       crm_activity_log: {
         Row: {
           action_type: string
@@ -686,6 +727,54 @@ export type Database = {
           name?: string
           sort_order?: number
           stage?: string
+        }
+        Relationships: []
+      }
+      discount_coupons: {
+        Row: {
+          applicable_tiers: string[] | null
+          applies_to: string
+          code: string
+          created_at: string
+          description: string | null
+          discount_percent: number
+          id: string
+          is_active: boolean
+          max_uses: number | null
+          stripe_coupon_id: string | null
+          updated_at: string
+          uses_count: number
+          valid_until: string | null
+        }
+        Insert: {
+          applicable_tiers?: string[] | null
+          applies_to?: string
+          code: string
+          created_at?: string
+          description?: string | null
+          discount_percent: number
+          id?: string
+          is_active?: boolean
+          max_uses?: number | null
+          stripe_coupon_id?: string | null
+          updated_at?: string
+          uses_count?: number
+          valid_until?: string | null
+        }
+        Update: {
+          applicable_tiers?: string[] | null
+          applies_to?: string
+          code?: string
+          created_at?: string
+          description?: string | null
+          discount_percent?: number
+          id?: string
+          is_active?: boolean
+          max_uses?: number | null
+          stripe_coupon_id?: string | null
+          updated_at?: string
+          uses_count?: number
+          valid_until?: string | null
         }
         Relationships: []
       }
