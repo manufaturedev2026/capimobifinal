@@ -598,7 +598,7 @@ export default function Index() {
               A bio mais <span className="text-accent">profissional</span> do Instagram
             </h2>
             <p className="text-muted-foreground mt-3 max-w-2xl mx-auto">
-              Pare de usar links genéricos. Com o Capimobi, seu link na bio abre diretamente
+              Pare de usar links genéricos. Com o {site_name}, seu link na bio abre diretamente
               o seu app de imóveis — com sua marca, seus imóveis e contato direto pelo WhatsApp.
             </p>
           </div>
