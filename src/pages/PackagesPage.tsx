@@ -512,18 +512,22 @@ export default function PackagesPage() {
 
         <div className="mt-10 bg-card border border-border rounded-2xl p-6">
           <h3 className="font-display font-bold text-lg text-foreground mb-3">Como funciona?</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-muted-foreground">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm text-muted-foreground">
             <div>
               <strong className="text-foreground">1. Escolha seu plano</strong>
-              <p className="mt-1">Selecione mensal ou anual e aplique um cupom se tiver.</p>
+              <p className="mt-1">Mensal (30 dias) ou Anual (12 meses), aplique cupom se tiver.</p>
             </div>
             <div>
-              <strong className="text-foreground">2. Pagamento seguro</strong>
-              <p className="mt-1">Para planos pagos, você será redirecionado ao checkout seguro do Stripe para pagamento com cartão.</p>
+              <strong className="text-foreground">2. Pagamento único</strong>
+              <p className="mt-1">Pagamento via Stripe, à vista no cartão. <strong>Sem renovação automática.</strong></p>
             </div>
             <div>
               <strong className="text-foreground">3. Ativação instantânea</strong>
-              <p className="mt-1">Após o pagamento, seu plano é ativado automaticamente e você já pode anunciar!</p>
+              <p className="mt-1">Plano ativo na hora e seus créditos IA somam ao saldo atual.</p>
+            </div>
+            <div>
+              <strong className="text-foreground">4. Troque quando quiser</strong>
+              <p className="mt-1">Sem amarrações. Compre outro plano e ele substitui o atual mantendo seus créditos.</p>
             </div>
           </div>
         </div>
