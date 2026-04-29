@@ -1177,16 +1177,42 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
 
       {/* ═══════════════════ Batch Results ═══════════════════ */}
       {batchResults.length > 0 && (
-        <div className="rounded-3xl border border-border p-4 sm:p-5">
-          <div className="flex items-center justify-between mb-3">
+        <motion.div
+          ref={batchResultsRef}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          className={`rounded-3xl border-2 p-4 sm:p-5 transition-all ${batchHighlight ? "border-primary ring-4 ring-primary/30 shadow-2xl shadow-primary/20" : "border-border"}`}
+        >
+          <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
             <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
               <Sparkles size={16} className="text-primary" /> Resultados ({batchResults.length})
+              {batchGenerating && <Loader2 size={14} className="animate-spin text-primary" />}
             </h3>
-            <button onClick={() => setBatchResults([])} className="text-[11px] text-muted-foreground hover:text-foreground">✕ Limpar</button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => {
+                  const safe = selectedItem!.title.replace(/[^a-zA-Z0-9À-ÿ ]/g, "").trim().replace(/\s+/g, "-");
+                  batchResults.forEach((r, idx) => {
+                    setTimeout(() => downloadDataUrl(r.url, `${safe}_${r.format}_${r.templateId}.jpg`), idx * 200);
+                  });
+                  toast({ title: `Baixando ${batchResults.length} imagens...` });
+                }}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-primary text-primary-foreground hover:opacity-90 transition"
+              >
+                <Download size={12} /> Baixar todas
+              </button>
+              <button onClick={() => setBatchResults([])} className="text-[11px] text-muted-foreground hover:text-foreground">✕ Limpar</button>
+            </div>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
             {batchResults.map((r, i) => (
-              <div key={i} className="rounded-xl overflow-hidden border border-border group bg-card">
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: i * 0.05 }}
+                className="rounded-xl overflow-hidden border border-border group bg-card hover:shadow-lg transition"
+              >
                 <img src={r.url} alt={r.name} className="w-full aspect-square object-cover" />
                 <div className="p-2">
                   <p className="text-[10px] font-bold text-foreground line-clamp-1">{r.name}</p>
@@ -1197,11 +1223,19 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
                     <Download size={10} /> Baixar
                   </button>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
+        </motion.div>
+      )}
+
+      {/* Indicador inline (acima do estudio) durante geração */}
+      {batchGenerating && batchResults.length === 0 && (
+        <div className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-primary/10 border border-primary/30 text-primary text-xs font-bold">
+          <Loader2 size={14} className="animate-spin" /> Gerando imagens... aguarde alguns segundos.
         </div>
       )}
+
 
       {/* ═══════════════════ Texto pronto para anúncio ═══════════════════ */}
       {selectedItem && (() => {
