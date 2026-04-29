@@ -237,7 +237,9 @@ serve(async (req) => {
 
     let credit: Awaited<ReturnType<typeof consumeAiCreditsForUser>> | null = null;
     if (ownerUserId && messages.length > 0) {
-      credit = await consumeAiCreditsForUser(admin, ownerUserId, sellerId || null, "invite_chat", corsHeaders);
+      const visitorIp = (req.headers.get("x-forwarded-for") || "").split(",")[0].trim() || req.headers.get("cf-connecting-ip") || "unknown";
+      const visitorKey = `${visitorIp}:${sellerId || ownerUserId}`;
+      credit = await consumeAiCreditsForUser(admin, ownerUserId, sellerId || null, "invite_chat", corsHeaders, visitorKey);
       if (!credit.ok) return credit.response;
     }
 
