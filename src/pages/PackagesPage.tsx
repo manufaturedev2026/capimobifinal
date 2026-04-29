@@ -720,30 +720,38 @@ export default function PackagesPage() {
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Plano Ativo</p>
-                  <h3 className="font-display font-extrabold text-xl text-foreground">{activePlan.name}</h3>
                   {(() => {
                     const isFounder = isFounderTier(currentTier);
-                    // Para Fundador: busca o lote correspondente à categoria do usuário (preço real pago)
+                    // Para Fundador: busca o lote correspondente à categoria do usuário (preço e tier herdado)
                     const founderLotForUser = isFounder
                       ? founderLots
                           .filter((l) => l.category === founderCategory)
                           .sort((a, b) => b.lot_number - a.lot_number)[0]
                       : null;
+                    const inheritedPlan = founderLotForUser?.inherited_tier
+                      ? plans.find((p) => p.tier === founderLotForUser.inherited_tier)
+                      : null;
+                    const displayName = isFounder
+                      ? `Fundador${inheritedPlan ? ` ${inheritedPlan.name}` : ""}`
+                      : activePlan.name;
                     const displayPrice = isFounder
                       ? (founderLotForUser?.price ?? activePlan.price)
                       : activePlan.price;
                     const suffix = isFounder ? "/ano" : "/mês";
                     return (
-                      <p className="text-sm text-muted-foreground">
-                        {activePlan.price === 0
-                          ? "Grátis"
-                          : `R$ ${Number(displayPrice).toFixed(2).replace(".", ",")}${suffix}`}
-                        {subscription.expires_at && (
-                          <span className="ml-2">
-                            · Válido até {new Date(subscription.expires_at).toLocaleDateString("pt-BR")}
-                          </span>
-                        )}
-                      </p>
+                      <>
+                        <h3 className="font-display font-extrabold text-xl text-foreground">{displayName}</h3>
+                        <p className="text-sm text-muted-foreground">
+                          {activePlan.price === 0 && !isFounder
+                            ? "Grátis"
+                            : `R$ ${Number(displayPrice).toFixed(2).replace(".", ",")}${suffix}`}
+                          {subscription.expires_at && (
+                            <span className="ml-2">
+                              · Válido até {new Date(subscription.expires_at).toLocaleDateString("pt-BR")}
+                            </span>
+                          )}
+                        </p>
+                      </>
                     );
                   })()}
                   {activePlan.price > 0 && (
