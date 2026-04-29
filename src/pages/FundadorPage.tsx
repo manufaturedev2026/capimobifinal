@@ -200,7 +200,7 @@ export default function FundadorPage() {
             <div>
               <h3 className="text-2xl font-bold">{label}</h3>
               <p className="text-sm text-muted-foreground">
-                Equivalente vitalício ao <strong>{equivalentPlan}</strong>
+                Equivalente por 1 ano ao <strong>{equivalentPlan}</strong>
               </p>
             </div>
           </div>
@@ -216,10 +216,10 @@ export default function FundadorPage() {
                   <span className="text-5xl font-extrabold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                     R$ {lot.price.toFixed(0)}
                   </span>
-                  <span className="text-muted-foreground">/único</span>
+                  <span className="text-muted-foreground">/ano</span>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Pagamento único · Acesso vitalício · Sem mensalidades
+                  Pagamento único · Válido por 12 meses · Sem mensalidades
                 </p>
               </div>
 
