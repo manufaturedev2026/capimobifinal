@@ -250,7 +250,7 @@ export default function InvitePage() {
       const showNext = () => {
         if (i < msgs.length) {
           const raw = msgs[i];
-          const text = nameOverride ? raw.replace(/\{\{nome\}\}/gi, nameOverride) : resolve(raw);
+          const text = (nameOverride ? raw.replace(/\{\{nome\}\}/gi, nameOverride) : resolve(raw)).replace(/\{\{site\}\}/gi, site_name);
           addBubble(text, "attendant");
           i++;
           if (i < msgs.length) {
