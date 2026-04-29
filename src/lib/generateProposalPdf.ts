@@ -396,7 +396,7 @@ export async function generateProposalPdf(data: ProposalData) {
   const heroImg = await loadImg(data.image);
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(data.propertyUrl)}&format=png&margin=2`;
   const qrImg = await loadImg(qrUrl);
-  const mapImg = data.location ? await loadStaticMap(data.location) : null;
+  const mapImg = data.location ? await loadStaticMap(data) : null;
 
   const rental = isRental(data);
   // Pages: Cover, Specs, Differentials, (Financial only for sale), Location, CTA
