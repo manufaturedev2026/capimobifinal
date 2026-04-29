@@ -29,6 +29,10 @@ export type ValuationReportData = {
   acabamento: string;
   conservacao: string;
   documentacao: string[];
+  // Valores informados pelo proprietário (opcionais)
+  valorPedido?: string | number;
+  iptu?: string | number;
+  condominio?: string | number;
   // Resultado
   result: {
     valor_estimado: number;
