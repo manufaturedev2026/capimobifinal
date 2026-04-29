@@ -5,6 +5,7 @@ import {
   Download, Palette, FileText, Layers, Wand2, Loader2, Package, Type, Sliders,
   Award, Crown, Building2, Home, Trees, Store, ShieldCheck, Zap,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 import jsPDF from "jspdf";
@@ -763,7 +764,7 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
   }, [selectedItemId, items]);
 
   const selectedItem = items.find((i) => i.id === selectedItemId);
-  const photos = selectedItem?.photos || [];
+  const photos = useMemo(() => selectedItem?.photos || [], [selectedItem?.photos]);
   const template = useMemo(() => TEMPLATES.find(t => t.id === selectedTemplate)!, [selectedTemplate]);
   const effectiveBadge: Exclude<BadgeKind, "auto"> | null = useMemo(() => {
     if (selectedBadge === "auto") return selectedItem ? autoBadge(selectedItem) : null;
@@ -771,7 +772,7 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
   }, [selectedBadge, selectedItem]);
 
   const galleryUrl = selectedItem
-    ? `${window.location.origin}/imoveis/produto/${(selectedItem as any).slug || selectedItem.id}${sellerSlug ? `?corretor=${sellerSlug}` : ""}`
+    ? `${window.location.origin}/imoveis/produto/${selectedItem.slug || selectedItem.id}${sellerSlug ? `?corretor=${sellerSlug}` : ""}`
     : "";
 
   const buildOpts = useCallback((overrides: Partial<GenOpts> = {}): GenOpts | null => {
