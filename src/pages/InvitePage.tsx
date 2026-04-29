@@ -511,7 +511,7 @@ export default function InvitePage() {
                     if (config.ctaType === "captacao_imobiliaria") {
                       const categoryLabel = { imobiliaria: "Imobiliária", construtora: "Construtora", corretor: "Corretor(a)" }[crmCategory] || crmCategory;
                       const msg = encodeURIComponent(
-                        `Olá! Sou ${crmName.trim()}, ${categoryLabel}.\n\nTenho interesse em conhecer a Capimobi e criar minha loja online.\n\nWhatsApp: ${crmPhone.trim()}`
+                        `Olá! Sou ${crmName.trim()}, ${categoryLabel}.\n\nTenho interesse em conhecer a ${site_name} e criar minha loja online.\n\nWhatsApp: ${crmPhone.trim()}`
                       );
                       const url = config.crmRedirectUrl || config.ctaUrl || "https://wa.me/55";
                       const whatsappUrl = url.includes("wa.me") ? `${url}?text=${msg}` : url;
