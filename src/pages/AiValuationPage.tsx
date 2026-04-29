@@ -1526,11 +1526,11 @@ const Field = ({ label, children }: { label: string; children: React.ReactNode }
   </div>
 );
 
-const ChipGroup = ({ options, value, onChange }: { options: string[]; value: string; onChange: (v: string) => void }) => (
+const ChipGroup = ({ options, value, onChange }: { options: string[]; value: string; onChange: (v: string, el?: HTMLElement) => void }) => (
   <div className="flex flex-wrap gap-2">
     {options.map((opt) => (
       <button
-        key={opt} type="button" onClick={() => onChange(opt)}
+        key={opt} type="button" onClick={(e) => onChange(opt, e.currentTarget as HTMLElement)}
         className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
           value === opt
             ? "bg-primary text-primary-foreground shadow-md shadow-primary/30 scale-105"
