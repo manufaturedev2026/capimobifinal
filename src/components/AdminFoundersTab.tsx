@@ -7,8 +7,17 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Crown, Loader2, Plus, RefreshCw, Save, Trash2, Power, Repeat } from "lucide-react";
+import { Crown, Loader2, Plus, RefreshCw, Trash2, Power, Repeat, Sparkles } from "lucide-react";
+
+type InheritedTier =
+  | "start"
+  | "premium"
+  | "vip"
+  | "essencial_empresa"
+  | "premium_empresa"
+  | "prime_empresa";
 
 type Lot = {
   id: string;
@@ -18,6 +27,8 @@ type Lot = {
   total_slots: number;
   used_slots: number;
   is_active: boolean;
+  inherited_tier: InheritedTier;
+  ia_credits: number;
 };
 
 type Settings = {
@@ -31,6 +42,17 @@ const CAT_LABEL: Record<string, string> = {
   individual: "Corretor Fundador",
   enterprise: "Empresa Fundadora",
 };
+
+const TIER_OPTIONS: { value: InheritedTier; label: string; defaultCredits: number; category: "individual" | "enterprise" }[] = [
+  { value: "start", label: "Start", defaultCredits: 250, category: "individual" },
+  { value: "premium", label: "Premium", defaultCredits: 600, category: "individual" },
+  { value: "vip", label: "VIP", defaultCredits: 1000, category: "individual" },
+  { value: "essencial_empresa", label: "Essencial Empresa", defaultCredits: 2000, category: "enterprise" },
+  { value: "premium_empresa", label: "Premium Empresa", defaultCredits: 2000, category: "enterprise" },
+  { value: "prime_empresa", label: "Prime Empresa (Black)", defaultCredits: 3500, category: "enterprise" },
+];
+
+const TIER_LABEL: Record<string, string> = Object.fromEntries(TIER_OPTIONS.map(t => [t.value, t.label]));
 
 export default function AdminFoundersTab() {
   const [loading, setLoading] = useState(true);
@@ -77,14 +99,22 @@ export default function AdminFoundersTab() {
   const createLot = async (category: "individual" | "enterprise") => {
     const catLots = lots.filter(l => l.category === category);
     const nextNumber = (catLots.reduce((m, l) => Math.max(m, l.lot_number), 0)) + 1;
-    const lastPrice = catLots.length ? catLots[catLots.length - 1].price : 97;
+    const last = catLots[catLots.length - 1];
+    const lastPrice = last ? last.price : 97;
     const newPrice = Number(lastPrice) + Number(settings.price_increment || 30);
+    // Herda do último lote da categoria; se não houver, usa default sensato
+    const defaultTier: InheritedTier = last?.inherited_tier
+      ?? (category === "individual" ? "vip" : "prime_empresa");
+    const defaultCredits = last?.ia_credits
+      ?? (category === "individual" ? 1000 : 3500);
     const { error } = await supabase.from("founder_lots").insert({
       category, lot_number: nextNumber, price: newPrice,
       total_slots: settings.default_slots, used_slots: 0, is_active: true,
-    });
+      inherited_tier: defaultTier,
+      ia_credits: defaultCredits,
+    } as any);
     if (error) { toast.error(error.message); return; }
-    toast.success(`Lote ${nextNumber} criado em R$ ${newPrice}`);
+    toast.success(`Lote ${nextNumber} criado em R$ ${newPrice} (herda ${TIER_LABEL[defaultTier]})`);
     load();
   };
 
@@ -147,6 +177,9 @@ export default function AdminFoundersTab() {
                       <Badge variant="secondary">Inativo</Badge>
                     )}
                     {isFull && <Badge className="bg-red-500/10 text-red-600 border-red-500/30">Esgotado</Badge>}
+                    <Badge variant="outline" className="bg-amber-500/10 text-amber-700 border-amber-500/30">
+                      Herda: {TIER_LABEL[lot.inherited_tier] || lot.inherited_tier}
+                    </Badge>
                   </div>
                   <div className="flex items-center gap-2">
                     <Switch
@@ -188,6 +221,56 @@ export default function AdminFoundersTab() {
                   <div>
                     <Label className="text-xs">Vagas usadas</Label>
                     <Input type="number" value={lot.used_slots} disabled />
+                  </div>
+                </div>
+
+                {/* Plano herdado + créditos IA */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t">
+                  <div>
+                    <Label className="text-xs flex items-center gap-1.5">
+                      <Crown size={12} className="text-amber-500" />
+                      Plano herdado pelo comprador
+                    </Label>
+                    <Select
+                      value={lot.inherited_tier}
+                      onValueChange={(v) => {
+                        const opt = TIER_OPTIONS.find(o => o.value === v);
+                        const patch: Partial<Lot> = { inherited_tier: v as InheritedTier };
+                        if (opt && (lot.ia_credits === 0 || confirm(`Atualizar créditos de IA para o padrão do plano ${opt.label} (${opt.defaultCredits})?`))) {
+                          patch.ia_credits = opt.defaultCredits;
+                        }
+                        updateLot(lot.id, patch);
+                      }}
+                    >
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {TIER_OPTIONS
+                          .filter(t => t.category === lot.category)
+                          .map(t => (
+                            <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
+                          ))}
+                      </SelectContent>
+                    </Select>
+                    <p className="text-[10px] text-muted-foreground mt-1">
+                      Define quais funções premium o membro recebe por 12 meses.
+                    </p>
+                  </div>
+                  <div>
+                    <Label className="text-xs flex items-center gap-1.5">
+                      <Sparkles size={12} className="text-primary" />
+                      Créditos de IA (uma vez)
+                    </Label>
+                    <Input
+                      type="number"
+                      defaultValue={lot.ia_credits}
+                      onBlur={(e) => {
+                        const v = Number(e.target.value);
+                        if (v !== lot.ia_credits) updateLot(lot.id, { ia_credits: v });
+                      }}
+                    />
+                    <p className="text-[10px] text-muted-foreground mt-1">
+                      Concedidos no momento da compra; não renovam mensalmente.
+                    </p>
                   </div>
                 </div>
 
