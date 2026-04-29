@@ -1275,11 +1275,8 @@ export default function CompanyProfile() {
                   style={{ backgroundImage: `linear-gradient(135deg, ${storeTheme.accent || storeTheme.primary}, ${storeTheme.primary})` }}
                 >
                   {activeSellerCategory
-                    ? getSellerVerifiedLabel(activeSellerCategory, isPaid ? "title" : "active")
+                    ? getSellerVerifiedLabel(activeSellerCategory, isPaid ? "combined" : "combinedActive")
                     : (isPaid ? "Profissional Verificado" : "Profissional Ativo")}
-                </p>
-                <p className="text-[8px] md:text-[10px] uppercase tracking-[0.1em] md:tracking-[0.18em] font-semibold truncate" style={{ color: storeTheme.textMuted }}>
-                  {isPaid ? "Profissional verificado" : "Perfil ativo"}
                 </p>
               </div>
             </div>
