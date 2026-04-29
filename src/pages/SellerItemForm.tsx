@@ -14,6 +14,7 @@ import PropertyFieldsCasa from "@/components/PropertyFieldsCasa";
 import PropertyFieldsApartamento from "@/components/PropertyFieldsApartamento";
 import PropertyFieldsTerreno from "@/components/PropertyFieldsTerreno";
 import PropertyFieldsComercial from "@/components/PropertyFieldsComercial";
+import ListingValuationFields from "@/components/ListingValuationFields";
 
 type ItemCategory = Database["public"]["Enums"]["item_category"];
 type ItemTag = Database["public"]["Enums"]["item_tag"];
