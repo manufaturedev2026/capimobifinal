@@ -28,6 +28,7 @@ const propertyCategories: { value: ItemCategory; label: string; emoji: string }[
 ];
 
 const MAX_TAGS = 1;
+const MAX_PHOTOS = 10;
 
 const categoryHeaderStyles: Record<string, string> = {
   valor: "text-amber-600",
