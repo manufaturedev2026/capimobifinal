@@ -342,9 +342,19 @@ export default function SellerItemForm() {
     if (!e.target.files?.length || !user) return;
     const remaining = MAX_PHOTOS - form.photos.length;
     if (remaining <= 0) {
-      toast({ title: `Máximo de ${MAX_PHOTOS} fotos por imóvel`, description: "Remova alguma foto antes de adicionar outra.", variant: "destructive" });
+      openLimit("photos");
       e.target.value = "";
       return;
+    }
+    // Bloqueio de armazenamento do plano
+    if (planUsage && planUsage.limits.storage_mb > 0) {
+      const usedMb = planUsage.usage.storage_mb || 0;
+      const limitMb = planUsage.limits.storage_mb;
+      if (usedMb >= limitMb) {
+        openLimit("storage");
+        e.target.value = "";
+        return;
+      }
     }
     const filesArray = Array.from(e.target.files);
     if (filesArray.length > remaining) {
