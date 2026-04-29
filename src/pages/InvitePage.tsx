@@ -7,6 +7,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { SITE_URL } from "@/lib/siteUrl";
 import { DEFAULT_CONFIG, DEFAULT_FLOWS, type FlowStep, type BotStep, type InputStep, type ChoiceStep, type InviteChatConfig } from "@/data/inviteFlow";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 const resolveInviteConfig = (parsed: any, botSlug?: string): InviteChatConfig => {
   const base = { ...DEFAULT_CONFIG };
@@ -30,6 +31,7 @@ interface VisibleBubble {
 
 export default function InvitePage() {
   const { botSlug } = useParams();
+  const { site_name } = useSiteSettings();
   const [config, setConfig] = useState<InviteChatConfig>(DEFAULT_CONFIG);
   const [flow, setFlow] = useState<FlowStep[]>([]);
   const [bubbles, setBubbles] = useState<VisibleBubble[]>([]);
@@ -231,7 +233,7 @@ export default function InvitePage() {
   };
 
   // ─── Flow Mode Logic ───
-  const resolve = useCallback((t: string) => t.replace(/\{\{nome\}\}/gi, userName || "você"), [userName]);
+  const resolve = useCallback((t: string) => t.replace(/\{\{nome\}\}/gi, userName || "você").replace(/\{\{site\}\}/gi, site_name), [userName, site_name]);
   const getStep = useCallback((id: string) => flow.find((s) => s.id === id), [flow]);
   const addBubble = useCallback((text: string, sender: "attendant" | "user") => {
     setBubbles((prev) => [...prev, { id: `${Date.now()}_${Math.random()}`, text, sender }]);
@@ -248,7 +250,7 @@ export default function InvitePage() {
       const showNext = () => {
         if (i < msgs.length) {
           const raw = msgs[i];
-          const text = nameOverride ? raw.replace(/\{\{nome\}\}/gi, nameOverride) : resolve(raw);
+          const text = (nameOverride ? raw.replace(/\{\{nome\}\}/gi, nameOverride) : resolve(raw)).replace(/\{\{site\}\}/gi, site_name);
           addBubble(text, "attendant");
           i++;
           if (i < msgs.length) {
@@ -357,8 +359,8 @@ export default function InvitePage() {
   return (
     <>
       <Helmet>
-        <title>Crie sua loja de imóveis grátis | Capimobi</title>
-        <meta name="description" content="Cadastre-se gratuitamente na Capimobi e tenha sua loja de imóveis online em minutos!" />
+        <title>Crie sua loja de imóveis grátis | {site_name}</title>
+        <meta name="description" content={`Cadastre-se gratuitamente na ${site_name} e tenha sua loja de imóveis online em minutos!`} />
         <link rel="canonical" href={`${SITE_URL}/convite`} />
       </Helmet>
 
@@ -366,10 +368,10 @@ export default function InvitePage() {
         <div className="sticky top-0 z-50 flex items-center gap-3 px-3 py-2" style={{ background: "#075e54" }}>
           <button onClick={() => navigate(-1)} className="text-white/80 hover:text-white"><ArrowLeft size={22} /></button>
           <div className="w-10 h-10 rounded-full bg-[#128c7e] flex items-center justify-center text-white font-bold text-lg overflow-hidden shrink-0">
-            {config.attendantAvatar ? <img src={config.attendantAvatar} alt="" className="w-full h-full object-cover" /> : config.attendantName.charAt(0).toUpperCase()}
+            {config.attendantAvatar ? <img src={config.attendantAvatar} alt="" className="w-full h-full object-cover" /> : (config.attendantName.replace(/\{\{site\}\}/gi, site_name).charAt(0).toUpperCase())}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-white font-semibold text-sm truncate">{config.attendantName}</p>
+            <p className="text-white font-semibold text-sm truncate">{config.attendantName.replace(/\{\{site\}\}/gi, site_name)}</p>
             <p className="text-[#8eddd4] text-xs">online</p>
           </div>
           <div className="flex items-center gap-4 text-white/80">
@@ -509,7 +511,7 @@ export default function InvitePage() {
                     if (config.ctaType === "captacao_imobiliaria") {
                       const categoryLabel = { imobiliaria: "Imobiliária", construtora: "Construtora", corretor: "Corretor(a)" }[crmCategory] || crmCategory;
                       const msg = encodeURIComponent(
-                        `Olá! Sou ${crmName.trim()}, ${categoryLabel}.\n\nTenho interesse em conhecer a Capimobi e criar minha loja online.\n\nWhatsApp: ${crmPhone.trim()}`
+                        `Olá! Sou ${crmName.trim()}, ${categoryLabel}.\n\nTenho interesse em conhecer a ${site_name} e criar minha loja online.\n\nWhatsApp: ${crmPhone.trim()}`
                       );
                       const url = config.crmRedirectUrl || config.ctaUrl || "https://wa.me/55";
                       const whatsappUrl = url.includes("wa.me") ? `${url}?text=${msg}` : url;

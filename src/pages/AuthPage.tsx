@@ -9,6 +9,7 @@ import heroImg from "@/assets/hero-auth.jpg";
 import logoImg from "@/assets/logo-es-corretores.png";
 import { BRAZIL_STATES } from "@/data/brazilStates";
 import { useCitiesByState } from "@/hooks/useCitiesByState";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(() => {
@@ -28,6 +29,7 @@ export default function AuthPage() {
   const [sellerCategory, setSellerCategory] = useState<"corretor" | "imobiliaria" | "construtora">("corretor");
   const { cities: stateCities, loading: loadingCities } = useCitiesByState(selectedState);
   const { user, profile, signIn, signUp } = useAuth();
+  const { site_name } = useSiteSettings();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const trialDays = searchParams.get("trial");
@@ -124,7 +126,7 @@ export default function AuthPage() {
     <div className="min-h-screen flex flex-col lg:flex-row bg-background">
       {/* Left Panel - Hero Image + Blue Overlay */}
       <div className="relative w-full lg:w-1/2 h-[40vh] lg:h-auto lg:min-h-screen overflow-hidden">
-        <img src={heroImg} alt="Capimobi" className="absolute inset-0 w-full h-full object-cover" />
+        <img src={heroImg} alt={site_name} className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-br from-[hsl(212,100%,15%)/85%] via-[hsl(197,100%,25%)/70%] to-[hsl(212,100%,20%)/80%]" />
         <div className="absolute inset-0 bg-gradient-to-b lg:bg-gradient-to-r from-transparent via-transparent to-background" />
         
@@ -137,7 +139,7 @@ export default function AuthPage() {
         <div className="absolute bottom-0 left-0 right-0 p-6 lg:p-12 lg:bottom-auto lg:top-1/2 lg:-translate-y-1/2">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
             <div className="flex items-center gap-3 mb-6">
-              <img src={logoImg} alt="Capimobi" className="w-14 h-14 rounded-2xl object-contain" />
+              <img src={logoImg} alt={site_name} className="w-14 h-14 rounded-2xl object-contain" />
               <div>
                 <h2 className="text-white font-display text-xl font-bold">
                   <span className="text-primary">Cap</span><span className="text-white">i</span><span className="text-accent">mobi</span>
@@ -183,7 +185,7 @@ export default function AuthPage() {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }} className="w-full max-w-md">
           {/* Mobile header */}
            <div className="lg:hidden text-center mb-6">
-              <img src={logoImg} alt="Capimobi" className="w-14 h-14 rounded-2xl object-contain mx-auto mb-3" />
+              <img src={logoImg} alt={site_name} className="w-14 h-14 rounded-2xl object-contain mx-auto mb-3" />
               <h2 className="font-display font-bold text-lg">
                 <span className="text-primary">Cap</span><span className="text-foreground">i</span><span className="text-accent">mobi</span>
               </h2>

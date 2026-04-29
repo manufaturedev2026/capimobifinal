@@ -64,19 +64,19 @@ const SHARED_INTRO: FlowStep[] = [
 
 const FLOW_INTERNAL: FlowStep[] = [
   ...SHARED_INTRO,
-  { id: "greet", type: "bot", messages: ["Prazer, {{nome}}! 😊", "Eu sou a Ana, consultora digital da Capimobi!", "Me conta, você já trabalha com imóveis?"], next: "choice_experience" },
+  { id: "greet", type: "bot", messages: ["Prazer, {{nome}}! 😊", "Eu sou a Ana, consultora digital da {{site}}!", "Me conta, você já trabalha com imóveis?"], next: "choice_experience" },
   { id: "choice_experience", type: "choice", options: [
     { label: "Sim, sou corretor(a) 🏠", next: "path_corretor" },
     { label: "Ainda não, quero começar 🚀", next: "path_iniciante" },
     { label: "Sou imobiliária/construtora 🏢", next: "path_empresa" },
   ]},
-  { id: "path_corretor", type: "bot", messages: ["Excelente, {{nome}}! 💪", "A Capimobi foi feita pra corretores como você!", "O que mais te interessa?"], next: "choice_corretor_interest" },
+  { id: "path_corretor", type: "bot", messages: ["Excelente, {{nome}}! 💪", "A {{site}} foi feita pra corretores como você!", "O que mais te interessa?"], next: "choice_corretor_interest" },
   { id: "choice_corretor_interest", type: "choice", options: [
     { label: "Ter minha loja online 🛍️", next: "benefit_loja" },
     { label: "Captar mais leads 📈", next: "benefit_leads" },
     { label: "Ver tudo que oferecemos ✨", next: "benefit_all" },
   ]},
-  { id: "path_iniciante", type: "bot", messages: ["Que ótimo, {{nome}}! O mercado imobiliário é incrível! 🌟", "Com a Capimobi, você começa do zero e já sai com sua loja profissional pronta!", "O que te atraiu pra essa área?"], next: "choice_iniciante_reason" },
+  { id: "path_iniciante", type: "bot", messages: ["Que ótimo, {{nome}}! O mercado imobiliário é incrível! 🌟", "Com a {{site}}, você começa do zero e já sai com sua loja profissional pronta!", "O que te atraiu pra essa área?"], next: "choice_iniciante_reason" },
   { id: "choice_iniciante_reason", type: "choice", options: [
     { label: "Renda extra 💰", next: "benefit_all" },
     { label: "Carreira nova 🎯", next: "benefit_all" },
@@ -87,9 +87,9 @@ const FLOW_INTERNAL: FlowStep[] = [
     { label: "Sim, quero detalhes! 📋", next: "benefit_all" },
     { label: "Quanto custa? 💳", next: "pricing" },
   ]},
-  { id: "benefit_loja", type: "bot", messages: ["Com a Capimobi você tem sua loja online em minutos! 🛍️", "✅ Página profissional com seu nome\n✅ Layouts exclusivos (Netflix, Magazine, Elegant...)\n✅ Compartilhamento por WhatsApp\n✅ QR Code personalizado", "Quer saber mais sobre outros benefícios?"], next: "choice_more" },
+  { id: "benefit_loja", type: "bot", messages: ["Com a {{site}} você tem sua loja online em minutos! 🛍️", "✅ Página profissional com seu nome\n✅ Layouts exclusivos (Netflix, Magazine, Elegant...)\n✅ Compartilhamento por WhatsApp\n✅ QR Code personalizado", "Quer saber mais sobre outros benefícios?"], next: "choice_more" },
   { id: "benefit_leads", type: "bot", messages: ["Captação de leads é nosso forte! 📈", "✅ CRM integrado com funil de vendas\n✅ Bot de captação por WhatsApp\n✅ Landing page para atrair proprietários\n✅ Notificações push para engajar visitantes", "Quer saber mais?"], next: "choice_more" },
-  { id: "benefit_all", type: "bot", messages: ["Olha tudo que você ganha com a Capimobi, {{nome}}! ✨", "🛍️ Loja online personalizada\n📈 CRM de leads integrado\n📱 Tudo pelo celular\n🔔 Notificações push\n📄 Propostas em PDF\n🤖 Bot de captação WhatsApp\n🎬 Stories profissionais\n📊 Analytics de visitas", "E o melhor de tudo..."], next: "pricing" },
+  { id: "benefit_all", type: "bot", messages: ["Olha tudo que você ganha com a {{site}}, {{nome}}! ✨", "🛍️ Loja online personalizada\n📈 CRM de leads integrado\n📱 Tudo pelo celular\n🔔 Notificações push\n📄 Propostas em PDF\n🤖 Bot de captação WhatsApp\n🎬 Stories profissionais\n📊 Analytics de visitas", "E o melhor de tudo..."], next: "pricing" },
   { id: "choice_more", type: "choice", options: [
     { label: "Ver todos os benefícios ✨", next: "benefit_all" },
     { label: "Quanto custa? 💰", next: "pricing" },
@@ -107,12 +107,12 @@ const FLOW_INTERNAL: FlowStep[] = [
 
 const FLOW_CRM: FlowStep[] = [
   ...SHARED_INTRO,
-  { id: "greet", type: "bot", messages: ["Prazer, {{nome}}! 😊", "Sou a Ana, consultora da Capimobi!", "Temos uma oportunidade exclusiva para profissionais do mercado imobiliário 🏠", "Posso te contar mais?"], next: "choice_interest" },
+  { id: "greet", type: "bot", messages: ["Prazer, {{nome}}! 😊", "Sou a Ana, consultora da {{site}}!", "Temos uma oportunidade exclusiva para profissionais do mercado imobiliário 🏠", "Posso te contar mais?"], next: "choice_interest" },
   { id: "choice_interest", type: "choice", options: [
     { label: "Sim, quero saber! 🤩", next: "explain_opportunity" },
-    { label: "O que é a Capimobi? 🤔", next: "explain_platform" },
+    { label: "O que é a {{site}}? 🤔", next: "explain_platform" },
   ]},
-  { id: "explain_platform", type: "bot", messages: ["A Capimobi é a plataforma mais completa para corretores e imobiliárias! 🚀", "Loja online, CRM, bot de captação, stories, e muito mais!", "Temos uma proposta especial para novos membros..."], next: "explain_opportunity" },
+  { id: "explain_platform", type: "bot", messages: ["A {{site}} é a plataforma mais completa para corretores e imobiliárias! 🚀", "Loja online, CRM, bot de captação, stories, e muito mais!", "Temos uma proposta especial para novos membros..."], next: "explain_opportunity" },
   { id: "explain_opportunity", type: "bot", messages: ["{{nome}}, estamos selecionando profissionais para uma consultoria gratuita de posicionamento digital! 🎯", "Nosso time entra em contato pelo WhatsApp para uma conversa rápida de 5 minutos.", "É só deixar seu contato e um consultor te liga! 📲"], next: "choice_leave_data" },
   { id: "choice_leave_data", type: "choice", options: [
     { label: "Quero a consultoria grátis! 📋", next: "final_cta" },
@@ -125,27 +125,27 @@ const FLOW_CRM: FlowStep[] = [
 
 const FLOW_WHATSAPP: FlowStep[] = [
   ...SHARED_INTRO,
-  { id: "greet", type: "bot", messages: ["Oi, {{nome}}! Que bom te ver por aqui! 😊", "Sou a Ana da Capimobi!", "Posso te ajudar com o que precisa. O que te trouxe até aqui?"], next: "choice_reason" },
+  { id: "greet", type: "bot", messages: ["Oi, {{nome}}! Que bom te ver por aqui! 😊", "Sou a Ana da {{site}}!", "Posso te ajudar com o que precisa. O que te trouxe até aqui?"], next: "choice_reason" },
   { id: "choice_reason", type: "choice", options: [
     { label: "Quero anunciar imóveis 🏠", next: "path_anunciar" },
     { label: "Sou corretor e quero saber mais 📈", next: "path_corretor" },
     { label: "Preciso de ajuda rápida 🆘", next: "path_ajuda" },
   ]},
-  { id: "path_anunciar", type: "bot", messages: ["Perfeito, {{nome}}! 🏡", "Na Capimobi você cria sua loja online e anuncia seus imóveis em minutos!", "Quer falar direto com nossa equipe pelo WhatsApp? É mais rápido! 💬"], next: "choice_whatsapp" },
+  { id: "path_anunciar", type: "bot", messages: ["Perfeito, {{nome}}! 🏡", "Na {{site}} você cria sua loja online e anuncia seus imóveis em minutos!", "Quer falar direto com nossa equipe pelo WhatsApp? É mais rápido! 💬"], next: "choice_whatsapp" },
   { id: "path_corretor", type: "bot", messages: ["Excelente, {{nome}}! 💪", "Temos CRM, bot de captação, layouts profissionais e muito mais!", "Nosso time pode te mostrar tudo pelo WhatsApp. Bora? 💬"], next: "choice_whatsapp" },
   { id: "path_ajuda", type: "bot", messages: ["Claro, {{nome}}! 😊", "Nosso time está pronto pra te atender agora mesmo pelo WhatsApp!", "É rápido e sem burocracia 🚀"], next: "choice_whatsapp" },
   { id: "choice_whatsapp", type: "choice", options: [
     { label: "Chamar no WhatsApp! 💬", next: "final_cta" },
     { label: "Quero saber mais antes 🤔", next: "more_info" },
   ]},
-  { id: "more_info", type: "bot", messages: ["Sem problemas! 😊", "A Capimobi oferece:\n\n🛍️ Loja profissional online\n📈 CRM integrado\n🤖 Bot de captação\n📱 Tudo pelo celular\n🎬 Stories profissionais", "Nosso time pode tirar todas as suas dúvidas pelo WhatsApp! 👇"], next: "final_cta" },
+  { id: "more_info", type: "bot", messages: ["Sem problemas! 😊", "A {{site}} oferece:\n\n🛍️ Loja profissional online\n📈 CRM integrado\n🤖 Bot de captação\n📱 Tudo pelo celular\n🎬 Stories profissionais", "Nosso time pode tirar todas as suas dúvidas pelo WhatsApp! 👇"], next: "final_cta" },
   { id: "final_cta", type: "bot", messages: ["Beleza, {{nome}}! 🎯", "Clica no botão abaixo e fale direto com nossa equipe! 👇"], next: "cta" },
   { id: "cta", type: "cta" },
 ];
 
 const FLOW_WHATSAPP_GROUP: FlowStep[] = [
   ...SHARED_INTRO,
-  { id: "greet", type: "bot", messages: ["Prazer, {{nome}}! 😊", "Sou a Ana da Capimobi!", "Sabia que temos um grupo exclusivo de corretores no WhatsApp? 👥"], next: "choice_know_more" },
+  { id: "greet", type: "bot", messages: ["Prazer, {{nome}}! 😊", "Sou a Ana da {{site}}!", "Sabia que temos um grupo exclusivo de corretores no WhatsApp? 👥"], next: "choice_know_more" },
   { id: "choice_know_more", type: "choice", options: [
     { label: "Conta mais! 🤩", next: "group_benefits" },
     { label: "O que rola no grupo? 🤔", next: "group_benefits" },
@@ -168,7 +168,7 @@ const FLOW_WHATSAPP_GROUP: FlowStep[] = [
 
 const FLOW_URL: FlowStep[] = [
   ...SHARED_INTRO,
-  { id: "greet", type: "bot", messages: ["Prazer, {{nome}}! 😊", "Sou a Ana da Capimobi!", "Tenho algo especial pra te mostrar! 🎁"], next: "choice_interest" },
+  { id: "greet", type: "bot", messages: ["Prazer, {{nome}}! 😊", "Sou a Ana da {{site}}!", "Tenho algo especial pra te mostrar! 🎁"], next: "choice_interest" },
   { id: "choice_interest", type: "choice", options: [
     { label: "Quero ver! 🤩", next: "present_offer" },
     { label: "O que é? 🤔", next: "present_offer" },
@@ -189,13 +189,13 @@ const FLOW_URL: FlowStep[] = [
 
 const FLOW_CAPTACAO_IMOBILIARIA: FlowStep[] = [
   ...SHARED_INTRO,
-  { id: "greet", type: "bot", messages: ["Prazer, {{nome}}! 😊", "Sou a Ana, consultora digital da Capimobi!", "Somos a plataforma nº1 para imobiliárias e construtoras criarem suas lojas online profissionais 🏢", "Posso te mostrar como funciona?"], next: "choice_profile" },
+  { id: "greet", type: "bot", messages: ["Prazer, {{nome}}! 😊", "Sou a Ana, consultora digital da {{site}}!", "Somos a plataforma nº1 para imobiliárias e construtoras criarem suas lojas online profissionais 🏢", "Posso te mostrar como funciona?"], next: "choice_profile" },
   { id: "choice_profile", type: "choice", options: [
     { label: "Sou Imobiliária 🏢", next: "path_imobiliaria" },
     { label: "Sou Construtora 🏗️", next: "path_construtora" },
     { label: "Sou Corretor(a) autônomo 🏠", next: "path_corretor" },
   ]},
-  { id: "path_imobiliaria", type: "bot", messages: ["Perfeito, {{nome}}! A Capimobi foi feita especialmente para imobiliárias como a sua! 🚀", "Olha o que você ganha de cara:"], next: "benefits_empresa" },
+  { id: "path_imobiliaria", type: "bot", messages: ["Perfeito, {{nome}}! A {{site}} foi feita especialmente para imobiliárias como a sua! 🚀", "Olha o que você ganha de cara:"], next: "benefits_empresa" },
   { id: "path_construtora", type: "bot", messages: ["Excelente, {{nome}}! Trabalhamos com as melhores construtoras do mercado! 🏗️", "Veja como podemos impulsionar seus lançamentos:"], next: "benefits_empresa" },
   { id: "path_corretor", type: "bot", messages: ["Ótimo, {{nome}}! Corretores autônomos são nossa especialidade! 💪", "Veja o que preparamos pra você:"], next: "benefits_corretor" },
   { id: "benefits_empresa", type: "bot", messages: [
@@ -213,7 +213,7 @@ const FLOW_CAPTACAO_IMOBILIARIA: FlowStep[] = [
     { label: "Como funciona a parceria? 🤝", next: "parceria" },
   ]},
   { id: "parceria", type: "bot", messages: [
-    "A parceria Capimobi funciona assim, {{nome}}: 🤝",
+    "A parceria {{site}} funciona assim, {{nome}}: 🤝",
     "✅ Cada corretor tem sua loja espelho com 1 clique\n✅ Os leads chegam direto no WhatsApp do corretor\n✅ Você vê tudo pelo painel: visitas, cliques, captação\n✅ Imóveis compartilhados entre a equipe\n✅ O plano gratuito já inclui tudo para começar!",
     "Quer experimentar? É só deixar seus dados! 👇"
   ], next: "collect_data" },
@@ -244,7 +244,7 @@ export const DEFAULT_CONFIG: InviteChatConfig = {
   id: "principal",
   name: "Convite principal",
   slug: "principal",
-  attendantName: "Ana • Capimobi",
+  attendantName: "Ana • {{site}}",
   attendantAvatar: "",
   aiPrompt: "",
   ctaText: "🚀 Criar Minha Conta Grátis",

@@ -8,8 +8,10 @@ import { getMarketplaceTheme } from "@/lib/marketplaceThemes";
 import { getMarketplaceThemeCssVars } from "@/lib/marketplaceThemeCssVars";
 import { normalizeLoginHeroSetting, resolveLoginHeroImage } from "@/data/loginHeroPresets";
 import heroImgDefault from "@/assets/hero-anunciar.jpg";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 export default function ResetPasswordPage() {
+  const { site_name } = useSiteSettings();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -83,7 +85,7 @@ export default function ResetPasswordPage() {
   return (
     <div className="min-h-screen flex flex-col lg:flex-row" style={{ ...themeVars, background: theme.darkBase }}>
       <div className="relative w-full lg:w-1/2 h-[40vh] lg:h-auto lg:min-h-screen overflow-hidden">
-        <img src={heroImg} alt="Capimobi" className="absolute inset-0 w-full h-full object-cover" />
+        <img src={heroImg} alt={site_name} className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0" style={{ background: `linear-gradient(to bottom, transparent, transparent, ${theme.darkBase})` }} />
         <div className="hidden lg:block absolute inset-0" style={{ background: `linear-gradient(to right, transparent 60%, ${theme.darkBase})` }} />
         <div className="absolute inset-0 bg-black/30" />

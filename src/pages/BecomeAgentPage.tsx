@@ -1,5 +1,6 @@
 /* Updated images v2 */
 import { useEffect, useRef, useState } from "react";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { Link } from "react-router-dom";
 import { motion, useInView } from "framer-motion";
 import {
@@ -142,14 +143,14 @@ const steps = [
   {
     icon: Briefcase,
     title: "Comece a Atuar",
-    description: "Cadastre-se no Capimobi, crie seu perfil profissional e comece a captar clientes e fechar negócios.",
+    description: "Cadastre-se no {{site}}, crie seu perfil profissional e comece a captar clientes e fechar negócios.",
     detail: "Cadastro gratuito na plataforma",
   },
 ];
 
 const skills = [
   { icon: Target, title: "Negociação", description: "Domine a arte de ouvir, argumentar e fechar acordos que satisfaçam todas as partes." },
-  { icon: Lightbulb, title: "Marketing Digital", description: "Aprenda a usar redes sociais, portais e o Capimobi para atrair clientes qualificados.", accent: true },
+  { icon: Lightbulb, title: "Marketing Digital", description: "Aprenda a usar redes sociais, portais e o {{site}} para atrair clientes qualificados.", accent: true },
   { icon: Star, title: "Conhecimento Jurídico", description: "Entenda contratos, documentação e legislação para transmitir segurança ao cliente." },
   { icon: Award, title: "Atendimento Premium", description: "Ofereça uma experiência personalizada. O cliente satisfeito indica 3 novos." },
   { icon: Building2, title: "Avaliação de Imóveis", description: "Saiba precificar com base em localização, conservação e tendências de mercado." },
@@ -160,7 +161,7 @@ const testimonials = [
   {
     name: "Marcos Oliveira",
     role: "Corretor há 3 anos • Vitória",
-    text: "Comecei do zero e hoje faturo mais de R$ 20 mil por mês. O Capimobi me deu visibilidade que eu não teria sozinho.",
+    text: "Comecei do zero e hoje faturo mais de R$ 20 mil por mês. O {{site}} me deu visibilidade que eu não teria sozinho.",
     stars: 5,
   },
   {
@@ -195,7 +196,7 @@ const faqs = [
     a: "Sim! Muitos corretores começam atuando nos finais de semana e horários livres. A flexibilidade é uma das maiores vantagens.",
   },
   {
-    q: "O Capimobi cobra para anunciar?",
+    q: "O {{site}} cobra para anunciar?",
     a: "O cadastro é gratuito com até 5 anúncios. Temos planos premium para quem deseja mais visibilidade e recursos.",
   },
 ];
@@ -212,6 +213,8 @@ const whatsappUrl =
 
 export default function BecomeAgentPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const { site_name } = useSiteSettings();
+  const r = (s: string) => s.replace(/\{\{site\}\}/gi, site_name);
 
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
@@ -327,7 +330,7 @@ export default function BecomeAgentPage() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={scaleIn}>
               <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/15 text-accent text-xs font-bold uppercase tracking-widest mb-6 border border-accent/20">
-                <Sparkles size={14} /> Exclusivo Capimobi
+                <Sparkles size={14} /> Exclusivo {site_name}
               </span>
               <h2 className="font-display font-black text-4xl md:text-5xl mt-2 mb-5">
                 Sua <span className="text-accent">Loja</span> Estilo
@@ -376,7 +379,7 @@ export default function BecomeAgentPage() {
               {/* Glow behind mockup */}
               <div className="absolute -inset-6 bg-gradient-to-br from-primary/20 via-accent/10 to-primary/20 rounded-[2rem] blur-3xl opacity-60" />
               <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-primary/20 border border-border">
-                <img src={lojaNetflixImg} alt="Loja estilo Netflix do Capimobi" loading="lazy" className="w-full h-auto" width={1440} height={960} />
+                <img src={lojaNetflixImg} alt={`Loja estilo Netflix do ${site_name}`} loading="lazy" className="w-full h-auto" width={1440} height={960} />
               </div>
               {/* Floating badge */}
               <motion.div
@@ -431,7 +434,7 @@ export default function BecomeAgentPage() {
                   <item.icon size={26} />
                 </div>
                 <h3 className="font-display font-bold text-xl text-foreground mb-2">{item.title}</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">{item.description}</p>
+                <p className="text-muted-foreground text-sm leading-relaxed">{r(item.description)}</p>
               </motion.div>
             ))}
           </div>
@@ -532,7 +535,7 @@ export default function BecomeAgentPage() {
                         <span className="text-xs font-bold text-primary uppercase tracking-wider">Passo {i + 1}</span>
                       </div>
                       <h3 className="font-display font-bold text-xl text-foreground mb-2">{step.title}</h3>
-                      <p className="text-muted-foreground text-sm leading-relaxed mb-3">{step.description}</p>
+                      <p className="text-muted-foreground text-sm leading-relaxed mb-3">{r(step.description)}</p>
                       <span className="inline-flex items-center gap-2 text-xs text-accent font-semibold bg-accent/10 px-3 py-1.5 rounded-full">
                         <CheckCircle2 size={12} /> {step.detail}
                       </span>
@@ -599,7 +602,7 @@ export default function BecomeAgentPage() {
                     </div>
                     <div>
                       <h3 className="font-display font-bold text-foreground mb-1">{skill.title}</h3>
-                      <p className="text-muted-foreground text-sm leading-relaxed">{skill.description}</p>
+                      <p className="text-muted-foreground text-sm leading-relaxed">{r(skill.description)}</p>
                     </div>
                   </motion.div>
                 ))}
@@ -637,7 +640,7 @@ export default function BecomeAgentPage() {
                     <Star key={s} size={16} className="fill-accent text-accent" />
                   ))}
                 </div>
-                <p className="text-muted-foreground text-sm leading-relaxed mb-6 italic">"{t.text}"</p>
+                <p className="text-muted-foreground text-sm leading-relaxed mb-6 italic">"{r(t.text)}"</p>
                 <div>
                   <div className="font-display font-bold  text-foreground">{t.name}</div>
                   <div className="text-muted-foreground text-xs">{t.role}</div>
@@ -666,7 +669,7 @@ export default function BecomeAgentPage() {
                   className="w-full text-left bg-secondary/30 hover:bg-secondary/50 border border-border rounded-2xl p-5 transition-all"
                 >
                   <div className="flex items-center justify-between gap-4">
-                    <span className="font-display font-bold text-foreground text-sm md:text-base">{faq.q}</span>
+                    <span className="font-display font-bold text-foreground text-sm md:text-base">{r(faq.q)}</span>
                     <ChevronDown
                       size={18}
                       className={`text-muted-foreground shrink-0 transition-transform duration-300 ${openFaq === i ? "rotate-180" : ""}`}
@@ -678,7 +681,7 @@ export default function BecomeAgentPage() {
                       animate={{ opacity: 1, height: "auto" }}
                       className="text-muted-foreground text-sm mt-3 leading-relaxed"
                     >
-                      {faq.a}
+                      {r(faq.a)}
                     </motion.p>
                   )}
                 </button>

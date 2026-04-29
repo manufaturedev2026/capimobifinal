@@ -10,6 +10,7 @@ import { getMarketplaceTheme, type MarketplaceTheme } from "@/lib/marketplaceThe
 import { getMarketplaceThemeCssVars } from "@/lib/marketplaceThemeCssVars";
 import FloatingParticles from "@/components/seo/FloatingParticles";
 import ShimmerLine from "@/components/seo/ShimmerLine";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 export { FloatingParticles, ShimmerLine };
 
@@ -64,6 +65,7 @@ export default function SeoPageLayout({
 }: SeoPageLayoutProps) {
   const { primary: PRIMARY, darkBase: DARK_BASE, darkMid: DARK_MID, cardBg: CARD_BG, border: BORDER, text: TEXT, textMuted: TEXT_MUTED } = theme;
   const themeVars = getMarketplaceThemeCssVars(theme);
+  const { site_name } = useSiteSettings();
 
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
@@ -83,7 +85,7 @@ export default function SeoPageLayout({
   return (
     <div style={{ ...themeVars, background: DARK_BASE, color: TEXT, overflowX: "clip", maxWidth: "100%" }} className="min-h-screen">
       <Helmet>
-        <title>{`${title} | Capimobi`}</title>
+        <title>{`${title} | ${site_name}`}</title>
         <meta name="description" content={metaDescription} />
         <link rel="canonical" href={canonical} />
         <meta property="og:title" content={title} />
@@ -174,7 +176,7 @@ export default function SeoPageLayout({
           <h2 className="font-display font-bold text-xl mb-4" style={{ color: TEXT }}>{title}</h2>
           <div className="text-sm leading-relaxed space-y-3" style={{ color: TEXT_MUTED }}>
             <p>{metaDescription}</p>
-            <p>O Capimobi é a plataforma que conecta compradores diretamente com corretores e imobiliárias verificadas de todo o Brasil. Encontre seu imóvel ideal com contato direto via WhatsApp.</p>
+            <p>O {site_name} é a plataforma que conecta compradores diretamente com corretores e imobiliárias verificadas de todo o Brasil. Encontre seu imóvel ideal com contato direto via WhatsApp.</p>
           </div>
         </div>
       </section>

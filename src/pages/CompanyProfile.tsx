@@ -6,6 +6,7 @@ import { useParams, Link, useLocation, Navigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ArrowRight, Star, MapPin, MessageCircle, Share2, Key, Home, Building2, Landmark, Store, Warehouse, MoreHorizontal, Image, Eye, Instagram, Phone, ExternalLink, Clock, Shield, Zap, ChevronLeft, ChevronRight, Heart, BadgeCheck, Clapperboard, Play, X, Volume2, VolumeX, LayoutDashboard, Bed, Bath, Car, Maximize, Sword, Trophy, Sparkles, Calendar, Info, Ruler } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 import StoreEffects from "@/components/StoreEffects";
 import ThemeParticles from "@/components/ThemeParticles";
 import {
@@ -87,6 +88,7 @@ export default function CompanyProfile() {
   const { id } = useParams();
   const location = useLocation();
   const { user } = useAuth();
+  const { site_name } = useSiteSettings();
   const [activeCategory, setActiveCategory] = useState("todos");
   const [filterCity, setFilterCity] = useState("");
   const [dbProfile, setDbProfile] = useState<any>(null);
@@ -555,7 +557,7 @@ export default function CompanyProfile() {
       const phone = company.whatsapp.replace(/\D/g, "");
       const msg = productId
         ? `Olá ${company.name}! 🏠 Vi o imóvel *${title}* na sua loja e gostaria de mais informações.\n\n🔗 ${link}`
-        : `Olá ${company.name}! 🏠 Vim da sua loja Capimobi e gostaria de mais informações sobre seus imóveis.\n\n🔗 ${link}`;
+        : `Olá ${company.name}! 🏠 Vim da sua loja ${site_name} e gostaria de mais informações sobre seus imóveis.\n\n🔗 ${link}`;
       openUrl(`https://wa.me/55${phone}?text=${encodeURIComponent(msg)}`);
       return;
     }
@@ -620,7 +622,7 @@ export default function CompanyProfile() {
             const stateName = dbProfile?.state || "";
             const sellerName = company.name;
             const totalItems = products.length;
-            const seoTitle = `${sellerName} — Imóveis em ${cityName}${stateName ? `, ${stateName}` : ""} | Capimobi`;
+            const seoTitle = `${sellerName} — Imóveis em ${cityName}${stateName ? `, ${stateName}` : ""} | ${site_name}`;
             const seoDesc = activeBio
               ? `${activeBio.slice(0, 130)} — ${totalItems} imóveis em ${cityName}.`
               : `Encontre ${totalItems}+ imóveis com ${sellerName} em ${cityName}. Casas, apartamentos, terrenos à venda. Contato direto via WhatsApp.`;
@@ -640,7 +642,7 @@ export default function CompanyProfile() {
                 <meta property="og:description" content={seoDesc} />
                 <meta property="og:url" content={canonicalUrl} />
                 {ogImage && <meta property="og:image" content={ogImage} />}
-                <meta property="og:site_name" content="Capimobi" />
+                <meta property="og:site_name" content={site_name} />
                 <meta property="og:locale" content="pt_BR" />
 
                 <meta name="twitter:card" content="summary_large_image" />
@@ -770,7 +772,7 @@ export default function CompanyProfile() {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="center" className="w-48">
                     <DropdownMenuItem onClick={() => {
-                      const text = `Confira ${company.name} no Capimobi: ${window.location.href}`;
+                      const text = `Confira ${company.name} no ${site_name}: ${window.location.href}`;
                       window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
                     }}>
                       <MessageCircle size={16} className="mr-2 text-[#25d366]" /> Enviar via WhatsApp
@@ -929,7 +931,7 @@ export default function CompanyProfile() {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="center" className="w-48">
                 <DropdownMenuItem onClick={() => {
-                  const text = `Confira ${company.name} no Capimobi: ${window.location.href}`;
+                  const text = `Confira ${company.name} no ${site_name}: ${window.location.href}`;
                   window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
                 }}>
                   <MessageCircle size={16} className="mr-2 text-[#25d366]" /> Enviar via WhatsApp
@@ -1170,7 +1172,7 @@ export default function CompanyProfile() {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-48">
                     <DropdownMenuItem onClick={() => {
-                      const text = `Confira ${company.name} no Capimobi: ${window.location.href}`;
+                      const text = `Confira ${company.name} no ${site_name}: ${window.location.href}`;
                       window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
                     }}>
                       <MessageCircle size={16} className="mr-2 text-[#25d366]" /> Enviar via WhatsApp

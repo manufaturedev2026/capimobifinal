@@ -22,6 +22,7 @@ import heroImg from "@/assets/hero-anunciar.jpg";
 import lojaPreviewImg from "@/assets/loja-preview-anunciar.jpg";
 import painelPreviewImg from "@/assets/painel-preview-anunciar.jpg";
 import avatarCorretorImg from "@/assets/avatar-corretor.png";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -86,11 +87,12 @@ const companyPlans = [
   { name: "Black Empresa", price: "R$ 1.899,00/mês", items: "Anúncios ilimitados", features: ["Selo Empresa Verificada", "10 Stories por 24h", "Destaque na homepage", "Destaque no topo da listagem", "Estatísticas completas", "Campanha Google Ads ampliada", "Anúncios Dinâmicos Google ADS", "Gerente de conta dedicado", "Suporte VIP dedicado", "Instagram na loja", "Botão Modo Cinema na loja", "Até 30 corretores vinculados", "Prioridade total em destaque"] },
 ];
 export default function CreateListing() {
+  const { site_name } = useSiteSettings();
   return (
     <div className="min-h-screen bg-background">
       {/* Hero */}
       <div className="relative h-[55vh] sm:h-[65vh] md:h-[80vh] overflow-hidden">
-        <img src={heroImg} alt="Anuncie no Capimobi" className="absolute inset-0 w-full h-full object-cover" />
+        <img src={heroImg} alt={`Anuncie no ${site_name}`} className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-r from-background/80 to-transparent" />
 
@@ -147,7 +149,7 @@ export default function CreateListing() {
         <div className="container max-w-6xl mx-auto px-4">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-8 sm:mb-12">
             <h2 className="font-display font-bold text-2xl sm:text-3xl md:text-4xl text-foreground mb-3">
-              Por que anunciar no <span className="text-accent">Capimobi</span>?
+              Por que anunciar no <span className="text-accent">{site_name}</span>?
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">Tudo que você precisa para vender mais imóveis em um só lugar.</p>
           </motion.div>
@@ -360,7 +362,7 @@ export default function CreateListing() {
               Pronto para vender <span className="text-accent">mais</span>?
             </h2>
             <p className="text-muted-foreground text-sm sm:text-base mb-6 sm:mb-8 max-w-lg mx-auto">
-              Cadastre-se gratuitamente e teste por 7 dias grátis no Capimobi.
+              Cadastre-se gratuitamente e teste por 7 dias grátis no {site_name}.
             </p>
             <Link to="/login" className="inline-flex items-center justify-center gap-2 px-6 sm:px-10 py-3 sm:py-4 rounded-xl bg-accent text-accent-foreground font-bold text-xs sm:text-sm hover:bg-accent/90 transition-all shadow-lg shadow-accent/20 w-full sm:w-auto">
               Cadastrar e Testar 7 Dias Grátis <ArrowRight size={14} />

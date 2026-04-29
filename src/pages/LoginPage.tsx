@@ -12,8 +12,10 @@ import heroImgDefault from "@/assets/hero-anunciar.jpg";
 import { BRAZIL_STATES } from "@/data/brazilStates";
 import { useCitiesByState } from "@/hooks/useCitiesByState";
 import { SITE_URL } from "@/lib/siteUrl";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 export default function LoginPage() {
+  const { site_name } = useSiteSettings();
   const [isLogin, setIsLogin] = useState(() => {
     const params = new URLSearchParams(window.location.search);
     return !params.get("trial");
@@ -183,7 +185,7 @@ export default function LoginPage() {
     <div className="min-h-screen flex flex-col lg:flex-row" style={{ ...themeVars, background: theme.darkBase }}>
       {/* Image Panel */}
       <div className="relative w-full lg:w-1/2 h-[40vh] lg:h-auto lg:min-h-screen overflow-hidden">
-        <img src={heroImg} alt="Capimobi" className="absolute inset-0 w-full h-full object-cover" />
+        <img src={heroImg} alt={site_name} className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0" style={{ background: `linear-gradient(to bottom, transparent, transparent, ${theme.darkBase})` }} />
         <div className="absolute inset-0 lg:hidden" style={{ background: `linear-gradient(to bottom, transparent 60%, ${theme.darkBase})` }} />
         <div className="hidden lg:block absolute inset-0" style={{ background: `linear-gradient(to right, transparent 60%, ${theme.darkBase})` }} />
@@ -192,7 +194,7 @@ export default function LoginPage() {
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
             <div className="flex items-center gap-2 mb-4">
               <Sparkles size={20} style={{ color: theme.primary }} />
-              <span style={{ color: theme.primary }} className="font-semibold text-sm uppercase tracking-wider">Capimobi</span>
+              <span style={{ color: theme.primary }} className="font-semibold text-sm uppercase tracking-wider">{site_name}</span>
             </div>
             <h1 className="font-display font-bold text-3xl lg:text-5xl text-white leading-tight mb-3">
               Área do<br /><span style={{ color: theme.promoAccent || theme.primary }}>Corretor</span>

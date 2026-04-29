@@ -15,6 +15,7 @@ import {
   Download, Phone, Clock, Trash2, Flame, TrendingUp, Home as HomeIcon, DollarSign, Bot, Sparkles
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 const todayISO = () => new Date().toISOString().slice(0, 10);
 const weekRange = () => {
@@ -35,6 +36,7 @@ type Quick = "todas" | "hoje" | "amanha" | "semana" | "mes";
 
 export default function AgendaPage() {
   const { user, profile } = useAuth();
+  const { site_name } = useSiteSettings();
   const navigate = useNavigate();
   const { toast } = useToast();
   const { visits, loading, createVisit, updateVisit, deleteVisit } = useVisitAppointments(user?.id, profile?.id);
@@ -142,7 +144,7 @@ export default function AgendaPage() {
   return (
     <div className="min-h-screen bg-background">
       <Helmet>
-        <title>Agenda de Visitas — Capimobi</title>
+        <title>Agenda de Visitas — {site_name}</title>
         <meta name="description" content="Organize visitas a imóveis, leads e compromissos imobiliários em um só lugar." />
       </Helmet>
 

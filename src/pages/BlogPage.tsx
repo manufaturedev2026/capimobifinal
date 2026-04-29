@@ -4,6 +4,7 @@ import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import { Search, Clock, BookOpen, ArrowRight } from "lucide-react";
 import { SITE_URL } from "@/lib/siteUrl";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 interface BlogArticle {
   slug: string;
@@ -77,6 +78,7 @@ const categories = ["Todos", "Guias", "Investimento", "Finanças", "Decoração"
 export default function BlogPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("Todos");
+  const { site_name } = useSiteSettings();
 
   const filtered = blogArticles.filter((a) => {
     const matchesSearch =
@@ -92,13 +94,13 @@ export default function BlogPage() {
   return (
     <div className="min-h-screen bg-background">
       <Helmet>
-        <title>Blog | Capimobi - Dicas e Notícias do Mercado Imobiliário</title>
+        <title>Blog | {site_name} - Dicas e Notícias do Mercado Imobiliário</title>
         <meta
           name="description"
           content="Blog sobre mercado imobiliário no Brasil. Dicas de compra, investimento, decoração e tendências."
         />
         <link rel="canonical" href={`${SITE_URL}/blog`} />
-        <meta property="og:title" content="Blog | Capimobi" />
+        <meta property="og:title" content={`Blog | ${site_name}`} />
         <meta property="og:description" content="Blog sobre mercado imobiliário no Brasil. Dicas de compra, investimento, decoração e tendências." />
         <meta property="og:url" content={`${SITE_URL}/blog`} />
       </Helmet>
