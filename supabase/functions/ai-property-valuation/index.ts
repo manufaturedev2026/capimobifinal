@@ -198,6 +198,9 @@ const LOC_W = {
   proximoComercio: 3,
   proximoEscola: 3,
   proximoHospital: 2,
+  proximoTransporte: 2,
+  proximoParque: 2,
+  proximoBancos: 1.5,
   vistaPrivilegiada: 4,
   areaRisco: -10,
 };
