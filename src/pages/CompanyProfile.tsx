@@ -1284,10 +1284,12 @@ export default function CompanyProfile() {
                   className="font-display font-extrabold text-sm md:text-xl bg-clip-text text-transparent truncate"
                   style={{ backgroundImage: `linear-gradient(135deg, ${storeTheme.accent || storeTheme.primary}, ${storeTheme.primary})` }}
                 >
-                  {isPaid ? "Verificado" : "Ativo"}
+                  {activeSellerCategory
+                    ? getSellerVerifiedLabel(activeSellerCategory, isPaid ? "title" : "active")
+                    : (isPaid ? "Profissional Verificado" : "Profissional Ativo")}
                 </p>
                 <p className="text-[8px] md:text-[10px] uppercase tracking-[0.1em] md:tracking-[0.18em] font-semibold truncate" style={{ color: storeTheme.textMuted }}>
-                  Vendedor
+                  {isPaid ? "Profissional verificado" : "Perfil ativo"}
                 </p>
               </div>
             </div>
