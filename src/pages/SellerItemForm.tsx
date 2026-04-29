@@ -366,6 +366,7 @@ export default function SellerItemForm() {
       cep: strOrNull(form.cep),
       tags: isAluguel ? [...new Set([...form.tags, "aluguel_flex" as ItemTag])] : form.tags.filter(t => t !== "aluguel_flex"),
       photos: form.photos,
+      thumbnail_url: form.thumbnail_url || form.photos[0] || null,
       brand: strOrNull(form.brand),
       model: strOrNull(form.model),
       year: intOrNull(form.year),
