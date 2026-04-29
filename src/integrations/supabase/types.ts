@@ -931,7 +931,9 @@ export type Database = {
         Row: {
           category: string
           created_at: string
+          ia_credits: number
           id: string
+          inherited_tier: string
           is_active: boolean
           lot_number: number
           price: number
@@ -942,7 +944,9 @@ export type Database = {
         Insert: {
           category: string
           created_at?: string
+          ia_credits?: number
           id?: string
+          inherited_tier?: string
           is_active?: boolean
           lot_number: number
           price: number
@@ -953,7 +957,9 @@ export type Database = {
         Update: {
           category?: string
           created_at?: string
+          ia_credits?: number
           id?: string
+          inherited_tier?: string
           is_active?: boolean
           lot_number?: number
           price?: number
