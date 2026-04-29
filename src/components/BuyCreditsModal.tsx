@@ -199,14 +199,15 @@ export default function BuyCreditsModal({ open, onClose, themeVars, userId, sell
         {/* Footer */}
         <div className="sticky bottom-0 mt-4 px-6 py-4 border-t border-border bg-background/95 backdrop-blur flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <p className="text-[11px] text-muted-foreground flex items-center gap-1.5">
-            <Sparkles className="h-3.5 w-3.5 text-primary" /> Créditos não expiram. Pagamento único.
+            <Sparkles className="h-3.5 w-3.5 text-primary" /> Modo teste ativo — créditos adicionados sem cobrança real.
           </p>
           <div className="flex gap-2">
-            <Button variant="outline" onClick={onClose}>
+            <Button variant="outline" onClick={onClose} disabled={processing}>
               <X className="h-4 w-4" /> Cancelar
             </Button>
-            <Button onClick={handleConfirm} disabled={!canConfirm} className="bg-gradient-to-r from-primary to-accent text-primary-foreground">
-              <Coins className="h-4 w-4" /> Comprar agora
+            <Button onClick={handleConfirm} disabled={!canConfirm || processing} className="bg-gradient-to-r from-primary to-accent text-primary-foreground">
+              {processing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Coins className="h-4 w-4" />}
+              {processing ? "Processando..." : "Comprar agora"}
             </Button>
           </div>
         </div>
