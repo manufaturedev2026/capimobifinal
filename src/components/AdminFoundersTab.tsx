@@ -99,14 +99,22 @@ export default function AdminFoundersTab() {
   const createLot = async (category: "individual" | "enterprise") => {
     const catLots = lots.filter(l => l.category === category);
     const nextNumber = (catLots.reduce((m, l) => Math.max(m, l.lot_number), 0)) + 1;
-    const lastPrice = catLots.length ? catLots[catLots.length - 1].price : 97;
+    const last = catLots[catLots.length - 1];
+    const lastPrice = last ? last.price : 97;
     const newPrice = Number(lastPrice) + Number(settings.price_increment || 30);
+    // Herda do último lote da categoria; se não houver, usa default sensato
+    const defaultTier: InheritedTier = last?.inherited_tier
+      ?? (category === "individual" ? "vip" : "prime_empresa");
+    const defaultCredits = last?.ia_credits
+      ?? (category === "individual" ? 1000 : 3500);
     const { error } = await supabase.from("founder_lots").insert({
       category, lot_number: nextNumber, price: newPrice,
       total_slots: settings.default_slots, used_slots: 0, is_active: true,
-    });
+      inherited_tier: defaultTier,
+      ia_credits: defaultCredits,
+    } as any);
     if (error) { toast.error(error.message); return; }
-    toast.success(`Lote ${nextNumber} criado em R$ ${newPrice}`);
+    toast.success(`Lote ${nextNumber} criado em R$ ${newPrice} (herda ${TIER_LABEL[defaultTier]})`);
     load();
   };
 
