@@ -9,7 +9,7 @@ import {
   User, Phone, Mail, Lock, Loader2,
   Globe, Brain, Megaphone, Wallet, FileText, Home,
   Smartphone, Camera, Target, Flame, Diamond, ChevronRight, MapPin,
-  Shield, Users, TrendingUp, Award,
+  Shield, Users, TrendingUp, Award, MessageCircle, Film, Sparkles, Building2, BarChart3, Bot,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import MarketplaceNavbar from "@/components/MarketplaceNavbar";
@@ -22,6 +22,7 @@ import { useToast } from "@/hooks/use-toast";
 import { BRAZIL_STATES } from "@/data/brazilStates";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { useRegistrationsClosed } from "@/hooks/useRegistrationsClosed";
+import { useActivePlans } from "@/hooks/usePlans";
 import RegistrationsClosedNotice from "@/components/RegistrationsClosedNotice";
 
 const FEATURES = [
