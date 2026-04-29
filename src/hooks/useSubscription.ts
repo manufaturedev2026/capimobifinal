@@ -68,7 +68,7 @@ export const PACKAGE_CONFIG = {
     ],
   },
   premium: {
-    name: "VIP",
+    name: "Premium",
     price: 119.99,
     setupFee: 0,
     maxItems: 60,
@@ -96,14 +96,14 @@ export const PACKAGE_CONFIG = {
       "Gestão de Aluguéis completa",
       "Sistema de ADS integrado",
       "Estatísticas avançadas",
-      "Selo VIP nos anúncios",
+      "Selo Premium nos anúncios",
       "Hero Banner",
       "Push Notifications: 2 envios por dia",
       "Suporte prioritário",
     ],
   },
-  vip: {
-    name: "Premium",
+  prime: {
+    name: "Prime",
     price: 229.99,
     setupFee: 0,
     maxItems: 115,
