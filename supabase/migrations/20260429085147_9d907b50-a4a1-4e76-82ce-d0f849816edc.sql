@@ -1,0 +1,1 @@
+DELETE FROM public.subscription_plans WHERE tier IN ('fundador_corretor', 'fundador_empresa');
