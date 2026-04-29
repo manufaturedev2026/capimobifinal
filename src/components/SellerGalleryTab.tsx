@@ -1229,9 +1229,9 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
                 const cfg = FORMAT_CONFIG[fmt];
                 const active = selectedFormat === fmt;
                 return (
-                  <button key={fmt} onClick={() => setSelectedFormat(fmt)} title={cfg.description} className={`flex flex-col items-center gap-1 p-2 rounded-lg border-2 transition-all ${active ? "border-primary bg-primary/10" : "border-border hover:border-primary/40"}`}>
+                  <button key={fmt} onClick={() => setSelectedFormat(fmt)} title={cfg.description} className={`flex flex-col items-center gap-1 p-2 rounded-lg border-2 transition-all ${active ? "border-primary bg-primary/10 text-primary" : "border-border text-foreground hover:border-primary/40 hover:text-primary"}`}>
                     <span className="text-base leading-none">{cfg.icon}</span>
-                    <span className="text-[9px] font-bold text-foreground">{cfg.short}</span>
+                    <span className="text-[9px] font-bold">{cfg.short}</span>
                   </button>
                 );
               })}
