@@ -254,9 +254,20 @@ export default function SellerItemForm() {
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files?.length || !user) return;
+    const remaining = MAX_PHOTOS - form.photos.length;
+    if (remaining <= 0) {
+      toast({ title: `Máximo de ${MAX_PHOTOS} fotos por imóvel`, description: "Remova alguma foto antes de adicionar outra.", variant: "destructive" });
+      e.target.value = "";
+      return;
+    }
+    const filesArray = Array.from(e.target.files);
+    if (filesArray.length > remaining) {
+      toast({ title: `Você só pode adicionar mais ${remaining} foto(s)`, description: `Limite de ${MAX_PHOTOS} fotos por imóvel.`, variant: "destructive" });
+    }
+    const filesToUpload = filesArray.slice(0, remaining);
     setUploading(true);
     const newPhotos = [...form.photos];
-    for (const file of Array.from(e.target.files)) {
+    for (const file of filesToUpload) {
       const ext = file.name.split(".").pop();
       const path = `${user.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
       const { error } = await supabase.storage.from("seller-uploads").upload(path, file);
@@ -267,6 +278,7 @@ export default function SellerItemForm() {
     }
     setForm((f) => ({ ...f, photos: newPhotos }));
     setUploading(false);
+    e.target.value = "";
   };
 
   const removePhoto = (index: number) => setForm((f) => ({ ...f, photos: f.photos.filter((_, i) => i !== index) }));
