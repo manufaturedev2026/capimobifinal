@@ -1,11 +1,11 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import {
   MapPin, Image, Search, Bed, Bath, Ruler, Home, Building2,
   Store, Trees, Key, Landmark, Phone, ShieldCheck, Globe, Megaphone,
-  ArrowRight, X, Sparkles, Crown, Star, LayoutDashboard, Clapperboard,
+  ArrowRight, X, Sparkles, Crown, Star, LayoutDashboard, Clapperboard, ChevronDown,
 } from "lucide-react";
 import type { StoreLayoutProps } from "./types";
 import { isIOSStandaloneApp } from "@/lib/pwaInstall";
