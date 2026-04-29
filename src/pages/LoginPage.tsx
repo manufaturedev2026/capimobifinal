@@ -13,9 +13,11 @@ import { BRAZIL_STATES } from "@/data/brazilStates";
 import { useCitiesByState } from "@/hooks/useCitiesByState";
 import { SITE_URL } from "@/lib/siteUrl";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { useRegistrationsClosed } from "@/hooks/useRegistrationsClosed";
 
 export default function LoginPage() {
   const { site_name } = useSiteSettings();
+  const { closed: registrationsClosed } = useRegistrationsClosed();
   const [isLogin, setIsLogin] = useState(() => {
     const params = new URLSearchParams(window.location.search);
     return !params.get("trial");
@@ -110,6 +112,10 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isLogin && registrationsClosed) {
+      toast({ title: "Cadastros encerrados", description: "Não estamos aceitando novos cadastros no momento.", variant: "destructive" });
+      return;
+    }
     setLoading(true);
 
     if (isLogin) {
