@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import type { CSSProperties } from "react";
 import { Coins, Sparkles, Check, X, Tag, Calculator } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -31,9 +32,10 @@ function customCreditsFor(reais: number) {
 interface Props {
   open: boolean;
   onClose: () => void;
+  themeVars?: CSSProperties;
 }
 
-export default function BuyCreditsModal({ open, onClose }: Props) {
+export default function BuyCreditsModal({ open, onClose, themeVars }: Props) {
   const { toast } = useToast();
   const [selectedId, setSelectedId] = useState<string>("p40");
   const [customValue, setCustomValue] = useState<string>("");
@@ -60,7 +62,7 @@ export default function BuyCreditsModal({ open, onClose }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto p-0 bg-background border-border">
+      <DialogContent style={themeVars} className="max-w-3xl max-h-[90vh] overflow-y-auto p-0 bg-background text-foreground border-border">
         <DialogHeader className="px-6 pt-6 pb-2">
           <DialogTitle className="flex items-center gap-2 font-display text-2xl font-extrabold">
             <Coins className="h-6 w-6 text-primary" /> Comprar Créditos IA

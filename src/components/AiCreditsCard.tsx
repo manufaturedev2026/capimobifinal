@@ -1,4 +1,5 @@
 import { useState } from "react";
+import type { CSSProperties } from "react";
 import { Coins, CreditCard, History, Sparkles, BarChart3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -20,7 +21,7 @@ const TOOL_LABELS: Record<string, string> = {
   invite_chat: "Atendimento Bot Convite",
 };
 
-export default function AiCreditsCard({ userId, sellerId }: { userId?: string; sellerId?: string }) {
+export default function AiCreditsCard({ userId, sellerId, themeVars }: { userId?: string; sellerId?: string; themeVars?: CSSProperties }) {
   const { toast } = useToast();
   const [usageOpen, setUsageOpen] = useState(false);
   const [buyOpen, setBuyOpen] = useState(false);
@@ -94,7 +95,7 @@ export default function AiCreditsCard({ userId, sellerId }: { userId?: string; s
       )}
 
       <AiCreditsUsageModal open={usageOpen} onClose={() => setUsageOpen(false)} userId={userId} />
-      <BuyCreditsModal open={buyOpen} onClose={() => setBuyOpen(false)} />
+      <BuyCreditsModal open={buyOpen} onClose={() => setBuyOpen(false)} themeVars={themeVars} />
     </Card>
   );
 }
