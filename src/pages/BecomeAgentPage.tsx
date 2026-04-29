@@ -681,7 +681,7 @@ export default function BecomeAgentPage() {
                       animate={{ opacity: 1, height: "auto" }}
                       className="text-muted-foreground text-sm mt-3 leading-relaxed"
                     >
-                      {faq.a}
+                      {r(faq.a)}
                     </motion.p>
                   )}
                 </button>
