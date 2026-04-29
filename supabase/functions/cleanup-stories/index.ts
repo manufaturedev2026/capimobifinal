@@ -20,7 +20,7 @@ Deno.serve(async (req) => {
       .from("seller_stories")
       .delete()
       .lt("expires_at", new Date().toISOString())
-      .select("id, image_url");
+      .select("id, image_url, is_auto, item_id");
 
     if (err1) throw err1;
 
@@ -31,25 +31,58 @@ Deno.serve(async (req) => {
       .delete()
       .eq("is_active", false)
       .lt("created_at", thirtyDaysAgo)
-      .select("id, image_url");
+      .select("id, image_url, is_auto, item_id");
 
     if (err2) throw err2;
 
-    // Combine all deleted stories for storage cleanup
     const allDeleted = [...(expiredStories || []), ...(inactiveStories || [])];
 
-    // Clean up storage files
-    if (allDeleted.length > 0) {
-      const paths = allDeleted
-        .map((s: any) => {
-          const url = s.image_url as string;
-          const match = url.match(/seller-uploads\/(.+)$/);
-          return match ? match[1] : null;
-        })
-        .filter(Boolean) as string[];
+    // ⚠️ IMPORTANTE: Stories automáticas (is_auto=true) reutilizam fotos dos anúncios.
+    // NUNCA deletar a foto do storage nesse caso, senão o anúncio perde a imagem.
+    // Stories manuais (is_auto=false) também podem reutilizar fotos — vamos checar
+    // se a URL ainda é referenciada em qualquer seller_item antes de remover.
 
-      if (paths.length > 0) {
-        await supabase.storage.from("seller-uploads").remove(paths);
+    let removedFiles = 0;
+    let skippedShared = 0;
+
+    if (allDeleted.length > 0) {
+      // Filtra somente stories manuais (auto NUNCA deve apagar arquivo)
+      const candidates = allDeleted.filter((s: any) => !s.is_auto);
+
+      // Para cada candidata, verifica se a image_url ainda é usada em algum anúncio
+      const safeToDelete: string[] = [];
+      for (const s of candidates) {
+        const url = s.image_url as string;
+        if (!url) continue;
+
+        // Verifica referência em seller_items.photos (array) ou outras colunas
+        const { data: usedIn, error: checkErr } = await supabase
+          .from("seller_items")
+          .select("id")
+          .or(`photos.cs.{${url}},video_url.eq.${url},thumbnail_url.eq.${url}`)
+          .limit(1);
+
+        if (checkErr) {
+          console.warn("[cleanup-stories] check error:", checkErr.message);
+          continue;
+        }
+
+        if (usedIn && usedIn.length > 0) {
+          skippedShared++;
+          continue; // ainda em uso por um anúncio, NÃO apaga
+        }
+
+        // Extrai path do bucket seller-uploads
+        const match = url.match(/seller-uploads\/(.+?)(?:\?|$)/);
+        if (match) safeToDelete.push(match[1]);
+      }
+
+      if (safeToDelete.length > 0) {
+        const { error: rmErr } = await supabase.storage
+          .from("seller-uploads")
+          .remove(safeToDelete);
+        if (!rmErr) removedFiles = safeToDelete.length;
+        else console.warn("[cleanup-stories] remove error:", rmErr.message);
       }
     }
 
@@ -57,6 +90,8 @@ Deno.serve(async (req) => {
       JSON.stringify({
         deleted_expired: expiredStories?.length ?? 0,
         deleted_inactive_30d: inactiveStories?.length ?? 0,
+        files_removed: removedFiles,
+        files_skipped_shared_with_listings: skippedShared,
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
