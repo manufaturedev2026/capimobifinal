@@ -756,7 +756,7 @@ export default function ProductDetail() {
 
       {/* ── Gallery Mosaic (desktop only) ── */}
       {images.length > 0 && (
-        <div className="container max-w-6xl mx-auto px-4 -mt-16 md:-mt-20 z-10 relative">
+        <div className="container max-w-6xl mx-auto px-4 -mt-10 md:-mt-12 z-10 relative">
           {/* Desktop */}
           <div className="hidden md:block">
             {images.length === 1 && (
@@ -769,7 +769,7 @@ export default function ProductDetail() {
               </motion.button>
             )}
             {images.length === 2 && (
-              <div className="grid grid-cols-2 gap-2 h-[320px]">
+              <div className="grid grid-cols-2 gap-2 h-[clamp(140px,18vw,220px)]">
                 {images.slice(0, 2).map((img, i) => (
                   <motion.button key={i} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
                     onClick={() => { setActiveImage(i); setLightboxOpen(true); }}
@@ -783,7 +783,7 @@ export default function ProductDetail() {
               </div>
             )}
             {images.length === 3 && (
-              <div className="grid grid-cols-3 gap-2 h-[360px]">
+              <div className="grid grid-cols-3 gap-2 h-[clamp(150px,20vw,240px)]">
                 <motion.button initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
                   onClick={() => { setActiveImage(0); setLightboxOpen(true); }}
                   className="col-span-2 rounded-2xl overflow-hidden border-2 border-border hover:border-primary/50 transition-all group relative">
@@ -807,7 +807,7 @@ export default function ProductDetail() {
               </div>
             )}
             {images.length >= 4 && (
-              <div className="grid grid-cols-4 grid-rows-2 gap-2 h-[400px]">
+              <div className="grid grid-cols-4 grid-rows-2 gap-2 h-[clamp(170px,22vw,260px)]">
                 <motion.button initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
                   onClick={() => { setActiveImage(0); setLightboxOpen(true); }}
                   className="col-span-2 row-span-2 rounded-2xl overflow-hidden border-2 border-border hover:border-primary/50 transition-all group relative">
