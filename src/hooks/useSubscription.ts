@@ -5,7 +5,7 @@ export interface Subscription {
   id: string;
   user_id: string;
   seller_id: string;
-  tier: "start" | "basico" | "premium" | "vip" | "essencial_empresa" | "premium_empresa" | "prime_empresa";
+  tier: "start" | "basico" | "premium" | "vip" | "basico_empresa" | "essencial_empresa" | "premium_empresa" | "prime_empresa";
   max_items: number;
   started_at: string;
   expires_at: string;
@@ -107,6 +107,27 @@ export const PACKAGE_CONFIG = {
       "Selo Premium exclusivo",
       "Push Notifications: 3 envios por dia",
       "Suporte VIP dedicado",
+    ],
+  },
+  basico_empresa: {
+    name: "Básico Empresa",
+    price: 0,
+    setupFee: 0,
+    maxItems: 5,
+    color: "from-slate-500 to-slate-600",
+    borderColor: "border-slate-400",
+    badgeColor: "bg-slate-500 text-white",
+    benefits: [
+      "Até 5 anúncios ativos",
+      "Vitrine própria empresarial",
+      "Selo de Empresa Verificada",
+      "Até 3 corretores vinculados",
+      "Lojas espelho por corretor",
+      "CRM Kanban completo",
+      "1 Layout (Marketplace) + 1 Tema",
+      "Estatísticas básicas",
+      "Sistema de Parcerias entre corretores",
+      "Push: 1 envio por dia",
     ],
   },
   essencial_empresa: {
