@@ -631,7 +631,7 @@ export default function PackagesPage() {
                     </h2>
                     <p className="mt-3 text-white/90 text-base md:text-lg max-w-xl">
                       Pagamento único, acesso por <strong>1 ano completo</strong> aos benefícios do plano{" "}
-                      <strong>{isImobiliaria ? "Black Empresa" : "VIP"}</strong> + selo exclusivo de Membro Fundador.
+                      <strong>{inheritedLabel}</strong> + selo exclusivo de Membro Fundador.
                     </p>
 
                     <ul className="mt-5 grid sm:grid-cols-2 gap-2.5 text-sm">
