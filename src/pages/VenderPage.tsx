@@ -275,8 +275,16 @@ const AI_CREDITS_BY_TIER: Record<string, number> = {
   essencial_empresa: 2000,
   premium_empresa: 2000,
   prime_empresa: 3500,
+  imob_basico: 25,
+  imob_start: 1500,
+  imob_pro: 3000,
+  imob_elite: 6000,
+  const_basico: 25,
+  const_start: 2000,
+  const_pro: 4500,
+  const_master: 10000,
 };
-const getAiCredits = (tier: string) => AI_CREDITS_BY_TIER[tier] ?? 25;
+const getAiCredits = (tier: string, fromDb?: number | null) => fromDb || AI_CREDITS_BY_TIER[tier] || 25;
 const formatCredits = (n: number) => n.toLocaleString("pt-BR");
 
 // Bots de IA inclusos por tier (ordem de desbloqueio progressivo)
@@ -321,6 +329,53 @@ const AI_BOTS_BY_TIER: Record<string, { emoji: string; name: string }[]> = {
     { emoji: "🎓", name: "Suporte IA da Plataforma" },
   ],
   prime_empresa: [
+    { emoji: "💰", name: "Avaliador IA" },
+    { emoji: "✍️", name: "Copywriter IA" },
+    { emoji: "📸", name: "Analisador de Fotos IA" },
+    { emoji: "🤖", name: "Bot de Captação de Leads" },
+    { emoji: "📅", name: "Agenda Bot IA" },
+    { emoji: "🎓", name: "Suporte IA da Plataforma" },
+  ],
+  imob_basico: [
+    { emoji: "💰", name: "Avaliador IA" },
+  ],
+  imob_start: [
+    { emoji: "💰", name: "Avaliador IA" },
+    { emoji: "✍️", name: "Copywriter IA" },
+    { emoji: "📸", name: "Analisador de Fotos IA" },
+  ],
+  imob_pro: [
+    { emoji: "💰", name: "Avaliador IA" },
+    { emoji: "✍️", name: "Copywriter IA" },
+    { emoji: "📸", name: "Analisador de Fotos IA" },
+    { emoji: "🤖", name: "Bot de Captação de Leads" },
+    { emoji: "📅", name: "Agenda Bot IA" },
+  ],
+  imob_elite: [
+    { emoji: "💰", name: "Avaliador IA" },
+    { emoji: "✍️", name: "Copywriter IA" },
+    { emoji: "📸", name: "Analisador de Fotos IA" },
+    { emoji: "🤖", name: "Bot de Captação de Leads" },
+    { emoji: "📅", name: "Agenda Bot IA" },
+    { emoji: "🎓", name: "Suporte IA da Plataforma" },
+  ],
+  const_basico: [
+    { emoji: "💰", name: "Avaliador IA" },
+  ],
+  const_start: [
+    { emoji: "💰", name: "Avaliador IA" },
+    { emoji: "✍️", name: "Copywriter IA" },
+    { emoji: "📸", name: "Analisador de Fotos IA" },
+    { emoji: "🤖", name: "Bot de Captação de Leads" },
+  ],
+  const_pro: [
+    { emoji: "💰", name: "Avaliador IA" },
+    { emoji: "✍️", name: "Copywriter IA" },
+    { emoji: "📸", name: "Analisador de Fotos IA" },
+    { emoji: "🤖", name: "Bot de Captação de Leads" },
+    { emoji: "📅", name: "Agenda Bot IA" },
+  ],
+  const_master: [
     { emoji: "💰", name: "Avaliador IA" },
     { emoji: "✍️", name: "Copywriter IA" },
     { emoji: "📸", name: "Analisador de Fotos IA" },
@@ -874,7 +929,7 @@ export default function VenderPage() {
                           </div>
                           <div className="px-3 py-2 rounded-lg bg-gradient-to-br from-purple-500/20 to-fuchsia-500/10 border border-purple-400/20">
                             <p className="text-[9px] uppercase tracking-wider text-purple-200/70 mb-0.5 flex items-center gap-1"><Sparkles className="w-2.5 h-2.5" /> Créditos IA/mês</p>
-                            <p className="text-xs md:text-sm font-bold text-white">{formatCredits(getAiCredits(plan.tier))}</p>
+                            <p className="text-xs md:text-sm font-bold text-white">{formatCredits(getAiCredits(plan.tier, (plan as any).ai_generations_per_day))}</p>
                           </div>
                         </div>
 
@@ -990,7 +1045,7 @@ export default function VenderPage() {
                             </div>
                             <div className="px-3 py-2 rounded-lg bg-gradient-to-br from-purple-500/20 to-fuchsia-500/10 border border-purple-400/20">
                               <p className="text-[9px] uppercase tracking-wider text-purple-200/70 mb-0.5 flex items-center gap-1"><Sparkles className="w-2.5 h-2.5" /> Créditos IA/mês</p>
-                              <p className="text-xs md:text-sm font-bold text-white">{formatCredits(getAiCredits(plan.tier))}</p>
+                              <p className="text-xs md:text-sm font-bold text-white">{formatCredits(getAiCredits(plan.tier, (plan as any).ai_generations_per_day))}</p>
                             </div>
                           </div>
 
