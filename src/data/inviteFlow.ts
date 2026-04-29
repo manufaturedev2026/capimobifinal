@@ -95,7 +95,7 @@ const FLOW_INTERNAL: FlowStep[] = [
     { label: "Quanto custa? 💰", next: "pricing" },
     { label: "Quero me cadastrar! 🚀", next: "final_cta" },
   ]},
-  { id: "pricing", type: "bot", messages: ["O cadastro é 100% GRATUITO! 🎉", "No plano Básico (grátis) você já tem:\n\n🆓 Loja completa profissional\n🆓 Até 5 imóveis cadastrados\n🆓 CRM com funil de vendas\n🆓 1 push por dia\n🆓 Compartilhamento WhatsApp", "Quer mais imóveis e recursos? Temos planos a partir de R$24,99/mês (Start: 25 imóveis + Stories + contratos) 💎", "Pronto(a) pra começar, {{nome}}? 😄"], next: "choice_final" },
+  { id: "pricing", type: "bot", messages: ["O cadastro é 100% GRATUITO! 🎉", "No plano Básico (grátis) você já tem:\n\n🆓 Loja completa profissional\n🆓 Até 3 imóveis cadastrados\n🆓 CRM com funil de vendas\n🆓 1 push por dia\n🆓 Compartilhamento WhatsApp", "Quer mais imóveis e recursos? Temos planos a partir de R$29,90/mês (Start: 30 imóveis + Stories + contratos) 💎", "Pronto(a) pra começar, {{nome}}? 😄"], next: "choice_final" },
   { id: "choice_final", type: "choice", options: [
     { label: "Quero criar minha conta! 🚀", next: "final_cta" },
     { label: "Tenho mais dúvidas 🤔", next: "doubts" },

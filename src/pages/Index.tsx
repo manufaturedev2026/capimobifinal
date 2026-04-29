@@ -81,7 +81,7 @@ const TARGET_AUDIENCE = [
 const PLANS_PREVIEW = [
   {
     name: "Start",
-    price: "R$ 24,99",
+    price: "R$ 29,90",
     setupFee: "R$ 299",
     items: "30 anúncios",
     layouts: "1 Layout (Netflix)",
@@ -90,26 +90,26 @@ const PLANS_PREVIEW = [
     icon: Zap,
   },
   {
-    name: "VIP",
-    price: "R$ 59,99",
+    name: "Premium",
+    price: "R$ 59,90",
     setupFee: "R$ 719",
-    items: "60 anúncios",
+    items: "75 anúncios",
     layouts: "4 Layouts",
     highlight: true,
     color: "from-amber-500 to-orange-600",
     icon: Star,
-    benefits: ["Selo VIP", "Destaque no topo", "Analytics avançado", "Modo Cinema"],
+    benefits: ["Selo Premium", "Destaque no topo", "Analytics avançado", "Modo Cinema"],
   },
   {
-    name: "Premium",
-    price: "R$ 114,99",
+    name: "Prime",
+    price: "R$ 119,90",
     setupFee: "R$ 1.379",
-    items: "115 anúncios",
+    items: "150 anúncios",
     layouts: "7 Layouts (todos)",
     highlight: false,
     color: "from-purple-600 to-indigo-700",
     icon: Crown,
-    benefits: ["Selo Premium", "SEO Otimizado", "Suporte VIP", "Instagram na loja", "Modo Cinema"],
+    benefits: ["Selo Prime", "SEO Otimizado", "Suporte VIP", "Instagram na loja", "Modo Cinema"],
   },
 ];
 

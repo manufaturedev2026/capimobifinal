@@ -76,9 +76,9 @@ const stats = [
 ];
 
 const plans = [
-  { name: "Start", price: "R$ 24,99/mês", items: "Até 10 anúncios", features: ["Loja estilo Marketplace", "2 Stories por 24h", "Painel do vendedor completo", "Destaque normal na listagem", "Estatísticas básicas"] },
-  { name: "VIP", price: "R$ 59,99/mês", items: "Até 25 anúncios", features: ["Selo Premium nos anúncios", "3 Stories por 24h", "Destaque no topo da listagem", "4 Layouts de loja", "Estatísticas avançadas", "Suporte prioritário", "Botão Modo Cinema na loja"], highlight: true },
-  { name: "Premium", price: "R$ 114,99/mês", items: "Até 50 anúncios", features: ["Selo VIP exclusivo", "4 Stories por 24h", "Destaque no topo da listagem", "Estatísticas completas", "Suporte VIP dedicado", "Anúncios via Google Ads", "Instagram na loja", "Botão Modo Cinema na loja"] },
+  { name: "Start", price: "R$ 29,90/mês", items: "Até 30 anúncios", features: ["Loja estilo Marketplace", "5 fotos por anúncio", "Stories", "Painel do vendedor completo", "CRM Kanban", "Estatísticas básicas"] },
+  { name: "Premium", price: "R$ 59,90/mês", items: "Até 75 anúncios", features: ["Selo Premium nos anúncios", "10 fotos por anúncio", "Destaque no topo da listagem", "4 Layouts de loja", "Estatísticas avançadas", "Suporte prioritário", "Botão Modo Cinema na loja"], highlight: true },
+  { name: "Prime", price: "R$ 119,90/mês", items: "Até 150 anúncios", features: ["Selo Prime exclusivo", "20 fotos por anúncio", "Destaque no topo da listagem", "Todos os Layouts", "Estatísticas completas", "Suporte VIP dedicado", "Instagram na loja", "Botão Modo Cinema na loja"] },
 ];
 
 const companyPlans = [
