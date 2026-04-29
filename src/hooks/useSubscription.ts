@@ -252,7 +252,7 @@ export const PACKAGE_CONFIG = {
     badgeColor: "bg-gradient-to-r from-zinc-800 to-zinc-950 text-white",
     benefits: [
       "Anúncios ilimitados",
-      "Vitrine Lvl 6 — máximo absoluto",
+      "Vitrine Lvl 3 — pareada com Premium",
       "Todos os 7 Layouts + Temas",
       "URL personalizada /seu-nome",
       "Painel do vendedor completo",
