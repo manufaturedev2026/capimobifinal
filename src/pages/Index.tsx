@@ -172,7 +172,7 @@ export default function Index() {
   return (
     <div className="min-h-screen bg-background">
       <Helmet>
-        <title>Capimobi | Crie Seu Próprio App de Imóveis</title>
+        <title>{site_name} | Crie Seu Próprio App de Imóveis</title>
         <meta name="description" content="Monte seu próprio app de imóveis em minutos. Perfeito para corretores, imobiliárias e construtoras. Link profissional na bio do Instagram, PWA instalável e CRM integrado." />
         <link rel="canonical" href="https://redeimoveisgb.lovable.app/" />
       </Helmet>
