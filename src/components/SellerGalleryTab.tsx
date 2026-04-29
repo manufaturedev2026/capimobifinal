@@ -614,6 +614,8 @@ async function generateMarketingImage(o: GenOpts): Promise<string> {
       const dfs = Math.round((isStory ? 44 : 36) * scale);
       ctx.font = `700 ${dfs}px ${baseFont}`;
       ctx.fillStyle = t.textSub;
+      ctx.textAlign = "left";
+      ctx.textBaseline = "bottom";
       ctx.fillText(details.join("   "), pad, y);
       y -= dfs + Math.round(12 * scale);
     }
@@ -626,6 +628,8 @@ async function generateMarketingImage(o: GenOpts): Promise<string> {
       const lfs = Math.round((isStory ? 44 : 36) * scale);
       ctx.font = `600 ${lfs}px ${baseFont}`;
       ctx.fillStyle = t.textSub;
+      ctx.textAlign = "left";
+      ctx.textBaseline = "bottom";
       ctx.fillText(location, pad, y);
       y -= lfs + Math.round(14 * scale);
     }
