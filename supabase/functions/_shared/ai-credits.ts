@@ -11,10 +11,41 @@ export const AI_CREDIT_COSTS: Record<string, number> = {
   invite_chat: 3,
 };
 
-// Bots cobrados por janela de atendimento (não por mensagem).
-// Janela = primeira mensagem após 30min de inatividade do mesmo visitante.
-const SESSION_BASED_TOOLS = new Set(["capture_bot_chat", "agenda_bot_chat", "invite_chat"]);
-const SESSION_WINDOW_MINUTES = 30;
+const DEFAULT_SESSION_BASED_TOOLS = new Set(["capture_bot_chat", "agenda_bot_chat", "invite_chat"]);
+const DEFAULT_SESSION_WINDOW_MINUTES = 30;
+
+// Cache em memória dos custos do DB (1 minuto)
+let costsCache: { data: Record<string, { cost: number; is_session_based: boolean; session_window_minutes: number }>; expires: number } | null = null;
+
+async function loadCosts(admin: ReturnType<typeof createClient>) {
+  if (costsCache && costsCache.expires > Date.now()) return costsCache.data;
+  try {
+    const { data } = await (admin as any).from("ai_tool_costs").select("tool_key,cost,is_session_based,session_window_minutes");
+    const map: Record<string, { cost: number; is_session_based: boolean; session_window_minutes: number }> = {};
+    (data || []).forEach((r: any) => {
+      map[r.tool_key] = {
+        cost: Number(r.cost),
+        is_session_based: !!r.is_session_based,
+        session_window_minutes: Number(r.session_window_minutes ?? DEFAULT_SESSION_WINDOW_MINUTES),
+      };
+    });
+    costsCache = { data: map, expires: Date.now() + 60_000 };
+    return map;
+  } catch {
+    return {};
+  }
+}
+
+async function getToolConfig(admin: ReturnType<typeof createClient>, toolKey: string) {
+  const map = await loadCosts(admin);
+  const fromDb = map[toolKey];
+  if (fromDb) return fromDb;
+  return {
+    cost: AI_CREDIT_COSTS[toolKey] ?? 1,
+    is_session_based: DEFAULT_SESSION_BASED_TOOLS.has(toolKey),
+    session_window_minutes: DEFAULT_SESSION_WINDOW_MINUTES,
+  };
+}
 
 async function shouldChargeForSession(
   admin: ReturnType<typeof createClient>,
