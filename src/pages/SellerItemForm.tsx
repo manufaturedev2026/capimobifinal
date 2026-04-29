@@ -16,6 +16,7 @@ import PropertyFieldsApartamento from "@/components/PropertyFieldsApartamento";
 import PropertyFieldsTerreno from "@/components/PropertyFieldsTerreno";
 import PropertyFieldsComercial from "@/components/PropertyFieldsComercial";
 import ListingValuationFields from "@/components/ListingValuationFields";
+import LimitReachedDialog, { type LimitKind } from "@/components/LimitReachedDialog";
 
 type ItemCategory = Database["public"]["Enums"]["item_category"];
 type ItemTag = Database["public"]["Enums"]["item_tag"];
@@ -162,6 +163,9 @@ export default function SellerItemForm() {
   const { subscription, currentTier, config: pkgConfig, isExpired } = useSubscription(user?.id);
   const { usage: planUsage } = usePlanUsage(user?.id);
   const MAX_PHOTOS = planUsage?.limits.max_photos_per_listing ?? DEFAULT_MAX_PHOTOS;
+  const [limitDialog, setLimitDialog] = useState<{ open: boolean; kind: LimitKind }>({ open: false, kind: "items" });
+
+  const openLimit = (kind: LimitKind) => setLimitDialog({ open: true, kind });
 
   const [form, setForm] = useState(INITIAL_FORM);
   const { cities: ibgeCities, loading: citiesLoading } = useCitiesByState(form.state);
