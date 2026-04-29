@@ -164,6 +164,7 @@ export async function refundAiCredits(
   amount: number,
   toolKey: string,
 ) {
+  if (!amount || amount <= 0) return; // sem cobrança, sem estorno
   await admin.rpc("refund_ai_credits", {
     p_user_id: userId,
     p_amount: amount,
