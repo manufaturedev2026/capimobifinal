@@ -165,6 +165,13 @@ export default function StoreLayoutMarketplace({
     }
   }, [filterCity, citiesByState]);
 
+  // Auto-expand if there's only one state available (typical for single-broker stores)
+  useEffect(() => {
+    if (citiesByState.length === 1 && openStates.size === 0) {
+      setOpenStates(new Set([citiesByState[0].state]));
+    }
+  }, [citiesByState, openStates.size]);
+
   const visibleProducts = searchTerm
     ? filteredProducts.filter((p: any) =>
         p.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
