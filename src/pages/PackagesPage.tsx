@@ -144,27 +144,48 @@ export default function PackagesPage() {
     toast({ title: "Cupom removido" });
   };
 
-  const handleManageSubscription = async () => {
-    if (!user) {
-      navigate("/login");
+  // Handler de retorno do checkout: confirma pagamento e ativa o plano
+  useEffect(() => {
+    const status = searchParams.get("checkout");
+    const sessionId = searchParams.get("session_id");
+    if (status === "cancelled") {
+      toast({ title: "Pagamento cancelado", description: "Você pode tentar novamente quando quiser." });
+      searchParams.delete("checkout");
+      setSearchParams(searchParams, { replace: true });
       return;
     }
-    setOpeningPortal(true);
-    try {
-      const { data, error } = await supabase.functions.invoke("customer-portal");
-      if (error) throw error;
-      if (data?.url) {
-        window.open(data.url, "_blank");
-      } else {
-        throw new Error("URL do portal não retornada");
+    if (status !== "success" || !sessionId || !user) return;
+    if (confirmedSessionRef.current === sessionId) return;
+    confirmedSessionRef.current = sessionId;
+    (async () => {
+      setConfirming(true);
+      try {
+        const { data, error } = await supabase.functions.invoke("confirm-checkout", {
+          body: { session_id: sessionId },
+        });
+        if (error) throw error;
+        if (data?.ok) {
+          await refetch();
+          toast({
+            title: data.already_processed ? "Plano já ativo" : "🎉 Plano ativado!",
+            description: data.already_processed
+              ? "Esta compra já havia sido processada."
+              : `Seu novo plano está ativo até ${new Date(data.expires_at).toLocaleDateString("pt-BR")}. Créditos IA somados ao seu saldo.`,
+          });
+        } else {
+          toast({ title: "Pagamento ainda processando", description: "Aguarde alguns instantes e atualize a página.", variant: "destructive" });
+        }
+      } catch (err: any) {
+        toast({ title: "Erro ao confirmar pagamento", description: err.message, variant: "destructive" });
+      } finally {
+        setConfirming(false);
+        searchParams.delete("checkout");
+        searchParams.delete("session_id");
+        setSearchParams(searchParams, { replace: true });
       }
-    } catch (err: any) {
-      toast({ title: "Erro ao abrir portal", description: err.message || "Tente novamente.", variant: "destructive" });
-    }
-    setOpeningPortal(false);
-  };
+    })();
+  }, [searchParams, user]);
 
-  const handleSelect = async (plan: Plan) => {
     if (!user || !profile) {
       navigate("/login");
       return;
