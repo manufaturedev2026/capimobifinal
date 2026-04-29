@@ -72,6 +72,7 @@ export async function consumeAiCredits(
   req: Request,
   toolKey: keyof typeof AI_CREDIT_COSTS,
   corsHeaders: Record<string, string>,
+  visitorKey?: string | null,
 ): Promise<CreditCheck> {
   const authHeader = req.headers.get("Authorization");
   if (!authHeader) {
