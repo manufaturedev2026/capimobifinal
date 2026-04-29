@@ -185,7 +185,7 @@ export async function generateProposalPdf(data: ProposalData) {
   let page = 1;
 
   // PAGE 1 — Cover
-  drawCover(pdf, data);
+  drawCoverImpl(pdf, data, heroImg);
   drawFooter(pdf, page++, totalPages);
 
   // PAGE 2 — Specs
