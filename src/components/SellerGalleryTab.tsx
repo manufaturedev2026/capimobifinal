@@ -666,8 +666,12 @@ async function generateMarketingImage(o: GenOpts): Promise<string> {
     ctx.fillText(fittedTitle.lines[i], pad, titleY);
     titleY -= fittedTitle.size + titleLineGap;
   }
+  // Topo real do bloco do título (linha mais alta, considerando ascender)
+  // titleY já está acima da primeira linha desenhada — usamos como referência
+  // para empilhar o CTA acima sem sobreposição.
+  const titleTopY = titleY + fittedTitle.size + titleLineGap;
 
-  // Aggressive: CTA "FALE AGORA"
+  // Aggressive: CTA "FALE AGORA" (acima do título)
   if (o.density === "aggressive") {
     const cta = "👉 FALE AGORA";
     const ctaFs = Math.round(34 * scale);
@@ -677,7 +681,8 @@ async function generateMarketingImage(o: GenOpts): Promise<string> {
     const cw = cm.width + cp * 2;
     const ch = ctaFs + cp;
     const cx = pad;
-    const cy = y - ch - Math.round(14 * scale);
+    // Posiciona o CTA acima do TOPO do título (não em cima dele)
+    const cy = titleTopY - fittedTitle.size - ch - Math.round(18 * scale);
     ctx.fillStyle = t.accent;
     drawRoundedRect(ctx, cx, cy, cw, ch, Math.round(10 * scale));
     ctx.fill();
