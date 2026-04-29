@@ -941,6 +941,7 @@ export type Database = {
           content: string
           created_at: string
           id: string
+          is_favorite: boolean
           seller_id: string
           signature_locador: string | null
           signature_locatario: string | null
@@ -954,6 +955,7 @@ export type Database = {
           content: string
           created_at?: string
           id?: string
+          is_favorite?: boolean
           seller_id: string
           signature_locador?: string | null
           signature_locatario?: string | null
@@ -967,6 +969,7 @@ export type Database = {
           content?: string
           created_at?: string
           id?: string
+          is_favorite?: boolean
           seller_id?: string
           signature_locador?: string | null
           signature_locatario?: string | null
