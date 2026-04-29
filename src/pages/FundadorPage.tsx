@@ -27,14 +27,14 @@ interface FounderLot {
 }
 
 const FOUNDER_BENEFITS = [
-  "Plano vitalício — sem mensalidade depois",
+  "Pagamento único válido por 12 meses",
   "Selo exclusivo de Membro Fundador 🏆",
-  "Acesso a TODAS as funções premium para sempre",
-  "Bônus em créditos de Inteligência Artificial",
+  "Acesso a TODAS as funções premium por 1 ano",
+  "Bônus generoso em créditos de Inteligência Artificial",
   "Prioridade na exibição dos seus imóveis",
   "Suporte VIP prioritário",
   "Acesso antecipado a novas funções",
-  "Sem reajustes futuros — preço travado",
+  "Preço de fundador travado por todo o período",
 ];
 
 export default function FundadorPage() {
