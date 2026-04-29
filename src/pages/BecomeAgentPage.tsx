@@ -640,7 +640,7 @@ export default function BecomeAgentPage() {
                     <Star key={s} size={16} className="fill-accent text-accent" />
                   ))}
                 </div>
-                <p className="text-muted-foreground text-sm leading-relaxed mb-6 italic">"{t.text}"</p>
+                <p className="text-muted-foreground text-sm leading-relaxed mb-6 italic">"{r(t.text)}"</p>
                 <div>
                   <div className="font-display font-bold  text-foreground">{t.name}</div>
                   <div className="text-muted-foreground text-xs">{t.role}</div>
