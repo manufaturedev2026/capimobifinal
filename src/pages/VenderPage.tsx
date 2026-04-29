@@ -367,9 +367,13 @@ export default function VenderPage() {
   const individualPlans = dbPlans
     .filter(p => p.category === "free" || p.category === "individual" || p.category === "corretor")
     .sort((a, b) => a.sort_order - b.sort_order);
-  const enterprisePlans = dbPlans
-    .filter(p => p.category === "enterprise" || p.category === "imobiliaria" || p.category === "construtora")
+  const imobiliariaPlans = dbPlans
+    .filter(p => p.category === "enterprise" || p.category === "imobiliaria")
     .sort((a, b) => a.sort_order - b.sort_order);
+  const construtoraPlans = dbPlans
+    .filter(p => p.category === "construtora")
+    .sort((a, b) => a.sort_order - b.sort_order);
+  const enterprisePlans = [...imobiliariaPlans, ...construtoraPlans];
   const { site_name } = useSiteSettings();
   const { closed: registrationsClosed } = useRegistrationsClosed();
   const { toast } = useToast();
