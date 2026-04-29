@@ -1,10 +1,11 @@
 import { useMemo, useState } from "react";
 import type { CSSProperties } from "react";
-import { Coins, Sparkles, Check, X, Tag, Calculator } from "lucide-react";
+import { Coins, Sparkles, Check, X, Tag, Calculator, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 /**
  * Pacotes pré-definidos.
