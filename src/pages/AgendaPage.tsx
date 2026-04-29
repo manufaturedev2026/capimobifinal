@@ -52,6 +52,20 @@ export default function AgendaPage() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [openForm, setOpenForm] = useState(false);
   const [editing, setEditing] = useState<VisitAppointment | null>(null);
+  const [dashThemeId, setDashThemeId] = useState<string>("default");
+
+  useEffect(() => {
+    supabase.from("platform_settings").select("value").eq("key", "homepage_theme").maybeSingle().then(({ data }) => {
+      if (data?.value) setDashThemeId(data.value as string);
+    });
+  }, []);
+
+  const dashTheme = getMarketplaceTheme(dashThemeId);
+  const brokerStoreTheme = getStoreTheme((profile as any)?.store_theme);
+  const hasBrokerTheme = !!(profile as any)?.store_theme && (profile as any)?.store_theme !== "default";
+  const dashThemeVars = hasBrokerTheme
+    ? getStoreThemeCssVars(brokerStoreTheme)
+    : getMarketplaceThemeCssVars(dashTheme);
 
   const filtered = useMemo(() => {
     let list = [...visits];
