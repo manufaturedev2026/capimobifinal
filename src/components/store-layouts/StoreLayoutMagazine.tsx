@@ -43,7 +43,7 @@ function HeroCard({ product, corretorSlug, storeTheme, getTagStyle, getTagLabel,
       >
         <div className="relative aspect-[4/3] sm:aspect-[21/9] overflow-hidden">
           {product.image ? (
-            <img src={product.image} alt={product.title}
+            <img loading="lazy" decoding="async" src={product.image} alt={product.title}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" />
           ) : (
             <div className="w-full h-full flex items-center justify-center" style={{ background: storeTheme.border }}>
@@ -280,7 +280,7 @@ export default function StoreLayoutMagazine({
                 }}
               >
                 {bgImage ? (
-                  <img src={bgImage} alt={cat.name}
+                  <img loading="lazy" decoding="async" src={bgImage} alt={cat.name}
                     className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                 ) : (
                   <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${storeTheme.primary}30, ${storeTheme.primary}10)` }} />

@@ -707,7 +707,7 @@ export default function SellerItemForm() {
           <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
             {form.photos.map((photo, i) => (
               <div key={i} className="relative aspect-square rounded-xl overflow-hidden border border-border">
-                <img src={photo} alt="" className="w-full h-full object-cover" />
+                <img loading="lazy" decoding="async" src={photo} alt="" className="w-full h-full object-cover" />
                 <button type="button" onClick={() => removePhoto(i)} className="absolute top-1 right-1 p-1 rounded-full bg-destructive text-white"><X size={12} /></button>
               </div>
             ))}

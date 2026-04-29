@@ -180,7 +180,7 @@ export default function SellerProfile({ embedded }: { embedded?: boolean }) {
       <div className="bg-card border border-border rounded-2xl p-5 flex flex-col items-center">
         <div className="w-24 h-24 rounded-2xl bg-muted border-2 border-border overflow-hidden mb-4">
           {form.logo_url ? (
-            <img src={form.logo_url} alt="" className="w-full h-full object-cover" />
+            <img loading="lazy" decoding="async" src={form.logo_url} alt="" className="w-full h-full object-cover" />
           ) : (
             <div className="w-full h-full flex items-center justify-center">
               <User size={32} className="text-muted-foreground" />

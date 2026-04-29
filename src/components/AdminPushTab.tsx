@@ -448,7 +448,7 @@ export default function AdminPushTab({ userId }: AdminPushTabProps) {
               <Label className="text-xs font-medium">Imagem (opcional)</Label>
               {image ? (
                 <div className="relative w-full max-w-[200px]">
-                  <img src={image} alt="Preview" className="rounded-lg w-full h-24 object-cover border border-border" />
+                  <img loading="lazy" decoding="async" src={image} alt="Preview" className="rounded-lg w-full h-24 object-cover border border-border" />
                   <button
                     type="button"
                     onClick={() => setImage("")}

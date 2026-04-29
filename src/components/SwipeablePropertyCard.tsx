@@ -107,7 +107,7 @@ export default function SwipeablePropertyCard({ product, company, index }: Swipe
             </div>
             {company && (
               <div className="flex items-center gap-2 mt-3 pt-3 border-t border-border">
-                <img src={company.logo} alt={company.name} className="w-8 h-8 rounded-full object-cover" />
+                <img loading="lazy" decoding="async" src={company.logo} alt={company.name} className="w-8 h-8 rounded-full object-cover" />
                 <div className="min-w-0">
                   <p className="text-sm font-medium text-foreground truncate">{company.name}</p>
                   <p className="text-xs text-muted-foreground truncate">{company.address}</p>

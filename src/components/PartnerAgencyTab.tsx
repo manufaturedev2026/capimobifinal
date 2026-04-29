@@ -511,7 +511,7 @@ export default function PartnerAgencyTab({ profileId, userId, maxMembers }: { pr
                 <div key={req.id} className="rounded-xl border border-border bg-card/50 p-4 flex items-center gap-3 opacity-60">
                   <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center overflow-hidden shrink-0">
                     {req.profile?.logo_url ? (
-                      <img src={req.profile.logo_url} alt="" className="w-full h-full object-cover" />
+                      <img loading="lazy" decoding="async" src={req.profile.logo_url} alt="" className="w-full h-full object-cover" />
                     ) : (
                       <User className="text-muted-foreground" size={18} />
                     )}
@@ -591,7 +591,7 @@ function PartnerCard({
           {/* Photo - larger */}
           <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-secondary flex items-center justify-center overflow-hidden shrink-0 border border-border mx-auto sm:mx-0">
             {p?.logo_url ? (
-              <img src={p.logo_url} alt={p.full_name} className="w-full h-full object-cover" />
+              <img loading="lazy" decoding="async" src={p.logo_url} alt={p.full_name} className="w-full h-full object-cover" />
             ) : (
               <User className="text-muted-foreground" size={36} />
             )}

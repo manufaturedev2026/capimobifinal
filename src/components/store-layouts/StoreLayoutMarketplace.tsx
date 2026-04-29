@@ -694,7 +694,7 @@ export default function StoreLayoutMarketplace({
                       onClick={() => { setActiveCategory(banner.slug); scrollToGrid(); }}
                     >
                       {banner.coverImage ? (
-                        <img src={banner.coverImage} alt="" className="absolute inset-0 w-full h-full object-cover" />
+                        <img loading="lazy" decoding="async" src={banner.coverImage} alt="" className="absolute inset-0 w-full h-full object-cover" />
                       ) : null}
                       <div className="absolute inset-0" style={{ background: `${storeTheme.primary}90` }} />
                       <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent" />

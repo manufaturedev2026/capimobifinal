@@ -39,7 +39,7 @@ export default function GlobalStoriesBar({ primaryColor = "#3B82F6", textColor =
                 }}
               >
                 <div className="w-full h-full rounded-full bg-black/80 p-[2px]">
-                  <img
+                  <img loading="lazy" decoding="async"
                     src={story.image_url}
                     alt={story.title || story.sellerName}
                     className="w-full h-full rounded-full object-cover"
@@ -74,7 +74,7 @@ export default function GlobalStoriesBar({ primaryColor = "#3B82F6", textColor =
           onClick={() => setViewStory(null)}
         >
           <div className="relative w-full h-full max-w-lg mx-auto" onClick={(e) => e.stopPropagation()}>
-            <img
+            <img loading="lazy" decoding="async"
               src={viewStory.image_url}
               alt={viewStory.title || ""}
               className="w-full h-full object-contain"
@@ -83,7 +83,7 @@ export default function GlobalStoriesBar({ primaryColor = "#3B82F6", textColor =
             <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6">
               <div className="flex items-center gap-3 mb-3">
                 {viewStory.sellerLogo && (
-                  <img src={viewStory.sellerLogo} className="w-8 h-8 rounded-full object-cover border border-white/30" alt="" />
+                  <img loading="lazy" decoding="async" src={viewStory.sellerLogo} className="w-8 h-8 rounded-full object-cover border border-white/30" alt="" />
                 )}
                 <span className="text-white text-sm font-semibold">{viewStory.sellerName}</span>
               </div>

@@ -529,7 +529,7 @@ export default function Index() {
                     {(() => {
                       const screens = [
                         <motion.div key="s1" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0">
-                          <img src={storePreviewHouse} alt="App preview" className="w-full h-full object-cover" width={768} height={1344} />
+                          <img loading="lazy" decoding="async" src={storePreviewHouse} alt="App preview" className="w-full h-full object-cover" width={768} height={1344} />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
                           <div className="absolute top-10 left-4 flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-md">
                             <div className="w-6 h-6 rounded-full bg-primary/40 flex items-center justify-center border border-white/20">
@@ -827,7 +827,7 @@ export default function Index() {
                   transition={{ duration: 0.8 }}
                   className="absolute inset-0"
                 >
-                  <img src={img} alt={current.title} className="w-full h-full object-cover" />
+                  <img loading="lazy" decoding="async" src={img} alt={current.title} className="w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/40" />
                 </motion.div>
               </AnimatePresence>

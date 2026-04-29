@@ -313,7 +313,7 @@ export default function StoreLayoutMinimal({
           style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}
         >
           {dbProfile?.logo_url ? (
-            <img src={dbProfile.logo_url} alt={sellerDisplayName} className="w-12 h-12 rounded-xl object-cover flex-shrink-0" />
+            <img loading="lazy" decoding="async" src={dbProfile.logo_url} alt={sellerDisplayName} className="w-12 h-12 rounded-xl object-cover flex-shrink-0" />
           ) : (
             <div className="w-12 h-12 rounded-xl flex items-center justify-center minimal-display font-bold text-lg text-white flex-shrink-0" style={{ background: storeTheme.primary }}>
               {sellerDisplayName?.charAt(0)}
@@ -674,7 +674,7 @@ export default function StoreLayoutMinimal({
             {/* Avatar / Logo */}
             <div className="flex md:flex-col items-center md:items-start gap-4">
               {dbProfile?.logo_url ? (
-                <img
+                <img loading="lazy" decoding="async"
                   src={dbProfile.logo_url}
                   alt={sellerDisplayName}
                   className="w-20 h-20 md:w-28 md:h-28 rounded-2xl object-cover flex-shrink-0"

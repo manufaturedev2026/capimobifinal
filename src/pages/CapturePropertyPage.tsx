@@ -270,7 +270,7 @@ export default function CapturePropertyPage() {
             <div className="hidden lg:flex items-center gap-4 mt-8 p-4 rounded-2xl"
               style={{ background: `${colors.card}80`, border: `1px solid ${colors.border}` }}>
               {broker.logo_url ? (
-                <img src={broker.logo_url} alt={broker.full_name} className="w-14 h-14 rounded-2xl object-cover" style={{ boxShadow: `0 0 0 2px ${colors.border}` }} />
+                <img loading="lazy" decoding="async" src={broker.logo_url} alt={broker.full_name} className="w-14 h-14 rounded-2xl object-cover" style={{ boxShadow: `0 0 0 2px ${colors.border}` }} />
               ) : (
                 <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-xl font-bold"
                   style={{ background: `linear-gradient(135deg, ${colors.primary}, ${colors.primaryDarker})`, color: colors.btnTextColor }}>
@@ -413,7 +413,7 @@ export default function CapturePropertyPage() {
             >
               <div className="flex items-center gap-4 mb-4">
                 {broker.logo_url ? (
-                  <img src={broker.logo_url} alt={broker.full_name} className="w-16 h-16 rounded-2xl object-cover" style={{ boxShadow: `0 0 0 2px ${colors.border}` }} />
+                  <img loading="lazy" decoding="async" src={broker.logo_url} alt={broker.full_name} className="w-16 h-16 rounded-2xl object-cover" style={{ boxShadow: `0 0 0 2px ${colors.border}` }} />
                 ) : (
                   <div className="w-16 h-16 rounded-2xl flex items-center justify-center text-xl font-bold"
                     style={{ background: `linear-gradient(135deg, ${colors.primary}, ${colors.primaryDarker})`, color: colors.btnTextColor }}>

@@ -134,7 +134,7 @@ export default function AdminSiteTab() {
       <Section icon={Image} title="Logo do Site" desc="Imagem exibida no cabeçalho (recomendado: PNG transparente).">
         <div className="flex items-center gap-4">
           {settings.site_logo_url && (
-            <img src={settings.site_logo_url} alt="Logo" className="h-12 max-w-[180px] object-contain rounded-lg border border-border bg-secondary p-1" />
+            <img loading="lazy" decoding="async" src={settings.site_logo_url} alt="Logo" className="h-12 max-w-[180px] object-contain rounded-lg border border-border bg-secondary p-1" />
           )}
           <input ref={logoRef} type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleUpload("site_logo_url", f); }} />
           <button
@@ -158,7 +158,7 @@ export default function AdminSiteTab() {
       <Section icon={Globe} title="Favicon" desc="Ícone exibido na aba do navegador (recomendado: 32x32 ou 64x64 PNG).">
         <div className="flex items-center gap-4">
           {settings.site_favicon_url && (
-            <img src={settings.site_favicon_url} alt="Favicon" className="w-10 h-10 object-contain rounded-lg border border-border bg-secondary p-1" />
+            <img loading="lazy" decoding="async" src={settings.site_favicon_url} alt="Favicon" className="w-10 h-10 object-contain rounded-lg border border-border bg-secondary p-1" />
           )}
           <input ref={faviconRef} type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleUpload("site_favicon_url", f); }} />
           <button
@@ -194,7 +194,7 @@ export default function AdminSiteTab() {
           <>
             <div className="flex items-center gap-4">
               {settings.site_splash_image_url && (
-                <img src={settings.site_splash_image_url} alt="Splash" className="h-20 w-20 object-contain rounded-full border border-border bg-secondary p-2" />
+                <img loading="lazy" decoding="async" src={settings.site_splash_image_url} alt="Splash" className="h-20 w-20 object-contain rounded-full border border-border bg-secondary p-2" />
               )}
               <input
                 ref={splashRef}

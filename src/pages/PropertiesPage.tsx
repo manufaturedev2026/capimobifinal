@@ -428,7 +428,7 @@ export default function PropertiesPage() {
                     <div className="absolute bottom-0 left-0 right-0 p-3">
                       {company && (
                         <div className="flex items-center gap-1.5">
-                          <img src={company.logo} alt={company.name} className="w-5 h-5 rounded-full object-cover border border-white/30" />
+                          <img loading="lazy" decoding="async" src={company.logo} alt={company.name} className="w-5 h-5 rounded-full object-cover border border-white/30" />
                           <span className="text-white/80 text-[10px] truncate">{company.name}</span>
                         </div>
                       )}

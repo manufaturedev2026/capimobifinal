@@ -172,7 +172,7 @@ export function WhatsAppTeamPickerProvider({ children }: { children: React.React
                   >
                     <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center overflow-hidden flex-shrink-0">
                       {member.photo_url ? (
-                        <img src={member.photo_url} alt={member.full_name} className="w-full h-full object-cover" />
+                        <img loading="lazy" decoding="async" src={member.photo_url} alt={member.full_name} className="w-full h-full object-cover" />
                       ) : (
                         <span className="font-bold text-lg text-muted-foreground">{member.full_name.charAt(0)}</span>
                       )}

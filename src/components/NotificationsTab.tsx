@@ -337,7 +337,7 @@ export default function NotificationsTab({ userId, sellerId }: NotificationsTabP
               <Label className="text-xs font-medium">Imagem (opcional)</Label>
               {image ? (
                 <div className="relative w-full h-32 rounded-lg overflow-hidden border border-border">
-                  <img src={image} alt="Preview" className="w-full h-full object-cover" />
+                  <img loading="lazy" decoding="async" src={image} alt="Preview" className="w-full h-full object-cover" />
                   <Button
                     type="button"
                     size="icon"

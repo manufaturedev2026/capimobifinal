@@ -713,7 +713,7 @@ export default function StoreLayoutNetflix({
                 }}
               >
                 {allImages[0] ? (
-                  <img src={allImages[0].image} alt="Todos" className="w-full h-full rounded-[inherit] object-cover transition-transform duration-700 ease-out group-hover/cat:scale-105" />
+                  <img loading="lazy" decoding="async" src={allImages[0].image} alt="Todos" className="w-full h-full rounded-[inherit] object-cover transition-transform duration-700 ease-out group-hover/cat:scale-105" />
                 ) : (
                   <div className="w-full h-full rounded-[inherit] bg-[#2a2a2a]" />
                 )}
@@ -762,7 +762,7 @@ export default function StoreLayoutNetflix({
                   }}
                 >
                   {coverImg ? (
-                    <img src={coverImg} alt={c.name} className="w-full h-full rounded-[inherit] object-cover transition-transform duration-700 ease-out group-hover/cat:scale-105" />
+                    <img loading="lazy" decoding="async" src={coverImg} alt={c.name} className="w-full h-full rounded-[inherit] object-cover transition-transform duration-700 ease-out group-hover/cat:scale-105" />
                   ) : (
                     <div className="w-full h-full rounded-[inherit] bg-[#2a2a2a]" />
                   )}
@@ -894,7 +894,7 @@ export default function StoreLayoutNetflix({
                               transition={{ duration: 2.5, repeat: Infinity }}
                             />
                             {dbProfile.logo_url ? (
-                              <img
+                              <img loading="lazy" decoding="async"
                                 src={dbProfile.logo_url}
                                 alt={profileDisplayName}
                                 className="relative w-12 h-12 rounded-full object-cover flex-shrink-0"

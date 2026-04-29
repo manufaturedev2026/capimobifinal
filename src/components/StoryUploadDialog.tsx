@@ -208,7 +208,7 @@ export default function StoryUploadDialog({ open, onOpenChange, sellerId, onUplo
                     {selectedMember ? (
                       <div className="flex items-center gap-2 p-2 rounded-lg border border-border bg-muted/50">
                         {selectedMember.photo_url && (
-                          <img src={selectedMember.photo_url} alt="" className="w-8 h-8 rounded-full object-cover" />
+                          <img loading="lazy" decoding="async" src={selectedMember.photo_url} alt="" className="w-8 h-8 rounded-full object-cover" />
                         )}
                         <p className="text-xs font-medium flex-1">{selectedMember.full_name}</p>
                         <Button variant="ghost" size="sm" onClick={() => setSelectedMemberId(null)}>✕</Button>
@@ -233,7 +233,7 @@ export default function StoryUploadDialog({ open, onOpenChange, sellerId, onUplo
                             onClick={() => { setSelectedMemberId(member.id); setShowMemberPicker(false); }}
                           >
                             {member.photo_url ? (
-                              <img src={member.photo_url} alt="" className="w-7 h-7 rounded-full object-cover" />
+                              <img loading="lazy" decoding="async" src={member.photo_url} alt="" className="w-7 h-7 rounded-full object-cover" />
                             ) : (
                               <div className="w-7 h-7 rounded-full bg-muted flex items-center justify-center text-[10px] font-bold text-muted-foreground">
                                 {member.full_name.charAt(0)}
@@ -258,7 +258,7 @@ export default function StoryUploadDialog({ open, onOpenChange, sellerId, onUplo
 
                 {preview ? (
                   <div className="relative aspect-[9/16] max-h-[220px] rounded-xl overflow-hidden bg-black mx-auto">
-                    <img src={preview} alt="Preview" className="w-full h-full object-contain" />
+                    <img loading="lazy" decoding="async" src={preview} alt="Preview" className="w-full h-full object-contain" />
                     {(title || description || buttonText) && (
                       <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-3">
                         {title && <p className="text-white font-bold text-xs">{title}</p>}
@@ -316,7 +316,7 @@ export default function StoryUploadDialog({ open, onOpenChange, sellerId, onUplo
                   </Label>
                   {selectedItem ? (
                     <div className="flex items-center gap-2 p-2 rounded-lg border border-border bg-muted/50">
-                      {selectedItem.photos?.[0] && <img src={selectedItem.photos[0]} alt="" className="w-10 h-10 rounded object-cover" />}
+                      {selectedItem.photos?.[0] && <img loading="lazy" decoding="async" src={selectedItem.photos[0]} alt="" className="w-10 h-10 rounded object-cover" />}
                       <div className="flex-1 min-w-0">
                         <p className="text-xs font-medium truncate">{selectedItem.title}</p>
                         {selectedItem.price && <p className="text-[10px] text-muted-foreground">{formatPrice(selectedItem.price)}</p>}
@@ -338,7 +338,7 @@ export default function StoryUploadDialog({ open, onOpenChange, sellerId, onUplo
                           className="flex items-center gap-2 p-2 w-full text-left hover:bg-muted/50 transition-colors"
                           onClick={() => { setSelectedItemId(item.id); setShowItemPicker(false); if (!buttonText) setButtonText("Ver anúncio"); }}
                         >
-                          {item.photos?.[0] && <img src={item.photos[0]} alt="" className="w-8 h-8 rounded object-cover" />}
+                          {item.photos?.[0] && <img loading="lazy" decoding="async" src={item.photos[0]} alt="" className="w-8 h-8 rounded object-cover" />}
                           <div className="flex-1 min-w-0">
                             <p className="text-xs font-medium truncate">{item.title}</p>
                             {item.price && <p className="text-[10px] text-muted-foreground">{formatPrice(item.price)}</p>}

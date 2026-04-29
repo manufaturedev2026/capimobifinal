@@ -429,7 +429,7 @@ export default function SellerDashboard() {
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center overflow-hidden ring-2 ring-white/20">
                 {profile?.logo_url ? (
-                  <img src={profile.logo_url} alt="" className="w-full h-full object-cover" />
+                  <img loading="lazy" decoding="async" src={profile.logo_url} alt="" className="w-full h-full object-cover" />
                 ) : (
                   <span className="text-white font-bold text-lg">{profile?.full_name?.charAt(0) || "V"}</span>
                 )}
@@ -466,7 +466,7 @@ export default function SellerDashboard() {
               <div className="relative">
                 <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center overflow-hidden ring-2 ring-primary/20">
                   {profile?.logo_url ? (
-                    <img src={profile.logo_url} alt="" className="w-full h-full object-cover" />
+                    <img loading="lazy" decoding="async" src={profile.logo_url} alt="" className="w-full h-full object-cover" />
                   ) : (
                     <span className="text-foreground font-bold text-xl">{profile?.full_name?.charAt(0) || "V"}</span>
                   )}
@@ -568,7 +568,7 @@ export default function SellerDashboard() {
             <div className="relative overflow-hidden rounded-2xl p-4" style={{ background: 'linear-gradient(135deg, hsl(var(--primary) / 0.08) 0%, hsl(var(--accent) / 0.08) 100%)' }}>
               <div className="absolute top-0 right-0 w-20 h-20 rounded-full bg-primary/5 -translate-y-1/2 translate-x-1/2" />
               <div className="flex items-center gap-3 mb-3 relative">
-                <img src={managerPhoto} alt={managerName} className="w-11 h-11 rounded-full object-cover ring-2 ring-primary/30 shadow-lg" width={44} height={44} />
+                <img loading="lazy" decoding="async" src={managerPhoto} alt={managerName} className="w-11 h-11 rounded-full object-cover ring-2 ring-primary/30 shadow-lg" width={44} height={44} />
                 <div>
                   <p className="text-xs font-bold text-foreground">{managerName}</p>
                   <p className="text-[10px] text-muted-foreground">Seu Gerente de Conta</p>
@@ -733,7 +733,7 @@ export default function SellerDashboard() {
                 <div className="lg:hidden relative overflow-hidden rounded-2xl p-5" style={{ background: 'linear-gradient(135deg, hsl(var(--primary) / 0.08) 0%, hsl(var(--accent) / 0.08) 100%)' }}>
                   <div className="absolute top-0 right-0 w-20 h-20 rounded-full bg-primary/5 -translate-y-1/2 translate-x-1/2" />
                   <div className="flex items-center gap-3 mb-3 relative">
-                    <img src={managerPhoto} alt={managerName} className="w-12 h-12 rounded-full object-cover ring-2 ring-primary/30 shadow-lg" width={48} height={48} />
+                    <img loading="lazy" decoding="async" src={managerPhoto} alt={managerName} className="w-12 h-12 rounded-full object-cover ring-2 ring-primary/30 shadow-lg" width={48} height={48} />
                     <div>
                       <p className="text-sm font-bold text-foreground">{managerName}</p>
                       <p className="text-xs text-muted-foreground">Seu Gerente de Conta</p>
@@ -806,7 +806,7 @@ export default function SellerDashboard() {
                             <GripVertical size={14} />
                           </div>
                           {item.photos && item.photos.length > 0 ? (
-                            <img src={item.photos[0]} alt={item.title} className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 ${item.status === "vendido" ? "brightness-50 blur-[1px]" : ""}`} />
+                            <img loading="lazy" decoding="async" src={item.photos[0]} alt={item.title} className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 ${item.status === "vendido" ? "brightness-50 blur-[1px]" : ""}`} />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-muted to-muted/50">
                               <Image size={36} className="text-muted-foreground/40" />

@@ -1311,7 +1311,7 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
               <label className="flex items-center gap-2 cursor-pointer">
                 <input type="checkbox" checked={showLogo} onChange={(e) => setShowLogo(e.target.checked)} className="w-4 h-4 rounded border-border text-primary focus:ring-primary" />
                 <span className="text-[11px] font-semibold text-foreground">Logo do corretor</span>
-                {showLogo && sellerLogo && <img src={sellerLogo} alt="" className="w-5 h-5 rounded-full object-cover border border-border" />}
+                {showLogo && sellerLogo && <img loading="lazy" decoding="async" src={sellerLogo} alt="" className="w-5 h-5 rounded-full object-cover border border-border" />}
               </label>
               <label className="flex items-center gap-2 cursor-pointer">
                 <input type="checkbox" checked={showWatermark} onChange={(e) => setShowWatermark(e.target.checked)} className="w-4 h-4 rounded border-border text-primary focus:ring-primary" />
@@ -1365,7 +1365,7 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
                 transition={{ delay: i * 0.05 }}
                 className="rounded-xl overflow-hidden border border-border group bg-card hover:shadow-lg transition"
               >
-                <img src={r.url} alt={r.name} className="w-full aspect-square object-cover" />
+                <img loading="lazy" decoding="async" src={r.url} alt={r.name} className="w-full aspect-square object-cover" />
                 <div className="p-2">
                   <p className="text-[10px] font-bold text-foreground line-clamp-1">{r.name}</p>
                   <button onClick={() => {

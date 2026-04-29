@@ -207,7 +207,7 @@ export default function FinancingSimulator({ propertyPrice }: Props) {
         {bestRate && (
           <div className="bg-primary/10 border border-primary/20 rounded-xl p-4">
             <div className="flex items-center gap-2 mb-1">
-              <img src={bestRate.logo} alt={bestRate.bank} className="h-5 w-auto object-contain" />
+              <img loading="lazy" decoding="async" src={bestRate.logo} alt={bestRate.bank} className="h-5 w-auto object-contain" />
               <p className="text-xs font-semibold text-primary">💡 Melhor opção encontrada</p>
             </div>
             <p className="font-display font-bold text-xl text-foreground">
@@ -236,7 +236,7 @@ export default function FinancingSimulator({ propertyPrice }: Props) {
               >
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2.5 min-w-0">
-                    <img src={sim.logo} alt={sim.bank} className="h-6 w-auto object-contain flex-shrink-0" />
+                    <img loading="lazy" decoding="async" src={sim.logo} alt={sim.bank} className="h-6 w-auto object-contain flex-shrink-0" />
                     <div className="min-w-0">
                       <p className="text-sm font-semibold text-foreground truncate">{sim.bank}</p>
                       <p className="text-[11px] text-muted-foreground truncate">{sim.program}</p>

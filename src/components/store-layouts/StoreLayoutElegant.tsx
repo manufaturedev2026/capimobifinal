@@ -124,7 +124,7 @@ export default function StoreLayoutElegant({
               >
                 {/* Background image or gradient */}
                 {bgImage ? (
-                  <img
+                  <img loading="lazy" decoding="async"
                     src={bgImage} alt={cat.name}
                     className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                   />
@@ -323,7 +323,7 @@ export default function StoreLayoutElegant({
           >
             <div className="relative aspect-[4/3] sm:aspect-[21/9] overflow-hidden">
               {featuredProduct.image ? (
-                <img
+                <img loading="lazy" decoding="async"
                   src={featuredProduct.image} alt={featuredProduct.title}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                 />

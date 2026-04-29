@@ -37,7 +37,7 @@ export default function CompareBar() {
           >
             <div className="flex -space-x-2">
               {items.map(item => (
-                <img key={item.id} src={item.image} alt="" className="w-10 h-10 rounded-full border-2 border-card object-cover" />
+                <img loading="lazy" decoding="async" key={item.id} src={item.image} alt="" className="w-10 h-10 rounded-full border-2 border-card object-cover" />
               ))}
             </div>
             <span className="text-sm font-medium text-foreground">{items.length}/3 imóveis</span>
@@ -93,7 +93,7 @@ export default function CompareBar() {
                             <button onClick={() => removeItem(item.id)} className="absolute -top-1 -right-1 p-1 bg-card rounded-full border border-border shadow-md hover:bg-secondary z-10">
                               <X size={12} />
                             </button>
-                            <img src={item.image} alt={item.title} className="w-full aspect-[4/3] object-cover rounded-xl" />
+                            <img loading="lazy" decoding="async" src={item.image} alt={item.title} className="w-full aspect-[4/3] object-cover rounded-xl" />
                             <p className="font-display font-bold text-sm text-foreground mt-2 line-clamp-2">{item.title}</p>
                           </div>
                         </th>

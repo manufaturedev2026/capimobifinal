@@ -219,7 +219,7 @@ export default function BrokerAnalytics({ sellerId, teamMembers }: Props) {
             >
               <div className="w-11 h-11 rounded-xl bg-secondary flex items-center justify-center overflow-hidden flex-shrink-0">
                 {broker.photo_url ? (
-                  <img src={broker.photo_url} alt={broker.full_name} className="w-full h-full object-cover" />
+                  <img loading="lazy" decoding="async" src={broker.photo_url} alt={broker.full_name} className="w-full h-full object-cover" />
                 ) : (
                   <span className="font-bold text-sm text-muted-foreground">{broker.full_name.charAt(0)}</span>
                 )}

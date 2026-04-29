@@ -575,7 +575,7 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
                 >
                   <div className="relative aspect-[16/10] bg-muted overflow-hidden">
                     {item.photos?.[0] ? (
-                      <img src={item.photos[0]} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                      <img loading="lazy" decoding="async" src={item.photos[0]} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center"><Home size={32} className="text-muted-foreground/30" /></div>
                     )}
@@ -669,7 +669,7 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
               <div className="flex gap-3 bg-secondary/50 rounded-xl p-3">
                 <div className="w-16 h-16 rounded-xl bg-muted overflow-hidden flex-shrink-0">
                   {configItem.photos?.[0] ? (
-                    <img src={configItem.photos[0]} alt="" className="w-full h-full object-cover" />
+                    <img loading="lazy" decoding="async" src={configItem.photos[0]} alt="" className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center"><Home size={20} className="text-muted-foreground/30" /></div>
                   )}
@@ -824,7 +824,7 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
                   >
                     <div className="relative aspect-[16/10] bg-muted overflow-hidden">
                       {item.photos?.[0] ? (
-                        <img src={item.photos[0]} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                        <img loading="lazy" decoding="async" src={item.photos[0]} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center"><Home size={32} className="text-muted-foreground/30" /></div>
                       )}
@@ -890,7 +890,7 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
 
                 <div className="relative aspect-[16/10] bg-muted rounded-xl overflow-hidden -mx-2">
                   {detailItem.photos?.[0] ? (
-                    <img src={detailItem.photos[0]} alt={detailItem.title} className="w-full h-full object-cover" />
+                    <img loading="lazy" decoding="async" src={detailItem.photos[0]} alt={detailItem.title} className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center"><Home size={40} className="text-muted-foreground/30" /></div>
                   )}
@@ -941,7 +941,7 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
                   <div className="flex items-center gap-3 bg-secondary/50 rounded-xl p-3">
                     <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
                       {detailItem.seller.logo_url ? (
-                        <img src={detailItem.seller.logo_url} alt="" className="w-full h-full object-cover" />
+                        <img loading="lazy" decoding="async" src={detailItem.seller.logo_url} alt="" className="w-full h-full object-cover" />
                       ) : (
                         <span className="text-sm font-bold text-primary">{detailItem.seller.full_name.charAt(0)}</span>
                       )}
@@ -1024,7 +1024,7 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
                     {/* Hero photo */}
                     <div className="relative aspect-[16/9] bg-muted overflow-hidden">
                       {p.item?.photos?.[0] ? (
-                        <img src={p.item.photos[0]} alt={p.item.title} className="w-full h-full object-cover" />
+                        <img loading="lazy" decoding="async" src={p.item.photos[0]} alt={p.item.title} className="w-full h-full object-cover" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center"><Home size={32} className="text-muted-foreground/30" /></div>
                       )}
@@ -1077,7 +1077,7 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
                         <div className="flex items-center gap-2.5 bg-secondary/50 rounded-xl p-2.5">
                           <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden flex-shrink-0">
                             {p.partner.logo_url ? (
-                              <img src={p.partner.logo_url} alt="" className="w-full h-full object-cover" />
+                              <img loading="lazy" decoding="async" src={p.partner.logo_url} alt="" className="w-full h-full object-cover" />
                             ) : (
                               <span className="text-xs font-bold text-primary">{p.partner.full_name.charAt(0)}</span>
                             )}
@@ -1201,7 +1201,7 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
                     {removed ? (
                       <div className="w-full h-full flex items-center justify-center bg-red-500/10"><XCircle size={20} className="text-red-400" /></div>
                     ) : req.item?.photos?.[0] ? (
-                      <img src={req.item.photos[0]} alt="" className="w-full h-full object-cover" />
+                      <img loading="lazy" decoding="async" src={req.item.photos[0]} alt="" className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center"><Home size={20} className="text-muted-foreground/30" /></div>
                     )}
@@ -1280,7 +1280,7 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
                       {removed ? (
                         <div className="w-full h-full flex items-center justify-center bg-red-500/10"><XCircle size={20} className="text-red-400" /></div>
                       ) : req.item?.photos?.[0] ? (
-                        <img src={req.item.photos[0]} alt="" className="w-full h-full object-cover" />
+                        <img loading="lazy" decoding="async" src={req.item.photos[0]} alt="" className="w-full h-full object-cover" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center"><Home size={20} className="text-muted-foreground/30" /></div>
                       )}
@@ -1306,7 +1306,7 @@ export default function PropertyPartnershipsTab({ profileId, userId }: { profile
                     <div className="flex items-center gap-2 bg-secondary/50 rounded-xl p-2.5">
                       <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
                         {req.requester.logo_url ? (
-                          <img src={req.requester.logo_url} alt="" className="w-full h-full object-cover" />
+                          <img loading="lazy" decoding="async" src={req.requester.logo_url} alt="" className="w-full h-full object-cover" />
                         ) : (
                           <span className="text-xs font-bold text-primary">{req.requester.full_name.charAt(0)}</span>
                         )}

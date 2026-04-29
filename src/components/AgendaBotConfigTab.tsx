@@ -219,7 +219,7 @@ export default function AgendaBotConfigTab({ sellerId, sellerSlug }: Props) {
               <div className="mt-1 flex items-center gap-3">
                 <div className="w-14 h-14 rounded-full bg-muted overflow-hidden shrink-0 border flex items-center justify-center">
                   {editing.attendant_avatar ? (
-                    <img src={editing.attendant_avatar} alt="" className="w-full h-full object-cover" />
+                    <img loading="lazy" decoding="async" src={editing.attendant_avatar} alt="" className="w-full h-full object-cover" />
                   ) : (
                     <Bot className="w-6 h-6 text-muted-foreground" />
                   )}

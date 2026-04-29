@@ -63,7 +63,7 @@ export default function NetflixVideoHero({ videoUrl, storeName, storeLogo, descr
           <div className="absolute bottom-0 left-0 right-0 p-4 md:p-8 z-10">
             <div className="flex items-end gap-4">
               {storeLogo && (
-                <img
+                <img loading="lazy" decoding="async"
                   src={storeLogo}
                   alt={storeName}
                   className="w-12 h-12 md:w-16 md:h-16 rounded-xl object-cover border-2 border-white/20 shadow-2xl flex-shrink-0"
@@ -135,7 +135,7 @@ export default function NetflixVideoHero({ videoUrl, storeName, storeLogo, descr
             >
               <div className="flex items-center gap-3">
                 {storeLogo && (
-                  <img src={storeLogo} alt="" className="w-8 h-8 rounded-lg object-cover border border-white/20" />
+                  <img loading="lazy" decoding="async" src={storeLogo} alt="" className="w-8 h-8 rounded-lg object-cover border border-white/20" />
                 )}
                 <div>
                   <p className="text-white font-display font-bold text-sm md:text-base">{storeName}</p>
