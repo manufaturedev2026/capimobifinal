@@ -36,7 +36,7 @@ const EMAIL_TEMPLATES: Record<string, React.ComponentType<any>> = {
 }
 
 // Configuration
-const SITE_NAME = "capimobi001"
+const SITE_NAME = "capimobifinal"
 const SENDER_DOMAIN = "notify.capimobi.com.br"
 const ROOT_DOMAIN = "capimobi.com.br"
 const FROM_DOMAIN = "capimobi.com.br" // Domain shown in From address (may be root or sender subdomain)
