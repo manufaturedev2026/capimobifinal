@@ -654,29 +654,43 @@ export default function ProductDetail() {
       <ThemeParticles color={getStoreTheme(dbSeller?.store_theme).primary} sellerId={dbSeller?.id} />
       {/* ── Hero Banner ── */}
       <section className="relative">
-        <div className={`overflow-hidden bg-muted ${isMobile ? "aspect-[4/3]" : "aspect-[21/9] max-h-[70vh]"}`}>
-          {images.length > 0 ? (
-            <AnimatePresence mode="wait">
-              <motion.img
-                key={activeImage}
-                initial={{ opacity: 0, scale: 1.02 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.4 }}
-                src={images[activeImage]}
-                alt={title}
-                className="w-full h-full object-contain bg-muted cursor-pointer"
-                onClick={() => isMobile && setLightboxOpen(true)}
-                onTouchStart={isMobile ? handleTouchStart : undefined}
-                onTouchEnd={isMobile ? handleTouchEnd : undefined}
-              />
-            </AnimatePresence>
-          ) : (
-            <div className="w-full h-full flex items-center justify-center bg-muted">
-              <Image size={64} className="text-muted-foreground" />
+        {(() => {
+          const o = imgOrientation[activeImage];
+          // Mobile: keep portrait-friendly 4:3, desktop adapts
+          const heroClass = isMobile
+            ? "aspect-[4/3]"
+            : o === "portrait"
+              ? "h-[78vh] max-h-[820px] min-h-[480px]"
+              : o === "square"
+                ? "aspect-square max-h-[70vh]"
+                : "aspect-[21/9] max-h-[70vh]";
+          return (
+            <div className={`overflow-hidden bg-muted ${heroClass}`}>
+              {images.length > 0 ? (
+                <AnimatePresence mode="wait">
+                  <motion.img
+                    key={activeImage}
+                    initial={{ opacity: 0, scale: 1.02 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.4 }}
+                    src={images[activeImage]}
+                    alt={title}
+                    onLoad={handleImgLoad(activeImage)}
+                    className="w-full h-full object-contain bg-muted cursor-pointer"
+                    onClick={() => isMobile && setLightboxOpen(true)}
+                    onTouchStart={isMobile ? handleTouchStart : undefined}
+                    onTouchEnd={isMobile ? handleTouchEnd : undefined}
+                  />
+                </AnimatePresence>
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-muted">
+                  <Image size={64} className="text-muted-foreground" />
+                </div>
+              )}
             </div>
-          )}
-        </div>
+          );
+        })()}
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/30 to-transparent pointer-events-none" />
         <div className="absolute top-4 left-4 z-20">
           <Link to={companyUrl} className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-card/70 backdrop-blur-md text-foreground text-sm font-medium hover:bg-card/90 transition-colors">
