@@ -616,8 +616,15 @@ export default function PackagesPage() {
           const userInheritedPlan = userFounderLot?.inherited_tier
             ? plans.find((p) => p.tier === userFounderLot.inherited_tier)
             : null;
-          const newInheritedPlan = plans.find((p) => p.tier === activeFounderLot.inherited_tier);
-          const isUpgradeAvailable =
+           const newInheritedPlan = plans.find((p) => p.tier === activeFounderLot.inherited_tier);
+           // Cor do lote = cor do plano herdado (Start verde, VIP laranja, etc.)
+           const founderColor = newInheritedPlan?.color || founderPlan.color || "from-amber-500 to-orange-600";
+           // Cor do texto do botão (extrai a cor base do gradient: ex. "from-emerald-500 to-..." -> "emerald-700")
+           const buttonTextColor = (() => {
+             const m = founderColor.match(/from-([a-z]+)-/);
+             return m ? `text-${m[1]}-700` : "text-amber-700";
+           })();
+           const isUpgradeAvailable =
             isCurrent &&
             userFounderLot != null &&
             Number(activeFounderLot.price) > Number(userFounderLot.price);
