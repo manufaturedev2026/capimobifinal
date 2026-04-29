@@ -186,6 +186,7 @@ const ENTERPRISE_PLANS = [
 export default function VenderPage() {
   const navigate = useNavigate();
   const { user, signUp } = useAuth();
+  const { site_name } = useSiteSettings();
   const { toast } = useToast();
   const [themeId, setThemeId] = useState("azul");
   const [fullName, setFullName] = useState("");
