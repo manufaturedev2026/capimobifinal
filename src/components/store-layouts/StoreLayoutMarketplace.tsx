@@ -11,7 +11,7 @@ import type { StoreLayoutProps } from "./types";
 import { isIOSStandaloneApp } from "@/lib/pwaInstall";
 import { BRAZIL_STATES } from "@/data/brazilStates";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { getSellerProfessionalTitle } from "@/lib/sellerTitle";
+import { getSellerProfessionalTitle, getSellerVerifiedLabel } from "@/lib/sellerTitle";
 
 const QUICK_ACTIONS = [
   { slug: "casa", name: "Casas", desc: "Residenciais", icon: Home },
@@ -22,11 +22,14 @@ const QUICK_ACTIONS = [
   { slug: "flat", name: "Flats", desc: "Compactos", icon: Landmark },
 ];
 
-const getBenefits = (cityName?: string, creci?: string | null) => [
+const getBenefitsRow = () => [
   { icon: Phone, title: "Contato Direto", desc: "Fale direto com o corretor via WhatsApp" },
-  { icon: Globe, title: "Cobertura Regional", desc: `Imóveis em toda${cityName ? ` ${cityName}` : " a região"}` },
-  { icon: ShieldCheck, title: "Corretor Verificado", desc: creci ? `CRECI ${creci}` : "Corretor com CRECI ativo" },
   { icon: Megaphone, title: "Anuncie seu Imóvel", desc: "Cadastre o seu imóvel em nosso site sem custo" },
+];
+
+const getBenefitsStack = (cityName?: string, creci?: string | null, verifiedTitle: string = "Corretor(a) Verificado(a)") => [
+  { icon: ShieldCheck, title: verifiedTitle, desc: creci ? `CRECI ${creci}` : "Profissional com registro ativo" },
+  { icon: Globe, title: "Cobertura Regional", desc: `Imóveis em toda${cityName ? ` ${cityName}` : " a região"}` },
 ];
 
 /* ── Floating particles component ── */
@@ -924,9 +927,9 @@ export default function StoreLayoutMarketplace({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12"
+          className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6"
         >
-          {getBenefits(dbProfile?.city || undefined, dbProfile?.creci).map((benefit, i) => {
+          {getBenefitsRow().map((benefit, i) => {
             const Icon = benefit.icon;
             return (
               <motion.div
@@ -949,6 +952,47 @@ export default function StoreLayoutMarketplace({
                 </div>
                 <h4 className="text-xs font-bold" style={{ color: storeTheme.text }}>{benefit.title}</h4>
                 <p className="text-[10px] leading-relaxed" style={{ color: storeTheme.textMuted }}>{benefit.desc}</p>
+              </motion.div>
+            );
+          })}
+        </motion.section>
+
+        {/* ═══ Verified + Location stacked vertically ═══ */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          className="flex flex-col gap-3 mb-12 max-w-md mx-auto"
+        >
+          {getBenefitsStack(
+            dbProfile?.city || undefined,
+            dbProfile?.creci,
+            getSellerVerifiedLabel(dbProfile?.seller_category, "title")
+          ).map((benefit, i) => {
+            const Icon = benefit.icon;
+            return (
+              <motion.div
+                key={i}
+                whileHover={{ y: -2, transition: { duration: 0.2 } }}
+                className="flex items-center gap-4 p-5 rounded-2xl relative overflow-hidden"
+                style={{ background: storeTheme.card, border: `1px solid ${storeTheme.border}` }}
+              >
+                <div
+                  className="w-12 h-12 rounded-xl flex items-center justify-center relative flex-shrink-0"
+                  style={{ background: `${storeTheme.primary}15`, color: storeTheme.primary }}
+                >
+                  <motion.div
+                    className="absolute inset-0 rounded-xl"
+                    style={{ background: `${storeTheme.primary}10` }}
+                    animate={{ scale: [1, 1.4, 1], opacity: [0.3, 0, 0.3] }}
+                    transition={{ duration: 3, repeat: Infinity, delay: i * 0.5 }}
+                  />
+                  <Icon size={20} />
+                </div>
+                <div className="flex flex-col text-left min-w-0">
+                  <h4 className="text-sm font-bold truncate" style={{ color: storeTheme.text }}>{benefit.title}</h4>
+                  <p className="text-[11px] leading-relaxed" style={{ color: storeTheme.textMuted }}>{benefit.desc}</p>
+                </div>
               </motion.div>
             );
           })}
