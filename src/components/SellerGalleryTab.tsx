@@ -873,6 +873,44 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
   };
 
+  /* ── Headline IA (chamada Lovable AI via edge function) ── */
+  const handleGenerateAiHeadline = async () => {
+    if (!selectedItem || aiHeadlineLoading) return;
+    setAiHeadlineLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("gallery-ai-headline", {
+        body: {
+          title: selectedItem.title,
+          category: selectedItem.category,
+          location: selectedItem.neighborhood
+            ? `${selectedItem.neighborhood}, ${selectedItem.city || ""}`
+            : selectedItem.city || "",
+          price: selectedItem.price,
+          bedrooms: selectedItem.bedrooms,
+          bathrooms: selectedItem.bathrooms,
+          parking: selectedItem.parking_spots,
+          area: selectedItem.area,
+          operation: (selectedItem as any).operation || "venda",
+        },
+      });
+      if (error) throw error;
+      const headline: string | undefined = data?.headline;
+      if (!headline) throw new Error("Sem retorno");
+      setAiHeadline(headline);
+      toast({ title: "Headline IA gerada ✨", description: headline });
+    } catch (e: any) {
+      const msg = e?.message || "Erro ao gerar headline";
+      const isCredits = /402|cr\u00e9dito|credits/i.test(msg);
+      toast({
+        title: isCredits ? "Sem créditos IA" : "Erro ao gerar headline",
+        description: isCredits ? "Recarregue créditos para usar a IA." : msg,
+        variant: "destructive",
+      });
+    } finally {
+      setAiHeadlineLoading(false);
+    }
+  };
+
   /* ── Geração em lote: 10 versões automáticas ── */
   const handleGenerate10Versions = async () => {
     if (!selectedItem) return;
