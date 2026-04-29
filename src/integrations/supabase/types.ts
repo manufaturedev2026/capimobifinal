@@ -963,6 +963,33 @@ export type Database = {
         }
         Relationships: []
       }
+      founder_settings: {
+        Row: {
+          default_slots: number
+          id: number
+          is_enabled: boolean
+          loop_enabled: boolean
+          price_increment: number
+          updated_at: string
+        }
+        Insert: {
+          default_slots?: number
+          id?: number
+          is_enabled?: boolean
+          loop_enabled?: boolean
+          price_increment?: number
+          updated_at?: string
+        }
+        Update: {
+          default_slots?: number
+          id?: number
+          is_enabled?: boolean
+          loop_enabled?: boolean
+          price_increment?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       funnel_excluded_emails: {
         Row: {
           created_at: string
