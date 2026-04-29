@@ -656,14 +656,14 @@ export default function ProductDetail() {
       <section className="relative">
         {(() => {
           const o = imgOrientation[activeImage];
-          // Mobile: keep portrait-friendly 4:3, desktop adapts
+          // Mobile keeps a stable 4:3 frame; desktop stays compact so broker data never disappears below the fold.
           const heroClass = isMobile
             ? "aspect-[4/3]"
             : o === "portrait"
-              ? "h-[78vh] max-h-[820px] min-h-[480px]"
+              ? "h-[min(56vh,430px)] min-h-[320px]"
               : o === "square"
-                ? "aspect-square max-h-[70vh]"
-                : "aspect-[21/9] max-h-[70vh]";
+                ? "h-[min(56vh,430px)] min-h-[320px]"
+                : "aspect-[21/9] max-h-[430px]";
           return (
             <div className={`overflow-hidden bg-muted ${heroClass}`}>
               {images.length > 0 ? (
