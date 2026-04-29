@@ -90,15 +90,16 @@ export default function PackagesPage() {
   }, []);
 
   const isImobiliaria = profile?.seller_category === "imobiliaria" || profile?.seller_category === "construtora";
+  const isFounderTier = (t: string) => t === "fundador_corretor" || t === "fundador_empresa";
   const individualPlans = isImobiliaria || billingPeriod === "founder"
     ? []
     : plans.filter((p) =>
-        billingPeriod === "annual"
+        !isFounderTier(p.tier) && (billingPeriod === "annual"
           ? p.category === "individual" && p.price > 0
-          : p.category === "individual" || p.category === "free"
+          : p.category === "individual" || p.category === "free")
       );
   const enterprisePlans = isImobiliaria && billingPeriod !== "founder"
-    ? plans.filter((p) => p.category === "enterprise" && (billingPeriod === "monthly" || p.price > 0))
+    ? plans.filter((p) => !isFounderTier(p.tier) && p.category === "enterprise" && (billingPeriod === "monthly" || p.price > 0))
     : [];
   const activePlan = plans.find((p) => p.tier === currentTier);
 
