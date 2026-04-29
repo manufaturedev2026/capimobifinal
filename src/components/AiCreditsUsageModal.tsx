@@ -107,7 +107,18 @@ export default function AiCreditsUsageModal({
 
     const avgDay = used7 / 7;
 
-    return { usedToday, used7, usedMonth, days, maxDay, topTools, avgDay };
+    // Recargas (positive amounts) — compras e plano mensal
+    const recharges = txs
+      .filter((t) => t.amount > 0)
+      .slice(0, 20);
+    const totalRecharged = txs
+      .filter((t) => t.amount > 0 && new Date(t.created_at) >= startMonth)
+      .reduce((acc, t) => acc + t.amount, 0);
+    const totalPurchased = txs
+      .filter((t) => t.amount > 0 && t.transaction_type !== "monthly_reset" && new Date(t.created_at) >= startMonth)
+      .reduce((acc, t) => acc + t.amount, 0);
+
+    return { usedToday, used7, usedMonth, days, maxDay, topTools, avgDay, recharges, totalRecharged, totalPurchased };
   }, [txs]);
 
   return (
