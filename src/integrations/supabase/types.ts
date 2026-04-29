@@ -1674,6 +1674,42 @@ export type Database = {
           },
         ]
       }
+      plan_limit_alerts: {
+        Row: {
+          created_at: string
+          current_value: number | null
+          id: string
+          limit_key: string
+          limit_value: number | null
+          period_start: string
+          seller_id: string | null
+          threshold: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_value?: number | null
+          id?: string
+          limit_key: string
+          limit_value?: number | null
+          period_start: string
+          seller_id?: string | null
+          threshold: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_value?: number | null
+          id?: string
+          limit_key?: string
+          limit_value?: number | null
+          period_start?: string
+          seller_id?: string | null
+          threshold?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       platform_settings: {
         Row: {
           key: string
