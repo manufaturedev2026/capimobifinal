@@ -5,6 +5,7 @@ import {
   Download, Palette, FileText, Layers, Wand2, Loader2, Package, Type, Sliders,
   Award, Crown, Building2, Home, Trees, Store, ShieldCheck, Zap,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 import jsPDF from "jspdf";
@@ -274,6 +275,66 @@ function drawRoundedRect(ctx: CanvasRenderingContext2D, x: number, y: number, w:
   ctx.lineTo(x, y + r);
   ctx.quadraticCurveTo(x, y, x + r, y);
   ctx.closePath();
+}
+
+function wrapCanvasText(ctx: CanvasRenderingContext2D, text: string, maxWidth: number, maxLines: number): string[] {
+  const words = text.trim().split(/\s+/).filter(Boolean);
+  const lines: string[] = [];
+  let line = "";
+
+  const pushLongWord = (word: string) => {
+    let chunk = "";
+    for (const char of word) {
+      const test = chunk + char;
+      if (ctx.measureText(test).width > maxWidth && chunk) {
+        lines.push(chunk);
+        chunk = char;
+      } else {
+        chunk = test;
+      }
+      if (lines.length >= maxLines) break;
+    }
+    return chunk;
+  };
+
+  for (const word of words) {
+    if (lines.length >= maxLines) break;
+    const test = line ? `${line} ${word}` : word;
+    if (ctx.measureText(test).width <= maxWidth) {
+      line = test;
+      continue;
+    }
+    if (line) lines.push(line);
+    line = ctx.measureText(word).width > maxWidth ? pushLongWord(word) : word;
+  }
+  if (line && lines.length < maxLines) lines.push(line);
+
+  if (lines.length === maxLines) {
+    let last = lines[maxLines - 1];
+    while (last.length > 1 && ctx.measureText(`${last}…`).width > maxWidth) last = last.slice(0, -1);
+    lines[maxLines - 1] = `${last}…`;
+  }
+
+  return lines;
+}
+
+function fitCanvasTextLines(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  fontFamily: string,
+  weight: number,
+  startSize: number,
+  minSize: number,
+  maxWidth: number,
+  maxLines: number,
+) {
+  for (let size = startSize; size >= minSize; size -= 2) {
+    ctx.font = `${weight} ${size}px ${fontFamily}`;
+    const lines = wrapCanvasText(ctx, text, maxWidth, maxLines);
+    if (lines.every((l) => ctx.measureText(l).width <= maxWidth)) return { size, lines };
+  }
+  ctx.font = `${weight} ${minSize}px ${fontFamily}`;
+  return { size: minSize, lines: wrapCanvasText(ctx, text, maxWidth, maxLines) };
 }
 
 function autoBadge(item: GalleryItem): Exclude<BadgeKind, "auto"> {
@@ -565,26 +626,29 @@ async function generateMarketingImage(o: GenOpts): Promise<string> {
     y -= lfs + Math.round(14 * scale);
   }
 
-  // Título (negrito grande)
+  // Título (negrito grande, com encaixe automático para não cortar)
+  const isMinimalTemplate = t.id === "minimalista_clean";
   const titleFontSize = Math.round((isStory ? 76 : isA4 ? 64 : 60) * scale);
-  ctx.font = `${fontDef.weight} ${titleFontSize}px ${titleFont}`;
   ctx.fillStyle = t.textTop;
-  const maxTitleWidth = width - pad * 2;
-  const words = o.item.title.split(" ");
-  const titleLines: string[] = [];
-  let line = "";
-  for (const w of words) {
-    const test = line ? `${line} ${w}` : w;
-    if (ctx.measureText(test).width > maxTitleWidth && line) {
-      titleLines.push(line); line = w;
-    } else line = test;
-  }
-  if (line) titleLines.push(line);
-  const maxLines = isStory ? 4 : 3;
-  const visible = titleLines.slice(0, maxLines);
-  for (let i = visible.length - 1; i >= 0; i--) {
-    ctx.fillText(visible[i], pad, y);
-    y -= titleFontSize + Math.round(6 * scale);
+  const maxTitleWidth = width - pad * (isMinimalTemplate ? 2.35 : 2);
+  const maxLines = isMinimalTemplate ? (isStory ? 3 : 2) : (isStory ? 4 : 3);
+  const minTitleSize = Math.round((isStory ? 48 : isA4 ? 42 : 38) * scale);
+  const fittedTitle = fitCanvasTextLines(
+    ctx,
+    o.item.title,
+    titleFont,
+    fontDef.weight,
+    titleFontSize,
+    minTitleSize,
+    maxTitleWidth,
+    maxLines,
+  );
+  const titleLineGap = Math.round((isMinimalTemplate ? 12 : 6) * scale);
+  ctx.font = `${fontDef.weight} ${fittedTitle.size}px ${titleFont}`;
+  ctx.textBaseline = "bottom";
+  for (let i = fittedTitle.lines.length - 1; i >= 0; i--) {
+    ctx.fillText(fittedTitle.lines[i], pad, y);
+    y -= fittedTitle.size + titleLineGap;
   }
 
   // Aggressive: CTA "FALE AGORA"
@@ -700,7 +764,7 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
   }, [selectedItemId, items]);
 
   const selectedItem = items.find((i) => i.id === selectedItemId);
-  const photos = selectedItem?.photos || [];
+  const photos = useMemo(() => selectedItem?.photos || [], [selectedItem?.photos]);
   const template = useMemo(() => TEMPLATES.find(t => t.id === selectedTemplate)!, [selectedTemplate]);
   const effectiveBadge: Exclude<BadgeKind, "auto"> | null = useMemo(() => {
     if (selectedBadge === "auto") return selectedItem ? autoBadge(selectedItem) : null;
@@ -708,7 +772,7 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
   }, [selectedBadge, selectedItem]);
 
   const galleryUrl = selectedItem
-    ? `${window.location.origin}/imoveis/produto/${(selectedItem as any).slug || selectedItem.id}${sellerSlug ? `?corretor=${sellerSlug}` : ""}`
+    ? `${window.location.origin}/imoveis/produto/${selectedItem.slug || selectedItem.id}${sellerSlug ? `?corretor=${sellerSlug}` : ""}`
     : "";
 
   const buildOpts = useCallback((overrides: Partial<GenOpts> = {}): GenOpts | null => {
@@ -1307,7 +1371,7 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
    SUBCOMPONENTES
    ═══════════════════════════════════════════════════════════════ */
 
-function Section({ title, icon: Icon, extra, children }: { title: string; icon: any; extra?: React.ReactNode; children: React.ReactNode }) {
+function Section({ title, icon: Icon, extra, children }: { title: string; icon: LucideIcon; extra?: React.ReactNode; children: React.ReactNode }) {
   return (
     <div className="rounded-2xl border border-border p-3 bg-card">
       <div className="flex items-center justify-between mb-2">
