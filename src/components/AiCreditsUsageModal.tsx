@@ -11,9 +11,9 @@ const TOOL_LABELS: Record<string, string> = {
   valuation_ad: "Anúncio da avaliação",
   photo_analysis: "Análise de fotos",
   platform_help_chat: "Assistente IA",
-  capture_bot_chat: "Bot de captação",
-  agenda_bot_chat: "Bot de agenda",
-  invite_chat: "Bot de convite",
+  capture_bot_chat: "Atendimento Bot Captação",
+  agenda_bot_chat: "Atendimento Bot Agenda",
+  invite_chat: "Atendimento Bot Convite",
 };
 
 type Tx = { id: string; tool_key: string; amount: number; created_at: string; transaction_type: string };
