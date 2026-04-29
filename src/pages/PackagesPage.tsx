@@ -88,6 +88,13 @@ export default function PackagesPage() {
     })();
   }, []);
 
+  // Remove cupom automaticamente ao sair da aba Mensal (cupons só valem para Mensal)
+  useEffect(() => {
+    if (billingPeriod !== "monthly" && appliedCoupon) {
+      setAppliedCoupon(null);
+    }
+  }, [billingPeriod, appliedCoupon]);
+
   // Carrega lotes Fundador ativos + setting global
   useEffect(() => {
     (async () => {
@@ -129,9 +136,8 @@ export default function PackagesPage() {
     if (billingPeriod === "annual" && annualDiscount > 0) {
       totalDiscount += annualDiscount;
     }
-    if (appliedCoupon) {
-      const tiersAllowed = appliedCoupon as any;
-      // O cupom já foi validado server-side, aplica direto
+    if (appliedCoupon && billingPeriod === "monthly") {
+      // Cupons só são aplicados em planos Mensais
       totalDiscount += appliedCoupon.discount_percent;
     }
     if (totalDiscount > 0) {
@@ -144,6 +150,11 @@ export default function PackagesPage() {
     const code = couponInput.trim().toUpperCase();
     if (!code) {
       toast({ title: "Digite um código de cupom", variant: "destructive" });
+      return;
+    }
+    if (billingPeriod !== "monthly") {
+      toast({ title: "Cupons indisponíveis", description: "Cupons só podem ser aplicados em planos Mensais.", variant: "destructive" });
+      setValidatingCoupon(false);
       return;
     }
     setValidatingCoupon(true);
@@ -170,12 +181,8 @@ export default function PackagesPage() {
         toast({ title: "Cupom esgotado", description: "Esse cupom já atingiu o limite de usos.", variant: "destructive" });
         return;
       }
-      if (data.applies_to === "monthly" && billingPeriod === "annual") {
-        toast({ title: "Cupom não aplicável", description: "Esse cupom só vale para planos mensais. Mude para a aba Mensal.", variant: "destructive" });
-        return;
-      }
-      if (data.applies_to === "annual" && billingPeriod === "monthly") {
-        toast({ title: "Cupom não aplicável", description: "Esse cupom só vale para planos anuais. Mude para a aba Anual.", variant: "destructive" });
+      if (data.applies_to === "annual") {
+        toast({ title: "Cupom não aplicável", description: "Esse cupom é para planos anuais e cupons foram desabilitados nesse período.", variant: "destructive" });
         return;
       }
 
@@ -519,7 +526,7 @@ export default function PackagesPage() {
         </div>
 
         {/* Campo de cupom (não se aplica ao Fundador) */}
-        <div className={`max-w-md mx-auto mb-8 ${billingPeriod === "founder" ? "hidden" : ""}`}>
+        <div className={`max-w-md mx-auto mb-8 ${billingPeriod !== "monthly" ? "hidden" : ""}`}>
           <AnimatePresence mode="wait">
             {appliedCoupon ? (
               <motion.div
