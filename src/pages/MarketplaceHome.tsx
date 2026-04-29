@@ -389,11 +389,10 @@ export default function MarketplaceHome() {
             transition={{ duration: 1.2 }}
           >
             {heroImages[heroIdx] ? (
-              <motion.img
+              <img
                 src={heroImages[heroIdx]}
                 alt="Hero"
                 className="w-full h-full object-cover"
-                style={{ y: heroY, scale: heroScale }}
               />
             ) : (
               <div className="w-full h-full" style={{ background: `linear-gradient(135deg, ${DARK_BASE}, ${DARK_MID}, ${PRIMARY})` }} />
