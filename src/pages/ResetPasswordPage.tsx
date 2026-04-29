@@ -9,6 +9,7 @@ import { getMarketplaceThemeCssVars } from "@/lib/marketplaceThemeCssVars";
 import { normalizeLoginHeroSetting, resolveLoginHeroImage } from "@/data/loginHeroPresets";
 import heroImgDefault from "@/assets/hero-anunciar.jpg";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { translateAuthError } from "@/utils/translateAuthError";
 
 export default function ResetPasswordPage() {
   const { site_name } = useSiteSettings();
@@ -75,7 +76,7 @@ export default function ResetPasswordPage() {
     }
     setLoading(false);
     if (error) {
-      toast({ title: "Erro ao alterar senha", description: error.message, variant: "destructive" });
+      toast({ title: "Erro ao alterar senha", description: translateAuthError(error.message), variant: "destructive" });
     } else {
       toast({ title: "Senha alterada com sucesso!", description: "Você já está logado." });
       navigate("/painel", { replace: true });

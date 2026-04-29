@@ -13,6 +13,7 @@ import { BRAZIL_STATES } from "@/data/brazilStates";
 import { useCitiesByState } from "@/hooks/useCitiesByState";
 import { SITE_URL } from "@/lib/siteUrl";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { translateAuthError } from "@/utils/translateAuthError";
 import { useRegistrationsClosed } from "@/hooks/useRegistrationsClosed";
 
 export default function LoginPage() {
@@ -125,7 +126,7 @@ export default function LoginPage() {
     if (isLogin) {
       const { error } = await signIn(email, password);
       if (error) {
-        toast({ title: "Erro ao entrar", description: error.message, variant: "destructive" });
+        toast({ title: "Erro ao entrar", description: translateAuthError(error.message), variant: "destructive" });
       }
     } else {
       if (password !== confirmPassword) {
@@ -140,7 +141,7 @@ export default function LoginPage() {
       }
       const { error } = await signUp(email, password, fullName, phone, selectedCity, selectedState);
       if (error) {
-        toast({ title: "Erro ao cadastrar", description: error.message, variant: "destructive" });
+        toast({ title: "Erro ao cadastrar", description: translateAuthError(error.message), variant: "destructive" });
       } else {
         setSignedUp(true);
         setIsNewSignup(true);

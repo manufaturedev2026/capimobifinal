@@ -12,6 +12,7 @@ import { useCitiesByState } from "@/hooks/useCitiesByState";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { useRegistrationsClosed } from "@/hooks/useRegistrationsClosed";
 import RegistrationsClosedNotice from "@/components/RegistrationsClosedNotice";
+import { translateAuthError } from "@/utils/translateAuthError";
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(() => {
@@ -75,13 +76,13 @@ export default function AuthPage() {
     if (isLogin) {
       const { error } = await signIn(email, password);
       if (error) {
-        toast({ title: "Erro ao entrar", description: error.message, variant: "destructive" });
+        toast({ title: "Erro ao entrar", description: translateAuthError(error.message), variant: "destructive" });
       }
       // useEffect handles redirect after profile loads
     } else {
       const { error } = await signUp(email, password, fullName, phone, selectedCity, selectedState);
       if (error) {
-        toast({ title: "Erro ao cadastrar", description: error.message, variant: "destructive" });
+        toast({ title: "Erro ao cadastrar", description: translateAuthError(error.message), variant: "destructive" });
       } else {
         setSignedUp(true);
         toast({
