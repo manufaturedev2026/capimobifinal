@@ -235,11 +235,10 @@ export default function StoreLayoutMarketplace({
             transition={{ duration: 1.2 }}
           >
             {heroImages[heroIdx] ? (
-              <motion.img
+              <img
                 src={heroImages[heroIdx]}
                 alt="Hero"
                 className="w-full h-full object-cover"
-                style={{ y: heroY, scale: heroScale }}
               />
             ) : (
               <div className="w-full h-full" style={{ background: `linear-gradient(135deg, ${darkBase}, ${darkMid}, ${storeTheme.primary})` }} />
