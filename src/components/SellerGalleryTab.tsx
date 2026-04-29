@@ -736,6 +736,8 @@ export default function SellerGalleryTab({ userId, sellerId, sellerSlug, sellerN
   const [batchHighlight, setBatchHighlight] = useState(false);
   const [copiedAdText, setCopiedAdText] = useState(false);
   const [showAdvancedAdjust, setShowAdvancedAdjust] = useState(false);
+  const [aiHeadline, setAiHeadline] = useState<string | null>(null);
+  const [aiHeadlineLoading, setAiHeadlineLoading] = useState(false);
 
   useEffect(() => { ensureGoogleFonts(); }, []);
 
