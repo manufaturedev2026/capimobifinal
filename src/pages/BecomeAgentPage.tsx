@@ -1,5 +1,6 @@
 /* Updated images v2 */
 import { useEffect, useRef, useState } from "react";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { Link } from "react-router-dom";
 import { motion, useInView } from "framer-motion";
 import {
