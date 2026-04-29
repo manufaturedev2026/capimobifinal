@@ -434,7 +434,10 @@ export default function SellerItemForm() {
     if (!profile) { toast({ title: "Erro", description: "Perfil não encontrado.", variant: "destructive" }); return; }
     if (!isAluguel && !form.category) { toast({ title: "Erro", description: "Selecione uma categoria.", variant: "destructive" }); return; }
     if (!form.title.trim()) { toast({ title: "Erro", description: "Preencha o título.", variant: "destructive" }); return; }
-    if (!isEdit && activeItemCount >= pkgConfig.maxItems) { toast({ title: "Limite atingido!", description: `Plano ${pkgConfig.name} permite até ${pkgConfig.maxItems} anúncios.`, variant: "destructive" }); return; }
+    if (!isEdit && activeItemCount >= pkgConfig.maxItems) {
+      openLimit("items");
+      return;
+    }
     if (isExpired && subscription) { toast({ title: "Assinatura expirada!", description: "Renove seu plano.", variant: "destructive" }); return; }
 
     setSaving(true);
