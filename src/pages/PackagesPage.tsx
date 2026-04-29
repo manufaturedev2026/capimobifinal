@@ -663,7 +663,7 @@ export default function PackagesPage() {
           );
         })()}
 
-
+        {subscription && activePlan && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
