@@ -35,8 +35,9 @@ export default function PackagesPage() {
   const [selecting, setSelecting] = useState<string | null>(null);
   const [openingPortal, setOpeningPortal] = useState(false);
 
-  const individualPlans = plans.filter((p) => p.category === "individual" || p.category === "free");
-  const enterprisePlans = plans.filter((p) => p.category === "enterprise");
+  const isImobiliaria = profile?.seller_category === "imobiliaria" || profile?.seller_category === "construtora";
+  const individualPlans = isImobiliaria ? [] : plans.filter((p) => p.category === "individual" || p.category === "free");
+  const enterprisePlans = isImobiliaria ? plans.filter((p) => p.category === "enterprise") : [];
   const activePlan = plans.find((p) => p.tier === currentTier);
 
   const handleManageSubscription = async () => {
