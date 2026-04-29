@@ -209,19 +209,19 @@ export function useRealListings(segment?: "imoveis" | "automoveis") {
       // But lower tiers still have a chance to appear near the top
       const weightedItems = mapped.map((item: any) => {
         let weight = tierWeight[item.sellerTier] ?? 10;
-        // Gamification: Black Tag 24h gives same priority as prime_empresa (200)
+        // Gamification: Black Tag 24h gives top priority (same as prime_empresa/vip)
         if (blackTagSellers.has(item.sellerId)) {
-          weight = Math.max(weight, 200);
+          weight = Math.max(weight, 70);
           item.hasBlackTag = true;
         }
-        // Gamification: Destaque 24h boosts to essencial_empresa level (100)
+        // Gamification: Destaque 24h boosts to mid level (essencial_empresa/start)
         if (destaqueSellers.has(item.sellerId)) {
-          weight = Math.max(weight, 100);
+          weight = Math.max(weight, 20);
           item.hasDestaque = true;
         }
         // Manual destaque from seller profile (up to 5 items)
         if (destaqueItemIds.has(item.id)) {
-          weight = Math.max(weight, 100);
+          weight = Math.max(weight, 20);
           item.hasDestaque = true;
         }
         const randomFactor = Math.random();
