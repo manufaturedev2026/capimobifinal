@@ -623,8 +623,40 @@ REGRAS:
     return true;
   });
 
-  const precos = unique.map(c => c.preco!).filter(n => n > 0);
-  const ppm2s = unique.map(c => c.preco_m2!).filter(n => n > 0);
+  // ===== Scoring de proximidade: prioriza imóveis mais parecidos com o avaliado =====
+  const norm = (s: string) =>
+    (s || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+  const bairroAlvo = norm(p.bairro);
+  const cidadeAlvo = norm(p.cidade);
+  const ruaAlvo = norm(p.rua || "");
+  const cepAlvo = (p.cep || "").replace(/\D/g, "");
+  const cepPrefixo = cepAlvo.slice(0, 5);
+
+  const scored = unique.map(c => {
+    const blob = norm(`${c.titulo || ""} ${c.bairro || ""} ${c.url || ""}`);
+    let score = 0;
+    if (bairroAlvo && blob.includes(bairroAlvo)) score += 40;
+    if (cidadeAlvo && blob.includes(cidadeAlvo)) score += 15;
+    if (ruaAlvo && ruaAlvo.length > 4 && blob.includes(ruaAlvo)) score += 30;
+    if (cepPrefixo && blob.includes(cepPrefixo)) score += 20;
+    // Similaridade de área (quanto mais perto da área de referência, mais pontos)
+    if (areaRef > 0 && c.area) {
+      const diffPct = Math.abs(c.area - areaRef) / areaRef;
+      if (diffPct <= 0.10) score += 25;
+      else if (diffPct <= 0.25) score += 15;
+      else if (diffPct <= 0.50) score += 5;
+    }
+    // Similaridade de quartos
+    if (quartos > 0 && c.quartos === quartos) score += 10;
+    return { ...c, _score: score };
+  }).sort((a, b) => (b._score || 0) - (a._score || 0));
+
+  const TOP_N = 10;
+  const top = scored.slice(0, TOP_N).map(({ _score, ...rest }) => rest);
+
+  // Estatísticas calculadas SOBRE os top-N exibidos, garantindo coerência
+  const precos = top.map(c => c.preco!).filter(n => n > 0);
+  const ppm2s = top.map(c => c.preco_m2!).filter(n => n > 0);
   const precosClean = removeOutliers(precos);
   const ppm2sClean = removeOutliers(ppm2s);
 
@@ -634,19 +666,19 @@ REGRAS:
   const preco_m2_mediano = Math.round(median(ppm2sClean));
   const preco_provavel_fechamento = preco_mediano ? Math.round(preco_mediano * 0.93) : 0;
 
-  const fontes = Array.from(new Set(unique.map(c => c.fonte).filter(Boolean))) as string[];
+  const fontes = Array.from(new Set(top.map(c => c.fonte).filter(Boolean))) as string[];
 
   return {
-    total: unique.length,
-    comparaveis: unique.slice(0, 10),
+    total: top.length, // garantir que o número exibido bate com a lista
+    comparaveis: top,
     preco_medio,
     preco_mediano,
     preco_m2_medio,
     preco_m2_mediano,
     preco_provavel_fechamento,
     fontes_consultadas: fontes,
-    resumo: typeof parsed?.resumo === "string" ? parsed.resumo : `Análise baseada em ${unique.length} anúncio(s) real(is) coletado(s) da web.`,
-    aviso: unique.length === 0 ? "Anúncios localizados, mas nenhum com dados estruturados completos." : undefined,
+    resumo: typeof parsed?.resumo === "string" ? parsed.resumo : `Análise baseada em ${top.length} anúncio(s) real(is) próximos do imóvel avaliado.`,
+    aviso: top.length === 0 ? "Anúncios localizados, mas nenhum com dados estruturados completos." : undefined,
   };
 }
 
