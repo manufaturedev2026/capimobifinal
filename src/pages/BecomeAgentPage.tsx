@@ -669,7 +669,7 @@ export default function BecomeAgentPage() {
                   className="w-full text-left bg-secondary/30 hover:bg-secondary/50 border border-border rounded-2xl p-5 transition-all"
                 >
                   <div className="flex items-center justify-between gap-4">
-                    <span className="font-display font-bold text-foreground text-sm md:text-base">{faq.q}</span>
+                    <span className="font-display font-bold text-foreground text-sm md:text-base">{r(faq.q)}</span>
                     <ChevronDown
                       size={18}
                       className={`text-muted-foreground shrink-0 transition-transform duration-300 ${openFaq === i ? "rotate-180" : ""}`}
