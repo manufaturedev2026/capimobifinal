@@ -2985,6 +2985,7 @@ export type Database = {
           max_items: number
           notes: string | null
           payment_method: string | null
+          payment_reference: string | null
           payment_status: string | null
           seller_id: string
           started_at: string
@@ -3000,6 +3001,7 @@ export type Database = {
           max_items?: number
           notes?: string | null
           payment_method?: string | null
+          payment_reference?: string | null
           payment_status?: string | null
           seller_id: string
           started_at?: string
@@ -3015,6 +3017,7 @@ export type Database = {
           max_items?: number
           notes?: string | null
           payment_method?: string | null
+          payment_reference?: string | null
           payment_status?: string | null
           seller_id?: string
           started_at?: string
@@ -3581,6 +3584,10 @@ export type Database = {
       get_ai_monthly_credits_for_tier: {
         Args: { p_tier: string }
         Returns: number
+      }
+      grant_plan_credits: {
+        Args: { p_seller_id?: string; p_tier?: string; p_user_id: string }
+        Returns: Json
       }
       has_role: {
         Args: {

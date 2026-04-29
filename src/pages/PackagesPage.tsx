@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, Crown, Star, Zap, ArrowLeft, Settings, Shield, Gem, Diamond, Coins, Ticket, X, Sparkles, CheckCircle2 } from "lucide-react";
+import { Check, Crown, Star, Zap, ArrowLeft, Shield, Gem, Diamond, Coins, Ticket, X, Sparkles, CheckCircle2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
@@ -42,8 +42,10 @@ export default function PackagesPage() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [selecting, setSelecting] = useState<string | null>(null);
-  const [openingPortal, setOpeningPortal] = useState(false);
+  const [confirming, setConfirming] = useState(false);
   const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>("monthly");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const confirmedSessionRef = useRef<string | null>(null);
   const [annualDiscount, setAnnualDiscount] = useState<number>(20);
   const [couponInput, setCouponInput] = useState("");
   const [validatingCoupon, setValidatingCoupon] = useState(false);
@@ -142,25 +144,47 @@ export default function PackagesPage() {
     toast({ title: "Cupom removido" });
   };
 
-  const handleManageSubscription = async () => {
-    if (!user) {
-      navigate("/login");
+  // Handler de retorno do checkout: confirma pagamento e ativa o plano
+  useEffect(() => {
+    const status = searchParams.get("checkout");
+    const sessionId = searchParams.get("session_id");
+    if (status === "cancelled") {
+      toast({ title: "Pagamento cancelado", description: "Você pode tentar novamente quando quiser." });
+      searchParams.delete("checkout");
+      setSearchParams(searchParams, { replace: true });
       return;
     }
-    setOpeningPortal(true);
-    try {
-      const { data, error } = await supabase.functions.invoke("customer-portal");
-      if (error) throw error;
-      if (data?.url) {
-        window.open(data.url, "_blank");
-      } else {
-        throw new Error("URL do portal não retornada");
+    if (status !== "success" || !sessionId || !user) return;
+    if (confirmedSessionRef.current === sessionId) return;
+    confirmedSessionRef.current = sessionId;
+    (async () => {
+      setConfirming(true);
+      try {
+        const { data, error } = await supabase.functions.invoke("confirm-checkout", {
+          body: { session_id: sessionId },
+        });
+        if (error) throw error;
+        if (data?.ok) {
+          await refetch();
+          toast({
+            title: data.already_processed ? "Plano já ativo" : "🎉 Plano ativado!",
+            description: data.already_processed
+              ? "Esta compra já havia sido processada."
+              : `Seu novo plano está ativo até ${new Date(data.expires_at).toLocaleDateString("pt-BR")}. Créditos IA somados ao seu saldo.`,
+          });
+        } else {
+          toast({ title: "Pagamento ainda processando", description: "Aguarde alguns instantes e atualize a página.", variant: "destructive" });
+        }
+      } catch (err: any) {
+        toast({ title: "Erro ao confirmar pagamento", description: err.message, variant: "destructive" });
+      } finally {
+        setConfirming(false);
+        searchParams.delete("checkout");
+        searchParams.delete("session_id");
+        setSearchParams(searchParams, { replace: true });
       }
-    } catch (err: any) {
-      toast({ title: "Erro ao abrir portal", description: err.message || "Tente novamente.", variant: "destructive" });
-    }
-    setOpeningPortal(false);
-  };
+    })();
+  }, [searchParams, user]);
 
   const handleSelect = async (plan: Plan) => {
     if (!user || !profile) {
@@ -332,6 +356,15 @@ export default function PackagesPage() {
 
   return (
     <div className="min-h-screen bg-background">
+      {confirming && (
+        <div className="fixed inset-0 z-[200] bg-background/90 backdrop-blur-sm flex items-center justify-center">
+          <div className="bg-card border-2 border-primary/30 rounded-2xl p-8 shadow-2xl flex flex-col items-center gap-4 max-w-sm mx-4">
+            <div className="animate-spin w-12 h-12 border-4 border-primary border-t-transparent rounded-full" />
+            <h3 className="font-display font-extrabold text-xl text-foreground">Confirmando pagamento...</h3>
+            <p className="text-sm text-muted-foreground text-center">Estamos ativando seu plano e somando os créditos IA ao seu saldo.</p>
+          </div>
+        </div>
+      )}
       <div className="gradient-hero py-12">
         <div className="container max-w-6xl mx-auto px-4">
           <Link to="/painel" className="inline-flex items-center gap-2 text-white/70 text-sm mb-4 hover:text-white transition-colors">
@@ -471,49 +504,39 @@ export default function PackagesPage() {
                     {activePlan.price === 0 ? "Grátis" : `R$ ${activePlan.price.toFixed(2).replace(".", ",")}/mês`}
                     {subscription.expires_at && (
                       <span className="ml-2">
-                        · {activePlan.price === 0 ? "Válido até" : "Renova em"} {new Date(subscription.expires_at).toLocaleDateString("pt-BR")}
+                        · Válido até {new Date(subscription.expires_at).toLocaleDateString("pt-BR")}
                       </span>
                     )}
                   </p>
+                  {activePlan.price > 0 && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      ✨ Sem renovação automática · Troque de plano quando quiser
+                    </p>
+                  )}
                 </div>
               </div>
-              {activePlan.price > 0 && (
-                <div className="flex gap-3 w-full md:w-auto">
-                  <button
-                    onClick={handleManageSubscription}
-                    disabled={openingPortal}
-                    className="flex-1 md:flex-none inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-muted border border-border rounded-xl text-foreground font-semibold text-sm hover:bg-accent transition-all"
-                  >
-                    <Settings size={16} />
-                    {openingPortal ? "Abrindo..." : "Gerenciar"}
-                  </button>
-                  <button
-                    onClick={handleManageSubscription}
-                    disabled={openingPortal}
-                    className="flex-1 md:flex-none inline-flex items-center justify-center gap-2 px-5 py-2.5 border border-destructive/30 rounded-xl text-destructive font-semibold text-sm hover:bg-destructive/10 transition-all"
-                  >
-                    {openingPortal ? "Abrindo..." : "Cancelar Plano"}
-                  </button>
-                </div>
-              )}
             </div>
           </motion.div>
         )}
 
         <div className="mt-10 bg-card border border-border rounded-2xl p-6">
           <h3 className="font-display font-bold text-lg text-foreground mb-3">Como funciona?</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-muted-foreground">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm text-muted-foreground">
             <div>
               <strong className="text-foreground">1. Escolha seu plano</strong>
-              <p className="mt-1">Selecione mensal ou anual e aplique um cupom se tiver.</p>
+              <p className="mt-1">Mensal (30 dias) ou Anual (12 meses), aplique cupom se tiver.</p>
             </div>
             <div>
-              <strong className="text-foreground">2. Pagamento seguro</strong>
-              <p className="mt-1">Para planos pagos, você será redirecionado ao checkout seguro do Stripe para pagamento com cartão.</p>
+              <strong className="text-foreground">2. Pagamento único</strong>
+              <p className="mt-1">Pagamento via Stripe, à vista no cartão. <strong>Sem renovação automática.</strong></p>
             </div>
             <div>
               <strong className="text-foreground">3. Ativação instantânea</strong>
-              <p className="mt-1">Após o pagamento, seu plano é ativado automaticamente e você já pode anunciar!</p>
+              <p className="mt-1">Plano ativo na hora e seus créditos IA somam ao saldo atual.</p>
+            </div>
+            <div>
+              <strong className="text-foreground">4. Troque quando quiser</strong>
+              <p className="mt-1">Sem amarrações. Compre outro plano e ele substitui o atual mantendo seus créditos.</p>
             </div>
           </div>
         </div>

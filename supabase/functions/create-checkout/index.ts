@@ -8,22 +8,11 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-// Monthly recurring price IDs (assinaturas mensais base do Stripe)
-const TIER_PRICES: Record<string, string> = {
-  start: "price_1THCtiA3teTHF5ONpr1FStDh",
-  premium: "price_1THCuCA3teTHF5ONI7IKoAdr",
-  vip: "price_1THDpbA3teTHF5ONdXA10lcs",
-  essencial_empresa: "price_1THDq0A3teTHF5ONdo5k2dSk",
-  premium_empresa: "price_1THDqLA3teTHF5ONtDLVuFVT",
-  prime_empresa: "price_1THDqhA3teTHF5ONtDLVuFVT",
-};
-
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
-  // Cliente público (para auth) e cliente admin (para inserts auditados)
   const supabaseClient = createClient(
     Deno.env.get("SUPABASE_URL") ?? "",
     Deno.env.get("SUPABASE_ANON_KEY") ?? ""
@@ -41,9 +30,19 @@ serve(async (req) => {
     if (!user?.email) throw new Error("Usuário não autenticado");
 
     const { tier, billing_period = "monthly", coupon_code = null } = await req.json();
-    if (!tier || !TIER_PRICES[tier]) {
-      throw new Error(`Plano inválido: ${tier}`);
-    }
+    if (!tier) throw new Error("Plano inválido");
+    if (!["monthly", "annual"].includes(billing_period)) throw new Error("Período inválido");
+
+    // Busca o plano no banco
+    const { data: plan, error: planErr } = await supabaseAdmin
+      .from("subscription_plans")
+      .select("tier, name, price, max_items, is_active")
+      .eq("tier", tier)
+      .eq("is_active", true)
+      .maybeSingle();
+    if (planErr) throw planErr;
+    if (!plan) throw new Error(`Plano ${tier} não encontrado`);
+    if (Number(plan.price) <= 0) throw new Error("Plano gratuito não exige checkout");
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2025-08-27.basil",
@@ -100,8 +99,22 @@ serve(async (req) => {
         : `Cupom ${cpn.code} (-${cpn.discount_percent}%)`;
     }
 
-    // Limite de segurança: não passa de 95% de desconto
     if (totalDiscount > 95) totalDiscount = 95;
+
+    // ==== Calcula valor total da compra (one-time payment) ====
+    const basePrice = Number(plan.price); // preço mensal base
+    const months = billing_period === "annual" ? 12 : 1;
+    const grossTotal = basePrice * months; // total bruto antes do desconto
+    const finalTotal = grossTotal * (1 - totalDiscount / 100);
+    const amountCents = Math.round(finalTotal * 100);
+
+    if (amountCents < 50) throw new Error("Valor final muito baixo para checkout (mínimo R$ 0,50)");
+
+    const periodLabel = billing_period === "annual" ? "Anual (12 meses)" : "Mensal (30 dias)";
+    const productName = `${plan.name} - ${periodLabel}`;
+    const productDescription = totalDiscount > 0
+      ? `${couponDescription} aplicado. Pagamento único, sem renovação automática.`
+      : `Pagamento único, sem renovação automática.`;
 
     // ==== Find or create customer ====
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
@@ -116,12 +129,24 @@ serve(async (req) => {
       customerId = customer.id;
     }
 
-    // ==== Cria coupon dinâmico no Stripe se houver desconto ====
-    const sessionParams: any = {
+    // ==== One-time payment session (sem renovação) ====
+    const session = await stripe.checkout.sessions.create({
       customer: customerId,
-      line_items: [{ price: TIER_PRICES[tier], quantity: 1 }],
-      mode: "subscription",
-      success_url: `${req.headers.get("origin")}/painel?checkout=success&tier=${tier}`,
+      line_items: [
+        {
+          price_data: {
+            currency: "brl",
+            product_data: {
+              name: productName,
+              description: productDescription,
+            },
+            unit_amount: amountCents,
+          },
+          quantity: 1,
+        },
+      ],
+      mode: "payment", // 🔑 pagamento único, sem renovação automática
+      success_url: `${req.headers.get("origin")}/pacotes?checkout=success&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${req.headers.get("origin")}/pacotes?checkout=cancelled`,
       metadata: {
         user_id: user.id,
@@ -130,26 +155,13 @@ serve(async (req) => {
         applied_coupon_code: appliedCouponCode || "",
         applied_coupon_id: appliedCouponId || "",
         total_discount_percent: String(totalDiscount),
+        max_items: String(plan.max_items),
+        gross_total: String(grossTotal.toFixed(2)),
+        final_total: String(finalTotal.toFixed(2)),
       },
-    };
+    });
 
-    if (totalDiscount > 0) {
-      const stripeCoupon = await stripe.coupons.create({
-        percent_off: totalDiscount,
-        duration: "forever", // desconto vitalício enquanto manter assinatura
-        name: couponDescription.slice(0, 40),
-        metadata: {
-          user_id: user.id,
-          tier,
-          billing_period,
-        },
-      });
-      sessionParams.discounts = [{ coupon: stripeCoupon.id }];
-    }
-
-    const session = await stripe.checkout.sessions.create(sessionParams);
-
-    // ==== Registra uso do cupom (auditoria) ====
+    // ==== Auditoria do cupom ====
     if (appliedCouponId) {
       await supabaseAdmin.from("coupon_redemptions").insert({
         coupon_id: appliedCouponId,
@@ -160,7 +172,6 @@ serve(async (req) => {
         stripe_session_id: session.id,
       });
 
-      // Incrementa uses_count
       const { data: current } = await supabaseAdmin
         .from("discount_coupons")
         .select("uses_count")
