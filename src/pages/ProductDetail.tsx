@@ -119,6 +119,15 @@ export default function ProductDetail() {
   const isMobile = useIsMobile();
   const [activeImage, setActiveImage] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [imgOrientation, setImgOrientation] = useState<Record<number, "portrait" | "landscape" | "square">>({});
+
+  // Detect orientation of the active image so the hero adapts to any photo format
+  const handleImgLoad = (idx: number) => (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const img = e.currentTarget;
+    const ratio = img.naturalWidth / img.naturalHeight;
+    const o = ratio > 1.15 ? "landscape" : ratio < 0.85 ? "portrait" : "square";
+    setImgOrientation((prev) => (prev[idx] === o ? prev : { ...prev, [idx]: o }));
+  };
   const carouselRef = useRef<HTMLDivElement>(null);
   const [dbItem, setDbItem] = useState<any>(null);
   const [dbSeller, setDbSeller] = useState<any>(null);
