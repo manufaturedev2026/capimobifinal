@@ -45,6 +45,7 @@ import AiHelpChat from "@/components/AiHelpChat";
 import PanelSplash from "@/components/PanelSplash";
 import AiCreditsCard from "@/components/AiCreditsCard";
 import { useAiCredits } from "@/hooks/useAiCredits";
+import PlanLimitsCard from "@/components/PlanLimitsCard";
 
 type SellerItem = {
   id: string;
@@ -624,6 +625,10 @@ export default function SellerDashboard() {
 
                 {user?.id && profile?.id && (
                   <AiCreditsCard userId={user.id} sellerId={profile.id} themeVars={dashThemeVars} onPurchased={aiCredits.refresh} />
+                )}
+
+                {user?.id && (
+                  <PlanLimitsCard userId={user.id} />
                 )}
 
                 {/* Stats Grid — Premium Cards */}
