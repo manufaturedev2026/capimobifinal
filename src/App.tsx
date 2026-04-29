@@ -40,6 +40,7 @@ const NotFound = lazyPage(() => import("@/pages/NotFound"));
 const CapturePropertyPage = lazyPage(() => import("@/pages/CapturePropertyPage"));
 const CapturePropertyChatPage = lazyPage(() => import("@/pages/CapturePropertyChatPage"));
 const VenderPage = lazyPage(() => import("@/pages/VenderPage"));
+const FundadorPage = lazyPage(() => import("@/pages/FundadorPage"));
 const SearchPage = lazyPage(() => import("@/pages/SearchPage"));
 const SeoLandingPage = lazyPage(() => import("@/pages/SeoLandingPage"));
 const SeoBrokersPage = lazyPage(() => import("@/pages/SeoBrokersPage"));
