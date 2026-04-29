@@ -143,7 +143,8 @@ Deno.serve(async (req) => {
       for (const em of customList) {
         if (existing.has(em)) continue;
         const p = map.get(em);
-        recipients.push({ email: em, full_name: p?.full_name || null, profile_id: p?.id || null });
+        const fallbackName = customNameByEmail.get(em) || null;
+        recipients.push({ email: em, full_name: p?.full_name || fallbackName, profile_id: p?.id || null });
       }
     }
 
