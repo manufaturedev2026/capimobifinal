@@ -19,7 +19,7 @@ import {
   Activity, Search, Settings as SettingsIcon, Database, Mail, History,
   Loader2, Play, RefreshCw, MessageCircle, Trash2, Send, Filter, MapPin,
   CheckCircle2, XCircle, Building2, User, Globe, Instagram, Phone,
-  Upload, Download, FileText, Save, Eye, RotateCcw,
+  Upload, Download, FileText, Save, Eye, RotateCcw, Copy,
 } from "lucide-react";
 
 type Lead = {
@@ -988,13 +988,53 @@ export default function AdminApifyLeadsTab() {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="flex items-center gap-4">
+              <div className="flex flex-wrap items-center gap-4">
                 <label className="flex items-center gap-2 text-sm">
                   <Switch checked={fHasEmail} onCheckedChange={setFHasEmail} />Com e-mail
                 </label>
                 <label className="flex items-center gap-2 text-sm">
                   <Switch checked={fHasWhats} onCheckedChange={setFHasWhats} />Com WhatsApp
                 </label>
+                <div className="ml-auto flex flex-wrap gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={paginatedLeads.filter((l) => l.email).length === 0}
+                    onClick={async () => {
+                      const emails = paginatedLeads
+                        .map((l) => l.email)
+                        .filter((e): e is string => !!e);
+                      const text = emails.join(", ");
+                      try {
+                        await navigator.clipboard.writeText(text);
+                        toast({ title: "Copiado!", description: `${emails.length} e-mail(s) da página copiados.` });
+                      } catch {
+                        toast({ title: "Erro", description: "Não foi possível copiar.", variant: "destructive" });
+                      }
+                    }}
+                  >
+                    <Copy className="h-4 w-4 mr-1" />Copiar e-mails (página)
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={paginatedLeads.filter((l) => l.email).length === 0}
+                    onClick={async () => {
+                      const lines = paginatedLeads
+                        .filter((l) => l.email)
+                        .map((l) => `${(l.nome || "").trim()} <${l.email}>`);
+                      const text = lines.join(", ");
+                      try {
+                        await navigator.clipboard.writeText(text);
+                        toast({ title: "Copiado!", description: `${lines.length} contato(s) (nome + e-mail) copiados.` });
+                      } catch {
+                        toast({ title: "Erro", description: "Não foi possível copiar.", variant: "destructive" });
+                      }
+                    }}
+                  >
+                    <Copy className="h-4 w-4 mr-1" />Copiar nome + e-mail (página)
+                  </Button>
+                </div>
               </div>
 
               {selectedLeadIds.size > 0 && (
