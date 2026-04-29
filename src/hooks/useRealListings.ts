@@ -99,10 +99,12 @@ export function useRealListings(segment?: "imoveis" | "automoveis") {
       const pageSize = 1000;
       let hasMore = true;
       
-      while (hasMore) {
+      // Cap at 5 pages (5000 items max) to avoid runaway queries
+      const MAX_PAGES = 5;
+      while (hasMore && page < MAX_PAGES) {
         const { data: batch } = await supabase
           .from("seller_items")
-          .select("*")
+          .select("id, seller_id, title, price, photos, thumbnail_url, tags, category, city, state, neighborhood, description, bedrooms, bathrooms, area, suites, parking_spots, furnished, accepts_financing, pool, balcony, property_subtype, built_area, condo_fee, iptu, status, sold_at, created_at, seller_type")
           .eq("seller_type", "imoveis")
           .in("status", ["ativo", "vendido"] as any)
           .or("is_owner_listing.is.null,is_owner_listing.eq.false")
@@ -159,7 +161,7 @@ export function useRealListings(segment?: "imoveis" | "automoveis") {
       // Fetch ALL profiles so the seller count reflects all registered users
       const { data: allProfiles } = await supabase
         .from("profiles")
-        .select("*");
+        .select("id, user_id, company_name, full_name, logo_url, address, city, state, phone, slug, seller_type, show_location, featured_item_id, store_layout, store_theme");
 
       const profileMap = new Map<string, any>();
       (allProfiles || []).forEach((p: any) => profileMap.set(p.id, p));
