@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Sparkles, TrendingUp, Calendar, Flame, Zap, BarChart3, Trophy, Activity } from "lucide-react";
+import { X, Sparkles, TrendingUp, Calendar, Flame, Zap, BarChart3, Trophy, Activity, PlusCircle, ShoppingCart, Gift } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 const TOOL_LABELS: Record<string, string> = {
@@ -107,7 +107,18 @@ export default function AiCreditsUsageModal({
 
     const avgDay = used7 / 7;
 
-    return { usedToday, used7, usedMonth, days, maxDay, topTools, avgDay };
+    // Recargas (positive amounts) — compras e plano mensal
+    const recharges = txs
+      .filter((t) => t.amount > 0)
+      .slice(0, 20);
+    const totalRecharged = txs
+      .filter((t) => t.amount > 0 && new Date(t.created_at) >= startMonth)
+      .reduce((acc, t) => acc + t.amount, 0);
+    const totalPurchased = txs
+      .filter((t) => t.amount > 0 && t.transaction_type !== "monthly_reset" && new Date(t.created_at) >= startMonth)
+      .reduce((acc, t) => acc + t.amount, 0);
+
+    return { usedToday, used7, usedMonth, days, maxDay, topTools, avgDay, recharges, totalRecharged, totalPurchased };
   }, [txs]);
 
   return (
@@ -282,7 +293,65 @@ export default function AiCreditsUsageModal({
                   </div>
                 )}
 
-                {/* Footer note */}
+                {/* Recargas e entradas */}
+                {stats.recharges.length > 0 && (
+                  <div className="rounded-2xl border border-border bg-card p-5">
+                    <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                          <PlusCircle className="w-4 h-4 text-primary" />
+                        </div>
+                        <div>
+                          <h3 className="font-display font-bold text-foreground">Recargas e entradas</h3>
+                          <p className="text-[11px] text-muted-foreground">Créditos adicionados à sua conta</p>
+                        </div>
+                      </div>
+                      <div className="flex gap-2 text-xs">
+                        <div className="rounded-lg bg-primary/10 border border-primary/20 px-2.5 py-1.5 text-center">
+                          <p className="text-[10px] uppercase font-bold text-muted-foreground">No mês</p>
+                          <p className="font-extrabold text-primary text-sm">+{stats.totalRecharged}</p>
+                        </div>
+                        <div className="rounded-lg bg-accent/10 border border-accent/20 px-2.5 py-1.5 text-center">
+                          <p className="text-[10px] uppercase font-bold text-muted-foreground">Comprados</p>
+                          <p className="font-extrabold text-foreground text-sm">+{stats.totalPurchased}</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
+                      {stats.recharges.map((tx, i) => {
+                        const isPlan = tx.transaction_type === "monthly_reset" || tx.tool_key === "monthly_plan_reset";
+                        const Icon = isPlan ? Gift : ShoppingCart;
+                        const date = new Date(tx.created_at);
+                        return (
+                          <motion.div
+                            key={tx.id}
+                            initial={{ opacity: 0, x: -8 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: i * 0.03 }}
+                            className="flex items-center justify-between gap-3 rounded-xl border border-border/60 bg-background/50 px-3 py-2.5"
+                          >
+                            <div className="flex items-center gap-3 min-w-0">
+                              <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${isPlan ? "bg-gradient-to-br from-primary to-accent" : "bg-gradient-to-br from-emerald-500 to-teal-500"}`}>
+                                <Icon className="w-4 h-4 text-white" />
+                              </div>
+                              <div className="min-w-0">
+                                <p className="text-sm font-bold text-foreground truncate">
+                                  {TOOL_LABELS[tx.tool_key] || (isPlan ? "Créditos do plano" : "Compra de créditos")}
+                                </p>
+                                <p className="text-[11px] text-muted-foreground">
+                                  {date.toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })} • {date.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
+                                </p>
+                              </div>
+                            </div>
+                            <span className="font-extrabold text-primary text-sm shrink-0">+{tx.amount}</span>
+                          </motion.div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+
                 <div className="flex items-center gap-2 text-xs text-muted-foreground bg-muted/40 rounded-xl p-3 border border-border">
                   <Activity className="w-4 h-4 text-primary flex-shrink-0" />
                   <span>
