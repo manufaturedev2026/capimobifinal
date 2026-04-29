@@ -759,7 +759,7 @@ export default function CompanyProfile() {
 
               {/* Action buttons */}
               <div className="flex gap-2 mt-4">
-                {(company as any).instagram && ["start", "vip", "premium", "essencial_empresa", "premium_empresa", "prime_empresa"].includes(sellerTier || "") && (
+                {(company as any).instagram && ["start", "prime", "premium", "essencial_empresa", "premium_empresa", "prime_empresa"].includes(sellerTier || "") && (
                   <a href={`https://instagram.com/${(company as any).instagram.replace(/^@/, "")}`} target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-gradient-to-r from-[#833AB4] via-[#E1306C] to-[#F77737] text-white text-xs font-bold active:scale-95 transition-transform">
                     <Instagram size={16} /> Instagram
                   </a>
@@ -915,7 +915,7 @@ export default function CompanyProfile() {
 
           {/* Big action buttons */}
           <div className="flex gap-2 w-full max-w-sm">
-            {(company as any).instagram && ["start", "vip", "premium", "essencial_empresa", "premium_empresa", "prime_empresa"].includes(sellerTier || "") && (
+            {(company as any).instagram && ["start", "prime", "premium", "essencial_empresa", "premium_empresa", "prime_empresa"].includes(sellerTier || "") && (
               <a href={`https://instagram.com/${(company as any).instagram.replace(/^@/, "")}`} target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl bg-gradient-to-r from-[#833AB4] via-[#E1306C] to-[#F77737] text-white font-bold text-sm shadow-lg active:scale-95 transition-transform">
                 <Instagram size={18} /> Instagram
               </a>
@@ -1159,7 +1159,7 @@ export default function CompanyProfile() {
                     <MessageCircle size={14} /> WhatsApp
                   </button>
                 )}
-                {(company as any).instagram && ["start", "vip", "premium", "essencial_empresa", "premium_empresa", "prime_empresa"].includes(sellerTier || "") && (
+                {(company as any).instagram && ["start", "prime", "premium", "essencial_empresa", "premium_empresa", "prime_empresa"].includes(sellerTier || "") && (
                   <a href={`https://instagram.com/${(company as any).instagram.replace(/^@/, "")}`} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#833AB4] via-[#E1306C] to-[#F77737] text-white font-bold text-sm hover:opacity-90 transition-opacity shadow-lg whitespace-nowrap flex-shrink-0">
                     <Instagram size={14} /> Instagram
                   </a>
@@ -1360,7 +1360,7 @@ export default function CompanyProfile() {
                         <MessageCircle size={14} /> Falar no WhatsApp
                       </button>
                     )}
-                    {(company as any).instagram && ["start", "vip", "premium", "essencial_empresa", "premium_empresa", "prime_empresa"].includes(sellerTier || "") && (
+                    {(company as any).instagram && ["start", "prime", "premium", "essencial_empresa", "premium_empresa", "prime_empresa"].includes(sellerTier || "") && (
                       <a
                         href={`https://instagram.com/${(company as any).instagram.replace(/^@/, "")}`}
                         target="_blank"
@@ -2096,7 +2096,7 @@ export default function CompanyProfile() {
                 </p>
                 <div className="flex gap-2 mt-3 flex-wrap lg:justify-center">
                 
-                  {(company as any).instagram && ["start", "vip", "premium", "essencial_empresa", "premium_empresa", "prime_empresa"].includes(sellerTier || "") && (
+                  {(company as any).instagram && ["start", "prime", "premium", "essencial_empresa", "premium_empresa", "prime_empresa"].includes(sellerTier || "") && (
                     <a
                       href={`https://instagram.com/${(company as any).instagram.replace(/^@/, "")}`}
                       target="_blank"

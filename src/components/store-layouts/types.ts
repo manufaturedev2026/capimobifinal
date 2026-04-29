@@ -41,11 +41,22 @@ export const LAYOUTS_BY_TIER: Record<string, string[]> = {
   basico: ["marketplace"],
   start: ["marketplace"],
   basico_empresa: ["marketplace"],
-  vip: ["marketplace", "netflix", "minimal"],
-  premium: ["marketplace", "netflix", "minimal", "magazine", "gallery", "elegant"],
+  premium: ["marketplace", "netflix", "minimal"],
+  prime: ["marketplace", "netflix", "minimal", "magazine", "gallery", "elegant"],
+  vip: ["marketplace", "netflix", "minimal", "magazine", "gallery", "elegant"],
   essencial_empresa: ["marketplace", "netflix", "minimal"],
   premium_empresa: ["marketplace", "netflix", "minimal", "magazine", "gallery", "elegant"],
   prime_empresa: ["marketplace", "netflix", "minimal", "magazine", "gallery", "elegant"],
+  imob_basico: ["marketplace"],
+  imob_start: ["marketplace", "netflix", "minimal"],
+  imob_pro: ["marketplace", "netflix", "minimal", "magazine", "gallery", "elegant"],
+  imob_elite: ["marketplace", "netflix", "minimal", "magazine", "gallery", "elegant"],
+  const_basico: ["marketplace"],
+  const_start: ["marketplace", "netflix", "minimal"],
+  const_pro: ["marketplace", "netflix", "minimal", "magazine", "gallery", "elegant"],
+  const_master: ["marketplace", "netflix", "minimal", "magazine", "gallery", "elegant"],
+  fundador_corretor: ["marketplace", "netflix", "minimal", "magazine", "gallery", "elegant"],
+  fundador_empresa: ["marketplace", "netflix", "minimal", "magazine", "gallery", "elegant"],
 };
 
 export function isLayoutAllowed(layoutId: string, tier: string | null | undefined): boolean {
@@ -55,7 +66,7 @@ export function isLayoutAllowed(layoutId: string, tier: string | null | undefine
 
 /** Returns the minimum tier required for a layout */
 export function getMinTierForLayout(layoutId: string): string {
-  if (["magazine", "gallery", "elegant"].includes(layoutId)) return "Premium";
-  if (["netflix", "minimal"].includes(layoutId)) return "VIP";
+  if (["magazine", "gallery", "elegant"].includes(layoutId)) return "Prime";
+  if (["netflix", "minimal"].includes(layoutId)) return "Premium";
   return "";
 }

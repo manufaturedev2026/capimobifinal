@@ -34,7 +34,7 @@ interface HeroBannerCarouselProps {
   accentColor?: string;
 }
 
-const PAID_TIERS = ["start", "premium", "vip", "essencial_empresa", "premium_empresa", "prime_empresa"];
+const PAID_TIERS = ["start", "premium", "prime", "essencial_empresa", "premium_empresa", "prime_empresa"];
 const INTERVAL = 6000;
 
 export default function HeroBannerCarousel({

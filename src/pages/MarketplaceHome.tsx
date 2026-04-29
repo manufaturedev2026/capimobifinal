@@ -1008,7 +1008,7 @@ export default function MarketplaceHome() {
         {realSellers.length > 0 && (() => {
           const TIER_PRIORITY: Record<string, number> = {
             prime_empresa: 1, premium_empresa: 2, essencial_empresa: 3,
-            vip: 4, premium: 5, start: 6, basico: 7,
+            prime: 4, vip: 4, premium: 5, start: 6, basico: 7,
           };
           const pool = filterCity
             ? realSellers.filter((s) => (s.city || "").toLowerCase() === filterCity.toLowerCase())

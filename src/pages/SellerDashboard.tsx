@@ -379,7 +379,18 @@ export default function SellerDashboard() {
   const isImobiliaria = profile?.seller_category === "imobiliaria" || profile?.seller_category === "construtora";
   const isEmpresaPlan = ["essencial_empresa", "premium_empresa", "prime_empresa"].includes(currentTier);
   const showTeamTab = isEmpresaPlan || isImobiliaria;
-  const maxTeamMembers = currentTier === "prime_empresa" ? 25 : currentTier === "premium_empresa" ? 15 : currentTier === "essencial_empresa" ? 8 : currentTier === "basico_empresa" ? 1 : isImobiliaria ? 1 : 0;
+  const maxTeamMembers =
+    currentTier === "prime_empresa" ? 25 :
+    currentTier === "premium_empresa" ? 15 :
+    currentTier === "essencial_empresa" ? 8 :
+    currentTier === "basico_empresa" ? 1 :
+    currentTier === "prime" ? 999 :
+    currentTier === "imob_elite" || currentTier === "const_master" ? 999 :
+    currentTier === "imob_pro" ? 15 :
+    currentTier === "imob_start" ? 5 :
+    currentTier === "const_pro" ? 30 :
+    currentTier === "const_start" ? 10 :
+    isImobiliaria ? 1 : 0;
   const lockedTabs: DashboardTab[] = isFreePlan ? ["domain"] : [];
 
   const tabNav = (id: DashboardTab, label: string, icon: any, options: { locked?: boolean; tourId?: string } = {}): SidebarNavItem => ({ type: "tab", id, label, icon, ...options });
@@ -641,7 +652,7 @@ export default function SellerDashboard() {
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 relative">
                     <div className="flex items-center gap-4">
                       <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${pkgConfig.color} flex items-center justify-center shadow-lg`}>
-                        {currentTier === "vip" ? <Crown size={22} className="text-white" /> : currentTier === "premium" ? <Star size={22} className="text-white" /> : <Zap size={22} className="text-white" />}
+                        {currentTier === "prime" ? <Crown size={22} className="text-white" /> : currentTier === "premium" ? <Star size={22} className="text-white" /> : <Zap size={22} className="text-white" />}
                       </div>
                       <div>
                         <div className="flex items-center gap-2">

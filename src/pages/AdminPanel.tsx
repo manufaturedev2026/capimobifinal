@@ -557,8 +557,8 @@ export default function AdminPanel() {
             {[
               { label: "Total", value: sellers.length, icon: Users, color: "text-primary" },
               { label: "Start", value: totalByTier["start"] || 0, icon: Rocket, color: "text-emerald-500" },
-              { label: "VIP", value: totalByTier["premium"] || 0, icon: Star, color: "text-amber-500" },
-              { label: "Premium", value: totalByTier["vip"] || 0, icon: Crown, color: "text-purple-500" },
+              { label: "Premium", value: totalByTier["premium"] || 0, icon: Star, color: "text-amber-500" },
+              { label: "Prime", value: (totalByTier["prime"] || 0) + (totalByTier["vip"] || 0), icon: Crown, color: "text-purple-500" },
               { label: "Empresa", value: (totalByTier["essencial_empresa"] || 0) + (totalByTier["premium_empresa"] || 0) + (totalByTier["prime_empresa"] || 0), icon: Building2, color: "text-rose-500" },
             ].map((s) => (
               <div key={s.label} className="bg-secondary rounded-xl p-2.5 text-center">
@@ -647,7 +647,7 @@ export default function AdminPanel() {
                 { key: "basico", label: "Básico" },
                 { key: "start", label: "Start" },
                 { key: "premium", label: "Premium" },
-                { key: "vip", label: "VIP" },
+                { key: "prime", label: "VIP" },
               ].map((f) => (
                 <button
                   key={f.key}
@@ -800,7 +800,7 @@ export default function AdminPanel() {
         )}
 
         {tab === "billing" && (() => {
-          const BILLING_ORDER = ["basico", "start", "premium", "vip", "essencial_empresa", "premium_empresa", "prime_empresa"] as const;
+          const BILLING_ORDER = ["basico", "start", "premium", "prime", "essencial_empresa", "premium_empresa", "prime_empresa"] as const;
           const BILLING_LABEL_OVERRIDES: Record<string, string> = { prime_empresa: "Black Empresa" };
           const orderedTiers = BILLING_ORDER.filter((t) => (PACKAGE_CONFIG as any)[t]);
           return (

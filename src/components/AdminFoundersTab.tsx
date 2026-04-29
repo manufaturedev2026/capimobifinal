@@ -14,7 +14,7 @@ import { Crown, Loader2, Plus, RefreshCw, Trash2, Power, Repeat, Sparkles } from
 type InheritedTier =
   | "start"
   | "premium"
-  | "vip"
+  | "prime"
   | "essencial_empresa"
   | "premium_empresa"
   | "prime_empresa";
@@ -46,7 +46,7 @@ const CAT_LABEL: Record<string, string> = {
 const TIER_OPTIONS: { value: InheritedTier; label: string; defaultCredits: number; category: "individual" | "enterprise" }[] = [
   { value: "start", label: "Start", defaultCredits: 250, category: "individual" },
   { value: "premium", label: "Premium", defaultCredits: 600, category: "individual" },
-  { value: "vip", label: "VIP", defaultCredits: 1000, category: "individual" },
+  { value: "prime", label: "VIP", defaultCredits: 1000, category: "individual" },
   { value: "essencial_empresa", label: "Essencial Empresa", defaultCredits: 2000, category: "enterprise" },
   { value: "premium_empresa", label: "Premium Empresa", defaultCredits: 2000, category: "enterprise" },
   { value: "prime_empresa", label: "Prime Empresa (Black)", defaultCredits: 3500, category: "enterprise" },
@@ -104,7 +104,7 @@ export default function AdminFoundersTab() {
     const newPrice = Number(lastPrice) + Number(settings.price_increment || 30);
     // Herda do último lote da categoria; se não houver, usa default sensato
     const defaultTier: InheritedTier = last?.inherited_tier
-      ?? (category === "individual" ? "vip" : "prime_empresa");
+      ?? (category === "individual" ? "prime" : "prime_empresa");
     const defaultCredits = last?.ia_credits
       ?? (category === "individual" ? 1000 : 3500);
     const { error } = await supabase.from("founder_lots").insert({
