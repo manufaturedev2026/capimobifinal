@@ -171,6 +171,36 @@ export type Database = {
           },
         ]
       }
+      ai_chat_sessions: {
+        Row: {
+          created_at: string
+          id: string
+          last_activity_at: string
+          seller_id: string | null
+          tool_key: string
+          user_id: string
+          visitor_key: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_activity_at?: string
+          seller_id?: string | null
+          tool_key: string
+          user_id: string
+          visitor_key: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_activity_at?: string
+          seller_id?: string | null
+          tool_key?: string
+          user_id?: string
+          visitor_key?: string
+        }
+        Relationships: []
+      }
       ai_credit_transactions: {
         Row: {
           amount: number
