@@ -2,12 +2,14 @@ import { Home, Search, Menu, X, LogIn, LayoutDashboard, Plus, Key, Package, Fold
 import { Link, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 import ThemeToggle from "@/components/ThemeToggle";
 
 export default function Header() {
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
   const { user } = useAuth();
+  const { site_name } = useSiteSettings();
 
   const navLinks = [
     { to: "/", label: "Início", icon: Home },
