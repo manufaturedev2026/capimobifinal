@@ -48,7 +48,7 @@ export default function AiCreditsCard({ userId, sellerId }: { userId?: string; s
         <div className="grid grid-cols-2 gap-2 md:min-w-[300px]">
           <div className="rounded-xl border border-border bg-background/60 p-3">
             <div className="mb-1 flex items-center gap-1.5 text-xs text-muted-foreground">
-              <Sparkles className="h-3.5 w-3.5 text-primary" /> Plano/mês
+              <Sparkles className="h-3.5 w-3.5 text-primary" /> Limite do plano
             </div>
             <p className="font-bold text-foreground">{monthlyPlanCredits} créditos</p>
           </div>
