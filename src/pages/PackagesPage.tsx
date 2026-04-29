@@ -519,7 +519,7 @@ export default function PackagesPage() {
         </div>
 
         {/* Campo de cupom (não se aplica ao Fundador) */}
-        <div className={`max-w-md mx-auto mb-8 ${billingPeriod === "founder" ? "hidden" : ""}`}>
+        <div className={`max-w-md mx-auto mb-8 ${billingPeriod !== "monthly" ? "hidden" : ""}`}>
           <AnimatePresence mode="wait">
             {appliedCoupon ? (
               <motion.div
