@@ -13,33 +13,76 @@ const DEFAULT_HTML = `<div style="font-family:system-ui,sans-serif;max-width:560
   <p style="margin-top:20px"><a href="https://capimobi.com.br/painel" style="background:#2563eb;color:#fff;padding:12px 20px;border-radius:8px;text-decoration:none">Acessar Painel</a></p>
 </div>`;
 
-const CONVITE_LEADS_HTML = `<div style="font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:620px;margin:auto;padding:0;background:#f1f5f9;color:#0f172a;">
-  <div style="background:linear-gradient(135deg,#16a34a,#22c55e);padding:34px 25px;border-radius:16px 16px 0 0;text-align:center;">
-    <h1 style="margin:0;font-size:30px;color:#ffffff;">🎉 Convite Especial Capimobi</h1>
-    <p style="margin:10px 0 0;color:#dcfce7;font-size:15px;">Acesso liberado para {{nome}}</p>
+const CONVITE_LEADS_HTML = `<div style="font-family:'Segoe UI',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;max-width:640px;margin:0 auto;padding:0;background:#0f172a;">
+  <div style="background:linear-gradient(135deg,#064e3b 0%,#16a34a 50%,#22c55e 100%);padding:0;border-radius:20px 20px 0 0;text-align:center;position:relative;overflow:hidden;">
+    <div style="padding:48px 28px 40px;position:relative;">
+      <div style="display:inline-block;background:rgba(255,255,255,0.18);backdrop-filter:blur(10px);padding:8px 18px;border-radius:999px;margin-bottom:18px;border:1px solid rgba(255,255,255,0.25);">
+        <span style="color:#ffffff;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;">✨ Convite Exclusivo</span>
+      </div>
+      <h1 style="margin:0 0 12px;font-size:34px;color:#ffffff;font-weight:800;letter-spacing:-0.5px;line-height:1.15;">Bem-vindo à Capimobi</h1>
+      <p style="margin:0;color:#dcfce7;font-size:16px;font-weight:500;">Acesso liberado para <strong style="color:#ffffff;">{{nome}}</strong></p>
+    </div>
   </div>
-  <div style="background:#ffffff;padding:35px 28px;border-radius:0 0 16px 16px;box-shadow:0 8px 24px rgba(0,0,0,0.06);">
-    <h2 style="margin-top:0;font-size:24px;color:#0f172a;">Olá {{nome}} 👋</h2>
-    <p style="font-size:16px;line-height:1.7;color:#334155;"><strong>{{nome}}</strong>, preparamos um convite exclusivo para você conhecer a <strong>Capimobi</strong> e testar gratuitamente nossas ferramentas profissionais.</p>
-    <p style="font-size:16px;line-height:1.7;color:#334155;">Seu cadastro está disponível para o e-mail: <strong>{{email}}</strong></p>
-    <p style="font-size:16px;line-height:1.7;color:#334155;">Ao criar sua conta, você poderá experimentar:</p>
-    <ul style="padding-left:18px;color:#334155;line-height:1.9;font-size:15px;">
-      <li>CRM completo para leads e clientes</li>
-      <li>Site imobiliário profissional</li>
-      <li>Captação automática de imóveis</li>
-      <li>IA para anúncios e textos</li>
-      <li>Ferramentas exclusivas de vendas</li>
-      <li>Painel moderno e fácil de usar</li>
-    </ul>
-    <div style="background:#ecfdf5;border:1px solid #bbf7d0;padding:18px;border-radius:12px;margin-top:22px;">
-      <p style="margin:0;font-size:15px;color:#166534;line-height:1.6;">✅ {{nome}}, seu acesso gratuito já está ativo.<br>Entre agora e teste tudo sem compromisso.</p>
+
+  <div style="background:#ffffff;padding:40px 32px 36px;">
+    <h2 style="margin:0 0 18px;font-size:26px;color:#0f172a;font-weight:700;letter-spacing:-0.3px;">Olá, {{nome}} 👋</h2>
+    <p style="font-size:16px;line-height:1.7;color:#475569;margin:0 0 14px;">
+      Preparamos um <strong style="color:#16a34a;">acesso gratuito exclusivo</strong> para você conhecer a Capimobi — a plataforma completa para corretores que querem vender mais e melhor.
+    </p>
+    <p style="font-size:14px;line-height:1.6;color:#64748b;margin:0 0 28px;background:#f1f5f9;padding:12px 16px;border-radius:10px;border-left:3px solid #16a34a;">
+      📧 Cadastro reservado para: <strong style="color:#0f172a;">{{email}}</strong>
+    </p>
+
+    <h3 style="margin:0 0 16px;font-size:14px;color:#0f172a;font-weight:700;text-transform:uppercase;letter-spacing:1px;">O que você vai ter:</h3>
+    <table cellpadding="0" cellspacing="0" border="0" style="width:100%;margin-bottom:28px;">
+      <tr>
+        <td style="padding:10px 0;vertical-align:top;width:38px;"><div style="width:32px;height:32px;background:#dcfce7;border-radius:8px;text-align:center;line-height:32px;font-size:16px;">📊</div></td>
+        <td style="padding:10px 0 10px 12px;font-size:15px;color:#334155;line-height:1.5;"><strong style="color:#0f172a;">CRM completo</strong> para gerenciar leads e clientes</td>
+      </tr>
+      <tr>
+        <td style="padding:10px 0;vertical-align:top;width:38px;"><div style="width:32px;height:32px;background:#dcfce7;border-radius:8px;text-align:center;line-height:32px;font-size:16px;">🌐</div></td>
+        <td style="padding:10px 0 10px 12px;font-size:15px;color:#334155;line-height:1.5;"><strong style="color:#0f172a;">Site imobiliário profissional</strong> personalizado</td>
+      </tr>
+      <tr>
+        <td style="padding:10px 0;vertical-align:top;width:38px;"><div style="width:32px;height:32px;background:#dcfce7;border-radius:8px;text-align:center;line-height:32px;font-size:16px;">🤖</div></td>
+        <td style="padding:10px 0 10px 12px;font-size:15px;color:#334155;line-height:1.5;"><strong style="color:#0f172a;">Captação automática</strong> de imóveis com IA</td>
+      </tr>
+      <tr>
+        <td style="padding:10px 0;vertical-align:top;width:38px;"><div style="width:32px;height:32px;background:#dcfce7;border-radius:8px;text-align:center;line-height:32px;font-size:16px;">✍️</div></td>
+        <td style="padding:10px 0 10px 12px;font-size:15px;color:#334155;line-height:1.5;"><strong style="color:#0f172a;">IA para anúncios</strong> e textos profissionais</td>
+      </tr>
+      <tr>
+        <td style="padding:10px 0;vertical-align:top;width:38px;"><div style="width:32px;height:32px;background:#dcfce7;border-radius:8px;text-align:center;line-height:32px;font-size:16px;">🚀</div></td>
+        <td style="padding:10px 0 10px 12px;font-size:15px;color:#334155;line-height:1.5;"><strong style="color:#0f172a;">Painel moderno</strong> e ferramentas exclusivas de vendas</td>
+      </tr>
+    </table>
+
+    <div style="background:linear-gradient(135deg,#ecfdf5 0%,#d1fae5 100%);border:1px solid #86efac;padding:20px;border-radius:14px;margin:0 0 32px;">
+      <p style="margin:0;font-size:15px;color:#065f46;line-height:1.6;font-weight:500;">
+        <span style="font-size:18px;">✅</span> <strong>{{nome}}</strong>, seu acesso gratuito já está ativo. Crie sua conta agora e comece a usar sem compromisso.
+      </p>
     </div>
-    <div style="text-align:center;margin-top:30px;">
-      <a href="https://capimobi.com.br" style="background:#16a34a;color:#ffffff;padding:15px 32px;text-decoration:none;border-radius:10px;font-weight:700;display:inline-block;font-size:16px;">Criar Conta e Testar Agora</a>
+
+    <div style="text-align:center;margin:0 0 12px;">
+      <a href="https://capimobi.com.br/anunciar" style="background:linear-gradient(135deg,#16a34a 0%,#15803d 100%);color:#ffffff;padding:18px 44px;text-decoration:none;border-radius:12px;font-weight:700;display:inline-block;font-size:16px;letter-spacing:0.3px;box-shadow:0 8px 20px rgba(22,163,74,0.35);">
+        Criar Minha Conta Grátis →
+      </a>
     </div>
-    <p style="margin-top:28px;font-size:14px;color:#64748b;line-height:1.6;">Convite enviado para <strong>{{nome}}</strong> • <strong>{{email}}</strong></p>
-    <hr style="border:none;border-top:1px solid #e2e8f0;margin:26px 0;">
-    <p style="font-size:13px;color:#94a3b8;text-align:center;margin:0;">© 2026 Capimobi • Tecnologia que impulsiona resultados</p>
+    <p style="text-align:center;margin:0 0 28px;font-size:13px;color:#94a3b8;">Sem cartão de crédito • Acesso imediato</p>
+
+    <div style="border-top:1px solid #e2e8f0;padding-top:20px;">
+      <p style="margin:0 0 6px;font-size:13px;color:#64748b;line-height:1.6;text-align:center;">
+        Convite enviado para <strong style="color:#334155;">{{nome}}</strong>
+      </p>
+      <p style="margin:0;font-size:12px;color:#94a3b8;line-height:1.6;text-align:center;">
+        {{email}}
+      </p>
+    </div>
+  </div>
+
+  <div style="background:#0f172a;padding:24px;border-radius:0 0 20px 20px;text-align:center;">
+    <p style="margin:0 0 6px;font-size:14px;color:#ffffff;font-weight:700;">Cap<span style="color:#22c55e;">i</span>mobi</p>
+    <p style="margin:0;font-size:12px;color:#64748b;">© 2026 Capimobi • Tecnologia que impulsiona resultados</p>
   </div>
 </div>`;
 
