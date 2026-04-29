@@ -231,7 +231,7 @@ export default function InvitePage() {
   };
 
   // ─── Flow Mode Logic ───
-  const resolve = useCallback((t: string) => t.replace(/\{\{nome\}\}/gi, userName || "você"), [userName]);
+  const resolve = useCallback((t: string) => t.replace(/\{\{nome\}\}/gi, userName || "você").replace(/\{\{site\}\}/gi, site_name), [userName, site_name]);
   const getStep = useCallback((id: string) => flow.find((s) => s.id === id), [flow]);
   const addBubble = useCallback((text: string, sender: "attendant" | "user") => {
     setBubbles((prev) => [...prev, { id: `${Date.now()}_${Math.random()}`, text, sender }]);
