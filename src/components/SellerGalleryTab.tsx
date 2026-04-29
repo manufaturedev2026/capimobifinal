@@ -586,11 +586,8 @@ async function generateMarketingImage(o: GenOpts): Promise<string> {
   }
 
   /* ── 9. Bottom area (footer + details + location + title) ── */
-  // Margem extra do bottom quando density="minimal" (sem footer/details/location)
-  // garante que o título não fique colado/cortado na borda inferior.
   const bottomBarOffset = t.bottomBarColor ? Math.round(10 * scale) : 0;
-  const minimalBottomBreath = o.density === "minimal" ? Math.round(28 * scale) : 0;
-  let y = height - pad - bottomBarOffset - minimalBottomBreath;
+  let y = height - pad - bottomBarOffset;
 
   // Footer (corretor)
   if (o.density !== "minimal") {
@@ -635,18 +632,14 @@ async function generateMarketingImage(o: GenOpts): Promise<string> {
   }
 
   // Título (negrito grande, com encaixe automático para não cortar)
+  // Tamanho idêntico em todos os modos (minimal/medium/complete/aggressive)
+  // para que o título fique sempre alinhado no mesmo ponto inferior esquerdo.
   const isMinimalTemplate = t.id === "minimalista_clean";
-  // No modo minimal o título é o ÚNICO texto — reduzimos o tamanho inicial
-  // para garantir que múltiplas linhas caibam confortavelmente.
-  const titleFontSize = o.density === "minimal"
-    ? Math.round((isStory ? 64 : isA4 ? 56 : 52) * scale)
-    : Math.round((isStory ? 76 : isA4 ? 64 : 60) * scale);
+  const titleFontSize = Math.round((isStory ? 76 : isA4 ? 64 : 60) * scale);
   ctx.fillStyle = t.textTop;
   const maxTitleWidth = width - pad * (isMinimalTemplate ? 2.35 : 2);
   const maxLines = isMinimalTemplate ? (isStory ? 3 : 2) : (isStory ? 4 : 3);
-  const minTitleSize = o.density === "minimal"
-    ? Math.round((isStory ? 40 : isA4 ? 36 : 32) * scale)
-    : Math.round((isStory ? 48 : isA4 ? 42 : 38) * scale);
+  const minTitleSize = Math.round((isStory ? 48 : isA4 ? 42 : 38) * scale);
   const fittedTitle = fitCanvasTextLines(
     ctx,
     (o.titleOverride && o.titleOverride.trim()) || o.item.title,
@@ -661,9 +654,8 @@ async function generateMarketingImage(o: GenOpts): Promise<string> {
   ctx.font = `${fontDef.weight} ${fittedTitle.size}px ${titleFont}`;
   ctx.textAlign = "left";
   ctx.textBaseline = "alphabetic";
-  // Desenha linha por linha de baixo para cima, usando alphabetic baseline para
-  // controle preciso. Reservamos uma "descender margin" para letras como g/p/ç
-  // não serem cortadas pela borda inferior do canvas.
+  // Margem de descender (g/p/ç/y) — evita que letras com perna sejam
+  // cortadas pela borda inferior do canvas.
   const descenderMargin = Math.round(fittedTitle.size * 0.22);
   let titleY = y - descenderMargin;
   for (let i = fittedTitle.lines.length - 1; i >= 0; i--) {
