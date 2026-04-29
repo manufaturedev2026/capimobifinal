@@ -150,7 +150,7 @@ export default function PackagesPage() {
           {opts.showPartners && (
             <div className="mt-3 px-3 py-2 bg-white/15 rounded-xl text-center">
               <span className="text-white font-bold text-sm">
-                {plan.tier === "essencial_empresa" ? "Até 5" : plan.tier === "premium_empresa" ? "Até 10" : "Até 30"} Parceiros Vinculados
+                {plan.tier === "basico_empresa" ? "Até 1" : plan.tier === "essencial_empresa" ? "Até 5" : plan.tier === "premium_empresa" ? "Até 10" : "Até 30"} Parceiros Vinculados
               </span>
             </div>
           )}
