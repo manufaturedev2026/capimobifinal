@@ -411,11 +411,32 @@ export default function AiValuationPage() {
           } : {}),
         },
       });
+      // Tenta extrair body JSON mesmo quando supabase-js lança FunctionsHttpError
+      let payload: any = data;
+      if (error) {
+        try {
+          const ctx: any = (error as any).context;
+          if (ctx && typeof ctx.json === "function") payload = await ctx.json();
+          else if (ctx && typeof ctx.text === "function") payload = JSON.parse(await ctx.text());
+        } catch { /* ignore */ }
+      }
+
+      // Créditos IA insuficientes — aviso amigável, sem crash
+      if (payload?.aiCredits && (payload?.error?.includes?.("Cr") || payload?.error?.includes?.("insufic"))) {
+        const { balance, required } = payload.aiCredits;
+        toast({
+          title: "Créditos IA insuficientes",
+          description: `Você tem ${balance} crédito(s) e esta avaliação custa ${required}. Compre mais créditos no painel para continuar.`,
+          variant: "destructive",
+        });
+        return;
+      }
       if (error) throw error;
       if ((data as any)?.error) throw new Error((data as any).error);
+      const dataResolved = payload as any;
 
       // Aplicar ajuste da análise visual (se houver)
-      let finalResult = data as Valuation;
+      let finalResult = dataResolved as Valuation;
       if (analiseVisual) {
         const ajustePct = analiseVisual.ajuste_total_pct;
         const fator = 1 + ajustePct / 100;
@@ -440,7 +461,7 @@ export default function AiValuationPage() {
       }
 
       setResult(finalResult);
-      setCurrentValuationId((data as any)?.id ?? null);
+      setCurrentValuationId(dataResolved?.id ?? null);
       setTimeout(() => document.getElementById("result-section")?.scrollIntoView({ behavior: "smooth" }), 100);
     } catch (e: any) {
       toast({ title: "Erro ao calcular", description: e.message, variant: "destructive" });
