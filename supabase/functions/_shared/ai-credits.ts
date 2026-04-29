@@ -145,7 +145,7 @@ export async function consumeAiCredits(
     .order("created_at", { ascending: false })
     .limit(1);
   const sellerId = (subRows?.[0]?.seller_id as string | undefined) || null;
-  const cost = AI_CREDIT_COSTS[toolKey];
+  const cost = (await getToolConfig(admin, toolKey)).cost;
 
   await admin.rpc("refresh_ai_monthly_credits", {
     p_user_id: userId,
