@@ -625,26 +625,29 @@ async function generateMarketingImage(o: GenOpts): Promise<string> {
     y -= lfs + Math.round(14 * scale);
   }
 
-  // Título (negrito grande)
+  // Título (negrito grande, com encaixe automático para não cortar)
+  const isMinimalTemplate = t.id === "minimalista_clean";
   const titleFontSize = Math.round((isStory ? 76 : isA4 ? 64 : 60) * scale);
-  ctx.font = `${fontDef.weight} ${titleFontSize}px ${titleFont}`;
   ctx.fillStyle = t.textTop;
-  const maxTitleWidth = width - pad * 2;
-  const words = o.item.title.split(" ");
-  const titleLines: string[] = [];
-  let line = "";
-  for (const w of words) {
-    const test = line ? `${line} ${w}` : w;
-    if (ctx.measureText(test).width > maxTitleWidth && line) {
-      titleLines.push(line); line = w;
-    } else line = test;
-  }
-  if (line) titleLines.push(line);
-  const maxLines = isStory ? 4 : 3;
-  const visible = titleLines.slice(0, maxLines);
-  for (let i = visible.length - 1; i >= 0; i--) {
-    ctx.fillText(visible[i], pad, y);
-    y -= titleFontSize + Math.round(6 * scale);
+  const maxTitleWidth = width - pad * (isMinimalTemplate ? 2.35 : 2);
+  const maxLines = isMinimalTemplate ? (isStory ? 3 : 2) : (isStory ? 4 : 3);
+  const minTitleSize = Math.round((isStory ? 48 : isA4 ? 42 : 38) * scale);
+  const fittedTitle = fitCanvasTextLines(
+    ctx,
+    o.item.title,
+    titleFont,
+    fontDef.weight,
+    titleFontSize,
+    minTitleSize,
+    maxTitleWidth,
+    maxLines,
+  );
+  const titleLineGap = Math.round((isMinimalTemplate ? 12 : 6) * scale);
+  ctx.font = `${fontDef.weight} ${fittedTitle.size}px ${titleFont}`;
+  ctx.textBaseline = "bottom";
+  for (let i = fittedTitle.lines.length - 1; i >= 0; i--) {
+    ctx.fillText(fittedTitle.lines[i], pad, y);
+    y -= fittedTitle.size + titleLineGap;
   }
 
   // Aggressive: CTA "FALE AGORA"
