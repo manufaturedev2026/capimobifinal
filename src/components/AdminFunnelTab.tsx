@@ -342,6 +342,21 @@ export default function AdminFunnelTab() {
     else { toast({ title: "E-mail reincluído no funil", description: clean }); load(); }
   };
 
+  const [clearingHistory, setClearingHistory] = useState(false);
+  const clearHistory = async () => {
+    const scope = historyFilter === "all" ? "TODO o histórico" : historyFilter === "enviado" ? "todos os ENVIADOS" : "todas as FALHAS";
+    if (!confirm(`Tem certeza que deseja apagar ${scope} (${filteredSends.length} registro(s))?\n\nEsta ação não pode ser desfeita.`)) return;
+    setClearingHistory(true);
+    let query = supabase.from("funnel_sends").delete();
+    if (historyFilter === "enviado") query = query.eq("status", "enviado");
+    else if (historyFilter === "falhou") query = query.neq("status", "enviado");
+    else query = query.not("id", "is", null);
+    const { error } = await query;
+    setClearingHistory(false);
+    if (error) toast({ title: "Erro", description: error.message, variant: "destructive" });
+    else { toast({ title: "Histórico limpo!", description: `${filteredSends.length} registro(s) removido(s)` }); load(); }
+  };
+
   const addManualExclusion = async () => {
     const emails = newExcludeEmail
       .split(/[\s,;]+/)
