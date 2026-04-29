@@ -6,7 +6,7 @@ import { useSiteSettings } from "@/hooks/useSiteSettings";
  * Reaproveita o estilo do splash inicial (logo + ring giratório).
  */
 export default function PanelSplash() {
-  const { site_splash_enabled, loaded } = useSiteSettings();
+  const { site_splash_enabled, loaded, site_name } = useSiteSettings();
   const [visible, setVisible] = useState(true);
   const [hiding, setHiding] = useState(false);
 
