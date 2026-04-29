@@ -305,9 +305,24 @@ export default function AdminBroadcastTab() {
         </div>
       ) : tab === "templates" ? (
         <div className="space-y-3">
+          {BUILTIN_TEMPLATES.map((tpl) => (
+            <div key={tpl.id} className="bg-card border-2 border-primary/30 rounded-xl p-4 flex items-center justify-between shadow-sm">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] uppercase font-bold tracking-wider bg-primary/10 text-primary px-2 py-0.5 rounded">Padrão</span>
+                  <div className="font-bold text-foreground">{tpl.name}</div>
+                </div>
+                <div className="text-sm text-muted-foreground truncate mt-1">{tpl.subject}</div>
+              </div>
+              <button onClick={() => loadTemplate(tpl)}
+                className="px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-sm hover:opacity-90">
+                Usar
+              </button>
+            </div>
+          ))}
           {templates.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground">
-              Nenhum template salvo. Vá em "Compor" e clique em "Salvar como template".
+            <div className="text-center py-8 text-muted-foreground text-sm">
+              Nenhum template personalizado salvo ainda. Vá em "Compor" e clique em "Salvar como template".
             </div>
           ) : templates.map((tpl) => (
             <div key={tpl.id} className="bg-card border border-border rounded-xl p-4 flex items-center justify-between shadow-sm">
