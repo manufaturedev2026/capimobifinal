@@ -28,6 +28,7 @@ const propertyCategories: { value: ItemCategory; label: string; emoji: string }[
 ];
 
 const MAX_TAGS = 1;
+const MAX_PHOTOS = 10;
 
 const categoryHeaderStyles: Record<string, string> = {
   valor: "text-amber-600",
@@ -253,9 +254,20 @@ export default function SellerItemForm() {
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files?.length || !user) return;
+    const remaining = MAX_PHOTOS - form.photos.length;
+    if (remaining <= 0) {
+      toast({ title: `Máximo de ${MAX_PHOTOS} fotos por imóvel`, description: "Remova alguma foto antes de adicionar outra.", variant: "destructive" });
+      e.target.value = "";
+      return;
+    }
+    const filesArray = Array.from(e.target.files);
+    if (filesArray.length > remaining) {
+      toast({ title: `Você só pode adicionar mais ${remaining} foto(s)`, description: `Limite de ${MAX_PHOTOS} fotos por imóvel.`, variant: "destructive" });
+    }
+    const filesToUpload = filesArray.slice(0, remaining);
     setUploading(true);
     const newPhotos = [...form.photos];
-    for (const file of Array.from(e.target.files)) {
+    for (const file of filesToUpload) {
       const ext = file.name.split(".").pop();
       const path = `${user.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
       const { error } = await supabase.storage.from("seller-uploads").upload(path, file);
@@ -266,6 +278,7 @@ export default function SellerItemForm() {
     }
     setForm((f) => ({ ...f, photos: newPhotos }));
     setUploading(false);
+    e.target.value = "";
   };
 
   const removePhoto = (index: number) => setForm((f) => ({ ...f, photos: f.photos.filter((_, i) => i !== index) }));
@@ -664,7 +677,12 @@ export default function SellerItemForm() {
 
         {/* Photos */}
         <div className="bg-card border border-border rounded-2xl p-5">
-          <h2 className="font-display font-bold text-foreground mb-3">Fotos</h2>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="font-display font-bold text-foreground">Fotos</h2>
+            <span className={`text-xs font-medium ${form.photos.length >= MAX_PHOTOS ? "text-destructive" : "text-muted-foreground"}`}>
+              {form.photos.length}/{MAX_PHOTOS}
+            </span>
+          </div>
           <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
             {form.photos.map((photo, i) => (
               <div key={i} className="relative aspect-square rounded-xl overflow-hidden border border-border">
@@ -672,13 +690,18 @@ export default function SellerItemForm() {
                 <button type="button" onClick={() => removePhoto(i)} className="absolute top-1 right-1 p-1 rounded-full bg-destructive text-white"><X size={12} /></button>
               </div>
             ))}
-            <label className="aspect-square rounded-xl border-2 border-dashed border-border flex flex-col items-center justify-center cursor-pointer hover:border-primary/50 transition-colors">
-              {uploading ? <div className="w-6 h-6 border-2 border-primary/30 border-t-primary rounded-full animate-spin" /> : (
-                <><Upload size={20} className="text-muted-foreground mb-1" /><span className="text-xs text-muted-foreground">Adicionar</span></>
-              )}
-              <input type="file" multiple accept="image/*" onChange={handlePhotoUpload} className="hidden" />
-            </label>
+            {form.photos.length < MAX_PHOTOS && (
+              <label className="aspect-square rounded-xl border-2 border-dashed border-border flex flex-col items-center justify-center cursor-pointer hover:border-primary/50 transition-colors">
+                {uploading ? <div className="w-6 h-6 border-2 border-primary/30 border-t-primary rounded-full animate-spin" /> : (
+                  <><Upload size={20} className="text-muted-foreground mb-1" /><span className="text-xs text-muted-foreground">Adicionar</span></>
+                )}
+                <input type="file" multiple accept="image/*" onChange={handlePhotoUpload} className="hidden" />
+              </label>
+            )}
           </div>
+          {form.photos.length >= MAX_PHOTOS && (
+            <p className="text-xs text-muted-foreground mt-3">Limite de {MAX_PHOTOS} fotos atingido. Remova alguma para adicionar outra.</p>
+          )}
         </div>
 
         {/* Video */}
