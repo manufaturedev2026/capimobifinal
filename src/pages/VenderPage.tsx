@@ -364,8 +364,12 @@ export default function VenderPage() {
   const navigate = useNavigate();
   const { user, signUp } = useAuth();
   const { plans: dbPlans, loading: loadingPlans } = useActivePlans();
-  const individualPlans = dbPlans.filter(p => p.category === "free" || p.category === "individual").sort((a, b) => a.sort_order - b.sort_order);
-  const enterprisePlans = dbPlans.filter(p => p.category === "enterprise").sort((a, b) => a.sort_order - b.sort_order);
+  const individualPlans = dbPlans
+    .filter(p => p.category === "free" || p.category === "individual" || p.category === "corretor")
+    .sort((a, b) => a.sort_order - b.sort_order);
+  const enterprisePlans = dbPlans
+    .filter(p => p.category === "enterprise" || p.category === "imobiliaria" || p.category === "construtora")
+    .sort((a, b) => a.sort_order - b.sort_order);
   const { site_name } = useSiteSettings();
   const { closed: registrationsClosed } = useRegistrationsClosed();
   const { toast } = useToast();

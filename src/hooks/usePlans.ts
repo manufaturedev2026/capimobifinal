@@ -13,7 +13,7 @@ export interface Plan {
   border_color: string;
   badge_color: string;
   benefits: string[];
-  category: "individual" | "enterprise" | "free";
+  category: "individual" | "enterprise" | "free" | "corretor" | "imobiliaria" | "construtora";
   is_active: boolean;
   is_popular: boolean;
   sort_order: number;
