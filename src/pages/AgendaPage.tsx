@@ -197,11 +197,11 @@ export default function AgendaPage() {
       <div className="container max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
         {/* Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 sm:gap-3">
-          <StatCard icon={<CalendarIcon className="w-5 h-5" />} label="Visitas Hoje" value={stats.hoje} color="bg-blue-500" />
-          <StatCard icon={<TrendingUp className="w-5 h-5" />} label="Semana" value={stats.semana} color="bg-emerald-500" />
-          <StatCard icon={<Flame className="w-5 h-5" />} label="Leads Quentes" value={stats.quentes} color="bg-orange-500" />
-          <StatCard icon={<HomeIcon className="w-5 h-5" />} label="Visitados" value={stats.visitados} color="bg-indigo-500" />
-          <StatCard icon={<DollarSign className="w-5 h-5" />} label="Fechamentos" value={stats.fechamentos} color="bg-purple-500" />
+          <StatCard icon={<CalendarIcon className="w-5 h-5" />} label="Visitas Hoje" value={stats.hoje} tone="primary" />
+          <StatCard icon={<TrendingUp className="w-5 h-5" />} label="Semana" value={stats.semana} tone="accent" />
+          <StatCard icon={<Flame className="w-5 h-5" />} label="Leads Quentes" value={stats.quentes} tone="primary-soft" />
+          <StatCard icon={<HomeIcon className="w-5 h-5" />} label="Visitados" value={stats.visitados} tone="accent-soft" />
+          <StatCard icon={<DollarSign className="w-5 h-5" />} label="Fechamentos" value={stats.fechamentos} tone="gradient" />
         </div>
 
         {/* Filters */}
