@@ -53,7 +53,7 @@ export default function AiCreditsCard({ userId, sellerId }: { userId?: string; s
             <p className="font-bold text-foreground">{monthlyPlanCredits} créditos</p>
           </div>
           <Button onClick={handleBuyCredits} className="h-full rounded-xl">
-            <CreditCard className="h-4 w-4" /> Comprar R$ {(creditPriceCents / 100).toFixed(2).replace(".", ",")}
+            <CreditCard className="h-4 w-4" /> Comprar Créditos
           </Button>
         </div>
       </div>
