@@ -549,6 +549,15 @@ export default function CompanyProfile() {
     return <Navigate to="/login" replace />;
   }
 
+  if (visitBlocked) {
+    return (
+      <StoreVisitLimitOverlay
+        sellerName={company.name}
+        sellerPhone={company.whatsapp}
+      />
+    );
+  }
+
   const displayProfile = teamMember
     ? {
         ...dbProfile,
