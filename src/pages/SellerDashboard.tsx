@@ -857,13 +857,6 @@ export default function SellerDashboard() {
                               className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg bg-primary/10 text-primary text-xs font-semibold hover:bg-primary/20 transition-all">
                               <Edit size={12} /> Editar
                             </Link>
-                            <Link
-                              to={`/avaliacao-ia?listing=${item.id}`}
-                              title="Importar este anúncio para o Avaliador IA"
-                              className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg bg-gradient-to-r from-violet-500/15 to-fuchsia-500/15 text-violet-700 dark:text-violet-300 text-xs font-semibold hover:from-violet-500/25 hover:to-fuchsia-500/25 transition-all"
-                            >
-                              <Sparkles size={12} /> Avaliar IA
-                            </Link>
                             <button onClick={() => duplicateItem(item)}
                               className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg bg-secondary text-secondary-foreground text-xs font-medium hover:bg-secondary/80 transition-all">
                               <Copy size={12} /> Duplicar
@@ -909,6 +902,13 @@ export default function SellerDashboard() {
                               <Trash2 size={14} />
                             </button>
                           </div>
+                          <Link
+                            to={`/avaliacao-ia?listing=${item.id}`}
+                            title="Importar este anúncio para o Avaliador IA"
+                            className="mt-2 w-full flex items-center justify-center gap-2 py-2.5 rounded-lg bg-gradient-to-r from-violet-500/15 via-fuchsia-500/15 to-violet-500/15 hover:from-violet-500/25 hover:via-fuchsia-500/25 hover:to-violet-500/25 text-violet-700 dark:text-violet-300 text-sm font-semibold border border-violet-500/30 shadow-sm transition-all"
+                          >
+                            <Sparkles size={16} /> Avaliar com IA
+                          </Link>
                         </div>
                       </motion.div>
                     ))}
