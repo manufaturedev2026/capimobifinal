@@ -23,14 +23,10 @@ const TOOL_LABELS: Record<string, string> = {
 export default function AiCreditsCard({ userId, sellerId }: { userId?: string; sellerId?: string }) {
   const { toast } = useToast();
   const [usageOpen, setUsageOpen] = useState(false);
-  const { balance, monthlyPlanCredits, transactions, loading, creditPriceCents } = useAiCredits(userId, sellerId);
+  const [buyOpen, setBuyOpen] = useState(false);
+  const { balance, monthlyPlanCredits, transactions, loading } = useAiCredits(userId, sellerId);
 
-  const handleBuyCredits = () => {
-    toast({
-      title: "Compra de créditos em preparação",
-      description: "O saldo já está pronto. Falta ativar o pagamento para vender créditos a R$ 0,25 cada.",
-    });
-  };
+  const handleBuyCredits = () => setBuyOpen(true);
 
   return (
     <Card className="relative overflow-hidden border-primary/20 bg-gradient-to-br from-primary/10 via-card to-accent/10 p-5">
