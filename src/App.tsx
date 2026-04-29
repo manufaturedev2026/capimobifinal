@@ -40,6 +40,7 @@ const NotFound = lazyPage(() => import("@/pages/NotFound"));
 const CapturePropertyPage = lazyPage(() => import("@/pages/CapturePropertyPage"));
 const CapturePropertyChatPage = lazyPage(() => import("@/pages/CapturePropertyChatPage"));
 const VenderPage = lazyPage(() => import("@/pages/VenderPage"));
+const FundadorPage = lazyPage(() => import("@/pages/FundadorPage"));
 const SearchPage = lazyPage(() => import("@/pages/SearchPage"));
 const SeoLandingPage = lazyPage(() => import("@/pages/SeoLandingPage"));
 const SeoBrokersPage = lazyPage(() => import("@/pages/SeoBrokersPage"));
@@ -173,6 +174,7 @@ const AppLayout = () => {
               <Route path="/convite" element={<InvitePage />} />
               <Route path="/convite/:botSlug" element={<InvitePage />} />
               <Route path="/anunciar" element={<VenderPage />} />
+              <Route path="/fundador" element={<FundadorPage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/entrar" element={<Navigate to="/login" replace />} />
               <Route path="/reset-password" element={<ResetPasswordPage />} />
