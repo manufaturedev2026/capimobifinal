@@ -79,10 +79,11 @@ export default function SellerProfile({ embedded }: { embedded?: boolean }) {
   const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files?.[0] || !user) return;
     setUploading(true);
-    const file = e.target.files[0];
+    const { compressAvatar } = await import("@/lib/imageCompression");
+    const file = await compressAvatar(e.target.files[0]);
     const ext = file.name.split(".").pop();
     const path = `${user.id}/logo.${ext}`;
-    const { error } = await supabase.storage.from("seller-uploads").upload(path, file, { upsert: true });
+    const { error } = await supabase.storage.from("seller-uploads").upload(path, file, { upsert: true, contentType: file.type });
     if (!error) {
       const { data } = supabase.storage.from("seller-uploads").getPublicUrl(path);
       setForm((f) => ({ ...f, logo_url: data.publicUrl }));

@@ -266,11 +266,13 @@ export default function SellerItemForm() {
     }
     const filesToUpload = filesArray.slice(0, remaining);
     setUploading(true);
+    const { compressImages } = await import("@/lib/imageCompression");
+    const compressed = await compressImages(filesToUpload);
     const newPhotos = [...form.photos];
-    for (const file of filesToUpload) {
+    for (const file of compressed) {
       const ext = file.name.split(".").pop();
       const path = `${user.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-      const { error } = await supabase.storage.from("seller-uploads").upload(path, file);
+      const { error } = await supabase.storage.from("seller-uploads").upload(path, file, { contentType: file.type });
       if (!error) {
         const { data: urlData } = supabase.storage.from("seller-uploads").getPublicUrl(path);
         newPhotos.push(urlData.publicUrl);
