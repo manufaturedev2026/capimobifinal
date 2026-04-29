@@ -10,6 +10,14 @@ import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import { Crown, Loader2, Plus, RefreshCw, Save, Trash2, Power, Repeat } from "lucide-react";
 
+type InheritedTier =
+  | "start"
+  | "premium"
+  | "vip"
+  | "essencial_empresa"
+  | "premium_empresa"
+  | "prime_empresa";
+
 type Lot = {
   id: string;
   category: "individual" | "enterprise";
@@ -18,6 +26,8 @@ type Lot = {
   total_slots: number;
   used_slots: number;
   is_active: boolean;
+  inherited_tier: InheritedTier;
+  ia_credits: number;
 };
 
 type Settings = {
@@ -31,6 +41,17 @@ const CAT_LABEL: Record<string, string> = {
   individual: "Corretor Fundador",
   enterprise: "Empresa Fundadora",
 };
+
+const TIER_OPTIONS: { value: InheritedTier; label: string; defaultCredits: number; category: "individual" | "enterprise" }[] = [
+  { value: "start", label: "Start", defaultCredits: 250, category: "individual" },
+  { value: "premium", label: "Premium", defaultCredits: 600, category: "individual" },
+  { value: "vip", label: "VIP", defaultCredits: 1000, category: "individual" },
+  { value: "essencial_empresa", label: "Essencial Empresa", defaultCredits: 2000, category: "enterprise" },
+  { value: "premium_empresa", label: "Premium Empresa", defaultCredits: 2000, category: "enterprise" },
+  { value: "prime_empresa", label: "Prime Empresa (Black)", defaultCredits: 3500, category: "enterprise" },
+];
+
+const TIER_LABEL: Record<string, string> = Object.fromEntries(TIER_OPTIONS.map(t => [t.value, t.label]));
 
 export default function AdminFoundersTab() {
   const [loading, setLoading] = useState(true);
