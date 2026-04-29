@@ -99,6 +99,11 @@ export default function AiValuationPage() {
   const { user, profile } = useAuth();
   const [searchParams] = useSearchParams();
 
+  // Modal de créditos IA insuficientes (mensagem didática, não tratar como erro)
+  const [creditsModal, setCreditsModal] = useState<{ open: boolean; balance: number; required: number }>({
+    open: false, balance: 0, required: 0,
+  });
+
   // Tema visual (segue o tema da loja do usuário ou o tema do marketplace)
   const [marketplaceThemeId, setMarketplaceThemeId] = useState(
     () => localStorage.getItem("marketplace_theme") || "azul"
@@ -424,11 +429,7 @@ export default function AiValuationPage() {
       // Créditos IA insuficientes — aviso amigável, sem crash
       if (payload?.aiCredits && (payload?.error?.includes?.("Cr") || payload?.error?.includes?.("insufic"))) {
         const { balance, required } = payload.aiCredits;
-        toast({
-          title: "Créditos IA insuficientes",
-          description: `Você tem ${balance} crédito(s) e esta avaliação custa ${required}. Compre mais créditos no painel para continuar.`,
-          variant: "destructive",
-        });
+        setCreditsModal({ open: true, balance: Number(balance) || 0, required: Number(required) || 0 });
         return;
       }
       if (error) throw error;
@@ -1353,6 +1354,57 @@ export default function AiValuationPage() {
               </Button>
             </div>
           ) : null}
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal didático de créditos IA insuficientes */}
+      <Dialog open={creditsModal.open} onOpenChange={(o) => setCreditsModal((s) => ({ ...s, open: o }))}>
+        <DialogContent className="max-w-md" style={themeVars}>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-primary" /> Você precisa de mais créditos IA
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Para gerar uma avaliação completa com inteligência artificial (busca de comparativos reais
+              no mercado, análise técnica e laudo profissional), são necessários <strong className="text-foreground">{creditsModal.required} créditos</strong> por avaliação.
+            </p>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="rounded-lg border border-border bg-background p-3 text-center">
+                <div className="text-xs text-muted-foreground">Seu saldo</div>
+                <div className="text-2xl font-bold text-foreground">{creditsModal.balance}</div>
+                <div className="text-[10px] text-muted-foreground">crédito(s)</div>
+              </div>
+              <div className="rounded-lg border border-primary/40 bg-primary/5 p-3 text-center">
+                <div className="text-xs text-primary">Necessário</div>
+                <div className="text-2xl font-bold text-primary">{creditsModal.required}</div>
+                <div className="text-[10px] text-muted-foreground">crédito(s)</div>
+              </div>
+            </div>
+
+            <div className="rounded-lg bg-muted/50 border border-border p-3 text-xs text-muted-foreground leading-relaxed">
+              💡 <strong className="text-foreground">Não é um erro</strong> — você apenas ainda não tem
+              créditos IA suficientes na sua conta. Compre um pacote no painel para continuar usando a
+              avaliação automática e outras ferramentas de IA da plataforma.
+            </div>
+
+            <div className="flex flex-col-reverse sm:flex-row gap-2">
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={() => setCreditsModal((s) => ({ ...s, open: false }))}
+              >
+                Agora não
+              </Button>
+              <Button asChild className="flex-1 bg-primary hover:bg-primary/90">
+                <Link to="/painel?tab=creditos" onClick={() => setCreditsModal((s) => ({ ...s, open: false }))}>
+                  <Sparkles className="h-4 w-4 mr-2" /> Comprar créditos
+                </Link>
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
