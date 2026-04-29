@@ -7,8 +7,9 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Crown, Loader2, Plus, RefreshCw, Save, Trash2, Power, Repeat } from "lucide-react";
+import { Crown, Loader2, Plus, RefreshCw, Trash2, Power, Repeat, Sparkles } from "lucide-react";
 
 type InheritedTier =
   | "start"
