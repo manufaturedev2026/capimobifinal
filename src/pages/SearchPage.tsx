@@ -6,12 +6,13 @@ import { formatPrice } from "@/data/products";
 import PackageBadge from "@/components/PackageBadge";
 
 const TIER_WEIGHT: Record<string, number> = {
-  prime_empresa: 200,
-  premium_empresa: 140,
-  essencial_empresa: 100,
+  prime_empresa: 70,
   vip: 70,
+  premium_empresa: 40,
   premium: 40,
+  essencial_empresa: 20,
   start: 20,
+  basico_empresa: 10,
   basico: 10,
 };
 
