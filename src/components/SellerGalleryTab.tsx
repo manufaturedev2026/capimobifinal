@@ -276,6 +276,66 @@ function drawRoundedRect(ctx: CanvasRenderingContext2D, x: number, y: number, w:
   ctx.closePath();
 }
 
+function wrapCanvasText(ctx: CanvasRenderingContext2D, text: string, maxWidth: number, maxLines: number): string[] {
+  const words = text.trim().split(/\s+/).filter(Boolean);
+  const lines: string[] = [];
+  let line = "";
+
+  const pushLongWord = (word: string) => {
+    let chunk = "";
+    for (const char of word) {
+      const test = chunk + char;
+      if (ctx.measureText(test).width > maxWidth && chunk) {
+        lines.push(chunk);
+        chunk = char;
+      } else {
+        chunk = test;
+      }
+      if (lines.length >= maxLines) break;
+    }
+    return chunk;
+  };
+
+  for (const word of words) {
+    if (lines.length >= maxLines) break;
+    const test = line ? `${line} ${word}` : word;
+    if (ctx.measureText(test).width <= maxWidth) {
+      line = test;
+      continue;
+    }
+    if (line) lines.push(line);
+    line = ctx.measureText(word).width > maxWidth ? pushLongWord(word) : word;
+  }
+  if (line && lines.length < maxLines) lines.push(line);
+
+  if (lines.length === maxLines) {
+    let last = lines[maxLines - 1];
+    while (last.length > 1 && ctx.measureText(`${last}…`).width > maxWidth) last = last.slice(0, -1);
+    lines[maxLines - 1] = `${last}…`;
+  }
+
+  return lines;
+}
+
+function fitCanvasTextLines(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  fontFamily: string,
+  weight: number,
+  startSize: number,
+  minSize: number,
+  maxWidth: number,
+  maxLines: number,
+) {
+  for (let size = startSize; size >= minSize; size -= 2) {
+    ctx.font = `${weight} ${size}px ${fontFamily}`;
+    const lines = wrapCanvasText(ctx, text, maxWidth, maxLines);
+    if (lines.every((l) => ctx.measureText(l).width <= maxWidth)) return { size, lines };
+  }
+  ctx.font = `${weight} ${minSize}px ${fontFamily}`;
+  return { size: minSize, lines: wrapCanvasText(ctx, text, maxWidth, maxLines) };
+}
+
 function autoBadge(item: GalleryItem): Exclude<BadgeKind, "auto"> {
   const isRent = item.finality === "aluguel" || item.category === "aluguel";
   if (isRent) return "aluguel";
