@@ -47,6 +47,10 @@ export default function AuthPage() {
     if (user && profile) navigate(getStoreRoute(profile), { replace: true });
   }, [user, profile, navigate]);
 
+  useEffect(() => {
+    if (registrationsClosed && !isLogin) setIsLogin(true);
+  }, [registrationsClosed, isLogin]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
