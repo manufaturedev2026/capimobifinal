@@ -702,13 +702,20 @@ export default function AdminFunnelTab() {
         </div>
       ) : (
         <div className="space-y-3">
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap items-center">
             {(["all", "enviado", "falhou"] as const).map(f => (
               <button key={f} onClick={() => setHistoryFilter(f)}
                 className={`px-3 py-1.5 rounded-lg text-sm ${historyFilter === f ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
                 {f === "all" ? "Todos" : f === "enviado" ? "Enviados" : "Falhas"}
               </button>
             ))}
+            <button
+              onClick={clearHistory}
+              disabled={clearingHistory || filteredSends.length === 0}
+              className="ml-auto px-3 py-1.5 rounded-lg text-sm bg-destructive/10 text-destructive hover:bg-destructive/20 flex items-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed">
+              {clearingHistory ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+              Limpar histórico ({filteredSends.length})
+            </button>
           </div>
           <div className="bg-card text-card-foreground border border-border rounded-xl overflow-hidden shadow-sm overflow-x-auto">
             <table className="w-full text-sm">
