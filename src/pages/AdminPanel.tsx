@@ -508,7 +508,7 @@ export default function AdminPanel() {
     { key: "billing" as const, label: "Faturamento", icon: DollarSign },
     { key: "plans" as const, label: "Planos", icon: Package },
     { key: "coupons" as const, label: "Cupons & Anual", icon: Ticket },
-    { key: "founders" as const, label: "Fundadores", icon: Crown },
+    
     { key: "crm" as const, label: "CRM WhatsApp", icon: MessageCircle },
     { key: "ads" as const, label: "CRM de ADS", icon: Megaphone },
     { key: "push" as const, label: "Push Broadcast", icon: Bell },
@@ -1551,12 +1551,8 @@ export default function AdminPanel() {
         </div>
       )}
 
-      {/* Founders Tab */}
-      {tab === "founders" && (
-        <div className="px-4 lg:px-8 py-6">
-          <AdminFoundersTab />
-        </div>
-      )}
+
+
 
         </main>
       </div>
