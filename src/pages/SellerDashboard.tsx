@@ -505,10 +505,6 @@ export default function SellerDashboard() {
                   style={{ width: `${Math.min(100, Math.max(6, (aiCredits.balance / Math.max(aiCredits.monthlyPlanCredits || 10, aiCredits.balance || 1)) * 100))}%` }}
                 />
               </div>
-              <div className="mt-2 flex items-center justify-between text-[10px] text-muted-foreground">
-                <span>Limite do plano</span>
-                <span className="font-bold text-foreground">{aiCredits.monthlyPlanCredits} créditos</span>
-              </div>
             </div>
           </div>
 
