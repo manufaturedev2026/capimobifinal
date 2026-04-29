@@ -564,7 +564,7 @@ export default function PackagesPage() {
           const slotsLeft = activeFounderLot.total_slots - activeFounderLot.used_slots;
           const pct = (activeFounderLot.used_slots / activeFounderLot.total_slots) * 100;
           const credits = aiMonthlyCredits[founderTier];
-          const isCurrent = currentTier === founderTier;
+          const isCurrent = String(currentTier) === founderTier;
           return (
             <motion.div
               initial={{ opacity: 0, y: 30 }}
