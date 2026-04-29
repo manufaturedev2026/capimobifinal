@@ -75,6 +75,8 @@ async function loadImg(url: string): Promise<string | null> {
 
 function rr(pdf: jsPDF, x: number, y: number, w: number, h: number, r: number, style: "F" | "S" | "FD") {
   pdf.roundedRect(x, y, w, h, r, r, style);
+}
+
 async function loadStaticMap(location: string): Promise<string | null> {
   // 1) Geocode via Nominatim (OpenStreetMap) — no API key required
   try {
