@@ -7,6 +7,7 @@ import {
   Pencil, Plus, Trash2, X, Check, GripVertical, Eye, EyeOff, Star, Save,
   Calendar, CalendarDays, Crown, Info,
 } from "lucide-react";
+import AdminFoundersTab from "@/components/AdminFoundersTab";
 
 const CATEGORY_OPTIONS = [
   { value: "free", label: "Grátis" },
