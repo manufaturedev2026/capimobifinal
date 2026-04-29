@@ -94,13 +94,13 @@ export default function BlogPage() {
   return (
     <div className="min-h-screen bg-background">
       <Helmet>
-        <title>Blog | Capimobi - Dicas e Notícias do Mercado Imobiliário</title>
+        <title>Blog | {site_name} - Dicas e Notícias do Mercado Imobiliário</title>
         <meta
           name="description"
           content="Blog sobre mercado imobiliário no Brasil. Dicas de compra, investimento, decoração e tendências."
         />
         <link rel="canonical" href={`${SITE_URL}/blog`} />
-        <meta property="og:title" content="Blog | Capimobi" />
+        <meta property="og:title" content={`Blog | ${site_name}`} />
         <meta property="og:description" content="Blog sobre mercado imobiliário no Brasil. Dicas de compra, investimento, decoração e tendências." />
         <meta property="og:url" content={`${SITE_URL}/blog`} />
       </Helmet>
