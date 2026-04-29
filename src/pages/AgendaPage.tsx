@@ -169,7 +169,7 @@ export default function AgendaPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background" style={dashThemeVars}>
       <Helmet>
         <title>Agenda de Visitas — {site_name}</title>
         <meta name="description" content="Organize visitas a imóveis, leads e compromissos imobiliários em um só lugar." />
