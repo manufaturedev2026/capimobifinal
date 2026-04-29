@@ -3,6 +3,7 @@ import { Helmet } from "react-helmet-async";
 import { ArrowLeft, Clock, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import { SITE_URL } from "@/lib/siteUrl";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 const blogContent: Record<string, { title: string; category: string; readTime: string; date: string; cover: string; body: string }> = {
   "como-comprar-primeiro-imovel": {
