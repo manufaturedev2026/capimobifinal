@@ -109,6 +109,10 @@ export default function LoginPage() {
     }
   }, [user, profile, navigate, isNewSignup]);
 
+  useEffect(() => {
+    if (registrationsClosed && !isLogin) setIsLogin(true);
+  }, [registrationsClosed, isLogin]);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
