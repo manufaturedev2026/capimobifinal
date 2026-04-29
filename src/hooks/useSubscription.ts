@@ -5,7 +5,7 @@ export interface Subscription {
   id: string;
   user_id: string;
   seller_id: string;
-  tier: "start" | "basico" | "premium" | "vip" | "basico_empresa" | "essencial_empresa" | "premium_empresa" | "prime_empresa";
+  tier: "start" | "basico" | "premium" | "vip" | "basico_empresa" | "essencial_empresa" | "premium_empresa" | "prime_empresa" | "fundador_corretor" | "fundador_empresa";
   max_items: number;
   started_at: string;
   expires_at: string;
@@ -288,6 +288,36 @@ export const PACKAGE_CONFIG = {
       "Suporte 24/7 prioritário",
     ],
   },
+  fundador_corretor: {
+    name: "Fundador",
+    price: 97,
+    setupFee: 0,
+    maxItems: 115,
+    color: "from-amber-500 to-orange-600",
+    borderColor: "border-amber-400",
+    badgeColor: "bg-gradient-to-r from-amber-500 to-orange-500 text-white",
+    benefits: [
+      "Plano Fundador vitalício",
+      "Equivalente ao VIP/Premium",
+      "500 créditos IA bônus (única vez)",
+      "Acesso por 1 ano",
+    ],
+  },
+  fundador_empresa: {
+    name: "Fundador Empresa",
+    price: 97,
+    setupFee: 0,
+    maxItems: 9999,
+    color: "from-amber-600 to-yellow-700",
+    borderColor: "border-amber-500",
+    badgeColor: "bg-gradient-to-r from-amber-600 to-yellow-700 text-white",
+    benefits: [
+      "Plano Fundador Empresa vitalício",
+      "Equivalente ao Black Empresa",
+      "1750 créditos IA bônus (única vez)",
+      "Acesso por 1 ano",
+    ],
+  },
 } as const;
 
 export function useSubscription(userId?: string) {
@@ -350,7 +380,7 @@ export function useSubscription(userId?: string) {
   const isExpiringSoon = daysUntilExpiry !== null && daysUntilExpiry > 0 && daysUntilExpiry <= 7;
 
   const currentTier = subscription?.tier || "basico";
-  const config = PACKAGE_CONFIG[currentTier];
+  const config = PACKAGE_CONFIG[currentTier as keyof typeof PACKAGE_CONFIG] || PACKAGE_CONFIG.basico;
 
   return {
     subscription,
