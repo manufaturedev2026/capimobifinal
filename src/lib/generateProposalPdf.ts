@@ -234,16 +234,6 @@ export async function generateProposalPdf(data: ProposalData) {
 // ═══════════════════════════════════════════════════════════════════════
 // PAGE 1 — COVER (Buyer-focused)
 // ═══════════════════════════════════════════════════════════════════════
-function drawCover(pdf: jsPDF, data: ProposalData) {
-  const heroH = 175;
-
-  // We need the hero image — load synchronously is impossible, so we receive via closure.
-  // Re-render: actually we should pass it in. Refactor: accept inline image only via base64 already loaded above.
-  // We'll redraw using data.image_base64 via a separate call. For simplicity, embed via async wrapper... 
-  // (Simpler: load again here but generateProposalPdf already pre-loaded it. We pass via mutation.)
-}
-
-// helper rewrite to accept hero
 function drawCoverImpl(pdf: jsPDF, data: ProposalData, heroImg: string | null) {
   const heroH = 185;
   if (heroImg) {
