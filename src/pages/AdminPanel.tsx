@@ -75,6 +75,8 @@ export default function AdminPanel() {
   const [salesVideoUrl, setSalesVideoUrl] = useState<string>("");
   const [salesVideoTitle, setSalesVideoTitle] = useState<string>("");
   const [savingSalesVideo, setSavingSalesVideo] = useState(false);
+  const [registrationsClosed, setRegistrationsClosed] = useState<boolean>(false);
+  const [savingRegClosed, setSavingRegClosed] = useState(false);
   const [loginHeroUploading, setLoginHeroUploading] = useState(false);
   const loginHeroRef = useRef<HTMLInputElement>(null);
   const [adRequests, setAdRequests] = useState<any[]>([]);
