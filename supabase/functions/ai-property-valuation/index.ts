@@ -703,6 +703,9 @@ function calcular(p: Payload, precoM2: number, market: MarketContext) {
   if (p.proximoComercio) aplica("Próximo a comércio", LOC_W.proximoComercio, "localizacao");
   if (p.proximoEscola) aplica("Próximo a escola", LOC_W.proximoEscola, "localizacao");
   if (p.proximoHospital) aplica("Próximo a hospital", LOC_W.proximoHospital, "localizacao");
+  if (p.proximoTransporte) aplica("Próximo a transporte público", LOC_W.proximoTransporte, "localizacao");
+  if (p.proximoParque) aplica("Próximo a praças / parques", LOC_W.proximoParque, "localizacao");
+  if (p.proximoBancos) aplica("Próximo a bancos / serviços", LOC_W.proximoBancos, "localizacao");
   if (p.vistaPrivilegiada) aplica("Vista privilegiada", LOC_W.vistaPrivilegiada, "localizacao");
   if (p.areaRisco) aplica("Área de risco/alagamento", LOC_W.areaRisco, "localizacao");
 
