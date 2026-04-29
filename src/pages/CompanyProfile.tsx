@@ -109,12 +109,30 @@ export default function CompanyProfile() {
   const [storyUploadOpen, setStoryUploadOpen] = useState(false);
   const [pendingWhatsAppAction, setPendingWhatsAppAction] = useState<(() => void) | null>(null);
   const [leadCaptureContext, setLeadCaptureContext] = useState<{ funnelStage?: string; extraNotes?: string; leadSource?: string } | null>(null);
+  const [visitBlocked, setVisitBlocked] = useState(false);
 
   const searchParams = new URLSearchParams(location.search);
   const corretorSlug = searchParams.get("corretor");
 
   const resolvedProfileId = isDbProfile ? dbProfile?.id : undefined;
   const sellerTier = useSellerSubscription(resolvedProfileId);
+
+  // Bloqueio por excesso de visitas (>120% do limite mensal)
+  useEffect(() => {
+    if (!resolvedProfileId) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data } = await (supabase as any).rpc("is_seller_visit_blocked", {
+          p_seller_id: resolvedProfileId,
+        });
+        if (!cancelled) setVisitBlocked(Boolean(data));
+      } catch {
+        // fail-open: nunca bloqueia em caso de erro
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [resolvedProfileId]);
 
   useEffect(() => {
     if (!id) {
