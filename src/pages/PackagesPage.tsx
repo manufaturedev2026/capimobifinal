@@ -181,12 +181,8 @@ export default function PackagesPage() {
         toast({ title: "Cupom esgotado", description: "Esse cupom já atingiu o limite de usos.", variant: "destructive" });
         return;
       }
-      if (data.applies_to === "monthly" && billingPeriod === "annual") {
-        toast({ title: "Cupom não aplicável", description: "Esse cupom só vale para planos mensais. Mude para a aba Mensal.", variant: "destructive" });
-        return;
-      }
-      if (data.applies_to === "annual" && billingPeriod === "monthly") {
-        toast({ title: "Cupom não aplicável", description: "Esse cupom só vale para planos anuais. Mude para a aba Anual.", variant: "destructive" });
+      if (data.applies_to === "annual") {
+        toast({ title: "Cupom não aplicável", description: "Esse cupom é para planos anuais e cupons foram desabilitados nesse período.", variant: "destructive" });
         return;
       }
 
