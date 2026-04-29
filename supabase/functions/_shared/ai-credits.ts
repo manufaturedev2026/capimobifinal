@@ -54,10 +54,11 @@ async function shouldChargeForSession(
   toolKey: string,
   visitorKey: string | null,
 ): Promise<boolean> {
-  if (!SESSION_BASED_TOOLS.has(toolKey)) return true;
+  const cfg = await getToolConfig(admin, toolKey);
+  if (!cfg.is_session_based) return true;
   if (!visitorKey) return true;
 
-  const cutoff = new Date(Date.now() - SESSION_WINDOW_MINUTES * 60 * 1000).toISOString();
+  const cutoff = new Date(Date.now() - cfg.session_window_minutes * 60 * 1000).toISOString();
 
   const { data: existing } = await (admin as any)
     .from("ai_chat_sessions")
