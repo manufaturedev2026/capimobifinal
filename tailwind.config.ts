@@ -9,6 +9,16 @@ export default {
     "./src/**/*.{ts,tsx}",
   ],
   prefix: "",
+  safelist: [
+    // Plan card gradients loaded dynamically from DB (subscription_plans.color)
+    "from-slate-500", "to-slate-700", "to-zinc-700", "to-blue-700",
+    "from-cyan-500", "from-emerald-500", "to-teal-700",
+    "from-violet-500", "to-indigo-700",
+    "from-fuchsia-500", "to-purple-700",
+    "from-amber-500", "to-orange-600", "to-amber-700",
+    "from-yellow-500",
+    "from-zinc-800", "to-zinc-950",
+  ],
   theme: {
     container: {
       center: true,
