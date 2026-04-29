@@ -198,12 +198,13 @@ Deno.serve(async (req) => {
       const TIER_DAILY_LIMITS: Record<string, number> = {
         basico: 1,
         start: 1,
-        premium: 2,           // VIP
-        vip: 3,               // Premium
+        premium: 2,           // Display: VIP
+        vip: 3,               // Display: Premium
+        basico_empresa: 1,    // Básico Empresa
         essencial_empresa: 4, // Exclusive
         premium_empresa: 5,   // Prime
         prime_empresa: 6,     // Black
-        black: 6,             // Black
+        black: 6,             // Black (alias)
       };
       const dailyLimit = TIER_DAILY_LIMITS[tier] ?? 1;
 
