@@ -7,6 +7,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { SITE_URL } from "@/lib/siteUrl";
 import { DEFAULT_CONFIG, DEFAULT_FLOWS, type FlowStep, type BotStep, type InputStep, type ChoiceStep, type InviteChatConfig } from "@/data/inviteFlow";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 const resolveInviteConfig = (parsed: any, botSlug?: string): InviteChatConfig => {
   const base = { ...DEFAULT_CONFIG };
