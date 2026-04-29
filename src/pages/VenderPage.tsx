@@ -215,6 +215,58 @@ const AI_CREDITS_BY_TIER: Record<string, number> = {
 const getAiCredits = (tier: string) => AI_CREDITS_BY_TIER[tier] ?? 25;
 const formatCredits = (n: number) => n.toLocaleString("pt-BR");
 
+// Bots de IA inclusos por tier (ordem de desbloqueio progressivo)
+const AI_BOTS_BY_TIER: Record<string, { emoji: string; name: string }[]> = {
+  basico: [
+    { emoji: "💰", name: "Avaliador IA" },
+  ],
+  basico_empresa: [
+    { emoji: "💰", name: "Avaliador IA" },
+  ],
+  start: [
+    { emoji: "💰", name: "Avaliador IA" },
+    { emoji: "✍️", name: "Copywriter IA" },
+    { emoji: "📸", name: "Analisador de Fotos IA" },
+  ],
+  premium: [
+    { emoji: "💰", name: "Avaliador IA" },
+    { emoji: "✍️", name: "Copywriter IA" },
+    { emoji: "📸", name: "Analisador de Fotos IA" },
+    { emoji: "🤖", name: "Bot de Captação de Leads" },
+  ],
+  vip: [
+    { emoji: "💰", name: "Avaliador IA" },
+    { emoji: "✍️", name: "Copywriter IA" },
+    { emoji: "📸", name: "Analisador de Fotos IA" },
+    { emoji: "🤖", name: "Bot de Captação de Leads" },
+    { emoji: "📅", name: "Agenda Bot IA" },
+  ],
+  essencial_empresa: [
+    { emoji: "💰", name: "Avaliador IA" },
+    { emoji: "✍️", name: "Copywriter IA" },
+    { emoji: "📸", name: "Analisador de Fotos IA" },
+    { emoji: "🤖", name: "Bot de Captação de Leads" },
+    { emoji: "📅", name: "Agenda Bot IA" },
+  ],
+  premium_empresa: [
+    { emoji: "💰", name: "Avaliador IA" },
+    { emoji: "✍️", name: "Copywriter IA" },
+    { emoji: "📸", name: "Analisador de Fotos IA" },
+    { emoji: "🤖", name: "Bot de Captação de Leads" },
+    { emoji: "📅", name: "Agenda Bot IA" },
+    { emoji: "🎓", name: "Suporte IA da Plataforma" },
+  ],
+  prime_empresa: [
+    { emoji: "💰", name: "Avaliador IA" },
+    { emoji: "✍️", name: "Copywriter IA" },
+    { emoji: "📸", name: "Analisador de Fotos IA" },
+    { emoji: "🤖", name: "Bot de Captação de Leads" },
+    { emoji: "📅", name: "Agenda Bot IA" },
+    { emoji: "🎓", name: "Suporte IA da Plataforma" },
+  ],
+};
+const getAiBots = (tier: string) => AI_BOTS_BY_TIER[tier] ?? AI_BOTS_BY_TIER.basico;
+
 export default function VenderPage() {
   const navigate = useNavigate();
   const { user, signUp } = useAuth();
