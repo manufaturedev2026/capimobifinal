@@ -25,9 +25,25 @@ const DEFAULTS: SiteSettings = {
   site_splash_bg_color: "#FFFFFF",
 };
 
+const STORAGE_KEY = "site_settings_cache_v1";
+const TTL_MS = 10 * 60 * 1000;
+
 let cachedSettings: SiteSettings | null = null;
 let fetchPromise: Promise<SiteSettings> | null = null;
 const listeners = new Set<(s: SiteSettings) => void>();
+
+// Hydrate from sessionStorage on module load
+try {
+  const raw = sessionStorage.getItem(STORAGE_KEY);
+  if (raw) {
+    const parsed = JSON.parse(raw);
+    if (parsed?.expiresAt && Date.now() < parsed.expiresAt && parsed.value) {
+      cachedSettings = parsed.value as SiteSettings;
+    }
+  }
+} catch {
+  // ignore
+}
 
 function fetchSettings(force = false): Promise<SiteSettings> {
   if (!force && cachedSettings) return Promise.resolve(cachedSettings);
@@ -43,6 +59,14 @@ function fetchSettings(force = false): Promise<SiteSettings> {
     });
     cachedSettings = s;
     fetchPromise = null;
+    try {
+      sessionStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({ value: s, expiresAt: Date.now() + TTL_MS })
+      );
+    } catch {
+      // ignore quota errors
+    }
     listeners.forEach((cb) => cb(s));
     return s;
   })();
@@ -75,5 +99,10 @@ export function useSiteSettings() {
 export function invalidateSiteSettings() {
   cachedSettings = null;
   fetchPromise = null;
+  try {
+    sessionStorage.removeItem(STORAGE_KEY);
+  } catch {
+    // ignore
+  }
   fetchSettings(true);
 }
