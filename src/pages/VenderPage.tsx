@@ -186,50 +186,20 @@ const STATS = [
   { value: "100%", label: "Responsivo", icon: Smartphone },
 ];
 
-const PLANS = [
-  {
-    key: "basico", name: "Básico", subtitle: "Para experimentar", price: 0, priceLabel: "Gratuito",
-    setupFee: null, popular: false,
-    benefits: ["Até 5 anúncios ativos", "Vitrine própria (sua loja online)", "URL personalizada /seu-nome", "1 Layout (Marketplace) + 1 Tema", "Painel do vendedor completo", "Estatísticas básicas", "Busca de endereço por CEP no cadastro", "Gerador de contratos (1 modelo)", "QR Code dos anúncios e propostas PDF", "Calculadora de Lucro (ROI)", "Sistema de Parcerias entre corretores", "Push: 1 envio por dia"],
-    cta: "Criar conta grátis",
-  },
-  {
-    key: "start", name: "Start", subtitle: "Para corretores iniciantes", price: 24.99, priceLabel: "R$24,99",
-    setupFee: 299, popular: false,
-    benefits: ["Até 25 anúncios ativos", "Vitrine Lvl 1 — mais visibilidade", "1 Layout (Showcase) + 3 Temas", "CRM Kanban completo", "Ferramenta de calcular tamanho do imóvel", "Stories (estilo Instagram)", "Página de Captação de imóveis", "Todos os modelos de contrato", "Simulador de Financiamento", "PDF de Proposta profissional", "Selo Start + Hero Banner", "Destaque na listagem", "Push: 1 envio por dia"],
-    cta: "Começar agora",
-  },
-  {
-    key: "premium", name: "VIP", subtitle: "⭐ Mais popular", price: 59.99, priceLabel: "R$59,99",
-    setupFee: 719, popular: true,
-    benefits: ["Até 60 anúncios ativos", "Vitrine Lvl 2 — destaque superior", "4 Layouts + 6 Temas", "Tudo do Start +", "Bot de Captação (fluxo fixo)", "Push Notifications: 2 envios por dia", "Vídeo banner hero (autoplay)", "Modo Cinema imersivo", "Efeitos visuais na loja", "Gestão de Aluguéis completa", "Sistema de ADS integrado", "Estatísticas avançadas", "Selo VIP nos anúncios", "Suporte prioritário"],
-    cta: "Assinar VIP",
-  },
-  {
-    key: "vip", name: "Premium", subtitle: "Para dominar o mercado", price: 114.99, priceLabel: "R$114,99",
-    setupFee: 1379, popular: false,
-    benefits: ["Até 115 anúncios ativos", "Vitrine Lvl 3 — máximo individual", "Todos os 7 Layouts + Temas", "Tudo do VIP +", "Avaliação Profissional com laudo PDF", "CRECI e CNAI no laudo", "Captação com IA Inteligente", "Instagram na loja", "SEO otimizado (cidade/bairro)", "Destaque Épico (até 5 imóveis)", "Galeria Showroom + Copywriting", "Selo Premium exclusivo", "Push Notifications: 3 envios por dia", "Suporte VIP dedicado"],
-    cta: "Assinar Premium",
-  },
-];
+// Estilo épico por tier (gradientes, glow e ícones) — aplicado dinamicamente sobre os planos do banco
+const TIER_STYLES: Record<string, { gradient: string; glow: string; ring: string; icon: any; badge?: string; ctaGradient?: string; subtitle: string }> = {
+  basico:            { gradient: "from-slate-500/20 to-slate-700/10",     glow: "shadow-slate-500/10",   ring: "border-white/10",                                                            icon: Rocket,    subtitle: "Para começar agora" },
+  basico_empresa:    { gradient: "from-slate-500/20 to-blue-700/10",      glow: "shadow-blue-500/10",    ring: "border-white/10",                                                            icon: Building2, subtitle: "Para imobiliárias começarem" },
+  start:             { gradient: "from-emerald-500/30 to-teal-700/10",    glow: "shadow-emerald-500/20", ring: "border-emerald-400/30",                                                      icon: Zap,       subtitle: "Para corretores em ascensão" },
+  premium:           { gradient: "from-amber-500/40 to-orange-600/20",    glow: "shadow-amber-500/30",   ring: "border-amber-400/60 ring-1 ring-amber-400/40",                               icon: Star,      subtitle: "⭐ Mais popular",            badge: "Mais Popular", ctaGradient: "from-amber-500 to-orange-500" },
+  vip:               { gradient: "from-fuchsia-500/30 to-purple-700/20",  glow: "shadow-fuchsia-500/30", ring: "border-fuchsia-400/50",                                                      icon: Crown,     subtitle: "Para dominar o mercado" },
+  essencial_empresa: { gradient: "from-cyan-500/30 to-blue-700/20",       glow: "shadow-cyan-500/20",    ring: "border-cyan-400/40",                                                         icon: Building2, subtitle: "Para imobiliárias médias" },
+  premium_empresa:   { gradient: "from-violet-500/30 to-indigo-700/20",   glow: "shadow-violet-500/30",  ring: "border-violet-400/50",                                                       icon: Diamond,   subtitle: "Para grandes imobiliárias" },
+  prime_empresa:     { gradient: "from-yellow-500/30 to-amber-700/30",    glow: "shadow-yellow-500/30",  ring: "border-yellow-500/60 ring-1 ring-yellow-500/40",                             icon: Crown,     subtitle: "★ Para construtoras e redes", badge: "★ TOP",        ctaGradient: "from-zinc-800 to-black text-yellow-400 border border-yellow-500/40" },
+};
 
-const ENTERPRISE_PLANS = [
-  {
-    key: "essencial_empresa", name: "Exclusive", subtitle: "Para imobiliárias", price: 199.99, priceLabel: "R$199,99",
-    benefits: ["Anúncios ilimitados", "Vitrine Lvl 4 — prioridade empresa", "Todos os layouts + temas", "Tudo do Premium +", "Até 5 corretores vinculados", "Lojas espelho por corretor", "WhatsApp Team Picker", "Analytics por corretor", "Selo Exclusive", "Push Notifications: 4 envios por dia", "Suporte dedicado"],
-    cta: "Assinar Exclusive",
-  },
-  {
-    key: "premium_empresa", name: "Prime", subtitle: "Para grandes imobiliárias", price: 349.99, priceLabel: "R$349,99",
-    benefits: ["Anúncios ilimitados", "Vitrine Lvl 5 — destaque premium", "Tudo do Exclusive +", "Até 10 corretores vinculados", "Domínio personalizado", "Selo Prime", "Push Notifications: 5 envios por dia", "Suporte premium dedicado"],
-    cta: "Assinar Prime",
-  },
-  {
-    key: "prime_empresa", name: "Black", subtitle: "★ Para construtoras e redes", price: 599.99, priceLabel: "R$599,99",
-    benefits: ["Anúncios ilimitados", "Vitrine Lvl 6 — máximo absoluto", "Tudo do Prime +", "Corretores ilimitados", "Gerente de conta VIP dedicado", "Selo Black ★ exclusivo", "Push Notifications: 6 envios por dia", "Suporte 24/7 prioritário"],
-    cta: "Assinar Black",
-  },
-];
+const formatPrice = (price: number) => price === 0 ? "Gratuito" : `R$ ${price.toFixed(2).replace(".", ",")}`;
+const getTierStyle = (tier: string) => TIER_STYLES[tier] || TIER_STYLES.basico;
 
 export default function VenderPage() {
   const navigate = useNavigate();
