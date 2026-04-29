@@ -142,14 +142,14 @@ const steps = [
   {
     icon: Briefcase,
     title: "Comece a Atuar",
-    description: "Cadastre-se no Capimobi, crie seu perfil profissional e comece a captar clientes e fechar negócios.",
+    description: "Cadastre-se no {{site}}, crie seu perfil profissional e comece a captar clientes e fechar negócios.",
     detail: "Cadastro gratuito na plataforma",
   },
 ];
 
 const skills = [
   { icon: Target, title: "Negociação", description: "Domine a arte de ouvir, argumentar e fechar acordos que satisfaçam todas as partes." },
-  { icon: Lightbulb, title: "Marketing Digital", description: "Aprenda a usar redes sociais, portais e o Capimobi para atrair clientes qualificados.", accent: true },
+  { icon: Lightbulb, title: "Marketing Digital", description: "Aprenda a usar redes sociais, portais e o {{site}} para atrair clientes qualificados.", accent: true },
   { icon: Star, title: "Conhecimento Jurídico", description: "Entenda contratos, documentação e legislação para transmitir segurança ao cliente." },
   { icon: Award, title: "Atendimento Premium", description: "Ofereça uma experiência personalizada. O cliente satisfeito indica 3 novos." },
   { icon: Building2, title: "Avaliação de Imóveis", description: "Saiba precificar com base em localização, conservação e tendências de mercado." },
@@ -160,7 +160,7 @@ const testimonials = [
   {
     name: "Marcos Oliveira",
     role: "Corretor há 3 anos • Vitória",
-    text: "Comecei do zero e hoje faturo mais de R$ 20 mil por mês. O Capimobi me deu visibilidade que eu não teria sozinho.",
+    text: "Comecei do zero e hoje faturo mais de R$ 20 mil por mês. O {{site}} me deu visibilidade que eu não teria sozinho.",
     stars: 5,
   },
   {
@@ -195,7 +195,7 @@ const faqs = [
     a: "Sim! Muitos corretores começam atuando nos finais de semana e horários livres. A flexibilidade é uma das maiores vantagens.",
   },
   {
-    q: "O Capimobi cobra para anunciar?",
+    q: "O {{site}} cobra para anunciar?",
     a: "O cadastro é gratuito com até 5 anúncios. Temos planos premium para quem deseja mais visibilidade e recursos.",
   },
 ];
@@ -327,7 +327,7 @@ export default function BecomeAgentPage() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={scaleIn}>
               <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/15 text-accent text-xs font-bold uppercase tracking-widest mb-6 border border-accent/20">
-                <Sparkles size={14} /> Exclusivo Capimobi
+                <Sparkles size={14} /> Exclusivo {{site}}
               </span>
               <h2 className="font-display font-black text-4xl md:text-5xl mt-2 mb-5">
                 Sua <span className="text-accent">Loja</span> Estilo
@@ -376,7 +376,7 @@ export default function BecomeAgentPage() {
               {/* Glow behind mockup */}
               <div className="absolute -inset-6 bg-gradient-to-br from-primary/20 via-accent/10 to-primary/20 rounded-[2rem] blur-3xl opacity-60" />
               <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-primary/20 border border-border">
-                <img src={lojaNetflixImg} alt="Loja estilo Netflix do Capimobi" loading="lazy" className="w-full h-auto" width={1440} height={960} />
+                <img src={lojaNetflixImg} alt="Loja estilo Netflix do {{site}}" loading="lazy" className="w-full h-auto" width={1440} height={960} />
               </div>
               {/* Floating badge */}
               <motion.div
