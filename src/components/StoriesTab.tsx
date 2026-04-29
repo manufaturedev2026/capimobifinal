@@ -25,6 +25,7 @@ interface StoryRow {
   expires_at: string;
   is_active: boolean;
   team_member_id: string | null;
+  is_auto?: boolean | null;
 }
 
 export default function StoriesTab({ userId, sellerId }: StoriesTabProps) {
@@ -49,6 +50,9 @@ export default function StoriesTab({ userId, sellerId }: StoriesTabProps) {
   }, [userId]);
 
   const deleteStory = async (id: string, imageUrl: string) => {
+    // Find the story to check if it's auto-generated (image belongs to a listing)
+    const story = stories.find((s) => s.id === id);
+
     // Delete from DB
     const { error } = await supabase.from("seller_stories").delete().eq("id", id);
     if (error) {
@@ -56,10 +60,24 @@ export default function StoriesTab({ userId, sellerId }: StoriesTabProps) {
       return;
     }
 
-    // Clean up storage
-    const match = imageUrl.match(/seller-uploads\/(.+)$/);
-    if (match) {
-      await supabase.storage.from("seller-uploads").remove([match[1]]);
+    // Clean up storage ONLY for manual stories that uploaded their own image to seller-uploads.
+    // Auto stories (is_auto) and stories tied to an item_id reuse the listing photo —
+    // never delete those, or we'd erase the property photo itself.
+    const isAuto = story?.is_auto === true;
+    const hasItem = !!story?.item_id;
+    if (!isAuto && !hasItem) {
+      const match = imageUrl.match(/seller-uploads\/(.+)$/);
+      if (match) {
+        // Extra safety: confirm no listing is using this same photo before removing.
+        const { data: usedBy } = await supabase
+          .from("seller_items")
+          .select("id")
+          .contains("photos", [imageUrl])
+          .limit(1);
+        if (!usedBy || usedBy.length === 0) {
+          await supabase.storage.from("seller-uploads").remove([match[1]]);
+        }
+      }
     }
 
     setStories((prev) => prev.filter((s) => s.id !== id));
