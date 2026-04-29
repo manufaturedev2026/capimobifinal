@@ -41,6 +41,24 @@ const PRESETS: Preset[] = [
   { id: "custom", label: "Personalizado", host: "", port: 587, security: "tls", hint: "Configure manualmente os dados do seu provedor." },
 ];
 
+const DEFAULT_SMTP_ROW: SmtpRow = {
+  id: "",
+  enabled: false,
+  sender_name: "Capimobi",
+  sender_email: "",
+  host: "smtp.hostinger.com",
+  port: 465,
+  security: "ssl",
+  username: "",
+  password_encrypted: null,
+  reply_to: null,
+  use_for_signup: false,
+  use_for_recovery: true,
+  last_test_at: null,
+  last_test_status: null,
+  last_test_error: null,
+};
+
 export default function AdminSmtpTab() {
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
@@ -55,26 +73,39 @@ export default function AdminSmtpTab() {
 
   const load = async () => {
     setLoading(true);
-    const { data } = await supabase.from("smtp_settings" as any).select("*").limit(1).maybeSingle();
-    if (data) {
-      setRow(data as any);
-      const matched = PRESETS.find(
-        (p) => p.host === (data as any).host && p.port === (data as any).port && p.security === (data as any).security,
-      );
-      setPresetId(matched?.id || "custom");
+    try {
+      const { data, error } = await supabase.from("smtp_settings" as any).select("*").limit(1).maybeSingle();
+      if (error) throw error;
+      if (data) {
+        setRow(data as any);
+        const matched = PRESETS.find(
+          (p) => p.host === (data as any).host && p.port === (data as any).port && p.security === (data as any).security,
+        );
+        setPresetId(matched?.id || "custom");
+      } else {
+        setRow({ ...DEFAULT_SMTP_ROW });
+        setPresetId("hostinger");
+      }
+    } catch (e: any) {
+      setRow({ ...DEFAULT_SMTP_ROW });
+      toast({ title: "Não foi possível carregar SMTP", description: e.message, variant: "destructive" });
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const loadLogs = async () => {
     setLogsLoading(true);
-    const { data } = await supabase
-      .from("email_logs" as any)
-      .select("*")
-      .order("created_at", { ascending: false })
-      .limit(50);
-    setLogs((data as any) || []);
-    setLogsLoading(false);
+    try {
+      const { data } = await supabase
+        .from("email_logs" as any)
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(50);
+      setLogs((data as any) || []);
+    } finally {
+      setLogsLoading(false);
+    }
   };
 
   useEffect(() => {
