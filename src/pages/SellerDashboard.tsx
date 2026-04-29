@@ -506,7 +506,7 @@ export default function SellerDashboard() {
                 />
               </div>
               <div className="mt-2 flex items-center justify-between text-[10px] text-muted-foreground">
-                <span>Plano/mês</span>
+                <span>Limite do plano</span>
                 <span className="font-bold text-foreground">{aiCredits.monthlyPlanCredits} créditos</span>
               </div>
             </div>
