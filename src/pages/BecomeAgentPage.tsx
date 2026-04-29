@@ -535,7 +535,7 @@ export default function BecomeAgentPage() {
                         <span className="text-xs font-bold text-primary uppercase tracking-wider">Passo {i + 1}</span>
                       </div>
                       <h3 className="font-display font-bold text-xl text-foreground mb-2">{step.title}</h3>
-                      <p className="text-muted-foreground text-sm leading-relaxed mb-3">{step.description}</p>
+                      <p className="text-muted-foreground text-sm leading-relaxed mb-3">{r(step.description)}</p>
                       <span className="inline-flex items-center gap-2 text-xs text-accent font-semibold bg-accent/10 px-3 py-1.5 rounded-full">
                         <CheckCircle2 size={12} /> {step.detail}
                       </span>
