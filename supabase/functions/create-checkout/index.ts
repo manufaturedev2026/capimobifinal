@@ -185,7 +185,10 @@ serve(async (req) => {
       metadata: {
         user_id: user.id,
         tier,
-        billing_period,
+        billing_period: isFounder ? "annual" : billing_period,
+        is_founder: isFounder ? "1" : "0",
+        founder_lot_id: isFounder ? founderLot.id : "",
+        founder_lot_number: isFounder ? String(founderLot.lot_number) : "",
         applied_coupon_code: appliedCouponCode || "",
         applied_coupon_id: appliedCouponId || "",
         total_discount_percent: String(totalDiscount),
