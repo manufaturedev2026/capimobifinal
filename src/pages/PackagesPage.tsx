@@ -38,7 +38,7 @@ interface FounderLot {
 
 const formatCredits = (credits: number) => credits.toLocaleString("pt-BR");
 
-type BillingPeriod = "monthly" | "annual";
+type BillingPeriod = "monthly" | "annual" | "founder";
 
 interface AppliedCoupon {
   id: string;
@@ -90,14 +90,14 @@ export default function PackagesPage() {
   }, []);
 
   const isImobiliaria = profile?.seller_category === "imobiliaria" || profile?.seller_category === "construtora";
-  const individualPlans = isImobiliaria
+  const individualPlans = isImobiliaria || billingPeriod === "founder"
     ? []
     : plans.filter((p) =>
         billingPeriod === "annual"
           ? p.category === "individual" && p.price > 0
           : p.category === "individual" || p.category === "free"
       );
-  const enterprisePlans = isImobiliaria
+  const enterprisePlans = isImobiliaria && billingPeriod !== "founder"
     ? plans.filter((p) => p.category === "enterprise" && (billingPeriod === "monthly" || p.price > 0))
     : [];
   const activePlan = plans.find((p) => p.tier === currentTier);
@@ -479,11 +479,22 @@ export default function PackagesPage() {
                 </span>
               )}
             </button>
+            <button
+              onClick={() => setBillingPeriod("founder")}
+              className={`px-5 sm:px-8 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 ${
+                billingPeriod === "founder"
+                  ? "bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-md"
+                  : "text-amber-600 hover:text-amber-700"
+              }`}
+            >
+              <Crown size={14} />
+              Fundador
+            </button>
           </div>
         </div>
 
-        {/* Campo de cupom */}
-        <div className="max-w-md mx-auto mb-8">
+        {/* Campo de cupom (não se aplica ao Fundador) */}
+        <div className={`max-w-md mx-auto mb-8 ${billingPeriod === "founder" ? "hidden" : ""}`}>
           <AnimatePresence mode="wait">
             {appliedCoupon ? (
               <motion.div
@@ -560,7 +571,7 @@ export default function PackagesPage() {
         )}
 
         {/* ===== Plano Fundador (apenas na aba Anual) ===== */}
-        {billingPeriod === "annual" && activeFounderLot && founderPlan && (() => {
+        {billingPeriod === "founder" && activeFounderLot && founderPlan && (() => {
           const slotsLeft = activeFounderLot.total_slots - activeFounderLot.used_slots;
           const pct = (activeFounderLot.used_slots / activeFounderLot.total_slots) * 100;
           const credits = aiMonthlyCredits[founderTier];
@@ -662,6 +673,14 @@ export default function PackagesPage() {
             </motion.div>
           );
         })()}
+
+        {billingPeriod === "founder" && !activeFounderLot && (
+          <div className="mt-12 text-center bg-card border-2 border-dashed border-border rounded-3xl p-12">
+            <Crown size={48} className="mx-auto text-muted-foreground mb-4" />
+            <h3 className="font-display font-extrabold text-2xl text-foreground">Lotes Fundador esgotados</h3>
+            <p className="text-muted-foreground mt-2">Todas as vagas de fundador foram preenchidas. Confira os planos Mensal ou Anual.</p>
+          </div>
+        )}
 
         {subscription && activePlan && (
           <motion.div
