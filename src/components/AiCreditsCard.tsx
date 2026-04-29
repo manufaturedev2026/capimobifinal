@@ -21,6 +21,7 @@ const TOOL_LABELS: Record<string, string> = {
 
 export default function AiCreditsCard({ userId, sellerId }: { userId?: string; sellerId?: string }) {
   const { toast } = useToast();
+  const [usageOpen, setUsageOpen] = useState(false);
   const { balance, monthlyPlanCredits, transactions, loading, creditPriceCents } = useAiCredits(userId, sellerId);
 
   const handleBuyCredits = () => {
