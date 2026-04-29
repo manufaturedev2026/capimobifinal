@@ -13,9 +13,11 @@ import { BRAZIL_STATES } from "@/data/brazilStates";
 import { useCitiesByState } from "@/hooks/useCitiesByState";
 import { SITE_URL } from "@/lib/siteUrl";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { useRegistrationsClosed } from "@/hooks/useRegistrationsClosed";
 
 export default function LoginPage() {
   const { site_name } = useSiteSettings();
+  const { closed: registrationsClosed } = useRegistrationsClosed();
   const [isLogin, setIsLogin] = useState(() => {
     const params = new URLSearchParams(window.location.search);
     return !params.get("trial");
@@ -107,9 +109,17 @@ export default function LoginPage() {
     }
   }, [user, profile, navigate, isNewSignup]);
 
+  useEffect(() => {
+    if (registrationsClosed && !isLogin) setIsLogin(true);
+  }, [registrationsClosed, isLogin]);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isLogin && registrationsClosed) {
+      toast({ title: "Cadastros encerrados", description: "Não estamos aceitando novos cadastros no momento.", variant: "destructive" });
+      return;
+    }
     setLoading(true);
 
     if (isLogin) {
@@ -356,14 +366,23 @@ export default function LoginPage() {
           </form>
 
           {!signedUp && isLogin && (
-            <p className="text-center text-sm mt-6 flex items-center justify-center gap-3" style={{ color: theme.textMuted }}>
+            <p className="text-center text-sm mt-6 flex items-center justify-center gap-3 flex-wrap" style={{ color: theme.textMuted }}>
               <button onClick={() => { setShowForgot(true); setForgotEmail(email); }} className="font-medium hover:underline" style={{ color: theme.textMuted }}>
                 Esqueci minha senha
               </button>
-              <span style={{ color: theme.border }}>•</span>
-              <button onClick={() => setIsLogin(false)} className="font-semibold hover:underline" style={{ color: theme.primary }}>
-                Quero me Cadastrar
-              </button>
+              {!registrationsClosed && (
+                <>
+                  <span style={{ color: theme.border }}>•</span>
+                  <button onClick={() => setIsLogin(false)} className="font-semibold hover:underline" style={{ color: theme.primary }}>
+                    Quero me Cadastrar
+                  </button>
+                </>
+              )}
+            </p>
+          )}
+          {!signedUp && isLogin && registrationsClosed && (
+            <p className="text-center text-xs mt-3" style={{ color: theme.textMuted }}>
+              🔒 Cadastros temporariamente encerrados.
             </p>
           )}
 

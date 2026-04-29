@@ -21,6 +21,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { BRAZIL_STATES } from "@/data/brazilStates";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { useRegistrationsClosed } from "@/hooks/useRegistrationsClosed";
+import RegistrationsClosedNotice from "@/components/RegistrationsClosedNotice";
 
 const FEATURES = [
   {
@@ -187,6 +189,7 @@ export default function VenderPage() {
   const navigate = useNavigate();
   const { user, signUp } = useAuth();
   const { site_name } = useSiteSettings();
+  const { closed: registrationsClosed } = useRegistrationsClosed();
   const { toast } = useToast();
   const [themeId, setThemeId] = useState("azul");
   const [fullName, setFullName] = useState("");
@@ -218,6 +221,10 @@ export default function VenderPage() {
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (registrationsClosed) {
+      toast({ title: "Cadastros encerrados", description: "Não estamos aceitando novos cadastros no momento.", variant: "destructive" });
+      return;
+    }
      if (!fullName.trim() || !email.trim() || !password.trim() || !city) {
        toast({ title: "Preencha todos os campos obrigatórios", variant: "destructive" });
        return;
@@ -386,6 +393,11 @@ export default function VenderPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.2 }}
             >
+              {registrationsClosed ? (
+                <div id="signup-form" className="bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl p-5 md:p-8 shadow-2xl" style={{ boxShadow: `0 25px 60px ${theme.primary}10` }}>
+                  <RegistrationsClosedNotice variant="inline" />
+                </div>
+              ) : (
               <form id="signup-form" onSubmit={handleSignup} className="bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl p-5 md:p-8 space-y-3 md:space-y-4 shadow-2xl" style={{ boxShadow: `0 25px 60px ${theme.primary}10` }}>
                 <div className="text-center mb-1 md:mb-2">
                   <h2 className="font-display font-bold text-lg md:text-xl">Comece Gratuitamente</h2>
@@ -454,6 +466,7 @@ export default function VenderPage() {
                   Já tem uma conta? <Link to="/login" className="hover:underline" style={{ color: theme.primary }}>Faça login</Link>
                 </p>
               </form>
+              )}
             </motion.div>
           </div>
         </section>

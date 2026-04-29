@@ -10,6 +10,8 @@ import logoImg from "@/assets/logo-es-corretores.png";
 import { BRAZIL_STATES } from "@/data/brazilStates";
 import { useCitiesByState } from "@/hooks/useCitiesByState";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { useRegistrationsClosed } from "@/hooks/useRegistrationsClosed";
+import RegistrationsClosedNotice from "@/components/RegistrationsClosedNotice";
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(() => {
@@ -30,6 +32,7 @@ export default function AuthPage() {
   const { cities: stateCities, loading: loadingCities } = useCitiesByState(selectedState);
   const { user, profile, signIn, signUp } = useAuth();
   const { site_name } = useSiteSettings();
+  const { closed: registrationsClosed } = useRegistrationsClosed();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const trialDays = searchParams.get("trial");
@@ -44,8 +47,17 @@ export default function AuthPage() {
     if (user && profile) navigate(getStoreRoute(profile), { replace: true });
   }, [user, profile, navigate]);
 
+  useEffect(() => {
+    if (registrationsClosed && !isLogin) setIsLogin(true);
+  }, [registrationsClosed, isLogin]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!isLogin && registrationsClosed) {
+      toast({ title: "Cadastros encerrados", description: "Não estamos aceitando novos cadastros no momento.", variant: "destructive" });
+      return;
+    }
 
     if (!isLogin) {
       if (password !== confirmPassword) {
@@ -291,11 +303,16 @@ export default function AuthPage() {
             </button>
           </form>
 
-          {!signedUp && isLogin && (
+          {!signedUp && isLogin && !registrationsClosed && (
             <p className="text-center text-sm text-muted-foreground mt-8">
               <button onClick={() => setIsLogin(false)} className="text-primary font-semibold hover:underline">
                 Criar conta da loja
               </button>
+            </p>
+          )}
+          {!signedUp && isLogin && registrationsClosed && (
+            <p className="text-center text-xs text-muted-foreground mt-8">
+              🔒 Cadastros temporariamente encerrados. Apenas corretores já cadastrados podem entrar.
             </p>
           )}
           {!signedUp && !isLogin && (
