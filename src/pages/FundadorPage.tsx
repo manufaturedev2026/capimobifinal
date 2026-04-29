@@ -24,7 +24,18 @@ interface FounderLot {
   total_slots: number;
   used_slots: number;
   is_active: boolean;
+  inherited_tier: string;
+  ia_credits: number;
 }
+
+const TIER_LABEL: Record<string, string> = {
+  start: "Plano Start",
+  premium: "Plano Premium",
+  vip: "Plano VIP",
+  essencial_empresa: "Plano Essencial Empresa",
+  premium_empresa: "Plano Premium Empresa",
+  prime_empresa: "Plano Prime Empresa (Black)",
+};
 
 const FOUNDER_BENEFITS = [
   "Pagamento único válido por 12 meses",
