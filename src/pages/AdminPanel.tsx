@@ -508,7 +508,7 @@ export default function AdminPanel() {
     { key: "billing" as const, label: "Faturamento", icon: DollarSign },
     { key: "plans" as const, label: "Planos", icon: Package },
     { key: "coupons" as const, label: "Cupons & Anual", icon: Ticket },
-    { key: "founders" as const, label: "Fundadores", icon: Crown },
+    
     { key: "crm" as const, label: "CRM WhatsApp", icon: MessageCircle },
     { key: "ads" as const, label: "CRM de ADS", icon: Megaphone },
     { key: "push" as const, label: "Push Broadcast", icon: Bell },
