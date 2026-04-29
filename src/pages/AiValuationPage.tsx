@@ -21,6 +21,7 @@ import {
   AlertCircle, Loader2, Brain, MapPin, Home, Maximize2, Bed, FileText,
   Megaphone, Download, History, Wand2, FileBadge, Printer, Share2, Mail,
   Building2, Award, KeyRound, Trash2, Search, Settings2, ChevronDown, ChevronUp,
+  MapPinned,
 } from "lucide-react";
 import { generateValuationReport, getLaudoCode } from "@/lib/generateValuationReport";
 import AdvancedValuationFields, { ADVANCED_INITIAL, type AdvancedState } from "@/components/AdvancedValuationFields";
