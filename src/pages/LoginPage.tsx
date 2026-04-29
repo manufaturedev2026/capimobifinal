@@ -194,7 +194,7 @@ export default function LoginPage() {
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
             <div className="flex items-center gap-2 mb-4">
               <Sparkles size={20} style={{ color: theme.primary }} />
-              <span style={{ color: theme.primary }} className="font-semibold text-sm uppercase tracking-wider">Capimobi</span>
+              <span style={{ color: theme.primary }} className="font-semibold text-sm uppercase tracking-wider">{site_name}</span>
             </div>
             <h1 className="font-display font-bold text-3xl lg:text-5xl text-white leading-tight mb-3">
               Área do<br /><span style={{ color: theme.promoAccent || theme.primary }}>Corretor</span>
