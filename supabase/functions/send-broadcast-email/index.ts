@@ -77,11 +77,32 @@ Deno.serve(async (req) => {
     }
 
     // Validate tiers + custom emails
+    // Supports formats: "user@x.com", "Nome <user@x.com>", "Nome,user@x.com"
     const safeTiers = (tiers || []).filter((t) => ALLOWED_TIERS.includes(t));
     const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const customList = Array.from(new Set(
-      (custom_emails || []).map((e) => String(e).trim().toLowerCase()).filter((e) => emailRe.test(e))
-    ));
+    const customNameByEmail = new Map<string, string>();
+    const customList: string[] = [];
+    for (const raw of (custom_emails || [])) {
+      const s = String(raw).trim();
+      if (!s) continue;
+      let name = "";
+      let email = "";
+      const m = s.match(/^\s*(.*?)\s*<\s*([^>]+)\s*>\s*$/);
+      if (m) {
+        name = m[1].trim().replace(/^["']|["']$/g, "");
+        email = m[2].trim().toLowerCase();
+      } else if (s.includes(",")) {
+        const parts = s.split(",").map((p) => p.trim());
+        const emailPart = parts.find((p) => emailRe.test(p.toLowerCase())) || "";
+        email = emailPart.toLowerCase();
+        name = parts.filter((p) => p !== emailPart).join(" ").trim();
+      } else {
+        email = s.toLowerCase();
+      }
+      if (!emailRe.test(email)) continue;
+      if (!customList.includes(email)) customList.push(email);
+      if (name && !customNameByEmail.has(email)) customNameByEmail.set(email, name);
+    }
     if (safeTiers.length === 0 && customList.length === 0) {
       return json({ error: "Selecione um plano ou informe e-mails personalizados" }, 400);
     }
