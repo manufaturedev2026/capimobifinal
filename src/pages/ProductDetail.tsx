@@ -552,6 +552,7 @@ export default function ProductDetail() {
                 sellerLogo: company.logo || "", propertyUrl: window.location.href,
                 bedrooms: product.bedrooms, bathrooms: product.bathrooms,
                 area: product.area, suites: product.suites, parking_spots: product.parking_spots,
+                cep: (dbItem as any)?.cep || null,
               })}
               className="mt-3 w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-secondary text-foreground font-medium text-sm hover:bg-secondary/80 transition-colors border border-border">
               <FileDown size={16} /> Baixar Proposta (PDF)
