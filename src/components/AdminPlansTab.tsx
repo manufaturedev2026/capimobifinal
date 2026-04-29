@@ -50,6 +50,37 @@ export default function AdminPlansTab() {
   const [editing, setEditing] = useState<Partial<Plan> | null>(null);
   const [isNew, setIsNew] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [view, setView] = useState<"monthly" | "annual" | "founder">("monthly");
+  const [annualDiscount, setAnnualDiscount] = useState<number>(20);
+  const [savingDiscount, setSavingDiscount] = useState(false);
+
+  // Carrega o desconto anual configurado
+  useEffect(() => {
+    (async () => {
+      const { data } = await (supabase as any)
+        .from("platform_settings")
+        .select("value")
+        .eq("key", "annual_discount_percent")
+        .maybeSingle();
+      if (data?.value !== undefined && data?.value !== null) {
+        const v = typeof data.value === "string" ? parseInt(data.value) : Number(data.value);
+        if (!Number.isNaN(v)) setAnnualDiscount(v);
+      }
+    })();
+  }, []);
+
+  const saveAnnualDiscount = async () => {
+    setSavingDiscount(true);
+    const { error } = await (supabase as any)
+      .from("platform_settings")
+      .upsert({ key: "annual_discount_percent", value: annualDiscount }, { onConflict: "key" });
+    setSavingDiscount(false);
+    if (error) {
+      toast({ title: "Erro ao salvar", description: error.message, variant: "destructive" });
+      return;
+    }
+    toast({ title: "Desconto anual atualizado", description: `${annualDiscount}% aplicado a todos os planos anuais.` });
+  };
 
   const openEdit = (p: Plan) => { setEditing({ ...p, benefits: [...p.benefits] }); setIsNew(false); };
   const openNew = () => { setEditing(emptyPlan()); setIsNew(true); };
