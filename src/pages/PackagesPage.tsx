@@ -285,6 +285,41 @@ export default function PackagesPage() {
     setSelecting(null);
   };
 
+  // Lote ativo (próximo a vender) e tier de Fundador para a categoria do usuário
+  const founderCategory: "individual" | "enterprise" = isImobiliaria ? "enterprise" : "individual";
+  const founderTier = isImobiliaria ? "fundador_empresa" : "fundador_corretor";
+  const activeFounderLot = founderLots
+    .filter((l) => l.category === founderCategory && l.is_active && l.used_slots < l.total_slots)
+    .sort((a, b) => a.lot_number - b.lot_number)[0];
+  const founderPlan = plans.find((p) => p.tier === founderTier);
+
+  const handleSelectFounder = async () => {
+    if (!user || !profile) {
+      navigate("/auth");
+      return;
+    }
+    if (!activeFounderLot || !founderPlan) {
+      toast({ title: "Plano Fundador esgotado", description: "Todos os lotes foram vendidos.", variant: "destructive" });
+      return;
+    }
+    setSelecting(founderTier);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-checkout", {
+        body: {
+          tier: founderTier,
+          billing_period: "annual",
+          founder_lot_id: activeFounderLot.id,
+        },
+      });
+      if (error) throw error;
+      if (data?.url) window.open(data.url, "_blank");
+      else throw new Error("URL de checkout não retornada");
+    } catch (err: any) {
+      toast({ title: "Erro ao processar", description: err.message || "Tente novamente.", variant: "destructive" });
+    }
+    setSelecting(null);
+  };
+
   if (plansLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
