@@ -28,19 +28,20 @@ interface ProposalData {
 const C = {
   white:        [255, 255, 255] as [number, number, number],
   bg:           [248, 250, 252] as [number, number, number],
-  ink:          [10, 15, 30]    as [number, number, number],   // preto premium
+  ink:          [10, 15, 30]    as [number, number, number],
   ink2:         [30, 41, 59]    as [number, number, number],
-  navy:         [12, 32, 64]    as [number, number, number],   // azul escuro pro
+  navy:         [12, 32, 64]    as [number, number, number],
   navyDeep:     [6, 18, 42]     as [number, number, number],
   blue:         [30, 64, 175]   as [number, number, number],
   blueSoft:     [219, 234, 254] as [number, number, number],
   green:        [16, 163, 96]   as [number, number, number],
   greenSoft:    [220, 252, 231] as [number, number, number],
   gold:         [193, 154, 73]  as [number, number, number],
+  goldSoft:     [253, 246, 227] as [number, number, number],
   grayLine:     [226, 232, 240] as [number, number, number],
   grayMute:     [100, 116, 139] as [number, number, number],
   grayCard:     [241, 245, 249] as [number, number, number],
-  red:          [220, 38, 38]   as [number, number, number],
+  grayDark:     [148, 163, 184] as [number, number, number],
 };
 
 const W = 210;
@@ -49,12 +50,6 @@ const M = 16;
 
 function fmtPrice(price: number): string {
   return price.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
-}
-
-function fmtPriceShort(price: number): string {
-  if (price >= 1_000_000) return `R$ ${(price / 1_000_000).toFixed(price % 1_000_000 === 0 ? 0 : 2).replace(".", ",")}M`;
-  if (price >= 1_000) return `R$ ${Math.round(price / 1_000)}k`;
-  return fmtPrice(price);
 }
 
 async function loadImg(url: string): Promise<string | null> {
@@ -86,27 +81,59 @@ function setFill(pdf: jsPDF, c: [number, number, number]) { pdf.setFillColor(c[0
 function setDraw(pdf: jsPDF, c: [number, number, number]) { pdf.setDrawColor(c[0], c[1], c[2]); }
 function setText(pdf: jsPDF, c: [number, number, number]) { pdf.setTextColor(c[0], c[1], c[2]); }
 
+function isRental(data: ProposalData): boolean {
+  const t = (data.tags || []).join(" ").toLowerCase();
+  return t.includes("alug") || t.includes("locação") || t.includes("locacao");
+}
+
+function priceLabel(data: ProposalData): string {
+  return isRental(data) ? `${fmtPrice(data.price)} / mês` : fmtPrice(data.price);
+}
+
+function propertyTypeLabel(data: ProposalData): string {
+  const t = (data.tags || []).map(x => x.toLowerCase());
+  const known = ["casa", "apartamento", "terreno", "cobertura", "sítio", "sitio", "chácara", "chacara", "fazenda", "sala comercial", "loja", "galpão", "galpao", "kitnet", "studio", "sobrado", "lote"];
+  for (const k of known) {
+    if (t.some(x => x.includes(k))) return k.charAt(0).toUpperCase() + k.slice(1);
+  }
+  // try title
+  const titleLower = (data.title || "").toLowerCase();
+  for (const k of known) {
+    if (titleLower.includes(k)) return k.charAt(0).toUpperCase() + k.slice(1);
+  }
+  return "Imóvel";
+}
+
+function splitLocation(loc: string): { neighborhood: string; city: string } {
+  if (!loc) return { neighborhood: "", city: "" };
+  const parts = loc.split(/[·,•|-]/).map(p => p.trim()).filter(Boolean);
+  if (parts.length >= 2) return { neighborhood: parts[0], city: parts.slice(1).join(", ") };
+  return { neighborhood: "", city: parts[0] || loc };
+}
+
 // ─── Footer / Header ───────────────────────────────────────────────────
-function drawFooter(pdf: jsPDF, pageNum: number, totalPages: number) {
-  // Hairline
-  setDraw(pdf, C.grayLine);
+function drawFooter(pdf: jsPDF, pageNum: number, totalPages: number, dark = false) {
+  const muted = dark ? C.grayDark : C.grayMute;
+  const lineCol = dark ? [55, 78, 120] as [number, number, number] : C.grayLine;
+
+  setDraw(pdf, lineCol);
   pdf.setLineWidth(0.2);
   pdf.line(M, H - 14, W - M, H - 14);
 
   pdf.setFont("helvetica", "bold");
   pdf.setFontSize(7.5);
-  setText(pdf, C.ink);
+  setText(pdf, dark ? C.white : C.ink);
   pdf.text("CAPIMOBI", M, H - 8);
 
   pdf.setFont("helvetica", "normal");
-  setText(pdf, C.grayMute);
+  setText(pdf, muted);
   pdf.text("  ·  Inteligência Imobiliária", M + pdf.getTextWidth("CAPIMOBI"), H - 8);
 
+  setText(pdf, muted);
   pdf.text(`${pageNum} / ${totalPages}`, W - M, H - 8, { align: "right" });
 }
 
 function drawTopBar(pdf: jsPDF, label: string) {
-  // very subtle top brand strip
   pdf.setFont("helvetica", "bold");
   pdf.setFontSize(8);
   setText(pdf, C.ink);
@@ -144,88 +171,71 @@ function sectionTitle(pdf: jsPDF, eyebrow: string, title: string, y: number): nu
 export async function generateProposalPdf(data: ProposalData) {
   const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4", compress: true });
 
-  // Preload images
   const heroImg = await loadImg(data.image);
-  const sellerLogoImg = await loadImg(data.sellerLogo);
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(data.propertyUrl)}&format=png&margin=2`;
   const qrImg = await loadImg(qrUrl);
   const mapImg = data.location
     ? await loadImg(`https://maps.googleapis.com/maps/api/staticmap?center=${encodeURIComponent(data.location)}&zoom=15&size=600x400&markers=color:0x1E40AF|${encodeURIComponent(data.location)}&scale=2&maptype=roadmap`)
     : null;
 
-  const totalPagesPlanned = 7 + (mapImg || data.location ? 1 : 0);
+  const rental = isRental(data);
+  // Pages: Cover, Specs, Differentials, (Financial only for sale), Location, CTA
+  const totalPages = rental ? 5 : 6;
 
-  // ─── PAGE 1 — CAPA IMPACTANTE ─────────────────────────────────────────
-  drawCover(pdf, data, heroImg);
-  drawFooter(pdf, 1, totalPagesPlanned);
+  let page = 1;
 
-  // ─── PAGE 2 — RESUMO EXECUTIVO ────────────────────────────────────────
+  // PAGE 1 — Cover
+  drawCoverImpl(pdf, data, heroImg);
+  drawFooter(pdf, page++, totalPages);
+
+  // PAGE 2 — Specs
   pdf.addPage();
-  drawTopBar(pdf, "Resumo Executivo");
+  drawTopBar(pdf, "Ficha Técnica");
   let y = 32;
-  y = sectionTitle(pdf, "01 · Avaliação", "Resumo Executivo", y);
-  drawExecutiveSummary(pdf, data, y);
-  drawFooter(pdf, 2, totalPagesPlanned);
+  y = sectionTitle(pdf, "01 · O Imóvel", "Ficha Técnica", y);
+  drawSpecs(pdf, data, y);
+  drawFooter(pdf, page++, totalPages);
 
-  // ─── PAGE 3 — POR QUE CAPIMOBI ────────────────────────────────────────
+  // PAGE 3 — Differentials
   pdf.addPage();
   drawTopBar(pdf, "Diferenciais");
   y = 32;
-  y = sectionTitle(pdf, "02 · Por que nós", "Por que contratar a Capimobi", y);
-  drawWhyUs(pdf, y);
-  drawFooter(pdf, 3, totalPagesPlanned);
+  y = sectionTitle(pdf, "02 · Pontos Fortes", "Diferenciais do Imóvel", y);
+  drawDifferentials(pdf, data, y);
+  drawFooter(pdf, page++, totalPages);
 
-  // ─── PAGE 4 — PLANO DE MARKETING ──────────────────────────────────────
-  pdf.addPage();
-  drawTopBar(pdf, "Estratégia");
-  y = 32;
-  y = sectionTitle(pdf, "03 · Plano", "Estratégia de Marketing", y);
-  drawMarketingTimeline(pdf, y);
-  drawFooter(pdf, 4, totalPagesPlanned);
-
-  // ─── PAGE 5 — COMPARATIVO DE PREÇO ────────────────────────────────────
-  pdf.addPage();
-  drawTopBar(pdf, "Pricing");
-  y = 32;
-  y = sectionTitle(pdf, "04 · Posicionamento", "Comparativo de Preço", y);
-  drawPriceComparison(pdf, data, y);
-  drawFooter(pdf, 5, totalPagesPlanned);
-
-  // ─── PAGE 6 — OPORTUNIDADE DE VALORIZAÇÃO ─────────────────────────────
-  pdf.addPage();
-  drawTopBar(pdf, "Valorização");
-  y = 32;
-  y = sectionTitle(pdf, "05 · Oportunidade", "Potencial de Valorização", y);
-  drawValuation(pdf, y);
-  drawFooter(pdf, 6, totalPagesPlanned);
-
-  // ─── PAGE 7 — LOCALIZAÇÃO (se houver) ────────────────────────────────
-  let pageCount = 6;
-  if (data.location) {
+  // PAGE 4 — Financial Simulation (only for sale)
+  if (!rental) {
     pdf.addPage();
-    drawTopBar(pdf, "Localização");
+    drawTopBar(pdf, "Simulação Financeira");
     y = 32;
-    y = sectionTitle(pdf, "06 · Endereço", "Localização Estratégica", y);
-    drawLocation(pdf, data, mapImg, y);
-    pageCount++;
-    drawFooter(pdf, pageCount, totalPagesPlanned);
+    y = sectionTitle(pdf, "03 · Financeiro", "Simulação de Financiamento", y);
+    drawFinancing(pdf, data, y);
+    drawFooter(pdf, page++, totalPages);
   }
 
-  // ─── PAGE FINAL — CTA FORTE ───────────────────────────────────────────
+  // PAGE 5 — Location
   pdf.addPage();
-  pageCount++;
-  drawClosingCta(pdf, data, qrImg);
-  // closing page has its own footer in dark theme
+  drawTopBar(pdf, "Localização");
+  y = 32;
+  const stepNum = rental ? "03" : "04";
+  y = sectionTitle(pdf, `${stepNum} · Localização`, "Localização Estratégica", y);
+  drawLocation(pdf, data, mapImg, y);
+  drawFooter(pdf, page++, totalPages);
 
-  pdf.save(`proposta-capimobi-${data.id}.pdf`);
+  // PAGE FINAL — CTA
+  pdf.addPage();
+  drawClosingCta(pdf, data, qrImg);
+  drawFooter(pdf, page++, totalPages, true);
+
+  pdf.save(`imovel-capimobi-${data.id}.pdf`);
 }
 
 // ═══════════════════════════════════════════════════════════════════════
-// PAGE 1 — COVER
+// PAGE 1 — COVER (Buyer-focused)
 // ═══════════════════════════════════════════════════════════════════════
-function drawCover(pdf: jsPDF, data: ProposalData, heroImg: string | null) {
-  // Full-bleed hero image area (top 60%)
-  const heroH = 175;
+function drawCoverImpl(pdf: jsPDF, data: ProposalData, heroImg: string | null) {
+  const heroH = 185;
   if (heroImg) {
     try { pdf.addImage(heroImg, "JPEG", 0, 0, W, heroH, undefined, "FAST"); }
     catch { setFill(pdf, C.navy); pdf.rect(0, 0, W, heroH, "F"); }
@@ -233,15 +243,15 @@ function drawCover(pdf: jsPDF, data: ProposalData, heroImg: string | null) {
     setFill(pdf, C.navy); pdf.rect(0, 0, W, heroH, "F");
   }
 
-  // Dark gradient overlay (simulated with stacked translucent rects)
-  for (let i = 0; i < 14; i++) {
+  // Dark gradient overlay (bottom)
+  for (let i = 0; i < 18; i++) {
     pdf.setFillColor(6, 18, 42);
-    pdf.setGState(pdf.GState({ opacity: 0.06 }));
-    pdf.rect(0, heroH - 60 + i * 4, W, 8, "F");
+    pdf.setGState(pdf.GState({ opacity: 0.05 }));
+    pdf.rect(0, heroH - 70 + i * 4, W, 8, "F");
   }
   pdf.setGState(pdf.GState({ opacity: 1 }));
 
-  // Brand chip (top)
+  // Brand chip (top left)
   setFill(pdf, C.white);
   rr(pdf, M, 16, 38, 9, 1.5, "F");
   pdf.setFont("helvetica", "bold");
@@ -251,309 +261,227 @@ function drawCover(pdf: jsPDF, data: ProposalData, heroImg: string | null) {
   setFill(pdf, C.gold);
   pdf.rect(M + 4 + pdf.getTextWidth("CAPIMOBI") + 1.5, 19, 1.5, 1.5, "F");
 
-  // Date chip (top right)
-  pdf.setFont("helvetica", "normal");
-  pdf.setFontSize(8);
-  setText(pdf, C.white);
-  pdf.text(new Date().toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" }), W - M, 22, { align: "right" });
-
-  // Eyebrow
+  // "Oportunidade exclusiva" badge top right
+  setFill(pdf, C.gold);
+  rr(pdf, W - M - 56, 16, 56, 9, 1.5, "F");
   pdf.setFont("helvetica", "bold");
   pdf.setFontSize(8);
-  setText(pdf, C.gold);
-  pdf.text("PROPOSTA PROFISSIONAL", M, heroH - 32);
-
-  // Big title
-  pdf.setFont("helvetica", "bold");
-  pdf.setFontSize(26);
   setText(pdf, C.white);
-  const titleLines = pdf.splitTextToSize(data.title, W - M * 2 - 10);
-  pdf.text(titleLines.slice(0, 2), M, heroH - 22);
+  pdf.text("◆  OPORTUNIDADE EXCLUSIVA", W - M - 28, 22, { align: "center" });
 
-  // Location chip
+  // Property type chip on hero
+  pdf.setFont("helvetica", "bold");
+  pdf.setFontSize(8);
+  setFill(pdf, C.white);
+  const ptype = propertyTypeLabel(data);
+  const tw = pdf.getTextWidth(ptype.toUpperCase()) + 8;
+  rr(pdf, M, heroH - 50, tw, 7, 1.2, "F");
+  setText(pdf, C.ink);
+  pdf.text(ptype.toUpperCase(), M + 4, heroH - 45);
+
+  // Title
+  pdf.setFont("helvetica", "bold");
+  pdf.setFontSize(24);
+  setText(pdf, C.white);
+  const titleLines = pdf.splitTextToSize(data.title, W - M * 2);
+  pdf.text(titleLines.slice(0, 2), M, heroH - 30);
+
+  // Location line
   if (data.location) {
     pdf.setFont("helvetica", "normal");
-    pdf.setFontSize(9.5);
+    pdf.setFontSize(10);
     setText(pdf, C.white);
-    pdf.text(`◆  ${data.location}`, M, heroH - 10);
+    pdf.text(`◆  ${data.location}`, M, heroH - 14);
   }
 
-  // White info panel (bottom 40%)
+  // White info panel below
   setFill(pdf, C.white);
   pdf.rect(0, heroH, W, H - heroH, "F");
 
-  // Eyebrow
+  // Price block
+  const priceY = heroH + 18;
   pdf.setFont("helvetica", "bold");
   pdf.setFontSize(7.5);
   setText(pdf, C.gold);
-  pdf.text("VENDA IMOBILIÁRIA", M, heroH + 14);
+  pdf.text(isRental(data) ? "VALOR DO ALUGUEL" : "VALOR DE VENDA", M, priceY);
 
-  // Headline
   pdf.setFont("helvetica", "bold");
-  pdf.setFontSize(15);
+  pdf.setFontSize(28);
   setText(pdf, C.ink);
-  const head = pdf.splitTextToSize(
-    "Estratégia completa para vender seu imóvel com velocidade e valorização.",
-    W - M * 2
-  );
-  pdf.text(head, M, heroH + 22);
+  let val = priceLabel(data);
+  pdf.text(val, M, priceY + 12);
 
-  // Stat row (3 columns)
-  const statY = heroH + 48;
-  const colW = (W - M * 2 - 8) / 3;
-  drawStatChip(pdf, M, statY, colW, "VALOR ESTIMADO", fmtPrice(data.price), C.green);
-  drawStatChip(pdf, M + colW + 4, statY, colW, "TIPO", catLabel(data.sellerCategory), C.blue);
-  const specsCount = [data.bedrooms, data.bathrooms, data.area].filter(Boolean).length;
-  drawStatChip(pdf, M + (colW + 4) * 2, statY, colW, "REFERÊNCIA", `#${data.id.slice(0, 6).toUpperCase()}`, C.ink);
-
-  // Seller bar at bottom
-  const sbY = H - 38;
-  setFill(pdf, C.bg);
-  rr(pdf, M, sbY, W - M * 2, 22, 2.5, "F");
-
+  // Reference chip
   pdf.setFont("helvetica", "bold");
   pdf.setFontSize(7);
   setText(pdf, C.grayMute);
-  pdf.text("APRESENTADO POR", M + 5, sbY + 6);
-
-  pdf.setFont("helvetica", "bold");
-  pdf.setFontSize(11);
-  setText(pdf, C.ink);
-  pdf.text(data.sellerName, M + 5, sbY + 13);
-
-  pdf.setFont("helvetica", "normal");
-  pdf.setFontSize(8);
-  setText(pdf, C.grayMute);
-  const subParts = [catLabel(data.sellerCategory)];
-  if (data.sellerPhone) subParts.push(data.sellerPhone);
-  pdf.text(subParts.join("  ·  "), M + 5, sbY + 18.5);
-
-  pdf.setFont("helvetica", "bold");
-  pdf.setFontSize(8);
-  setText(pdf, C.gold);
-  pdf.text("PROPOSTA #" + data.id.slice(0, 6).toUpperCase(), W - M - 5, sbY + 13, { align: "right" });
-}
-
-function drawStatChip(
-  pdf: jsPDF, x: number, y: number, w: number,
-  label: string, value: string, accent: [number, number, number]
-) {
-  setFill(pdf, C.bg);
-  rr(pdf, x, y, w, 22, 2.5, "F");
-  setFill(pdf, accent);
-  pdf.rect(x, y, 1.4, 22, "F");
-
-  pdf.setFont("helvetica", "bold");
-  pdf.setFontSize(6.5);
-  setText(pdf, C.grayMute);
-  pdf.text(label, x + 5, y + 6);
-
-  pdf.setFont("helvetica", "bold");
-  pdf.setFontSize(11);
-  setText(pdf, C.ink);
-  // Auto-fit
-  let fit = value;
-  while (pdf.getTextWidth(fit) > w - 8 && pdf.getFontSize() > 7) {
-    pdf.setFontSize(pdf.getFontSize() - 0.5);
-  }
-  pdf.text(fit, x + 5, y + 15);
-}
-
-function catLabel(cat: string): string {
-  const m: Record<string, string> = {
-    imobiliaria: "Imobiliária",
-    corretor: "Corretor(a)",
-    construtora: "Construtora",
-    proprietario: "Proprietário",
-  };
-  return m[cat] || "Corretor(a)";
-}
-
-// ═══════════════════════════════════════════════════════════════════════
-// PAGE 2 — EXECUTIVE SUMMARY
-// ═══════════════════════════════════════════════════════════════════════
-function drawExecutiveSummary(pdf: jsPDF, data: ProposalData, y: number) {
-  pdf.setFont("helvetica", "normal");
-  pdf.setFontSize(9.5);
-  setText(pdf, C.grayMute);
-  const intro = pdf.splitTextToSize(
-    "Análise estratégica de pricing baseada em comportamento de mercado, perfil do imóvel e velocidade desejada de fechamento.",
-    W - M * 2
-  );
-  pdf.text(intro, M, y);
-  y += intro.length * 5 + 6;
-
-  const base = data.price;
-  const cards = [
-    { label: "VENDA RÁPIDA", value: base * 0.92,  hint: "Liquidez em até 30 dias",  accent: C.blue,  badge: "—8%" },
-    { label: "VENDA IDEAL",  value: base,         hint: "Equilíbrio mercado x lucro", accent: C.green, badge: "MERCADO" },
-    { label: "VENDA PREMIUM",value: base * 1.08,  hint: "Maior margem · prazo +90d", accent: C.gold,  badge: "+8%" },
-  ];
-
-  const cw = (W - M * 2 - 8) / 3;
-  cards.forEach((c, i) => {
-    const x = M + i * (cw + 4);
-    drawPriceCard(pdf, x, y, cw, 50, c.label, fmtPrice(c.value), c.hint, c.accent, c.badge);
-  });
-  y += 56;
-
-  // Secondary row: aluguel estimado + tempo médio
-  const sw = (W - M * 2 - 4) / 2;
-  drawInfoCard(
-    pdf, M, y, sw, 32,
-    "ALUGUEL ESTIMADO",
-    fmtPrice(base * 0.0045),
-    "≈ 0,45% do valor de venda · referência regional",
-    C.green
-  );
-  drawInfoCard(
-    pdf, M + sw + 4, y, sw, 32,
-    "TEMPO MÉDIO DE VENDA",
-    "45 a 90 dias",
-    "Com plano de marketing Capimobi ativo",
-    C.blue
-  );
-  y += 38;
+  pdf.text(`REF #${data.id.slice(0, 6).toUpperCase()}`, W - M, priceY + 12, { align: "right" });
 
   // Specs strip
+  const stripY = priceY + 22;
   const specs: { k: string; v: string }[] = [];
   if (data.bedrooms) specs.push({ k: "Quartos", v: String(data.bedrooms) });
-  if (data.suites) specs.push({ k: "Suítes", v: String(data.suites) });
   if (data.bathrooms) specs.push({ k: "Banheiros", v: String(data.bathrooms) });
   if (data.parking_spots) specs.push({ k: "Vagas", v: String(data.parking_spots) });
   if (data.area) specs.push({ k: "Área", v: `${data.area} m²` });
 
   if (specs.length > 0) {
-    setFill(pdf, C.navy);
-    rr(pdf, M, y, W - M * 2, 26, 2.5, "F");
-
-    pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(7);
-    setText(pdf, C.gold);
-    pdf.text("FICHA DO IMÓVEL", M + 6, y + 7);
-
-    const sx0 = M + 6;
-    const sw2 = (W - M * 2 - 12) / specs.length;
+    setFill(pdf, C.bg);
+    rr(pdf, M, stripY, W - M * 2, 22, 2.5, "F");
+    const sw = (W - M * 2) / specs.length;
     specs.forEach((s, i) => {
-      const sx = sx0 + i * sw2;
+      const sx = M + i * sw + sw / 2;
       pdf.setFont("helvetica", "bold");
       pdf.setFontSize(13);
-      setText(pdf, C.white);
-      pdf.text(s.v, sx, y + 17);
+      setText(pdf, C.ink);
+      pdf.text(s.v, sx, stripY + 11, { align: "center" });
       pdf.setFont("helvetica", "normal");
-      pdf.setFontSize(7);
-      setText(pdf, [148, 163, 184]);
-      pdf.text(s.k.toUpperCase(), sx, y + 22);
+      pdf.setFontSize(7.5);
+      setText(pdf, C.grayMute);
+      pdf.text(s.k.toUpperCase(), sx, stripY + 17, { align: "center" });
+      // divider
+      if (i < specs.length - 1) {
+        setDraw(pdf, C.grayLine);
+        pdf.setLineWidth(0.3);
+        pdf.line(M + (i + 1) * sw, stripY + 5, M + (i + 1) * sw, stripY + 17);
+      }
     });
   }
-}
 
-function drawPriceCard(
-  pdf: jsPDF, x: number, y: number, w: number, h: number,
-  label: string, value: string, hint: string, accent: [number, number, number], badge: string
-) {
-  setFill(pdf, C.white);
-  rr(pdf, x, y, w, h, 3, "F");
-  setDraw(pdf, C.grayLine);
-  pdf.setLineWidth(0.3);
-  rr(pdf, x, y, w, h, 3, "S");
-
-  // Top accent bar
-  setFill(pdf, accent);
-  rr(pdf, x, y, w, 1.5, 1, "F");
-
-  pdf.setFont("helvetica", "bold");
-  pdf.setFontSize(7);
-  setText(pdf, C.grayMute);
-  pdf.text(label, x + 5, y + 9);
-
-  // Badge
-  setFill(pdf, accent);
-  const bw = pdf.getStringUnitWidth(badge) * 6.5 / pdf.internal.scaleFactor + 4;
-  rr(pdf, x + w - bw - 5, y + 5, bw, 5, 1, "F");
-  pdf.setFont("helvetica", "bold");
-  pdf.setFontSize(6.5);
-  setText(pdf, C.white);
-  pdf.text(badge, x + w - bw - 5 + bw / 2, y + 8.5, { align: "center" });
-
-  pdf.setFont("helvetica", "bold");
-  pdf.setFontSize(15);
-  setText(pdf, C.ink);
-  // auto-fit
-  let fit = value;
-  while (pdf.getTextWidth(fit) > w - 10) { pdf.setFontSize(pdf.getFontSize() - 0.5); }
-  pdf.text(fit, x + 5, y + 25);
-
-  // Divider
-  setDraw(pdf, C.grayLine);
-  pdf.setLineWidth(0.2);
-  pdf.line(x + 5, y + 30, x + w - 5, y + 30);
-
+  // Footer tagline
   pdf.setFont("helvetica", "normal");
-  pdf.setFontSize(7.5);
+  pdf.setFontSize(9);
   setText(pdf, C.grayMute);
-  const lines = pdf.splitTextToSize(hint, w - 10);
-  pdf.text(lines, x + 5, y + 36);
-}
-
-function drawInfoCard(
-  pdf: jsPDF, x: number, y: number, w: number, h: number,
-  label: string, value: string, hint: string, accent: [number, number, number]
-) {
-  setFill(pdf, C.bg);
-  rr(pdf, x, y, w, h, 3, "F");
-  setFill(pdf, accent);
-  pdf.rect(x, y, 1.5, h, "F");
-
-  pdf.setFont("helvetica", "bold");
-  pdf.setFontSize(7);
-  setText(pdf, C.grayMute);
-  pdf.text(label, x + 6, y + 8);
-
-  pdf.setFont("helvetica", "bold");
-  pdf.setFontSize(14);
-  setText(pdf, C.ink);
-  let fit = value;
-  while (pdf.getTextWidth(fit) > w - 12) { pdf.setFontSize(pdf.getFontSize() - 0.5); }
-  pdf.text(fit, x + 6, y + 18);
-
-  pdf.setFont("helvetica", "normal");
-  pdf.setFontSize(7.5);
-  setText(pdf, C.grayMute);
-  const lines = pdf.splitTextToSize(hint, w - 12);
-  pdf.text(lines, x + 6, y + 25);
+  pdf.text("Apresentação completa do imóvel · 6 páginas a seguir", M, H - 22);
 }
 
 // ═══════════════════════════════════════════════════════════════════════
-// PAGE 3 — WHY US
+// PAGE 2 — SPECS (Ficha Técnica)
 // ═══════════════════════════════════════════════════════════════════════
-function drawWhyUs(pdf: jsPDF, y: number) {
+function drawSpecs(pdf: jsPDF, data: ProposalData, y: number) {
   pdf.setFont("helvetica", "normal");
   pdf.setFontSize(9.5);
   setText(pdf, C.grayMute);
   const intro = pdf.splitTextToSize(
-    "Estrutura de venda completa: tecnologia, mídia paga, atendimento humano-IA e equipe especializada em fechamento.",
+    "Todos os detalhes técnicos para você avaliar o imóvel com clareza e tomar a melhor decisão.",
     W - M * 2
   );
   pdf.text(intro, M, y);
   y += intro.length * 5 + 8;
 
-  const items = [
-    { t: "Divulgação Multi-Portal",   d: "Anúncio sincronizado nos maiores portais imobiliários e marketplace Capimobi." },
-    { t: "Tráfego Pago Estratégico",  d: "Campanhas Meta Ads e Google Ads segmentadas por perfil do comprador ideal." },
-    { t: "Atendimento Inteligente IA",d: "Bot Capimobi qualifica leads 24/7 antes do corretor humano entrar em ação." },
-    { t: "Captação de Compradores",   d: "Base ativa de compradores reais filtrada por região, ticket e intenção." },
-    { t: "Negociação Profissional",   d: "Corretores treinados para condução de propostas, contraproposta e fechamento." },
-    { t: "Acompanhamento Completo",   d: "Do primeiro lead à assinatura: relatórios, visitas e suporte jurídico." },
+  // Big specs grid (2 columns x 3 rows)
+  const items: { k: string; v: string; icon?: string }[] = [
+    { k: "Tipo do Imóvel", v: propertyTypeLabel(data) },
+    { k: "Área Construída", v: data.area ? `${data.area} m²` : "—" },
+    { k: "Quartos", v: data.bedrooms ? String(data.bedrooms) : "—" },
+    { k: "Suítes", v: data.suites ? String(data.suites) : "—" },
+    { k: "Banheiros", v: data.bathrooms ? String(data.bathrooms) : "—" },
+    { k: "Vagas de Garagem", v: data.parking_spots ? String(data.parking_spots) : "—" },
+  ];
+
+  const cols = 2;
+  const cardW = (W - M * 2 - 6) / cols;
+  const cardH = 28;
+  items.forEach((it, i) => {
+    const col = i % cols;
+    const row = Math.floor(i / cols);
+    const x = M + col * (cardW + 6);
+    const cy = y + row * (cardH + 6);
+
+    setFill(pdf, C.white);
+    rr(pdf, x, cy, cardW, cardH, 2.5, "F");
+    setDraw(pdf, C.grayLine);
+    pdf.setLineWidth(0.3);
+    rr(pdf, x, cy, cardW, cardH, 2.5, "S");
+
+    setFill(pdf, C.gold);
+    pdf.rect(x, cy, 1.4, cardH, "F");
+
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(7);
+    setText(pdf, C.grayMute);
+    pdf.text(it.k.toUpperCase(), x + 6, cy + 8);
+
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(16);
+    setText(pdf, C.ink);
+    pdf.text(it.v, x + 6, cy + 20);
+  });
+
+  y += Math.ceil(items.length / cols) * (cardH + 6) + 6;
+
+  // Financing acceptance highlight (only for sale)
+  if (!isRental(data)) {
+    setFill(pdf, C.greenSoft);
+    rr(pdf, M, y, W - M * 2, 22, 2.5, "F");
+    setFill(pdf, C.green);
+    pdf.rect(M, y, 1.5, 22, "F");
+
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(7.5);
+    setText(pdf, C.green);
+    pdf.text("FINANCIAMENTO", M + 6, y + 8);
+
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(11);
+    setText(pdf, C.ink);
+    pdf.text("Aceita financiamento bancário e uso de FGTS", M + 6, y + 16);
+    y += 28;
+  }
+
+  // Description block
+  if (data.description && data.description.trim()) {
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(9);
+    setText(pdf, C.ink);
+    pdf.text("SOBRE O IMÓVEL", M, y + 4);
+    setFill(pdf, C.gold);
+    pdf.rect(M, y + 6, 8, 0.6, "F");
+
+    pdf.setFont("helvetica", "normal");
+    pdf.setFontSize(9);
+    setText(pdf, C.ink2);
+    const desc = data.description.replace(/\s+/g, " ").trim();
+    const lines = pdf.splitTextToSize(desc, W - M * 2);
+    const maxLines = Math.max(0, Math.floor((H - 30 - (y + 12)) / 5));
+    pdf.text(lines.slice(0, maxLines), M, y + 14);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// PAGE 3 — DIFFERENTIALS
+// ═══════════════════════════════════════════════════════════════════════
+function drawDifferentials(pdf: jsPDF, data: ProposalData, y: number) {
+  pdf.setFont("helvetica", "normal");
+  pdf.setFontSize(9.5);
+  setText(pdf, C.grayMute);
+  const intro = pdf.splitTextToSize(
+    "Os pontos fortes que tornam este imóvel uma escolha inteligente para morar ou investir.",
+    W - M * 2
+  );
+  pdf.text(intro, M, y);
+  y += intro.length * 5 + 8;
+
+  const rental = isRental(data);
+
+  const items: { t: string; d: string }[] = [
+    { t: "Localização privilegiada", d: "Região consolidada com fácil acesso a comércio, serviços e vias principais." },
+    { t: "Pronto para morar", d: "Imóvel em condições de uso imediato — sem reformas necessárias." },
+    { t: "Boa distribuição interna", d: "Ambientes funcionais que aproveitam cada metro com inteligência." },
+    { t: "Iluminação e ventilação", d: "Espaços bem iluminados e arejados, com conforto durante o dia inteiro." },
+    rental
+      ? { t: "Pronto para alugar", d: "Documentação organizada e processo de locação simplificado." }
+      : { t: "Aceita financiamento", d: "Compatível com financiamento bancário e uso de FGTS." },
+    { t: "Ideal para família e investimento", d: "Perfil versátil — ótimo para morar ou gerar renda com locação." },
   ];
 
   const colW = (W - M * 2 - 6) / 2;
-  const rowH = 32;
+  const rowH = 30;
   items.forEach((it, i) => {
     const col = i % 2;
     const row = Math.floor(i / 2);
     const x = M + col * (colW + 6);
-    const cy = y + row * (rowH + 6);
+    const cy = y + row * (rowH + 5);
 
     setFill(pdf, C.white);
     rr(pdf, x, cy, colW, rowH, 2.5, "F");
@@ -561,288 +489,223 @@ function drawWhyUs(pdf: jsPDF, y: number) {
     pdf.setLineWidth(0.3);
     rr(pdf, x, cy, colW, rowH, 2.5, "S");
 
-    // Check icon disc
+    // Check disc
     setFill(pdf, C.green);
-    pdf.circle(x + 8, cy + 10, 3.5, "F");
+    pdf.circle(x + 9, cy + 9, 3.5, "F");
     pdf.setFont("helvetica", "bold");
     pdf.setFontSize(8);
     setText(pdf, C.white);
-    pdf.text("✓", x + 8, cy + 11.5, { align: "center" });
+    pdf.text("✓", x + 9, cy + 10.5, { align: "center" });
 
     pdf.setFont("helvetica", "bold");
     pdf.setFontSize(10);
     setText(pdf, C.ink);
-    pdf.text(it.t, x + 15, cy + 9);
+    pdf.text(it.t, x + 16, cy + 9);
 
     pdf.setFont("helvetica", "normal");
     pdf.setFontSize(8);
     setText(pdf, C.grayMute);
-    const lines = pdf.splitTextToSize(it.d, colW - 18);
-    pdf.text(lines.slice(0, 3), x + 15, cy + 15);
+    const lines = pdf.splitTextToSize(it.d, colW - 20);
+    pdf.text(lines.slice(0, 3), x + 16, cy + 15);
   });
 
-  // Trust banner
-  const banY = y + Math.ceil(items.length / 2) * (rowH + 6) + 6;
-  setFill(pdf, C.navy);
-  rr(pdf, M, banY, W - M * 2, 22, 2.5, "F");
+  y += Math.ceil(items.length / 2) * (rowH + 5) + 8;
 
-  pdf.setFont("helvetica", "bold");
-  pdf.setFontSize(7.5);
-  setText(pdf, C.gold);
-  pdf.text("RESULTADO COMPROVADO", M + 8, banY + 8);
-
-  pdf.setFont("helvetica", "bold");
-  pdf.setFontSize(11);
-  setText(pdf, C.white);
-  pdf.text("Tecnologia + Pessoas + Estratégia = Vendas mais rápidas", M + 8, banY + 16);
-}
-
-// ═══════════════════════════════════════════════════════════════════════
-// PAGE 4 — MARKETING TIMELINE
-// ═══════════════════════════════════════════════════════════════════════
-function drawMarketingTimeline(pdf: jsPDF, y: number) {
-  pdf.setFont("helvetica", "normal");
-  pdf.setFontSize(9.5);
-  setText(pdf, C.grayMute);
-  const intro = pdf.splitTextToSize(
-    "7 etapas executadas em sequência por times especializados — do clique inicial à assinatura do contrato.",
-    W - M * 2
-  );
-  pdf.text(intro, M, y);
-  y += intro.length * 5 + 8;
-
-  const steps = [
-    { n: "01", t: "Fotos Profissionais",      d: "Sessão fotográfica HDR + drone quando aplicável." },
-    { n: "02", t: "Anúncio Premium",          d: "Copywriting, ficha técnica e SEO local." },
-    { n: "03", t: "Redes Sociais",            d: "Post, Reels e Stories no Instagram + Facebook." },
-    { n: "04", t: "Google + Meta Ads",        d: "Tráfego pago segmentado por intenção de compra." },
-    { n: "05", t: "WhatsApp Leads",           d: "Bot IA qualifica e distribui ao corretor responsável." },
-    { n: "06", t: "Visitas Agendadas",        d: "Agenda automatizada, lembretes e check-in." },
-    { n: "07", t: "Fechamento",               d: "Negociação, contrato e suporte pós-venda." },
-  ];
-
-  const lineX = M + 16;
-  // Vertical timeline line
-  setFill(pdf, C.grayLine);
-  pdf.rect(lineX, y, 0.6, steps.length * 18 - 6, "F");
-
-  steps.forEach((s, i) => {
-    const cy = y + i * 18;
-
-    // Number disc
-    setFill(pdf, i === steps.length - 1 ? C.green : C.navy);
-    pdf.circle(lineX + 0.3, cy + 3, 5.5, "F");
-    pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(8);
-    setText(pdf, C.white);
-    pdf.text(s.n, lineX + 0.3, cy + 4.6, { align: "center" });
-
-    // Card
-    const cardX = lineX + 10;
-    const cardW = W - M - cardX;
-    setFill(pdf, C.white);
-    rr(pdf, cardX, cy - 2, cardW, 14, 2, "F");
-    setDraw(pdf, C.grayLine);
-    pdf.setLineWidth(0.25);
-    rr(pdf, cardX, cy - 2, cardW, 14, 2, "S");
-
-    pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(10);
-    setText(pdf, C.ink);
-    pdf.text(s.t, cardX + 5, cy + 3);
-
-    pdf.setFont("helvetica", "normal");
-    pdf.setFontSize(8);
-    setText(pdf, C.grayMute);
-    pdf.text(s.d, cardX + 5, cy + 8.5);
-  });
-}
-
-// ═══════════════════════════════════════════════════════════════════════
-// PAGE 5 — PRICE COMPARISON
-// ═══════════════════════════════════════════════════════════════════════
-function drawPriceComparison(pdf: jsPDF, data: ProposalData, y: number) {
-  pdf.setFont("helvetica", "normal");
-  pdf.setFontSize(9.5);
-  setText(pdf, C.grayMute);
-  const intro = pdf.splitTextToSize(
-    "Como o preço de anúncio impacta sua receita final e o tempo de venda. Análise visual comparativa.",
-    W - M * 2
-  );
-  pdf.text(intro, M, y);
-  y += intro.length * 5 + 8;
-
-  const base = data.price;
-  const rows = [
-    { label: "Abaixo do mercado", value: base * 0.85, time: "15 dias", color: C.red,   pct: 65, note: "Perde dinheiro · venda rápida demais" },
-    { label: "Preço correto",     value: base,        time: "60 dias", color: C.green, pct: 88, note: "Equilíbrio entre tempo e lucro" },
-    { label: "Preço premium",     value: base * 1.10, time: "120 dias",time2: "",      color: C.gold,  pct: 100, note: "Maior margem · requer paciência" },
-  ];
-
-  const tableX = M;
-  const tableW = W - M * 2;
-
-  // Header
-  setFill(pdf, C.ink);
-  rr(pdf, tableX, y, tableW, 9, 2, "F");
-  pdf.setFont("helvetica", "bold");
-  pdf.setFontSize(7.5);
-  setText(pdf, C.white);
-  pdf.text("ESTRATÉGIA",     tableX + 5, y + 5.8);
-  pdf.text("VALOR ANÚNCIO",  tableX + 70, y + 5.8);
-  pdf.text("TEMPO MÉDIO",    tableX + 110, y + 5.8);
-  pdf.text("VISIBILIDADE",   tableX + tableW - 5, y + 5.8, { align: "right" });
-  y += 13;
-
-  rows.forEach((r) => {
-    setFill(pdf, C.white);
-    rr(pdf, tableX, y, tableW, 22, 2, "F");
-    setDraw(pdf, C.grayLine);
-    pdf.setLineWidth(0.3);
-    rr(pdf, tableX, y, tableW, 22, 2, "S");
-
-    setFill(pdf, r.color);
-    pdf.rect(tableX, y, 1.5, 22, "F");
-
-    pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(10);
-    setText(pdf, C.ink);
-    pdf.text(r.label, tableX + 6, y + 8);
-
-    pdf.setFont("helvetica", "normal");
-    pdf.setFontSize(7.5);
-    setText(pdf, C.grayMute);
-    pdf.text(r.note, tableX + 6, y + 14);
-
-    pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(11);
-    setText(pdf, C.ink);
-    pdf.text(fmtPriceShort(r.value), tableX + 70, y + 11);
-
-    pdf.setFont("helvetica", "normal");
-    pdf.setFontSize(9);
-    setText(pdf, C.ink2);
-    pdf.text(r.time, tableX + 110, y + 11);
-
-    // Horizontal bar (visibility)
-    const barX = tableX + 145;
-    const barMaxW = tableW - 145 - 8;
-    const barH = 4;
-    setFill(pdf, C.grayLine);
-    rr(pdf, barX, y + 9, barMaxW, barH, 1, "F");
-    setFill(pdf, r.color);
-    rr(pdf, barX, y + 9, barMaxW * (r.pct / 100), barH, 1, "F");
-    pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(7.5);
-    setText(pdf, r.color);
-    pdf.text(`${r.pct}%`, tableX + tableW - 5, y + 17, { align: "right" });
-
-    y += 25;
-  });
-
-  // Recommendation footer
-  setFill(pdf, C.greenSoft);
-  rr(pdf, M, y + 4, W - M * 2, 22, 2.5, "F");
-  setFill(pdf, C.green);
-  pdf.rect(M, y + 4, 1.5, 22, "F");
-
-  pdf.setFont("helvetica", "bold");
-  pdf.setFontSize(8);
-  setText(pdf, C.green);
-  pdf.text("RECOMENDAÇÃO CAPIMOBI", M + 6, y + 12);
-
-  pdf.setFont("helvetica", "normal");
-  pdf.setFontSize(9);
-  setText(pdf, C.ink);
-  pdf.text(`Anunciar em ${fmtPrice(base)} — preço alinhado ao mercado regional para maximizar liquidez e lucro.`, M + 6, y + 19);
-}
-
-// ═══════════════════════════════════════════════════════════════════════
-// PAGE 6 — VALUATION OPPORTUNITIES
-// ═══════════════════════════════════════════════════════════════════════
-function drawValuation(pdf: jsPDF, y: number) {
-  pdf.setFont("helvetica", "normal");
-  pdf.setFontSize(9.5);
-  setText(pdf, C.grayMute);
-  const intro = pdf.splitTextToSize(
-    "Pequenas intervenções com retorno mensurável. Investimentos inteligentes que aumentam o valor percebido pelo comprador.",
-    W - M * 2
-  );
-  pdf.text(intro, M, y);
-  y += intro.length * 5 + 8;
-
-  const items = [
-    { t: "Pintura nova",        pct: 8,  d: "Paredes claras valorizam a percepção de espaço." },
-    { t: "Reforma simples",     pct: 12, d: "Atualização de pisos, louças e bancadas." },
-    { t: "Organização",         pct: 4,  d: "Home staging básico — remove excesso visual." },
-    { t: "Fotos profissionais", pct: 6,  d: "Aumenta cliques no anúncio em até 3x." },
-    { t: "Pequenos reparos",    pct: 5,  d: "Vazamentos, pintura, fechaduras, portas." },
-  ];
-
-  const totalPct = items.reduce((s, i) => s + i.pct, 0);
-
-  const rowH = 22;
-  items.forEach((it, i) => {
-    const cy = y + i * (rowH + 4);
-    setFill(pdf, C.white);
-    rr(pdf, M, cy, W - M * 2, rowH, 2.5, "F");
-    setDraw(pdf, C.grayLine);
-    pdf.setLineWidth(0.3);
-    rr(pdf, M, cy, W - M * 2, rowH, 2.5, "S");
-
-    // % chip
-    setFill(pdf, C.green);
-    rr(pdf, M + 5, cy + 5, 18, 12, 2, "F");
-    pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(10);
-    setText(pdf, C.white);
-    pdf.text(`+${it.pct}%`, M + 14, cy + 13, { align: "center" });
-
-    pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(10);
-    setText(pdf, C.ink);
-    pdf.text(it.t, M + 28, cy + 9);
-
-    pdf.setFont("helvetica", "normal");
-    pdf.setFontSize(8);
-    setText(pdf, C.grayMute);
-    pdf.text(it.d, M + 28, cy + 15);
-  });
-
-  y += items.length * (rowH + 4) + 6;
-
-  // Total potential
+  // Profile banner
   setFill(pdf, C.navy);
   rr(pdf, M, y, W - M * 2, 26, 2.5, "F");
 
   pdf.setFont("helvetica", "bold");
   pdf.setFontSize(7.5);
   setText(pdf, C.gold);
-  pdf.text("POTENCIAL TOTAL DE VALORIZAÇÃO", M + 8, y + 9);
+  pdf.text("PERFIL DO IMÓVEL", M + 8, y + 9);
 
   pdf.setFont("helvetica", "bold");
-  pdf.setFontSize(20);
+  pdf.setFontSize(12);
   setText(pdf, C.white);
-  pdf.text(`Até +${totalPct}%`, M + 8, y + 20);
-
-  pdf.setFont("helvetica", "normal");
-  pdf.setFontSize(8.5);
-  setText(pdf, [203, 213, 225]);
-  pdf.text("Combinando todas as melhorias acima · estimativa de mercado", W - M - 8, y + 16, { align: "right" });
+  pdf.text(rental ? "Ideal para quem busca conforto e praticidade." : "Ideal para família, primeira moradia ou investimento.", M + 8, y + 18);
 }
 
 // ═══════════════════════════════════════════════════════════════════════
-// PAGE 7 — LOCATION
+// PAGE 4 — FINANCIAL SIMULATION
+// ═══════════════════════════════════════════════════════════════════════
+function drawFinancing(pdf: jsPDF, data: ProposalData, y: number) {
+  pdf.setFont("helvetica", "normal");
+  pdf.setFontSize(9.5);
+  setText(pdf, C.grayMute);
+  const intro = pdf.splitTextToSize(
+    "Simulação aproximada para você visualizar o investimento. Valores podem variar conforme banco, perfil e prazo aprovado.",
+    W - M * 2
+  );
+  pdf.text(intro, M, y);
+  y += intro.length * 5 + 8;
+
+  const price = data.price;
+
+  // Three down-payment scenarios
+  const scenarios = [
+    { label: "ENTRADA 20%", down: price * 0.20, finance: price * 0.80, accent: C.blue, hint: "Mínimo aceito pela maioria dos bancos" },
+    { label: "ENTRADA 30%", down: price * 0.30, finance: price * 0.70, accent: C.green, hint: "Recomendado · parcela menor" },
+    { label: "ENTRADA 50%", down: price * 0.50, finance: price * 0.50, accent: C.gold, hint: "Maior poupança em juros" },
+  ];
+
+  const cw = (W - M * 2 - 8) / 3;
+  scenarios.forEach((s, i) => {
+    const x = M + i * (cw + 4);
+    setFill(pdf, C.white);
+    rr(pdf, x, y, cw, 56, 3, "F");
+    setDraw(pdf, C.grayLine);
+    pdf.setLineWidth(0.3);
+    rr(pdf, x, y, cw, 56, 3, "S");
+
+    setFill(pdf, s.accent);
+    rr(pdf, x, y, cw, 1.5, 1, "F");
+
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(7);
+    setText(pdf, C.grayMute);
+    pdf.text(s.label, x + 5, y + 9);
+
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(7);
+    setText(pdf, C.gold);
+    pdf.text("ENTRADA", x + 5, y + 17);
+
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(13);
+    setText(pdf, C.ink);
+    let dv = fmtPrice(s.down);
+    let fs = 13;
+    pdf.setFontSize(fs);
+    while (pdf.getTextWidth(dv) > cw - 10 && fs > 8) { fs -= 0.5; pdf.setFontSize(fs); }
+    pdf.text(dv, x + 5, y + 24);
+
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(7);
+    setText(pdf, C.gold);
+    pdf.text("FINANCIA", x + 5, y + 32);
+
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(11);
+    setText(pdf, C.ink2);
+    let fv = fmtPrice(s.finance);
+    fs = 11;
+    pdf.setFontSize(fs);
+    while (pdf.getTextWidth(fv) > cw - 10 && fs > 7) { fs -= 0.5; pdf.setFontSize(fs); }
+    pdf.text(fv, x + 5, y + 39);
+
+    setDraw(pdf, C.grayLine);
+    pdf.setLineWidth(0.2);
+    pdf.line(x + 5, y + 43, x + cw - 5, y + 43);
+
+    pdf.setFont("helvetica", "normal");
+    pdf.setFontSize(7.5);
+    setText(pdf, C.grayMute);
+    const hl = pdf.splitTextToSize(s.hint, cw - 10);
+    pdf.text(hl, x + 5, y + 49);
+  });
+
+  y += 64;
+
+  // Monthly installment table (simulated SAC-style approximations)
+  pdf.setFont("helvetica", "bold");
+  pdf.setFontSize(11);
+  setText(pdf, C.ink);
+  pdf.text("Parcelas aproximadas — entrada de 20%", M, y);
+  y += 5;
+
+  pdf.setFont("helvetica", "normal");
+  pdf.setFontSize(8);
+  setText(pdf, C.grayMute);
+  pdf.text("Cálculo simplificado para fins ilustrativos · taxa média 10,5% a.a.", M, y);
+  y += 6;
+
+  // Header
+  setFill(pdf, C.ink);
+  rr(pdf, M, y, W - M * 2, 9, 2, "F");
+  pdf.setFont("helvetica", "bold");
+  pdf.setFontSize(8);
+  setText(pdf, C.white);
+  pdf.text("PRAZO", M + 6, y + 5.8);
+  pdf.text("PARCELA APROXIMADA", M + 60, y + 5.8);
+  pdf.text("RENDA SUGERIDA", W - M - 6, y + 5.8, { align: "right" });
+  y += 12;
+
+  const financed = price * 0.80;
+  const rate = 0.105 / 12; // monthly
+  const terms = [
+    { years: 15, label: "180 meses (15 anos)" },
+    { years: 20, label: "240 meses (20 anos)" },
+    { years: 30, label: "360 meses (30 anos)" },
+  ];
+
+  terms.forEach((t) => {
+    const n = t.years * 12;
+    // PRICE formula
+    const pmt = (financed * rate) / (1 - Math.pow(1 + rate, -n));
+    const income = pmt / 0.30; // 30% commitment
+
+    setFill(pdf, C.white);
+    rr(pdf, M, y, W - M * 2, 14, 2, "F");
+    setDraw(pdf, C.grayLine);
+    pdf.setLineWidth(0.25);
+    rr(pdf, M, y, W - M * 2, 14, 2, "S");
+
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(9.5);
+    setText(pdf, C.ink);
+    pdf.text(t.label, M + 6, y + 9);
+
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(11);
+    setText(pdf, C.green);
+    pdf.text(fmtPrice(pmt), M + 60, y + 9);
+
+    pdf.setFont("helvetica", "normal");
+    pdf.setFontSize(9);
+    setText(pdf, C.ink2);
+    pdf.text(fmtPrice(income), W - M - 6, y + 9, { align: "right" });
+
+    y += 17;
+  });
+
+  // Disclaimer
+  y += 2;
+  setFill(pdf, C.bg);
+  rr(pdf, M, y, W - M * 2, 14, 2, "F");
+  pdf.setFont("helvetica", "italic");
+  pdf.setFontSize(7.5);
+  setText(pdf, C.grayMute);
+  const dis = pdf.splitTextToSize(
+    "Valores estimados. Aprovação, taxa real e condições finais dependem da análise de crédito do banco escolhido.",
+    W - M * 2 - 8
+  );
+  pdf.text(dis, M + 4, y + 6);
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// PAGE 5 — LOCATION
 // ═══════════════════════════════════════════════════════════════════════
 function drawLocation(pdf: jsPDF, data: ProposalData, mapImg: string | null, y: number) {
   pdf.setFont("helvetica", "normal");
   pdf.setFontSize(9.5);
   setText(pdf, C.grayMute);
-  pdf.text(data.location, M, y);
+  const intro = pdf.splitTextToSize(
+    "Região com excelente infraestrutura urbana — comércio, escolas e transporte ao alcance.",
+    W - M * 2
+  );
+  pdf.text(intro, M, y);
+  y += intro.length * 5 + 6;
+
+  // Address line
+  pdf.setFont("helvetica", "bold");
+  pdf.setFontSize(11);
+  setText(pdf, C.ink);
+  pdf.text(`◆  ${data.location}`, M, y);
   y += 8;
 
   // Map card
-  const mapH = 130;
+  const mapH = 95;
   setFill(pdf, C.white);
   rr(pdf, M, y, W - M * 2, mapH + 6, 3, "F");
   setDraw(pdf, C.grayLine);
@@ -862,6 +725,36 @@ function drawLocation(pdf: jsPDF, data: ProposalData, mapImg: string | null, y: 
   }
   y += mapH + 12;
 
+  // Nearby amenities (3 cards)
+  const items = [
+    { t: "Comércio", d: "Mercados, padarias, farmácias e restaurantes nas proximidades." },
+    { t: "Escolas", d: "Instituições de ensino infantil, fundamental e médio na região." },
+    { t: "Transporte", d: "Acesso rápido a vias principais e transporte público." },
+  ];
+  const cw = (W - M * 2 - 8) / 3;
+  items.forEach((it, i) => {
+    const x = M + i * (cw + 4);
+    setFill(pdf, C.white);
+    rr(pdf, x, y, cw, 32, 2.5, "F");
+    setDraw(pdf, C.grayLine);
+    pdf.setLineWidth(0.3);
+    rr(pdf, x, y, cw, 32, 2.5, "S");
+    setFill(pdf, C.blue);
+    pdf.rect(x, y, cw, 1.2, "F");
+
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(10);
+    setText(pdf, C.ink);
+    pdf.text(it.t, x + 5, y + 10);
+
+    pdf.setFont("helvetica", "normal");
+    pdf.setFontSize(8);
+    setText(pdf, C.grayMute);
+    const ll = pdf.splitTextToSize(it.d, cw - 10);
+    pdf.text(ll.slice(0, 4), x + 5, y + 16);
+  });
+  y += 38;
+
   // Open in Maps button
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(data.location)}`;
   setFill(pdf, C.blue);
@@ -874,14 +767,14 @@ function drawLocation(pdf: jsPDF, data: ProposalData, mapImg: string | null, y: 
 }
 
 // ═══════════════════════════════════════════════════════════════════════
-// PAGE FINAL — CTA
+// PAGE FINAL — CTA (buyer focus)
 // ═══════════════════════════════════════════════════════════════════════
 function drawClosingCta(pdf: jsPDF, data: ProposalData, qrImg: string | null) {
   // Full dark background
   setFill(pdf, C.navyDeep);
   pdf.rect(0, 0, W, H, "F");
 
-  // Subtle gold corner mark
+  // Gold corner mark
   setFill(pdf, C.gold);
   pdf.rect(M, M, 14, 0.8, "F");
 
@@ -893,40 +786,71 @@ function drawClosingCta(pdf: jsPDF, data: ProposalData, qrImg: string | null) {
 
   pdf.setFont("helvetica", "normal");
   pdf.setFontSize(7);
-  setText(pdf, [148, 163, 184]);
+  setText(pdf, C.grayDark);
   pdf.text("INTELIGÊNCIA IMOBILIÁRIA", M, M + 11);
 
   // Eyebrow
   pdf.setFont("helvetica", "bold");
   pdf.setFontSize(8);
   setText(pdf, C.gold);
-  pdf.text("PRÓXIMO PASSO", M, 70);
+  pdf.text("GOSTOU DESTE IMÓVEL?", M, 70);
 
   // Big headline
   pdf.setFont("helvetica", "bold");
-  pdf.setFontSize(28);
+  pdf.setFontSize(30);
   setText(pdf, C.white);
-  pdf.text("Seu imóvel merece", M, 84);
-  pdf.text("estratégia profissional.", M, 98);
+  pdf.text("Agende sua visita", M, 86);
+  pdf.text("agora mesmo.", M, 102);
 
   pdf.setFont("helvetica", "normal");
   pdf.setFontSize(11);
   setText(pdf, [203, 213, 225]);
   const sub = pdf.splitTextToSize(
-    "Fale agora com a equipe Capimobi e comece o plano de venda em até 24 horas.",
+    "Fale diretamente com o corretor responsável pelo imóvel. Atendimento rápido pelo WhatsApp.",
     W - M * 2
   );
-  pdf.text(sub, M, 110);
+  pdf.text(sub, M, 114);
 
-  // Contact card
-  let cy = 130;
-  setFill(pdf, [255, 255, 255]);
+  // Property mini-card
+  let cy = 132;
+  setFill(pdf, C.white);
   pdf.setGState(pdf.GState({ opacity: 0.06 }));
-  rr(pdf, M, cy, W - M * 2, 60, 3, "F");
+  rr(pdf, M, cy, W - M * 2, 30, 3, "F");
   pdf.setGState(pdf.GState({ opacity: 1 }));
   setDraw(pdf, [55, 78, 120]);
   pdf.setLineWidth(0.3);
-  rr(pdf, M, cy, W - M * 2, 60, 3, "S");
+  rr(pdf, M, cy, W - M * 2, 30, 3, "S");
+
+  pdf.setFont("helvetica", "bold");
+  pdf.setFontSize(7);
+  setText(pdf, C.gold);
+  pdf.text("IMÓVEL DE INTERESSE", M + 8, cy + 8);
+
+  pdf.setFont("helvetica", "bold");
+  pdf.setFontSize(12);
+  setText(pdf, C.white);
+  const tl = pdf.splitTextToSize(data.title, W - M * 2 - 80);
+  pdf.text(tl[0], M + 8, cy + 16);
+
+  pdf.setFont("helvetica", "normal");
+  pdf.setFontSize(8.5);
+  setText(pdf, C.grayDark);
+  pdf.text(data.location || "—", M + 8, cy + 23);
+
+  pdf.setFont("helvetica", "bold");
+  pdf.setFontSize(13);
+  setText(pdf, C.gold);
+  pdf.text(priceLabel(data), W - M - 8, cy + 19, { align: "right" });
+
+  // Broker card
+  cy = 170;
+  setFill(pdf, C.white);
+  pdf.setGState(pdf.GState({ opacity: 0.06 }));
+  rr(pdf, M, cy, W - M * 2, 50, 3, "F");
+  pdf.setGState(pdf.GState({ opacity: 1 }));
+  setDraw(pdf, [55, 78, 120]);
+  pdf.setLineWidth(0.3);
+  rr(pdf, M, cy, W - M * 2, 50, 3, "S");
 
   pdf.setFont("helvetica", "bold");
   pdf.setFontSize(7);
@@ -940,108 +864,67 @@ function drawClosingCta(pdf: jsPDF, data: ProposalData, qrImg: string | null) {
 
   pdf.setFont("helvetica", "normal");
   pdf.setFontSize(9);
-  setText(pdf, [148, 163, 184]);
+  setText(pdf, C.grayDark);
   pdf.text(catLabel(data.sellerCategory), M + 8, cy + 25);
 
-  // Contact rows
-  let ry = cy + 35;
   if (data.sellerPhone) {
     pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(8);
-    setText(pdf, [148, 163, 184]);
-    pdf.text("WHATSAPP", M + 8, ry);
+    pdf.setFontSize(7);
+    setText(pdf, C.grayDark);
+    pdf.text("WHATSAPP", M + 8, cy + 35);
+
     pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(11);
+    pdf.setFontSize(13);
     setText(pdf, C.white);
-    pdf.text(data.sellerPhone, M + 8, ry + 6);
+    pdf.text(data.sellerPhone, M + 8, cy + 43);
   }
 
-  if (data.sellerInstagram) {
-    pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(8);
-    setText(pdf, [148, 163, 184]);
-    pdf.text("INSTAGRAM", M + 75, ry);
-    pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(11);
-    setText(pdf, C.white);
-    pdf.text(data.sellerInstagram, M + 75, ry + 6);
-  }
-
-  if (data.sellerSiteUrl || data.propertyUrl) {
-    pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(8);
-    setText(pdf, [148, 163, 184]);
-    pdf.text("SITE", M + 130, ry);
-    pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(10);
-    setText(pdf, C.white);
-    const site = data.sellerSiteUrl || "capimobi.com.br";
-    pdf.text(site.replace(/^https?:\/\//, "").slice(0, 22), M + 130, ry + 6);
-  }
-
-  // Action buttons
-  const bY = 205;
-  const bW = (W - M * 2 - 6) / 2;
-  const bH = 14;
-
-  // Solicitar visita (WhatsApp green)
-  if (data.sellerPhone) {
-    const msg = encodeURIComponent(`Olá! Quero solicitar uma visita ao imóvel: ${data.title}`);
-    const phone = data.sellerPhone.replace(/\D/g, "");
-    const url = `https://wa.me/55${phone}?text=${msg}`;
-    setFill(pdf, [37, 211, 102]);
-    rr(pdf, M, bY, bW, bH, 3, "F");
-    pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(11);
-    setText(pdf, C.white);
-    pdf.text("Solicitar visita", M + bW / 2, bY + 9, { align: "center" });
-    pdf.link(M, bY, bW, bH, { url });
-  }
-
-  // Anunciar agora (gold)
-  setFill(pdf, C.gold);
-  rr(pdf, M + bW + 6, bY, bW, bH, 3, "F");
-  pdf.setFont("helvetica", "bold");
-  pdf.setFontSize(11);
-  setText(pdf, C.ink);
-  pdf.text("Anunciar agora  →", M + bW + 6 + bW / 2, bY + 9, { align: "center" });
-  pdf.link(M + bW + 6, bY, bW, bH, { url: "https://capimobi.com.br/anunciar" });
-
-  // QR + URL
-  const qrSize = 30;
-  const qrY = 230;
+  // QR code
   if (qrImg) {
-    setFill(pdf, C.white);
-    rr(pdf, W - M - qrSize - 4, qrY - 2, qrSize + 4, qrSize + 4, 2, "F");
-    try { pdf.addImage(qrImg, "PNG", W - M - qrSize - 2, qrY, qrSize, qrSize); } catch {}
+    try {
+      const qrSize = 32;
+      setFill(pdf, C.white);
+      rr(pdf, W - M - 8 - qrSize, cy + 9, qrSize, qrSize, 2, "F");
+      pdf.addImage(qrImg, "PNG", W - M - 8 - qrSize + 2, cy + 11, qrSize - 4, qrSize - 4, undefined, "FAST");
+      pdf.setFont("helvetica", "normal");
+      pdf.setFontSize(6.5);
+      setText(pdf, C.grayDark);
+      pdf.text("Ver imóvel online", W - M - 8 - qrSize / 2, cy + 46, { align: "center" });
+    } catch { /* skip */ }
   }
 
+  // CTA Button — Schedule visit (WhatsApp)
+  cy = 232;
+  const wa = data.sellerPhone ? data.sellerPhone.replace(/\D/g, "") : "";
+  const waMsg = encodeURIComponent(`Olá ${data.sellerName}, tenho interesse no imóvel: ${data.title} (${data.propertyUrl}). Posso agendar uma visita?`);
+  const waUrl = wa ? `https://wa.me/${wa}?text=${waMsg}` : data.propertyUrl;
+
+  setFill(pdf, C.green);
+  rr(pdf, M, cy, W - M * 2, 16, 3, "F");
   pdf.setFont("helvetica", "bold");
-  pdf.setFontSize(8);
-  setText(pdf, C.gold);
-  pdf.text("VER ANÚNCIO ONLINE", M, qrY + 8);
-
-  pdf.setFont("helvetica", "normal");
-  pdf.setFontSize(8);
-  setText(pdf, [203, 213, 225]);
-  const urlLines = pdf.splitTextToSize(data.propertyUrl, W - M * 2 - qrSize - 14);
-  pdf.text(urlLines.slice(0, 3), M, qrY + 14);
-  pdf.link(M, qrY + 10, W - M * 2 - qrSize - 14, 10, { url: data.propertyUrl });
-
-  // Bottom hairline
-  setDraw(pdf, [55, 78, 120]);
-  pdf.setLineWidth(0.3);
-  pdf.line(M, H - 16, W - M, H - 16);
-
-  pdf.setFont("helvetica", "bold");
-  pdf.setFontSize(7);
+  pdf.setFontSize(12);
   setText(pdf, C.white);
-  pdf.text("CAPIMOBI", M, H - 9);
-  pdf.setFont("helvetica", "normal");
-  setText(pdf, [148, 163, 184]);
-  pdf.text("  ·  Inteligência Imobiliária", M + pdf.getTextWidth("CAPIMOBI"), H - 9);
+  pdf.text("Agendar visita pelo WhatsApp  →", W / 2, cy + 10.5, { align: "center" });
+  pdf.link(M, cy, W - M * 2, 16, { url: waUrl });
 
-  pdf.setFont("helvetica", "normal");
-  setText(pdf, [148, 163, 184]);
-  pdf.text(`Proposta gerada em ${new Date().toLocaleDateString("pt-BR")}`, W - M, H - 9, { align: "right" });
+  // Secondary button — view online
+  cy += 20;
+  setDraw(pdf, C.gold);
+  pdf.setLineWidth(0.6);
+  rr(pdf, M, cy, W - M * 2, 14, 3, "S");
+  pdf.setFont("helvetica", "bold");
+  pdf.setFontSize(10);
+  setText(pdf, C.gold);
+  pdf.text("Ver imóvel completo no site  →", W / 2, cy + 9, { align: "center" });
+  pdf.link(M, cy, W - M * 2, 14, { url: data.propertyUrl });
+}
+
+function catLabel(cat: string): string {
+  const m: Record<string, string> = {
+    imobiliaria: "Imobiliária",
+    corretor: "Corretor(a)",
+    construtora: "Construtora",
+    proprietario: "Proprietário(a)",
+  };
+  return m[cat] || "Corretor(a)";
 }
