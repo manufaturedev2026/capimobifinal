@@ -276,15 +276,38 @@ export default function FundadorPage() {
                 </div>
               </div>
 
-              {/* Benefícios resumidos */}
-              <ul className="space-y-2">
-                {FOUNDER_BENEFITS.slice(0, 6).map((b, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm text-white/75">
-                    <Check className="w-4 h-4 shrink-0 mt-0.5" style={{ color: theme.primary }} />
-                    <span>{b}</span>
-                  </li>
-                ))}
-              </ul>
+              {/* Benefícios EXCLUSIVOS de Fundador */}
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5" style={{ color: theme.primary }}>
+                  <Crown className="w-3.5 h-3.5" /> Vantagens exclusivas Fundador
+                </p>
+                <ul className="space-y-2">
+                  {FOUNDER_BENEFITS.slice(0, 5).map((b, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm text-white/80">
+                      <Check className="w-4 h-4 shrink-0 mt-0.5" style={{ color: theme.primary }} />
+                      <span>{b}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Benefícios HERDADOS do plano (vindos do banco) */}
+              {planBenefits.length > 0 && (
+                <div className="pt-4 border-t border-white/10">
+                  <p className="text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-1.5 text-white/90">
+                    <Sparkles className="w-3.5 h-3.5" style={{ color: theme.promoAccent || theme.primary }} />
+                    Tudo que vem no {equivalentPlan}
+                  </p>
+                  <ul className="space-y-2">
+                    {planBenefits.map((b, i) => (
+                      <li key={i} className="flex items-start gap-2 text-sm text-white/75">
+                        <Check className="w-4 h-4 shrink-0 mt-0.5" style={{ color: theme.promoAccent || theme.primary }} />
+                        <span>{b}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
               {/* CTA */}
               <Button
