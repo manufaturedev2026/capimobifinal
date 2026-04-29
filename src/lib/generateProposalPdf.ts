@@ -928,15 +928,3 @@ function catLabel(cat: string): string {
   };
   return m[cat] || "Corretor(a)";
 }
-
-// Bridge: replace stub drawCover with real implementation that has access to heroImg.
-// We accomplish this by re-wiring generateProposalPdf above — but JS hoisting forces
-// us to keep one symbol. So we override via closure:
-(generateProposalPdf as any)._drawCoverImpl = drawCoverImpl;
-
-// Patch drawCover to actually render — we need heroImg, which is loaded in generateProposalPdf.
-// Refactor: change generateProposalPdf to call drawCoverImpl directly.
-
-// Patch drawCover to actually render — we need heroImg, which is loaded in generateProposalPdf.
-// Refactor: change generateProposalPdf to call drawCoverImpl directly.
-(generateProposalPdf as any)._drawCoverImpl = drawCoverImpl;
