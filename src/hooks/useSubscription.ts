@@ -121,7 +121,7 @@ export const PACKAGE_CONFIG = {
       "Até 5 anúncios ativos",
       "Vitrine própria empresarial",
       "Selo de Empresa Verificada",
-      "Até 3 corretores vinculados",
+      "Até 1 corretor vinculado",
       "Lojas espelho por corretor",
       "CRM Kanban completo",
       "1 Layout (Marketplace) + 1 Tema",
