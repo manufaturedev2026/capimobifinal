@@ -1272,7 +1272,7 @@ export default function CompanyProfile() {
               </div>
               <div className="leading-tight min-w-0">
                 <p
-                  className="font-display font-extrabold text-sm md:text-xl bg-clip-text text-transparent truncate"
+                  className="font-display font-extrabold text-sm md:text-xl bg-clip-text text-transparent truncate uppercase"
                   style={{ backgroundImage: `linear-gradient(135deg, ${storeTheme.accent || storeTheme.primary}, ${storeTheme.primary})` }}
                 >
                   {activeSellerCategory
