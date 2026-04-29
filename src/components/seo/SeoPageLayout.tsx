@@ -10,6 +10,7 @@ import { getMarketplaceTheme, type MarketplaceTheme } from "@/lib/marketplaceThe
 import { getMarketplaceThemeCssVars } from "@/lib/marketplaceThemeCssVars";
 import FloatingParticles from "@/components/seo/FloatingParticles";
 import ShimmerLine from "@/components/seo/ShimmerLine";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 export { FloatingParticles, ShimmerLine };
 
