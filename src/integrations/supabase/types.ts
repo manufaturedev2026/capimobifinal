@@ -3050,6 +3050,7 @@ export type Database = {
       }
       seller_subscriptions: {
         Row: {
+          billing_period: string
           created_at: string
           expires_at: string
           id: string
@@ -3066,6 +3067,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          billing_period?: string
           created_at?: string
           expires_at?: string
           id?: string
@@ -3082,6 +3084,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          billing_period?: string
           created_at?: string
           expires_at?: string
           id?: string
@@ -3658,10 +3661,20 @@ export type Database = {
         Args: { p_tier: string }
         Returns: number
       }
-      grant_plan_credits: {
-        Args: { p_seller_id?: string; p_tier?: string; p_user_id: string }
-        Returns: Json
-      }
+      grant_plan_credits:
+        | {
+            Args: { p_seller_id?: string; p_tier?: string; p_user_id: string }
+            Returns: Json
+          }
+        | {
+            Args: {
+              p_billing_period?: string
+              p_seller_id?: string
+              p_tier?: string
+              p_user_id: string
+            }
+            Returns: Json
+          }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
