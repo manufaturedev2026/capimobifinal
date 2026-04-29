@@ -60,7 +60,7 @@ export default function BuyCreditsModal({ open, onClose }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto p-0 bg-gradient-to-br from-background via-background to-primary/5">
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto p-0 bg-background border-border">
         <DialogHeader className="px-6 pt-6 pb-2">
           <DialogTitle className="flex items-center gap-2 font-display text-2xl font-extrabold">
             <Coins className="h-6 w-6 text-primary" /> Comprar Créditos IA
