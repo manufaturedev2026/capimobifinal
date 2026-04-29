@@ -761,7 +761,7 @@ export default function ProductDetail() {
           <div className="hidden md:block">
             {images.length === 1 && (
               <motion.button initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} onClick={() => { setActiveImage(0); setLightboxOpen(true); }}
-                className="w-full aspect-[16/7] rounded-2xl overflow-hidden border-2 border-border hover:border-primary/50 transition-all group relative">
+                className="w-full h-[clamp(160px,22vw,260px)] rounded-2xl overflow-hidden border-2 border-border hover:border-primary/50 transition-all group relative">
                 <img loading="lazy" decoding="async" src={images[0]} alt="Foto 1" className="w-full h-full object-cover bg-muted transition-transform duration-500 group-hover:scale-105" />
                 <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/10 transition-colors flex items-center justify-center">
                   <ZoomIn size={32} className="text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg" />
