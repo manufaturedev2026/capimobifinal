@@ -2177,12 +2177,6 @@ export default function CompanyProfile() {
               <div className="flex-1 rounded-xl overflow-hidden" style={{ border: `1px solid ${storeTheme.primary}20`, minHeight: 240 }}>
                 <MapEmbed address={company?.address || [dbProfile?.address, dbProfile?.city, dbProfile?.state].filter(Boolean).join(", ")} cep={(dbProfile as any)?.cep} allowStreetViewFallback />
               </div>
-              {(company?.address || dbProfile?.address) && (
-                <p className="text-[11px] mt-3 flex items-start gap-1.5" style={{ color: storeTheme.textMuted }}>
-                  <MapPin size={11} style={{ color: storeTheme.primary }} className="mt-0.5 flex-shrink-0" />
-                  <span>{company?.address || [dbProfile?.address, dbProfile?.city, dbProfile?.state].filter(Boolean).join(", ")}</span>
-                </p>
-              )}
             </div>
           )}
         </div>
