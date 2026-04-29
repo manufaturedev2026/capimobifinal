@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useAiCredits } from "@/hooks/useAiCredits";
 import AiCreditsUsageModal from "./AiCreditsUsageModal";
+import BuyCreditsModal from "./BuyCreditsModal";
 
 const TOOL_LABELS: Record<string, string> = {
   monthly_plan_reset: "Créditos do plano",
@@ -22,14 +23,10 @@ const TOOL_LABELS: Record<string, string> = {
 export default function AiCreditsCard({ userId, sellerId }: { userId?: string; sellerId?: string }) {
   const { toast } = useToast();
   const [usageOpen, setUsageOpen] = useState(false);
-  const { balance, monthlyPlanCredits, transactions, loading, creditPriceCents } = useAiCredits(userId, sellerId);
+  const [buyOpen, setBuyOpen] = useState(false);
+  const { balance, monthlyPlanCredits, transactions, loading } = useAiCredits(userId, sellerId);
 
-  const handleBuyCredits = () => {
-    toast({
-      title: "Compra de créditos em preparação",
-      description: "O saldo já está pronto. Falta ativar o pagamento para vender créditos a R$ 0,25 cada.",
-    });
-  };
+  const handleBuyCredits = () => setBuyOpen(true);
 
   return (
     <Card className="relative overflow-hidden border-primary/20 bg-gradient-to-br from-primary/10 via-card to-accent/10 p-5">
@@ -56,7 +53,7 @@ export default function AiCreditsCard({ userId, sellerId }: { userId?: string; s
             <p className="font-bold text-foreground">{monthlyPlanCredits} créditos</p>
           </div>
           <Button onClick={handleBuyCredits} className="h-full rounded-xl">
-            <CreditCard className="h-4 w-4" /> Comprar R$ {(creditPriceCents / 100).toFixed(2).replace(".", ",")}
+            <CreditCard className="h-4 w-4" /> Comprar Créditos
           </Button>
         </div>
       </div>
@@ -97,6 +94,7 @@ export default function AiCreditsCard({ userId, sellerId }: { userId?: string; s
       )}
 
       <AiCreditsUsageModal open={usageOpen} onClose={() => setUsageOpen(false)} userId={userId} />
+      <BuyCreditsModal open={buyOpen} onClose={() => setBuyOpen(false)} />
     </Card>
   );
 }
