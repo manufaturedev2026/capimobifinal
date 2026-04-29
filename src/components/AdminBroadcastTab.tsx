@@ -95,7 +95,7 @@ const BUILTIN_TEMPLATES: Template[] = [
   },
 ];
 
-const TIERS = ["basico", "start", "premium", "vip", "basico_empresa", "essencial_empresa", "premium_empresa", "prime_empresa"] as const;
+const TIERS = ["basico", "start", "premium", "prime", "basico_empresa", "essencial_empresa", "premium_empresa", "prime_empresa"] as const;
 // Display overrides to disambiguate duplicated names in PACKAGE_CONFIG
 const TIER_LABEL_OVERRIDES: Record<string, string> = {
   prime_empresa: "Black Empresa",

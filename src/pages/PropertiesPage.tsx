@@ -106,7 +106,7 @@ export default function PropertiesPage() {
   const normalizeCityValue = (value?: string | null) => value?.trim().toLowerCase() ?? "";
 
   // Filter sellers by city + only paid plans
-  const paidTiers = ["start", "premium", "vip", "essencial_empresa", "premium_empresa"];
+  const paidTiers = ["start", "premium", "prime", "essencial_empresa", "premium_empresa"];
   const filteredSellers = useMemo(() => {
     const paid = realSellers.filter((s) => paidTiers.includes(s.tier));
     if (!filterCity) return paid;

@@ -641,7 +641,7 @@ export default function SellerDashboard() {
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 relative">
                     <div className="flex items-center gap-4">
                       <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${pkgConfig.color} flex items-center justify-center shadow-lg`}>
-                        {currentTier === "vip" ? <Crown size={22} className="text-white" /> : currentTier === "premium" ? <Star size={22} className="text-white" /> : <Zap size={22} className="text-white" />}
+                        {currentTier === "prime" ? <Crown size={22} className="text-white" /> : currentTier === "premium" ? <Star size={22} className="text-white" /> : <Zap size={22} className="text-white" />}
                       </div>
                       <div>
                         <div className="flex items-center gap-2">

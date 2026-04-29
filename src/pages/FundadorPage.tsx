@@ -103,7 +103,7 @@ export default function FundadorPage() {
       .sort((a, b) => a.lot_number - b.lot_number)
       .slice(0, 2);
 
-  const vipPlan = plans.find((p) => p.tier === "vip");
+  const vipPlan = plans.find((p) => p.tier === "prime");
   const blackPlan = plans.find((p) => p.tier === "prime_empresa");
 
   const handlePurchase = async (category: "individual" | "enterprise") => {

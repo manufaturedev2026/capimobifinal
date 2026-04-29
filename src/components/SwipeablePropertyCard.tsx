@@ -58,7 +58,7 @@ export default function SwipeablePropertyCard({ product, company, index }: Swipe
       <Link to={`/imoveis/produto/${product.slug || product.id}`} draggable={false}>
         <div className={`group bg-card border rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 relative ${
           product.hasDestaque ? "border-amber-400/60 ring-2 ring-amber-400/40 shadow-[0_0_24px_rgba(251,191,36,0.18)]" :
-          product.sellerTier === "vip" ? "border-purple-500/50 ring-1 ring-purple-500/20" :
+          product.sellerTier === "prime" ? "border-purple-500/50 ring-1 ring-purple-500/20" :
           product.sellerTier === "premium" ? "border-amber-400/50 ring-1 ring-amber-400/20" : "border-border"
         } ${swiped === "right" ? "ring-2 ring-red-400" : swiped === "left" ? "ring-2 ring-primary" : ""}`}>
           <div className="relative aspect-[4/3] overflow-hidden">
