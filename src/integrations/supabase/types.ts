@@ -2763,6 +2763,7 @@ export type Database = {
           suites: number | null
           tags: Database["public"]["Enums"]["item_tag"][] | null
           three_phase_power: boolean | null
+          thumbnail_url: string | null
           title: string
           topography: string | null
           transmission: string | null
@@ -2843,6 +2844,7 @@ export type Database = {
           suites?: number | null
           tags?: Database["public"]["Enums"]["item_tag"][] | null
           three_phase_power?: boolean | null
+          thumbnail_url?: string | null
           title: string
           topography?: string | null
           transmission?: string | null
@@ -2923,6 +2925,7 @@ export type Database = {
           suites?: number | null
           tags?: Database["public"]["Enums"]["item_tag"][] | null
           three_phase_power?: boolean | null
+          thumbnail_url?: string | null
           title?: string
           topography?: string | null
           transmission?: string | null
