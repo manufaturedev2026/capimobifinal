@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Home, Camera, HardDrive, Sparkles, ArrowUpRight } from "lucide-react";
+import { Home, Camera, HardDrive, Sparkles, ArrowUpRight, Eye } from "lucide-react";
 import { usePlanUsage, getUsagePercent, getUsageColor } from "@/hooks/usePlanUsage";
 
 function formatStorage(mb: number): string {
@@ -55,6 +55,15 @@ export default function PlanLimitsCard({ userId }: { userId?: string }) {
       formatUsed: (n: number) => n.toLocaleString("pt-BR"),
       formatLimit: (n: number) => `${n.toLocaleString("pt-BR")}/mês`,
       reverse: true,
+    },
+    {
+      icon: Eye,
+      label: "Visitas no mês",
+      used: usage.usage.monthly_visits ?? 0,
+      limit: usage.limits.monthly_visits_limit ?? 3000,
+      formatUsed: (n: number) => n.toLocaleString("pt-BR"),
+      formatLimit: (n: number) => `${n.toLocaleString("pt-BR")}/mês`,
+      hint: "recomendado",
     },
   ];
 
