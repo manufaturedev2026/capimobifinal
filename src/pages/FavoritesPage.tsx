@@ -59,7 +59,7 @@ export default function FavoritesPage() {
                 <div className="group bg-card border border-border rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
                   <Link to={`/imoveis/produto/${item.slug || item.id}`}>
                     <div className="relative aspect-[4/3] overflow-hidden">
-                      <img src={item.photos?.[0] || "/placeholder.svg"} alt={item.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
+                      <img src={item.thumbnail_url || item.photos?.[0] || "/placeholder.svg"} alt={item.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
                     </div>
                     <div className="p-4">
                       <h3 className="font-display font-bold text-base text-foreground line-clamp-1">{item.title}</h3>

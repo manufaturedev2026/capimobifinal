@@ -121,7 +121,7 @@ export default function NeighborhoodPage() {
                   <Link to={`/imoveis/produto/${item.slug || item.id}`}>
                     <div className="group bg-card border border-border rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
                       <div className="relative aspect-[4/3] overflow-hidden">
-                        <img src={item.photos?.[0] || "/placeholder.svg"} alt={item.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
+                        <img src={item.thumbnail_url || item.photos?.[0] || "/placeholder.svg"} alt={item.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" />
                         <div className="absolute top-3 right-3">
                           <FavoriteButton
                             isFavorite={isFavorite(item.id)}

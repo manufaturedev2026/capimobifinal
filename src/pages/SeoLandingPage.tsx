@@ -244,7 +244,7 @@ export default function SeoLandingPage() {
                   <motion.div key={item.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(idx * 0.03, 0.5) }}>
                     <Link to={`/imoveis/produto/${item.slug || item.id}`} className="block rounded-2xl overflow-hidden transition-all duration-300 group hover:scale-[1.02]" style={{ background: CARD_BG, border: `1.5px solid ${isPaid ? PRIMARY + "40" : BORDER}`, boxShadow: isPaid ? `0 0 16px ${PRIMARY}12` : "none" }}>
                       <div className="relative aspect-[4/3] overflow-hidden">
-                        <img src={item.photos?.[0] || ""} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy" />
+                        <img src={item.thumbnail_url || item.photos?.[0] || ""} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy" />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
                         {firstTag && firstTag !== "aluguel_flex" && (
                           <span className={`absolute top-2 left-2 px-2 py-0.5 rounded-lg text-[9px] font-bold shadow-lg backdrop-blur-sm ${getTagStyle(firstTag)}`}>
