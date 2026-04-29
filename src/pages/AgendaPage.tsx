@@ -325,7 +325,7 @@ export default function AgendaPage() {
                             size="sm"
                             onClick={() => confirmQuick(v)}
                             title="Confirmar visita"
-                            className="px-0 sm:px-3 bg-emerald-600 hover:bg-emerald-700 text-white"
+                            className="px-0 sm:px-3 bg-primary hover:bg-primary/90 text-primary-foreground"
                           >
                             <CheckCircle2 className="w-4 h-4" />
                             <span className="hidden sm:inline ml-1 text-xs font-semibold">Confirmar</span>
