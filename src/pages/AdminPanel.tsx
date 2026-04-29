@@ -1536,6 +1536,13 @@ export default function AdminPanel() {
         </div>
       )}
 
+      {/* AI Costs Tab */}
+      {tab === "aiCosts" && (
+        <div className="px-4 lg:px-8 py-6">
+          <AdminAiCostsTab />
+        </div>
+      )}
+
         </main>
       </div>
 
