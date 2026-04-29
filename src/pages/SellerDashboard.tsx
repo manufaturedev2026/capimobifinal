@@ -76,7 +76,8 @@ export default function SellerDashboard() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("todos");
-  const { subscription, currentTier, config: pkgConfig, daysUntilExpiry, isExpiringSoon, isExpired } = useSubscription(user?.id);
+  const { subscription, currentTier, config: pkgConfigRaw, daysUntilExpiry, isExpiringSoon, isExpired } = useSubscription(user?.id);
+  const pkgConfig = pkgConfigRaw || PACKAGE_CONFIG.basico;
   const { isAdmin } = useIsAdmin(user?.id);
   const { dailyData, weeklyData, totals: analyticsTotals, loading: analyticsLoading } = useSellerAnalytics(profile?.id);
   const [chartView, setChartView] = useState<"diario" | "semanal">("diario");
