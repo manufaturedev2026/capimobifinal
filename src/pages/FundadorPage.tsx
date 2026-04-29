@@ -183,24 +183,25 @@ export default function FundadorPage() {
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative bg-gradient-to-br from-primary/5 via-card to-accent/5 border-2 border-primary/30 rounded-3xl overflow-hidden shadow-2xl"
+        className="relative bg-black/40 backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden shadow-2xl"
+        style={{ boxShadow: `0 25px 60px ${theme.primary}20` }}
       >
         {/* Brilho de borda */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-accent/10 pointer-events-none" />
+        <div className="absolute inset-0 pointer-events-none" style={{ background: `linear-gradient(135deg, ${theme.primary}10, transparent, ${theme.promoAccent || theme.primary}10)` }} />
 
         {/* Header */}
-        <div className="relative p-8 border-b border-primary/20">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gradient-to-r from-primary to-accent text-primary-foreground text-xs font-bold mb-4">
+        <div className="relative p-8 border-b border-white/10">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold mb-4 text-white" style={{ background: `linear-gradient(to right, ${theme.primary}, ${theme.promoAccent || theme.primary})` }}>
             <Crown size={14} /> OFERTA FUNDADOR
           </div>
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center text-primary-foreground">
+            <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-white" style={{ background: `linear-gradient(135deg, ${theme.primary}, ${theme.promoAccent || theme.primary})` }}>
               <Icon className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="text-2xl font-bold">{label}</h3>
-              <p className="text-sm text-muted-foreground">
-                Equivalente por 1 ano ao <strong>{equivalentPlan}</strong>
+              <h3 className="text-2xl font-bold text-white">{label}</h3>
+              <p className="text-sm text-white/60">
+                Equivalente por 1 ano ao <strong className="text-white/80">{equivalentPlan}</strong>
               </p>
             </div>
           </div>
@@ -211,14 +212,14 @@ export default function FundadorPage() {
           {lot ? (
             <>
               <div>
-                <div className="flex items-baseline gap-2 mb-2">
-                  <span className="text-sm text-muted-foreground">Lote {lot.lot_number} ·</span>
-                  <span className="text-5xl font-extrabold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                <div className="flex items-baseline gap-2 mb-2 flex-wrap">
+                  <span className="text-sm text-white/50">Lote {lot.lot_number} ·</span>
+                  <span className="text-5xl font-extrabold text-transparent bg-clip-text" style={{ backgroundImage: `linear-gradient(to right, ${theme.primary}, ${theme.promoAccent || theme.primary})` }}>
                     R$ {lot.price.toFixed(0)}
                   </span>
-                  <span className="text-muted-foreground">/ano</span>
+                  <span className="text-white/60">/ano</span>
                 </div>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-white/50">
                   Pagamento único · Válido por 12 meses · Sem mensalidades
                 </p>
               </div>
@@ -226,38 +227,39 @@ export default function FundadorPage() {
               {/* Barra de vagas */}
               <div>
                 <div className="flex justify-between text-sm mb-2">
-                  <span className="font-semibold flex items-center gap-1.5">
-                    <Flame className="w-4 h-4 text-accent" />
-                    Restam <strong className="text-primary">{remaining}</strong> de {lot.total_slots} vagas
+                  <span className="font-semibold flex items-center gap-1.5 text-white/80">
+                    <Flame className="w-4 h-4" style={{ color: theme.promoAccent || theme.primary }} />
+                    Restam <strong style={{ color: theme.primary }}>{remaining}</strong> de {lot.total_slots} vagas
                   </span>
-                  <span className="text-muted-foreground">{percentSold.toFixed(0)}% vendido</span>
+                  <span className="text-white/50">{percentSold.toFixed(0)}% vendido</span>
                 </div>
-                <div className="h-3 bg-muted rounded-full overflow-hidden">
+                <div className="h-3 bg-white/10 rounded-full overflow-hidden">
                   <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${percentSold}%` }}
                     transition={{ duration: 1, ease: "easeOut" }}
-                    className="h-full bg-gradient-to-r from-primary to-accent"
+                    className="h-full"
+                    style={{ background: `linear-gradient(to right, ${theme.primary}, ${theme.promoAccent || theme.primary})` }}
                   />
                 </div>
               </div>
 
               {/* Créditos IA */}
-              <div className="flex items-center gap-3 p-4 rounded-xl bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20">
-                <Sparkles className="w-5 h-5 text-primary shrink-0" />
-                <div className="text-sm">
-                  <strong className="text-primary">
+              <div className="flex items-center gap-3 p-4 rounded-xl border border-white/10" style={{ background: `linear-gradient(to right, ${theme.primary}15, ${theme.promoAccent || theme.primary}10)` }}>
+                <Sparkles className="w-5 h-5 shrink-0" style={{ color: theme.primary }} />
+                <div className="text-sm text-white/80">
+                  <strong style={{ color: theme.primary }}>
                     +{credits.toLocaleString("pt-BR")} créditos de IA
                   </strong>{" "}
-                  <span className="text-muted-foreground">como bônus de boas-vindas</span>
+                  <span className="text-white/60">como bônus de boas-vindas</span>
                 </div>
               </div>
 
               {/* Benefícios resumidos */}
               <ul className="space-y-2">
                 {FOUNDER_BENEFITS.slice(0, 6).map((b, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm">
-                    <Check className="w-4 h-4 text-green-500 shrink-0 mt-0.5" />
+                  <li key={i} className="flex items-start gap-2 text-sm text-white/75">
+                    <Check className="w-4 h-4 shrink-0 mt-0.5" style={{ color: theme.primary }} />
                     <span>{b}</span>
                   </li>
                 ))}
@@ -268,7 +270,8 @@ export default function FundadorPage() {
                 onClick={() => handlePurchase(category)}
                 disabled={purchasing === tier}
                 size="lg"
-                className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90 text-primary-foreground font-bold text-lg h-14 shadow-lg shadow-primary/30"
+                className="w-full text-white font-bold text-lg h-14 shadow-lg"
+                style={{ background: `linear-gradient(to right, ${theme.primary}, ${theme.promoAccent || theme.primary})`, boxShadow: `0 10px 25px ${theme.primary}40` }}
               >
                 {purchasing === tier ? (
                   <>
@@ -286,18 +289,18 @@ export default function FundadorPage() {
 
               {/* Próximos lotes */}
               {nextLots.length > 0 && (
-                <div className="pt-4 border-t border-border">
-                  <p className="text-xs text-muted-foreground mb-2 font-semibold">
+                <div className="pt-4 border-t border-white/10">
+                  <p className="text-xs text-white/60 mb-2 font-semibold">
                     ⚠️ Quando esgotar, o preço sobe:
                   </p>
                   <div className="flex gap-2 flex-wrap">
                     {nextLots.map((l) => (
                       <div
                         key={l.id}
-                        className="px-3 py-1.5 rounded-lg bg-muted text-sm"
+                        className="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-sm text-white/70"
                       >
                         Lote {l.lot_number}:{" "}
-                        <strong className="text-primary">R$ {l.price.toFixed(0)}</strong>
+                        <strong style={{ color: theme.primary }}>R$ {l.price.toFixed(0)}</strong>
                       </div>
                     ))}
                   </div>
@@ -306,9 +309,9 @@ export default function FundadorPage() {
             </>
           ) : (
             <div className="text-center py-12">
-              <Trophy className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
-              <p className="font-semibold mb-1">Todos os lotes esgotados</p>
-              <p className="text-sm text-muted-foreground">
+              <Trophy className="w-12 h-12 text-white/20 mx-auto mb-4" />
+              <p className="font-semibold mb-1 text-white">Todos os lotes esgotados</p>
+              <p className="text-sm text-white/50">
                 Aguarde a abertura de novos lotes.
               </p>
             </div>
