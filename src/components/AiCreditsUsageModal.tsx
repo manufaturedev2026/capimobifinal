@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Sparkles, TrendingUp, Calendar, Flame, Zap, BarChart3, Trophy, Activity } from "lucide-react";
+import { X, Sparkles, TrendingUp, Calendar, Flame, Zap, BarChart3, Trophy, Activity, PlusCircle, ShoppingCart, Gift } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 const TOOL_LABELS: Record<string, string> = {
