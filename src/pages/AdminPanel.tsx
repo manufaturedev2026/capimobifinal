@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Shield, Users, Package, DollarSign, Search, Check, X, RefreshCw, ArrowLeft, Crown, Star, Zap, Globe, Plus, Trash2, ExternalLink, Copy, Megaphone, LayoutDashboard, Building2, Rocket, FileText, UserCog, Filter, Camera, Phone, Ban, ShieldOff, Clock, MessageCircle, MapPin, Palette, Bell, Video, Save, Eye, BarChart3, Mail, Send, Database } from "lucide-react";
+import { Shield, Users, Package, DollarSign, Search, Check, X, RefreshCw, ArrowLeft, Crown, Star, Zap, Globe, Plus, Trash2, ExternalLink, Copy, Megaphone, LayoutDashboard, Building2, Rocket, FileText, UserCog, Filter, Camera, Phone, Ban, ShieldOff, Clock, MessageCircle, MapPin, Palette, Bell, Video, Save, Eye, BarChart3, Mail, Send, Database, Brain } from "lucide-react";
 import { Link } from "react-router-dom";
 import { MARKETPLACE_THEMES } from "@/lib/marketplaceThemes";
 import { getMarketplaceThemeCssVars } from "@/lib/marketplaceThemeCssVars";
@@ -25,6 +25,7 @@ import AdminPlansTab from "@/components/AdminPlansTab";
 import AdminManagersTab from "@/components/AdminManagersTab";
 import AdminValuationPricesTab from "@/components/AdminValuationPricesTab";
 import AdminReceivePushTab from "@/components/AdminReceivePushTab";
+import AdminAiCostsTab from "@/components/AdminAiCostsTab";
 import { LOGIN_HERO_PRESETS, normalizeLoginHeroSetting, resolveLoginHeroImage } from "@/data/loginHeroPresets";
 import { invalidateRegistrationsClosed } from "@/hooks/useRegistrationsClosed";
 
@@ -63,7 +64,7 @@ export default function AdminPanel() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [tierFilter, setTierFilter] = useState<string>("todos");
-  const [tab, setTab] = useState<"dashboard" | "clientes" | "managers" | "billing" | "plans" | "referrals" | "crm" | "seo" | "vendas" | "config" | "push" | "receivePush" | "site" | "smtp" | "funnel" | "broadcast" | "ads" | "invite" | "apify" | "valuation">("dashboard");
+  const [tab, setTab] = useState<"dashboard" | "clientes" | "managers" | "billing" | "plans" | "referrals" | "crm" | "seo" | "vendas" | "config" | "push" | "receivePush" | "site" | "smtp" | "funnel" | "broadcast" | "ads" | "invite" | "apify" | "valuation" | "aiCosts">("dashboard");
   const [managersList, setManagersList] = useState<Array<{ id: string; name: string; phone: string | null; photo_url: string | null }>>([]);
   // Category edit dialog
   const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
@@ -518,6 +519,7 @@ export default function AdminPanel() {
     { key: "valuation" as const, label: "Avaliação de Imóveis — Preços", icon: DollarSign },
     { key: "invite" as const, label: "Convite", icon: MessageCircle },
     { key: "receivePush" as const, label: "Receber Push", icon: Bell },
+    { key: "aiCosts" as const, label: "Custos de IA", icon: Brain },
   ];
   const activeSidebarItem = sidebarItems.find((item) => item.key === tab) || sidebarItems[0];
   const ActiveSidebarIcon = activeSidebarItem.icon;
@@ -1531,6 +1533,13 @@ export default function AdminPanel() {
       {tab === "ads" && (
         <div className="px-4 lg:px-8 py-6">
           <AdminAdsCrmTab />
+        </div>
+      )}
+
+      {/* AI Costs Tab */}
+      {tab === "aiCosts" && (
+        <div className="px-4 lg:px-8 py-6">
+          <AdminAiCostsTab />
         </div>
       )}
 
