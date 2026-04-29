@@ -1216,8 +1216,8 @@ export default function AdminPanel() {
                 },
                 {
                   value: "single",
-                  title: "👤 Corretor Único",
-                  desc: "Redireciona para a loja do primeiro corretor cadastrado.",
+                  title: "👤 Loja Principal",
+                  desc: "Redireciona a raiz do site para a loja do primeiro corretor cadastrado.",
                 },
               ].map((opt) => (
                 <button
@@ -1245,6 +1245,61 @@ export default function AdminPanel() {
                 </button>
               ))}
             </div>
+          </div>
+
+          {/* Cadastros Fechados toggle */}
+          <div className="bg-card border border-border rounded-2xl p-5">
+            <div className="flex items-start justify-between gap-4 flex-wrap">
+              <div className="flex-1 min-w-[240px]">
+                <h3 className="font-display font-bold text-lg text-foreground mb-1 flex items-center gap-2">
+                  <Shield size={20} className="text-primary" /> Cadastros Fechados
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Quando ativado, <strong>nenhum novo corretor poderá se cadastrar</strong> no site.
+                  As páginas <code className="text-xs bg-secondary px-1.5 py-0.5 rounded">/anunciar</code>,
+                  {" "}<code className="text-xs bg-secondary px-1.5 py-0.5 rounded">/login</code> (aba cadastro)
+                  e <code className="text-xs bg-secondary px-1.5 py-0.5 rounded">/auth</code> mostrarão um aviso.
+                  Os corretores já cadastrados continuam funcionando normalmente.
+                </p>
+              </div>
+              <button
+                onClick={async () => {
+                  setSavingRegClosed(true);
+                  const next = !registrationsClosed;
+                  setRegistrationsClosed(next);
+                  await supabase
+                    .from("platform_settings" as any)
+                    .upsert({ key: "registrations_closed", value: next ? "true" : "false" } as any, { onConflict: "key" });
+                  invalidateRegistrationsClosed();
+                  toast({
+                    title: next ? "Cadastros fechados" : "Cadastros reabertos",
+                    description: next
+                      ? "Novos corretores não poderão se cadastrar."
+                      : "Novos corretores podem se cadastrar normalmente.",
+                  });
+                  setSavingRegClosed(false);
+                }}
+                disabled={savingRegClosed}
+                className={`relative inline-flex h-9 w-16 items-center rounded-full transition-colors disabled:opacity-50 ${
+                  registrationsClosed ? "bg-primary" : "bg-secondary border border-border"
+                }`}
+                aria-pressed={registrationsClosed}
+              >
+                <span
+                  className={`inline-block h-7 w-7 transform rounded-full bg-background shadow transition-transform ${
+                    registrationsClosed ? "translate-x-8" : "translate-x-1"
+                  }`}
+                />
+              </button>
+            </div>
+            {registrationsClosed && (
+              <div className="mt-4 p-3 rounded-xl bg-primary/5 border border-primary/20 text-xs text-foreground/80 flex items-start gap-2">
+                <Check size={14} className="text-primary mt-0.5 shrink-0" />
+                <span>
+                  Cadastros fechados. Apenas os corretores já existentes têm acesso. Reative quando quiser permitir novos cadastros.
+                </span>
+              </div>
+            )}
           </div>
 
           {/* Theme Picker */}
