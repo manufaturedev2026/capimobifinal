@@ -42,8 +42,10 @@ export default function PackagesPage() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [selecting, setSelecting] = useState<string | null>(null);
-  const [openingPortal, setOpeningPortal] = useState(false);
+  const [confirming, setConfirming] = useState(false);
   const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>("monthly");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const confirmedSessionRef = useRef<string | null>(null);
   const [annualDiscount, setAnnualDiscount] = useState<number>(20);
   const [couponInput, setCouponInput] = useState("");
   const [validatingCoupon, setValidatingCoupon] = useState(false);
