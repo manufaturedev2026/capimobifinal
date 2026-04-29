@@ -29,6 +29,7 @@ export default function AuthPage() {
   const [sellerCategory, setSellerCategory] = useState<"corretor" | "imobiliaria" | "construtora">("corretor");
   const { cities: stateCities, loading: loadingCities } = useCitiesByState(selectedState);
   const { user, profile, signIn, signUp } = useAuth();
+  const { site_name } = useSiteSettings();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const trialDays = searchParams.get("trial");
