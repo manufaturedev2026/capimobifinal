@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Home, Camera, HardDrive, Sparkles, ArrowUpRight, Eye } from "lucide-react";
+import { Home, Camera, HardDrive, ArrowUpRight, Eye } from "lucide-react";
 import { usePlanUsage, getUsagePercent, getUsageColor } from "@/hooks/usePlanUsage";
 
 function formatStorage(mb: number): string {
@@ -46,15 +46,6 @@ export default function PlanLimitsCard({ userId }: { userId?: string }) {
       limit: usage.limits.storage_mb,
       formatUsed: formatStorage,
       formatLimit: formatStorage,
-    },
-    {
-      icon: Sparkles,
-      label: "Créditos IA restantes",
-      used: usage.usage.ai_credits_balance,
-      limit: usage.limits.ai_credits_per_month,
-      formatUsed: (n: number) => n.toLocaleString("pt-BR"),
-      formatLimit: (n: number) => `${n.toLocaleString("pt-BR")}/mês`,
-      reverse: true,
     },
     {
       icon: Eye,
