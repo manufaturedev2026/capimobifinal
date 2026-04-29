@@ -615,7 +615,7 @@ export default function SellerDashboard() {
                 </motion.div>
 
                 {user?.id && profile?.id && (
-                  <AiCreditsCard userId={user.id} sellerId={profile.id} />
+                  <AiCreditsCard userId={user.id} sellerId={profile.id} themeVars={dashThemeVars} />
                 )}
 
                 {/* Stats Grid — Premium Cards */}
