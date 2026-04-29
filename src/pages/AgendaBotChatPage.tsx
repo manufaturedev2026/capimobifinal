@@ -104,6 +104,15 @@ export default function AgendaBotChatPage() {
   useEffect(() => {
     if (started.current || loading || !sellerProfile || notFound) return;
     started.current = true;
+
+    // Se houver mensagem de abertura configurada, usa ela diretamente (sem gastar crédito de IA)
+    const customOpening = config.opening_message?.trim();
+    if (customOpening) {
+      setAiMessages([{ role: "assistant", content: customOpening }]);
+      addBotMsg(customOpening);
+      return;
+    }
+
     setTyping(true);
     (async () => {
       try {
@@ -121,16 +130,16 @@ export default function AgendaBotChatPage() {
           },
         });
         if (error) throw error;
-        const reply = data?.reply || config.opening_message || "Olá! Vou te ajudar a agendar uma visita. 👋";
+        const reply = data?.reply || "Olá! Vou te ajudar a agendar uma visita. 👋";
         setAiMessages([{ role: "assistant", content: reply }]);
         addBotMsg(reply);
       } catch (e) {
         console.error("Bot start error:", e);
-        addBotMsg(config.opening_message || "Olá! Vou te ajudar a agendar uma visita. 👋");
+        addBotMsg("Olá! Vou te ajudar a agendar uma visita. 👋");
       }
       setTyping(false);
     })();
-  }, [loading, sellerProfile, notFound, prelinkedItem, config.id]);
+  }, [loading, sellerProfile, notFound, prelinkedItem, config.id, config.opening_message]);
 
   useEffect(() => {
     if (chatRef.current) chatRef.current.scrollTop = chatRef.current.scrollHeight;
