@@ -4,6 +4,7 @@ import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import { Search, Clock, BookOpen, ArrowRight } from "lucide-react";
 import { SITE_URL } from "@/lib/siteUrl";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 interface BlogArticle {
   slug: string;
