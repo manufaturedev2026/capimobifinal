@@ -729,6 +729,24 @@ export default function PackagesPage() {
                   </span>
                 </div>
 
+                {/* Toggle Mensal / Anual do Fundador (apenas se houver monthly_price no lote) */}
+                {!isUpgradeAvailable && activeFounderLot.monthly_price && Number(activeFounderLot.monthly_price) > 0 && (
+                  <div className="mb-6 inline-flex p-1 rounded-full bg-black/30 backdrop-blur-sm border border-white/20">
+                    <button
+                      onClick={() => setFounderBilling("annual")}
+                      className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${founderBilling === "annual" ? "bg-white text-black shadow" : "text-white/80 hover:text-white"}`}
+                    >
+                      Anual · 12 meses
+                    </button>
+                    <button
+                      onClick={() => setFounderBilling("monthly")}
+                      className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${founderBilling === "monthly" ? "bg-white text-black shadow" : "text-white/80 hover:text-white"}`}
+                    >
+                      Mensal · 30 dias
+                    </button>
+                  </div>
+                )}
+
                 {/* ===== MODO UPGRADE: Comparativo entre planos ===== */}
                 {isUpgradeAvailable && userInheritedPlan && newInheritedPlan && (
                   <div className="mb-8 bg-black/25 backdrop-blur-md border border-white/20 rounded-2xl p-5">
