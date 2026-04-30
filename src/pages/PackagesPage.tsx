@@ -734,16 +734,16 @@ export default function PackagesPage() {
                 {!isUpgradeAvailable && activeFounderLot.monthly_price && Number(activeFounderLot.monthly_price) > 0 && (
                   <div className="mb-6 inline-flex p-1 rounded-full bg-black/30 backdrop-blur-sm border border-white/20">
                     <button
-                      onClick={() => setFounderBilling("annual")}
-                      className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${founderBilling === "annual" ? "bg-white text-black shadow" : "text-white/80 hover:text-white"}`}
-                    >
-                      Anual · 12 meses
-                    </button>
-                    <button
                       onClick={() => setFounderBilling("monthly")}
                       className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${founderBilling === "monthly" ? "bg-white text-black shadow" : "text-white/80 hover:text-white"}`}
                     >
                       Mensal · 30 dias
+                    </button>
+                    <button
+                      onClick={() => setFounderBilling("annual")}
+                      className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${founderBilling === "annual" ? "bg-white text-black shadow" : "text-white/80 hover:text-white"}`}
+                    >
+                      Anual · 12 meses
                     </button>
                   </div>
                 )}
