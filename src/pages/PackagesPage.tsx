@@ -1031,6 +1031,15 @@ export default function PackagesPage() {
           </div>
         </div>
       </div>
+      <PlanCheckoutModal
+        open={checkoutModal.open}
+        orderId={checkoutModal.orderId}
+        amount={checkoutModal.amount}
+        planName={checkoutModal.planName}
+        description={checkoutModal.description}
+        onClose={() => setCheckoutModal((s) => ({ ...s, open: false }))}
+        onPaid={() => { refetch(); }}
+      />
     </div>
   );
 }
