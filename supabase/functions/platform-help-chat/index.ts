@@ -31,7 +31,11 @@ Você conhece todas as funcionalidades:
   - **Start** — R$ 179,90 (mensal).
   - **Pro** — R$ 359,90 (mensal).
   - **Master** — R$ 779,90 (mensal). Topo construtora.
-  **Fundador** — R$ 97 pagamento único, válido por 12 meses (NÃO é vitalício). Concede 50% dos créditos de IA mensais do plano topo de referência.
+  **Plano Fundador** (oportunidade limitada — vagas por lote):
+  - **Fundador Corretor** — R$ 97 pagamento único, válido 12 meses, 600 créditos de IA/mês.
+  - **Fundador Construtora** — R$ 97 pagamento único, válido 12 meses, 10.000 créditos de IA/mês.
+  - **Fundador Empresa (Imobiliária)** — R$ 97 pagamento único, válido 12 meses, 12.000 créditos de IA/mês.
+  Todos os Fundador custam R$ 97 (NÃO é vitalício, válido 12 meses). Quando o lote esgota, o preço sobe no próximo lote.
   IMPORTANTE: Não existem mais "VIP", "Exclusive", "Black" nem taxas de ativação. Todos os planos são pagamento único (não renovam automaticamente). Há opção Mensal e Anual com cupons de desconto aplicáveis.
 - **Captação**: página de captação de imóveis, leads de proprietários
 - **Gestão de Aluguéis**: contratos, pagamentos, lembretes
