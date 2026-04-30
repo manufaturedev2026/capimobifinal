@@ -57,11 +57,32 @@ FUNCIONALIDADES DETALHADAS DA CAPIMOBI:
 - Gestão de aluguéis com lembretes
 
 💰 PLANOS E PREÇOS:
-- Básico (GRATUITO): Loja completa, até 5 imóveis, CRM, 1 push/dia
-- Start (R$24,99/mês): Até 25 imóveis, Stories, contratos, 1 push/dia
-- VIP (R$59,99/mês): Até 60 imóveis, vídeo hero, bot de captação, 2 push/dia
-- Premium (R$114,99/mês): Até 115 imóveis, captação com IA, 3 push/dia
-- Planos empresariais (Exclusive, Prime, Black) com imóveis ilimitados e múltiplos corretores`;
+
+CORRETOR (autônomo / solo):
+- Básico (GRÁTIS): Loja completa, até 5 imóveis, CRM, 25 créditos IA/mês
+- Start (R$29,90/mês): Até 30 imóveis, Stories automáticos, 250 créditos IA/mês
+- Premium (R$59,90/mês): Até 75 imóveis, vídeo hero, bot de captação, 600 créditos IA/mês
+- Prime (R$119,90/mês): Até 150 imóveis, captação com IA, 1500 créditos IA/mês
+
+IMOBILIÁRIA (gestão de equipe + corretores):
+- Imob Grátis: Até 3 imóveis para testar
+- Imob Start (R$119,90/mês): Até 100 imóveis, equipe, 1500 créditos IA
+- Imob Pro (R$239,90/mês): Até 300 imóveis, 3000 créditos IA
+- Imob Elite (R$479,90/mês): Até 5000 imóveis, 6000 créditos IA
+
+CONSTRUTORA (lançamentos + grandes volumes):
+- Construtora Grátis: Até 3 imóveis para testar
+- Construtora Start (R$179,90/mês): Até 150 imóveis, 2000 créditos IA
+- Construtora Pro (R$359,90/mês): Até 500 imóveis, 4500 créditos IA
+- Construtora Master (R$779,90/mês): Até 10000 imóveis, 10000 créditos IA
+
+🚀 PLANO FUNDADOR (oportunidade limitada):
+- Pagamento ÚNICO de R$97 com validade de 12 meses
+- Disponível para Corretor, Imobiliária e Construtora
+- Inclui benefícios premium do plano de referência da categoria + créditos IA exclusivos
+- Vagas limitadas por lote — quando esgotam, o preço sobe no próximo lote
+
+IMPORTANTE: Todos os planos pagos são pagamento ÚNICO mensal ou anual (sem renovação automática). Existem cupons de desconto e opção anual com desconto.`;
 
 const STRATEGY_PROMPTS: Record<string, string> = {
   // ─── Cadastro Interno ───
