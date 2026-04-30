@@ -187,13 +187,13 @@ export default function StoryUploadDialog({ open, onOpenChange, sellerId, onUplo
 
   return (
     <Dialog open={open} onOpenChange={(v) => { if (!v) resetForm(); onOpenChange(v); }}>
-      <DialogContent className="max-w-md max-h-[90vh]">
-        <DialogHeader>
+      <DialogContent className="max-w-md w-[calc(100vw-1rem)] sm:w-full max-h-[100dvh] sm:max-h-[90vh] h-[100dvh] sm:h-auto p-0 sm:p-6 rounded-none sm:rounded-lg flex flex-col gap-0 sm:gap-4">
+        <DialogHeader className="px-4 pt-4 sm:px-0 sm:pt-0 shrink-0">
           <DialogTitle>Publicar Story</DialogTitle>
         </DialogHeader>
 
-        <ScrollArea className="max-h-[70vh] pr-2">
-          <div className="space-y-4">
+        <ScrollArea className="flex-1 min-h-0 px-4 sm:px-2 sm:max-h-[70vh]">
+          <div className="space-y-4 pb-4">
             <p className="text-sm text-muted-foreground">
               {currentCount} stories ativos
             </p>
@@ -258,7 +258,7 @@ export default function StoryUploadDialog({ open, onOpenChange, sellerId, onUplo
                 />
 
                 {preview ? (
-                  <div className="relative aspect-[9/16] max-h-[220px] rounded-xl overflow-hidden bg-black mx-auto">
+                  <div className="relative aspect-[9/16] max-h-[40vh] sm:max-h-[220px] w-auto rounded-xl overflow-hidden bg-black mx-auto">
                     <img loading="lazy" decoding="async" src={preview} alt="Preview" className="w-full h-full object-contain" />
                     {(title || description || buttonText) && (
                       <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-3">
@@ -275,7 +275,7 @@ export default function StoryUploadDialog({ open, onOpenChange, sellerId, onUplo
                 ) : (
                   <button
                     onClick={() => inputRef.current?.click()}
-                    className="w-full aspect-[9/16] max-h-[220px] rounded-xl border-2 border-dashed border-muted-foreground/30 flex flex-col items-center justify-center gap-2 hover:bg-muted/50 transition-colors"
+                    className="w-full aspect-[9/16] max-h-[40vh] sm:max-h-[220px] rounded-xl border-2 border-dashed border-muted-foreground/30 flex flex-col items-center justify-center gap-2 hover:bg-muted/50 transition-colors"
                   >
                     <ImagePlus className="w-10 h-10 text-muted-foreground/50" />
                     <span className="text-sm text-muted-foreground">Selecionar imagem</span>
@@ -299,7 +299,7 @@ export default function StoryUploadDialog({ open, onOpenChange, sellerId, onUplo
                 </div>
 
                 {/* Button text + URL */}
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   <div className="space-y-1.5">
                     <Label className="text-xs">Texto do botão</Label>
                     <Input value={buttonText} onChange={(e) => setButtonText(e.target.value)} placeholder="Ver mais" maxLength={30} />
@@ -350,22 +350,23 @@ export default function StoryUploadDialog({ open, onOpenChange, sellerId, onUplo
                   )}
                 </div>
 
-                {/* Actions */}
-                <div className="flex gap-2 pt-2">
-                  {preview && (
-                    <Button variant="outline" className="flex-1" onClick={() => { setFile(null); setPreview(null); }}>
-                      Trocar imagem
-                    </Button>
-                  )}
-                  <Button className="flex-1" disabled={!file || uploading} onClick={handleUpload}>
-                    {uploading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-                    Publicar Story
-                  </Button>
-                </div>
               </>
 
           </div>
         </ScrollArea>
+
+        {/* Sticky actions footer */}
+        <div className="shrink-0 flex gap-2 px-4 py-3 sm:px-0 sm:py-0 sm:pt-2 border-t sm:border-t-0 border-border bg-background">
+          {preview && (
+            <Button variant="outline" className="flex-1" onClick={() => { setFile(null); setPreview(null); }}>
+              Trocar imagem
+            </Button>
+          )}
+          <Button className="flex-1" disabled={!file || uploading} onClick={handleUpload}>
+            {uploading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+            Publicar Story
+          </Button>
+        </div>
       </DialogContent>
     </Dialog>
   );
