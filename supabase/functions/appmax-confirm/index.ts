@@ -19,6 +19,33 @@ async function activateSubscription(supabaseAdmin: any, payment: any) {
   }
 
   const meta = payment.metadata || {};
+
+  // ==== Compra de créditos de IA (PIX) ====
+  if (meta.kind === "credits") {
+    const credits = parseInt(String(meta.credits || "0")) || 0;
+    if (credits <= 0) throw new Error("Quantidade de créditos inválida");
+
+    const { data: profile } = await supabaseAdmin
+      .from("profiles").select("id").eq("user_id", payment.user_id).maybeSingle();
+
+    await supabaseAdmin.rpc("add_ai_credits", {
+      p_user_id: payment.user_id,
+      p_amount: credits,
+      p_transaction_type: "purchase",
+      p_tool_key: "credit_purchase",
+      p_seller_id: meta.seller_id || profile?.id || null,
+      p_external_reference: `appmax_${payment.order_id}`,
+      p_notes: `Compra de ${credits} créditos via AppMax PIX (R$ ${Number(payment.amount).toFixed(2).replace(".", ",")})`,
+      p_metadata: { source: "appmax_credits", order_id: payment.order_id, amount: payment.amount },
+    });
+
+    await supabaseAdmin.from("appmax_payments" as any)
+      .update({ status: "approved", activated_at: new Date().toISOString() })
+      .eq("order_id", payment.order_id);
+
+    return { ok: true, kind: "credits", credits };
+  }
+
   let tier = String(payment.tier);
   const billingPeriod = String(payment.billing_period || "monthly");
   const isFounder = !!meta.is_founder;
