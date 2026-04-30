@@ -23,7 +23,6 @@ import { useToast } from "@/hooks/use-toast";
 import { BRAZIL_STATES } from "@/data/brazilStates";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { useRegistrationsClosed } from "@/hooks/useRegistrationsClosed";
-import { useActivePlans } from "@/hooks/usePlans";
 import RegistrationsClosedNotice from "@/components/RegistrationsClosedNotice";
 
 const FEATURES = [
@@ -361,17 +360,6 @@ function PlanBenefitsList({ benefits, primaryColor }: { benefits: string[]; prim
 export default function VenderPage() {
   const navigate = useNavigate();
   const { user, signUp } = useAuth();
-  const { plans: dbPlans, loading: loadingPlans } = useActivePlans();
-  const individualPlans = dbPlans
-    .filter(p => p.category === "free" || p.category === "individual" || p.category === "corretor")
-    .sort((a, b) => a.sort_order - b.sort_order);
-  const imobiliariaPlans = dbPlans
-    .filter(p => p.category === "enterprise" || p.category === "imobiliaria")
-    .sort((a, b) => a.sort_order - b.sort_order);
-  const construtoraPlans = dbPlans
-    .filter(p => p.category === "construtora")
-    .sort((a, b) => a.sort_order - b.sort_order);
-  const enterprisePlans = [...imobiliariaPlans, ...construtoraPlans];
   const { site_name } = useSiteSettings();
   const { closed: registrationsClosed } = useRegistrationsClosed();
   const { toast } = useToast();
@@ -560,8 +548,8 @@ export default function VenderPage() {
                 <Button onClick={scrollToForm} size="lg" className="flex-1 sm:flex-none text-white font-bold rounded-xl px-3 sm:px-6 md:px-8 text-xs sm:text-sm md:text-base shadow-lg whitespace-nowrap" style={{ background: `linear-gradient(to right, ${theme.primary}, ${theme.promoAccent || theme.primary})`, boxShadow: `0 10px 25px ${theme.primary}40` }}>
                   Criar Meu Site <ArrowRight className="ml-1.5 sm:ml-2 w-4 h-4 md:w-5 md:h-5" />
                 </Button>
-                <Button onClick={() => document.getElementById("planos")?.scrollIntoView({ behavior: "smooth" })} variant="outline" className="flex-1 sm:flex-none rounded-xl border-white/20 text-white/70 hover:text-white hover:bg-white/5 text-xs sm:text-sm whitespace-nowrap">
-                  Ver Planos <ChevronRight className="ml-1 w-4 h-4" />
+                <Button onClick={() => document.getElementById("beneficios")?.scrollIntoView({ behavior: "smooth" })} variant="outline" className="flex-1 sm:flex-none rounded-xl border-white/20 text-white/70 hover:text-white hover:bg-white/5 text-xs sm:text-sm whitespace-nowrap">
+                  Benefícios <ChevronRight className="ml-1 w-4 h-4" />
                 </Button>
               </div>
 
@@ -694,7 +682,7 @@ export default function VenderPage() {
         </section>
 
         {/* ═══ INTRO ═══ */}
-        <section className="bg-white/[0.02] py-12 md:py-16 lg:py-20">
+        <section id="beneficios" className="bg-white/[0.02] py-12 md:py-16 lg:py-20 scroll-mt-20">
           <div className="max-w-4xl mx-auto px-4 text-center space-y-3 md:space-y-4">
             <div className="inline-flex items-center gap-2 font-semibold text-xs md:text-sm" style={{ color: theme.primary }}>
               <Rocket className="w-4 h-4" /> Tudo que você precisa em um só lugar
@@ -816,254 +804,6 @@ export default function VenderPage() {
           </div>
         </section>
 
-        {/* ═══ PRICING ═══ */}
-        <section id="planos" className="py-16 md:py-20 lg:py-28">
-          <div className="max-w-6xl mx-auto px-4">
-            <div className="text-center max-w-2xl mx-auto mb-10 md:mb-14">
-              <p className="font-semibold text-xs md:text-sm uppercase tracking-wide mb-3" style={{ color: theme.primary }}>Planos e preços</p>
-              <h2 className="font-display text-2xl sm:text-3xl md:text-4xl font-black">
-                Comece de graça ou escolha seu plano
-              </h2>
-              <p className="text-white/40 mt-3 md:mt-4 text-sm md:text-base">
-                Todos os planos incluem 7 dias de teste gratuito
-              </p>
-            </div>
-
-            {loadingPlans ? (
-              <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-white/30" /></div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
-                {individualPlans.map((plan, i) => {
-                  const style = getTierStyle(plan.tier);
-                  const Icon = style.icon;
-                  const isPopular = plan.is_popular || !!style.badge;
-                  return (
-                    <motion.div
-                      key={plan.id}
-                      initial={{ opacity: 0, y: 30 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: i * 0.08, duration: 0.5 }}
-                      whileHover={{ y: -6, transition: { duration: 0.2 } }}
-                      className={`group relative bg-gradient-to-br ${style.gradient} backdrop-blur-xl rounded-2xl border ${style.ring} ${style.glow} shadow-2xl p-5 md:p-6 flex flex-col`}
-                    >
-                      {/* Glow ambient */}
-                      <div className="absolute -top-20 -right-20 w-40 h-40 bg-white/5 rounded-full blur-3xl group-hover:bg-white/10 transition-all duration-500 overflow-hidden" />
-
-                      {style.badge && (
-                        <span className={`absolute -top-3 left-1/2 -translate-x-1/2 z-10 ${style.ctaGradient ? `bg-gradient-to-r ${style.ctaGradient}` : "bg-gradient-to-r from-amber-500 to-orange-500"} text-white text-[10px] font-black uppercase px-4 py-1 rounded-full tracking-widest shadow-lg`}>
-                          {style.badge}
-                        </span>
-                      )}
-
-                      <div className="relative z-10 flex flex-col h-full">
-                        <div className="flex items-center gap-2 mb-3">
-                          <div className="p-2 bg-white/10 rounded-lg backdrop-blur">
-                            <Icon className="w-5 h-5 text-white" />
-                          </div>
-                          <h3 className="font-display font-black text-xl md:text-2xl">{plan.name}</h3>
-                        </div>
-                        <p className="text-[11px] md:text-xs text-white/50 mb-4">{style.subtitle}</p>
-
-                        <div className="mb-4">
-                          {plan.price === 0 ? (
-                            <p className="text-3xl md:text-4xl font-black bg-gradient-to-br from-white to-white/60 bg-clip-text text-transparent">Gratuito</p>
-                          ) : (
-                            <>
-                              <div className="flex items-baseline gap-1 flex-nowrap whitespace-nowrap">
-                                <span className="text-2xl md:text-3xl lg:text-4xl font-black bg-gradient-to-br from-white to-white/60 bg-clip-text text-transparent whitespace-nowrap">{formatPrice(plan.price)}</span>
-                                <span className="text-xs md:text-sm font-normal text-white/40">/mês</span>
-                              </div>
-                              <p className="text-[10px] md:text-[11px] font-bold mt-1.5 flex items-center gap-1" style={{ color: theme.primary }}>
-                                <Sparkles className="w-3 h-3" /> 7 dias grátis
-                              </p>
-                            </>
-                          )}
-                        </div>
-
-                        <div className="mb-3 grid grid-cols-2 gap-2">
-                          <div className="px-3 py-2 rounded-lg bg-black/30 border border-white/5">
-                            <p className="text-[9px] uppercase tracking-wider text-white/40 mb-0.5">Anúncios</p>
-                            <p className="text-xs md:text-sm font-bold text-white">{plan.max_items >= 9999 ? "Ilimitado" : `Até ${plan.max_items}`}</p>
-                          </div>
-                          <div className="px-3 py-2 rounded-lg bg-gradient-to-br from-purple-500/20 to-fuchsia-500/10 border border-purple-400/20">
-                            <p className="text-[9px] uppercase tracking-wider text-purple-200/70 mb-0.5 flex items-center gap-1"><Sparkles className="w-2.5 h-2.5" /> Créditos IA/mês</p>
-                            <p className="text-xs md:text-sm font-bold text-white">{formatCredits((plan as any).ai_credits_per_month || getAiCredits(plan.tier, (plan as any).ai_generations_per_day))}</p>
-                          </div>
-                          <div className="px-3 py-2 rounded-lg bg-black/30 border border-white/5">
-                            <p className="text-[9px] uppercase tracking-wider text-white/40 mb-0.5">Fotos / Anúncio</p>
-                            <p className="text-xs md:text-sm font-bold text-white">Até {plan.max_photos_per_listing}</p>
-                          </div>
-                          <div className="px-3 py-2 rounded-lg bg-black/30 border border-white/5">
-                            <p className="text-[9px] uppercase tracking-wider text-white/40 mb-0.5">Storage</p>
-                            <p className="text-xs md:text-sm font-bold text-white">{plan.storage_mb >= 1024 ? `${(plan.storage_mb / 1024).toFixed(1)} GB` : `${plan.storage_mb} MB`}</p>
-                          </div>
-                        </div>
-
-                        <div className="mb-4 px-3 py-2.5 rounded-lg bg-gradient-to-br from-purple-500/10 via-fuchsia-500/5 to-transparent border border-purple-400/20">
-                          <p className="text-[9px] uppercase tracking-wider text-purple-200/80 mb-1.5 flex items-center gap-1 font-bold">
-                            <Bot className="w-3 h-3" /> Bots de IA inclusos
-                          </p>
-                          <div className="flex flex-wrap gap-1">
-                            {getAiBots(plan.tier).map((bot) => (
-                              <span key={bot.name} className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-white/5 border border-white/10 text-[10px] text-white/80">
-                                <span>{bot.emoji}</span>
-                                <span className="font-medium">{bot.name}</span>
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-
-                        <PlanBenefitsList benefits={plan.benefits} primaryColor={theme.primary} />
-
-                        <Button
-                          onClick={scrollToForm}
-                          className={`w-full rounded-xl font-bold text-sm transition-all ${
-                            style.ctaGradient
-                              ? `bg-gradient-to-r ${style.ctaGradient} hover:brightness-110 text-white shadow-lg`
-                              : "bg-white/10 hover:bg-white/20 text-white border border-white/10"
-                          }`}
-                        >
-                          {plan.price === 0 ? "Criar conta grátis" : `Assinar ${plan.name}`}
-                          <ArrowRight className="w-4 h-4 ml-1" />
-                        </Button>
-                      </div>
-                    </motion.div>
-                  );
-                })}
-              </div>
-            )}
-
-            {/* Enterprise Plans — Imobiliárias */}
-            {[
-              { plans: imobiliariaPlans, badge: "Para Imobiliárias", title: "Planos para Imobiliárias", subtitle: "Múltiplos corretores, lojas-espelho, CRM compartilhado e analytics por equipe", chipFrom: "from-cyan-500/10", chipTo: "to-violet-500/10", chipText: "from-cyan-300 to-violet-300", icon: Building2 },
-              { plans: construtoraPlans, badge: "Para Construtoras", title: "Planos para Construtoras", subtitle: "Lançamentos, plantas, gestão de empreendimentos e leads em alto volume", chipFrom: "from-amber-500/10", chipTo: "to-orange-500/10", chipText: "from-amber-300 to-orange-300", icon: Building2 },
-            ].map((section) => section.plans.length > 0 && (
-              <div key={section.title} className="mt-16 md:mt-24">
-                <div className="text-center mb-10">
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r ${section.chipFrom} ${section.chipTo} border border-white/10 mb-4`}
-                  >
-                    <section.icon className="w-3.5 h-3.5 text-white/80" />
-                    <span className={`text-[11px] font-bold uppercase tracking-widest bg-gradient-to-r ${section.chipText} bg-clip-text text-transparent`}>{section.badge}</span>
-                  </motion.div>
-                  <h3 className="font-display text-2xl sm:text-3xl md:text-4xl font-black bg-gradient-to-br from-white to-white/60 bg-clip-text text-transparent">
-                    {section.title}
-                  </h3>
-                  <p className="text-white/40 mt-3 text-sm md:text-base max-w-xl mx-auto">
-                    {section.subtitle}
-                  </p>
-                </div>
-
-                <div className={`grid grid-cols-1 sm:grid-cols-2 ${section.plans.length >= 4 ? "lg:grid-cols-4" : "lg:grid-cols-3"} gap-4 md:gap-5 ${section.plans.length < 3 ? "max-w-4xl mx-auto" : ""}`}>
-                  {section.plans.map((plan, i) => {
-                    const style = getTierStyle(plan.tier);
-                    const Icon = style.icon;
-                    return (
-                      <motion.div
-                        key={plan.id}
-                        initial={{ opacity: 0, y: 30 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: i * 0.08, duration: 0.5 }}
-                        whileHover={{ y: -6, transition: { duration: 0.2 } }}
-                        className={`group relative bg-gradient-to-br ${style.gradient} backdrop-blur-xl rounded-2xl border ${style.ring} ${style.glow} shadow-2xl p-5 md:p-6 flex flex-col`}
-                      >
-                        <div className="absolute -top-20 -right-20 w-40 h-40 bg-white/5 rounded-full blur-3xl group-hover:bg-white/10 transition-all duration-500 overflow-hidden" />
-
-                        {style.badge && (
-                          <span className={`absolute -top-3 left-1/2 -translate-x-1/2 z-10 ${style.ctaGradient ? `bg-gradient-to-r ${style.ctaGradient}` : "bg-gradient-to-r from-violet-500 to-fuchsia-500"} text-white text-[10px] font-black uppercase px-4 py-1 rounded-full tracking-widest shadow-lg`}>
-                            {style.badge}
-                          </span>
-                        )}
-
-                        <div className="relative z-10 flex flex-col h-full">
-                          <div className="flex items-center gap-2 mb-3">
-                            <div className="p-2 bg-white/10 rounded-lg backdrop-blur">
-                              <Icon className="w-5 h-5 text-white" />
-                            </div>
-                            <h3 className="font-display font-black text-xl md:text-2xl">{plan.name}</h3>
-                          </div>
-                          <p className="text-[11px] md:text-xs text-white/50 mb-4">{style.subtitle}</p>
-
-                          <div className="mb-4">
-                            {plan.price === 0 ? (
-                              <p className="text-3xl md:text-4xl font-black bg-gradient-to-br from-white to-white/60 bg-clip-text text-transparent">Gratuito</p>
-                            ) : (
-                              <>
-                                <div className="flex items-baseline gap-1 flex-nowrap whitespace-nowrap">
-                                  <span className="text-2xl md:text-3xl lg:text-4xl font-black bg-gradient-to-br from-white to-white/60 bg-clip-text text-transparent whitespace-nowrap">{formatPrice(plan.price)}</span>
-                                  <span className="text-xs md:text-sm font-normal text-white/40">/mês</span>
-                                </div>
-                                <p className="text-[10px] md:text-[11px] font-bold mt-1.5 flex items-center gap-1" style={{ color: theme.primary }}>
-                                  <Sparkles className="w-3 h-3" /> 7 dias grátis
-                                </p>
-                              </>
-                            )}
-                          </div>
-
-                          <div className="mb-3 grid grid-cols-2 gap-2">
-                            <div className="px-3 py-2 rounded-lg bg-black/30 border border-white/5">
-                              <p className="text-[9px] uppercase tracking-wider text-white/40 mb-0.5">Anúncios</p>
-                              <p className="text-xs md:text-sm font-bold text-white">{plan.max_items >= 9999 ? "Ilimitado" : `Até ${plan.max_items}`}</p>
-                            </div>
-                            <div className="px-3 py-2 rounded-lg bg-gradient-to-br from-purple-500/20 to-fuchsia-500/10 border border-purple-400/20">
-                              <p className="text-[9px] uppercase tracking-wider text-purple-200/70 mb-0.5 flex items-center gap-1"><Sparkles className="w-2.5 h-2.5" /> Créditos IA/mês</p>
-                              <p className="text-xs md:text-sm font-bold text-white">{formatCredits((plan as any).ai_credits_per_month || getAiCredits(plan.tier, (plan as any).ai_generations_per_day))}</p>
-                            </div>
-                            <div className="px-3 py-2 rounded-lg bg-black/30 border border-white/5">
-                              <p className="text-[9px] uppercase tracking-wider text-white/40 mb-0.5">Fotos / Anúncio</p>
-                              <p className="text-xs md:text-sm font-bold text-white">Até {plan.max_photos_per_listing}</p>
-                            </div>
-                            <div className="px-3 py-2 rounded-lg bg-black/30 border border-white/5">
-                              <p className="text-[9px] uppercase tracking-wider text-white/40 mb-0.5">Storage</p>
-                              <p className="text-xs md:text-sm font-bold text-white">{plan.storage_mb >= 1024 ? `${(plan.storage_mb / 1024).toFixed(1)} GB` : `${plan.storage_mb} MB`}</p>
-                            </div>
-                            <div className="col-span-2 px-3 py-2 rounded-lg bg-gradient-to-br from-cyan-500/15 to-blue-500/5 border border-cyan-400/20">
-                              <p className="text-[9px] uppercase tracking-wider text-cyan-200/70 mb-0.5 flex items-center gap-1"><Users className="w-2.5 h-2.5" /> Corretores na equipe</p>
-                              <p className="text-xs md:text-sm font-bold text-white">{getBrokersFromBenefits(plan.benefits)}</p>
-                            </div>
-                          </div>
-
-                          <div className="mb-4 px-3 py-2.5 rounded-lg bg-gradient-to-br from-purple-500/10 via-fuchsia-500/5 to-transparent border border-purple-400/20">
-                            <p className="text-[9px] uppercase tracking-wider text-purple-200/80 mb-1.5 flex items-center gap-1 font-bold">
-                              <Bot className="w-3 h-3" /> Bots de IA inclusos
-                            </p>
-                            <div className="flex flex-wrap gap-1">
-                              {getAiBots(plan.tier).map((bot) => (
-                                <span key={bot.name} className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-white/5 border border-white/10 text-[10px] text-white/80">
-                                  <span>{bot.emoji}</span>
-                                  <span className="font-medium">{bot.name}</span>
-                                </span>
-                              ))}
-                            </div>
-                          </div>
-
-                          <PlanBenefitsList benefits={plan.benefits} primaryColor={theme.primary} />
-
-                          <Button
-                            onClick={scrollToForm}
-                            className={`w-full rounded-xl font-bold text-sm transition-all ${
-                              style.ctaGradient
-                                ? `bg-gradient-to-r ${style.ctaGradient} hover:brightness-110 shadow-lg`
-                                : "bg-white/10 hover:bg-white/20 text-white border border-white/10"
-                            }`}
-                          >
-                            {plan.price === 0 ? "Criar conta grátis" : `Assinar ${plan.name}`}
-                            <ArrowRight className="w-4 h-4 ml-1" />
-                          </Button>
-                        </div>
-                      </motion.div>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
 
         {/* ═══ CTA FINAL ═══ */}
         <section className="border-t border-white/5 py-16 md:py-20 lg:py-28" style={{ background: `linear-gradient(135deg, ${theme.primary}30, ${theme.promoAccent || theme.primary}18)` }}>
