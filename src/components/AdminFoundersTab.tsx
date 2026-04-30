@@ -64,9 +64,9 @@ const TIER_OPTIONS: { value: InheritedTier; label: string; defaultCredits: numbe
   { value: "imob_start", label: "Imob Start", defaultCredits: 2000, category: "empresa" },
   { value: "imob_pro", label: "Imob Pro", defaultCredits: 3000, category: "empresa" },
   { value: "imob_elite", label: "Imob Elite", defaultCredits: 3500, category: "empresa" },
-  { value: "const_start", label: "Construtora Start", defaultCredits: 2000, category: "construtora" },
-  { value: "const_pro", label: "Construtora Pro", defaultCredits: 4000, category: "construtora" },
-  { value: "const_master", label: "Construtora Master", defaultCredits: 5000, category: "construtora" },
+  { value: "const_start", label: "Construtora Start", defaultCredits: 1500, category: "construtora" },
+  { value: "const_pro", label: "Construtora Pro", defaultCredits: 3000, category: "construtora" },
+  { value: "const_master", label: "Construtora Master", defaultCredits: 6000, category: "construtora" },
 ];
 
 const TIER_LABEL: Record<string, string> = Object.fromEntries(TIER_OPTIONS.map(t => [t.value, t.label]));
