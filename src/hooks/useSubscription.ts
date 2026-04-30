@@ -299,10 +299,12 @@ export const PACKAGE_CONFIG = {
     borderColor: "border-amber-400",
     badgeColor: "bg-gradient-to-r from-amber-500 to-orange-500 text-white",
     benefits: [
-      "Plano Fundador vitalício",
-      "Equivalente ao VIP/Premium",
+      "Pagamento único — válido por 12 meses",
+      "Equivalente ao plano VIP/Premium",
       "500 créditos IA bônus (única vez)",
-      "Acesso por 1 ano",
+      "Todos os benefícios do Premium incluídos",
+      "Selo Fundador exclusivo",
+      "Lote limitado por preço promocional",
     ],
   },
   fundador_empresa: {
@@ -314,10 +316,12 @@ export const PACKAGE_CONFIG = {
     borderColor: "border-amber-500",
     badgeColor: "bg-gradient-to-r from-amber-600 to-yellow-700 text-white",
     benefits: [
-      "Plano Fundador Empresa vitalício",
-      "Equivalente ao Black Empresa",
+      "Pagamento único — válido por 12 meses",
+      "Equivalente ao plano Black Empresa",
       "1750 créditos IA bônus (única vez)",
-      "Acesso por 1 ano",
+      "Todos os benefícios do Black incluídos",
+      "Selo Fundador Empresa exclusivo",
+      "Lote limitado por preço promocional",
     ],
   },
 } as const;
