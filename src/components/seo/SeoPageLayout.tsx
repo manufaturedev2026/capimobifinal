@@ -181,7 +181,7 @@ export default function SeoPageLayout({
         </div>
       </section>
 
-      <FooterSimple theme={{ bg: DARK_BASE, text: TEXT, textMuted: TEXT_MUTED, border: BORDER, primary: PRIMARY }} />
+      <FooterSimple theme={{ bg: DARK_BASE, text: TEXT, textMuted: TEXT_MUTED, border: BORDER, primary: PRIMARY, accent: theme.promoAccent }} />
     </div>
   );
 }
