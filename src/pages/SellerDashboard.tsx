@@ -143,23 +143,17 @@ export default function SellerDashboard() {
     fetchCaptureCount();
     fetchCrmCount();
     fetchPartnershipCount();
-    const ch1 = supabase
-      .channel("capture-leads-badge")
-      .on("postgres_changes", { event: "*", schema: "public", table: "property_capture_leads" }, fetchCaptureCount)
-      .subscribe();
-    const ch2 = supabase
-      .channel("crm-contacts-badge")
-      .on("postgres_changes", { event: "*", schema: "public", table: "seller_crm_contacts" }, fetchCrmCount)
-      .subscribe();
-    const ch3 = supabase
-      .channel("property-partnerships-badge")
-      .on("postgres_changes", { event: "*", schema: "public", table: "property_partnerships" }, fetchPartnershipCount)
-      .subscribe();
-    const ch4 = supabase
-      .channel("partnership-requests-badge")
-      .on("postgres_changes", { event: "*", schema: "public", table: "partnership_requests" }, fetchPartnershipCount)
-      .subscribe();
-    return () => { supabase.removeChannel(ch1); supabase.removeChannel(ch2); supabase.removeChannel(ch3); supabase.removeChannel(ch4); };
+    // Cloud cost optimization: replaced 4 always-on Realtime channels with
+    // a refresh on tab visibility change. Badges still update reliably when
+    // the user returns to the dashboard, without keeping live websockets open.
+    const onVisible = () => {
+      if (document.visibilityState !== "visible") return;
+      fetchCaptureCount();
+      fetchCrmCount();
+      fetchPartnershipCount();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => document.removeEventListener("visibilitychange", onVisible);
   }, [user?.id]);
 
   useEffect(() => {

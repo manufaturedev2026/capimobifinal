@@ -28,8 +28,10 @@ export default function StoreEffects({ sellerId }: StoreEffectsProps) {
       }
     };
     fetchEffect();
-    const interval = setInterval(fetchEffect, 60000);
-    return () => { mounted = false; clearInterval(interval); };
+    // Refetch only when tab becomes visible again (saves Cloud reads on idle tabs)
+    const onVisible = () => { if (document.visibilityState === "visible") fetchEffect(); };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => { mounted = false; document.removeEventListener("visibilitychange", onVisible); };
   }, [sellerId]);
 
   // Show for 5 seconds then hide, repeat every 30s

@@ -72,8 +72,10 @@ export default function StoreEffectsPicker({ userId, sellerId }: StoreEffectsPic
 
   useEffect(() => {
     Promise.all([fetchActiveEffect(), fetchParticlesStatus()]).then(() => setLoading(false));
-    const interval = setInterval(fetchActiveEffect, 15000);
-    return () => clearInterval(interval);
+    // Refetch when tab regains focus instead of polling — saves Cloud reads
+    const onVisible = () => { if (document.visibilityState === "visible") fetchActiveEffect(); };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => document.removeEventListener("visibilitychange", onVisible);
   }, [sellerId]);
 
   const toggleParticles = async () => {
