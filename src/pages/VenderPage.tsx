@@ -560,8 +560,8 @@ export default function VenderPage() {
                 <Button onClick={scrollToForm} size="lg" className="flex-1 sm:flex-none text-white font-bold rounded-xl px-3 sm:px-6 md:px-8 text-xs sm:text-sm md:text-base shadow-lg whitespace-nowrap" style={{ background: `linear-gradient(to right, ${theme.primary}, ${theme.promoAccent || theme.primary})`, boxShadow: `0 10px 25px ${theme.primary}40` }}>
                   Criar Meu Site <ArrowRight className="ml-1.5 sm:ml-2 w-4 h-4 md:w-5 md:h-5" />
                 </Button>
-                <Button onClick={() => document.getElementById("planos")?.scrollIntoView({ behavior: "smooth" })} variant="outline" className="flex-1 sm:flex-none rounded-xl border-white/20 text-white/70 hover:text-white hover:bg-white/5 text-xs sm:text-sm whitespace-nowrap">
-                  Ver Planos <ChevronRight className="ml-1 w-4 h-4" />
+                <Button onClick={() => document.getElementById("beneficios")?.scrollIntoView({ behavior: "smooth" })} variant="outline" className="flex-1 sm:flex-none rounded-xl border-white/20 text-white/70 hover:text-white hover:bg-white/5 text-xs sm:text-sm whitespace-nowrap">
+                  Benefícios <ChevronRight className="ml-1 w-4 h-4" />
                 </Button>
               </div>
 
@@ -694,7 +694,7 @@ export default function VenderPage() {
         </section>
 
         {/* ═══ INTRO ═══ */}
-        <section className="bg-white/[0.02] py-12 md:py-16 lg:py-20">
+        <section id="beneficios" className="bg-white/[0.02] py-12 md:py-16 lg:py-20 scroll-mt-20">
           <div className="max-w-4xl mx-auto px-4 text-center space-y-3 md:space-y-4">
             <div className="inline-flex items-center gap-2 font-semibold text-xs md:text-sm" style={{ color: theme.primary }}>
               <Rocket className="w-4 h-4" /> Tudo que você precisa em um só lugar
