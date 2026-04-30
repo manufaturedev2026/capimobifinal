@@ -418,7 +418,7 @@ export function useSubscription(userId?: string) {
 }
 
 export function useSellerSubscription(sellerId?: string) {
-  const [tier, setTier] = useState<"start" | "basico" | "premium" | "prime" | "basico_empresa" | "essencial_empresa" | "premium_empresa" | "prime_empresa">("basico");
+  const [tier, setTier] = useState<Subscription["tier"]>("basico");
 
   useEffect(() => {
     if (!sellerId) return;
