@@ -1032,7 +1032,7 @@ export default function PackagesPage() {
             </div>
             <div>
               <strong className="text-foreground">2. Pagamento único</strong>
-              <p className="mt-1">Pagamento via Stripe, à vista no cartão. <strong>Sem renovação automática.</strong></p>
+              <p className="mt-1">Pagamento via Appmax, no <strong>Pix</strong> ou <strong>cartão</strong>. <strong>Sem renovação automática.</strong></p>
             </div>
             <div>
               <strong className="text-foreground">3. Ativação instantânea</strong>
