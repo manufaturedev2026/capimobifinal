@@ -542,7 +542,7 @@ export default function StoreLayoutMarketplace({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.3 }}
-        className="px-4 md:px-8 -mt-7 relative z-20"
+        className="px-4 md:px-8 mt-4 md:-mt-7 relative z-20"
       >
         <div
           className="flex items-center gap-2 md:gap-3 rounded-2xl px-4 py-3 md:px-5 md:py-4 backdrop-blur-xl"
