@@ -239,7 +239,7 @@ interface StoreThemePickerProps {
 }
 
 export default function StoreThemePicker({ selected, onChange, tier = "premium", onLocked }: StoreThemePickerProps) {
-  const isBasico = tier === "basico";
+  const isBasico = false; // Todos os temas liberados em qualquer plano
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2 mb-2">
