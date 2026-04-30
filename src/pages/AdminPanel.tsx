@@ -289,6 +289,15 @@ export default function AdminPanel() {
     setManagersList((data as any[]) || []);
   };
 
+  const fetchAvailablePlans = async () => {
+    const { data } = await supabase
+      .from("subscription_plans")
+      .select("tier, name, max_items, category, sort_order")
+      .eq("is_active", true)
+      .order("sort_order", { ascending: true });
+    setAvailablePlans((data as any[]) || []);
+  };
+
   const fetchSellers = async () => {
     setLoading(true);
     const { data: profiles } = await supabase.from("profiles").select("*");
