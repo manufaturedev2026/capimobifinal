@@ -92,13 +92,17 @@ serve(async (req) => {
     if (isFounder && founderLotId) {
       const { data: lot, error: lotErr } = await supabaseAdmin
         .from("founder_lots")
-        .select("inherited_tier, ia_credits")
+        .select("inherited_tier, ia_credits, ia_credits_monthly")
         .eq("id", founderLotId)
         .maybeSingle();
       if (lotErr) throw lotErr;
       if (!lot) throw new Error("Lote Fundador não encontrado");
       inheritedTier = lot.inherited_tier as string;
-      founderIaCredits = lot.ia_credits as number;
+      // Mensal: usa ia_credits_monthly (créditos do plano base × 0.5).
+      // Anual: usa ia_credits (12× o valor mensal).
+      founderIaCredits = billingPeriod === "monthly"
+        ? ((lot as { ia_credits_monthly?: number }).ia_credits_monthly ?? 0)
+        : (lot.ia_credits as number);
 
       const { data: consumed, error: consErr } = await supabaseAdmin.rpc("consume_founder_slot", {
         p_lot_id: founderLotId,
