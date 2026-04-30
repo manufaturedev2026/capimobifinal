@@ -33,7 +33,7 @@ serve(async (req) => {
     if (!tier) throw new Error("Plano inválido");
     if (!["monthly", "annual"].includes(billing_period)) throw new Error("Período inválido");
 
-    const isFounder = tier === "fundador_corretor" || tier === "fundador_empresa";
+    const isFounder = tier === "fundador_corretor" || tier === "fundador_empresa" || tier === "fundador_construtora";
 
     // Busca o plano no banco (planos Fundador são is_active=false, então não filtramos por isso)
     const { data: plan, error: planErr } = await supabaseAdmin
@@ -54,7 +54,7 @@ serve(async (req) => {
       if (!founder_lot_id) throw new Error("Lote do plano Fundador não informado");
       const { data: lot, error: lotErr } = await supabaseAdmin
         .from("founder_lots")
-        .select("id, category, lot_number, price, total_slots, used_slots, is_active")
+        .select("id, category, lot_number, price, monthly_price, total_slots, used_slots, is_active")
         .eq("id", founder_lot_id)
         .maybeSingle();
       if (lotErr) throw lotErr;
@@ -62,9 +62,16 @@ serve(async (req) => {
       if (!lot.is_active) throw new Error("Lote Fundador desativado");
       if (lot.used_slots >= lot.total_slots) throw new Error("Lote Fundador esgotado");
 
-      const expectedCat = tier === "fundador_corretor" ? "individual" : "enterprise";
+      const expectedCat =
+        tier === "fundador_corretor" ? "individual" :
+        tier === "fundador_empresa" ? "enterprise" :
+        "construtora";
       if (lot.category !== expectedCat) throw new Error("Lote não corresponde ao plano");
       founderLot = lot;
+
+      if (billing_period === "monthly" && (!lot.monthly_price || Number(lot.monthly_price) <= 0)) {
+        throw new Error("Este lote não tem preço mensal cadastrado");
+      }
 
       // ==== UPGRADE entre lotes Fundador: calcula crédito proporcional ====
       if (is_founder_upgrade) {
@@ -175,14 +182,17 @@ serve(async (req) => {
     let periodLabel: string;
 
     if (isFounder) {
-      // Fundador: preço fixo do lote, sem desconto, vale 1 ano
-      grossTotal = Number(founderLot.price);
+      // Fundador: preço do lote (anual ou mensal), sem desconto
+      const isMonthly = billing_period === "monthly";
+      grossTotal = isMonthly ? Number(founderLot.monthly_price) : Number(founderLot.price);
       // Para upgrade Fundador→Fundador: desconta o crédito proporcional do lote anterior
       finalTotal = is_founder_upgrade
         ? Math.max(0.5, grossTotal - upgradeCreditCents / 100)
         : grossTotal;
       periodLabel = is_founder_upgrade
         ? `Upgrade Fundador → Lote ${founderLot.lot_number} · validade renovada`
+        : isMonthly
+        ? `Fundador Lote ${founderLot.lot_number} · 30 dias`
         : `Fundador Lote ${founderLot.lot_number} · 1 ano`;
     } else {
       const basePrice = Number(plan.price);
@@ -239,7 +249,7 @@ serve(async (req) => {
       metadata: {
         user_id: user.id,
         tier,
-        billing_period: isFounder ? "annual" : billing_period,
+        billing_period: isFounder ? billing_period : billing_period,
         is_founder: isFounder ? "1" : "0",
         is_founder_upgrade: is_founder_upgrade ? "1" : "0",
         upgrade_credit_brl: is_founder_upgrade ? (upgradeCreditCents / 100).toFixed(2) : "0",
