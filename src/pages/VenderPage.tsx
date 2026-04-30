@@ -280,9 +280,9 @@ const AI_CREDITS_BY_TIER: Record<string, number> = {
   imob_pro: 3000,
   imob_elite: 6000,
   const_basico: 25,
-  const_start: 1500,
-  const_pro: 3000,
-  const_master: 6000,
+  const_start: 2500,
+  const_pro: 6000,
+  const_master: 15000,
 };
 const getAiCredits = (tier: string, fromDb?: number | null) => fromDb || AI_CREDITS_BY_TIER[tier] || 25;
 const formatCredits = (n: number) => n.toLocaleString("pt-BR");
@@ -384,6 +384,18 @@ const AI_BOTS_BY_TIER: Record<string, { emoji: string; name: string }[]> = {
   ],
 };
 const getAiBots = (tier: string) => AI_BOTS_BY_TIER[tier] ?? AI_BOTS_BY_TIER.basico;
+
+// Extrai a quantidade de corretores anunciada nos benefits do plano (imob/const)
+const getBrokersFromBenefits = (benefits: string[]): string => {
+  if (!benefits?.length) return "—";
+  for (const b of benefits) {
+    const lower = b.toLowerCase();
+    if (lower.includes("ilimitad")) return "Ilimitado";
+    const m = b.match(/Até\s+([\d.]+)\s+corretor/i);
+    if (m) return `Até ${m[1]}`;
+  }
+  return "—";
+};
 
 function PlanBenefitsList({ benefits, primaryColor }: { benefits: string[]; primaryColor: string }) {
   const INITIAL = 12;
@@ -1061,6 +1073,10 @@ export default function VenderPage() {
                             <div className="px-3 py-2 rounded-lg bg-black/30 border border-white/5">
                               <p className="text-[9px] uppercase tracking-wider text-white/40 mb-0.5">Storage</p>
                               <p className="text-xs md:text-sm font-bold text-white">{plan.storage_mb >= 1024 ? `${(plan.storage_mb / 1024).toFixed(1)} GB` : `${plan.storage_mb} MB`}</p>
+                            </div>
+                            <div className="col-span-2 px-3 py-2 rounded-lg bg-gradient-to-br from-cyan-500/15 to-blue-500/5 border border-cyan-400/20">
+                              <p className="text-[9px] uppercase tracking-wider text-cyan-200/70 mb-0.5 flex items-center gap-1"><Users className="w-2.5 h-2.5" /> Corretores na equipe</p>
+                              <p className="text-xs md:text-sm font-bold text-white">{getBrokersFromBenefits(plan.benefits)}</p>
                             </div>
                           </div>
 
