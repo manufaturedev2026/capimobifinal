@@ -45,6 +45,7 @@ import AiHelpChat from "@/components/AiHelpChat";
 import AiCreditsCard from "@/components/AiCreditsCard";
 import { useAiCredits } from "@/hooks/useAiCredits";
 import PlanLimitsCard from "@/components/PlanLimitsCard";
+import PlanLimitWarningPopup from "@/components/PlanLimitWarningPopup";
 
 type SellerItem = {
   id: string;
@@ -1454,6 +1455,14 @@ export default function SellerDashboard() {
       <OnboardingTour />
       {user?.id && profile?.id && (
         <WelcomePushPopup sellerId={profile.id} userId={user.id} userName={profile.full_name || profile.company_name} />
+      )}
+      {user?.id && (
+        <PlanLimitWarningPopup
+          userId={user.id}
+          userName={profile?.full_name || profile?.company_name}
+          planName={pkgConfig?.name}
+          threshold={80}
+        />
       )}
       <AiHelpChat themeVars={dashThemeVars} />
     </div>
