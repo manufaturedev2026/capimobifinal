@@ -611,7 +611,13 @@ export default function PackagesPage() {
               ? "Processando..."
               : isCurrent
               ? "Plano Atual"
-              : plan.price === 0 ? "Plano Gratuito" : `Assinar ${plan.name}`}
+              : plan.price === 0
+                ? "Plano Gratuito"
+                : currentTier === plan.tier && billingPeriod === "annual"
+                  ? `Mudar para Anual`
+                  : currentTier === plan.tier && billingPeriod === "monthly"
+                    ? `Mudar para Mensal`
+                    : `Assinar ${plan.name}`}
             {!isCurrent && <ArrowRight className="w-4 h-4" />}
           </button>
         </div>
