@@ -1674,9 +1674,9 @@ export default function AdminPanel() {
                   onChange={(e) => setPlanTier(e.target.value)}
                   className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm text-foreground"
                 >
-                  {(Object.keys(PACKAGE_CONFIG) as (keyof typeof PACKAGE_CONFIG)[]).map((t) => (
-                    <option key={t} value={t}>
-                      {(PACKAGE_CONFIG[t] as any).name} — até {(PACKAGE_CONFIG[t] as any).maxItems} anúncios
+                  {availablePlans.map((p) => (
+                    <option key={p.tier} value={p.tier}>
+                      {p.name} ({p.category}) — até {p.max_items} anúncios
                     </option>
                   ))}
                 </select>
