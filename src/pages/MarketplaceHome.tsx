@@ -569,7 +569,7 @@ export default function MarketplaceHome() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.6 }}
-            className="flex items-center gap-3 mt-8 md:mt-5"
+            className="flex items-center gap-3 mt-8 md:mt-5 mb-10 md:mb-0"
           >
             <button
               onClick={() => {
