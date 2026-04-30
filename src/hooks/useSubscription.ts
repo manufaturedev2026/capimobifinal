@@ -5,7 +5,7 @@ export interface Subscription {
   id: string;
   user_id: string;
   seller_id: string;
-  tier: "start" | "basico" | "premium" | "prime" | "basico_empresa" | "essencial_empresa" | "premium_empresa" | "prime_empresa" | "fundador_corretor" | "fundador_empresa" | "imob_basico" | "imob_start" | "imob_pro" | "imob_elite" | "const_basico" | "const_start" | "const_pro" | "const_master";
+  tier: "start" | "basico" | "premium" | "prime" | "basico_empresa" | "essencial_empresa" | "premium_empresa" | "prime_empresa" | "fundador_corretor" | "fundador_empresa" | "fundador_construtora" | "imob_basico" | "imob_start" | "imob_pro" | "imob_elite" | "const_basico" | "const_start" | "const_pro" | "const_master";
   max_items: number;
   started_at: string;
   expires_at: string;
@@ -321,6 +321,23 @@ export const PACKAGE_CONFIG = {
       "1750 créditos IA bônus (única vez)",
       "Todos os benefícios do Black incluídos",
       "Selo Fundador Empresa exclusivo",
+      "Lote limitado por preço promocional",
+    ],
+  },
+  fundador_construtora: {
+    name: "Fundador Construtora",
+    price: 397,
+    setupFee: 0,
+    maxItems: 9999,
+    color: "from-orange-600 to-red-700",
+    borderColor: "border-orange-500",
+    badgeColor: "bg-gradient-to-r from-orange-600 to-red-700 text-white",
+    benefits: [
+      "Pagamento único — válido por 12 meses",
+      "Equivalente ao plano Construtora Pro",
+      "2500 créditos IA bônus (única vez)",
+      "Todos os benefícios do Construtora Pro incluídos",
+      "Selo Fundador Construtora exclusivo",
       "Lote limitado por preço promocional",
     ],
   },
