@@ -339,13 +339,13 @@ export default function AgendaPage() {
                       </div>
 
                       <div className="grid grid-cols-6 sm:flex sm:flex-wrap gap-1.5 sm:shrink-0">
-                        <Button size="sm" variant="outline" onClick={() => openWhatsApp(v.client_phone, v.client_name)} title="WhatsApp" className="px-0 sm:px-3">
+                        <Button size="sm" variant="outline" onClick={() => openWhatsApp(v.client_phone, v.client_name)} title="WhatsApp" className="px-0 sm:px-3 bg-background text-foreground border-border hover:bg-accent hover:text-accent-foreground">
                           <MessageCircle className="w-4 h-4" />
                         </Button>
-                        <Button size="sm" variant="outline" onClick={() => openMaps(v.address)} title="Maps" className="px-0 sm:px-3">
+                        <Button size="sm" variant="outline" onClick={() => openMaps(v.address)} title="Maps" className="px-0 sm:px-3 bg-background text-foreground border-border hover:bg-accent hover:text-accent-foreground">
                           <MapPin className="w-4 h-4" />
                         </Button>
-                        <Button size="sm" variant="outline" onClick={() => { setEditing(v); setOpenForm(true); }} title="Editar" className="px-0 sm:px-3">
+                        <Button size="sm" variant="outline" onClick={() => { setEditing(v); setOpenForm(true); }} title="Editar" className="px-0 sm:px-3 bg-background text-foreground border-border hover:bg-accent hover:text-accent-foreground">
                           <Edit3 className="w-4 h-4" />
                         </Button>
                         {v.status !== "confirmada" && v.status !== "fechada" ? (
@@ -364,7 +364,7 @@ export default function AgendaPage() {
                             <CheckCircle2 className="w-4 h-4" />
                           </Button>
                         ) : <span className="hidden sm:inline" />}
-                        <Button size="sm" variant="outline" onClick={() => remove(v)} title="Excluir" className="text-destructive hover:bg-destructive/10 px-0 sm:px-3">
+                        <Button size="sm" variant="outline" onClick={() => remove(v)} title="Excluir" className="bg-background border-border text-destructive hover:bg-destructive/10 px-0 sm:px-3">
                           <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
