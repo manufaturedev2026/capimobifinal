@@ -13,6 +13,7 @@ export interface Subscription {
   payment_method: string | null;
   payment_status: string | null;
   notes: string | null;
+  billing_period?: string | null;
 }
 
 export const PACKAGE_CONFIG = {
@@ -385,6 +386,7 @@ export function useSubscription(userId?: string) {
         payment_method: sub.payment_method,
         payment_status: sub.payment_status,
         notes: sub.notes,
+        billing_period: sub.billing_period ?? null,
       });
     }
     setLoading(false);
