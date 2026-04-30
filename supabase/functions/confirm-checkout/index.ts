@@ -8,6 +8,20 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+async function notifyAdmin(payload: Record<string, unknown>) {
+  try {
+    const url = `${Deno.env.get("SUPABASE_URL")}/functions/v1/notify-admin-purchase`;
+    await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
+      },
+      body: JSON.stringify(payload),
+    });
+  } catch (e) { console.error("notifyAdmin error:", e); }
+}
+
 /**
  * Confirma um checkout one-time concluído:
  * - Verifica o pagamento no Stripe
@@ -174,6 +188,14 @@ serve(async (req) => {
       });
       creditsResult = data;
     }
+
+    await notifyAdmin({
+      kind: "plan",
+      tier,
+      amount: session.amount_total ? session.amount_total / 100 : null,
+      user_id: user.id,
+      billing_period: effectiveBillingPeriod,
+    });
 
     return new Response(
       JSON.stringify({

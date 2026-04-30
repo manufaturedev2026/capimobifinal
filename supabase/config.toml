@@ -2,3 +2,6 @@ project_id = "lzjwmpwoybtdisenuzec"
 
 [functions.appmax-webhook]
 verify_jwt = false
+
+[functions.notify-admin-purchase]
+verify_jwt = false
