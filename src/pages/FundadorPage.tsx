@@ -481,7 +481,7 @@ export default function FundadorPage() {
             transition={{ delay: 0.2 }}
             className="text-lg md:text-xl text-white/65 max-w-2xl mx-auto mb-8"
           >
-            Acesso completo às funções premium da Capimobi por 1 ano. Sem mensalidades. Sem renovação automática.
+            Acesso completo às funções premium da Capimobi por 1 ano ou 1 mês, sem renovação automática, com 50% de desconto nos planos mensais ou anuais.
           </motion.p>
 
           {/* Contador regressivo */}
