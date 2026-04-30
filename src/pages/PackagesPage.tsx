@@ -62,6 +62,52 @@ const TIER_LABEL: Record<string, string> = {
 
 const formatCredits = (credits: number) => credits.toLocaleString("pt-BR");
 
+// ============================================================
+// Estilo épico por tier (replicado de /anunciar para unificar visual)
+// ============================================================
+const TIER_STYLES: Record<string, { gradient: string; glow: string; ring: string; icon: any; badge?: string; ctaGradient?: string; subtitle: string }> = {
+  basico:            { gradient: "from-slate-500/20 to-slate-700/10",     glow: "shadow-slate-500/10",   ring: "border-white/10",                                              icon: Rocket,    subtitle: "Para começar agora" },
+  basico_empresa:    { gradient: "from-slate-500/20 to-blue-700/10",      glow: "shadow-blue-500/10",    ring: "border-white/10",                                              icon: Building2, subtitle: "Para imobiliárias começarem" },
+  start:             { gradient: "from-emerald-500/30 to-teal-700/10",    glow: "shadow-emerald-500/20", ring: "border-emerald-400/30",                                        icon: Zap,       subtitle: "Para corretores em ascensão" },
+  premium:           { gradient: "from-amber-500/40 to-orange-600/20",    glow: "shadow-amber-500/30",   ring: "border-amber-400/60 ring-1 ring-amber-400/40",                 icon: Star,      subtitle: "⭐ Mais popular",            badge: "Mais Popular", ctaGradient: "from-amber-500 to-orange-500" },
+  prime:             { gradient: "from-fuchsia-500/30 to-purple-700/20",  glow: "shadow-fuchsia-500/30", ring: "border-fuchsia-400/50",                                        icon: Crown,     subtitle: "Para dominar o mercado" },
+  vip:               { gradient: "from-fuchsia-500/30 to-purple-700/20",  glow: "shadow-fuchsia-500/30", ring: "border-fuchsia-400/50",                                        icon: Crown,     subtitle: "Para dominar o mercado" },
+  imob_basico:       { gradient: "from-slate-500/20 to-blue-700/10",      glow: "shadow-blue-500/10",    ring: "border-white/10",                                              icon: Building2, subtitle: "Para imobiliárias começarem" },
+  imob_start:        { gradient: "from-cyan-500/30 to-blue-700/20",       glow: "shadow-cyan-500/20",    ring: "border-cyan-400/40",                                           icon: Shield,    subtitle: "Para imobiliárias em crescimento" },
+  imob_pro:          { gradient: "from-violet-500/30 to-indigo-700/20",   glow: "shadow-violet-500/30",  ring: "border-violet-400/50",                                         icon: Gem,       subtitle: "Para imobiliárias estabelecidas" },
+  imob_elite:        { gradient: "from-yellow-500/30 to-amber-700/30",    glow: "shadow-yellow-500/30",  ring: "border-yellow-500/60 ring-1 ring-yellow-500/40",               icon: Diamond,   subtitle: "★ Top imobiliária",          badge: "★ TOP",        ctaGradient: "from-zinc-800 to-black text-yellow-400 border border-yellow-500/40" },
+  const_basico:      { gradient: "from-slate-500/20 to-orange-700/10",    glow: "shadow-orange-500/10",  ring: "border-white/10",                                              icon: Building2, subtitle: "Para construtoras iniciantes" },
+  const_start:       { gradient: "from-amber-500/30 to-orange-700/20",    glow: "shadow-amber-500/20",   ring: "border-amber-400/40",                                          icon: Shield,    subtitle: "Para construtoras em ascensão" },
+  const_pro:         { gradient: "from-orange-500/30 to-red-700/20",      glow: "shadow-orange-500/30",  ring: "border-orange-400/50",                                         icon: Gem,       subtitle: "Para construtoras consolidadas" },
+  const_master:      { gradient: "from-yellow-500/30 to-amber-700/30",    glow: "shadow-yellow-500/30",  ring: "border-yellow-500/60 ring-1 ring-yellow-500/40",               icon: Diamond,   subtitle: "★ Top construtora",          badge: "★ TOP",        ctaGradient: "from-zinc-800 to-black text-yellow-400 border border-yellow-500/40" },
+};
+const getTierStyle = (tier: string) => TIER_STYLES[tier] || TIER_STYLES.basico;
+
+// Bots de IA inclusos: TODOS os planos pagos têm os 4 bots base.
+const BASE_BOTS = [
+  { emoji: "💰", name: "Avaliador IA" },
+  { emoji: "✍️", name: "Copywriter IA" },
+  { emoji: "📸", name: "Analisador de Fotos IA" },
+  { emoji: "🤖", name: "Bot de Captação" },
+];
+const AGENDA_BOT = { emoji: "📅", name: "Agenda Bot IA" };
+const SUPORTE_BOT = { emoji: "🎓", name: "Suporte IA" };
+const AGENDA_TIERS = new Set([
+  "vip", "premium", "prime",
+  "imob_pro", "imob_elite", "const_pro", "const_master",
+  "fundador_corretor", "fundador_empresa", "fundador_construtora",
+]);
+const SUPORTE_TIERS = new Set([
+  "prime", "imob_elite", "const_master",
+  "fundador_empresa", "fundador_construtora",
+]);
+const getAiBots = (tier: string) => {
+  const bots = [...BASE_BOTS];
+  if (AGENDA_TIERS.has(tier)) bots.push(AGENDA_BOT);
+  if (SUPORTE_TIERS.has(tier)) bots.push(SUPORTE_BOT);
+  return bots;
+};
+
 type BillingPeriod = "monthly" | "annual" | "founder";
 
 interface AppliedCoupon {
