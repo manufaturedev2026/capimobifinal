@@ -1,0 +1,1 @@
+DROP TRIGGER IF EXISTS trg_agenda_visit_created ON public.visit_appointments;
