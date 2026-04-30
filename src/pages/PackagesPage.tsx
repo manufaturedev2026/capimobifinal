@@ -36,7 +36,7 @@ const aiMonthlyCredits: Record<string, number> = {
 
 interface FounderLot {
   id: string;
-  category: "individual" | "enterprise" | "construtora";
+  category: "corretor" | "empresa" | "construtora";
   lot_number: number;
   price: number;
   monthly_price: number | null;
@@ -45,6 +45,7 @@ interface FounderLot {
   is_active: boolean;
   inherited_tier: string;
   ia_credits: number;
+  ia_credits_monthly?: number;
 }
 
 const TIER_LABEL: Record<string, string> = {
