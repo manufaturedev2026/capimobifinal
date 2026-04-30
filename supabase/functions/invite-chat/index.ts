@@ -82,7 +82,13 @@ CONSTRUTORA (lançamentos + grandes volumes):
 - Inclui benefícios premium do plano topo da categoria (Prime / Imob Elite / Construtora Master) + créditos IA exclusivos
 - Vagas limitadas por lote — quando esgotam, o preço sobe no próximo lote (consulte /fundador para valores atuais)
 
-IMPORTANTE: Todos os planos pagos são pagamento ÚNICO mensal ou anual (sem renovação automática). Existem cupons de desconto e opção anual com desconto.`;
+💳 MODALIDADES DE COBRANÇA (todos os planos pagos, exceto Fundador que é só anual):
+- Mensal: pagamento ÚNICO válido por 30 dias (preços listados acima)
+- Anual: pagamento ÚNICO válido por 365 dias com 20% de desconto padrão (configurável pelo admin). Fórmula: preço mensal × 12 × 0,80. Ex: Premium Anual ≈ R$ 574,80 cobrado de uma vez.
+- Créditos de IA: Mensal recarrega todo mês; Anual entrega os 12 meses de créditos de uma vez na compra
+- Cupons de desconto podem ser aplicados sobre Mensal ou Anual (cumulativos com o anual quando configurados como "forever")
+
+IMPORTANTE: Nenhum plano renova automaticamente. Após 30/365 dias o usuário precisa pagar de novo (ou cai para o Básico Grátis).`;
 
 const STRATEGY_PROMPTS: Record<string, string> = {
   // ─── Cadastro Interno ───
