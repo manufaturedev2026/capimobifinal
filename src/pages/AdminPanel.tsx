@@ -771,6 +771,11 @@ export default function AdminPanel() {
                         })()}
                       </div>
                       <p className="text-xs text-muted-foreground">{seller.email} • {seller.seller_type} • {seller.city || "—"}</p>
+                      <p className="text-xs mt-1 flex items-center gap-1.5">
+                        <Brain size={12} className="text-purple-500" />
+                        <span className="font-semibold text-foreground">{(seller.ai_balance ?? 0).toLocaleString("pt-BR")}</span>
+                        <span className="text-muted-foreground">créditos IA</span>
+                      </p>
                       {sub && (
                         <p className="text-xs mt-1">
                           {sub.payment_status === "pendente" && <span className="text-amber-500 font-semibold">⏳ Pagamento pendente</span>}
