@@ -62,21 +62,7 @@ const queryClient = new QueryClient({
   },
 });
 
-const RouteLoader = () => (
-  <div
-    className="fixed inset-0 z-[9998] flex items-center justify-center"
-    style={{ backgroundColor: "#FFFFFF" }}
-  >
-    <div className="relative flex items-center justify-center">
-      <div className="absolute h-52 w-52 rounded-full border-4 border-transparent border-t-primary border-r-primary/40 animate-spin" />
-      <img
-        src="/pwa-icon-512.png"
-        alt="Capimobi"
-        className="h-36 w-36 object-contain animate-pulse"
-      />
-    </div>
-  </div>
-);
+const RouteLoader = () => null;
 
 // No fixed BROKER_ID — the logged-in user IS the broker
 const HomeRedirect = () => {
