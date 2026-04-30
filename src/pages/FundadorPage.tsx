@@ -202,14 +202,19 @@ export default function FundadorPage() {
   }
 
   const renderLotCard = (
-    category: "individual" | "enterprise",
+    category: "individual" | "enterprise" | "construtora",
     lot: FounderLot | undefined,
     label: string,
     fallbackPlan: string,
     icon: typeof Crown,
   ) => {
     const Icon = icon;
-    const tier = category === "individual" ? "fundador_corretor" : "fundador_empresa";
+    const tier =
+      category === "individual" ? "fundador_corretor" :
+      category === "enterprise" ? "fundador_empresa" :
+      "fundador_construtora";
+    const billing = billingByCat[category] || "annual";
+    const hasMonthly = !!(lot?.monthly_price && Number(lot.monthly_price) > 0);
     // Plano herdado e créditos vêm do lote ativo (configurados no admin).
     // Se não houver lote, usa fallback apenas para texto.
     const equivalentPlan = lot?.inherited_tier
@@ -258,15 +263,33 @@ export default function FundadorPage() {
           {lot ? (
             <>
               <div>
+                {hasMonthly && (
+                  <div className="mb-3 inline-flex p-1 rounded-full bg-white/10 border border-white/15">
+                    <button
+                      onClick={() => setBillingByCat((s) => ({ ...s, [category]: "annual" }))}
+                      className={`px-3 py-1 rounded-full text-[11px] font-bold transition-all ${billing === "annual" ? "bg-white text-black" : "text-white/70 hover:text-white"}`}
+                    >
+                      Anual
+                    </button>
+                    <button
+                      onClick={() => setBillingByCat((s) => ({ ...s, [category]: "monthly" }))}
+                      className={`px-3 py-1 rounded-full text-[11px] font-bold transition-all ${billing === "monthly" ? "bg-white text-black" : "text-white/70 hover:text-white"}`}
+                    >
+                      Mensal
+                    </button>
+                  </div>
+                )}
                 <div className="flex items-baseline gap-2 mb-2 flex-wrap">
                   <span className="text-sm text-white/50">Lote {lot.lot_number} ·</span>
                   <span className="text-5xl font-extrabold text-transparent bg-clip-text" style={{ backgroundImage: `linear-gradient(to right, ${theme.primary}, ${theme.promoAccent || theme.primary})` }}>
-                    R$ {lot.price.toFixed(0)}
+                    R$ {billing === "monthly" && lot.monthly_price ? Number(lot.monthly_price).toFixed(2).replace(".", ",") : lot.price.toFixed(0)}
                   </span>
-                  <span className="text-white/60">/ano</span>
+                  <span className="text-white/60">{billing === "monthly" ? "/mês" : "/ano"}</span>
                 </div>
                 <p className="text-xs text-white/50">
-                  Pagamento único · Válido por 12 meses · Sem mensalidades
+                  {billing === "monthly"
+                    ? "Renovado a cada 30 dias · cancele quando quiser"
+                    : "Pagamento único · Válido por 12 meses · Sem mensalidades"}
                 </p>
               </div>
 
@@ -585,6 +608,7 @@ export default function FundadorPage() {
           <div className="grid md:grid-cols-2 gap-8">
             {renderLotCard("individual", individualLot, "Corretor Fundador", "Plano VIP", Award)}
             {renderLotCard("enterprise", enterpriseLot, "Imobiliária Fundadora", "Plano Black Empresa", Diamond)}
+            {renderLotCard("construtora", construtoraLot, "Construtora Fundadora", "Plano Construtora Pro", Building2)}
           </div>
         </div>
       </section>
