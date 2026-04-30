@@ -233,7 +233,8 @@ Deno.serve(async (req) => {
     const { data: subscriptions } = await adminClient
       .from("push_subscriptions")
       .select("*")
-      .eq("seller_id", profile.id);
+      .eq("seller_id", profile.id)
+      .is("user_id", null);
 
     if (!subscriptions || subscriptions.length === 0) {
       return new Response(JSON.stringify({ sent: 0, failed: 0, message: "No subscribers" }), {
