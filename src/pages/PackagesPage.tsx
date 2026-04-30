@@ -314,7 +314,7 @@ export default function PackagesPage() {
         await refetch();
         toast({ title: `Pacote ${plan.name} ativado!`, description: "Você pode começar a anunciar agora." });
       } else {
-        const { data, error } = await supabase.functions.invoke("create-checkout", {
+        const { data, error } = await supabase.functions.invoke("appmax-create-checkout", {
           body: {
             tier: plan.tier,
             billing_period: billingPeriod,
@@ -323,7 +323,7 @@ export default function PackagesPage() {
         });
         if (error) throw error;
         if (data?.url) {
-          window.open(data.url, "_blank");
+          navigate(data.url);
         } else {
           throw new Error("URL de checkout não retornada");
         }
@@ -361,7 +361,7 @@ export default function PackagesPage() {
     }
     setSelecting(founderTier);
     try {
-      const { data, error } = await supabase.functions.invoke("create-checkout", {
+      const { data, error } = await supabase.functions.invoke("appmax-create-checkout", {
         body: {
           tier: founderTier,
           billing_period: founderBilling,
@@ -370,7 +370,7 @@ export default function PackagesPage() {
         },
       });
       if (error) throw error;
-      if (data?.url) window.open(data.url, "_blank");
+      if (data?.url) navigate(data.url);
       else throw new Error("URL de checkout não retornada");
     } catch (err: any) {
       toast({ title: "Erro ao processar", description: err.message || "Tente novamente.", variant: "destructive" });

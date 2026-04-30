@@ -33,6 +33,7 @@ const SellerItemForm = lazyPage(() => import("@/pages/SellerItemForm"));
 const SellerProfile = lazyPage(() => import("@/pages/SellerProfile"));
 const SellerCustomization = lazyPage(() => import("@/pages/SellerCustomization"));
 const PackagesPage = lazyPage(() => import("@/pages/PackagesPage"));
+const AppmaxCheckoutPage = lazyPage(() => import("@/pages/AppmaxCheckoutPage"));
 const AdminPanel = lazyPage(() => import("@/pages/AdminPanel"));
 const PrivacyPage = lazyPage(() => import("@/pages/PrivacyPage"));
 const TermsPage = lazyPage(() => import("@/pages/TermsPage"));
@@ -184,6 +185,7 @@ const AppLayout = () => {
               <Route path="/agenda/:slug/chat" element={<AgendaBotChatPage />} />
               <Route path="/agenda/:slug/chat/:botSlug" element={<AgendaBotChatPage />} />
               <Route path="/pacotes" element={<RequireAuth><PackagesPage /></RequireAuth>} />
+              <Route path="/checkout-appmax/:orderId" element={<RequireAuth><AppmaxCheckoutPage /></RequireAuth>} />
               <Route path="/admin" element={<RequireAuth><AdminPanel /></RequireAuth>} />
               <Route path="/criar-anuncio" element={<RequireAuth><CreateListing /></RequireAuth>} />
               <Route path="/vender" element={<Navigate to="/anunciar" replace />} />

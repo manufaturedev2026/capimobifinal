@@ -410,6 +410,84 @@ export type Database = {
         }
         Relationships: []
       }
+      appmax_payments: {
+        Row: {
+          activated_at: string | null
+          amount: number
+          billing_period: string
+          created_at: string
+          customer_id: string | null
+          id: string
+          metadata: Json | null
+          order_id: string
+          pix_emv: string | null
+          pix_expires_at: string | null
+          pix_qr_code: string | null
+          status: string
+          tier: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          activated_at?: string | null
+          amount: number
+          billing_period?: string
+          created_at?: string
+          customer_id?: string | null
+          id?: string
+          metadata?: Json | null
+          order_id: string
+          pix_emv?: string | null
+          pix_expires_at?: string | null
+          pix_qr_code?: string | null
+          status?: string
+          tier: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          activated_at?: string | null
+          amount?: number
+          billing_period?: string
+          created_at?: string
+          customer_id?: string | null
+          id?: string
+          metadata?: Json | null
+          order_id?: string
+          pix_emv?: string | null
+          pix_expires_at?: string | null
+          pix_qr_code?: string | null
+          status?: string
+          tier?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      appmax_webhook_logs: {
+        Row: {
+          created_at: string
+          event: string
+          id: string
+          order_id: string | null
+          payload: Json | null
+        }
+        Insert: {
+          created_at?: string
+          event: string
+          id?: string
+          order_id?: string | null
+          payload?: Json | null
+        }
+        Update: {
+          created_at?: string
+          event?: string
+          id?: string
+          order_id?: string | null
+          payload?: Json | null
+        }
+        Relationships: []
+      }
       broadcast_sends: {
         Row: {
           batch_id: string
