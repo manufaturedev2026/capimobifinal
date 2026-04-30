@@ -45,6 +45,7 @@ import AiHelpChat from "@/components/AiHelpChat";
 import AiCreditsCard from "@/components/AiCreditsCard";
 import { useAiCredits } from "@/hooks/useAiCredits";
 import PlanLimitsCard from "@/components/PlanLimitsCard";
+import PlanLimitWarningPopup from "@/components/PlanLimitWarningPopup";
 
 type SellerItem = {
   id: string;
