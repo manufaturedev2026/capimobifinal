@@ -159,7 +159,8 @@ export default function AdminPlansTab() {
     );
   }
 
-  const isFounderTier = (t?: string) => t === "fundador_corretor" || t === "fundador_empresa";
+  const isFounderTier = (t?: string) =>
+    t === "fundador_corretor" || t === "fundador_empresa" || t === "fundador_construtora";
   const visiblePlans = plans.filter((p) => !isFounderTier(p.tier));
 
   return (
