@@ -95,11 +95,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const existingProfile = await fetchProfile(authUser.id);
     if (existingProfile) {
       const profileUpdates: Partial<ProfileInsert> = {};
-      if (!existingProfile.full_name?.trim() || existingProfile.full_name === authUser.email?.split("@")[0]) profileUpdates.full_name = metadataProfile.full_name;
+      if (signupData?.fullName?.trim()) profileUpdates.full_name = metadataProfile.full_name;
+      else if (!existingProfile.full_name?.trim() || existingProfile.full_name === authUser.email?.split("@")[0]) profileUpdates.full_name = metadataProfile.full_name;
       if (!existingProfile.email?.trim() && metadataProfile.email) profileUpdates.email = metadataProfile.email;
-      if (!existingProfile.phone?.trim() && metadataProfile.phone) profileUpdates.phone = metadataProfile.phone;
-      if (!existingProfile.city?.trim() && metadataProfile.city) profileUpdates.city = metadataProfile.city;
-      if (!existingProfile.state?.trim() && metadataProfile.state) profileUpdates.state = metadataProfile.state;
+      if (signupData?.phone?.trim()) profileUpdates.phone = metadataProfile.phone;
+      else if (!existingProfile.phone?.trim() && metadataProfile.phone) profileUpdates.phone = metadataProfile.phone;
+      if (signupData?.city?.trim()) profileUpdates.city = metadataProfile.city;
+      else if (!existingProfile.city?.trim() && metadataProfile.city) profileUpdates.city = metadataProfile.city;
+      if (signupData?.state?.trim()) profileUpdates.state = metadataProfile.state;
+      else if (!existingProfile.state?.trim() && metadataProfile.state) profileUpdates.state = metadataProfile.state;
 
       if (Object.keys(profileUpdates).length > 0) {
         const { data, error } = await supabase
