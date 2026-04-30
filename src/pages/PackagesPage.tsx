@@ -462,7 +462,12 @@ export default function PackagesPage() {
   const renderCard = (plan: Plan, idx: number, opts: { showPartners?: boolean } = {}) => {
     const style = getTierStyle(plan.tier);
     const Icon = style.icon;
-    const isCurrent = currentTier === plan.tier;
+    // Considera plano atual somente quando tier E período de cobrança coincidem.
+    // Assim, quem está no Mensal pode fazer upgrade para Anual do mesmo plano (e vice-versa).
+    const currentBilling = (subscription as any)?.billing_period || "monthly";
+    const isCurrent =
+      currentTier === plan.tier &&
+      (plan.price === 0 || currentBilling === billingPeriod);
     const isPopular = plan.is_popular || !!style.badge;
     const credits = (plan as any).ai_credits_per_month || (plan as any).ai_generations_per_day || aiMonthlyCredits[plan.tier] || 25;
     const { final, discount } = calculateFinalPrice(plan.price, plan.tier);
@@ -606,7 +611,13 @@ export default function PackagesPage() {
               ? "Processando..."
               : isCurrent
               ? "Plano Atual"
-              : plan.price === 0 ? "Plano Gratuito" : `Assinar ${plan.name}`}
+              : plan.price === 0
+                ? "Plano Gratuito"
+                : currentTier === plan.tier && billingPeriod === "annual"
+                  ? `Mudar para Anual`
+                  : currentTier === plan.tier && billingPeriod === "monthly"
+                    ? `Mudar para Mensal`
+                    : `Assinar ${plan.name}`}
             {!isCurrent && <ArrowRight className="w-4 h-4" />}
           </button>
         </div>
