@@ -145,7 +145,7 @@ export default function FundadorPage() {
       .slice(0, 1);
 
   const vipPlan = plans.find((p) => p.tier === "prime");
-  const blackPlan = plans.find((p) => p.tier === "prime_empresa");
+  const blackPlan = plans.find((p) => p.tier === "imob_elite");
 
   const handlePurchase = async (category: "corretor" | "empresa" | "construtora") => {
     if (!user || !profile) {
@@ -560,7 +560,7 @@ export default function FundadorPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 lg:items-stretch">
           {renderLotCard("corretor", individualLot, "Corretor Fundador", "Plano VIP", Award)}
-          {renderLotCard("empresa", enterpriseLot, "Imobiliária Fundadora", "Plano Black Empresa", Diamond, true)}
+          {renderLotCard("empresa", enterpriseLot, "Imobiliária Fundadora", "Plano Imob Elite", Diamond, true)}
             {renderLotCard("construtora", construtoraLot, "Construtora Fundadora", "Plano Construtora Pro", Building2)}
           </div>
         </div>
@@ -683,13 +683,13 @@ export default function FundadorPage() {
                 <div className="flex items-center gap-3 mb-6">
                   <Diamond className="w-7 h-7" style={{ color: theme.primary }} />
                   <div>
-                    <h3 className="text-xl font-bold text-white">Imobiliária</h3>
-                    <p className="text-xs text-white/50">Black × Fundador</p>
+                     <h3 className="text-xl font-bold text-white">Imobiliária</h3>
+                    <p className="text-xs text-white/50">Imob Elite × Fundador</p>
                   </div>
                 </div>
                 <div className="space-y-3">
                   <div className="flex justify-between items-baseline">
-                    <span className="text-sm text-white/60">Black mensal × 12</span>
+                     <span className="text-sm text-white/60">Imob Elite mensal × 12</span>
                     <span className="font-bold text-red-400">R$ {(blackPlan.price * 12).toFixed(0)}</span>
                   </div>
                   <div className="border-t border-white/10 pt-3 flex justify-between items-baseline">
