@@ -16,7 +16,7 @@ Deno.serve(async (req) => {
   const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
   const supabase = createClient(supabaseUrl, supabaseKey);
 
-  const baseUrl = "https://capimobifinal.lovable.app";
+  const baseUrl = "https://capimobi.com.br";
   const now = new Date().toISOString().split("T")[0];
 
   // Fetch all profiles with slugs

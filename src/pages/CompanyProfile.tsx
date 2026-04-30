@@ -670,7 +670,7 @@ export default function CompanyProfile() {
             const seoDesc = activeBio
               ? `${activeBio.slice(0, 130)} — ${totalItems} imóveis em ${cityName}.`
               : `Encontre ${totalItems}+ imóveis com ${sellerName} em ${cityName}. Casas, apartamentos, terrenos à venda. Contato direto via WhatsApp.`;
-            const canonicalUrl = `https://capimobifinal.lovable.app/empresa/${dbProfile?.slug || id}`;
+            const canonicalUrl = `https://capimobi.com.br/empresa/${dbProfile?.slug || id}`;
             const ogImage = company.logo || (products[0]?.image) || "";
             const keywords = `${sellerName}, imóveis ${cityName}, casas ${cityName}, apartamentos ${cityName}, corretor ${cityName}, imobiliária ${cityName}`;
 

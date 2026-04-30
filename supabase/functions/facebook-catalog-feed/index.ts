@@ -8,7 +8,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const BASE_URL = "https://capimobifinal.lovable.app";
+const BASE_URL = "https://capimobi.com.br";
 const BRAND = "Capimobi";
 
 const CATEGORY_LABEL: Record<string, string> = {
