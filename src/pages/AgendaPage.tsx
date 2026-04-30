@@ -271,10 +271,11 @@ export default function AgendaPage() {
               classNames={{
                 caption_label: "text-sm font-medium text-foreground",
                 head_cell: "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
+                cell: "h-9 w-9 text-center text-sm p-0 relative focus-within:relative focus-within:z-20",
                 day: "h-9 w-9 p-0 font-normal text-foreground hover:bg-accent hover:text-accent-foreground rounded-md aria-selected:opacity-100",
                 day_outside: "day-outside text-muted-foreground/60 opacity-50",
                 day_disabled: "text-muted-foreground/40 opacity-50",
-                day_selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
+                day_selected: "bg-transparent text-primary hover:bg-transparent hover:text-primary focus:bg-transparent focus:text-primary font-bold",
                 day_today: "bg-accent/40 text-foreground font-semibold",
               }}
             />
