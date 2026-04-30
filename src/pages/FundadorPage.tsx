@@ -90,9 +90,9 @@ export default function FundadorPage() {
   const [loadingLots, setLoadingLots] = useState(true);
   const [purchasing, setPurchasing] = useState<string | null>(null);
   const [billingByCat, setBillingByCat] = useState<Record<string, "annual" | "monthly">>({
-    corretor: "annual",
-    empresa: "annual",
-    construtora: "annual",
+    corretor: "monthly",
+    empresa: "monthly",
+    construtora: "monthly",
   });
 
   const [themeId, setThemeId] = useState(() => localStorage.getItem("marketplace_theme") || "azul");
@@ -172,7 +172,7 @@ export default function FundadorPage() {
       return;
     }
 
-    const billing = billingByCat[category] || "annual";
+    const billing = billingByCat[category] || "monthly";
     if (billing === "monthly" && (!lot.monthly_price || Number(lot.monthly_price) <= 0)) {
       toast({ title: "Mensalidade Fundador indisponível", description: "Este lote não tem preço mensal cadastrado.", variant: "destructive" });
       return;
@@ -227,7 +227,7 @@ export default function FundadorPage() {
       category === "corretor" ? "fundador_corretor" :
       category === "empresa" ? "fundador_empresa" :
       "fundador_construtora";
-    const billing = billingByCat[category] || "annual";
+    const billing = billingByCat[category] || "monthly";
     const hasMonthly = !!(lot?.monthly_price && Number(lot.monthly_price) > 0);
     const equivalentPlan = lot?.inherited_tier
       ? (TIER_LABEL[lot.inherited_tier] || fallbackPlan)
@@ -289,13 +289,13 @@ export default function FundadorPage() {
               {hasMonthly && (
                 <div className="inline-flex p-1 rounded-full bg-white/10 border border-white/15 self-start">
                   <button
-                    onClick={() => setBillingByCat((s) => ({ ...s, [category]: "annual" }))}
-                    className={`px-3 py-1 rounded-full text-[11px] font-bold transition-all ${billing === "annual" ? "bg-white text-black" : "text-white/70 hover:text-white"}`}
-                  >Anual</button>
-                  <button
                     onClick={() => setBillingByCat((s) => ({ ...s, [category]: "monthly" }))}
                     className={`px-3 py-1 rounded-full text-[11px] font-bold transition-all ${billing === "monthly" ? "bg-white text-black" : "text-white/70 hover:text-white"}`}
                   >Mensal</button>
+                  <button
+                    onClick={() => setBillingByCat((s) => ({ ...s, [category]: "annual" }))}
+                    className={`px-3 py-1 rounded-full text-[11px] font-bold transition-all ${billing === "annual" ? "bg-white text-black" : "text-white/70 hover:text-white"}`}
+                  >Anual</button>
                 </div>
               )}
 
