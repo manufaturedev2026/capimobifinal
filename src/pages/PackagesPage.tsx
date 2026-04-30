@@ -36,9 +36,10 @@ const aiMonthlyCredits: Record<string, number> = {
 
 interface FounderLot {
   id: string;
-  category: "individual" | "enterprise";
+  category: "individual" | "enterprise" | "construtora";
   lot_number: number;
   price: number;
+  monthly_price: number | null;
   total_slots: number;
   used_slots: number;
   is_active: boolean;
@@ -83,6 +84,7 @@ export default function PackagesPage() {
   const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null);
   const [founderLots, setFounderLots] = useState<FounderLot[]>([]);
   const [founderEnabled, setFounderEnabled] = useState<boolean>(true);
+  const [founderBilling, setFounderBilling] = useState<"annual" | "monthly">("annual");
 
   // Carrega o desconto anual configurado pelo admin
   useEffect(() => {
@@ -109,7 +111,7 @@ export default function PackagesPage() {
       const [{ data: lots }, { data: settings }] = await Promise.all([
         (supabase as any)
           .from("founder_lots")
-          .select("id, category, lot_number, price, total_slots, used_slots, is_active, inherited_tier, ia_credits")
+          .select("id, category, lot_number, price, monthly_price, total_slots, used_slots, is_active, inherited_tier, ia_credits")
           .order("category")
           .order("lot_number"),
         (supabase as any)
@@ -124,7 +126,8 @@ export default function PackagesPage() {
   }, []);
 
   const isImobiliaria = profile?.seller_category === "imobiliaria" || profile?.seller_category === "construtora";
-  const isFounderTier = (t: string) => t === "fundador_corretor" || t === "fundador_empresa";
+  const isConstrutora = profile?.seller_category === "construtora";
+  const isFounderTier = (t: string) => t === "fundador_corretor" || t === "fundador_empresa" || t === "fundador_construtora";
   // Categorias do banco: "corretor" / "imobiliaria" / "construtora" / "free" / "individual" / "enterprise"
   const isIndividualCat = (c: string) => c === "individual" || c === "corretor" || c === "free";
   const isEnterpriseCat = (c: string, sellerCat?: string) => {
@@ -329,8 +332,10 @@ export default function PackagesPage() {
   };
 
   // Lote ativo (próximo a vender) e tier de Fundador para a categoria do usuário
-  const founderCategory: "individual" | "enterprise" = isImobiliaria ? "enterprise" : "individual";
-  const founderTier = isImobiliaria ? "fundador_empresa" : "fundador_corretor";
+  const founderCategory: "individual" | "enterprise" | "construtora" =
+    isConstrutora ? "construtora" : isImobiliaria ? "enterprise" : "individual";
+  const founderTier =
+    isConstrutora ? "fundador_construtora" : isImobiliaria ? "fundador_empresa" : "fundador_corretor";
   const activeFounderLot = founderLots
     .filter((l) => l.category === founderCategory && l.is_active && l.used_slots < l.total_slots)
     .sort((a, b) => a.lot_number - b.lot_number)[0];
@@ -347,12 +352,16 @@ export default function PackagesPage() {
       toast({ title: "Plano Fundador esgotado", description: "Todos os lotes foram vendidos.", variant: "destructive" });
       return;
     }
+    if (founderBilling === "monthly" && (!activeFounderLot.monthly_price || Number(activeFounderLot.monthly_price) <= 0)) {
+      toast({ title: "Mensalidade Fundador indisponível", description: "Este lote não possui preço mensal cadastrado.", variant: "destructive" });
+      return;
+    }
     setSelecting(founderTier);
     try {
       const { data, error } = await supabase.functions.invoke("create-checkout", {
         body: {
           tier: founderTier,
-          billing_period: "annual",
+          billing_period: founderBilling,
           founder_lot_id: activeFounderLot.id,
           is_founder_upgrade: asUpgrade,
         },
