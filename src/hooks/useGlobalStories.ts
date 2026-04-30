@@ -24,11 +24,10 @@ export function useGlobalStories(city?: string) {
 
   const fetchStories = useCallback(async () => {
     setLoading(true);
-    // Fetch auto stories from all sellers, active & not expired
+    // Fetch all active, non-expired stories from all sellers (manual + auto)
     const { data: rawStories } = await supabase
       .from("seller_stories")
       .select("*")
-      .eq("is_auto", true)
       .eq("is_active", true)
       .gt("expires_at", new Date().toISOString())
       .order("created_at", { ascending: false })
