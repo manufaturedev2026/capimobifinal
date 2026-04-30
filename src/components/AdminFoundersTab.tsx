@@ -301,6 +301,28 @@ export default function AdminFoundersTab() {
                     <p className="text-[10px] text-muted-foreground mt-1">
                       Define quais funções premium o membro recebe por 12 meses.
                     </p>
+                    {tierLimits[lot.inherited_tier] && (
+                      <div className="mt-2 rounded-md border bg-muted/30 p-2 space-y-1">
+                        <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Limites herdados</p>
+                        <div className="grid grid-cols-1 gap-1 text-[11px]">
+                          <div className="flex items-center gap-1.5">
+                            <Layers size={10} className="text-primary" />
+                            <span className="font-medium">{tierLimits[lot.inherited_tier].max_items?.toLocaleString("pt-BR") ?? "—"}</span>
+                            <span className="text-muted-foreground">anúncios</span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <ImageIcon size={10} className="text-primary" />
+                            <span className="font-medium">{tierLimits[lot.inherited_tier].max_photos_per_listing ?? "—"}</span>
+                            <span className="text-muted-foreground">fotos / anúncio</span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <HardDrive size={10} className="text-primary" />
+                            <span className="font-medium">{tierLimits[lot.inherited_tier].storage_mb?.toLocaleString("pt-BR") ?? "—"} MB</span>
+                            <span className="text-muted-foreground">storage</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                   <div>
                     <Label className="text-xs flex items-center gap-1.5">
