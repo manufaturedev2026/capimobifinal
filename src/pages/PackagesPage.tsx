@@ -333,8 +333,8 @@ export default function PackagesPage() {
   };
 
   // Lote ativo (próximo a vender) e tier de Fundador para a categoria do usuário
-  const founderCategory: "individual" | "enterprise" | "construtora" =
-    isConstrutora ? "construtora" : isImobiliaria ? "enterprise" : "individual";
+  const founderCategory: "corretor" | "empresa" | "construtora" =
+    isConstrutora ? "construtora" : isImobiliaria ? "empresa" : "corretor";
   const founderTier =
     isConstrutora ? "fundador_construtora" : isImobiliaria ? "fundador_empresa" : "fundador_corretor";
   const activeFounderLot = founderLots
