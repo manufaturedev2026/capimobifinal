@@ -1,0 +1,4 @@
+UPDATE subscription_plans SET price = 0, max_items = 3, max_photos_per_listing = 5, storage_mb = 15, monthly_visits_limit = 3000, ai_credits_per_month = 25 WHERE tier = 'const_basico';
+UPDATE subscription_plans SET price = 119.90, max_items = 100, max_photos_per_listing = 15, storage_mb = 750, monthly_visits_limit = 200000, ai_credits_per_month = 1500 WHERE tier = 'const_start';
+UPDATE subscription_plans SET price = 239.90, max_items = 300, max_photos_per_listing = 20, storage_mb = 3000, monthly_visits_limit = 500000, ai_credits_per_month = 3000 WHERE tier = 'const_pro';
+UPDATE subscription_plans SET price = 479.90, max_items = 5000, max_photos_per_listing = 25, storage_mb = 12000, monthly_visits_limit = 1500000, ai_credits_per_month = 6000 WHERE tier = 'const_master';
