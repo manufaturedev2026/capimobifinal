@@ -298,8 +298,6 @@ const BASE_BOTS = [
 const AGENDA_BOT = { emoji: "📅", name: "Agenda Bot IA" };
 const SUPORTE_BOT = { emoji: "🎓", name: "Suporte IA da Plataforma" };
 
-// Tiers gratuitos/básicos: apenas Avaliador
-const FREE_TIERS = new Set(["basico", "basico_empresa", "imob_basico", "const_basico"]);
 // Tiers que ganham Agenda Bot
 const AGENDA_TIERS = new Set([
   "vip", "premium", "essencial_empresa", "premium_empresa", "prime_empresa",
@@ -313,7 +311,6 @@ const SUPORTE_TIERS = new Set([
 ]);
 
 const getAiBots = (tier: string) => {
-  if (FREE_TIERS.has(tier)) return [BASE_BOTS[0]];
   const bots = [...BASE_BOTS];
   if (AGENDA_TIERS.has(tier)) bots.push(AGENDA_BOT);
   if (SUPORTE_TIERS.has(tier)) bots.push(SUPORTE_BOT);
