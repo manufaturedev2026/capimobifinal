@@ -29,9 +29,9 @@ const aiMonthlyCredits: Record<string, number> = {
   imob_pro: 3000,
   imob_elite: 6000,
   const_basico: 25,
-  const_start: 2000,
-  const_pro: 4500,
-  const_master: 10000,
+  const_start: 1500,
+  const_pro: 3000,
+  const_master: 6000,
 };
 
 interface FounderLot {
