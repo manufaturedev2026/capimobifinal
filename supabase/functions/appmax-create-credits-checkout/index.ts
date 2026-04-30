@@ -29,6 +29,7 @@ serve(async (req) => {
   try {
     const apiKey = Deno.env.get("APPMAX_API_KEY");
     if (!apiKey) throw new Error("APPMAX_API_KEY não configurada");
+    console.log(`[appmax-credits] API key length: ${apiKey.length}, starts: ${apiKey.slice(0, 4)}***`);
 
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) throw new Error("Não autenticado");
@@ -55,20 +56,25 @@ serve(async (req) => {
     const phoneDigits = (profile?.phone || "").replace(/\D/g, "") || "27999999999";
 
     // Cliente AppMax
+    const customerPayload = {
+      "access-token": apiKey,
+      firstname: firstName,
+      lastname: lastName,
+      email: user.email,
+      telephone: phoneDigits,
+      ip: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "127.0.0.1",
+      custom_txt: user.id,
+    };
+    console.log(`[appmax-credits] POST ${APPMAX_BASE}/customer with email=${user.email}`);
     const customerRes = await fetch(`${APPMAX_BASE}/customer`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        "access-token": apiKey,
-        firstname: firstName,
-        lastname: lastName,
-        email: user.email,
-        telephone: phoneDigits,
-        ip: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "127.0.0.1",
-        custom_txt: user.id,
-      }),
+      body: JSON.stringify(customerPayload),
     });
-    const customerJson = await customerRes.json();
+    const customerText = await customerRes.text();
+    console.log(`[appmax-credits] customer response status=${customerRes.status} body=${customerText}`);
+    let customerJson: any;
+    try { customerJson = JSON.parse(customerText); } catch { customerJson = { raw: customerText }; }
     if (!customerRes.ok || !customerJson?.data?.id) {
       throw new Error(`AppMax customer falhou: ${JSON.stringify(customerJson)}`);
     }
