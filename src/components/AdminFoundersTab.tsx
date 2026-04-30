@@ -206,18 +206,42 @@ export default function AdminFoundersTab() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <Label className="text-xs">Preço (R$)</Label>
+                    <Label className="text-xs">💰 Preço ANUAL (R$) — pagamento único 12 meses</Label>
                     <Input
                       type="number"
+                      step="0.01"
                       defaultValue={lot.price}
                       onBlur={(e) => {
                         const v = Number(e.target.value);
                         if (v !== Number(lot.price)) updateLot(lot.id, { price: v });
                       }}
                     />
+                    <p className="text-[10px] text-muted-foreground mt-1">
+                      Mostrado quando usuário escolhe "Anual" em /fundador.
+                    </p>
                   </div>
+                  <div>
+                    <Label className="text-xs">📅 Preço MENSAL (R$) — recorrência mensal</Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      defaultValue={lot.monthly_price ?? ""}
+                      placeholder="Ex: 79.90"
+                      onBlur={(e) => {
+                        const raw = e.target.value;
+                        const v = raw === "" ? null : Number(raw);
+                        if (v !== lot.monthly_price) updateLot(lot.id, { monthly_price: v });
+                      }}
+                    />
+                    <p className="text-[10px] text-muted-foreground mt-1">
+                      Deixe vazio para desativar a opção mensal neste lote.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <Label className="text-xs">Vagas totais</Label>
                     <Input
@@ -236,7 +260,7 @@ export default function AdminFoundersTab() {
                 </div>
 
                 {/* Plano herdado + créditos IA */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t">
                   <div>
                     <Label className="text-xs flex items-center gap-1.5">
                       <Crown size={12} className="text-amber-500" />
@@ -269,7 +293,7 @@ export default function AdminFoundersTab() {
                   <div>
                     <Label className="text-xs flex items-center gap-1.5">
                       <Sparkles size={12} className="text-primary" />
-                      Créditos de IA (uma vez)
+                      Créditos IA — Anual (uma vez)
                     </Label>
                     <Input
                       type="number"
@@ -280,7 +304,24 @@ export default function AdminFoundersTab() {
                       }}
                     />
                     <p className="text-[10px] text-muted-foreground mt-1">
-                      Concedidos no momento da compra; não renovam mensalmente.
+                      Concedidos uma vez para quem escolhe pagamento anual.
+                    </p>
+                  </div>
+                  <div>
+                    <Label className="text-xs flex items-center gap-1.5">
+                      <Sparkles size={12} className="text-primary" />
+                      Créditos IA — Mensal (a cada mês)
+                    </Label>
+                    <Input
+                      type="number"
+                      defaultValue={lot.ia_credits_monthly}
+                      onBlur={(e) => {
+                        const v = Number(e.target.value);
+                        if (v !== lot.ia_credits_monthly) updateLot(lot.id, { ia_credits_monthly: v });
+                      }}
+                    />
+                    <p className="text-[10px] text-muted-foreground mt-1">
+                      Renovados todo mês para quem escolhe pagamento mensal.
                     </p>
                   </div>
                 </div>
