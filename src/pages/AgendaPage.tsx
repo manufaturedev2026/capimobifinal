@@ -480,9 +480,13 @@ const TONE_STYLES: Record<StatTone, string> = {
   "gradient": "bg-gradient-to-br from-primary to-accent text-primary-foreground",
 };
 
-function StatCard({ icon, label, value, tone }: { icon: React.ReactNode; label: string; value: number; tone: StatTone }) {
+function StatCard({ icon, label, value, tone, onClick, active }: { icon: React.ReactNode; label: string; value: number; tone: StatTone; onClick?: () => void; active?: boolean }) {
+  const Comp: any = onClick ? "button" : "div";
   return (
-    <div className="bg-card border border-border rounded-xl p-3 sm:p-4 shadow-sm">
+    <Comp
+      onClick={onClick}
+      className={`bg-card border rounded-xl p-3 sm:p-4 shadow-sm text-left w-full transition-all ${onClick ? "hover:border-primary hover:shadow-md cursor-pointer" : ""} ${active ? "border-primary ring-2 ring-primary/30" : "border-border"}`}
+    >
       <div className="flex items-center gap-2 sm:gap-3">
         <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center shrink-0 ${TONE_STYLES[tone]}`}>{icon}</div>
         <div className="min-w-0">
@@ -490,6 +494,6 @@ function StatCard({ icon, label, value, tone }: { icon: React.ReactNode; label: 
           <p className="text-lg sm:text-2xl font-bold text-foreground">{value}</p>
         </div>
       </div>
-    </div>
+    </Comp>
   );
 }
