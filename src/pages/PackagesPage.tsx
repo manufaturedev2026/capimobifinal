@@ -847,7 +847,7 @@ export default function PackagesPage() {
                         </>
                       ) : (
                         <>
-                          Pagamento único, acesso por <strong>1 ano completo</strong> aos benefícios do plano{" "}
+                          Pagamento único, acesso por <strong>{founderBilling === "annual" ? "1 ano completo" : "1 mês completo"}</strong> aos benefícios do plano{" "}
                           <strong>{inheritedLabel}</strong> + selo exclusivo de Membro Fundador.
                         </>
                       )}
