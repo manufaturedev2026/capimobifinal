@@ -227,8 +227,8 @@ export function getStoreTheme(themeId: string | null | undefined): StoreTheme {
 
 /** Theme is locked for Básico tier (only default allowed). */
 export function isThemeAllowed(themeId: string, tier: string): boolean {
-  if (tier !== "basico") return true;
-  return themeId === "default";
+  // Todos os temas liberados para todos os planos. Diferença entre planos = só limites numéricos.
+  return true;
 }
 
 interface StoreThemePickerProps {
@@ -239,7 +239,7 @@ interface StoreThemePickerProps {
 }
 
 export default function StoreThemePicker({ selected, onChange, tier = "premium", onLocked }: StoreThemePickerProps) {
-  const isBasico = tier === "basico";
+  const isBasico = false; // Todos os temas liberados em qualquer plano
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-2 mb-2">

@@ -805,7 +805,7 @@ export default function SellerItemForm() {
           )}
 
           {Object.entries(TAG_CATEGORIES).map(([catKey, catConfig]) => {
-            const isLocked = currentTier === "basico" && catKey === "valor";
+            const isLocked = false; // Todas as tags liberadas em qualquer plano
             return (
               <div key={catKey}>
                 <h3 className={`text-xs font-bold uppercase tracking-wider mb-2 ${categoryHeaderStyles[catKey] || "text-muted-foreground"}`}>

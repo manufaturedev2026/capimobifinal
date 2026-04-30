@@ -60,13 +60,12 @@ export const LAYOUTS_BY_TIER: Record<string, string[]> = {
 };
 
 export function isLayoutAllowed(layoutId: string, tier: string | null | undefined): boolean {
-  const allowed = LAYOUTS_BY_TIER[tier || "basico"] || LAYOUTS_BY_TIER.basico;
-  return allowed.includes(layoutId);
+  // Todos os layouts liberados para todos os planos. Diferença entre planos = só limites numéricos.
+  return true;
 }
 
 /** Returns the minimum tier required for a layout */
 export function getMinTierForLayout(layoutId: string): string {
-  if (["magazine", "gallery", "elegant"].includes(layoutId)) return "Prime";
-  if (["netflix", "minimal"].includes(layoutId)) return "Premium";
+  // Todos os layouts disponíveis em qualquer plano.
   return "";
 }
