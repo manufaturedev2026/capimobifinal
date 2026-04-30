@@ -89,11 +89,14 @@ async function sendPushTo(
   title: string,
   body: string,
   url: string,
+  ownerUserId?: string,
 ) {
-  const { data: subs } = await admin
+  let q = admin
     .from("push_subscriptions")
     .select("*")
     .eq("seller_id", sellerId);
+  if (ownerUserId) q = q.eq("user_id", ownerUserId);
+  const { data: subs } = await q;
   if (!subs?.length) return { sent: 0 };
 
   const vPub = Deno.env.get("VAPID_PUBLIC_KEY")!;
@@ -200,7 +203,7 @@ Deno.serve(async (req) => {
               ? `Você atingiu 100% do limite de ${label} do plano ${planName}. Faça upgrade para continuar crescendo.`
               : `Você já usou ${Math.round(pct)}% do limite de ${label} do plano ${planName}. Considere fazer upgrade.`;
 
-            const r = await sendPushTo(admin, p.id, title, body, "/pacotes");
+            const r = await sendPushTo(admin, p.id, title, body, "/pacotes", p.user_id);
 
             await admin.from("plan_limit_alerts").insert({
               user_id: p.user_id,
