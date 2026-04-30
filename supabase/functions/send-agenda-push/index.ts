@@ -74,11 +74,19 @@ async function sendPushToSeller(
   title: string,
   body: string,
   url: string | null,
+  ownerUserId?: string | null,
 ): Promise<{ sent: number; failed: number }> {
-  const { data: subs } = await admin
+  let query = admin
     .from("push_subscriptions")
     .select("*")
     .eq("seller_id", sellerProfileId);
+  // Restrict to the owner's devices only (agenda is private).
+  // Devices subscribed by anonymous visitors of the public store have user_id = null
+  // and must NOT receive private notifications.
+  if (ownerUserId) {
+    query = query.eq("user_id", ownerUserId);
+  }
+  const { data: subs } = await query;
   if (!subs || subs.length === 0) return { sent: 0, failed: 0 };
 
   const vapidPub = Deno.env.get("VAPID_PUBLIC_KEY")!;
@@ -159,7 +167,7 @@ Deno.serve(async (req) => {
 
       const title = "📅 Nova visita agendada";
       const text = `${visit.client_name} • ${formatDateBR(visit.visit_date)} às ${formatTimeBR(visit.visit_time)}`;
-      const result = await sendPushToSeller(admin, profileId, title, text, "/agenda");
+      const result = await sendPushToSeller(admin, profileId, title, text, "/agenda", visit.user_id);
       await admin.from("visit_appointments").update({ push_created_sent_at: new Date().toISOString() }).eq("id", visit.id);
       return new Response(JSON.stringify({ kind: "created", ...result }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
@@ -201,7 +209,7 @@ Deno.serve(async (req) => {
           const text = visits.length === 1
             ? `${first.client_name} às ${formatTimeBR(first.visit_time)}`
             : `Primeira: ${first.client_name} às ${formatTimeBR(first.visit_time)}`;
-          await sendPushToSeller(admin, profileId, title, text, "/agenda");
+          await sendPushToSeller(admin, profileId, title, text, "/agenda", userId);
           await admin.from("visit_appointments")
             .update({ push_morning_sent_at: new Date().toISOString() })
             .in("id", visits.map((v) => v.id));
@@ -234,7 +242,7 @@ Deno.serve(async (req) => {
         if (!profileId) continue;
         const title = `⏰ Visita em ~1 hora`;
         const text = `${v.client_name} às ${formatTimeBR(v.visit_time)}${v.address ? ` • ${v.address}` : ""}`;
-        await sendPushToSeller(admin, profileId, title, text, "/agenda");
+        await sendPushToSeller(admin, profileId, title, text, "/agenda", v.user_id);
         await admin.from("visit_appointments")
           .update({ push_hour_before_sent_at: new Date().toISOString() })
           .eq("id", v.id);
