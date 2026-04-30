@@ -196,13 +196,19 @@ export function usePushSubscription(
       // Step 5: Save to database
       const subJson = subscription.toJSON();
       console.log("[Push] Saving to DB, seller_id:", sellerId);
-      
+
+      // Capture the currently logged-in user (if any) so private notifications
+      // (like agenda visits) can be filtered to the owner's devices only.
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      const currentUserId = currentUser?.id ?? null;
+
       // Upsert: update if endpoint exists, insert if new
       const { error: saveError } = await withTimeout<{ error: { message: string; code?: string } | null }>(
         Promise.resolve(
           supabase.from("push_subscriptions" as any).upsert(
             {
               seller_id: sellerId,
+              user_id: currentUserId,
               endpoint: subJson.endpoint,
               p256dh: subJson.keys?.p256dh || "",
               auth: subJson.keys?.auth || "",
