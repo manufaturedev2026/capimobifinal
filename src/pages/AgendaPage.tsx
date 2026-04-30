@@ -243,11 +243,21 @@ export default function AgendaPage() {
       <div className="container max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
         {/* Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 sm:gap-3">
-          <StatCard icon={<CalendarIcon className="w-5 h-5" />} label="Visitas Hoje" value={stats.hoje} tone="primary" />
-          <StatCard icon={<TrendingUp className="w-5 h-5" />} label="Semana" value={stats.semana} tone="accent" />
-          <StatCard icon={<Flame className="w-5 h-5" />} label="Leads Quentes" value={stats.quentes} tone="primary-soft" />
-          <StatCard icon={<HomeIcon className="w-5 h-5" />} label="Visitados" value={stats.visitados} tone="accent-soft" />
-          <StatCard icon={<DollarSign className="w-5 h-5" />} label="Fechamentos" value={stats.fechamentos} tone="gradient" />
+          <StatCard icon={<CalendarIcon className="w-5 h-5" />} label="Visitas Hoje" value={stats.hoje} tone="primary"
+            active={quick === "hoje" && statusFilter === "todos"}
+            onClick={() => { setQuick("hoje"); setStatusFilter("todos"); }} />
+          <StatCard icon={<TrendingUp className="w-5 h-5" />} label="Semana" value={stats.semana} tone="accent"
+            active={quick === "semana" && statusFilter === "todos"}
+            onClick={() => { setQuick("semana"); setStatusFilter("todos"); }} />
+          <StatCard icon={<Flame className="w-5 h-5" />} label="Leads Quentes" value={stats.quentes} tone="primary-soft"
+            active={quick === "todas" && statusFilter === "quente" as any}
+            onClick={() => { setQuick("todas"); setStatusFilter("quente" as any); }} />
+          <StatCard icon={<HomeIcon className="w-5 h-5" />} label="Visitados" value={stats.visitados} tone="accent-soft"
+            active={quick === "todas" && statusFilter === "confirmada"}
+            onClick={() => { setQuick("todas"); setStatusFilter("confirmada"); }} />
+          <StatCard icon={<DollarSign className="w-5 h-5" />} label="Fechamentos" value={stats.fechamentos} tone="gradient"
+            active={quick === "todas" && statusFilter === "fechada"}
+            onClick={() => { setQuick("todas"); setStatusFilter("fechada"); }} />
         </div>
 
         {/* Próximas visitas — atalho rápido */}
