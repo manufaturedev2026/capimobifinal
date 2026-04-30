@@ -81,10 +81,19 @@ export function useGlobalStories(city?: string) {
       };
     });
 
-    // Filter by city if provided
+    // Filter by city if provided.
+    // Stories with a linked item: must match the item's city.
+    // Stories without a linked item: fall back to the seller's city.
     if (city) {
       const normalizedCity = city.trim().toLowerCase();
-      result = result.filter((s) => s.itemCity?.toLowerCase() === normalizedCity);
+      const sellerCityMap: Record<string, string> = {};
+      (profiles || []).forEach((p: any) => {
+        if (p.city) sellerCityMap[p.id] = String(p.city).trim().toLowerCase();
+      });
+      result = result.filter((s) => {
+        if (s.itemCity) return s.itemCity.toLowerCase() === normalizedCity;
+        return sellerCityMap[s.seller_id] === normalizedCity;
+      });
     }
 
     setStories(result);
