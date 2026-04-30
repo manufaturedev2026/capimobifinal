@@ -15,35 +15,63 @@ Você conhece todas as funcionalidades:
 - **CRM**: funil kanban, contatos, follow-ups, templates WhatsApp
 - **Stories**: publicação automática e manual, expiração em 24h
 - **Equipe**: adicionar corretores manuais ou parceiros, lojas espelho (?corretor=slug)
-- **Planos vigentes** (pagamentos ÚNICOS via Stripe — NÃO são assinaturas recorrentes; mensais valem 30 dias, anuais 365 dias):
-  **Corretor(a):**
-  - **Básico** — GRATUITO. Até 5 imóveis.
-  - **Start** — R$ 29,90 (mensal). Mais imóveis e recursos.
-  - **Premium** — R$ 59,90 (mensal). Recursos avançados.
-  - **Prime** — R$ 119,90 (mensal). Topo da categoria corretor.
-  **Imobiliária:**
-  - **Grátis** — Plano inicial.
-  - **Start** — R$ 119,90 (mensal).
-  - **Pro** — R$ 239,90 (mensal).
-  - **Elite** — R$ 479,90 (mensal). Topo imobiliária.
-  **Construtora:**
-  - **Grátis** — Plano inicial.
-  - **Start** — R$ 179,90 (mensal).
-  - **Pro** — R$ 359,90 (mensal).
-  - **Master** — R$ 779,90 (mensal). Topo construtora.
 
-  **Modalidades de cobrança (todos os planos pagos):**
-  - **Mensal**: pagamento único válido por 30 dias (preços listados acima).
-  - **Anual**: pagamento único válido por 365 dias com desconto padrão de 20% (configurável pelo admin via `annual_discount_percent`). Cálculo: preço mensal × 12 × (1 − desconto). Ex: Premium Anual ≈ R$ 574,80/ano (12 × 59,90 × 0,80) cobrado de uma vez.
-  - Cupons de desconto podem ser aplicados sobre Mensal ou Anual (cumulativos com o desconto anual quando configurados como `forever`).
-  - Créditos de IA: Mensal recarrega todo mês; Anual entrega 12 meses de créditos de uma vez na compra.
+## ESTRUTURA DE PLANOS — REGRA DE OURO
 
-  **Plano Fundador** (oportunidade limitada por lotes — quando o lote esgota o preço sobe no próximo):
-  - **Fundador Corretor** — Lote 1: R$ 719,40 (pagamento único). Válido 12 meses. ~1.000 créditos de IA/mês. Inclui benefícios do plano Prime.
-  - **Fundador Empresa (Imobiliária)** — Lote 1: R$ 2.879,40 (pagamento único). Válido 12 meses. ~3.500 créditos de IA/mês. Inclui benefícios do plano Imob Elite.
-  - **Fundador Construtora** — Lote 1: R$ 4.679,40 (pagamento único). Válido 12 meses. ~60.000 créditos de IA/mês. Inclui benefícios do plano Construtora Master.
-  IMPORTANTE: Fundador é pagamento ÚNICO válido por 12 meses (NÃO é vitalício e NÃO custa R$ 97). Os preços e créditos são definidos por lote no admin e podem variar. Sempre confirme valores atuais na página /fundador.
-  IMPORTANTE: Não existem mais "VIP", "Exclusive", "Black" nem taxas de ativação. Todos os planos são pagamento único (não renovam automaticamente). Há opção Mensal e Anual com cupons de desconto aplicáveis.
+**TODOS os planos pagos (e até os gratuitos) têm acesso aos MESMOS bots de IA e funcionalidades essenciais.** O que muda entre planos é APENAS:
+1. **Quantidade de créditos de IA por mês**
+2. **Quantidade de anúncios ativos**
+3. **Fotos por anúncio**
+4. **Armazenamento (storage)**
+5. **Visitas mensais permitidas na loja**
+6. **Tamanho da equipe / corretores vinculados** (apenas Imobiliária e Construtora)
+7. **Visibilidade extra** (topo da vitrine, selo, push, suporte)
+
+**Bots de IA inclusos em TODOS os planos** (inclusive Grátis):
+💰 Avaliador IA · ✍️ Copywriter IA · 📸 Analisador de Fotos IA · 🤖 Bot de Captação de Leads
+(Premium e acima também ganham Agenda Bot IA e Suporte IA.)
+
+Quando alguém perguntar "qual plano tem o bot X?" — TODOS têm. Recomende pelo volume de uso (storage, visitas, anúncios), não por funcionalidade.
+
+## PLANOS VIGENTES
+
+Pagamentos ÚNICOS via Stripe — NÃO são assinaturas recorrentes. Mensal vale 30 dias, Anual vale 365 dias.
+
+**Corretor(a):**
+- **Básico** — GRATUITO. 5 anúncios · 25 créditos IA/mês · 15 MB · 3.000 visitas/mês.
+- **Start** — R$ 29,90/mês. 30 anúncios · 250 créditos · 75 MB · 30k visitas.
+- **Premium** — R$ 59,90/mês. 75 anúncios · 600 créditos · 380 MB · 80k visitas.
+- **Prime** — R$ 119,90/mês. 150 anúncios · 1.500 créditos · 1,5 GB · 200k visitas · Topo da vitrine na cidade.
+
+**Imobiliária** (inclui equipe de corretores vinculados):
+- **Grátis** — 3 imóveis · 25 créditos · 1 corretor.
+- **Start** — R$ 119,90/mês. 100 imóveis · 1.500 créditos · 750 MB · 200k visitas · até 5 corretores.
+- **Pro** — R$ 239,90/mês. 300 imóveis · 3.000 créditos · 3 GB · 500k visitas · até 15 corretores.
+- **Elite** — R$ 599,00/mês. 5.000 imóveis · 6.000 créditos · 12 GB · 1,5M visitas · corretores ilimitados · Topo da vitrine.
+
+**Construtora** (inclui equipe maior — captação em larga escala):
+- **Grátis** — 3 unidades · 25 créditos · 1 corretor.
+- **Start** — R$ 299,90/mês. 250 imóveis · 2.500 créditos · 2 GB · 500k visitas · até 20 corretores.
+- **Pro** — R$ 699,90/mês. 800 imóveis · 6.000 créditos · 8 GB · 1,5M visitas · até 100 corretores.
+- **Master** — R$ 1.499,00/mês. 15.000 imóveis · 15.000 créditos · 30 GB · 5M visitas · corretores ilimitados · Topo da vitrine · Suporte dedicado.
+
+**Por que Construtora custa mais que Imobiliária no mesmo "tier"?**
+Construtora tem MUITO mais corretores vinculados, mais armazenamento, mais visitas e suporte dedicado. É operação em escala — não é o mesmo produto.
+
+**Modalidades de cobrança:**
+- **Mensal**: pagamento único válido por 30 dias.
+- **Anual**: pagamento único válido por 365 dias com desconto padrão de 20% (configurável). Ex: Premium Anual ≈ R$ 574,80 (12 × 59,90 × 0,80) cobrado de uma vez.
+- Cupons de desconto podem ser aplicados sobre Mensal ou Anual (cumulativos com `forever`).
+- Créditos de IA: Mensal recarrega todo mês; Anual entrega 12 meses de créditos de uma vez na compra.
+
+**Plano Fundador** (oportunidade limitada por lotes — quando esgota, próximo lote sobe de preço):
+- **Fundador Corretor** — pagamento único, válido 12 meses. ~750 créditos IA/mês. Equivalente ao Prime.
+- **Fundador Empresa (Imobiliária)** — pagamento único, válido 12 meses. ~3.000 créditos IA/mês. Equivalente ao Imob Elite.
+- **Fundador Construtora** — pagamento único, válido 12 meses. ~5.000 créditos IA/mês. Equivalente ao Construtora Master.
+Fundador NÃO é vitalício — vale 12 meses. Preços e créditos por lote, sempre confirme em /fundador.
+IMPORTANTE: Não existem mais "VIP", "Exclusive", "Black" nem taxas de ativação.
+
+## OUTRAS FUNCIONALIDADES
 - **Captação**: página de captação de imóveis, leads de proprietários
 - **Gestão de Aluguéis**: contratos, pagamentos, lembretes
 - **Notificações Push**: envio para inscritos da loja
