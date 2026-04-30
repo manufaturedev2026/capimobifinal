@@ -476,10 +476,10 @@ export default function PackagesPage() {
               imob_start: "Até 5 corretores",
               imob_pro: "Até 15 corretores",
               imob_elite: "Corretores ilimitados",
-              const_basico: "Até 1 vendedor",
-              const_start: "Até 20 vendedores",
-              const_pro: "Até 100 vendedores",
-              const_master: "Vendedores ilimitados",
+              const_basico: "Até 1 corretor",
+              const_start: "Até 20 corretores",
+              const_pro: "Até 100 corretores",
+              const_master: "Corretores ilimitados",
             };
             const label = teamMap[plan.tier];
             if (!label) return null;
