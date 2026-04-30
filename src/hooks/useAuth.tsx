@@ -78,21 +78,49 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return data;
   };
 
-  const ensureProfile = async (authUser: User) => {
-    const existingProfile = await fetchProfile(authUser.id);
-    if (existingProfile) return existingProfile;
-
+  const ensureProfile = async (authUser: User, signupData?: { fullName?: string; phone?: string; city?: string; state?: string }) => {
     const metadata = authUser.user_metadata ?? {};
+    const metadataProfile = {
+      full_name:
+        signupData?.fullName?.trim() ||
+        (typeof metadata.full_name === "string" && metadata.full_name.trim()
+          ? metadata.full_name.trim()
+          : authUser.email?.split("@")[0] ?? "Novo usuário"),
+      email: authUser.email ?? "",
+      phone: signupData?.phone?.trim() || (typeof metadata.phone === "string" && metadata.phone.trim() ? metadata.phone.trim() : null),
+      city: signupData?.city?.trim() || (typeof metadata.city === "string" && metadata.city.trim() ? metadata.city.trim() : null),
+      state: signupData?.state?.trim() || (typeof metadata.state === "string" && metadata.state.trim() ? metadata.state.trim() : null),
+    };
+
+    const existingProfile = await fetchProfile(authUser.id);
+    if (existingProfile) {
+      const profileUpdates: Partial<ProfileInsert> = {};
+      if (!existingProfile.full_name?.trim() || existingProfile.full_name === authUser.email?.split("@")[0]) profileUpdates.full_name = metadataProfile.full_name;
+      if (!existingProfile.email?.trim() && metadataProfile.email) profileUpdates.email = metadataProfile.email;
+      if (!existingProfile.phone?.trim() && metadataProfile.phone) profileUpdates.phone = metadataProfile.phone;
+      if (!existingProfile.city?.trim() && metadataProfile.city) profileUpdates.city = metadataProfile.city;
+      if (!existingProfile.state?.trim() && metadataProfile.state) profileUpdates.state = metadataProfile.state;
+
+      if (Object.keys(profileUpdates).length > 0) {
+        const { data, error } = await supabase
+          .from("profiles")
+          .update(profileUpdates)
+          .eq("user_id", authUser.id)
+          .select("*")
+          .maybeSingle();
+
+        if (!error && data) {
+          setProfile(data);
+          return data;
+        }
+      }
+
+      return existingProfile;
+    }
+
     const profilePayload: ProfileInsert = {
       user_id: authUser.id,
-      full_name:
-        typeof metadata.full_name === "string" && metadata.full_name.trim()
-          ? metadata.full_name.trim()
-          : authUser.email?.split("@")[0] ?? "Novo usuário",
-      email: authUser.email ?? "",
-      phone: typeof metadata.phone === "string" && metadata.phone.trim() ? metadata.phone.trim() : null,
-      city: typeof metadata.city === "string" && metadata.city.trim() ? metadata.city.trim() : null,
-      state: typeof metadata.state === "string" && metadata.state.trim() ? metadata.state.trim() : null,
+      ...metadataProfile,
       store_layout: "marketplace",
       store_theme: "luxury",
     };
@@ -107,7 +135,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // 23505 = duplicate key — outro caller (signUp + onAuthStateChange) já criou o perfil.
       // Em vez de zerar o estado, recarrega o perfil existente.
       if (error.code === "23505") {
-        const existing = await fetchProfile(authUser.id);
+        const existing = await ensureProfile(authUser, signupData);
         return existing;
       }
       console.error("Erro ao criar perfil automaticamente:", error);
@@ -178,7 +206,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     if (!error && data.user) {
       try {
-        await ensureProfile(data.user);
+        await ensureProfile(data.user, { fullName, phone, city, state });
         await checkBan(data.user.id);
       } catch (profileError) {
         console.warn("Falha ao garantir perfil após cadastro:", profileError);
