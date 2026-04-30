@@ -136,7 +136,7 @@ export default function AdminAiCostsTab() {
               <div className={`p-2 rounded-lg bg-gradient-to-br ${meta.color} text-white shadow-sm`}>
                 <Icon className="w-4 h-4" />
               </div>
-              <h3 className="text-lg font-semibold">{meta.label}</h3>
+              <h3 className="text-lg font-semibold text-foreground">{meta.label}</h3>
               <Badge variant="secondary" className="ml-auto">{tools.length}</Badge>
             </div>
 
