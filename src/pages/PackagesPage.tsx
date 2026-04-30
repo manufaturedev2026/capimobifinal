@@ -744,7 +744,7 @@ export default function PackagesPage() {
         {individualPlans.length > 0 && (
           <>
             <h2 className="font-display font-extrabold text-xl text-foreground mb-4">Planos Individuais</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className={`grid grid-cols-1 sm:grid-cols-2 ${individualPlans.length >= 4 ? "lg:grid-cols-4" : "lg:grid-cols-3"} gap-4 md:gap-5`}>
               {individualPlans.map((p, i) => renderCard(p, i))}
             </div>
           </>
@@ -753,7 +753,7 @@ export default function PackagesPage() {
         {enterprisePlans.length > 0 && (
           <>
             <h2 className="font-display font-extrabold text-xl text-foreground mt-10 mb-4">Planos Empresariais</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className={`grid grid-cols-1 sm:grid-cols-2 ${enterprisePlans.length >= 4 ? "lg:grid-cols-4" : "lg:grid-cols-3"} gap-4 md:gap-5`}>
               {enterprisePlans.map((p, i) => renderCard(p, i, { showPartners: true }))}
             </div>
           </>
