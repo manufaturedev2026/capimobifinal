@@ -119,6 +119,9 @@ export default function AdminPanel() {
   const [planCustomDays, setPlanCustomDays] = useState<string>("");
   const [planSaving, setPlanSaving] = useState(false);
 
+  // Available plans loaded from subscription_plans table (no ghost tiers)
+  const [availablePlans, setAvailablePlans] = useState<Array<{ tier: string; name: string; max_items: number; category: string; sort_order: number }>>([]);
+
   // AI Credits dialog state
   const [creditsDialogOpen, setCreditsDialogOpen] = useState(false);
   const [creditsSeller, setCreditsSeller] = useState<SellerWithSub | null>(null);
@@ -139,6 +142,7 @@ export default function AdminPanel() {
       fetchAdRequests();
       fetchBans();
       fetchManagersList();
+      fetchAvailablePlans();
       // Fetch homepage mode
       supabase.from("platform_settings").select("value").eq("key", "homepage_mode").maybeSingle().then(({ data }) => {
         if (data?.value) setHomepageMode(data.value);
@@ -283,6 +287,15 @@ export default function AdminPanel() {
       .eq("is_active", true)
       .order("name");
     setManagersList((data as any[]) || []);
+  };
+
+  const fetchAvailablePlans = async () => {
+    const { data } = await supabase
+      .from("subscription_plans")
+      .select("tier, name, max_items, category, sort_order")
+      .eq("is_active", true)
+      .order("sort_order", { ascending: true });
+    setAvailablePlans((data as any[]) || []);
   };
 
   const fetchSellers = async () => {
@@ -1661,9 +1674,9 @@ export default function AdminPanel() {
                   onChange={(e) => setPlanTier(e.target.value)}
                   className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm text-foreground"
                 >
-                  {(Object.keys(PACKAGE_CONFIG) as (keyof typeof PACKAGE_CONFIG)[]).map((t) => (
-                    <option key={t} value={t}>
-                      {(PACKAGE_CONFIG[t] as any).name} — até {(PACKAGE_CONFIG[t] as any).maxItems} anúncios
+                  {availablePlans.map((p) => (
+                    <option key={p.tier} value={p.tier}>
+                      {p.name} ({p.category}) — até {p.max_items} anúncios
                     </option>
                   ))}
                 </select>
