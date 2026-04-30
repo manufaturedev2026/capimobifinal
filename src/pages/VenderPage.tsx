@@ -287,103 +287,38 @@ const AI_CREDITS_BY_TIER: Record<string, number> = {
 const getAiCredits = (tier: string, fromDb?: number | null) => fromDb || AI_CREDITS_BY_TIER[tier] || 25;
 const formatCredits = (n: number) => n.toLocaleString("pt-BR");
 
-// Bots de IA inclusos por tier (ordem de desbloqueio progressivo)
-const AI_BOTS_BY_TIER: Record<string, { emoji: string; name: string }[]> = {
-  basico: [
-    { emoji: "💰", name: "Avaliador IA" },
-  ],
-  basico_empresa: [
-    { emoji: "💰", name: "Avaliador IA" },
-  ],
-  start: [
-    { emoji: "💰", name: "Avaliador IA" },
-    { emoji: "✍️", name: "Copywriter IA" },
-    { emoji: "📸", name: "Analisador de Fotos IA" },
-  ],
-  premium: [
-    { emoji: "💰", name: "Avaliador IA" },
-    { emoji: "✍️", name: "Copywriter IA" },
-    { emoji: "📸", name: "Analisador de Fotos IA" },
-    { emoji: "🤖", name: "Bot de Captação de Leads" },
-  ],
-  vip: [
-    { emoji: "💰", name: "Avaliador IA" },
-    { emoji: "✍️", name: "Copywriter IA" },
-    { emoji: "📸", name: "Analisador de Fotos IA" },
-    { emoji: "🤖", name: "Bot de Captação de Leads" },
-    { emoji: "📅", name: "Agenda Bot IA" },
-  ],
-  essencial_empresa: [
-    { emoji: "💰", name: "Avaliador IA" },
-    { emoji: "✍️", name: "Copywriter IA" },
-    { emoji: "📸", name: "Analisador de Fotos IA" },
-    { emoji: "🤖", name: "Bot de Captação de Leads" },
-    { emoji: "📅", name: "Agenda Bot IA" },
-  ],
-  premium_empresa: [
-    { emoji: "💰", name: "Avaliador IA" },
-    { emoji: "✍️", name: "Copywriter IA" },
-    { emoji: "📸", name: "Analisador de Fotos IA" },
-    { emoji: "🤖", name: "Bot de Captação de Leads" },
-    { emoji: "📅", name: "Agenda Bot IA" },
-    { emoji: "🎓", name: "Suporte IA da Plataforma" },
-  ],
-  prime_empresa: [
-    { emoji: "💰", name: "Avaliador IA" },
-    { emoji: "✍️", name: "Copywriter IA" },
-    { emoji: "📸", name: "Analisador de Fotos IA" },
-    { emoji: "🤖", name: "Bot de Captação de Leads" },
-    { emoji: "📅", name: "Agenda Bot IA" },
-    { emoji: "🎓", name: "Suporte IA da Plataforma" },
-  ],
-  imob_basico: [
-    { emoji: "💰", name: "Avaliador IA" },
-  ],
-  imob_start: [
-    { emoji: "💰", name: "Avaliador IA" },
-    { emoji: "✍️", name: "Copywriter IA" },
-    { emoji: "📸", name: "Analisador de Fotos IA" },
-  ],
-  imob_pro: [
-    { emoji: "💰", name: "Avaliador IA" },
-    { emoji: "✍️", name: "Copywriter IA" },
-    { emoji: "📸", name: "Analisador de Fotos IA" },
-    { emoji: "🤖", name: "Bot de Captação de Leads" },
-    { emoji: "📅", name: "Agenda Bot IA" },
-  ],
-  imob_elite: [
-    { emoji: "💰", name: "Avaliador IA" },
-    { emoji: "✍️", name: "Copywriter IA" },
-    { emoji: "📸", name: "Analisador de Fotos IA" },
-    { emoji: "🤖", name: "Bot de Captação de Leads" },
-    { emoji: "📅", name: "Agenda Bot IA" },
-    { emoji: "🎓", name: "Suporte IA da Plataforma" },
-  ],
-  const_basico: [
-    { emoji: "💰", name: "Avaliador IA" },
-  ],
-  const_start: [
-    { emoji: "💰", name: "Avaliador IA" },
-    { emoji: "✍️", name: "Copywriter IA" },
-    { emoji: "📸", name: "Analisador de Fotos IA" },
-  ],
-  const_pro: [
-    { emoji: "💰", name: "Avaliador IA" },
-    { emoji: "✍️", name: "Copywriter IA" },
-    { emoji: "📸", name: "Analisador de Fotos IA" },
-    { emoji: "🤖", name: "Bot de Captação de Leads" },
-    { emoji: "📅", name: "Agenda Bot IA" },
-  ],
-  const_master: [
-    { emoji: "💰", name: "Avaliador IA" },
-    { emoji: "✍️", name: "Copywriter IA" },
-    { emoji: "📸", name: "Analisador de Fotos IA" },
-    { emoji: "🤖", name: "Bot de Captação de Leads" },
-    { emoji: "📅", name: "Agenda Bot IA" },
-    { emoji: "🎓", name: "Suporte IA da Plataforma" },
-  ],
+// Bots de IA inclusos: TODOS os planos pagos têm os 4 bots base.
+// Tiers top desbloqueiam adicionais (Agenda, Suporte IA).
+const BASE_BOTS = [
+  { emoji: "💰", name: "Avaliador IA" },
+  { emoji: "✍️", name: "Copywriter IA" },
+  { emoji: "📸", name: "Analisador de Fotos IA" },
+  { emoji: "🤖", name: "Bot de Captação de Leads" },
+];
+const AGENDA_BOT = { emoji: "📅", name: "Agenda Bot IA" };
+const SUPORTE_BOT = { emoji: "🎓", name: "Suporte IA da Plataforma" };
+
+// Tiers gratuitos/básicos: apenas Avaliador
+const FREE_TIERS = new Set(["basico", "basico_empresa", "imob_basico", "const_basico"]);
+// Tiers que ganham Agenda Bot
+const AGENDA_TIERS = new Set([
+  "vip", "premium", "essencial_empresa", "premium_empresa", "prime_empresa",
+  "imob_pro", "imob_elite", "const_pro", "const_master",
+  "fundador_corretor", "fundador_empresa", "fundador_construtora",
+]);
+// Tiers top que ganham Suporte IA
+const SUPORTE_TIERS = new Set([
+  "premium_empresa", "prime_empresa", "imob_elite", "const_master",
+  "fundador_empresa", "fundador_construtora",
+]);
+
+const getAiBots = (tier: string) => {
+  if (FREE_TIERS.has(tier)) return [BASE_BOTS[0]];
+  const bots = [...BASE_BOTS];
+  if (AGENDA_TIERS.has(tier)) bots.push(AGENDA_BOT);
+  if (SUPORTE_TIERS.has(tier)) bots.push(SUPORTE_BOT);
+  return bots;
 };
-const getAiBots = (tier: string) => AI_BOTS_BY_TIER[tier] ?? AI_BOTS_BY_TIER.basico;
 
 // Extrai a quantidade de corretores anunciada nos benefits do plano (imob/const)
 const getBrokersFromBenefits = (benefits: string[]): string => {
