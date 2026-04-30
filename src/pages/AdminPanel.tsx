@@ -1674,11 +1674,24 @@ export default function AdminPanel() {
                   onChange={(e) => setPlanTier(e.target.value)}
                   className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm text-foreground"
                 >
-                  {availablePlans.map((p) => (
-                    <option key={p.tier} value={p.tier}>
-                      {p.name} ({p.category}) — até {p.max_items} anúncios
-                    </option>
-                  ))}
+                  {(["corretor", "imobiliaria", "construtora", "fundador"] as const).map((cat) => {
+                    const group = availablePlans.filter((p) => p.category === cat);
+                    if (!group.length) return null;
+                    const label =
+                      cat === "corretor" ? "👤 Corretor" :
+                      cat === "imobiliaria" ? "🏢 Imobiliária" :
+                      cat === "construtora" ? "🏗️ Construtora" :
+                      "👑 Fundadores";
+                    return (
+                      <optgroup key={cat} label={label}>
+                        {group.map((p) => (
+                          <option key={p.tier} value={p.tier}>
+                            {p.name} — até {p.max_items >= 9999 ? "∞" : p.max_items} anúncios
+                          </option>
+                        ))}
+                      </optgroup>
+                    );
+                  })}
                 </select>
               </div>
 
