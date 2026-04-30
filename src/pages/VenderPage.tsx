@@ -670,7 +670,12 @@ export default function VenderPage() {
         <section className="border-y border-white/5 py-8 md:py-10" style={{ background: `${theme.primary}08` }}>
           <div className="max-w-5xl mx-auto px-4">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-              {STATS.map((stat, i) => (
+              {[
+                { value: formatStat(liveStats.imoveis), label: "Imóveis Cadastrados", icon: Home },
+                { value: formatStat(liveStats.corretores), label: "Profissionais Ativos", icon: Users },
+                { value: "24/7", label: "Disponibilidade", icon: Shield },
+                { value: "100%", label: "Responsivo", icon: Smartphone },
+              ].map((stat, i) => (
                 <motion.div
                   key={stat.label}
                   initial={{ opacity: 0, y: 15 }}
