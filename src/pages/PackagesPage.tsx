@@ -835,7 +835,11 @@ export default function PackagesPage() {
 
                   <div className="bg-white/15 backdrop-blur-md border border-white/30 rounded-2xl p-6 text-center">
                     <p className="text-white/80 text-sm font-semibold uppercase tracking-wider">
-                      {isUpgradeAvailable ? "Diferença a pagar" : "Pagamento único"}
+                      {isUpgradeAvailable
+                        ? "Diferença a pagar"
+                        : founderBilling === "monthly"
+                        ? "Mensalidade Fundador"
+                        : "Pagamento único"}
                     </p>
                     {isUpgradeAvailable && (
                       <p className="text-white/70 text-xs line-through mt-1">
@@ -845,7 +849,14 @@ export default function PackagesPage() {
                     <div className="mt-2 flex items-baseline justify-center gap-1">
                       <span className="text-white/70 text-2xl font-bold">R$</span>
                       <span className="font-display font-extrabold text-6xl">
-                        {isUpgradeAvailable ? upgradeDiff.toFixed(0) : Number(activeFounderLot.price).toFixed(0)}
+                        {isUpgradeAvailable
+                          ? upgradeDiff.toFixed(0)
+                          : founderBilling === "monthly" && activeFounderLot.monthly_price
+                          ? Number(activeFounderLot.monthly_price).toFixed(2).replace(".", ",")
+                          : Number(activeFounderLot.price).toFixed(0)}
+                      </span>
+                      <span className="text-white/70 text-sm">
+                        {founderBilling === "monthly" && !isUpgradeAvailable ? "/mês" : "/ano"}
                       </span>
                     </div>
                     {isUpgradeAvailable && (
@@ -853,7 +864,11 @@ export default function PackagesPage() {
                         ✓ Crédito de R$ {estimatedCredit.toFixed(0)} aplicado
                       </p>
                     )}
-                    <p className="text-white/80 text-xs mt-1">à vista · sem renovação automática</p>
+                    <p className="text-white/80 text-xs mt-1">
+                      {founderBilling === "monthly" && !isUpgradeAvailable
+                        ? "Renovado a cada 30 dias · cancele quando quiser"
+                        : "à vista · sem renovação automática"}
+                    </p>
 
                     <div className="mt-4">
                       <div className="h-2 w-full rounded-full bg-black/30 overflow-hidden">
