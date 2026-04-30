@@ -57,18 +57,12 @@ function FooterContent({ theme }: { theme?: FooterSimpleProps["theme"] }) {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
         <div className="col-span-2 md:col-span-1">
           <Link to="/" className="flex items-center gap-2.5 mb-3">
-            {site_logo_url ? (
-              <img loading="lazy" decoding="async" src={site_logo_url} alt={site_name} className="h-9 max-w-[140px] object-contain" />
-            ) : (
-              <>
-                <img loading="lazy" decoding="async" src="/pwa-icon-512.png" alt={site_name} className="w-9 h-9 rounded-xl shadow-md object-contain" />
-                <span className="text-xl tracking-wide uppercase" style={{ fontFamily: "'Orbitron', sans-serif", fontWeight: 800 }}>
-                  <span style={primaryStyle} className={primaryClass}>Cap</span>
-                  <span style={foregroundStyle} className={foregroundClass}>i</span>
-                  <span style={accentStyle} className={accentClass}>mobi</span>
-                </span>
-              </>
-            )}
+            <img loading="lazy" decoding="async" src="/pwa-icon-512.png" alt={site_name} className="w-9 h-9 rounded-xl shadow-md object-contain" />
+            <span className="text-xl tracking-wide uppercase" style={{ fontFamily: "'Orbitron', sans-serif", fontWeight: 800 }}>
+              <span style={primaryStyle} className={primaryClass}>Cap</span>
+              <span style={foregroundStyle} className={foregroundClass}>i</span>
+              <span style={accentStyle} className={accentClass}>mobi</span>
+            </span>
           </Link>
           <p className={`text-xs leading-relaxed max-w-xs ${mutedClass}`} style={mutedStyle}>
             {site_footer_text || "Crie seu próprio app de imóveis. Perfeito para corretores, imobiliárias e construtoras."}
