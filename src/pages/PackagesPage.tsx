@@ -10,20 +10,19 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 const tierIcons: Record<string, any> = {
-  basico: Zap, start: Zap, premium: Star, vip: Crown,
-  essencial_empresa: Shield, premium_empresa: Gem, prime_empresa: Diamond,
+  basico: Zap, start: Zap, premium: Star, prime: Crown,
+  imob_basico: Zap, imob_start: Shield, imob_pro: Gem, imob_elite: Diamond,
+  const_basico: Zap, const_start: Shield, const_pro: Gem, const_master: Diamond,
 };
 
 const aiMonthlyCredits: Record<string, number> = {
   basico: 25,
   start: 250,
   premium: 600,
-  vip: 1000,
-  essencial_empresa: 2000,
-  premium_empresa: 2000,
-  prime_empresa: 3500,
+  prime: 1500,
   fundador_corretor: 500,
   fundador_empresa: 1750,
+  fundador_construtora: 2500,
   imob_basico: 25,
   imob_start: 1500,
   imob_pro: 3000,
@@ -51,10 +50,13 @@ interface FounderLot {
 const TIER_LABEL: Record<string, string> = {
   start: "Start",
   premium: "Premium",
-  vip: "VIP",
-  essencial_empresa: "Essencial Empresa",
-  premium_empresa: "Premium Empresa",
-  prime_empresa: "Prime Empresa (Black)",
+  prime: "Prime",
+  imob_start: "Imob Start",
+  imob_pro: "Imob Pro",
+  imob_elite: "Imob Elite",
+  const_start: "Construtora Start",
+  const_pro: "Construtora Pro",
+  const_master: "Construtora Master",
 };
 
 const formatCredits = (credits: number) => credits.toLocaleString("pt-BR");
