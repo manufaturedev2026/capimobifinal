@@ -119,6 +119,14 @@ export default function AdminPanel() {
   const [planCustomDays, setPlanCustomDays] = useState<string>("");
   const [planSaving, setPlanSaving] = useState(false);
 
+  // AI Credits dialog state
+  const [creditsDialogOpen, setCreditsDialogOpen] = useState(false);
+  const [creditsSeller, setCreditsSeller] = useState<SellerWithSub | null>(null);
+  const [creditsAction, setCreditsAction] = useState<"add" | "remove">("add");
+  const [creditsAmount, setCreditsAmount] = useState<string>("100");
+  const [creditsNotes, setCreditsNotes] = useState<string>("");
+  const [creditsSaving, setCreditsSaving] = useState(false);
+
   useEffect(() => {
     if (!authLoading && !adminLoading) {
       if (!user || !isAdmin) navigate("/painel");
