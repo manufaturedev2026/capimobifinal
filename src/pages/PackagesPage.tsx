@@ -460,114 +460,133 @@ export default function PackagesPage() {
   }
 
   const renderCard = (plan: Plan, idx: number, opts: { showPartners?: boolean } = {}) => {
-    const Icon = tierIcons[plan.tier] || Zap;
+    const style = getTierStyle(plan.tier);
+    const Icon = style.icon;
     const isCurrent = currentTier === plan.tier;
-    // Fonte preferencial: valor cadastrado no banco (ai_generations_per_day = créditos/mês);
-    // fallback no mapa local apenas se o banco não tiver valor.
+    const isPopular = plan.is_popular || !!style.badge;
     const credits = (plan as any).ai_credits_per_month || (plan as any).ai_generations_per_day || aiMonthlyCredits[plan.tier] || 25;
     const { final, discount } = calculateFinalPrice(plan.price, plan.tier);
     const hasDiscount = discount > 0 && plan.price > 0;
     const maxItems = plan.max_items >= 9999 ? "Ilimitado" : plan.max_items.toLocaleString("pt-BR");
-    const maxPhotos = plan.max_photos_per_listing;
     const storageLabel = plan.storage_mb >= 1024 ? `${(plan.storage_mb / 1024).toFixed(1)} GB` : `${plan.storage_mb} MB`;
+
+    const teamMap: Record<string, string> = {
+      imob_basico: "Até 1",
+      imob_start: "Até 5",
+      imob_pro: "Até 15",
+      imob_elite: "Ilimitado",
+      const_basico: "Até 1",
+      const_start: "Até 20",
+      const_pro: "Até 100",
+      const_master: "Ilimitado",
+    };
+    const teamLabel = opts.showPartners ? teamMap[plan.tier] : null;
 
     return (
       <motion.div
         key={plan.id}
         initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: idx * 0.1 }}
-        className={`relative bg-card border-2 rounded-3xl overflow-hidden shadow-lg transition-all hover:shadow-2xl ${
-          isCurrent ? "border-primary ring-4 ring-primary/20" : (plan.is_popular && billingPeriod === "monthly") ? "border-amber-400" : "border-border"
-        }`}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ delay: idx * 0.08, duration: 0.5 }}
+        whileHover={{ y: -6, transition: { duration: 0.2 } }}
+        className={`group relative bg-zinc-950 bg-gradient-to-br ${style.gradient} backdrop-blur-xl rounded-2xl border ${style.ring} ${style.glow} shadow-2xl p-5 md:p-6 flex flex-col text-white ${isCurrent ? "ring-2 ring-primary" : ""}`}
       >
-        {plan.is_popular && !isCurrent && billingPeriod === "monthly" && (
-          <div className="absolute top-0 right-0 px-4 py-1 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold rounded-bl-xl z-10">
-            POPULAR
-          </div>
-        )}
+        {/* Glow ambient */}
+        <div className="absolute -top-20 -right-20 w-40 h-40 bg-white/5 rounded-full blur-3xl group-hover:bg-white/10 transition-all duration-500 overflow-hidden pointer-events-none" />
+
         {isCurrent && (
-          <div className="absolute top-0 left-0 px-4 py-1 bg-primary text-primary-foreground text-xs font-bold rounded-br-xl z-10">
-            ATUAL
-          </div>
+          <span className="absolute -top-3 left-4 z-10 bg-primary text-primary-foreground text-[10px] font-black uppercase px-3 py-1 rounded-full tracking-widest shadow-lg">
+            Plano Atual
+          </span>
+        )}
+        {!isCurrent && style.badge && (
+          <span className={`absolute -top-3 left-1/2 -translate-x-1/2 z-10 ${style.ctaGradient ? `bg-gradient-to-r ${style.ctaGradient}` : "bg-gradient-to-r from-amber-500 to-orange-500"} text-white text-[10px] font-black uppercase px-4 py-1 rounded-full tracking-widest shadow-lg`}>
+            {style.badge}
+          </span>
         )}
         {hasDiscount && (
-          <div className="absolute top-3 right-3 px-3 py-1 bg-emerald-500 text-white text-xs font-extrabold rounded-full shadow-lg flex items-center gap-1 z-10">
-            <Sparkles size={12} /> -{discount}%
-          </div>
+          <span className="absolute top-3 right-3 z-10 px-2.5 py-0.5 bg-emerald-500 text-white text-[10px] font-black rounded-full shadow-lg flex items-center gap-1">
+            <Sparkles size={10} /> -{discount}%
+          </span>
         )}
 
-        <div className={`p-6 bg-gradient-to-br ${plan.color} text-white`}>
-          <Icon size={32} className="mb-3" />
-          <h2 className="font-display font-extrabold text-2xl">{plan.name}</h2>
-          <div className="mt-2">
-            {hasDiscount && (
-              <div className="text-white/60 text-sm line-through">
-                R$ {plan.price.toFixed(2).replace(".", ",")}
-              </div>
-            )}
-            <div className="flex items-baseline gap-1">
-              <span className="font-display font-bold text-3xl">R$ {final.toFixed(2).replace(".", ",")}</span>
-              <span className="text-white/70 text-sm">/mês</span>
+        <div className="relative z-10 flex flex-col h-full">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="p-2 bg-white/10 rounded-lg backdrop-blur">
+              <Icon className="w-5 h-5 text-white" />
             </div>
-            {billingPeriod === "annual" && plan.price > 0 && (
-              <div className="text-white/80 text-xs mt-1">
-                Cobrado anualmente · R$ {(final * 12).toFixed(2).replace(".", ",")}/ano
-              </div>
-            )}
+            <h3 className="font-display font-black text-xl md:text-2xl">{plan.name}</h3>
           </div>
-          {opts.showPartners && (() => {
-            const teamMap: Record<string, string> = {
-              imob_basico: "Até 1 corretor",
-              imob_start: "Até 5 corretores",
-              imob_pro: "Até 15 corretores",
-              imob_elite: "Corretores ilimitados",
-              const_basico: "Até 1 corretor",
-              const_start: "Até 20 corretores",
-              const_pro: "Até 100 corretores",
-              const_master: "Corretores ilimitados",
-            };
-            const label = teamMap[plan.tier];
-            if (!label) return null;
-            return (
-              <div className="mt-3 px-3 py-2 bg-white/15 rounded-xl text-center">
-                <span className="text-white font-bold text-sm">{label} na equipe</span>
-              </div>
-            );
-          })()}
-          <div className="mt-3 flex items-center justify-center gap-2 rounded-xl bg-white/15 px-3 py-2 text-center">
-            <Coins size={16} className="text-white" />
-            <span className="text-sm font-bold text-white">
-              {billingPeriod === "annual"
-                ? `${formatCredits(credits * 12)} créditos IA/ano`
-                : `${formatCredits(credits)} créditos IA/mês`}
-            </span>
-          </div>
-          <div className="mt-2 grid grid-cols-3 gap-1.5">
-            <div className="flex flex-col items-center justify-center gap-0.5 rounded-lg bg-white/15 px-2 py-2">
-              <Home size={14} className="text-white/90" />
-              <span className="text-[10px] text-white/70 font-medium">Anúncios</span>
-              <span className="text-xs font-extrabold text-white">{maxItems}</span>
-            </div>
-            <div className="flex flex-col items-center justify-center gap-0.5 rounded-lg bg-white/15 px-2 py-2">
-              <Camera size={14} className="text-white/90" />
-              <span className="text-[10px] text-white/70 font-medium">Fotos</span>
-              <span className="text-xs font-extrabold text-white">{maxPhotos}/anúncio</span>
-            </div>
-            <div className="flex flex-col items-center justify-center gap-0.5 rounded-lg bg-white/15 px-2 py-2">
-              <HardDrive size={14} className="text-white/90" />
-              <span className="text-[10px] text-white/70 font-medium">Storage</span>
-              <span className="text-xs font-extrabold text-white">{storageLabel}</span>
-            </div>
-          </div>
-        </div>
+          <p className="text-[11px] md:text-xs text-white/50 mb-4">{style.subtitle}</p>
 
-        <div className="p-6">
-          <ul className="space-y-3">
+          <div className="mb-4">
+            {plan.price === 0 ? (
+              <p className="text-3xl md:text-4xl font-black bg-gradient-to-br from-white to-white/60 bg-clip-text text-transparent">Gratuito</p>
+            ) : (
+              <>
+                {hasDiscount && (
+                  <div className="text-white/40 text-xs line-through">
+                    R$ {plan.price.toFixed(2).replace(".", ",")}
+                  </div>
+                )}
+                <div className="flex items-baseline gap-1 flex-nowrap whitespace-nowrap">
+                  <span className="text-2xl md:text-3xl lg:text-4xl font-black bg-gradient-to-br from-white to-white/60 bg-clip-text text-transparent whitespace-nowrap">R$ {final.toFixed(2).replace(".", ",")}</span>
+                  <span className="text-xs md:text-sm font-normal text-white/40">/mês</span>
+                </div>
+                {billingPeriod === "annual" && (
+                  <p className="text-[10px] md:text-[11px] text-white/60 mt-1">
+                    Cobrado anualmente · R$ {(final * 12).toFixed(2).replace(".", ",")}/ano
+                  </p>
+                )}
+              </>
+            )}
+          </div>
+
+          <div className="mb-3 grid grid-cols-2 gap-2">
+            <div className="px-3 py-2 rounded-lg bg-black/30 border border-white/5">
+              <p className="text-[9px] uppercase tracking-wider text-white/40 mb-0.5">Anúncios</p>
+              <p className="text-xs md:text-sm font-bold text-white">{maxItems}</p>
+            </div>
+            <div className="px-3 py-2 rounded-lg bg-gradient-to-br from-purple-500/20 to-fuchsia-500/10 border border-purple-400/20">
+              <p className="text-[9px] uppercase tracking-wider text-purple-200/70 mb-0.5 flex items-center gap-1"><Sparkles className="w-2.5 h-2.5" /> Créditos IA/mês</p>
+              <p className="text-xs md:text-sm font-bold text-white">{formatCredits(credits)}</p>
+            </div>
+            <div className="px-3 py-2 rounded-lg bg-black/30 border border-white/5">
+              <p className="text-[9px] uppercase tracking-wider text-white/40 mb-0.5">Fotos / Anúncio</p>
+              <p className="text-xs md:text-sm font-bold text-white">Até {plan.max_photos_per_listing}</p>
+            </div>
+            <div className="px-3 py-2 rounded-lg bg-black/30 border border-white/5">
+              <p className="text-[9px] uppercase tracking-wider text-white/40 mb-0.5">Storage</p>
+              <p className="text-xs md:text-sm font-bold text-white">{storageLabel}</p>
+            </div>
+            {teamLabel && (
+              <div className="col-span-2 px-3 py-2 rounded-lg bg-gradient-to-br from-cyan-500/15 to-blue-500/5 border border-cyan-400/20">
+                <p className="text-[9px] uppercase tracking-wider text-cyan-200/70 mb-0.5 flex items-center gap-1"><Users className="w-2.5 h-2.5" /> Corretores na equipe</p>
+                <p className="text-xs md:text-sm font-bold text-white">{teamLabel}</p>
+              </div>
+            )}
+          </div>
+
+          <div className="mb-4 px-3 py-2.5 rounded-lg bg-gradient-to-br from-purple-500/10 via-fuchsia-500/5 to-transparent border border-purple-400/20">
+            <p className="text-[9px] uppercase tracking-wider text-purple-200/80 mb-1.5 flex items-center gap-1 font-bold">
+              <Bot className="w-3 h-3" /> Bots de IA inclusos
+            </p>
+            <div className="flex flex-wrap gap-1">
+              {getAiBots(plan.tier).map((bot) => (
+                <span key={bot.name} className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-white/5 border border-white/10 text-[10px] text-white/80">
+                  <span>{bot.emoji}</span>
+                  <span className="font-medium">{bot.name}</span>
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <ul className="space-y-1.5 flex-1 mb-5">
             {plan.benefits.map((b, i) => (
-              <li key={i} className="flex items-start gap-2 text-sm text-foreground">
-                <Check size={16} className="text-green-500 mt-0.5 flex-shrink-0" />
-                {b}
+              <li key={i} className="flex items-start gap-2 text-[12px] md:text-[13px] text-white/70">
+                <Check className="w-3.5 h-3.5 mt-0.5 shrink-0 text-emerald-400" />
+                <span>{b}</span>
               </li>
             ))}
           </ul>
@@ -575,17 +594,20 @@ export default function PackagesPage() {
           <button
             onClick={() => handleSelect(plan)}
             disabled={isCurrent || selecting === plan.tier}
-            className={`w-full mt-3 py-3 rounded-xl font-bold text-sm transition-all ${
+            className={`w-full rounded-xl py-2.5 font-bold text-sm transition-all flex items-center justify-center gap-1 ${
               isCurrent
-                ? "bg-muted text-muted-foreground cursor-default"
-                : `bg-gradient-to-r ${plan.color} text-white hover:opacity-90 shadow-lg`
+                ? "bg-white/5 text-white/50 cursor-default border border-white/10"
+                : style.ctaGradient
+                  ? `bg-gradient-to-r ${style.ctaGradient} hover:brightness-110 text-white shadow-lg`
+                  : "bg-white/10 hover:bg-white/20 text-white border border-white/10"
             }`}
           >
             {selecting === plan.tier
               ? "Processando..."
               : isCurrent
               ? "Plano Atual"
-              : "Contratar"}
+              : plan.price === 0 ? "Plano Gratuito" : `Assinar ${plan.name}`}
+            {!isCurrent && <ArrowRight className="w-4 h-4" />}
           </button>
         </div>
       </motion.div>
