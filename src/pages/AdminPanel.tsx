@@ -423,6 +423,61 @@ export default function AdminPanel() {
     }
   };
 
+  const openCreditsDialog = (seller: SellerWithSub, action: "add" | "remove") => {
+    setCreditsSeller(seller);
+    setCreditsAction(action);
+    setCreditsAmount("100");
+    setCreditsNotes("");
+    setCreditsDialogOpen(true);
+  };
+
+  const confirmCreditsChange = async () => {
+    if (!creditsSeller) return;
+    const amount = parseInt(creditsAmount || "0", 10);
+    if (!amount || amount < 1) {
+      toast({ title: "Informe uma quantidade válida", variant: "destructive" });
+      return;
+    }
+    setCreditsSaving(true);
+    try {
+      if (creditsAction === "add") {
+        const { error } = await supabase.rpc("add_ai_credits", {
+          p_user_id: creditsSeller.user_id,
+          p_amount: amount,
+          p_transaction_type: "admin_grant",
+          p_tool_key: "admin_manual_credit",
+          p_seller_id: creditsSeller.id,
+          p_notes: creditsNotes || "Créditos concedidos manualmente pelo admin",
+        } as any);
+        if (error) throw error;
+        toast({ title: `+${amount} créditos adicionados!` });
+      } else {
+        const currentBalance = creditsSeller.ai_balance ?? 0;
+        const toRemove = Math.min(amount, currentBalance);
+        if (toRemove <= 0) {
+          toast({ title: "Saldo zerado", description: "Esse usuário não possui créditos para remover.", variant: "destructive" });
+          setCreditsSaving(false);
+          return;
+        }
+        const { error } = await supabase.rpc("consume_ai_credits", {
+          p_user_id: creditsSeller.user_id,
+          p_amount: toRemove,
+          p_tool_key: "admin_manual_debit",
+          p_seller_id: creditsSeller.id,
+          p_notes: creditsNotes || "Créditos removidos manualmente pelo admin",
+        } as any);
+        if (error) throw error;
+        toast({ title: `-${toRemove} créditos removidos!` });
+      }
+      setCreditsDialogOpen(false);
+      fetchSellers();
+    } catch (e: any) {
+      toast({ title: "Erro ao alterar créditos", description: e.message, variant: "destructive" });
+    } finally {
+      setCreditsSaving(false);
+    }
+  };
+
   const filteredSellers = sellers.filter((s) => {
     const matchesSearch =
       s.full_name.toLowerCase().includes(search.toLowerCase()) ||
