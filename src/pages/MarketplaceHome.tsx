@@ -1175,7 +1175,7 @@ export default function MarketplaceHome() {
         </div>{/* end flex-1 main content */}
       </div>{/* end flex sidebar+content */}
 
-      <FooterSimple theme={{ bg: DARK_BASE, text: TEXT, textMuted: TEXT_MUTED, border: BORDER, primary: PRIMARY }} />
+      <FooterSimple theme={{ bg: DARK_BASE, text: TEXT, textMuted: TEXT_MUTED, border: BORDER, primary: PRIMARY, accent: theme.promoAccent }} />
 
       {/* ═══ CINEMA MODE OVERLAY ═══ */}
       <AnimatePresence>
