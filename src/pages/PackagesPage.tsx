@@ -8,6 +8,7 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { useActivePlans, type Plan } from "@/hooks/usePlans";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import PlanCheckoutModal from "@/components/PlanCheckoutModal";
 
 const tierIcons: Record<string, any> = {
   basico: Zap, start: Zap, premium: Star, prime: Crown,
@@ -88,6 +89,15 @@ export default function PackagesPage() {
   const [founderLots, setFounderLots] = useState<FounderLot[]>([]);
   const [founderEnabled, setFounderEnabled] = useState<boolean>(true);
   const [founderBilling, setFounderBilling] = useState<"annual" | "monthly">("monthly");
+
+  // Checkout modal state (PIX/Cartão direto na página)
+  const [checkoutModal, setCheckoutModal] = useState<{
+    open: boolean;
+    orderId: string | null;
+    amount: number;
+    planName: string;
+    description?: string;
+  }>({ open: false, orderId: null, amount: 0, planName: "" });
 
   // Carrega o desconto anual configurado pelo admin
   useEffect(() => {
@@ -322,10 +332,18 @@ export default function PackagesPage() {
           },
         });
         if (error) throw error;
-        if (data?.url) {
-          navigate(data.url);
+        if (data?.order_id) {
+          setCheckoutModal({
+            open: true,
+            orderId: String(data.order_id),
+            amount: Number(data.amount ?? plan.price),
+            planName: plan.name,
+            description: appliedCoupon
+              ? `Cupom ${appliedCoupon.code} aplicado · ${billingPeriod === "annual" ? "Anual" : "Mensal"}`
+              : billingPeriod === "annual" ? "Pagamento anual à vista" : "Pagamento mensal único",
+          });
         } else {
-          throw new Error("URL de checkout não retornada");
+          throw new Error("Pedido não retornado");
         }
       }
     } catch (err: any) {
@@ -370,8 +388,17 @@ export default function PackagesPage() {
         },
       });
       if (error) throw error;
-      if (data?.url) navigate(data.url);
-      else throw new Error("URL de checkout não retornada");
+      if (data?.order_id) {
+        setCheckoutModal({
+          open: true,
+          orderId: String(data.order_id),
+          amount: Number(data.amount ?? (founderBilling === "monthly" ? Number(activeFounderLot.monthly_price) : Number(activeFounderLot.price))),
+          planName: `Fundador ${founderCategory === "corretor" ? "Corretor" : founderCategory === "empresa" ? "Empresa" : "Construtora"}`,
+          description: founderBilling === "monthly" ? "Mensalidade Fundador" : "Pagamento Fundador (12 meses)",
+        });
+      } else {
+        throw new Error("Pedido não retornado");
+      }
     } catch (err: any) {
       toast({ title: "Erro ao processar", description: err.message || "Tente novamente.", variant: "destructive" });
     }
@@ -1004,6 +1031,15 @@ export default function PackagesPage() {
           </div>
         </div>
       </div>
+      <PlanCheckoutModal
+        open={checkoutModal.open}
+        orderId={checkoutModal.orderId}
+        amount={checkoutModal.amount}
+        planName={checkoutModal.planName}
+        description={checkoutModal.description}
+        onClose={() => setCheckoutModal((s) => ({ ...s, open: false }))}
+        onPaid={() => { refetch(); }}
+      />
     </div>
   );
 }
