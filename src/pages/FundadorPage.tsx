@@ -93,7 +93,16 @@ export default function FundadorPage() {
     construtora: "annual",
   });
 
-  const theme = getMarketplaceTheme("luxury");
+  const [themeId, setThemeId] = useState(() => localStorage.getItem("marketplace_theme") || "azul");
+  useEffect(() => {
+    supabase.from("platform_settings").select("value").eq("key", "homepage_theme").maybeSingle().then(({ data }) => {
+      if (data?.value) {
+        setThemeId(data.value);
+        localStorage.setItem("marketplace_theme", data.value);
+      }
+    });
+  }, []);
+  const theme = getMarketplaceTheme(themeId);
   const themeVars = getMarketplaceThemeCssVars(theme);
 
   const isImobiliaria = profile?.seller_category === "imobiliaria";
