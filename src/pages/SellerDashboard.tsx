@@ -1456,6 +1456,14 @@ export default function SellerDashboard() {
       {user?.id && profile?.id && (
         <WelcomePushPopup sellerId={profile.id} userId={user.id} userName={profile.full_name || profile.company_name} />
       )}
+      {user?.id && (
+        <PlanLimitWarningPopup
+          userId={user.id}
+          userName={profile?.full_name || profile?.company_name}
+          planName={pkgConfig?.name}
+          threshold={80}
+        />
+      )}
       <AiHelpChat themeVars={dashThemeVars} />
     </div>
   );
