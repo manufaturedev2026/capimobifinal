@@ -131,8 +131,16 @@ async function matchProperty(supabase: any, sellerId: string, query: string, api
 }
 
 async function parseDateTime(dateText: string, timeText: string, apiKey: string): Promise<{ date: string; time: string }> {
-  const today = new Date();
-  const todayStr = today.toISOString().slice(0, 10);
+  // Usa fuso de São Paulo (America/Sao_Paulo) para evitar bug de UTC à noite
+  const fmt = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Sao_Paulo",
+    year: "numeric", month: "2-digit", day: "2-digit",
+    weekday: "long",
+  });
+  const parts = fmt.formatToParts(new Date());
+  const get = (t: string) => parts.find((p) => p.type === t)?.value || "";
+  const todayStr = `${get("year")}-${get("month")}-${get("day")}`;
+  const weekday = get("weekday");
   try {
     const resp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -140,7 +148,7 @@ async function parseDateTime(dateText: string, timeText: string, apiKey: string)
       body: JSON.stringify({
         model: "google/gemini-2.5-flash-lite",
         messages: [
-          { role: "system", content: `Hoje: ${todayStr}. Responda APENAS JSON {"date":"YYYY-MM-DD","time":"HH:MM"}. Manhã=09:00, tarde=14:00, noite=18:00. Fallback: amanhã 10:00.` },
+          { role: "system", content: `Hoje é ${todayStr} (${weekday}), fuso America/Sao_Paulo. "Amanhã" = ${todayStr} + 1 dia. Responda APENAS JSON {"date":"YYYY-MM-DD","time":"HH:MM"}. Manhã=09:00, tarde=14:00, noite=18:00. Fallback se incerto: amanhã 10:00.` },
           { role: "user", content: `Data: "${dateText}"\nHora: "${timeText}"` },
         ],
         max_tokens: 80,
@@ -153,8 +161,11 @@ async function parseDateTime(dateText: string, timeText: string, apiKey: string)
       if (m) { const p = JSON.parse(m[0]); if (p.date && p.time) return p; }
     }
   } catch (e) { console.error("Date parse error:", e); }
-  const t = new Date(today); t.setDate(t.getDate() + 1);
-  return { date: t.toISOString().slice(0, 10), time: "10:00" };
+  // Fallback: amanhã em SP
+  const [y, m, d] = todayStr.split("-").map(Number);
+  const tomorrow = new Date(Date.UTC(y, m - 1, d + 1));
+  const fb = `${tomorrow.getUTCFullYear()}-${String(tomorrow.getUTCMonth() + 1).padStart(2, "0")}-${String(tomorrow.getUTCDate()).padStart(2, "0")}`;
+  return { date: fb, time: "10:00" };
 }
 
 serve(async (req) => {
