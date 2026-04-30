@@ -29,15 +29,15 @@ export default function PlanLimitWarningPopup({
   const [metric, setMetric] = useState<{ label: string; used: number; limit: number; percent: number } | null>(null);
 
   useEffect(() => {
-    if (!usage || !userId) return;
-
-    // Modo de teste: ?previewLimitPopup=1 força exibição
+    // Modo de teste: ?previewLimitPopup=1 força exibição (não exige login/usage)
     const isPreview = typeof window !== "undefined" && new URLSearchParams(window.location.search).get("previewLimitPopup") === "1";
     if (isPreview) {
       setMetric({ label: "anúncios ativos", used: 8, limit: 10, percent: 80 });
       setOpen(true);
       return;
     }
+
+    if (!usage || !userId) return;
 
     const candidates = [
       {
