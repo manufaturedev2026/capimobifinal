@@ -1736,6 +1736,87 @@ export default function AdminPanel() {
       </Dialog>
 
       {/* Category Dialog */}
+      {/* AI Credits Dialog */}
+      <Dialog open={creditsDialogOpen} onOpenChange={setCreditsDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Brain size={18} className="text-purple-500" />
+              {creditsAction === "add" ? "Adicionar Créditos IA" : "Remover Créditos IA"}
+            </DialogTitle>
+          </DialogHeader>
+          {creditsSeller && (
+            <div className="space-y-4">
+              <div className="text-sm text-muted-foreground">
+                <span className="font-semibold text-foreground">{creditsSeller.company_name || creditsSeller.full_name}</span>
+                <br />
+                <span className="text-xs">{creditsSeller.email}</span>
+              </div>
+              <div className="rounded-lg border border-border bg-secondary/30 px-3 py-2 text-sm">
+                Saldo atual: <span className="font-bold text-foreground">{(creditsSeller.ai_balance ?? 0).toLocaleString("pt-BR")}</span> créditos
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-foreground mb-2 block">Quantidade</label>
+                <div className="grid grid-cols-4 gap-2 mb-2">
+                  {["50", "100", "500", "1000"].map((v) => (
+                    <button
+                      key={v}
+                      type="button"
+                      onClick={() => setCreditsAmount(v)}
+                      className={`px-2 py-2 rounded-lg text-xs font-semibold border transition-colors ${
+                        creditsAmount === v
+                          ? "bg-primary text-primary-foreground border-primary"
+                          : "bg-background text-foreground border-input hover:bg-secondary"
+                      }`}
+                    >
+                      {v}
+                    </button>
+                  ))}
+                </div>
+                <input
+                  type="number"
+                  min={1}
+                  value={creditsAmount}
+                  onChange={(e) => setCreditsAmount(e.target.value)}
+                  className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm text-foreground"
+                  placeholder="Quantidade personalizada"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-foreground mb-2 block">Motivo (opcional)</label>
+                <input
+                  type="text"
+                  value={creditsNotes}
+                  onChange={(e) => setCreditsNotes(e.target.value)}
+                  placeholder="Ex: Bônus de fidelidade"
+                  className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm text-foreground"
+                />
+              </div>
+              <div className="flex gap-2 pt-2">
+                <button
+                  onClick={() => setCreditsDialogOpen(false)}
+                  className="flex-1 px-3 py-2 rounded-lg border border-input bg-background text-sm font-semibold text-foreground hover:bg-secondary"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={confirmCreditsChange}
+                  disabled={creditsSaving}
+                  className={`flex-1 px-3 py-2 rounded-lg text-sm font-semibold disabled:opacity-60 ${
+                    creditsAction === "add"
+                      ? "bg-purple-500 text-white hover:bg-purple-600"
+                      : "bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  }`}
+                >
+                  {creditsSaving ? "Salvando..." : creditsAction === "add" ? "Adicionar" : "Remover"}
+                </button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Category Dialog */}
       <Dialog open={categoryDialogOpen} onOpenChange={setCategoryDialogOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
