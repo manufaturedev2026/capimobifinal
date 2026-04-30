@@ -335,7 +335,7 @@ export const PACKAGE_CONFIG = {
     benefits: [
       "Pagamento único — válido por 12 meses",
       "Equivalente ao plano Construtora Master",
-      "5.000 créditos IA por mês (50% do Construtora Master)",
+      "3.000 créditos IA por mês (50% do Construtora Master)",
       "Todos os benefícios do Construtora Master incluídos",
       "Selo Fundador Construtora exclusivo",
       "Lote limitado por preço promocional",
