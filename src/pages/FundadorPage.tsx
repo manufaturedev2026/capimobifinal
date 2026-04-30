@@ -19,7 +19,7 @@ import founderBadge from "@/assets/founder-badge.png";
 
 interface FounderLot {
   id: string;
-  category: "individual" | "enterprise" | "construtora";
+  category: "corretor" | "empresa" | "construtora";
   lot_number: number;
   price: number;
   monthly_price: number | null;
@@ -88,8 +88,8 @@ export default function FundadorPage() {
   const [loadingLots, setLoadingLots] = useState(true);
   const [purchasing, setPurchasing] = useState<string | null>(null);
   const [billingByCat, setBillingByCat] = useState<Record<string, "annual" | "monthly">>({
-    individual: "annual",
-    enterprise: "annual",
+    corretor: "annual",
+    empresa: "annual",
     construtora: "annual",
   });
 
@@ -119,16 +119,16 @@ export default function FundadorPage() {
     })();
   }, []);
 
-  const getActiveLot = (cat: "individual" | "enterprise" | "construtora") =>
+  const getActiveLot = (cat: "corretor" | "empresa" | "construtora") =>
     founderLots
       .filter((l) => l.category === cat && l.is_active && l.used_slots < l.total_slots)
       .sort((a, b) => a.lot_number - b.lot_number)[0];
 
-  const individualLot = getActiveLot("individual");
-  const enterpriseLot = getActiveLot("enterprise");
+  const individualLot = getActiveLot("corretor");
+  const enterpriseLot = getActiveLot("empresa");
   const construtoraLot = getActiveLot("construtora");
 
-  const getNextLots = (cat: "individual" | "enterprise" | "construtora") =>
+  const getNextLots = (cat: "corretor" | "empresa" | "construtora") =>
     founderLots
       .filter((l) => l.category === cat && (!getActiveLot(cat) || l.lot_number > getActiveLot(cat).lot_number))
       .sort((a, b) => a.lot_number - b.lot_number)
@@ -137,7 +137,7 @@ export default function FundadorPage() {
   const vipPlan = plans.find((p) => p.tier === "prime");
   const blackPlan = plans.find((p) => p.tier === "prime_empresa");
 
-  const handlePurchase = async (category: "individual" | "enterprise" | "construtora") => {
+  const handlePurchase = async (category: "corretor" | "empresa" | "construtora") => {
     if (!user || !profile) {
       toast({
         title: "Faça login para garantir sua vaga",
@@ -148,12 +148,12 @@ export default function FundadorPage() {
     }
 
     const lot =
-      category === "individual" ? individualLot :
-      category === "enterprise" ? enterpriseLot :
+      category === "corretor" ? individualLot :
+      category === "empresa" ? enterpriseLot :
       construtoraLot;
     const tier =
-      category === "individual" ? "fundador_corretor" :
-      category === "enterprise" ? "fundador_empresa" :
+      category === "corretor" ? "fundador_corretor" :
+      category === "empresa" ? "fundador_empresa" :
       "fundador_construtora";
 
     if (!lot) {
@@ -204,7 +204,7 @@ export default function FundadorPage() {
   }
 
   const renderLotCard = (
-    category: "individual" | "enterprise" | "construtora",
+    category: "corretor" | "empresa" | "construtora",
     lot: FounderLot | undefined,
     label: string,
     fallbackPlan: string,
@@ -213,15 +213,15 @@ export default function FundadorPage() {
   ) => {
     const Icon = icon;
     const tier =
-      category === "individual" ? "fundador_corretor" :
-      category === "enterprise" ? "fundador_empresa" :
+      category === "corretor" ? "fundador_corretor" :
+      category === "empresa" ? "fundador_empresa" :
       "fundador_construtora";
     const billing = billingByCat[category] || "annual";
     const hasMonthly = !!(lot?.monthly_price && Number(lot.monthly_price) > 0);
     const equivalentPlan = lot?.inherited_tier
       ? (TIER_LABEL[lot.inherited_tier] || fallbackPlan)
       : fallbackPlan;
-    const credits = lot?.ia_credits ?? (category === "individual" ? 1000 : 3500);
+    const credits = lot?.ia_credits ?? (category === "corretor" ? 1000 : 3500);
     const inheritedPlan = lot?.inherited_tier
       ? plans.find((p) => p.tier === lot.inherited_tier)
       : null;
@@ -235,7 +235,7 @@ export default function FundadorPage() {
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        className={`relative bg-black/40 backdrop-blur-xl border rounded-3xl overflow-hidden flex flex-col ${
+        className={`relative bg-black/40 backdrop-blur-xl border rounded-3xl flex flex-col ${
           highlight ? "lg:scale-105 lg:-translate-y-2 z-10" : ""
         }`}
         style={{
@@ -247,7 +247,7 @@ export default function FundadorPage() {
       >
         {highlight && (
           <div
-            className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 px-4 py-1.5 rounded-full text-white text-[11px] font-extrabold uppercase tracking-wider z-20 shadow-lg whitespace-nowrap"
+            className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 px-4 py-1.5 rounded-full text-white text-[11px] font-extrabold uppercase tracking-wider z-30 shadow-lg whitespace-nowrap pointer-events-none"
             style={{ background: `linear-gradient(to right, ${theme.primary}, ${theme.promoAccent || theme.primary})` }}
           >
             ⭐ Mais escolhido
@@ -549,8 +549,8 @@ export default function FundadorPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 lg:items-stretch">
-            {renderLotCard("individual", individualLot, "Corretor Fundador", "Plano VIP", Award)}
-            {renderLotCard("enterprise", enterpriseLot, "Imobiliária Fundadora", "Plano Black Empresa", Diamond, true)}
+          {renderLotCard("corretor", individualLot, "Corretor Fundador", "Plano VIP", Award)}
+          {renderLotCard("empresa", enterpriseLot, "Imobiliária Fundadora", "Plano Black Empresa", Diamond, true)}
             {renderLotCard("construtora", construtoraLot, "Construtora Fundadora", "Plano Construtora Pro", Building2)}
           </div>
         </div>
@@ -746,7 +746,7 @@ export default function FundadorPage() {
           </p>
           <Button
             size="lg"
-            onClick={() => handlePurchase(isImobiliaria ? "enterprise" : "individual")}
+            onClick={() => handlePurchase(isImobiliaria ? "empresa" : "corretor")}
             disabled={!!purchasing}
             className="text-white font-bold h-16 px-10 text-lg shadow-xl"
             style={{ background: `linear-gradient(to right, ${theme.primary}, ${theme.promoAccent || theme.primary})`, boxShadow: `0 20px 50px ${theme.primary}50` }}
