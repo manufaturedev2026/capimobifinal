@@ -163,6 +163,105 @@ async function parseDateTime(dateText: string, timeText: string, apiKey: string)
   const get = (t: string) => parts.find((p) => p.type === t)?.value || "";
   const todayStr = `${get("year")}-${get("month")}-${get("day")}`;
   const weekday = get("weekday");
+
+  // ===== Parser determinístico (prioridade máxima) =====
+  const norm = (s: string) => (s || "")
+    .toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .trim();
+  const dTxt = norm(dateText);
+  const tTxt = norm(timeText);
+  const combined = `${dTxt} ${tTxt}`;
+
+  // --- Hora ---
+  let parsedTime: string | null = null;
+  // Procura em AMBOS os campos (usuário pode ter dito "as 16 e 30" no campo de hora)
+  const timeSources = [tTxt, dTxt];
+  for (const src of timeSources) {
+    if (parsedTime) break;
+    // formatos: 16:30, 16h30, 16h, 16 h 30, 16 e 30, "as 16 e 30", "as 16:30"
+    let m = src.match(/(\d{1,2})\s*[:hH]\s*(\d{2})/);
+    if (m) {
+      const h = parseInt(m[1], 10), mn = parseInt(m[2], 10);
+      if (h >= 0 && h < 24 && mn >= 0 && mn < 60) parsedTime = `${String(h).padStart(2,"0")}:${String(mn).padStart(2,"0")}`;
+    }
+    if (!parsedTime) {
+      m = src.match(/(\d{1,2})\s*h(?!\d)/);
+      if (m) {
+        const h = parseInt(m[1], 10);
+        if (h >= 0 && h < 24) parsedTime = `${String(h).padStart(2,"0")}:00`;
+      }
+    }
+    if (!parsedTime) {
+      // "16 e 30", "as 16 e 30"
+      m = src.match(/(\d{1,2})\s+e\s+(\d{1,2})/);
+      if (m) {
+        const h = parseInt(m[1], 10), mn = parseInt(m[2], 10);
+        if (h >= 0 && h < 24 && mn >= 0 && mn < 60) parsedTime = `${String(h).padStart(2,"0")}:${String(mn).padStart(2,"0")}`;
+      }
+    }
+    if (!parsedTime) {
+      // "as 16", "às 9"
+      m = src.match(/(?:^|\s)(?:as|às|a)\s+(\d{1,2})(?!\d)/);
+      if (m) {
+        const h = parseInt(m[1], 10);
+        if (h >= 0 && h < 24) parsedTime = `${String(h).padStart(2,"0")}:00`;
+      }
+    }
+  }
+  if (!parsedTime) {
+    if (/manh[ãa]/.test(combined)) parsedTime = "09:00";
+    else if (/tarde/.test(combined)) parsedTime = "14:00";
+    else if (/noite/.test(combined)) parsedTime = "18:00";
+  }
+
+  // --- Data ---
+  const [yy, mm, dd] = todayStr.split("-").map(Number);
+  const todayDate = new Date(Date.UTC(yy, mm - 1, dd));
+  const fmtDate = (d: Date) => `${d.getUTCFullYear()}-${String(d.getUTCMonth()+1).padStart(2,"0")}-${String(d.getUTCDate()).padStart(2,"0")}`;
+  let parsedDate: string | null = null;
+
+  // hoje / amanhã / depois de amanhã
+  if (/depois de amanha/.test(dTxt)) {
+    const d = new Date(todayDate); d.setUTCDate(d.getUTCDate() + 2); parsedDate = fmtDate(d);
+  } else if (/amanha/.test(dTxt)) {
+    const d = new Date(todayDate); d.setUTCDate(d.getUTCDate() + 1); parsedDate = fmtDate(d);
+  } else if (/\bhoje\b/.test(dTxt)) {
+    parsedDate = todayStr;
+  }
+
+  // dd/mm ou dd/mm/yyyy
+  if (!parsedDate) {
+    const m = dTxt.match(/(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))?/);
+    if (m) {
+      const d = parseInt(m[1], 10), mo = parseInt(m[2], 10);
+      let y = m[3] ? parseInt(m[3], 10) : yy;
+      if (y < 100) y += 2000;
+      if (d >= 1 && d <= 31 && mo >= 1 && mo <= 12) parsedDate = `${y}-${String(mo).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+    }
+  }
+
+  // dia da semana
+  if (!parsedDate) {
+    const dows: Record<string, number> = {
+      domingo: 0, segunda: 1, terca: 2, quarta: 3, quinta: 4, sexta: 5, sabado: 6,
+    };
+    for (const [name, target] of Object.entries(dows)) {
+      if (new RegExp(`\\b${name}`).test(dTxt)) {
+        const todayDow = todayDate.getUTCDay();
+        let diff = target - todayDow;
+        if (diff <= 0) diff += 7;
+        const d = new Date(todayDate); d.setUTCDate(d.getUTCDate() + diff); parsedDate = fmtDate(d);
+        break;
+      }
+    }
+  }
+
+  if (parsedDate && parsedTime) {
+    return { date: parsedDate, time: parsedTime };
+  }
+
+  // ===== Fallback: LLM =====
   try {
     const resp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -180,14 +279,21 @@ async function parseDateTime(dateText: string, timeText: string, apiKey: string)
       const data = await resp.json();
       const txt = data.choices?.[0]?.message?.content || "";
       const m = txt.match(/\{[\s\S]*\}/);
-      if (m) { const p = JSON.parse(m[0]); if (p.date && p.time) return p; }
+      if (m) {
+        const p = JSON.parse(m[0]);
+        if (p.date && p.time) {
+          return {
+            date: parsedDate || p.date,
+            time: parsedTime || p.time,
+          };
+        }
+      }
     }
   } catch (e) { console.error("Date parse error:", e); }
-  // Fallback: amanhã em SP
-  const [y, m, d] = todayStr.split("-").map(Number);
-  const tomorrow = new Date(Date.UTC(y, m - 1, d + 1));
-  const fb = `${tomorrow.getUTCFullYear()}-${String(tomorrow.getUTCMonth() + 1).padStart(2, "0")}-${String(tomorrow.getUTCDate()).padStart(2, "0")}`;
-  return { date: fb, time: "10:00" };
+
+  // Fallback final: usa o que conseguiu, completa com amanhã / 10:00
+  const tomorrow = new Date(todayDate); tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
+  return { date: parsedDate || fmtDate(tomorrow), time: parsedTime || "10:00" };
 }
 
 serve(async (req) => {
