@@ -114,6 +114,25 @@ export default function AgendaPage() {
     return Array.from(set).map((d) => new Date(d + "T00:00:00"));
   }, [visits]);
 
+  const upcoming = useMemo(() => {
+    const now = new Date();
+    const todayStr = todayISO();
+    const nowTime = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+    return [...visits]
+      .filter((v) => v.status !== "fechada" && v.status !== "cancelada")
+      .filter((v) => v.visit_date > todayStr || (v.visit_date === todayStr && (v.visit_time || "23:59") >= nowTime))
+      .sort((a, b) => (a.visit_date + (a.visit_time || "")).localeCompare(b.visit_date + (b.visit_time || "")))
+      .slice(0, 5);
+  }, [visits]);
+
+  const formatRelative = (iso: string) => {
+    const t = todayISO();
+    if (iso === t) return "Hoje";
+    const tm = new Date(); tm.setDate(tm.getDate() + 1);
+    if (iso === tm.toISOString().slice(0, 10)) return "Amanhã";
+    return new Date(iso + "T00:00:00").toLocaleDateString("pt-BR", { weekday: "short", day: "2-digit", month: "2-digit" });
+  };
+
   const openWhatsApp = (phone?: string | null, name?: string) => {
     if (!phone) { toast({ title: "Cliente sem telefone", variant: "destructive" }); return; }
     const clean = phone.replace(/\D/g, "");
@@ -229,6 +248,54 @@ export default function AgendaPage() {
           <StatCard icon={<Flame className="w-5 h-5" />} label="Leads Quentes" value={stats.quentes} tone="primary-soft" />
           <StatCard icon={<HomeIcon className="w-5 h-5" />} label="Visitados" value={stats.visitados} tone="accent-soft" />
           <StatCard icon={<DollarSign className="w-5 h-5" />} label="Fechamentos" value={stats.fechamentos} tone="gradient" />
+        </div>
+
+        {/* Próximas visitas — atalho rápido */}
+        <div className="bg-card border border-border rounded-xl p-3 sm:p-4 shadow-sm">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-semibold text-sm sm:text-base text-foreground flex items-center gap-2">
+              <Clock className="w-4 h-4 text-primary" />
+              Próximas Visitas
+            </h3>
+            {upcoming.length > 0 && (
+              <span className="text-xs text-muted-foreground">{upcoming.length} agendada{upcoming.length !== 1 ? "s" : ""}</span>
+            )}
+          </div>
+          {upcoming.length === 0 ? (
+            <p className="text-sm text-muted-foreground text-center py-4">Nenhuma visita agendada para os próximos dias.</p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-2">
+              {upcoming.map((v) => {
+                const meta = STATUS_META[v.status];
+                return (
+                  <button
+                    key={v.id}
+                    onClick={() => { setEditing(v); setOpenForm(true); }}
+                    className="text-left bg-background border border-border rounded-lg p-2.5 hover:border-primary hover:shadow-md transition-all group"
+                  >
+                    <div className="flex items-center justify-between gap-2 mb-1.5">
+                      <span className="text-xs font-bold text-primary uppercase tracking-wide">
+                        {formatRelative(v.visit_date)}
+                      </span>
+                      <span className="text-xs font-mono font-semibold text-foreground bg-muted px-1.5 py-0.5 rounded">
+                        {v.visit_time?.slice(0, 5)}
+                      </span>
+                    </div>
+                    <p className="text-sm font-semibold text-foreground truncate group-hover:text-primary">{v.client_name}</p>
+                    {(v.property_type || v.address) && (
+                      <p className="text-xs text-muted-foreground truncate">
+                        {v.property_type}{v.property_type && v.address ? " • " : ""}{v.address}
+                      </p>
+                    )}
+                    <span className={`mt-1.5 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-medium ${meta.bg} ${meta.color}`}>
+                      <span className={`w-1 h-1 rounded-full ${meta.dot}`} />
+                      {meta.label}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {/* Filters */}
