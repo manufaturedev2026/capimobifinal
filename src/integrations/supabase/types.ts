@@ -932,6 +932,7 @@ export type Database = {
           category: string
           created_at: string
           ia_credits: number
+          ia_credits_monthly: number
           id: string
           inherited_tier: string
           is_active: boolean
@@ -946,6 +947,7 @@ export type Database = {
           category: string
           created_at?: string
           ia_credits?: number
+          ia_credits_monthly?: number
           id?: string
           inherited_tier?: string
           is_active?: boolean
@@ -960,6 +962,7 @@ export type Database = {
           category?: string
           created_at?: string
           ia_credits?: number
+          ia_credits_monthly?: number
           id?: string
           inherited_tier?: string
           is_active?: boolean
