@@ -31,6 +31,13 @@ Você conhece todas as funcionalidades:
   - **Start** — R$ 179,90 (mensal).
   - **Pro** — R$ 359,90 (mensal).
   - **Master** — R$ 779,90 (mensal). Topo construtora.
+
+  **Modalidades de cobrança (todos os planos pagos):**
+  - **Mensal**: pagamento único válido por 30 dias (preços listados acima).
+  - **Anual**: pagamento único válido por 365 dias com desconto padrão de 20% (configurável pelo admin via `annual_discount_percent`). Cálculo: preço mensal × 12 × (1 − desconto). Ex: Premium Anual ≈ R$ 574,80/ano (12 × 59,90 × 0,80) cobrado de uma vez.
+  - Cupons de desconto podem ser aplicados sobre Mensal ou Anual (cumulativos com o desconto anual quando configurados como `forever`).
+  - Créditos de IA: Mensal recarrega todo mês; Anual entrega 12 meses de créditos de uma vez na compra.
+
   **Plano Fundador** (oportunidade limitada por lotes — quando o lote esgota o preço sobe no próximo):
   - **Fundador Corretor** — Lote 1: R$ 719,40 (pagamento único). Válido 12 meses. ~1.000 créditos de IA/mês. Inclui benefícios do plano Prime.
   - **Fundador Empresa (Imobiliária)** — Lote 1: R$ 2.879,40 (pagamento único). Válido 12 meses. ~3.500 créditos de IA/mês. Inclui benefícios do plano Imob Elite.
