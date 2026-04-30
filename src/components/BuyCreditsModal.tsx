@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 
 /**
  * Pacotes pré-definidos.
@@ -41,6 +42,7 @@ interface Props {
 
 export default function BuyCreditsModal({ open, onClose, themeVars, userId, sellerId, onPurchased }: Props) {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [selectedId, setSelectedId] = useState<string>("p40");
   const [customValue, setCustomValue] = useState<string>("");
   const [processing, setProcessing] = useState(false);
@@ -66,24 +68,13 @@ export default function BuyCreditsModal({ open, onClose, themeVars, userId, sell
 
     setProcessing(true);
     try {
-      const { error } = await (supabase as any).rpc("add_ai_credits", {
-        p_user_id: userId,
-        p_amount: pkg.credits,
-        p_transaction_type: "purchase",
-        p_tool_key: "credit_purchase",
-        p_seller_id: sellerId || null,
-        p_external_reference: `test-${Date.now()}`,
-        p_notes: `Compra de teste — R$ ${pkg.price.toFixed(2).replace(".", ",")}`,
-        p_metadata: { test_mode: true, price_brl: pkg.price },
+      const { data, error } = await supabase.functions.invoke("appmax-create-credits-checkout", {
+        body: { amount: pkg.price, credits: pkg.credits },
       });
       if (error) throw error;
-
-      toast({
-        title: "✨ Créditos adicionados (modo teste)",
-        description: `+${pkg.credits} créditos creditados na sua conta. Valor simulado: R$ ${pkg.price.toFixed(2).replace(".", ",")}.`,
-      });
-      onPurchased?.();
+      if (!data?.url) throw new Error("Checkout não retornou URL");
       onClose();
+      navigate(data.url);
     } catch (e: any) {
       toast({ title: "Erro ao processar", description: e?.message || "Tente novamente.", variant: "destructive" });
     } finally {
@@ -199,7 +190,7 @@ export default function BuyCreditsModal({ open, onClose, themeVars, userId, sell
         {/* Footer */}
         <div className="sticky bottom-0 mt-4 px-6 py-4 border-t border-border bg-background/95 backdrop-blur flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <p className="text-[11px] text-muted-foreground flex items-center gap-1.5">
-            <Sparkles className="h-3.5 w-3.5 text-primary" /> Modo teste ativo — créditos adicionados sem cobrança real.
+            <Sparkles className="h-3.5 w-3.5 text-primary" /> Pagamento via PIX. Créditos liberados após confirmação.
           </p>
           <div className="flex gap-2">
             <Button variant="outline" onClick={onClose} disabled={processing}>
@@ -207,7 +198,7 @@ export default function BuyCreditsModal({ open, onClose, themeVars, userId, sell
             </Button>
             <Button onClick={handleConfirm} disabled={!canConfirm || processing} className="bg-gradient-to-r from-primary to-accent text-primary-foreground">
               {processing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Coins className="h-4 w-4" />}
-              {processing ? "Processando..." : "Comprar agora"}
+              {processing ? "Processando..." : "Pagar com PIX"}
             </Button>
           </div>
         </div>
