@@ -33,6 +33,9 @@ export default function AppmaxCheckoutPage() {
   const [confirming, setConfirming] = useState(false);
   const pollingRef = useRef<number | null>(null);
 
+  const isCreditsPurchase = payment?.metadata?.kind === "credits";
+  const successRedirect = isCreditsPurchase ? "/painel" : "/pacotes";
+
   // Cartão
   const [document, setDocument] = useState("");
   const [cardNumber, setCardNumber] = useState("");
@@ -59,7 +62,7 @@ export default function AppmaxCheckoutPage() {
       if (p.pix_qr_code) setPixData({ qr: p.pix_qr_code, emv: p.pix_emv || p.pix_qr_code });
       if (p.status === "approved") {
         toast({ title: "✅ Pagamento já aprovado!" });
-        navigate("/pacotes");
+        navigate(p.metadata?.kind === "credits" ? "/painel" : "/pacotes");
       }
       setLoading(false);
     })();
@@ -75,8 +78,13 @@ export default function AppmaxCheckoutPage() {
         });
         if (data?.ok && !data.already_processed) {
           if (pollingRef.current) clearInterval(pollingRef.current);
-          toast({ title: "🎉 Pagamento aprovado!", description: "Seu plano foi ativado." });
-          setTimeout(() => navigate("/pacotes"), 1500);
+          toast({
+            title: "🎉 Pagamento aprovado!",
+            description: data.kind === "credits"
+              ? `${data.credits} créditos adicionados na sua conta.`
+              : "Seu plano foi ativado.",
+          });
+          setTimeout(() => navigate(successRedirect), 1500);
         }
       } catch {
         /* silencioso */
@@ -85,7 +93,7 @@ export default function AppmaxCheckoutPage() {
     return () => {
       if (pollingRef.current) clearInterval(pollingRef.current);
     };
-  }, [pixData, orderId, navigate, toast]);
+  }, [pixData, orderId, navigate, toast, successRedirect]);
 
   const handleGeneratePix = async () => {
     if (!orderId) return;
@@ -137,7 +145,7 @@ export default function AppmaxCheckoutPage() {
       const conf = await supabase.functions.invoke("appmax-confirm", { body: { order_id: orderId } });
       if (conf.data?.ok) {
         toast({ title: "🎉 Pagamento aprovado!", description: "Seu plano foi ativado." });
-        setTimeout(() => navigate("/pacotes"), 1500);
+        setTimeout(() => navigate(successRedirect), 1500);
       } else {
         toast({ title: "Pagamento em análise", description: "Aguarde a confirmação por e-mail." });
       }
@@ -169,9 +177,13 @@ export default function AppmaxCheckoutPage() {
     <div className="min-h-screen bg-background py-12 px-4">
       <div className="max-w-2xl mx-auto">
         <Card className="p-8">
-          <h1 className="text-3xl font-bold mb-2">Finalizar Pagamento</h1>
+          <h1 className="text-3xl font-bold mb-2">
+            {isCreditsPurchase ? "Comprar Créditos IA" : "Finalizar Pagamento"}
+          </h1>
           <p className="text-muted-foreground mb-6">
-            {payment.metadata?.coupon_description || "Pagamento único, sem renovação automática"}
+            {isCreditsPurchase
+              ? `${payment.metadata?.credits} créditos · pagamento via PIX`
+              : (payment.metadata?.coupon_description || "Pagamento único, sem renovação automática")}
           </p>
 
           <div className="bg-muted/50 rounded-lg p-4 mb-6 flex justify-between items-center">
@@ -187,10 +199,12 @@ export default function AppmaxCheckoutPage() {
           </div>
 
           <Tabs value={method} onValueChange={(v) => setMethod(v as any)}>
-            <TabsList className="grid grid-cols-2 w-full">
-              <TabsTrigger value="pix"><QrCode className="w-4 h-4 mr-2" />PIX</TabsTrigger>
-              <TabsTrigger value="credit-card"><CreditCard className="w-4 h-4 mr-2" />Cartão</TabsTrigger>
-            </TabsList>
+            {!isCreditsPurchase && (
+              <TabsList className="grid grid-cols-2 w-full">
+                <TabsTrigger value="pix"><QrCode className="w-4 h-4 mr-2" />PIX</TabsTrigger>
+                <TabsTrigger value="credit-card"><CreditCard className="w-4 h-4 mr-2" />Cartão</TabsTrigger>
+              </TabsList>
+            )}
 
             <TabsContent value="pix" className="space-y-4 mt-6">
               {!pixData ? (
@@ -300,7 +314,7 @@ export default function AppmaxCheckoutPage() {
             </TabsContent>
           </Tabs>
 
-          <Button variant="ghost" onClick={() => navigate("/pacotes")} className="w-full mt-6">
+          <Button variant="ghost" onClick={() => navigate(successRedirect)} className="w-full mt-6">
             Cancelar e voltar
           </Button>
         </Card>
