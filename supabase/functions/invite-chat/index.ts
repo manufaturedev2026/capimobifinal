@@ -77,10 +77,10 @@ CONSTRUTORA (lançamentos + grandes volumes):
 - Construtora Master (R$779,90/mês): Até 10000 imóveis, 10000 créditos IA
 
 🚀 PLANO FUNDADOR (oportunidade limitada):
-- Pagamento ÚNICO de R$97 com validade de 12 meses
-- Disponível para Corretor, Imobiliária e Construtora
-- Inclui benefícios premium do plano de referência da categoria + créditos IA exclusivos
-- Vagas limitadas por lote — quando esgotam, o preço sobe no próximo lote
+- Pagamento ÚNICO com validade de 12 meses (NÃO é vitalício)
+- Preços por lote (lote 1 atual): Corretor R$ 719,40 | Imobiliária R$ 2.879,40 | Construtora R$ 4.679,40
+- Inclui benefícios premium do plano topo da categoria (Prime / Imob Elite / Construtora Master) + créditos IA exclusivos
+- Vagas limitadas por lote — quando esgotam, o preço sobe no próximo lote (consulte /fundador para valores atuais)
 
 IMPORTANTE: Todos os planos pagos são pagamento ÚNICO mensal ou anual (sem renovação automática). Existem cupons de desconto e opção anual com desconto.`;
 

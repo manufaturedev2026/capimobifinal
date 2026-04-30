@@ -31,11 +31,11 @@ Você conhece todas as funcionalidades:
   - **Start** — R$ 179,90 (mensal).
   - **Pro** — R$ 359,90 (mensal).
   - **Master** — R$ 779,90 (mensal). Topo construtora.
-  **Plano Fundador** (oportunidade limitada — vagas por lote):
-  - **Fundador Corretor** — R$ 97 pagamento único, válido 12 meses, 600 créditos de IA/mês.
-  - **Fundador Construtora** — R$ 97 pagamento único, válido 12 meses, 10.000 créditos de IA/mês.
-  - **Fundador Empresa (Imobiliária)** — R$ 97 pagamento único, válido 12 meses, 12.000 créditos de IA/mês.
-  Todos os Fundador custam R$ 97 (NÃO é vitalício, válido 12 meses). Quando o lote esgota, o preço sobe no próximo lote.
+  **Plano Fundador** (oportunidade limitada por lotes — quando o lote esgota o preço sobe no próximo):
+  - **Fundador Corretor** — Lote 1: R$ 719,40 (pagamento único). Válido 12 meses. ~1.000 créditos de IA/mês. Inclui benefícios do plano Prime.
+  - **Fundador Empresa (Imobiliária)** — Lote 1: R$ 2.879,40 (pagamento único). Válido 12 meses. ~3.500 créditos de IA/mês. Inclui benefícios do plano Imob Elite.
+  - **Fundador Construtora** — Lote 1: R$ 4.679,40 (pagamento único). Válido 12 meses. ~60.000 créditos de IA/mês. Inclui benefícios do plano Construtora Master.
+  IMPORTANTE: Fundador é pagamento ÚNICO válido por 12 meses (NÃO é vitalício e NÃO custa R$ 97). Os preços e créditos são definidos por lote no admin e podem variar. Sempre confirme valores atuais na página /fundador.
   IMPORTANTE: Não existem mais "VIP", "Exclusive", "Black" nem taxas de ativação. Todos os planos são pagamento único (não renovam automaticamente). Há opção Mensal e Anual com cupons de desconto aplicáveis.
 - **Captação**: página de captação de imóveis, leads de proprietários
 - **Gestão de Aluguéis**: contratos, pagamentos, lembretes
