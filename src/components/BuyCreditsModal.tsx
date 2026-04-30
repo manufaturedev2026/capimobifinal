@@ -1,12 +1,13 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties } from "react";
-import { Coins, Sparkles, Check, X, Tag, Calculator, Loader2 } from "lucide-react";
+import { Coins, Sparkles, Check, X, Tag, Calculator, Loader2, QrCode, Copy, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
+import { QRCodeCanvas } from "qrcode.react";
 
 /**
  * Pacotes pré-definidos.
@@ -42,10 +43,20 @@ interface Props {
 
 export default function BuyCreditsModal({ open, onClose, themeVars, userId, sellerId, onPurchased }: Props) {
   const { toast } = useToast();
-  const navigate = useNavigate();
   const [selectedId, setSelectedId] = useState<string>("p40");
   const [customValue, setCustomValue] = useState<string>("");
   const [processing, setProcessing] = useState(false);
+
+  // Etapas: pacotes -> cpf -> pix
+  const [step, setStep] = useState<"packages" | "cpf" | "pix">("packages");
+  const [orderId, setOrderId] = useState<string | null>(null);
+  const [orderAmount, setOrderAmount] = useState<number>(0);
+  const [orderCredits, setOrderCredits] = useState<number>(0);
+  const [document, setDocument] = useState("");
+  const [pixData, setPixData] = useState<{ qr: string; emv: string } | null>(null);
+  const [generating, setGenerating] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const pollingRef = useRef<number | null>(null);
 
   const customNum = parseFloat(customValue.replace(",", ".")) || 0;
   const customCredits = useMemo(() => customCreditsFor(customNum), [customNum]);
@@ -72,9 +83,11 @@ export default function BuyCreditsModal({ open, onClose, themeVars, userId, sell
         body: { amount: pkg.price, credits: pkg.credits },
       });
       if (error) throw error;
-      if (!data?.url) throw new Error("Checkout não retornou URL");
-      onClose();
-      navigate(data.url);
+      if (!data?.order_id) throw new Error("Checkout não retornou pedido");
+      setOrderId(String(data.order_id));
+      setOrderAmount(Number(data.amount ?? pkg.price));
+      setOrderCredits(pkg.credits);
+      setStep("cpf");
     } catch (e: any) {
       toast({ title: "Erro ao processar", description: e?.message || "Tente novamente.", variant: "destructive" });
     } finally {
@@ -82,19 +95,118 @@ export default function BuyCreditsModal({ open, onClose, themeVars, userId, sell
     }
   };
 
+  const handleGeneratePix = async () => {
+    if (!orderId) return;
+    if (!document || document.replace(/\D/g, "").length < 11) {
+      toast({ title: "CPF obrigatório", description: "Informe um CPF válido.", variant: "destructive" });
+      return;
+    }
+    setGenerating(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("appmax-pay", {
+        body: { order_id: orderId, method: "pix", document },
+      });
+      if (error) throw error;
+      if (data?.pix_emv || data?.pix_qr_code) {
+        setPixData({ qr: data.pix_qr_code || data.pix_emv, emv: data.pix_emv || data.pix_qr_code });
+        setStep("pix");
+        toast({ title: "PIX gerado!", description: "Escaneie o QR Code ou copie o código." });
+      } else {
+        throw new Error("PIX não retornou QR Code");
+      }
+    } catch (err: any) {
+      toast({ title: "Erro ao gerar PIX", description: err.message, variant: "destructive" });
+    } finally {
+      setGenerating(false);
+    }
+  };
+
+  const copyPix = () => {
+    if (!pixData?.emv) return;
+    navigator.clipboard.writeText(pixData.emv);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+    toast({ title: "Código PIX copiado!" });
+  };
+
+  // Polling de confirmação
+  useEffect(() => {
+    if (step !== "pix" || !orderId) return;
+    pollingRef.current = window.setInterval(async () => {
+      try {
+        const { data } = await supabase.functions.invoke("appmax-confirm", {
+          body: { order_id: orderId },
+        });
+        if (data?.ok && !data.already_processed) {
+          if (pollingRef.current) clearInterval(pollingRef.current);
+          toast({
+            title: "🎉 Pagamento aprovado!",
+            description: `${data.credits || orderCredits} créditos adicionados na sua conta.`,
+          });
+          onPurchased?.();
+          setTimeout(() => {
+            resetState();
+            onClose();
+          }, 1500);
+        }
+      } catch {
+        /* silencioso */
+      }
+    }, 5000);
+    return () => {
+      if (pollingRef.current) clearInterval(pollingRef.current);
+    };
+  }, [step, orderId, orderCredits, onPurchased, onClose, toast]);
+
+  const resetState = () => {
+    setStep("packages");
+    setOrderId(null);
+    setOrderAmount(0);
+    setOrderCredits(0);
+    setDocument("");
+    setPixData(null);
+    setCopied(false);
+    if (pollingRef.current) {
+      clearInterval(pollingRef.current);
+      pollingRef.current = null;
+    }
+  };
+
+  const handleClose = () => {
+    resetState();
+    onClose();
+  };
+
   return (
-    <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
+    <Dialog open={open} onOpenChange={(o) => !o && handleClose()}>
       <DialogContent style={themeVars} className="max-w-3xl max-h-[90vh] overflow-y-auto p-0 bg-background text-foreground border-border">
         <DialogHeader className="px-6 pt-6 pb-2">
           <DialogTitle className="flex items-center gap-2 font-display text-2xl font-extrabold">
-            <Coins className="h-6 w-6 text-primary" /> Comprar Créditos IA
+            {step !== "packages" && (
+              <button
+                type="button"
+                onClick={() => (step === "pix" ? handleClose() : setStep("packages"))}
+                className="p-1 rounded-full hover:bg-muted transition"
+                aria-label="Voltar"
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </button>
+            )}
+            <Coins className="h-6 w-6 text-primary" />
+            {step === "packages" && "Comprar Créditos IA"}
+            {step === "cpf" && "Confirmar dados"}
+            {step === "pix" && "Pague com PIX"}
           </DialogTitle>
           <p className="text-sm text-muted-foreground">
-            Quanto mais créditos, maior o desconto. Use para gerar artes, textos, avaliações e atendimento automático.
+            {step === "packages" && "Quanto mais créditos, maior o desconto. Use para gerar artes, textos, avaliações e atendimento automático."}
+            {step === "cpf" && `Pedido #${orderId} · ${orderCredits} créditos por R$ ${orderAmount.toFixed(2).replace(".", ",")}`}
+            {step === "pix" && "Aguardando seu pagamento. Os créditos são liberados automaticamente."}
           </p>
         </DialogHeader>
 
-        {/* Pacotes */}
+        {step === "packages" && (
+          <>
+
         <div className="px-6 pt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {PACKAGES.map((pkg) => {
             const active = selectedId === pkg.id;
@@ -187,21 +299,107 @@ export default function BuyCreditsModal({ open, onClose, themeVars, userId, sell
           </button>
         </div>
 
-        {/* Footer */}
         <div className="sticky bottom-0 mt-4 px-6 py-4 border-t border-border bg-background/95 backdrop-blur flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <p className="text-[11px] text-muted-foreground flex items-center gap-1.5">
             <Sparkles className="h-3.5 w-3.5 text-primary" /> Pagamento via PIX. Créditos liberados após confirmação.
           </p>
           <div className="flex gap-2">
-            <Button variant="outline" onClick={onClose} disabled={processing}>
+            <Button variant="outline" onClick={handleClose} disabled={processing}>
               <X className="h-4 w-4" /> Cancelar
             </Button>
             <Button onClick={handleConfirm} disabled={!canConfirm || processing} className="bg-gradient-to-r from-primary to-accent text-primary-foreground">
               {processing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Coins className="h-4 w-4" />}
-              {processing ? "Processando..." : "Pagar com PIX"}
+              {processing ? "Processando..." : "Continuar"}
             </Button>
           </div>
         </div>
+          </>
+        )}
+
+        {step === "cpf" && (
+          <div className="px-6 py-6 space-y-4">
+            <div className="rounded-xl border border-border bg-muted/40 p-4 flex items-center justify-between">
+              <div>
+                <p className="text-xs text-muted-foreground">Você vai pagar</p>
+                <p className="font-display text-2xl font-extrabold text-primary">
+                  R$ {orderAmount.toFixed(2).replace(".", ",")}
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="text-xs text-muted-foreground">Você recebe</p>
+                <p className="font-display text-2xl font-extrabold text-foreground">
+                  {orderCredits} <span className="text-xs font-normal text-muted-foreground">créditos</span>
+                </p>
+              </div>
+            </div>
+
+            <div>
+              <Label>CPF do pagador</Label>
+              <Input
+                placeholder="000.000.000-00"
+                value={document}
+                onChange={(e) => setDocument(e.target.value)}
+                maxLength={14}
+                className="h-11"
+              />
+              <p className="text-[11px] text-muted-foreground mt-1">
+                Necessário para gerar o PIX conforme regras do Banco Central.
+              </p>
+            </div>
+
+            <Button
+              onClick={handleGeneratePix}
+              disabled={generating}
+              className="w-full h-12 bg-gradient-to-r from-primary to-accent text-primary-foreground font-bold"
+              size="lg"
+            >
+              {generating ? <Loader2 className="h-5 w-5 mr-2 animate-spin" /> : <QrCode className="h-5 w-5 mr-2" />}
+              {generating ? "Gerando PIX..." : "Gerar QR Code PIX"}
+            </Button>
+          </div>
+        )}
+
+        {step === "pix" && pixData && (
+          <div className="px-6 py-6 space-y-5">
+            <div className="rounded-xl border border-border bg-muted/40 p-4 flex items-center justify-between">
+              <div>
+                <p className="text-xs text-muted-foreground">Total</p>
+                <p className="font-display text-2xl font-extrabold text-primary">
+                  R$ {orderAmount.toFixed(2).replace(".", ",")}
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="text-xs text-muted-foreground">Créditos</p>
+                <p className="font-display text-2xl font-extrabold text-foreground">{orderCredits}</p>
+              </div>
+            </div>
+
+            <div className="flex justify-center">
+              <div className="bg-white p-4 rounded-2xl shadow-lg">
+                <QRCodeCanvas value={pixData.emv} size={240} level="M" />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-xs">Código PIX copia e cola</Label>
+              <div className="flex items-center gap-2">
+                <Input value={pixData.emv} readOnly className="text-xs font-mono" />
+                <Button onClick={copyPix} variant="outline" size="icon" className="shrink-0">
+                  {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                </Button>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground py-2">
+              <Loader2 className="h-4 w-4 animate-spin text-primary" />
+              Aguardando pagamento... os créditos serão liberados automaticamente.
+            </div>
+
+            <Button variant="outline" onClick={handleClose} className="w-full">
+              Fechar (o pagamento continua válido)
+            </Button>
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   );
