@@ -385,6 +385,18 @@ const AI_BOTS_BY_TIER: Record<string, { emoji: string; name: string }[]> = {
 };
 const getAiBots = (tier: string) => AI_BOTS_BY_TIER[tier] ?? AI_BOTS_BY_TIER.basico;
 
+// Extrai a quantidade de corretores anunciada nos benefits do plano (imob/const)
+const getBrokersFromBenefits = (benefits: string[]): string => {
+  if (!benefits?.length) return "—";
+  for (const b of benefits) {
+    const lower = b.toLowerCase();
+    if (lower.includes("ilimitad")) return "Ilimitado";
+    const m = b.match(/Até\s+([\d.]+)\s+corretor/i);
+    if (m) return `Até ${m[1]}`;
+  }
+  return "—";
+};
+
 function PlanBenefitsList({ benefits, primaryColor }: { benefits: string[]; primaryColor: string }) {
   const INITIAL = 12;
   const [expanded, setExpanded] = useState(false);
