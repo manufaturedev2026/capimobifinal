@@ -386,7 +386,8 @@ export default function SellerDashboard() {
     currentTier === "const_pro" ? 30 :
     currentTier === "const_start" ? 10 :
     isImobiliaria ? 1 : 0;
-  const lockedTabs: DashboardTab[] = isFreePlan ? ["domain"] : [];
+  // Todos os recursos do dashboard liberados em qualquer plano. Diferença = só limites numéricos.
+  const lockedTabs: DashboardTab[] = [];
 
   const tabNav = (id: DashboardTab, label: string, icon: any, options: { locked?: boolean; tourId?: string } = {}): SidebarNavItem => ({ type: "tab", id, label, icon, ...options });
   const linkNav = (href: string, label: string, icon: any, options: { className?: string; tourId?: string; badge?: string } = {}): SidebarNavItem => ({ type: "link", href, label, icon, ...options });
