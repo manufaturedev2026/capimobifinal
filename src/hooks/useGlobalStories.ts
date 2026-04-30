@@ -24,11 +24,10 @@ export function useGlobalStories(city?: string) {
 
   const fetchStories = useCallback(async () => {
     setLoading(true);
-    // Fetch auto stories from all sellers, active & not expired
+    // Fetch all active, non-expired stories from all sellers (manual + auto)
     const { data: rawStories } = await supabase
       .from("seller_stories")
       .select("*")
-      .eq("is_auto", true)
       .eq("is_active", true)
       .gt("expires_at", new Date().toISOString())
       .order("created_at", { ascending: false })
@@ -56,7 +55,7 @@ export function useGlobalStories(city?: string) {
     const sellerIds = [...new Set(rawStories.map((s) => s.seller_id))];
     const { data: profiles } = await supabase
       .from("profiles")
-      .select("id, full_name, company_name, logo_url")
+      .select("id, full_name, company_name, logo_url, city")
       .in("id", sellerIds);
 
     const profileMap: Record<string, any> = {};
@@ -82,10 +81,19 @@ export function useGlobalStories(city?: string) {
       };
     });
 
-    // Filter by city if provided
+    // Filter by city if provided.
+    // Stories with a linked item: must match the item's city.
+    // Stories without a linked item: fall back to the seller's city.
     if (city) {
       const normalizedCity = city.trim().toLowerCase();
-      result = result.filter((s) => s.itemCity?.toLowerCase() === normalizedCity);
+      const sellerCityMap: Record<string, string> = {};
+      (profiles || []).forEach((p: any) => {
+        if (p.city) sellerCityMap[p.id] = String(p.city).trim().toLowerCase();
+      });
+      result = result.filter((s) => {
+        if (s.itemCity) return s.itemCity.toLowerCase() === normalizedCity;
+        return sellerCityMap[s.seller_id] === normalizedCity;
+      });
     }
 
     setStories(result);
