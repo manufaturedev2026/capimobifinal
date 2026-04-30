@@ -9,6 +9,20 @@ const corsHeaders = {
 
 const APPMAX_BASE = "https://admin.appmax.com.br/api/v3";
 
+async function notifyAdmin(payload: Record<string, unknown>) {
+  try {
+    const url = `${Deno.env.get("SUPABASE_URL")}/functions/v1/notify-admin-purchase`;
+    await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
+      },
+      body: JSON.stringify(payload),
+    });
+  } catch (e) { console.error("notifyAdmin error:", e); }
+}
+
 /**
  * Confirma um pedido AppMax: consulta status e se aprovado, ativa o plano.
  * Pode ser chamado pelo frontend (polling do PIX ou após cartão) e pelo webhook.
@@ -42,6 +56,8 @@ async function activateSubscription(supabaseAdmin: any, payment: any) {
     await supabaseAdmin.from("appmax_payments" as any)
       .update({ status: "approved", activated_at: new Date().toISOString() })
       .eq("order_id", payment.order_id);
+
+    await notifyAdmin({ kind: "credits", credits, amount: payment.amount, user_id: payment.user_id });
 
     return { ok: true, kind: "credits", credits };
   }
@@ -120,6 +136,11 @@ async function activateSubscription(supabaseAdmin: any, payment: any) {
   await supabaseAdmin.from("appmax_payments" as any)
     .update({ status: "approved", activated_at: new Date().toISOString() })
     .eq("order_id", payment.order_id);
+
+  await notifyAdmin({
+    kind: "plan", tier, amount: payment.amount, user_id: payment.user_id,
+    billing_period: effectiveBillingPeriod,
+  });
 
   return { ok: true, tier, expires_at: expiresAt };
 }
