@@ -327,7 +327,7 @@ export default function AdminFoundersTab() {
                   <div>
                     <Label className="text-xs flex items-center gap-1.5">
                       <Sparkles size={12} className="text-primary" />
-                      Créditos IA — Anual (uma vez)
+                      Créditos IA — Anual (a cada renovação)
                     </Label>
                     <Input
                       type="number"
@@ -338,13 +338,13 @@ export default function AdminFoundersTab() {
                       }}
                     />
                     <p className="text-[10px] text-muted-foreground mt-1">
-                      Concedidos uma vez para quem escolhe pagamento anual.
+                      Entregues integralmente na compra e novamente a cada renovação anual (12 meses).
                     </p>
                   </div>
                   <div>
                     <Label className="text-xs flex items-center gap-1.5">
                       <Sparkles size={12} className="text-primary" />
-                      Créditos IA — Mensal (a cada mês)
+                      Créditos IA — Mensal (a cada renovação)
                     </Label>
                     <Input
                       type="number"
@@ -355,7 +355,7 @@ export default function AdminFoundersTab() {
                       }}
                     />
                     <p className="text-[10px] text-muted-foreground mt-1">
-                      Renovados todo mês para quem escolhe pagamento mensal.
+                      Entregues na compra e novamente a cada renovação mensal.
                     </p>
                   </div>
                 </div>
