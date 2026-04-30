@@ -43,26 +43,25 @@ function FooterContent({ theme }: { theme?: FooterSimpleProps["theme"] }) {
   const borderClass = theme ? "" : "border-border";
   const primaryClass = theme ? "" : "text-primary";
   const accentClass = theme ? "" : "text-accent";
-  const foregroundClass = theme ? "" : "text-foreground";
 
   const textStyle = theme ? { color: theme.text } : {};
   const mutedStyle = theme ? { color: theme.textMuted } : {};
   const borderStyle = theme ? { borderColor: theme.border } : {};
   const primaryStyle = theme ? { color: theme.primary } : {};
   const accentStyle = theme ? { color: theme.accent || theme.primary } : {};
-  const foregroundStyle = theme ? { color: theme.text } : {};
 
   return (
     <>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
         <div className="col-span-2 md:col-span-1">
-          <Link to="/" className="flex items-center gap-2.5 mb-3">
-            <img loading="lazy" decoding="async" src="/pwa-icon-512.png" alt={site_name} className="w-9 h-9 rounded-xl shadow-md object-contain" />
-            <span className="text-xl tracking-wide uppercase" style={{ fontFamily: "'Orbitron', sans-serif", fontWeight: 800 }}>
-              <span style={primaryStyle} className={primaryClass}>Cap</span>
-              <span style={foregroundStyle} className={foregroundClass}>i</span>
-              <span style={accentStyle} className={accentClass}>mobi</span>
-            </span>
+          <Link to="/" className={`font-display font-bold text-lg flex items-center gap-2 mb-3 ${textClass}`} style={textStyle}>
+            {site_logo_url ? (
+              <img loading="lazy" decoding="async" src={site_logo_url} alt={site_name} className="h-8 max-w-[140px] object-contain" />
+            ) : (
+              <span>
+                <span style={primaryStyle} className={primaryClass}>Cap</span><span style={textStyle} className={textClass}>i</span><span style={accentStyle} className={accentClass}>mobi</span>
+              </span>
+            )}
           </Link>
           <p className={`text-xs leading-relaxed max-w-xs ${mutedClass}`} style={mutedStyle}>
             {site_footer_text || "Crie seu próprio app de imóveis. Perfeito para corretores, imobiliárias e construtoras."}
