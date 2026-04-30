@@ -243,12 +243,12 @@ const IDEAL_FOR = [
   { label: "Quem quer parar de depender de portais", emoji: "🚀" },
 ];
 
-const STATS = [
-  { value: "500+", label: "Imóveis Cadastrados", icon: Home },
-  { value: "50+", label: "Corretores Ativos", icon: Users },
-  { value: "24/7", label: "Disponibilidade", icon: Shield },
-  { value: "100%", label: "Responsivo", icon: Smartphone },
-];
+const formatStat = (n: number) => {
+  if (n >= 1000) return `${(n / 1000).toFixed(n >= 10000 ? 0 : 1).replace(".", ",")}k+`;
+  if (n >= 100) return `${Math.floor(n / 100) * 100}+`;
+  if (n >= 10) return `${Math.floor(n / 10) * 10}+`;
+  return `${n}`;
+};
 
 // Estilo épico por tier (gradientes, glow e ícones) — aplicado dinamicamente sobre os planos do banco
 const TIER_STYLES: Record<string, { gradient: string; glow: string; ring: string; icon: any; badge?: string; ctaGradient?: string; subtitle: string }> = {
