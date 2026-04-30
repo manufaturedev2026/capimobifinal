@@ -833,6 +833,14 @@ export default function AdminPanel() {
                         className="flex items-center justify-center gap-1 px-3 py-2 sm:py-1.5 rounded-lg bg-amber-500/10 text-amber-600 text-xs font-semibold hover:bg-amber-500/20">
                         <Crown size={12} /> Plano
                       </button>
+                      <button onClick={() => openCreditsDialog(seller, "add")}
+                        className="flex items-center justify-center gap-1 px-3 py-2 sm:py-1.5 rounded-lg bg-purple-500/10 text-purple-600 text-xs font-semibold hover:bg-purple-500/20">
+                        <Brain size={12} /> + IA
+                      </button>
+                      <button onClick={() => openCreditsDialog(seller, "remove")}
+                        className="flex items-center justify-center gap-1 px-3 py-2 sm:py-1.5 rounded-lg bg-purple-500/10 text-purple-600 text-xs font-semibold hover:bg-purple-500/20">
+                        <Brain size={12} /> − IA
+                      </button>
                        {sub && (
                         <>
                           <button onClick={() => renewSubscription(sub.id)}
