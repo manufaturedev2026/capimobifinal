@@ -259,15 +259,24 @@ export default function AgendaPage() {
         {/* Two columns */}
         <div className="grid grid-cols-1 lg:grid-cols-[420px_1fr] gap-4 lg:gap-6">
           {/* Calendar */}
-          <div className="bg-card border border-border rounded-xl p-3 sm:p-4 shadow-sm h-fit">
-            <h3 className="font-semibold mb-3 flex items-center gap-2 text-sm sm:text-base"><CalendarIcon className="w-4 h-4 text-primary" /> Calendário</h3>
+          <div className="bg-card text-card-foreground border border-border rounded-xl p-3 sm:p-4 shadow-sm h-fit">
+            <h3 className="font-semibold mb-3 flex items-center gap-2 text-sm sm:text-base text-foreground"><CalendarIcon className="w-4 h-4 text-primary" /> Calendário</h3>
             <Calendar
               mode="single"
               selected={selectedDate}
               onSelect={(d) => { setSelectedDate(d); setQuick("todas"); }}
               modifiers={{ withVisit: datesWithVisits }}
               modifiersClassNames={{ withVisit: "bg-primary/15 text-primary font-bold" }}
-              className="p-0 pointer-events-auto mx-auto"
+              className="p-0 pointer-events-auto mx-auto text-foreground"
+              classNames={{
+                caption_label: "text-sm font-medium text-foreground",
+                head_cell: "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
+                day: "h-9 w-9 p-0 font-normal text-foreground hover:bg-accent hover:text-accent-foreground rounded-md aria-selected:opacity-100",
+                day_outside: "day-outside text-muted-foreground/60 opacity-50",
+                day_disabled: "text-muted-foreground/40 opacity-50",
+                day_selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
+                day_today: "bg-accent/40 text-foreground font-semibold",
+              }}
             />
             <div className="mt-4 grid grid-cols-2 sm:block gap-1.5 text-xs">
               <p className="font-semibold text-muted-foreground mb-1 sm:mb-2 col-span-2">Legenda</p>
@@ -283,7 +292,7 @@ export default function AgendaPage() {
           {/* Visit list */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <h3 className="font-semibold text-lg">
+              <h3 className="font-semibold text-lg text-foreground">
                 {filtered.length} visita{filtered.length !== 1 ? "s" : ""}
               </h3>
             </div>
