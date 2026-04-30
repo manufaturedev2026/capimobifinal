@@ -43,12 +43,14 @@ function FooterContent({ theme }: { theme?: FooterSimpleProps["theme"] }) {
   const borderClass = theme ? "" : "border-border";
   const primaryClass = theme ? "" : "text-primary";
   const accentClass = theme ? "" : "text-accent";
+  const foregroundClass = theme ? "" : "text-foreground";
 
   const textStyle = theme ? { color: theme.text } : {};
   const mutedStyle = theme ? { color: theme.textMuted } : {};
   const borderStyle = theme ? { borderColor: theme.border } : {};
   const primaryStyle = theme ? { color: theme.primary } : {};
   const accentStyle = theme ? { color: theme.accent || theme.primary } : {};
+  const foregroundStyle = theme ? { color: theme.text } : {};
 
   return (
     <>
@@ -60,9 +62,9 @@ function FooterContent({ theme }: { theme?: FooterSimpleProps["theme"] }) {
             ) : (
               <>
                 <img loading="lazy" decoding="async" src="/pwa-icon-512.png" alt={site_name} className="w-9 h-9 rounded-xl shadow-md object-contain" />
-                <span className="text-lg tracking-wide uppercase" style={{ fontFamily: "'Orbitron', sans-serif", fontWeight: 800 }}>
+                <span className="text-xl tracking-wide uppercase" style={{ fontFamily: "'Orbitron', sans-serif", fontWeight: 800 }}>
                   <span style={primaryStyle} className={primaryClass}>Cap</span>
-                  <span style={{ color: '#ffffff' }}>i</span>
+                  <span style={foregroundStyle} className={foregroundClass}>i</span>
                   <span style={accentStyle} className={accentClass}>mobi</span>
                 </span>
               </>
