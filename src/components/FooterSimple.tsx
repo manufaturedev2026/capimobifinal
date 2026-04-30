@@ -48,7 +48,8 @@ function FooterContent({ theme }: { theme?: FooterSimpleProps["theme"] }) {
   const mutedStyle = theme ? { color: theme.textMuted } : {};
   const borderStyle = theme ? { borderColor: theme.border } : {};
   const primaryStyle = theme ? { color: theme.primary } : {};
-  const accentStyle = theme ? { color: theme.accent || theme.primary } : {};
+  const logoMiddleStyle = theme ? { color: "#ffffff" } : {};
+  const accentStyle = theme ? { color: theme.accent || "#D4708F" } : {};
 
   return (
     <>
@@ -59,7 +60,7 @@ function FooterContent({ theme }: { theme?: FooterSimpleProps["theme"] }) {
               <img loading="lazy" decoding="async" src={site_logo_url} alt={site_name} className="h-8 max-w-[140px] object-contain" />
             ) : (
               <span>
-                <span style={primaryStyle} className={primaryClass}>Cap</span><span style={textStyle} className={textClass}>i</span><span style={accentStyle} className={accentClass}>mobi</span>
+                <span style={primaryStyle} className={primaryClass}>Cap</span><span style={logoMiddleStyle} className={textClass}>i</span><span style={accentStyle} className={accentClass}>mobi</span>
               </span>
             )}
           </Link>
