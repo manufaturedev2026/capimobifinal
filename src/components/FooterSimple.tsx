@@ -115,7 +115,9 @@ function FooterContent({ theme }: { theme?: FooterSimpleProps["theme"] }) {
 
       <div className={`border-t mt-8 pt-6 flex flex-col items-center gap-2 text-center ${borderClass}`} style={borderStyle}>
         <p className={`text-xs ${mutedClass}`} style={mutedStyle}>
-          © {new Date().getFullYear()} {site_name} · Brasil
+          {site_footer_text?.trim()
+            ? site_footer_text
+            : `© ${new Date().getFullYear()} ${site_name} · Brasil`}
         </p>
       </div>
     </>
