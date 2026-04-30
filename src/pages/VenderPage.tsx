@@ -280,9 +280,9 @@ const AI_CREDITS_BY_TIER: Record<string, number> = {
   imob_pro: 3000,
   imob_elite: 6000,
   const_basico: 25,
-  const_start: 1500,
-  const_pro: 3000,
-  const_master: 6000,
+  const_start: 2500,
+  const_pro: 6000,
+  const_master: 15000,
 };
 const getAiCredits = (tier: string, fromDb?: number | null) => fromDb || AI_CREDITS_BY_TIER[tier] || 25;
 const formatCredits = (n: number) => n.toLocaleString("pt-BR");
