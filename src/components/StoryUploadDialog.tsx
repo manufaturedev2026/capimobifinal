@@ -170,7 +170,8 @@ export default function StoryUploadDialog({ open, onOpenChange, sellerId, onUplo
       onOpenChange(false);
       onUploaded?.();
     } catch (err: any) {
-      toast({ title: "Erro ao publicar", description: err.message, variant: "destructive" });
+      console.error("[StoryUpload] Erro detalhado:", err);
+      toast({ title: "Erro ao publicar", description: err.message || JSON.stringify(err), variant: "destructive" });
     } finally {
       setUploading(false);
     }
