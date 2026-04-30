@@ -104,6 +104,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       .maybeSingle();
 
     if (error) {
+      // 23505 = duplicate key — outro caller (signUp + onAuthStateChange) já criou o perfil.
+      // Em vez de zerar o estado, recarrega o perfil existente.
+      if (error.code === "23505") {
+        const existing = await fetchProfile(authUser.id);
+        return existing;
+      }
       console.error("Erro ao criar perfil automaticamente:", error);
       // If the auth user no longer exists (FK violation), sign out the stale session
       if (error.code === "23503") {
