@@ -245,6 +245,7 @@ export default function AppmaxCheckoutPage() {
               )}
             </TabsContent>
 
+            {!isCreditsPurchase && (
             <TabsContent value="credit-card" className="space-y-4 mt-6">
               <div>
                 <Label>CPF do titular</Label>
@@ -312,6 +313,7 @@ export default function AppmaxCheckoutPage() {
                 Pagar R$ {payment.amount.toFixed(2).replace(".", ",")}
               </Button>
             </TabsContent>
+            )}
           </Tabs>
 
           <Button variant="ghost" onClick={() => navigate(successRedirect)} className="w-full mt-6">
