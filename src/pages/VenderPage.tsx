@@ -23,7 +23,6 @@ import { useToast } from "@/hooks/use-toast";
 import { BRAZIL_STATES } from "@/data/brazilStates";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { useRegistrationsClosed } from "@/hooks/useRegistrationsClosed";
-import { useActivePlans } from "@/hooks/usePlans";
 import RegistrationsClosedNotice from "@/components/RegistrationsClosedNotice";
 
 const FEATURES = [
@@ -361,17 +360,6 @@ function PlanBenefitsList({ benefits, primaryColor }: { benefits: string[]; prim
 export default function VenderPage() {
   const navigate = useNavigate();
   const { user, signUp } = useAuth();
-  const { plans: dbPlans, loading: loadingPlans } = useActivePlans();
-  const individualPlans = dbPlans
-    .filter(p => p.category === "free" || p.category === "individual" || p.category === "corretor")
-    .sort((a, b) => a.sort_order - b.sort_order);
-  const imobiliariaPlans = dbPlans
-    .filter(p => p.category === "enterprise" || p.category === "imobiliaria")
-    .sort((a, b) => a.sort_order - b.sort_order);
-  const construtoraPlans = dbPlans
-    .filter(p => p.category === "construtora")
-    .sort((a, b) => a.sort_order - b.sort_order);
-  const enterprisePlans = [...imobiliariaPlans, ...construtoraPlans];
   const { site_name } = useSiteSettings();
   const { closed: registrationsClosed } = useRegistrationsClosed();
   const { toast } = useToast();
