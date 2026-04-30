@@ -6,6 +6,20 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "content-type, x-appmax-signature",
 };
 
+async function notifyAdmin(payload: Record<string, unknown>) {
+  try {
+    const url = `${Deno.env.get("SUPABASE_URL")}/functions/v1/notify-admin-purchase`;
+    await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
+      },
+      body: JSON.stringify(payload),
+    });
+  } catch (e) { console.error("notifyAdmin error:", e); }
+}
+
 /**
  * Webhook público da AppMax.
  * Eventos: OrderApproved, OrderPaid, OrderPaidByPix, OrderAuthorized, OrderRefunded, OrderCancelled, etc.
@@ -42,6 +56,8 @@ async function activateFromWebhook(supabaseAdmin: any, orderId: string) {
     await supabaseAdmin.from("appmax_payments" as any)
       .update({ status: "approved", activated_at: new Date().toISOString() })
       .eq("order_id", payment.order_id);
+
+    await notifyAdmin({ kind: "credits", credits, amount: payment.amount, user_id: payment.user_id });
 
     return { ok: true, kind: "credits", credits };
   }
@@ -110,6 +126,11 @@ async function activateFromWebhook(supabaseAdmin: any, orderId: string) {
   await supabaseAdmin.from("appmax_payments" as any)
     .update({ status: "approved", activated_at: new Date().toISOString() })
     .eq("order_id", payment.order_id);
+
+  await notifyAdmin({
+    kind: "plan", tier, amount: payment.amount, user_id: payment.user_id,
+    billing_period: effectiveBillingPeriod,
+  });
 
   return { ok: true, tier };
 }
