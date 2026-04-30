@@ -11,24 +11,31 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { Crown, Loader2, Plus, RefreshCw, Trash2, Power, Repeat, Sparkles } from "lucide-react";
 
+type Category = "corretor" | "empresa" | "construtora";
 type InheritedTier =
   | "start"
   | "premium"
   | "prime"
-  | "essencial_empresa"
-  | "premium_empresa"
+  | "imob_start"
+  | "imob_pro"
+  | "imob_elite"
+  | "const_start"
+  | "const_pro"
+  | "const_master"
   | "prime_empresa";
 
 type Lot = {
   id: string;
-  category: "individual" | "enterprise";
+  category: Category;
   lot_number: number;
   price: number;
+  monthly_price: number | null;
   total_slots: number;
   used_slots: number;
   is_active: boolean;
   inherited_tier: InheritedTier;
   ia_credits: number;
+  ia_credits_monthly: number;
 };
 
 type Settings = {
@@ -38,18 +45,23 @@ type Settings = {
   default_slots: number;
 };
 
-const CAT_LABEL: Record<string, string> = {
-  individual: "Corretor Fundador",
-  enterprise: "Empresa Fundadora",
+const CAT_LABEL: Record<Category, string> = {
+  corretor: "Corretor Fundador",
+  empresa: "Imobiliária Fundadora",
+  construtora: "Construtora Fundadora",
 };
 
-const TIER_OPTIONS: { value: InheritedTier; label: string; defaultCredits: number; category: "individual" | "enterprise" }[] = [
-  { value: "start", label: "Start", defaultCredits: 250, category: "individual" },
-  { value: "premium", label: "Premium", defaultCredits: 600, category: "individual" },
-  { value: "prime", label: "VIP", defaultCredits: 1000, category: "individual" },
-  { value: "essencial_empresa", label: "Essencial Empresa", defaultCredits: 2000, category: "enterprise" },
-  { value: "premium_empresa", label: "Premium Empresa", defaultCredits: 2000, category: "enterprise" },
-  { value: "prime_empresa", label: "Prime Empresa (Black)", defaultCredits: 3500, category: "enterprise" },
+const TIER_OPTIONS: { value: InheritedTier; label: string; defaultCredits: number; category: Category }[] = [
+  { value: "start", label: "Start", defaultCredits: 250, category: "corretor" },
+  { value: "premium", label: "Premium", defaultCredits: 600, category: "corretor" },
+  { value: "prime", label: "Prime (VIP)", defaultCredits: 1000, category: "corretor" },
+  { value: "imob_start", label: "Imob Start", defaultCredits: 2000, category: "empresa" },
+  { value: "imob_pro", label: "Imob Pro", defaultCredits: 3000, category: "empresa" },
+  { value: "imob_elite", label: "Imob Elite", defaultCredits: 3500, category: "empresa" },
+  { value: "prime_empresa", label: "Black (legado)", defaultCredits: 3500, category: "empresa" },
+  { value: "const_start", label: "Construtora Start", defaultCredits: 2000, category: "construtora" },
+  { value: "const_pro", label: "Construtora Pro", defaultCredits: 4000, category: "construtora" },
+  { value: "const_master", label: "Construtora Master", defaultCredits: 5000, category: "construtora" },
 ];
 
 const TIER_LABEL: Record<string, string> = Object.fromEntries(TIER_OPTIONS.map(t => [t.value, t.label]));
@@ -96,17 +108,16 @@ export default function AdminFoundersTab() {
     load();
   };
 
-  const createLot = async (category: "individual" | "enterprise") => {
+  const createLot = async (category: Category) => {
     const catLots = lots.filter(l => l.category === category);
     const nextNumber = (catLots.reduce((m, l) => Math.max(m, l.lot_number), 0)) + 1;
     const last = catLots[catLots.length - 1];
     const lastPrice = last ? last.price : 97;
     const newPrice = Number(lastPrice) + Number(settings.price_increment || 30);
-    // Herda do último lote da categoria; se não houver, usa default sensato
     const defaultTier: InheritedTier = last?.inherited_tier
-      ?? (category === "individual" ? "prime" : "prime_empresa");
+      ?? (category === "corretor" ? "prime" : category === "empresa" ? "imob_elite" : "const_master");
     const defaultCredits = last?.ia_credits
-      ?? (category === "individual" ? 1000 : 3500);
+      ?? (category === "corretor" ? 1000 : category === "empresa" ? 3500 : 5000);
     const { error } = await supabase.from("founder_lots").insert({
       category, lot_number: nextNumber, price: newPrice,
       total_slots: settings.default_slots, used_slots: 0, is_active: true,
@@ -139,7 +150,7 @@ export default function AdminFoundersTab() {
     );
   }
 
-  const renderCategory = (category: "individual" | "enterprise") => {
+  const renderCategory = (category: Category) => {
     const catLots = lots.filter(l => l.category === category);
     const totalRevenue = catLots.reduce((sum, l) => sum + (Number(l.price) * l.used_slots), 0);
     const totalUsed = catLots.reduce((sum, l) => sum + l.used_slots, 0);
@@ -364,8 +375,9 @@ export default function AdminFoundersTab() {
 
       <Separator />
 
-      {renderCategory("individual")}
-      {renderCategory("enterprise")}
+      {renderCategory("corretor")}
+      {renderCategory("empresa")}
+      {renderCategory("construtora")}
     </div>
   );
 }
