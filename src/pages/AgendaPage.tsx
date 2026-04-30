@@ -406,10 +406,10 @@ export default function AgendaPage() {
                       </div>
 
                       <div className="grid grid-cols-6 sm:flex sm:flex-wrap gap-1.5 sm:shrink-0">
-                        <Button size="sm" variant="outline" onClick={() => openWhatsApp(v.client_phone, v.client_name)} title="WhatsApp" className="px-0 sm:px-3 bg-background text-foreground border-border hover:bg-accent hover:text-accent-foreground">
+                        <Button size="sm" onClick={() => openWhatsApp(v.client_phone, v.client_name)} title="WhatsApp" className="px-0 sm:px-3 bg-[#25D366] hover:bg-[#1ebe5d] text-white border-0">
                           <MessageCircle className="w-4 h-4" />
                         </Button>
-                        <Button size="sm" variant="outline" onClick={() => openMaps(v.address)} title="Maps" className="px-0 sm:px-3 bg-background text-foreground border-border hover:bg-accent hover:text-accent-foreground">
+                        <Button size="sm" onClick={() => openMaps(v.address)} title="Maps" className="px-0 sm:px-3 bg-[#EA4335] hover:bg-[#d33426] text-white border-0">
                           <MapPin className="w-4 h-4" />
                         </Button>
                         <Button size="sm" variant="outline" onClick={() => { setEditing(v); setOpenForm(true); }} title="Editar" className="px-0 sm:px-3 bg-background text-foreground border-border hover:bg-accent hover:text-accent-foreground">
