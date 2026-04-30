@@ -243,12 +243,12 @@ const IDEAL_FOR = [
   { label: "Quem quer parar de depender de portais", emoji: "🚀" },
 ];
 
-const STATS = [
-  { value: "500+", label: "Imóveis Cadastrados", icon: Home },
-  { value: "50+", label: "Corretores Ativos", icon: Users },
-  { value: "24/7", label: "Disponibilidade", icon: Shield },
-  { value: "100%", label: "Responsivo", icon: Smartphone },
-];
+const formatStat = (n: number) => {
+  if (n >= 1000) return `${(n / 1000).toFixed(n >= 10000 ? 0 : 1).replace(".", ",")}k+`;
+  if (n >= 100) return `${Math.floor(n / 100) * 100}+`;
+  if (n >= 10) return `${Math.floor(n / 10) * 10}+`;
+  return `${n}`;
+};
 
 // Estilo épico por tier (gradientes, glow e ícones) — aplicado dinamicamente sobre os planos do banco
 const TIER_STYLES: Record<string, { gradient: string; glow: string; ring: string; icon: any; badge?: string; ctaGradient?: string; subtitle: string }> = {
@@ -388,6 +388,7 @@ export default function VenderPage() {
    const [salesVideoUrl, setSalesVideoUrl] = useState("");
    const [salesVideoTitle, setSalesVideoTitle] = useState("");
    const { cities: stateCities, loading: loadingCities } = useCitiesByState(state);
+  const [liveStats, setLiveStats] = useState({ imoveis: 0, corretores: 0 });
 
   useEffect(() => {
     supabase.from("platform_settings").select("value").eq("key", "homepage_theme").maybeSingle().then(({ data }) => {
@@ -398,6 +399,16 @@ export default function VenderPage() {
     });
     supabase.from("platform_settings").select("value").eq("key", "sales_video_title").maybeSingle().then(({ data }) => {
       if (data?.value) setSalesVideoTitle(data.value);
+    });
+    // Estatísticas reais da plataforma
+    Promise.all([
+      supabase.from("seller_items").select("id", { count: "exact", head: true }).eq("status", "ativo").is("sold_at", null),
+      supabase.from("profiles").select("id", { count: "exact", head: true }),
+    ]).then(([imoveisRes, corretoresRes]) => {
+      setLiveStats({
+        imoveis: imoveisRes.count || 0,
+        corretores: corretoresRes.count || 0,
+      });
     });
   }, []);
   const theme = getMarketplaceTheme(themeId);
@@ -659,7 +670,12 @@ export default function VenderPage() {
         <section className="border-y border-white/5 py-8 md:py-10" style={{ background: `${theme.primary}08` }}>
           <div className="max-w-5xl mx-auto px-4">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-              {STATS.map((stat, i) => (
+              {[
+                { value: formatStat(liveStats.imoveis), label: "Imóveis Cadastrados", icon: Home },
+                { value: formatStat(liveStats.corretores), label: "Profissionais Ativos", icon: Users },
+                { value: "24/7", label: "Disponibilidade", icon: Shield },
+                { value: "100%", label: "Responsivo", icon: Smartphone },
+              ].map((stat, i) => (
                 <motion.div
                   key={stat.label}
                   initial={{ opacity: 0, y: 15 }}
