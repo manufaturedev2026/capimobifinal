@@ -1456,9 +1456,9 @@ export default function SellerDashboard() {
       {user?.id && profile?.id && (
         <WelcomePushPopup sellerId={profile.id} userId={user.id} userName={profile.full_name || profile.company_name} />
       )}
-      {user?.id && (
+      {(user?.id || (typeof window !== "undefined" && window.location.search.includes("previewLimitPopup=1"))) && (
         <PlanLimitWarningPopup
-          userId={user.id}
+          userId={user?.id || "preview"}
           userName={profile?.full_name || profile?.company_name}
           planName={pkgConfig?.name}
           threshold={80}
