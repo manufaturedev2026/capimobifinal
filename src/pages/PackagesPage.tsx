@@ -470,19 +470,6 @@ export default function PackagesPage() {
               </div>
             )}
           </div>
-          {opts.showPartners && (
-            <div className="mt-3 px-3 py-2 bg-white/15 rounded-xl text-center">
-              <span className="text-white font-bold text-sm">
-                {plan.tier === "imob_basico"
-                  ? "Até 5"
-                  : plan.tier === "imob_start"
-                  ? "Até 10"
-                  : plan.tier === "imob_pro"
-                  ? "Até 20"
-                  : "Até 50"} Parceiros Vinculados
-              </span>
-            </div>
-          )}
           <div className="mt-3 flex items-center justify-center gap-2 rounded-xl bg-white/15 px-3 py-2 text-center">
             <Coins size={16} className="text-white" />
             <span className="text-sm font-bold text-white">
