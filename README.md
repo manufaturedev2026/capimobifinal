@@ -45,7 +45,7 @@ Só precisa se for vender planos.
 - `APIFY_TOKEN` (secret)
 
 #### 5. Domínio customizado
-Configure URL Forwarding 301 no seu registrador apontando para o domínio Lovable (`*.lovable.app`).
+Use `capimobi.com.br` como domínio principal. Para domínios alternativos, configure URL Forwarding 301 no seu registrador apontando para `https://capimobi.com.br`.
 
 ---
 
