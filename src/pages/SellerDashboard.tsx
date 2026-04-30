@@ -42,7 +42,6 @@ import OnboardingTour from "@/components/OnboardingTour";
 import { usePushSubscription } from "@/hooks/usePushSubscription";
 import WelcomePushPopup from "@/components/WelcomePushPopup";
 import AiHelpChat from "@/components/AiHelpChat";
-import PanelSplash from "@/components/PanelSplash";
 import AiCreditsCard from "@/components/AiCreditsCard";
 import { useAiCredits } from "@/hooks/useAiCredits";
 import PlanLimitsCard from "@/components/PlanLimitsCard";
@@ -433,7 +432,6 @@ export default function SellerDashboard() {
 
   return (
     <div className="min-h-screen bg-background overflow-x-hidden" style={dashThemeVars}>
-      <PanelSplash />
       {/* Mobile Header — Premium Gradient */}
       <div className="py-6 lg:py-4" style={{ background: dashGradient }}>
         <div className="container max-w-6xl mx-auto px-4 lg:hidden">
