@@ -114,6 +114,25 @@ export default function AgendaPage() {
     return Array.from(set).map((d) => new Date(d + "T00:00:00"));
   }, [visits]);
 
+  const upcoming = useMemo(() => {
+    const now = new Date();
+    const todayStr = todayISO();
+    const nowTime = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+    return [...visits]
+      .filter((v) => v.status !== "fechada" && v.status !== "cancelada")
+      .filter((v) => v.visit_date > todayStr || (v.visit_date === todayStr && (v.visit_time || "23:59") >= nowTime))
+      .sort((a, b) => (a.visit_date + (a.visit_time || "")).localeCompare(b.visit_date + (b.visit_time || "")))
+      .slice(0, 5);
+  }, [visits]);
+
+  const formatRelative = (iso: string) => {
+    const t = todayISO();
+    if (iso === t) return "Hoje";
+    const tm = new Date(); tm.setDate(tm.getDate() + 1);
+    if (iso === tm.toISOString().slice(0, 10)) return "Amanhã";
+    return new Date(iso + "T00:00:00").toLocaleDateString("pt-BR", { weekday: "short", day: "2-digit", month: "2-digit" });
+  };
+
   const openWhatsApp = (phone?: string | null, name?: string) => {
     if (!phone) { toast({ title: "Cliente sem telefone", variant: "destructive" }); return; }
     const clean = phone.replace(/\D/g, "");
