@@ -1074,6 +1074,10 @@ export default function VenderPage() {
                               <p className="text-[9px] uppercase tracking-wider text-white/40 mb-0.5">Storage</p>
                               <p className="text-xs md:text-sm font-bold text-white">{plan.storage_mb >= 1024 ? `${(plan.storage_mb / 1024).toFixed(1)} GB` : `${plan.storage_mb} MB`}</p>
                             </div>
+                            <div className="col-span-2 px-3 py-2 rounded-lg bg-gradient-to-br from-cyan-500/15 to-blue-500/5 border border-cyan-400/20">
+                              <p className="text-[9px] uppercase tracking-wider text-cyan-200/70 mb-0.5 flex items-center gap-1"><Users className="w-2.5 h-2.5" /> Corretores na equipe</p>
+                              <p className="text-xs md:text-sm font-bold text-white">{getBrokersFromBenefits(plan.benefits)}</p>
+                            </div>
                           </div>
 
                           <div className="mb-4 px-3 py-2.5 rounded-lg bg-gradient-to-br from-purple-500/10 via-fuchsia-500/5 to-transparent border border-purple-400/20">
