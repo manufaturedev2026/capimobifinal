@@ -936,6 +936,7 @@ export type Database = {
           inherited_tier: string
           is_active: boolean
           lot_number: number
+          monthly_price: number | null
           price: number
           total_slots: number
           updated_at: string
@@ -949,6 +950,7 @@ export type Database = {
           inherited_tier?: string
           is_active?: boolean
           lot_number: number
+          monthly_price?: number | null
           price: number
           total_slots?: number
           updated_at?: string
@@ -962,6 +964,7 @@ export type Database = {
           inherited_tier?: string
           is_active?: boolean
           lot_number?: number
+          monthly_price?: number | null
           price?: number
           total_slots?: number
           updated_at?: string
