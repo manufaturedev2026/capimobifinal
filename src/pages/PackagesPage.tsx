@@ -36,7 +36,7 @@ const aiMonthlyCredits: Record<string, number> = {
 
 interface FounderLot {
   id: string;
-  category: "individual" | "enterprise" | "construtora";
+  category: "corretor" | "empresa" | "construtora";
   lot_number: number;
   price: number;
   monthly_price: number | null;
@@ -45,6 +45,7 @@ interface FounderLot {
   is_active: boolean;
   inherited_tier: string;
   ia_credits: number;
+  ia_credits_monthly?: number;
 }
 
 const TIER_LABEL: Record<string, string> = {
@@ -84,7 +85,7 @@ export default function PackagesPage() {
   const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null);
   const [founderLots, setFounderLots] = useState<FounderLot[]>([]);
   const [founderEnabled, setFounderEnabled] = useState<boolean>(true);
-  const [founderBilling, setFounderBilling] = useState<"annual" | "monthly">("annual");
+  const [founderBilling, setFounderBilling] = useState<"annual" | "monthly">("monthly");
 
   // Carrega o desconto anual configurado pelo admin
   useEffect(() => {
@@ -332,8 +333,8 @@ export default function PackagesPage() {
   };
 
   // Lote ativo (próximo a vender) e tier de Fundador para a categoria do usuário
-  const founderCategory: "individual" | "enterprise" | "construtora" =
-    isConstrutora ? "construtora" : isImobiliaria ? "enterprise" : "individual";
+  const founderCategory: "corretor" | "empresa" | "construtora" =
+    isConstrutora ? "construtora" : isImobiliaria ? "empresa" : "corretor";
   const founderTier =
     isConstrutora ? "fundador_construtora" : isImobiliaria ? "fundador_empresa" : "fundador_corretor";
   const activeFounderLot = founderLots
@@ -733,16 +734,16 @@ export default function PackagesPage() {
                 {!isUpgradeAvailable && activeFounderLot.monthly_price && Number(activeFounderLot.monthly_price) > 0 && (
                   <div className="mb-6 inline-flex p-1 rounded-full bg-black/30 backdrop-blur-sm border border-white/20">
                     <button
-                      onClick={() => setFounderBilling("annual")}
-                      className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${founderBilling === "annual" ? "bg-white text-black shadow" : "text-white/80 hover:text-white"}`}
-                    >
-                      Anual · 12 meses
-                    </button>
-                    <button
                       onClick={() => setFounderBilling("monthly")}
                       className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${founderBilling === "monthly" ? "bg-white text-black shadow" : "text-white/80 hover:text-white"}`}
                     >
                       Mensal · 30 dias
+                    </button>
+                    <button
+                      onClick={() => setFounderBilling("annual")}
+                      className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${founderBilling === "annual" ? "bg-white text-black shadow" : "text-white/80 hover:text-white"}`}
+                    >
+                      Anual · 12 meses
                     </button>
                   </div>
                 )}
