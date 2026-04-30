@@ -470,6 +470,25 @@ export default function PackagesPage() {
               </div>
             )}
           </div>
+          {opts.showPartners && (() => {
+            const teamMap: Record<string, string> = {
+              imob_basico: "Até 1 corretor",
+              imob_start: "Até 5 corretores",
+              imob_pro: "Até 15 corretores",
+              imob_elite: "Corretores ilimitados",
+              const_basico: "Até 1 vendedor",
+              const_start: "Até 20 vendedores",
+              const_pro: "Até 100 vendedores",
+              const_master: "Vendedores ilimitados",
+            };
+            const label = teamMap[plan.tier];
+            if (!label) return null;
+            return (
+              <div className="mt-3 px-3 py-2 bg-white/15 rounded-xl text-center">
+                <span className="text-white font-bold text-sm">{label} na equipe</span>
+              </div>
+            );
+          })()}
           <div className="mt-3 flex items-center justify-center gap-2 rounded-xl bg-white/15 px-3 py-2 text-center">
             <Coins size={16} className="text-white" />
             <span className="text-sm font-bold text-white">
