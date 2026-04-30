@@ -837,7 +837,7 @@ export default function PackagesPage() {
                     <h2 className="font-display font-extrabold text-3xl md:text-4xl leading-tight">
                       {isUpgradeAvailable
                         ? `Suba para Fundador ${newInheritedPlan?.name || inheritedLabel}`
-                        : `Seja um ${isImobiliaria ? "Imobiliária" : "Corretor"} Fundador`}
+                        : `Seja um ${isConstrutora ? "Construtora" : isImobiliaria ? "Imobiliária" : "Corretor"} Fundador`}
                     </h2>
                     <p className="mt-3 text-white/90 text-base md:text-lg max-w-xl">
                       {isUpgradeAvailable ? (
