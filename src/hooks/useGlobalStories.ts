@@ -96,6 +96,12 @@ export function useGlobalStories(city?: string) {
       });
     }
 
+    // Random shuffle (Fisher-Yates) — equal chance for every story regardless of plan/recency
+    for (let i = result.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [result[i], result[j]] = [result[j], result[i]];
+    }
+
     setStories(result);
     setLoading(false);
   }, [city]);
