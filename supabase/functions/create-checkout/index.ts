@@ -63,8 +63,8 @@ serve(async (req) => {
       if (lot.used_slots >= lot.total_slots) throw new Error("Lote Fundador esgotado");
 
       const expectedCat =
-        tier === "fundador_corretor" ? "individual" :
-        tier === "fundador_empresa" ? "enterprise" :
+        tier === "fundador_corretor" ? "corretor" :
+        tier === "fundador_empresa" ? "empresa" :
         "construtora";
       if (lot.category !== expectedCat) throw new Error("Lote não corresponde ao plano");
       founderLot = lot;
