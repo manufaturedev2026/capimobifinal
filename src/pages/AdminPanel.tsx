@@ -52,6 +52,7 @@ interface SellerWithSub {
     is_active: boolean;
     payment_status: string | null;
   };
+  ai_balance?: number;
 }
 
 
@@ -117,6 +118,14 @@ export default function AdminPanel() {
   const [planDuration, setPlanDuration] = useState<string>("30");
   const [planCustomDays, setPlanCustomDays] = useState<string>("");
   const [planSaving, setPlanSaving] = useState(false);
+
+  // AI Credits dialog state
+  const [creditsDialogOpen, setCreditsDialogOpen] = useState(false);
+  const [creditsSeller, setCreditsSeller] = useState<SellerWithSub | null>(null);
+  const [creditsAction, setCreditsAction] = useState<"add" | "remove">("add");
+  const [creditsAmount, setCreditsAmount] = useState<string>("100");
+  const [creditsNotes, setCreditsNotes] = useState<string>("");
+  const [creditsSaving, setCreditsSaving] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !adminLoading) {
@@ -280,11 +289,14 @@ export default function AdminPanel() {
     setLoading(true);
     const { data: profiles } = await supabase.from("profiles").select("*");
     const { data: subs } = await supabase.from("seller_subscriptions").select("*").eq("is_active", true).order("created_at", { ascending: false });
+    const { data: wallets } = await supabase.from("ai_credit_wallets").select("user_id, balance");
 
     const subsMap = new Map<string, any>();
     (subs || []).forEach((s: any) => {
       if (!subsMap.has(s.user_id)) subsMap.set(s.user_id, s);
     });
+    const walletsMap = new Map<string, number>();
+    (wallets || []).forEach((w: any) => walletsMap.set(w.user_id, w.balance ?? 0));
 
     const mapped: SellerWithSub[] = (profiles || []).map((p: any) => ({
       id: p.id,
@@ -300,6 +312,7 @@ export default function AdminPanel() {
       account_manager: p.account_manager || null,
       manager_phone: p.manager_phone || null,
       manager_photo: p.manager_photo || null,
+      ai_balance: walletsMap.get(p.user_id) ?? 0,
       subscription: subsMap.get(p.user_id)
         ? {
             id: subsMap.get(p.user_id).id,
@@ -407,6 +420,61 @@ export default function AdminPanel() {
       toast({ title: `Plano atualizado para ${(tierConfig as any)?.name || planTier} por ${days} dias!` });
       setPlanDialogOpen(false);
       fetchSellers();
+    }
+  };
+
+  const openCreditsDialog = (seller: SellerWithSub, action: "add" | "remove") => {
+    setCreditsSeller(seller);
+    setCreditsAction(action);
+    setCreditsAmount("100");
+    setCreditsNotes("");
+    setCreditsDialogOpen(true);
+  };
+
+  const confirmCreditsChange = async () => {
+    if (!creditsSeller) return;
+    const amount = parseInt(creditsAmount || "0", 10);
+    if (!amount || amount < 1) {
+      toast({ title: "Informe uma quantidade válida", variant: "destructive" });
+      return;
+    }
+    setCreditsSaving(true);
+    try {
+      if (creditsAction === "add") {
+        const { error } = await supabase.rpc("add_ai_credits", {
+          p_user_id: creditsSeller.user_id,
+          p_amount: amount,
+          p_transaction_type: "admin_grant",
+          p_tool_key: "admin_manual_credit",
+          p_seller_id: creditsSeller.id,
+          p_notes: creditsNotes || "Créditos concedidos manualmente pelo admin",
+        } as any);
+        if (error) throw error;
+        toast({ title: `+${amount} créditos adicionados!` });
+      } else {
+        const currentBalance = creditsSeller.ai_balance ?? 0;
+        const toRemove = Math.min(amount, currentBalance);
+        if (toRemove <= 0) {
+          toast({ title: "Saldo zerado", description: "Esse usuário não possui créditos para remover.", variant: "destructive" });
+          setCreditsSaving(false);
+          return;
+        }
+        const { error } = await supabase.rpc("consume_ai_credits", {
+          p_user_id: creditsSeller.user_id,
+          p_amount: toRemove,
+          p_tool_key: "admin_manual_debit",
+          p_seller_id: creditsSeller.id,
+          p_notes: creditsNotes || "Créditos removidos manualmente pelo admin",
+        } as any);
+        if (error) throw error;
+        toast({ title: `-${toRemove} créditos removidos!` });
+      }
+      setCreditsDialogOpen(false);
+      fetchSellers();
+    } catch (e: any) {
+      toast({ title: "Erro ao alterar créditos", description: e.message, variant: "destructive" });
+    } finally {
+      setCreditsSaving(false);
     }
   };
 
@@ -703,6 +771,11 @@ export default function AdminPanel() {
                         })()}
                       </div>
                       <p className="text-xs text-muted-foreground">{seller.email} • {seller.seller_type} • {seller.city || "—"}</p>
+                      <p className="text-xs mt-1 flex items-center gap-1.5">
+                        <Brain size={12} className="text-purple-500" />
+                        <span className="font-semibold text-foreground">{(seller.ai_balance ?? 0).toLocaleString("pt-BR")}</span>
+                        <span className="text-muted-foreground">créditos IA</span>
+                      </p>
                       {sub && (
                         <p className="text-xs mt-1">
                           {sub.payment_status === "pendente" && <span className="text-amber-500 font-semibold">⏳ Pagamento pendente</span>}
@@ -759,6 +832,14 @@ export default function AdminPanel() {
                       <button onClick={() => openPlanDialog(seller)}
                         className="flex items-center justify-center gap-1 px-3 py-2 sm:py-1.5 rounded-lg bg-amber-500/10 text-amber-600 text-xs font-semibold hover:bg-amber-500/20">
                         <Crown size={12} /> Plano
+                      </button>
+                      <button onClick={() => openCreditsDialog(seller, "add")}
+                        className="flex items-center justify-center gap-1 px-3 py-2 sm:py-1.5 rounded-lg bg-purple-500/10 text-purple-600 text-xs font-semibold hover:bg-purple-500/20">
+                        <Brain size={12} /> + IA
+                      </button>
+                      <button onClick={() => openCreditsDialog(seller, "remove")}
+                        className="flex items-center justify-center gap-1 px-3 py-2 sm:py-1.5 rounded-lg bg-purple-500/10 text-purple-600 text-xs font-semibold hover:bg-purple-500/20">
+                        <Brain size={12} /> − IA
                       </button>
                        {sub && (
                         <>
@@ -1647,6 +1728,87 @@ export default function AdminPanel() {
                   className="flex-1 px-3 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 disabled:opacity-60"
                 >
                   {planSaving ? "Salvando..." : "Confirmar"}
+                </button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Category Dialog */}
+      {/* AI Credits Dialog */}
+      <Dialog open={creditsDialogOpen} onOpenChange={setCreditsDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Brain size={18} className="text-purple-500" />
+              {creditsAction === "add" ? "Adicionar Créditos IA" : "Remover Créditos IA"}
+            </DialogTitle>
+          </DialogHeader>
+          {creditsSeller && (
+            <div className="space-y-4">
+              <div className="text-sm text-muted-foreground">
+                <span className="font-semibold text-foreground">{creditsSeller.company_name || creditsSeller.full_name}</span>
+                <br />
+                <span className="text-xs">{creditsSeller.email}</span>
+              </div>
+              <div className="rounded-lg border border-border bg-secondary/30 px-3 py-2 text-sm">
+                Saldo atual: <span className="font-bold text-foreground">{(creditsSeller.ai_balance ?? 0).toLocaleString("pt-BR")}</span> créditos
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-foreground mb-2 block">Quantidade</label>
+                <div className="grid grid-cols-4 gap-2 mb-2">
+                  {["50", "100", "500", "1000"].map((v) => (
+                    <button
+                      key={v}
+                      type="button"
+                      onClick={() => setCreditsAmount(v)}
+                      className={`px-2 py-2 rounded-lg text-xs font-semibold border transition-colors ${
+                        creditsAmount === v
+                          ? "bg-primary text-primary-foreground border-primary"
+                          : "bg-background text-foreground border-input hover:bg-secondary"
+                      }`}
+                    >
+                      {v}
+                    </button>
+                  ))}
+                </div>
+                <input
+                  type="number"
+                  min={1}
+                  value={creditsAmount}
+                  onChange={(e) => setCreditsAmount(e.target.value)}
+                  className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm text-foreground"
+                  placeholder="Quantidade personalizada"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-foreground mb-2 block">Motivo (opcional)</label>
+                <input
+                  type="text"
+                  value={creditsNotes}
+                  onChange={(e) => setCreditsNotes(e.target.value)}
+                  placeholder="Ex: Bônus de fidelidade"
+                  className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm text-foreground"
+                />
+              </div>
+              <div className="flex gap-2 pt-2">
+                <button
+                  onClick={() => setCreditsDialogOpen(false)}
+                  className="flex-1 px-3 py-2 rounded-lg border border-input bg-background text-sm font-semibold text-foreground hover:bg-secondary"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={confirmCreditsChange}
+                  disabled={creditsSaving}
+                  className={`flex-1 px-3 py-2 rounded-lg text-sm font-semibold disabled:opacity-60 ${
+                    creditsAction === "add"
+                      ? "bg-purple-500 text-white hover:bg-purple-600"
+                      : "bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  }`}
+                >
+                  {creditsSaving ? "Salvando..." : creditsAction === "add" ? "Adicionar" : "Remover"}
                 </button>
               </div>
             </div>
