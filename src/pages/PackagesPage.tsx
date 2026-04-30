@@ -85,7 +85,7 @@ export default function PackagesPage() {
   const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null);
   const [founderLots, setFounderLots] = useState<FounderLot[]>([]);
   const [founderEnabled, setFounderEnabled] = useState<boolean>(true);
-  const [founderBilling, setFounderBilling] = useState<"annual" | "monthly">("annual");
+  const [founderBilling, setFounderBilling] = useState<"annual" | "monthly">("monthly");
 
   // Carrega o desconto anual configurado pelo admin
   useEffect(() => {
