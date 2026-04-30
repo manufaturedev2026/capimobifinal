@@ -38,6 +38,7 @@ const TIER_LABEL: Record<string, string> = {
   essencial_empresa: "Plano Essencial Empresa",
   premium_empresa: "Plano Premium Empresa",
   prime_empresa: "Plano Prime Empresa (Black)",
+  imob_elite: "Plano Imob Elite",
   const_pro: "Plano Construtora Pro",
   const_master: "Plano Construtora Master",
 };
