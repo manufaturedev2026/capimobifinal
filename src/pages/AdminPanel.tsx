@@ -119,6 +119,9 @@ export default function AdminPanel() {
   const [planCustomDays, setPlanCustomDays] = useState<string>("");
   const [planSaving, setPlanSaving] = useState(false);
 
+  // Available plans loaded from subscription_plans table (no ghost tiers)
+  const [availablePlans, setAvailablePlans] = useState<Array<{ tier: string; name: string; max_items: number; category: string; sort_order: number }>>([]);
+
   // AI Credits dialog state
   const [creditsDialogOpen, setCreditsDialogOpen] = useState(false);
   const [creditsSeller, setCreditsSeller] = useState<SellerWithSub | null>(null);
