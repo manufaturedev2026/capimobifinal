@@ -250,6 +250,54 @@ export default function AgendaPage() {
           <StatCard icon={<DollarSign className="w-5 h-5" />} label="Fechamentos" value={stats.fechamentos} tone="gradient" />
         </div>
 
+        {/* Próximas visitas — atalho rápido */}
+        <div className="bg-card border border-border rounded-xl p-3 sm:p-4 shadow-sm">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-semibold text-sm sm:text-base text-foreground flex items-center gap-2">
+              <Clock className="w-4 h-4 text-primary" />
+              Próximas Visitas
+            </h3>
+            {upcoming.length > 0 && (
+              <span className="text-xs text-muted-foreground">{upcoming.length} agendada{upcoming.length !== 1 ? "s" : ""}</span>
+            )}
+          </div>
+          {upcoming.length === 0 ? (
+            <p className="text-sm text-muted-foreground text-center py-4">Nenhuma visita agendada para os próximos dias.</p>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-2">
+              {upcoming.map((v) => {
+                const meta = STATUS_META[v.status];
+                return (
+                  <button
+                    key={v.id}
+                    onClick={() => { setEditing(v); setOpenForm(true); }}
+                    className="text-left bg-background border border-border rounded-lg p-2.5 hover:border-primary hover:shadow-md transition-all group"
+                  >
+                    <div className="flex items-center justify-between gap-2 mb-1.5">
+                      <span className="text-xs font-bold text-primary uppercase tracking-wide">
+                        {formatRelative(v.visit_date)}
+                      </span>
+                      <span className="text-xs font-mono font-semibold text-foreground bg-muted px-1.5 py-0.5 rounded">
+                        {v.visit_time?.slice(0, 5)}
+                      </span>
+                    </div>
+                    <p className="text-sm font-semibold text-foreground truncate group-hover:text-primary">{v.client_name}</p>
+                    {(v.property_type || v.address) && (
+                      <p className="text-xs text-muted-foreground truncate">
+                        {v.property_type}{v.property_type && v.address ? " • " : ""}{v.address}
+                      </p>
+                    )}
+                    <span className={`mt-1.5 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-medium ${meta.bg} ${meta.color}`}>
+                      <span className={`w-1 h-1 rounded-full ${meta.dot}`} />
+                      {meta.label}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
         {/* Filters */}
         <div className="bg-card border border-border rounded-xl p-2.5 sm:p-3 grid grid-cols-2 sm:flex sm:flex-wrap gap-2 items-center shadow-sm">
           <Select value={quick} onValueChange={(v) => setQuick(v as Quick)}>
