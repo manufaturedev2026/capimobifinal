@@ -266,7 +266,7 @@ export default function AgendaPage() {
               selected={selectedDate}
               onSelect={(d) => { setSelectedDate(d); setQuick("todas"); }}
               modifiers={{ withVisit: datesWithVisits }}
-              modifiersClassNames={{ withVisit: "bg-primary/15 text-primary font-bold" }}
+              modifiersClassNames={{ withVisit: "text-primary font-bold" }}
               className="p-0 pointer-events-auto mx-auto text-foreground"
               classNames={{
                 caption_label: "text-sm font-medium text-foreground",
