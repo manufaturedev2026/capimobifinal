@@ -388,6 +388,7 @@ export default function VenderPage() {
    const [salesVideoUrl, setSalesVideoUrl] = useState("");
    const [salesVideoTitle, setSalesVideoTitle] = useState("");
    const { cities: stateCities, loading: loadingCities } = useCitiesByState(state);
+  const [liveStats, setLiveStats] = useState({ imoveis: 0, corretores: 0 });
 
   useEffect(() => {
     supabase.from("platform_settings").select("value").eq("key", "homepage_theme").maybeSingle().then(({ data }) => {
@@ -398,6 +399,16 @@ export default function VenderPage() {
     });
     supabase.from("platform_settings").select("value").eq("key", "sales_video_title").maybeSingle().then(({ data }) => {
       if (data?.value) setSalesVideoTitle(data.value);
+    });
+    // Estatísticas reais da plataforma
+    Promise.all([
+      supabase.from("seller_items").select("id", { count: "exact", head: true }).eq("status", "ativo").is("sold_at", null),
+      supabase.from("profiles").select("id", { count: "exact", head: true }),
+    ]).then(([imoveisRes, corretoresRes]) => {
+      setLiveStats({
+        imoveis: imoveisRes.count || 0,
+        corretores: corretoresRes.count || 0,
+      });
     });
   }, []);
   const theme = getMarketplaceTheme(themeId);
