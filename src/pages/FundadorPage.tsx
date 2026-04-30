@@ -4,7 +4,7 @@ import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import {
   Crown, Check, Sparkles, Zap, Shield, Trophy, Flame,
-  ArrowRight, Loader2, Users, TrendingUp, Award, Diamond,
+  ArrowRight, Loader2, Users, TrendingUp, Award, Diamond, Building2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import MarketplaceNavbar from "@/components/MarketplaceNavbar";
@@ -18,9 +18,10 @@ import { useActivePlans } from "@/hooks/usePlans";
 
 interface FounderLot {
   id: string;
-  category: "individual" | "enterprise";
+  category: "individual" | "enterprise" | "construtora";
   lot_number: number;
   price: number;
+  monthly_price: number | null;
   total_slots: number;
   used_slots: number;
   is_active: boolean;
@@ -32,9 +33,12 @@ const TIER_LABEL: Record<string, string> = {
   start: "Plano Start",
   premium: "Plano Premium",
   vip: "Plano VIP",
+  prime: "Plano Prime",
   essencial_empresa: "Plano Essencial Empresa",
   premium_empresa: "Plano Premium Empresa",
   prime_empresa: "Plano Prime Empresa (Black)",
+  const_pro: "Plano Construtora Pro",
+  const_master: "Plano Construtora Master",
 };
 
 const FOUNDER_BENEFITS = [
@@ -58,20 +62,24 @@ export default function FundadorPage() {
   const [founderEnabled, setFounderEnabled] = useState<boolean>(true);
   const [loadingLots, setLoadingLots] = useState(true);
   const [purchasing, setPurchasing] = useState<string | null>(null);
+  const [billingByCat, setBillingByCat] = useState<Record<string, "annual" | "monthly">>({
+    individual: "annual",
+    enterprise: "annual",
+    construtora: "annual",
+  });
 
   const theme = getMarketplaceTheme("luxury");
   const themeVars = getMarketplaceThemeCssVars(theme);
 
-  const isImobiliaria =
-    profile?.seller_category === "imobiliaria" ||
-    profile?.seller_category === "construtora";
+  const isImobiliaria = profile?.seller_category === "imobiliaria";
+  const isConstrutora = profile?.seller_category === "construtora";
 
   useEffect(() => {
     (async () => {
       const [{ data: lots }, { data: settings }] = await Promise.all([
         (supabase as any)
           .from("founder_lots")
-          .select("id, category, lot_number, price, total_slots, used_slots, is_active, inherited_tier, ia_credits")
+          .select("id, category, lot_number, price, monthly_price, total_slots, used_slots, is_active, inherited_tier, ia_credits")
           .eq("is_active", true)
           .order("category")
           .order("lot_number"),
@@ -88,16 +96,17 @@ export default function FundadorPage() {
   }, []);
 
   // Lote ativo por categoria
-  const getActiveLot = (cat: "individual" | "enterprise") =>
+  const getActiveLot = (cat: "individual" | "enterprise" | "construtora") =>
     founderLots
       .filter((l) => l.category === cat && l.is_active && l.used_slots < l.total_slots)
       .sort((a, b) => a.lot_number - b.lot_number)[0];
 
   const individualLot = getActiveLot("individual");
   const enterpriseLot = getActiveLot("enterprise");
+  const construtoraLot = getActiveLot("construtora");
 
   // Próximos lotes (preview do aumento)
-  const getNextLots = (cat: "individual" | "enterprise") =>
+  const getNextLots = (cat: "individual" | "enterprise" | "construtora") =>
     founderLots
       .filter((l) => l.category === cat && (!getActiveLot(cat) || l.lot_number > getActiveLot(cat).lot_number))
       .sort((a, b) => a.lot_number - b.lot_number)
@@ -106,7 +115,7 @@ export default function FundadorPage() {
   const vipPlan = plans.find((p) => p.tier === "prime");
   const blackPlan = plans.find((p) => p.tier === "prime_empresa");
 
-  const handlePurchase = async (category: "individual" | "enterprise") => {
+  const handlePurchase = async (category: "individual" | "enterprise" | "construtora") => {
     if (!user || !profile) {
       toast({
         title: "Faça login para garantir sua vaga",
@@ -116,8 +125,14 @@ export default function FundadorPage() {
       return;
     }
 
-    const lot = category === "individual" ? individualLot : enterpriseLot;
-    const tier = category === "individual" ? "fundador_corretor" : "fundador_empresa";
+    const lot =
+      category === "individual" ? individualLot :
+      category === "enterprise" ? enterpriseLot :
+      construtoraLot;
+    const tier =
+      category === "individual" ? "fundador_corretor" :
+      category === "enterprise" ? "fundador_empresa" :
+      "fundador_construtora";
 
     if (!lot) {
       toast({
@@ -128,12 +143,22 @@ export default function FundadorPage() {
       return;
     }
 
+    const billing = billingByCat[category] || "annual";
+    if (billing === "monthly" && (!lot.monthly_price || Number(lot.monthly_price) <= 0)) {
+      toast({
+        title: "Mensalidade Fundador indisponível",
+        description: "Este lote não tem preço mensal cadastrado.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setPurchasing(tier);
     try {
       const { data, error } = await supabase.functions.invoke("create-checkout", {
         body: {
           tier,
-          billing_period: "annual",
+          billing_period: billing,
           founder_lot_id: lot.id,
         },
       });
