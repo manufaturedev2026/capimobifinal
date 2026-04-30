@@ -55,7 +55,7 @@ export function useGlobalStories(city?: string) {
     const sellerIds = [...new Set(rawStories.map((s) => s.seller_id))];
     const { data: profiles } = await supabase
       .from("profiles")
-      .select("id, full_name, company_name, logo_url")
+      .select("id, full_name, company_name, logo_url, city")
       .in("id", sellerIds);
 
     const profileMap: Record<string, any> = {};
