@@ -49,7 +49,7 @@ Deno.serve(async (req) => {
   const customDomain = domainData?.[0]?.domain;
   const baseUrl = customDomain
     ? `https://${customDomain}`
-    : `https://capimobifinal.lovable.app`;
+    : `https://capimobi.com.br`;
 
   const storeUrl = `${baseUrl}/loja/${sellerId}`;
 

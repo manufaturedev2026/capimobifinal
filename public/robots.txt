@@ -16,4 +16,4 @@ Disallow: /painel/
 Disallow: /admin
 Disallow: /entrar
 
-Sitemap: https://capimobifinal.lovable.app/sitemap.xml
+Sitemap: https://capimobi.com.br/sitemap.xml
