@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Crown, Loader2, Plus, RefreshCw, Trash2, Power, Repeat, Sparkles } from "lucide-react";
+import { Crown, Loader2, Plus, RefreshCw, Trash2, Power, Repeat, Sparkles, Image as ImageIcon, HardDrive, Layers } from "lucide-react";
 
 type Category = "corretor" | "empresa" | "construtora";
 type InheritedTier =
@@ -44,6 +44,13 @@ type Settings = {
   default_slots: number;
 };
 
+type TierLimits = {
+  max_items: number | null;
+  max_photos_per_listing: number | null;
+  storage_mb: number | null;
+  ai_credits_per_month: number | null;
+};
+
 const CAT_LABEL: Record<Category, string> = {
   corretor: "Corretor Fundador",
   empresa: "Imobiliária Fundadora",
@@ -74,15 +81,22 @@ export default function AdminFoundersTab() {
     default_slots: 500,
   });
   const [lots, setLots] = useState<Lot[]>([]);
+  const [tierLimits, setTierLimits] = useState<Record<string, TierLimits>>({});
 
   const load = async () => {
     setLoading(true);
-    const [{ data: s }, { data: l }] = await Promise.all([
+    const [{ data: s }, { data: l }, { data: plans }] = await Promise.all([
       supabase.from("founder_settings" as any).select("*").eq("id", 1).maybeSingle(),
       supabase.from("founder_lots").select("*").order("category").order("lot_number"),
+      supabase.from("subscription_plans").select("tier, max_items, max_photos_per_listing, storage_mb, ai_credits_per_month"),
     ]);
     if (s) setSettings(s as any);
     if (l) setLots(l as any);
+    if (plans) {
+      const map: Record<string, TierLimits> = {};
+      (plans as any[]).forEach(p => { map[p.tier] = p; });
+      setTierLimits(map);
+    }
     setLoading(false);
   };
 
@@ -287,6 +301,28 @@ export default function AdminFoundersTab() {
                     <p className="text-[10px] text-muted-foreground mt-1">
                       Define quais funções premium o membro recebe por 12 meses.
                     </p>
+                    {tierLimits[lot.inherited_tier] && (
+                      <div className="mt-2 rounded-md border bg-muted/30 p-2 space-y-1">
+                        <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">Limites herdados</p>
+                        <div className="grid grid-cols-1 gap-1 text-[11px]">
+                          <div className="flex items-center gap-1.5">
+                            <Layers size={10} className="text-primary" />
+                            <span className="font-medium">{tierLimits[lot.inherited_tier].max_items?.toLocaleString("pt-BR") ?? "—"}</span>
+                            <span className="text-muted-foreground">anúncios</span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <ImageIcon size={10} className="text-primary" />
+                            <span className="font-medium">{tierLimits[lot.inherited_tier].max_photos_per_listing ?? "—"}</span>
+                            <span className="text-muted-foreground">fotos / anúncio</span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <HardDrive size={10} className="text-primary" />
+                            <span className="font-medium">{tierLimits[lot.inherited_tier].storage_mb?.toLocaleString("pt-BR") ?? "—"} MB</span>
+                            <span className="text-muted-foreground">storage</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                   <div>
                     <Label className="text-xs flex items-center gap-1.5">
