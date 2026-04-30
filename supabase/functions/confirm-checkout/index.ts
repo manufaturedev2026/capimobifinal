@@ -118,12 +118,14 @@ serve(async (req) => {
       .eq("user_id", user.id)
       .eq("is_active", true);
 
-    // Fundador sempre vale 365 dias
-    const days = (isFounder || billingPeriod === "annual") ? 365 : 30;
+    // Fundador anual = 365 dias; Fundador mensal = 30 dias
+    const days = ((isFounder && billingPeriod === "annual") || (!isFounder && billingPeriod === "annual")) ? 365 : 30;
     const expiresAt = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString();
 
-    // Define o billing_period efetivo (Fundador = 'founder', senão segue meta)
-    const effectiveBillingPeriod = isFounder ? "founder" : billingPeriod;
+    // Fundador anual usa 'founder' (entrega créditos de uma vez); Fundador mensal usa 'monthly' (recarga mensal)
+    const effectiveBillingPeriod = isFounder
+      ? (billingPeriod === "annual" ? "founder" : "monthly")
+      : billingPeriod;
 
     const { error: insErr } = await supabaseAdmin
       .from("seller_subscriptions")
