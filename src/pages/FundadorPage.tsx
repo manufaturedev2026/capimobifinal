@@ -180,11 +180,11 @@ export default function FundadorPage() {
 
     setPurchasing(tier);
     try {
-      const { data, error } = await supabase.functions.invoke("create-checkout", {
+      const { data, error } = await supabase.functions.invoke("appmax-create-checkout", {
         body: { tier, billing_period: billing, founder_lot_id: lot.id },
       });
       if (error) throw error;
-      if (data?.url) window.open(data.url, "_blank");
+      if (data?.url) navigate(data.url);
       else throw new Error("URL de checkout não retornada");
     } catch (err: any) {
       toast({ title: "Erro ao processar", description: err.message || "Tente novamente.", variant: "destructive" });
