@@ -52,6 +52,7 @@ interface SellerWithSub {
     is_active: boolean;
     payment_status: string | null;
   };
+  ai_balance?: number;
 }
 
 
