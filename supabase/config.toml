@@ -1,1 +1,4 @@
 project_id = "lzjwmpwoybtdisenuzec"
+
+[functions.appmax-webhook]
+verify_jwt = false
