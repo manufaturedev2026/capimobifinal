@@ -250,9 +250,10 @@ serve(async (req) => {
       method: "POST",
       headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model: "google/gemini-2.5-flash",
         messages: [{ role: "system", content: systemPrompt }, ...messages],
-        max_tokens: 350,
+        max_tokens: 400,
+        temperature: 0.3,
         tools: [tool],
       }),
     });
