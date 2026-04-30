@@ -289,11 +289,14 @@ export default function AdminPanel() {
     setLoading(true);
     const { data: profiles } = await supabase.from("profiles").select("*");
     const { data: subs } = await supabase.from("seller_subscriptions").select("*").eq("is_active", true).order("created_at", { ascending: false });
+    const { data: wallets } = await supabase.from("ai_credit_wallets").select("user_id, balance");
 
     const subsMap = new Map<string, any>();
     (subs || []).forEach((s: any) => {
       if (!subsMap.has(s.user_id)) subsMap.set(s.user_id, s);
     });
+    const walletsMap = new Map<string, number>();
+    (wallets || []).forEach((w: any) => walletsMap.set(w.user_id, w.balance ?? 0));
 
     const mapped: SellerWithSub[] = (profiles || []).map((p: any) => ({
       id: p.id,
@@ -309,6 +312,7 @@ export default function AdminPanel() {
       account_manager: p.account_manager || null,
       manager_phone: p.manager_phone || null,
       manager_photo: p.manager_photo || null,
+      ai_balance: walletsMap.get(p.user_id) ?? 0,
       subscription: subsMap.get(p.user_id)
         ? {
             id: subsMap.get(p.user_id).id,
