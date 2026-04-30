@@ -28,6 +28,7 @@ interface FounderLot {
   is_active: boolean;
   inherited_tier: string;
   ia_credits: number;
+  ia_credits_monthly: number;
 }
 
 const TIER_LABEL: Record<string, string> = {
@@ -113,7 +114,7 @@ export default function FundadorPage() {
       const [{ data: lots }, { data: settings }] = await Promise.all([
         (supabase as any)
           .from("founder_lots")
-          .select("id, category, lot_number, price, monthly_price, total_slots, used_slots, is_active, inherited_tier, ia_credits")
+          .select("id, category, lot_number, price, monthly_price, total_slots, used_slots, is_active, inherited_tier, ia_credits, ia_credits_monthly")
           .eq("is_active", true)
           .order("category")
           .order("lot_number"),
@@ -231,7 +232,9 @@ export default function FundadorPage() {
     const equivalentPlan = lot?.inherited_tier
       ? (TIER_LABEL[lot.inherited_tier] || fallbackPlan)
       : fallbackPlan;
-    const credits = lot?.ia_credits ?? (category === "corretor" ? 1000 : 3500);
+    const credits = billing === "monthly"
+      ? (lot?.ia_credits_monthly ?? 0)
+      : (lot?.ia_credits ?? (category === "corretor" ? 1000 : 3500));
     const inheritedPlan = lot?.inherited_tier
       ? plans.find((p) => p.tier === lot.inherited_tier)
       : null;
