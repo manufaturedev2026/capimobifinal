@@ -179,7 +179,7 @@ export default function BuyCreditsModal({ open, onClose, themeVars, userId, sell
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && handleClose()}>
-      <DialogContent style={themeVars} className="max-w-3xl max-h-[90vh] overflow-y-auto p-0 bg-background text-foreground border-border">
+      <DialogContent style={themeVars} className="max-w-3xl max-h-[95dvh] overflow-y-auto p-0 bg-background text-foreground border-border">
         <DialogHeader className="px-6 pt-6 pb-2">
           <DialogTitle className="flex items-center gap-2 font-display text-2xl font-extrabold">
             {step !== "packages" && (
@@ -375,8 +375,8 @@ export default function BuyCreditsModal({ open, onClose, themeVars, userId, sell
             </div>
 
             <div className="flex justify-center">
-              <div className="bg-white p-4 rounded-2xl shadow-lg">
-                <QRCodeCanvas value={pixData.emv} size={240} level="M" />
+              <div className="bg-white p-3 sm:p-4 rounded-2xl shadow-lg">
+                <QRCodeCanvas value={pixData.emv} size={180} level="M" className="sm:!w-[220px] sm:!h-[220px]" />
               </div>
             </div>
 
