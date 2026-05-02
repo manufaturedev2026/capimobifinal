@@ -360,43 +360,40 @@ export default function BuyCreditsModal({ open, onClose, themeVars, userId, sell
         )}
 
         {step === "pix" && pixData && (
-          <div className="px-6 py-6 space-y-5">
-            <div className="rounded-xl border border-border bg-muted/40 p-4 flex items-center justify-between">
-              <div>
-                <p className="text-xs text-muted-foreground">Total</p>
-                <p className="font-display text-2xl font-extrabold text-primary">
+          <div className="px-4 sm:px-6 py-3 sm:py-6 space-y-2 sm:space-y-4">
+            <div className="flex items-center justify-between text-center">
+              <div className="flex-1">
+                <p className="text-[10px] text-muted-foreground">Total</p>
+                <p className="font-display text-base sm:text-xl font-extrabold text-primary leading-none">
                   R$ {orderAmount.toFixed(2).replace(".", ",")}
                 </p>
               </div>
-              <div className="text-right">
-                <p className="text-xs text-muted-foreground">Créditos</p>
-                <p className="font-display text-2xl font-extrabold text-foreground">{orderCredits}</p>
+              <div className="flex-1">
+                <p className="text-[10px] text-muted-foreground">Créditos</p>
+                <p className="font-display text-base sm:text-xl font-extrabold text-foreground leading-none">{orderCredits}</p>
               </div>
             </div>
 
             <div className="flex justify-center">
-              <div className="bg-white p-3 sm:p-4 rounded-2xl shadow-lg">
-                <QRCodeCanvas value={pixData.emv} size={180} level="M" className="sm:!w-[220px] sm:!h-[220px]" />
+              <div className="bg-white p-2 sm:p-3 rounded-xl shadow-lg">
+                <QRCodeCanvas value={pixData.emv} size={150} level="M" className="sm:!w-[200px] sm:!h-[200px]" />
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label className="text-xs">Código PIX copia e cola</Label>
-              <div className="flex items-center gap-2">
-                <Input value={pixData.emv} readOnly className="text-xs font-mono" />
-                <Button onClick={copyPix} variant="outline" size="icon" className="shrink-0">
-                  {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-                </Button>
-              </div>
+            <div className="flex items-center gap-2">
+              <Input value={pixData.emv} readOnly className="text-xs font-mono h-9" />
+              <Button onClick={copyPix} variant="outline" size="icon" className="shrink-0 h-9 w-9">
+                {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+              </Button>
             </div>
 
-            <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground py-2">
-              <Loader2 className="h-4 w-4 animate-spin text-primary" />
-              Aguardando pagamento... os créditos serão liberados automaticamente.
+            <div className="flex items-center justify-center gap-2 text-[11px] sm:text-sm text-muted-foreground">
+              <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" />
+              Aguardando pagamento — liberação automática.
             </div>
 
-            <Button variant="outline" onClick={handleClose} className="w-full">
-              Fechar (o pagamento continua válido)
+            <Button variant="outline" onClick={handleClose} className="w-full h-9 text-xs sm:text-sm">
+              Fechar (pagamento continua válido)
             </Button>
           </div>
         )}
