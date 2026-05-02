@@ -406,6 +406,10 @@ export default function SellerDashboard() {
 
   const sidebarNav = sidebarGroups.flatMap((group) => group.items).filter((item): item is Extract<SidebarNavItem, { type: "tab" }> => item.type === "tab");
 
+  // Lista completa (tab + link + action) para o menu "Mais" no mobile,
+  // garantindo que itens como Agenda, Novo Anúncio, Avaliação IA e Pacotes apareçam.
+  const mobileMenuItems = sidebarGroups.flatMap((group) => group.items);
+
   const getSidebarBadge = (id?: DashboardTab) => {
     if (id === "crm" && newCrmCount > 0) return newCrmCount;
     if (id === "captacao" && newCaptureCount > 0) return newCaptureCount;
