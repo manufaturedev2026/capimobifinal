@@ -141,8 +141,8 @@ export default function PlanCheckoutModal({ open, onClose, orderId, amount, plan
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="max-w-xl max-h-[95dvh] overflow-y-auto p-0 bg-background text-foreground border-border">
-        <DialogHeader className="px-4 sm:px-6 pt-4 sm:pt-6 pb-2">
-          <DialogTitle className="flex items-center gap-2 font-display text-xl sm:text-2xl font-extrabold">
+        <DialogHeader className={`px-4 sm:px-6 ${pixData ? "pt-3 pb-1" : "pt-4 sm:pt-6 pb-2"}`}>
+          <DialogTitle className={`flex items-center gap-2 font-display font-extrabold ${pixData ? "text-base sm:text-xl" : "text-xl sm:text-2xl"}`}>
             {pixData && (
               <button
                 type="button"
@@ -150,16 +150,16 @@ export default function PlanCheckoutModal({ open, onClose, orderId, amount, plan
                 className="p-1 rounded-full hover:bg-muted transition"
                 aria-label="Voltar"
               >
-                <ArrowLeft className="h-5 w-5" />
+                <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
               </button>
             )}
-            <Crown className="h-6 w-6 text-primary" />
-            Finalizar — {planName}
+            <Crown className={`text-primary ${pixData ? "h-4 w-4 sm:h-5 sm:w-5" : "h-6 w-6"}`} />
+            {pixData ? "Pague com PIX" : `Finalizar — ${planName}`}
           </DialogTitle>
-          {description && <p className="text-sm text-muted-foreground">{description}</p>}
+          {description && !pixData && <p className="text-sm text-muted-foreground">{description}</p>}
         </DialogHeader>
 
-        <div className="px-4 sm:px-6 pb-4 sm:pb-6 pt-2 space-y-3 sm:space-y-4">
+        <div className={`px-4 sm:px-6 pb-4 sm:pb-6 ${pixData ? "pt-1 space-y-2" : "pt-2 space-y-3 sm:space-y-4"}`}>
           {!pixData && (
             <div className="rounded-xl border border-border bg-muted/40 p-3 sm:p-4 flex justify-between items-center">
               <div>
@@ -175,12 +175,14 @@ export default function PlanCheckoutModal({ open, onClose, orderId, amount, plan
           )}
 
           <Tabs value={method} onValueChange={(v) => setMethod(v as any)}>
-            <TabsList className="grid grid-cols-2 w-full">
-              <TabsTrigger value="pix"><QrCode className="w-4 h-4 mr-2" />PIX</TabsTrigger>
-              <TabsTrigger value="credit-card"><CreditCard className="w-4 h-4 mr-2" />Cartão</TabsTrigger>
-            </TabsList>
+            {!pixData && (
+              <TabsList className="grid grid-cols-2 w-full">
+                <TabsTrigger value="pix"><QrCode className="w-4 h-4 mr-2" />PIX</TabsTrigger>
+                <TabsTrigger value="credit-card"><CreditCard className="w-4 h-4 mr-2" />Cartão</TabsTrigger>
+              </TabsList>
+            )}
 
-            <TabsContent value="pix" className="space-y-4 mt-4">
+            <TabsContent value="pix" className={pixData ? "space-y-3 mt-0" : "space-y-4 mt-4"}>
               {!pixData ? (
                 <>
                   <div>
@@ -202,25 +204,22 @@ export default function PlanCheckoutModal({ open, onClose, orderId, amount, plan
                   </Button>
                 </>
               ) : (
-                <div className="text-center space-y-3">
-                  <p className="font-display text-xl sm:text-2xl font-extrabold text-primary">
+                <div className="text-center space-y-2">
+                  <p className="font-display text-lg sm:text-2xl font-extrabold text-primary leading-none">
                     R$ {amount.toFixed(2).replace(".", ",")}
                   </p>
-                  <div className="bg-white p-3 sm:p-4 rounded-2xl shadow-lg inline-block">
-                    <QRCodeCanvas value={pixData.emv} size={180} level="M" className="sm:!w-[220px] sm:!h-[220px]" />
+                  <div className="bg-white p-2 sm:p-3 rounded-xl shadow-lg inline-block">
+                    <QRCodeCanvas value={pixData.emv} size={150} level="M" className="sm:!w-[200px] sm:!h-[200px]" />
                   </div>
-                  <p className="text-xs sm:text-sm text-muted-foreground">
-                    Escaneie no app do banco ou copie o código abaixo
-                  </p>
                   <div className="flex items-center gap-2">
-                    <Input value={pixData.emv} readOnly className="text-xs font-mono" />
-                    <Button onClick={copyPix} variant="outline" size="icon" className="shrink-0">
+                    <Input value={pixData.emv} readOnly className="text-xs font-mono h-9" />
+                    <Button onClick={copyPix} variant="outline" size="icon" className="shrink-0 h-9 w-9">
                       {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                     </Button>
                   </div>
-                  <div className="flex items-center justify-center gap-2 text-xs sm:text-sm text-muted-foreground py-1">
-                    <Loader2 className="w-4 h-4 animate-spin text-primary" />
-                    Aguardando pagamento... liberação automática.
+                  <div className="flex items-center justify-center gap-2 text-[11px] sm:text-sm text-muted-foreground">
+                    <Loader2 className="w-3.5 h-3.5 animate-spin text-primary" />
+                    Aguardando pagamento — liberação automática.
                   </div>
                 </div>
               )}
