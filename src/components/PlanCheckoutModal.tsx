@@ -140,9 +140,9 @@ export default function PlanCheckoutModal({ open, onClose, orderId, amount, plan
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto p-0 bg-background text-foreground border-border">
-        <DialogHeader className="px-6 pt-6 pb-2">
-          <DialogTitle className="flex items-center gap-2 font-display text-2xl font-extrabold">
+      <DialogContent className="max-w-xl max-h-[95dvh] overflow-y-auto p-0 bg-background text-foreground border-border">
+        <DialogHeader className="px-4 sm:px-6 pt-4 sm:pt-6 pb-2">
+          <DialogTitle className="flex items-center gap-2 font-display text-xl sm:text-2xl font-extrabold">
             {pixData && (
               <button
                 type="button"
@@ -159,18 +159,20 @@ export default function PlanCheckoutModal({ open, onClose, orderId, amount, plan
           {description && <p className="text-sm text-muted-foreground">{description}</p>}
         </DialogHeader>
 
-        <div className="px-6 pb-6 pt-2 space-y-4">
-          <div className="rounded-xl border border-border bg-muted/40 p-4 flex justify-between items-center">
-            <div>
-              <p className="text-xs text-muted-foreground">Total a pagar</p>
-              <p className="font-display text-3xl font-extrabold text-primary">
-                R$ {amount.toFixed(2).replace(".", ",")}
-              </p>
+        <div className="px-4 sm:px-6 pb-4 sm:pb-6 pt-2 space-y-3 sm:space-y-4">
+          {!pixData && (
+            <div className="rounded-xl border border-border bg-muted/40 p-3 sm:p-4 flex justify-between items-center">
+              <div>
+                <p className="text-xs text-muted-foreground">Total a pagar</p>
+                <p className="font-display text-2xl sm:text-3xl font-extrabold text-primary">
+                  R$ {amount.toFixed(2).replace(".", ",")}
+                </p>
+              </div>
+              {orderId && (
+                <p className="text-[11px] text-muted-foreground">Pedido #{orderId}</p>
+              )}
             </div>
-            {orderId && (
-              <p className="text-[11px] text-muted-foreground">Pedido #{orderId}</p>
-            )}
-          </div>
+          )}
 
           <Tabs value={method} onValueChange={(v) => setMethod(v as any)}>
             <TabsList className="grid grid-cols-2 w-full">
@@ -200,11 +202,14 @@ export default function PlanCheckoutModal({ open, onClose, orderId, amount, plan
                   </Button>
                 </>
               ) : (
-                <div className="text-center space-y-4">
-                  <div className="bg-white p-4 rounded-2xl shadow-lg inline-block">
-                    <QRCodeCanvas value={pixData.emv} size={240} level="M" />
+                <div className="text-center space-y-3">
+                  <p className="font-display text-xl sm:text-2xl font-extrabold text-primary">
+                    R$ {amount.toFixed(2).replace(".", ",")}
+                  </p>
+                  <div className="bg-white p-3 sm:p-4 rounded-2xl shadow-lg inline-block">
+                    <QRCodeCanvas value={pixData.emv} size={180} level="M" className="sm:!w-[220px] sm:!h-[220px]" />
                   </div>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-xs sm:text-sm text-muted-foreground">
                     Escaneie no app do banco ou copie o código abaixo
                   </p>
                   <div className="flex items-center gap-2">
@@ -213,7 +218,7 @@ export default function PlanCheckoutModal({ open, onClose, orderId, amount, plan
                       {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                     </Button>
                   </div>
-                  <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground py-2">
+                  <div className="flex items-center justify-center gap-2 text-xs sm:text-sm text-muted-foreground py-1">
                     <Loader2 className="w-4 h-4 animate-spin text-primary" />
                     Aguardando pagamento... liberação automática.
                   </div>
