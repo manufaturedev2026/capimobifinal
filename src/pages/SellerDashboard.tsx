@@ -1311,105 +1311,68 @@ export default function SellerDashboard() {
               <div>
                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5 px-2">Painel</p>
                 <div className="space-y-0.5">
-                  {sidebarNav.slice(3).map((nav) => (
-                    <button
-                      key={nav.id}
-                      onClick={() => { handleTabClick(nav.id); setMobileMenuOpen(false); }}
-                      className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                        nav.locked
-                          ? "text-muted-foreground/50"
-                          : activeTab === nav.id
-                            ? "bg-primary text-primary-foreground"
-                            : "text-foreground hover:bg-secondary"
-                      }`}
-                    >
-                      {nav.locked ? <Lock size={16} /> : <nav.icon size={16} />}
-                      {nav.label}
-                      {nav.id === "crm" && newCrmCount > 0 && (
-                        <span className="ml-auto bg-destructive text-destructive-foreground text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
-                          {newCrmCount}
-                        </span>
-                      )}
-                      {nav.id === "captacao" && newCaptureCount > 0 && (
-                        <span className="ml-auto bg-destructive text-destructive-foreground text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
-                          {newCaptureCount}
-                        </span>
-                      )}
-                      {nav.id === "parcerias" && newPartnershipCount > 0 && (
-                        <span className="ml-auto bg-destructive text-destructive-foreground text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
-                          {newPartnershipCount}
-                        </span>
-                      )}
-                      {nav.locked && <Lock size={14} className="ml-auto text-muted-foreground/40" />}
-                    </button>
-                  ))}
-                  <Link to="/painel/novo" onClick={() => setMobileMenuOpen(false)}
-                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-foreground hover:bg-secondary transition-all">
-                    <Plus size={16} /> Novo Anúncio
-                  </Link>
-                  {profile?.id && (
-                    <Link to={getStoreUrl(profile)} onClick={() => setMobileMenuOpen(false)}
-                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-foreground hover:bg-secondary transition-all">
-                      <Eye size={16} /> Ver Minha Loja
-                    </Link>
-                  )}
-                  <button onClick={() => { setActiveTab("profile"); setMobileMenuOpen(false); }}
-                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-foreground hover:bg-secondary transition-all">
-                    <UserCircle size={16} /> Meu Perfil
-                  </button>
-                  <button onClick={() => { setActiveTab("customization"); setMobileMenuOpen(false); }}
-                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-foreground hover:bg-secondary transition-all">
-                    <Palette size={16} /> Personalização
-                  </button>
-                  <Link to="/pacotes" onClick={() => setMobileMenuOpen(false)}
-                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-foreground hover:bg-secondary transition-all">
-                    <Package size={16} /> Pacotes
-                  </Link>
-                  {isAdmin && (
-                    <Link to="/admin" onClick={() => setMobileMenuOpen(false)}
-                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-purple-500 hover:bg-purple-500/10 transition-all">
-                      <Shield size={16} /> Painel Admin
-                    </Link>
-                  )}
-                  {!installed && (
-                    <button
-                      onClick={async () => {
-                        setMobileMenuOpen(false);
-                        const result = await requestInstall();
-                        if (result.outcome === "unavailable") setShowInstallGuide(true);
-                      }}
-                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-emerald-500 hover:bg-emerald-500/10 transition-all"
-                    >
-                      <Download size={16} /> Instalar APP
-                    </button>
-                  )}
-                  {!pushSub.isSubscribed && (
-                    <button
-                      onClick={async () => {
-                        if (!pushSub.isSupported) {
-                          toast({ title: "Notificações não suportadas", description: pushSub.unsupportedReason || "Tente pelo app instalado.", variant: "destructive" });
-                          setMobileMenuOpen(false);
-                          return;
-                        }
-                        if (pushSub.permission === "denied") {
-                          toast({ title: "Notificações bloqueadas", description: "Desbloqueie nas configurações do navegador.", variant: "destructive" });
-                          setMobileMenuOpen(false);
-                          return;
-                        }
-                        await pushSub.subscribe();
-                        setMobileMenuOpen(false);
-                      }}
-                      disabled={pushSub.loading}
-                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-amber-500 hover:bg-amber-500/10 transition-all"
-                    >
-                      <Bell size={16} /> {pushSub.loading ? "Ativando..." : "Ativar Notificações"}
-                    </button>
-                  )}
-                  {pushSub.isSubscribed && (
-                    <div className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-muted-foreground opacity-70">
-                      <Bell size={16} /> Notificações ativas ✓
-                    </div>
-                  )}
+                  {mobileMenuItems.map((nav, idx) => {
+                    const Icon = nav.icon;
+                    const baseClass = "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all";
+                    const badge =
+                      nav.type === "tab" && nav.id === "crm" && newCrmCount > 0 ? newCrmCount :
+                      nav.type === "tab" && nav.id === "captacao" && newCaptureCount > 0 ? newCaptureCount :
+                      nav.type === "tab" && nav.id === "parcerias" && newPartnershipCount > 0 ? newPartnershipCount :
+                      null;
+
+                    if (nav.type === "tab") {
+                      const isActive = activeTab === nav.id;
+                      return (
+                        <button
+                          key={`tab-${nav.id}-${idx}`}
+                          onClick={() => { handleTabClick(nav.id); setMobileMenuOpen(false); }}
+                          className={`${baseClass} ${nav.locked ? "text-muted-foreground/50" : isActive ? "bg-primary text-primary-foreground" : "text-foreground hover:bg-secondary"}`}
+                        >
+                          {nav.locked ? <Lock size={16} /> : <Icon size={16} />}
+                          {nav.label}
+                          {badge !== null && (
+                            <span className="ml-auto bg-destructive text-destructive-foreground text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
+                              {badge}
+                            </span>
+                          )}
+                          {nav.locked && <Lock size={14} className="ml-auto text-muted-foreground/40" />}
+                        </button>
+                      );
+                    }
+
+                    if (nav.type === "link") {
+                      const isExternal = /^https?:\/\//i.test(nav.href);
+                      const isAdminLink = nav.href === "/admin";
+                      const linkClass = `${baseClass} ${isAdminLink ? "text-purple-500 hover:bg-purple-500/10" : "text-foreground hover:bg-secondary"}`;
+                      if (isExternal) {
+                        return (
+                          <a key={`link-${nav.href}-${idx}`} href={nav.href} target="_blank" rel="noopener noreferrer"
+                            onClick={() => setMobileMenuOpen(false)} className={linkClass}>
+                            <Icon size={16} /> {nav.label}
+                            {nav.badge && <span className="ml-auto text-[9px] font-bold bg-primary text-primary-foreground px-1.5 py-0.5 rounded">{nav.badge}</span>}
+                          </a>
+                        );
+                      }
+                      return (
+                        <Link key={`link-${nav.href}-${idx}`} to={nav.href} onClick={() => setMobileMenuOpen(false)} className={linkClass}>
+                          <Icon size={16} /> {nav.label}
+                          {nav.badge && <span className="ml-auto text-[9px] font-bold bg-primary text-primary-foreground px-1.5 py-0.5 rounded">{nav.badge}</span>}
+                        </Link>
+                      );
+                    }
+
+                    // action
+                    return (
+                      <button
+                        key={`action-${nav.key}-${idx}`}
+                        onClick={async () => { await nav.onClick(); setMobileMenuOpen(false); }}
+                        disabled={nav.disabled}
+                        className={`${baseClass} ${nav.disabled ? "text-muted-foreground opacity-70" : "text-amber-500 hover:bg-amber-500/10"}`}
+                      >
+                        <Icon size={16} /> {nav.label}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
