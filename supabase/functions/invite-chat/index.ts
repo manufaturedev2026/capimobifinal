@@ -294,7 +294,7 @@ serve(async (req) => {
           method: "POST",
           headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
           body: JSON.stringify({
-            model: "google/gemini-3-flash-preview",
+            model: "google/gemini-2.5-flash-lite",
             messages: [
               { role: "system", content: strategy },
               { role: "user", content: "Crie apenas a primeira mensagem de abertura do bot, obedecendo rigorosamente às instruções específicas." },
@@ -320,7 +320,7 @@ serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model: "google/gemini-2.5-flash-lite",
         messages: [
           { role: "system", content: strategy },
           ...messages,
