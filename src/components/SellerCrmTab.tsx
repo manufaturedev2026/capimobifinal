@@ -158,7 +158,7 @@ export default function SellerCrmTab({ userId, sellerId }: SellerCrmTabProps) {
   const fetchItems = useCallback(async () => {
     const { data } = await supabase
       .from("seller_items")
-      .select("id, title")
+      .select("id, title, slug, price, images, city, neighborhood, bedrooms, bathrooms, area")
       .eq("seller_id", sellerId)
       .eq("status", "ativo")
       .order("title");
