@@ -352,8 +352,10 @@ export default function InvitePage() {
     const notes = `Lead clicou no botão final do convite | Bot: ${config.name || config.slug || "principal"} | Tipo: ${config.ctaType}`;
     notifyAdminLead(userName || "Visitante do convite", "", notes);
 
-    if (config.ctaType === "internal") {
+    if (config.ctaType === "signup_chat") {
       setSignupOpen(true);
+    } else if (config.ctaType === "internal") {
+      navigate(config.ctaUrl);
     } else {
       window.open(config.ctaUrl, "_blank", "noopener");
     }

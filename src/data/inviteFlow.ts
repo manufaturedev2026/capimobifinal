@@ -27,7 +27,7 @@ export interface CtaStep extends StepBase {
 
 export type FlowStep = BotStep | InputStep | ChoiceStep | CtaStep;
 
-export type CtaType = "internal" | "whatsapp" | "whatsapp_group" | "url" | "crm" | "captacao_imobiliaria";
+export type CtaType = "internal" | "signup_chat" | "whatsapp" | "whatsapp_group" | "url" | "crm" | "captacao_imobiliaria";
 
 export interface InviteChatConfig {
   id?: string;
@@ -233,6 +233,7 @@ const FLOW_CAPTACAO_IMOBILIARIA: FlowStep[] = [
 
 export const DEFAULT_FLOWS: Record<CtaType, FlowStep[]> = {
   internal: FLOW_INTERNAL,
+  signup_chat: FLOW_INTERNAL,
   crm: FLOW_CRM,
   whatsapp: FLOW_WHATSAPP,
   whatsapp_group: FLOW_WHATSAPP_GROUP,
