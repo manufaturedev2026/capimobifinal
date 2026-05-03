@@ -115,14 +115,18 @@ export default function AdminBroadcastTab() {
   const [customEmailsRaw, setCustomEmailsRaw] = useState("");
   const [testEmail, setTestEmail] = useState("");
   const [sending, setSending] = useState(false);
+  const [sendProgress, setSendProgress] = useState("");
   const [testing, setTesting] = useState(false);
   const [savingTemplate, setSavingTemplate] = useState(false);
   const [newTemplateName, setNewTemplateName] = useState("");
 
   const parseCustomEmails = (raw: string): string[] => {
-    return Array.from(new Set(
-      raw.split(/[\s,;]+/).map((e) => e.trim().toLowerCase()).filter((e) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e))
-    ));
+    const matches = raw.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi) || [];
+    return Array.from(new Set(matches.map((e) => e.toLowerCase()).filter((email) => {
+      const [local, domain] = email.split("@");
+      if (!local || !domain || local.startsWith(".") || local.endsWith(".") || local.startsWith("-")) return false;
+      return domain.split(".").every((label) => /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/i.test(label));
+    })));
   };
   const customEmails = parseCustomEmails(customEmailsRaw);
 
@@ -210,14 +214,57 @@ export default function AdminBroadcastTab() {
     if (!confirm(`Enviar para ${totalRecipients} destinatário(s)?`)) return;
 
     setSending(true);
+    setSendProgress("");
+
+    if (selectedTiers.length === 0 && customEmails.length > 0) {
+      let sent = 0;
+      let failed = 0;
+      let pausedByLimit = false;
+
+      for (let i = 0; i < customEmails.length; i++) {
+        const email = customEmails[i];
+        setSendProgress(`Enviando ${i + 1}/${customEmails.length}: ${email}`);
+        const { data, error } = await supabase.functions.invoke("send-broadcast-email", {
+          body: { subject, content_html: contentHtml, tiers: [], custom_emails: [email], sync: true },
+        });
+
+        if (error || (data as any)?.error) {
+          failed += 1;
+        } else {
+          sent += Number((data as any)?.sent || 0);
+          failed += Number((data as any)?.failed || 0);
+          if ((data as any)?.rate_limited) {
+            pausedByLimit = true;
+            break;
+          }
+        }
+
+        if (i < customEmails.length - 1) {
+          setSendProgress(`Aguardando limite do SMTP... ${sent} enviado(s), ${failed} falha(s)`);
+          await new Promise((resolve) => setTimeout(resolve, 20_000));
+        }
+      }
+
+      setSending(false);
+      setSendProgress("");
+      toast({
+        title: pausedByLimit ? "Broadcast pausado pelo limite do SMTP" : "Broadcast finalizado",
+        description: `Enviados: ${sent} | Falhas: ${failed}${pausedByLimit ? " — aguarde o limite resetar antes de continuar." : ""}`,
+        variant: pausedByLimit ? "destructive" : undefined,
+      });
+      load();
+      return;
+    }
+
     const { data, error } = await supabase.functions.invoke("send-broadcast-email", {
       body: { subject, content_html: contentHtml, tiers: selectedTiers, custom_emails: customEmails },
     });
     setSending(false);
+    setSendProgress("");
     if (error || (data as any)?.error) {
       toast({ title: "Erro", description: (data as any)?.error || error?.message, variant: "destructive" });
     } else {
-      toast({ title: "Broadcast concluído!", description: `Enviados: ${(data as any)?.sent || 0} | Falhas: ${(data as any)?.failed || 0}` });
+      toast({ title: "Broadcast iniciado!", description: `${(data as any)?.total || totalRecipients} e-mail(s) na fila. Acompanhe o histórico em alguns minutos.` });
       load();
     }
   };
@@ -344,6 +391,7 @@ export default function AdminBroadcastTab() {
               {sending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
               Enviar para {totalRecipients} destinatário{totalRecipients !== 1 ? "s" : ""}
             </button>
+            {sendProgress && <p className="text-xs text-muted-foreground text-center">{sendProgress}</p>}
           </div>
         </div>
       ) : tab === "templates" ? (

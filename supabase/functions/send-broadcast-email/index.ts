@@ -6,7 +6,36 @@ const cors = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const ALLOWED_TIERS = ["start", "basico", "premium", "vip", "essencial_empresa", "premium_empresa", "prime_empresa", "black"];
+const ALLOWED_TIERS = ["basico", "start", "premium", "prime", "vip", "basico_empresa", "essencial_empresa", "premium_empresa", "prime_empresa", "black"];
+const SEND_DELAY_MS = 20_000;
+const STRICT_EMAIL_RE = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+
+const isValidEmail = (email: string) => {
+  if (!STRICT_EMAIL_RE.test(email)) return false;
+  const [local, domain] = email.split("@");
+  if (!local || !domain || local.startsWith(".") || local.endsWith(".") || local.startsWith("-")) return false;
+  return domain.split(".").every((label) => /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/i.test(label));
+};
+
+const parseRecipientInput = (raw: unknown) => {
+  const s = String(raw || "").trim();
+  if (!s) return null;
+  let name = "";
+  let email = "";
+  const angle = s.match(/^\s*(.*?)\s*<\s*([^>]+)\s*>\s*$/);
+  if (angle) {
+    name = angle[1].trim().replace(/^["']|["']$/g, "");
+    email = angle[2].trim().toLowerCase();
+  } else {
+    const match = s.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i);
+    email = (match?.[0] || "").trim().toLowerCase();
+    name = s.replace(email, "").replace(/[<>,;]/g, " ").trim();
+  }
+  if (!isValidEmail(email)) return null;
+  return { email, name };
+};
+
+const isRateLimitError = (message: string) => /rate\s*limit|ratelimit|too many|4\.7\.1/i.test(message);
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: cors });
@@ -30,7 +59,9 @@ Deno.serve(async (req) => {
       tiers: string[];
       test_email?: string;
       custom_emails?: string[];
+      sync?: boolean;
     };
+    const sync = Boolean((body as { sync?: boolean }).sync);
 
     if (!subject || !content_html) return json({ error: "Assunto e conteúdo obrigatórios" }, 400);
 
@@ -79,29 +110,14 @@ Deno.serve(async (req) => {
     }
 
     // Validate tiers + custom emails
-    // Supports formats: "user@x.com", "Nome <user@x.com>", "Nome,user@x.com"
+    // Supports formats: "user@x.com", "Nome <user@x.com>", pasted lines with brackets.
     const safeTiers = (tiers || []).filter((t) => ALLOWED_TIERS.includes(t));
-    const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const customNameByEmail = new Map<string, string>();
     const customList: string[] = [];
     for (const raw of (custom_emails || [])) {
-      const s = String(raw).trim();
-      if (!s) continue;
-      let name = "";
-      let email = "";
-      const m = s.match(/^\s*(.*?)\s*<\s*([^>]+)\s*>\s*$/);
-      if (m) {
-        name = m[1].trim().replace(/^["']|["']$/g, "");
-        email = m[2].trim().toLowerCase();
-      } else if (s.includes(",")) {
-        const parts = s.split(",").map((p) => p.trim());
-        const emailPart = parts.find((p) => emailRe.test(p.toLowerCase())) || "";
-        email = emailPart.toLowerCase();
-        name = parts.filter((p) => p !== emailPart).join(" ").trim();
-      } else {
-        email = s.toLowerCase();
-      }
-      if (!emailRe.test(email)) continue;
+      const parsed = parseRecipientInput(raw);
+      if (!parsed) continue;
+      const { email, name } = parsed;
       if (!customList.includes(email)) customList.push(email);
       if (name && !customNameByEmail.has(email)) customNameByEmail.set(email, name);
     }
@@ -155,11 +171,10 @@ Deno.serve(async (req) => {
     }
 
     let sent = 0, failed = 0;
+    let rateLimited = false;
     const tierLabel = [...safeTiers, ...(customList.length ? ["custom"] : [])].join(",");
 
-    // Process in background to avoid 150s timeout
-    const processInBackground = async () => {
-      for (const profile of recipients) {
+    const sendOne = async (profile: Recipient) => {
         const firstName = (profile.full_name || "").split(" ")[0] || "Olá";
         const html = String(content_html)
           .replaceAll("{{nome}}", firstName)
@@ -181,6 +196,7 @@ Deno.serve(async (req) => {
             subject: subj, tier_filter: tierLabel, status: "enviado",
           });
           sent++;
+          return { ok: true };
         } catch (e) {
           const msg = (e as Error).message;
           await admin.from("broadcast_sends").insert({
@@ -188,11 +204,31 @@ Deno.serve(async (req) => {
             subject: subj, tier_filter: tierLabel, status: "falhou", error_message: msg,
           });
           failed++;
+          return { ok: false, error: msg, rateLimited: isRateLimitError(msg) };
+        } finally {
+          try { await client.close(); } catch (_) {}
         }
-        try { await client.close(); } catch (_) {}
-        // small delay to avoid SMTP rate limits
-        await new Promise((r) => setTimeout(r, 250));
+    };
+
+    const processRecipients = async () => {
+      for (let i = 0; i < recipients.length; i++) {
+        const result = await sendOne(recipients[i]);
+        if (!result.ok && result.rateLimited) {
+          rateLimited = true;
+          break;
+        }
+        if (i < recipients.length - 1) await new Promise((r) => setTimeout(r, SEND_DELAY_MS));
       }
+    };
+
+    if (sync) {
+      await processRecipients();
+      return json({ ok: true, sent, failed, rate_limited: rateLimited, total: recipients.length, delay_ms: SEND_DELAY_MS });
+    }
+
+    // Process in background to avoid 150s timeout for legacy bulk calls
+    const processInBackground = async () => {
+      await processRecipients();
       console.log(`Broadcast ${batchId} done: sent=${sent} failed=${failed}`);
     };
 
