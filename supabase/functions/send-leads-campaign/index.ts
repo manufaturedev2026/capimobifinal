@@ -171,12 +171,8 @@ Deno.serve(async (req) => {
 
     let sent = 0, failed = 0;
     let rateLimited = false;
-    const SEND_DELAY_MS = 70_000;
-    const MAX_RUNTIME_MS = 120_000; // stay under 150s edge timeout
     const startedAt = Date.now();
     let timedOut = false;
-    const isRateLimitError = (msg: string) =>
-      /rate\s*limit|hostinger_out_ratelimit|4\.7\.1|connection not recoverable|datamode|too many/i.test(msg || "");
 
     for (let i = 0; i < leads.length; i++) {
       const lead = leads[i];
@@ -189,11 +185,27 @@ Deno.serve(async (req) => {
       const subj = String(body.subject).replaceAll("{{nome}}", firstName).replaceAll("{{empresa}}", lead.empresa || "");
 
       try {
+        const { data: latestSent } = await admin
+          .from("lead_campaign_sends")
+          .select("created_at")
+          .eq("status", "enviado")
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        const lastSentAt = latestSent?.created_at ? new Date(latestSent.created_at).getTime() : 0;
+        const waitMs = lastSentAt ? Math.max(0, SEND_DELAY_MS - (Date.now() - lastSentAt)) : 0;
+        if (waitMs > 1_000) {
+          rateLimited = true;
+          break;
+        }
+
+        const client = makeClient();
         await client.send({
           from: `${settings.sender_name} <${settings.sender_email}>`,
           to: lead.email!, subject: subj, html,
           replyTo: settings.reply_to || undefined,
         });
+        await safeClose(client);
         await admin.from("lead_campaign_sends").insert({
           campaign_id: campaignId, lead_id: lead.id, to_email: lead.email!, status: "enviado",
         });
@@ -221,8 +233,6 @@ Deno.serve(async (req) => {
       }
     }
 
-    await client.close();
-
     await admin.from("lead_campaigns").update({
       status: (rateLimited || timedOut) ? "pausado" : "concluido", sent_count: sent, failed_count: failed,
       finished_at: new Date().toISOString(),
@@ -235,6 +245,8 @@ Deno.serve(async (req) => {
       failed,
       total: leads.length,
       rate_limited: rateLimited,
+      retry_after_ms: rateLimited ? SMTP_RATE_LIMIT_RETRY_MS : 0,
+      delay_ms: SEND_DELAY_MS,
       partial: timedOut,
       message: rateLimited
         ? "Limite de envio do SMTP atingido. Aguarde ~10 minutos e clique em Enviar novamente para continuar (já enviados são pulados automaticamente)."
