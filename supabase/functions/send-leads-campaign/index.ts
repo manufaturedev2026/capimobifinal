@@ -107,6 +107,18 @@ Deno.serve(async (req) => {
 
     // Test mode
     if (body.test_email) {
+      const waitMs = await getGlobalSmtpWaitMs(admin);
+      if (waitMs > 1_000) {
+        return json({
+          ok: false,
+          test: true,
+          error: "Aguardando intervalo seguro do SMTP",
+          rate_limited: true,
+          retry_after_ms: waitMs,
+          message: `A Hostinger ainda está em intervalo de segurança. Tente novamente em ${Math.ceil(waitMs / 60000)} min.`,
+        });
+      }
+
       const client = makeClient();
       try {
         await client.send({
@@ -224,6 +236,13 @@ Deno.serve(async (req) => {
         if (waitMs > 1_000) {
           rateLimited = true;
           retryAfterMs = waitMs;
+          break;
+        }
+
+        const globalWaitMs = await getGlobalSmtpWaitMs(admin);
+        if (globalWaitMs > 1_000) {
+          rateLimited = true;
+          retryAfterMs = globalWaitMs;
           break;
         }
 
