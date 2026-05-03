@@ -220,6 +220,8 @@ export default function AdminBroadcastTab() {
       let sent = 0;
       let failed = 0;
       let pausedByLimit = false;
+      let nextDelayMs = 70_000;
+      let retryAfterMs = 0;
 
       for (let i = 0; i < customEmails.length; i++) {
         const email = customEmails[i];
@@ -231,17 +233,19 @@ export default function AdminBroadcastTab() {
         if (error || (data as any)?.error) {
           failed += 1;
         } else {
+          nextDelayMs = Number((data as any)?.delay_ms || nextDelayMs);
           sent += Number((data as any)?.sent || 0);
           failed += Number((data as any)?.failed || 0);
           if ((data as any)?.rate_limited) {
             pausedByLimit = true;
+            retryAfterMs = Number((data as any)?.retry_after_ms || nextDelayMs);
             break;
           }
         }
 
         if (i < customEmails.length - 1) {
-          setSendProgress(`Aguardando limite do SMTP... ${sent} enviado(s), ${failed} falha(s)`);
-          await new Promise((resolve) => setTimeout(resolve, 20_000));
+          setSendProgress(`Aguardando limite do SMTP (${Math.ceil(nextDelayMs / 1000)}s)... ${sent} enviado(s), ${failed} falha(s)`);
+          await new Promise((resolve) => setTimeout(resolve, nextDelayMs));
         }
       }
 
@@ -249,7 +253,7 @@ export default function AdminBroadcastTab() {
       setSendProgress("");
       toast({
         title: pausedByLimit ? "Broadcast pausado pelo limite do SMTP" : "Broadcast finalizado",
-        description: `Enviados: ${sent} | Falhas: ${failed}${pausedByLimit ? " — aguarde o limite resetar antes de continuar." : ""}`,
+        description: `Enviados: ${sent} | Falhas: ${failed}${pausedByLimit ? ` — aguarde cerca de ${Math.ceil((retryAfterMs || nextDelayMs) / 60000)} min antes de continuar.` : ""}`,
         variant: pausedByLimit ? "destructive" : undefined,
       });
       load();
