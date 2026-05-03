@@ -421,8 +421,8 @@ export default function AdminApifyLeadsTab() {
       toast({ title: `Status Apify: ${p.status}`, description: p.message || "" });
     } else {
       toast({
-        title: "Sincronizado!",
-        description: `Retornados: ${p.retornados} • Importados: ${p.importados} • Duplicados: ${p.duplicados}`,
+        title: "Importação iniciada",
+        description: p.message || "Processando em segundo plano. Atualize em alguns segundos.",
       });
     }
     await loadRuns();
