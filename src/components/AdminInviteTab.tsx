@@ -171,7 +171,7 @@ export default function AdminInviteTab() {
       name: `Cadastro Persuasivo ${nextIndex}`,
       slug: `cadastro-${nextIndex}`,
       attendantName: "Bia • Capimobi",
-      ctaType: "internal",
+      ctaType: "signup_chat",
       ctaText: "🚀 Criar minha conta grátis agora",
       ctaUrl: "/anunciar",
       chatMode: "ai",
