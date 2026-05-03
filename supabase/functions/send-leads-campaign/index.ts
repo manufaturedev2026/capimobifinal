@@ -25,6 +25,32 @@ async function safeClose(client: SMTPClient) {
   }
 }
 
+async function getGlobalSmtpWaitMs(admin: ReturnType<typeof createClient>) {
+  const [{ data: lastLead }, { data: lastBroadcast }] = await Promise.all([
+    admin
+      .from("lead_campaign_sends")
+      .select("status, sent_at, error_message")
+      .order("sent_at", { ascending: false })
+      .limit(1)
+      .maybeSingle(),
+    admin
+      .from("broadcast_sends")
+      .select("status, sent_at, error_message")
+      .order("sent_at", { ascending: false })
+      .limit(1)
+      .maybeSingle(),
+  ]);
+
+  const latest = [lastLead, lastBroadcast]
+    .filter(Boolean)
+    .sort((a: any, b: any) => new Date(b.sent_at).getTime() - new Date(a.sent_at).getTime())[0] as any;
+
+  if (!latest?.sent_at) return 0;
+  const elapsed = Date.now() - new Date(latest.sent_at).getTime();
+  const cooldown = isRateLimitError(latest.error_message || "") ? SMTP_RATE_LIMIT_RETRY_MS : SEND_DELAY_MS;
+  return Math.max(0, cooldown - elapsed);
+}
+
 interface CampaignBody {
   campaign_id?: string;
   name?: string;
