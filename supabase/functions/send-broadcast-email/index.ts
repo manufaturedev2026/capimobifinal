@@ -7,7 +7,8 @@ const cors = {
 };
 
 const ALLOWED_TIERS = ["basico", "start", "premium", "prime", "vip", "basico_empresa", "essencial_empresa", "premium_empresa", "prime_empresa", "black"];
-const SEND_DELAY_MS = 20_000;
+const SEND_DELAY_MS = 70_000;
+const SMTP_RATE_LIMIT_RETRY_MS = 10 * 60_000;
 const STRICT_EMAIL_RE = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
 
 const isValidEmail = (email: string) => {
@@ -35,7 +36,7 @@ const parseRecipientInput = (raw: unknown) => {
   return { email, name };
 };
 
-const isRateLimitError = (message: string) => /rate\s*limit|ratelimit|too many|4\.7\.1/i.test(message);
+const isRateLimitError = (message: string) => /rate\s*limit|ratelimit|hostinger_out_ratelimit|too many|4\.7\.1|451|connection not recoverable|datamode/i.test(message);
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: cors });
@@ -172,9 +173,24 @@ Deno.serve(async (req) => {
 
     let sent = 0, failed = 0;
     let rateLimited = false;
+    let retryAfterMs = 0;
     const tierLabel = [...safeTiers, ...(customList.length ? ["custom"] : [])].join(",");
 
     const sendOne = async (profile: Recipient) => {
+        const { data: latestSent } = await admin
+          .from("broadcast_sends")
+          .select("sent_at")
+          .eq("status", "enviado")
+          .order("sent_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        const lastSentAt = latestSent?.sent_at ? new Date(latestSent.sent_at).getTime() : 0;
+        const waitMs = lastSentAt ? Math.max(0, SEND_DELAY_MS - (Date.now() - lastSentAt)) : 0;
+        if (waitMs > 1_000) {
+          return { ok: false, error: "Aguardando intervalo seguro do SMTP", rateLimited: true, retryAfterMs: waitMs, skipped: true };
+        }
+
         const firstName = (profile.full_name || "").split(" ")[0] || "Olá";
         const html = String(content_html)
           .replaceAll("{{nome}}", firstName)
@@ -204,7 +220,7 @@ Deno.serve(async (req) => {
             subject: subj, tier_filter: tierLabel, status: "falhou", error_message: msg,
           });
           failed++;
-          return { ok: false, error: msg, rateLimited: isRateLimitError(msg) };
+          return { ok: false, error: msg, rateLimited: isRateLimitError(msg), retryAfterMs: SMTP_RATE_LIMIT_RETRY_MS };
         } finally {
           try { await client.close(); } catch (_) {}
         }
@@ -215,6 +231,7 @@ Deno.serve(async (req) => {
         const result = await sendOne(recipients[i]);
         if (!result.ok && result.rateLimited) {
           rateLimited = true;
+          retryAfterMs = Math.max(retryAfterMs, result.retryAfterMs || SMTP_RATE_LIMIT_RETRY_MS);
           break;
         }
         if (i < recipients.length - 1) await new Promise((r) => setTimeout(r, SEND_DELAY_MS));
@@ -223,7 +240,7 @@ Deno.serve(async (req) => {
 
     if (sync) {
       await processRecipients();
-      return json({ ok: true, sent, failed, rate_limited: rateLimited, total: recipients.length, delay_ms: SEND_DELAY_MS });
+      return json({ ok: true, sent, failed, rate_limited: rateLimited, retry_after_ms: retryAfterMs, total: recipients.length, delay_ms: SEND_DELAY_MS });
     }
 
     // Process in background to avoid 150s timeout for legacy bulk calls
