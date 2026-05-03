@@ -45,13 +45,14 @@ Deno.serve(async (req) => {
       p_key: key,
     });
 
-    const client = new SMTPClient({
+    const makeClient = () => new SMTPClient({
       connection: {
         hostname: settings.host,
         port: settings.port,
         tls: settings.security === "ssl",
         auth: { username: settings.username, password: pwd as string },
       },
+      pool: false,
     });
 
     const batchId = crypto.randomUUID();
@@ -60,6 +61,7 @@ Deno.serve(async (req) => {
     if (test_email) {
       const html = String(content_html).replaceAll("{{nome}}", "Teste");
       const subj = String(subject).replaceAll("{{nome}}", "Teste");
+      const client = makeClient();
       try {
         await client.send({
           from: `${settings.sender_name} <${settings.sender_email}>`,
@@ -149,7 +151,6 @@ Deno.serve(async (req) => {
     }
 
     if (recipients.length === 0) {
-      await client.close();
       return json({ ok: true, sent: 0, failed: 0, message: "Nenhum destinatário encontrado" });
     }
 
@@ -166,6 +167,7 @@ Deno.serve(async (req) => {
           .replaceAll("{{email}}", profile.email);
         const subj = String(subject).replaceAll("{{nome}}", firstName);
 
+        const client = makeClient();
         try {
           await client.send({
             from: `${settings.sender_name} <${settings.sender_email}>`,
@@ -187,8 +189,10 @@ Deno.serve(async (req) => {
           });
           failed++;
         }
+        try { await client.close(); } catch (_) {}
+        // small delay to avoid SMTP rate limits
+        await new Promise((r) => setTimeout(r, 250));
       }
-      try { await client.close(); } catch (_) {}
       console.log(`Broadcast ${batchId} done: sent=${sent} failed=${failed}`);
     };
 
