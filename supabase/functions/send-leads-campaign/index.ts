@@ -171,6 +171,7 @@ Deno.serve(async (req) => {
 
     let sent = 0, failed = 0;
     let rateLimited = false;
+    let retryAfterMs = 0;
     const startedAt = Date.now();
     let timedOut = false;
 
@@ -187,25 +188,29 @@ Deno.serve(async (req) => {
       try {
         const { data: latestSent } = await admin
           .from("lead_campaign_sends")
-          .select("created_at")
+          .select("sent_at")
           .eq("status", "enviado")
-          .order("created_at", { ascending: false })
+          .order("sent_at", { ascending: false })
           .limit(1)
           .maybeSingle();
-        const lastSentAt = latestSent?.created_at ? new Date(latestSent.created_at).getTime() : 0;
+        const lastSentAt = latestSent?.sent_at ? new Date(latestSent.sent_at).getTime() : 0;
         const waitMs = lastSentAt ? Math.max(0, SEND_DELAY_MS - (Date.now() - lastSentAt)) : 0;
         if (waitMs > 1_000) {
           rateLimited = true;
+          retryAfterMs = waitMs;
           break;
         }
 
         const client = makeClient();
-        await client.send({
-          from: `${settings.sender_name} <${settings.sender_email}>`,
-          to: lead.email!, subject: subj, html,
-          replyTo: settings.reply_to || undefined,
-        });
-        await safeClose(client);
+        try {
+          await client.send({
+            from: `${settings.sender_name} <${settings.sender_email}>`,
+            to: lead.email!, subject: subj, html,
+            replyTo: settings.reply_to || undefined,
+          });
+        } finally {
+          await safeClose(client);
+        }
         await admin.from("lead_campaign_sends").insert({
           campaign_id: campaignId, lead_id: lead.id, to_email: lead.email!, status: "enviado",
         });
@@ -221,6 +226,7 @@ Deno.serve(async (req) => {
         failed++;
         if (isRateLimitError((e as Error).message)) {
           rateLimited = true;
+          retryAfterMs = SMTP_RATE_LIMIT_RETRY_MS;
           break;
         }
       }
@@ -245,7 +251,7 @@ Deno.serve(async (req) => {
       failed,
       total: leads.length,
       rate_limited: rateLimited,
-      retry_after_ms: rateLimited ? SMTP_RATE_LIMIT_RETRY_MS : 0,
+      retry_after_ms: rateLimited ? retryAfterMs || SMTP_RATE_LIMIT_RETRY_MS : 0,
       delay_ms: SEND_DELAY_MS,
       partial: timedOut,
       message: rateLimited
