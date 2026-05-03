@@ -6,6 +6,32 @@ const cors = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+const SEND_DELAY_MS = 70_000;
+const SMTP_RATE_LIMIT_RETRY_MS = 10 * 60_000;
+const MAX_RUNTIME_MS = 120_000;
+
+const isRateLimitError = (msg: string) =>
+  /rate\s*limit|ratelimit|hostinger_out_ratelimit|451|4\.7\.1|connection not recoverable|datamode|too many/i.test(msg || "");
+
+async function safeClose(client: SMTPClient) {
+  try { await client.close(); } catch (_) {}
+}
+
+async function getGlobalSmtpWaitMs(admin: ReturnType<typeof createClient>) {
+  const [{ data: lastLead }, { data: lastBroadcast }, { data: lastFunnel }] = await Promise.all([
+    admin.from("lead_campaign_sends").select("status, sent_at, error_message").order("sent_at", { ascending: false }).limit(1).maybeSingle(),
+    admin.from("broadcast_sends").select("status, sent_at, error_message").order("sent_at", { ascending: false }).limit(1).maybeSingle(),
+    admin.from("funnel_sends").select("status, sent_at, error_message").order("sent_at", { ascending: false }).limit(1).maybeSingle(),
+  ]);
+  const latest = [lastLead, lastBroadcast, lastFunnel]
+    .filter(Boolean)
+    .sort((a: any, b: any) => new Date(b.sent_at).getTime() - new Date(a.sent_at).getTime())[0] as any;
+  if (!latest?.sent_at) return 0;
+  const elapsed = Date.now() - new Date(latest.sent_at).getTime();
+  const cooldown = isRateLimitError(latest.error_message || "") ? SMTP_RATE_LIMIT_RETRY_MS : SEND_DELAY_MS;
+  return Math.max(0, cooldown - elapsed);
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: cors });
 
@@ -31,6 +57,16 @@ Deno.serve(async (req) => {
     const { data: pwd } = await admin.rpc("decrypt_smtp_password", {
       p_encrypted: settings.password_encrypted,
       p_key: key,
+    });
+
+    const makeClient = () => new SMTPClient({
+      connection: {
+        hostname: settings.host,
+        port: settings.port,
+        tls: settings.security === "ssl",
+        auth: { username: settings.username, password: pwd as string },
+      },
+      pool: false,
     });
 
     const { data: steps } = await admin
@@ -65,22 +101,18 @@ Deno.serve(async (req) => {
 
     let sent = 0, failed = 0, skipped = 0;
     const now = Date.now();
-
-    const client = new SMTPClient({
-      connection: {
-        hostname: settings.host,
-        port: settings.port,
-        tls: settings.security === "ssl",
-        auth: { username: settings.username, password: pwd as string },
-      },
-    });
+    const startedAt = Date.now();
+    let rateLimited = false;
+    let timedOut = false;
 
     for (const profile of profiles) {
+      if (rateLimited || timedOut) break;
       // Pula e-mails excluídos do funil
       if (excludedSet.has(String(profile.email).toLowerCase().trim())) { skipped++; continue; }
       const ageDays = Math.floor((now - new Date(profile.created_at).getTime()) / 86400000);
 
       for (const step of stepsFiltered) {
+        if (rateLimited || timedOut) break;
         // When invoked directly with a profile_id, ignore age check (immediate send)
         if (!onlyProfileId && ageDays !== step.day_offset) continue;
 
@@ -101,6 +133,11 @@ Deno.serve(async (req) => {
         const subject = String(step.subject)
           .replaceAll("{{nome}}", firstName);
 
+        // Cooldown global do SMTP (compartilhado com broadcast e leads)
+        const waitMs = await getGlobalSmtpWaitMs(admin);
+        if (waitMs > 1_000) { rateLimited = true; break; }
+
+        const client = makeClient();
         try {
           await client.send({
             from: `${settings.sender_name} <${settings.sender_email}>`,
@@ -139,12 +176,19 @@ Deno.serve(async (req) => {
             status: "failed", error_message: msg, context: `funnel_day_${step.day_offset}`,
           });
           failed++;
+          if (isRateLimitError(msg)) { rateLimited = true; }
+        } finally {
+          await safeClose(client);
+        }
+
+        if (Date.now() - startedAt + SEND_DELAY_MS > MAX_RUNTIME_MS) { timedOut = true; break; }
+        if (!rateLimited && !timedOut) {
+          await new Promise((r) => setTimeout(r, SEND_DELAY_MS));
         }
       }
     }
 
-    await client.close();
-    return json({ ok: true, sent, failed, skipped });
+    return json({ ok: true, sent, failed, skipped, rate_limited: rateLimited, partial: timedOut });
   } catch (e) {
     return json({ error: (e as Error).message }, 500);
   }
