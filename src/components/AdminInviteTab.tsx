@@ -77,6 +77,10 @@ const AI_STRATEGY_INFO: Record<string, { title: string; description: string }> =
     title: "📱 Cadastro Interno",
     description: "A IA identifica o perfil do visitante em tempo real (corretor, imobiliária, construtora ou autônomo), entende suas necessidades e apresenta de forma personalizada os principais benefícios da plataforma.\n\nDurante a conversa, ela demonstra funcionalidades relevantes como criação de app próprio, CRM integrado, captação de leads, anúncios automáticos, gestão de imóveis, atendimento via WhatsApp e ferramentas de vendas.\n\nCom abordagem natural e consultiva, a IA tira dúvidas, gera confiança, destaca vantagens competitivas e conduz o visitante passo a passo até criar uma conta gratuita, iniciar testes ou solicitar uma demonstração personalizada.",
   },
+  signup_chat: {
+    title: "💬 Cadastro pelo Chat",
+    description: "A IA conversa de forma persuasiva e, no momento ideal, abre um popup de cadastro DENTRO do próprio chat. O visitante cria a conta sem sair da conversa, entra automaticamente no funil de e-mails e a IA continua o atendimento parabenizando e orientando os primeiros passos. Ideal para máxima conversão sem fricção de redirecionamento.",
+  },
   crm: {
     title: "📋 Captura CRM",
     description: "A IA cria urgência e exclusividade, convencendo o visitante a deixar nome e WhatsApp para ser contatado por um consultor especializado.",
