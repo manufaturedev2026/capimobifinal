@@ -156,39 +156,46 @@ Deno.serve(async (req) => {
     let sent = 0, failed = 0;
     const tierLabel = [...safeTiers, ...(customList.length ? ["custom"] : [])].join(",");
 
-    for (const profile of recipients) {
-      const firstName = (profile.full_name || "").split(" ")[0] || "Olá";
-      const html = String(content_html)
-        .replaceAll("{{nome}}", firstName)
-        .replaceAll("{{nome_completo}}", profile.full_name || "")
-        .replaceAll("{{email}}", profile.email);
-      const subj = String(subject).replaceAll("{{nome}}", firstName);
+    // Process in background to avoid 150s timeout
+    const processInBackground = async () => {
+      for (const profile of recipients) {
+        const firstName = (profile.full_name || "").split(" ")[0] || "Olá";
+        const html = String(content_html)
+          .replaceAll("{{nome}}", firstName)
+          .replaceAll("{{nome_completo}}", profile.full_name || "")
+          .replaceAll("{{email}}", profile.email);
+        const subj = String(subject).replaceAll("{{nome}}", firstName);
 
-      try {
-        await client.send({
-          from: `${settings.sender_name} <${settings.sender_email}>`,
-          to: profile.email,
-          subject: subj,
-          html,
-          replyTo: settings.reply_to || undefined,
-        });
-        await admin.from("broadcast_sends").insert({
-          batch_id: batchId, to_email: profile.email, profile_id: profile.profile_id,
-          subject: subj, tier_filter: tierLabel, status: "enviado",
-        });
-        sent++;
-      } catch (e) {
-        const msg = (e as Error).message;
-        await admin.from("broadcast_sends").insert({
-          batch_id: batchId, to_email: profile.email, profile_id: profile.profile_id,
-          subject: subj, tier_filter: tierLabel, status: "falhou", error_message: msg,
-        });
-        failed++;
+        try {
+          await client.send({
+            from: `${settings.sender_name} <${settings.sender_email}>`,
+            to: profile.email,
+            subject: subj,
+            html,
+            replyTo: settings.reply_to || undefined,
+          });
+          await admin.from("broadcast_sends").insert({
+            batch_id: batchId, to_email: profile.email, profile_id: profile.profile_id,
+            subject: subj, tier_filter: tierLabel, status: "enviado",
+          });
+          sent++;
+        } catch (e) {
+          const msg = (e as Error).message;
+          await admin.from("broadcast_sends").insert({
+            batch_id: batchId, to_email: profile.email, profile_id: profile.profile_id,
+            subject: subj, tier_filter: tierLabel, status: "falhou", error_message: msg,
+          });
+          failed++;
+        }
       }
-    }
+      try { await client.close(); } catch (_) {}
+      console.log(`Broadcast ${batchId} done: sent=${sent} failed=${failed}`);
+    };
 
-    await client.close();
-    return json({ ok: true, sent, failed, batch_id: batchId, total: recipients.length });
+    // @ts-ignore EdgeRuntime is available in Supabase Edge runtime
+    EdgeRuntime.waitUntil(processInBackground());
+
+    return json({ ok: true, queued: true, batch_id: batchId, total: recipients.length });
   } catch (e) {
     return json({ error: (e as Error).message }, 500);
   }
