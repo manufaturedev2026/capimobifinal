@@ -57,6 +57,7 @@ type Run = {
   error_message: string | null;
   duration_ms: number | null;
   created_at: string;
+  apify_run_id?: string | null;
 };
 
 const QUICK_SEARCHES = [
@@ -401,6 +402,31 @@ export default function AdminApifyLeadsTab() {
     }
     toast({ title: "Cancelado", description: `${running.length} busca(s) marcada(s) como erro.` });
     await loadRuns();
+  }
+
+  async function syncRun(runId: string) {
+    const { data, error } = await supabase.functions.invoke("apify-sync-run", {
+      body: { run_id: runId },
+    });
+    if (error) {
+      toast({ title: "Erro ao sincronizar", description: error.message, variant: "destructive" });
+      return;
+    }
+    const p = data as any;
+    if (p?.error) {
+      toast({ title: "Erro", description: p.error, variant: "destructive" });
+      return;
+    }
+    if (p?.status && p.status !== "SUCCEEDED") {
+      toast({ title: `Status Apify: ${p.status}`, description: p.message || "" });
+    } else {
+      toast({
+        title: "Sincronizado!",
+        description: `Retornados: ${p.retornados} • Importados: ${p.importados} • Duplicados: ${p.duplicados}`,
+      });
+    }
+    await loadRuns();
+    await loadLeads();
   }
 
   async function runSearch() {
@@ -1419,11 +1445,12 @@ export default function AdminApifyLeadsTab() {
                     <TableHead>Duplic.</TableHead>
                     <TableHead>Tempo</TableHead>
                     <TableHead>Status</TableHead>
+                    <TableHead></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {runs.length === 0 ? (
-                    <TableRow><TableCell colSpan={8} className="text-center py-8 text-muted-foreground">Nenhuma busca executada</TableCell></TableRow>
+                    <TableRow><TableCell colSpan={9} className="text-center py-8 text-muted-foreground">Nenhuma busca executada</TableCell></TableRow>
                   ) : runs.map((r) => (
                     <TableRow key={r.id}>
                       <TableCell className="text-xs">{new Date(r.created_at).toLocaleString("pt-BR")}</TableCell>
@@ -1441,6 +1468,13 @@ export default function AdminApifyLeadsTab() {
                         {r.status === "concluido" && <Badge className="bg-emerald-500/10 text-emerald-600">Concluído</Badge>}
                         {r.status === "erro" && <Badge variant="destructive" title={r.error_message || ""}>Erro</Badge>}
                         {r.status === "rodando" && <Badge>Rodando</Badge>}
+                      </TableCell>
+                      <TableCell>
+                        {r.status === "rodando" && r.apify_run_id && (
+                          <Button size="sm" variant="outline" onClick={() => syncRun(r.id)}>
+                            <RefreshCw className="h-3 w-3 mr-1" />Sincronizar
+                          </Button>
+                        )}
                       </TableCell>
                     </TableRow>
                   ))}
