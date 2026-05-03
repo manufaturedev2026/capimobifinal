@@ -264,7 +264,7 @@ export default function AdminBroadcastTab() {
     if (error || (data as any)?.error) {
       toast({ title: "Erro", description: (data as any)?.error || error?.message, variant: "destructive" });
     } else {
-      toast({ title: "Broadcast concluído!", description: `Enviados: ${(data as any)?.sent || 0} | Falhas: ${(data as any)?.failed || 0}` });
+      toast({ title: "Broadcast iniciado!", description: `${(data as any)?.total || totalRecipients} e-mail(s) na fila. Acompanhe o histórico em alguns minutos.` });
       load();
     }
   };
@@ -391,6 +391,7 @@ export default function AdminBroadcastTab() {
               {sending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
               Enviar para {totalRecipients} destinatário{totalRecipients !== 1 ? "s" : ""}
             </button>
+            {sendProgress && <p className="text-xs text-muted-foreground text-center">{sendProgress}</p>}
           </div>
         </div>
       ) : tab === "templates" ? (
