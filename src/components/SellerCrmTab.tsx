@@ -10,6 +10,8 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { productUrl } from "@/lib/productUrl";
+import { SITE_URL } from "@/lib/siteUrl";
 
 interface SellerContact {
   id: string;
@@ -42,6 +44,14 @@ interface ActivityLog {
 interface SellerItem {
   id: string;
   title: string;
+  slug?: string | null;
+  price?: number | null;
+  images?: string[] | null;
+  city?: string | null;
+  neighborhood?: string | null;
+  bedrooms?: number | null;
+  bathrooms?: number | null;
+  area?: number | null;
 }
 
 const DEFAULT_STAGES = [
