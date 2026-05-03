@@ -850,10 +850,13 @@ export default function SellerCrmTab({ userId, sellerId }: SellerCrmTabProps) {
                                       <p className="text-[10px] font-bold text-muted-foreground mb-1.5">📲 Enviar WhatsApp:</p>
                                       <div className="flex flex-wrap gap-1.5">
                                         {(WHATSAPP_TEMPLATES[contact.funnel_stage] || WHATSAPP_TEMPLATES.novo).map((tpl) => {
-                                          const itemTitle = sellerItems.find(i => i.id === contact.interested_item_id)?.title;
+                                          const baseMsg = tpl.msg(contact.full_name, itemTitle);
+                                          const fullMsg = itemLink
+                                            ? `${baseMsg}\n\n🏠 Imóvel: ${itemTitle}\n🔗 ${itemLink}`
+                                            : baseMsg;
                                           return (
                                             <a key={tpl.label}
-                                              href={buildWhatsAppUrl(contact.phone!, tpl.msg(contact.full_name, itemTitle))}
+                                              href={buildWhatsAppUrl(contact.phone!, fullMsg)}
                                               target="_blank" rel="noopener noreferrer"
                                               onClick={() => markContacted(contact.id)}
                                               className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-green-500/10 text-green-600 text-[11px] font-medium hover:bg-green-500/20 transition-colors border border-green-500/20">
