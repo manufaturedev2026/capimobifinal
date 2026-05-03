@@ -7,6 +7,35 @@ const cors = {
 };
 
 const ALLOWED_TIERS = ["start", "basico", "premium", "vip", "essencial_empresa", "premium_empresa", "prime_empresa", "black"];
+const SEND_DELAY_MS = 20_000;
+const STRICT_EMAIL_RE = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+
+const isValidEmail = (email: string) => {
+  if (!STRICT_EMAIL_RE.test(email)) return false;
+  const [local, domain] = email.split("@");
+  if (!local || !domain || local.startsWith(".") || local.endsWith(".") || local.startsWith("-")) return false;
+  return domain.split(".").every((label) => /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/i.test(label));
+};
+
+const parseRecipientInput = (raw: unknown) => {
+  const s = String(raw || "").trim();
+  if (!s) return null;
+  let name = "";
+  let email = "";
+  const angle = s.match(/^\s*(.*?)\s*<\s*([^>]+)\s*>\s*$/);
+  if (angle) {
+    name = angle[1].trim().replace(/^["']|["']$/g, "");
+    email = angle[2].trim().toLowerCase();
+  } else {
+    const match = s.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i);
+    email = (match?.[0] || "").trim().toLowerCase();
+    name = s.replace(email, "").replace(/[<>,;]/g, " ").trim();
+  }
+  if (!isValidEmail(email)) return null;
+  return { email, name };
+};
+
+const isRateLimitError = (message: string) => /rate\s*limit|ratelimit|too many|4\.7\.1/i.test(message);
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: cors });
@@ -79,29 +108,14 @@ Deno.serve(async (req) => {
     }
 
     // Validate tiers + custom emails
-    // Supports formats: "user@x.com", "Nome <user@x.com>", "Nome,user@x.com"
+    // Supports formats: "user@x.com", "Nome <user@x.com>", pasted lines with brackets.
     const safeTiers = (tiers || []).filter((t) => ALLOWED_TIERS.includes(t));
-    const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const customNameByEmail = new Map<string, string>();
     const customList: string[] = [];
     for (const raw of (custom_emails || [])) {
-      const s = String(raw).trim();
-      if (!s) continue;
-      let name = "";
-      let email = "";
-      const m = s.match(/^\s*(.*?)\s*<\s*([^>]+)\s*>\s*$/);
-      if (m) {
-        name = m[1].trim().replace(/^["']|["']$/g, "");
-        email = m[2].trim().toLowerCase();
-      } else if (s.includes(",")) {
-        const parts = s.split(",").map((p) => p.trim());
-        const emailPart = parts.find((p) => emailRe.test(p.toLowerCase())) || "";
-        email = emailPart.toLowerCase();
-        name = parts.filter((p) => p !== emailPart).join(" ").trim();
-      } else {
-        email = s.toLowerCase();
-      }
-      if (!emailRe.test(email)) continue;
+      const parsed = parseRecipientInput(raw);
+      if (!parsed) continue;
+      const { email, name } = parsed;
       if (!customList.includes(email)) customList.push(email);
       if (name && !customNameByEmail.has(email)) customNameByEmail.set(email, name);
     }
