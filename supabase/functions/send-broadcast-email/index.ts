@@ -59,7 +59,9 @@ Deno.serve(async (req) => {
       tiers: string[];
       test_email?: string;
       custom_emails?: string[];
+      sync?: boolean;
     };
+    const sync = Boolean((body as { sync?: boolean }).sync);
 
     if (!subject || !content_html) return json({ error: "Assunto e conteúdo obrigatórios" }, 400);
 
@@ -169,11 +171,10 @@ Deno.serve(async (req) => {
     }
 
     let sent = 0, failed = 0;
+    let rateLimited = false;
     const tierLabel = [...safeTiers, ...(customList.length ? ["custom"] : [])].join(",");
 
-    // Process in background to avoid 150s timeout
-    const processInBackground = async () => {
-      for (const profile of recipients) {
+    const sendOne = async (profile: Recipient) => {
         const firstName = (profile.full_name || "").split(" ")[0] || "Olá";
         const html = String(content_html)
           .replaceAll("{{nome}}", firstName)
@@ -195,6 +196,7 @@ Deno.serve(async (req) => {
             subject: subj, tier_filter: tierLabel, status: "enviado",
           });
           sent++;
+          return { ok: true };
         } catch (e) {
           const msg = (e as Error).message;
           await admin.from("broadcast_sends").insert({
@@ -202,11 +204,31 @@ Deno.serve(async (req) => {
             subject: subj, tier_filter: tierLabel, status: "falhou", error_message: msg,
           });
           failed++;
+          return { ok: false, error: msg, rateLimited: isRateLimitError(msg) };
+        } finally {
+          try { await client.close(); } catch (_) {}
         }
-        try { await client.close(); } catch (_) {}
-        // small delay to avoid SMTP rate limits
-        await new Promise((r) => setTimeout(r, 250));
+    };
+
+    const processRecipients = async () => {
+      for (let i = 0; i < recipients.length; i++) {
+        const result = await sendOne(recipients[i]);
+        if (!result.ok && result.rateLimited) {
+          rateLimited = true;
+          break;
+        }
+        if (i < recipients.length - 1) await new Promise((r) => setTimeout(r, SEND_DELAY_MS));
       }
+    };
+
+    if (sync) {
+      await processRecipients();
+      return json({ ok: true, sent, failed, rate_limited: rateLimited, total: recipients.length, delay_ms: SEND_DELAY_MS });
+    }
+
+    // Process in background to avoid 150s timeout for legacy bulk calls
+    const processInBackground = async () => {
+      await processRecipients();
       console.log(`Broadcast ${batchId} done: sent=${sent} failed=${failed}`);
     };
 
