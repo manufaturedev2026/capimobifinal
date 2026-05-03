@@ -6,7 +6,7 @@ const cors = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const ALLOWED_TIERS = ["start", "basico", "premium", "vip", "essencial_empresa", "premium_empresa", "prime_empresa", "black"];
+const ALLOWED_TIERS = ["basico", "start", "premium", "prime", "vip", "basico_empresa", "essencial_empresa", "premium_empresa", "prime_empresa", "black"];
 const SEND_DELAY_MS = 20_000;
 const STRICT_EMAIL_RE = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
 
