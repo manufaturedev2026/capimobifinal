@@ -153,8 +153,16 @@ Deno.serve(async (req) => {
     }
 
     let sent = 0, failed = 0;
+    let rateLimited = false;
+    const SEND_DELAY_MS = 70_000;
+    const MAX_RUNTIME_MS = 120_000; // stay under 150s edge timeout
+    const startedAt = Date.now();
+    let timedOut = false;
+    const isRateLimitError = (msg: string) =>
+      /rate\s*limit|hostinger_out_ratelimit|4\.7\.1|connection not recoverable|datamode|too many/i.test(msg || "");
 
-    for (const lead of leads) {
+    for (let i = 0; i < leads.length; i++) {
+      const lead = leads[i];
       const firstName = (lead.nome || "").split(" ")[0] || "Olá";
       const html = String(body.content_html)
         .replaceAll("{{nome}}", firstName)
@@ -182,18 +190,44 @@ Deno.serve(async (req) => {
           status: "erro", error_message: (e as Error).message,
         });
         failed++;
+        if (isRateLimitError((e as Error).message)) {
+          rateLimited = true;
+          break;
+        }
+      }
+      if (i < leads.length - 1) {
+        if (Date.now() - startedAt + SEND_DELAY_MS > MAX_RUNTIME_MS) {
+          timedOut = true;
+          break;
+        }
+        await new Promise((r) => setTimeout(r, SEND_DELAY_MS));
       }
     }
 
     await client.close();
 
     await admin.from("lead_campaigns").update({
-      status: "concluido", sent_count: sent, failed_count: failed,
+      status: (rateLimited || timedOut) ? "pausado" : "concluido", sent_count: sent, failed_count: failed,
       finished_at: new Date().toISOString(),
     }).eq("id", campaignId);
 
-    return json({ ok: true, campaign_id: campaignId, sent, failed, total: leads.length });
+    return json({
+      ok: true,
+      campaign_id: campaignId,
+      sent,
+      failed,
+      total: leads.length,
+      rate_limited: rateLimited,
+      partial: timedOut,
+      message: rateLimited
+        ? "Limite de envio do SMTP atingido. Aguarde ~10 minutos e clique em Enviar novamente para continuar (já enviados são pulados automaticamente)."
+        : timedOut
+        ? `Lote parcial enviado (${sent}). Clique em Enviar novamente para continuar do próximo lead (já enviados são pulados).`
+        : undefined,
+    });
   } catch (e) {
-    return json({ error: (e as Error).message }, 500);
+    const msg = (e as Error).message || "";
+    const isRate = /rate\s*limit|hostinger_out_ratelimit|4\.7\.1|connection not recoverable|datamode|too many/i.test(msg);
+    return json({ error: msg, rate_limited: isRate }, isRate ? 200 : 500);
   }
 });
