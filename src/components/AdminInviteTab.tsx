@@ -161,6 +161,27 @@ export default function AdminInviteTab() {
     setActiveBotId(bot.id);
   };
 
+  const addPersuasiveSignupBot = () => {
+    const nextIndex = bots.length + 1;
+    const bot = createInviteBot({
+      name: `Cadastro Persuasivo ${nextIndex}`,
+      slug: `cadastro-${nextIndex}`,
+      attendantName: "Bia • Capimobi",
+      ctaType: "internal",
+      ctaText: "🚀 Criar minha conta grátis agora",
+      ctaUrl: "/anunciar",
+      chatMode: "ai",
+      aiPrompt: `MISSÃO: Maximizar cadastros no plano gratuito da Capimobi.\n\nSeja extremamente persuasiva, empolgada e próxima. Use o nome do visitante várias vezes. Sempre termine cada mensagem com um convite direto ao cadastro grátis.\n\nDestaque sempre:\n• Loja profissional GRÁTIS pra sempre\n• Até 5 imóveis sem pagar nada\n• CRM Kanban completo incluso\n• Sem cartão de crédito, sem pegadinha\n• Pronto em 2 minutos\n\nUse gatilhos mentais (escassez, urgência, prova social) e quebre objeções rapidamente. Quando o visitante mostrar QUALQUER interesse, ative o botão dizendo "clica no botão abaixo para criar sua conta gratuita agora!"`,
+    });
+    setConfig((prev) => {
+      const currentBots = prev.bots?.length ? prev.bots : [createInviteBot(prev as InviteBotConfig)];
+      const nextBots = [...currentBots, bot];
+      return { ...nextBots[0], bots: nextBots };
+    });
+    setActiveBotId(bot.id);
+    toast({ title: "Bot Cadastro Persuasivo criado!", description: "Já vem configurado com IA + gatilhos mentais. Salve para ativar." });
+  };
+
   const removeBot = (id: string) => {
     if (bots.length <= 1) return;
     const nextBots = bots.filter((bot) => bot.id !== id);
@@ -275,7 +296,12 @@ export default function AdminInviteTab() {
             <h3 className="text-sm font-semibold text-foreground flex items-center gap-2"><Bot size={16} /> Bots de Convite</h3>
             <p className="text-xs text-muted-foreground mt-1">Cada bot tem sua própria URL, IA, texto e botão final.</p>
           </div>
-          <Button variant="default" size="sm" onClick={addBot}><Plus size={14} /> Novo bot</Button>
+          <div className="flex gap-2 flex-wrap">
+            <Button variant="default" size="sm" onClick={addPersuasiveSignupBot} className="bg-gradient-to-r from-orange-500 to-pink-600 hover:opacity-90">
+              <Bot size={14} /> + Bot Cadastro Persuasivo
+            </Button>
+            <Button variant="secondary" size="sm" onClick={addBot}><Plus size={14} /> Novo bot</Button>
+          </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-[220px_1fr] gap-3">
           <div className="space-y-2">
