@@ -90,74 +90,109 @@ Deno.serve(async (req) => {
 
     if (!datasetId) throw new Error("Run sem defaultDatasetId");
 
-    const dsRes = await fetch(`https://api.apify.com/v2/datasets/${datasetId}/items?token=${apifyToken}&clean=true&format=json`);
-    if (!dsRes.ok) throw new Error(`Falha ao ler dataset (${dsRes.status})`);
-    const items = (await dsRes.json()) as any[];
-    const retornados = items.length;
+    const processInBackground = async () => {
+      const bgStart = Date.now();
+      try {
+        const dsRes = await fetch(`https://api.apify.com/v2/datasets/${datasetId}/items?token=${apifyToken}&clean=true&format=json`);
+        if (!dsRes.ok) throw new Error(`Falha ao ler dataset (${dsRes.status})`);
+        const items = (await dsRes.json()) as any[];
+        const retornados = items.length;
 
-    let importados = 0;
-    let duplicados = 0;
+        // Normalize all leads first
+        const normalized = items.map((it) => {
+          const nome = it.title || it.name;
+          if (!nome) return null;
+          const email = (it.emails?.[0] || it.email || null)?.toLowerCase().trim();
+          const telefone = cleanPhone(it.phone || it.phoneUnformatted);
+          const placeId = it.placeId || it.cid || null;
+          const tipo = inferTipoLead(nome, it.categoryName, run.tipo_lead === "ambos" ? undefined : run.tipo_lead);
+          return {
+            nome,
+            tipo_lead: tipo,
+            empresa: nome,
+            email: isValidEmail(email) ? email : null,
+            whatsapp: telefone,
+            telefone,
+            site: it.website || null,
+            instagram: it.instagrams?.[0] || null,
+            cidade: it.city || run.cidade,
+            estado: it.state || run.estado,
+            endereco: it.address || null,
+            cep: it.postalCode || null,
+            rating: it.totalScore || null,
+            reviews_count: it.reviewsCount || null,
+            google_place_id: placeId,
+            apify_run_id: run_id,
+            raw_data: it,
+            ultima_atualizacao: new Date().toISOString(),
+          };
+        }).filter(Boolean) as any[];
 
-    for (const it of items) {
-      const nome = it.title || it.name;
-      if (!nome) continue;
+        // Bulk fetch existing leads
+        const placeIds = [...new Set(normalized.map((l) => l.google_place_id).filter(Boolean))];
+        const emails = [...new Set(normalized.map((l) => l.email).filter(Boolean))];
+        const existingByPlace = new Map<string, string>();
+        const existingByEmail = new Map<string, string>();
 
-      const email = (it.emails?.[0] || it.email || null)?.toLowerCase().trim();
-      const telefone = cleanPhone(it.phone || it.phoneUnformatted);
-      const placeId = it.placeId || it.cid || null;
-      const tipo = inferTipoLead(nome, it.categoryName, run.tipo_lead === "ambos" ? undefined : run.tipo_lead);
+        if (placeIds.length) {
+          const { data } = await supabase.from("leads_imobiliarios")
+            .select("id, google_place_id").in("google_place_id", placeIds);
+          (data || []).forEach((r: any) => existingByPlace.set(r.google_place_id, r.id));
+        }
+        if (emails.length) {
+          const { data } = await supabase.from("leads_imobiliarios")
+            .select("id, email").in("email", emails);
+          (data || []).forEach((r: any) => existingByEmail.set(r.email, r.id));
+        }
 
-      const lead: any = {
-        nome,
-        tipo_lead: tipo,
-        empresa: nome,
-        email: isValidEmail(email) ? email : null,
-        whatsapp: telefone,
-        telefone,
-        site: it.website || null,
-        instagram: it.instagrams?.[0] || null,
-        cidade: it.city || run.cidade,
-        estado: it.state || run.estado,
-        endereco: it.address || null,
-        cep: it.postalCode || null,
-        rating: it.totalScore || null,
-        reviews_count: it.reviewsCount || null,
-        google_place_id: placeId,
-        apify_run_id: run_id,
-        raw_data: it,
-        ultima_atualizacao: new Date().toISOString(),
-      };
+        const toInsert: any[] = [];
+        const toUpdate: { id: string; lead: any }[] = [];
+        for (const lead of normalized) {
+          const existingId = (lead.google_place_id && existingByPlace.get(lead.google_place_id))
+            || (lead.email && existingByEmail.get(lead.email));
+          if (existingId) toUpdate.push({ id: existingId, lead });
+          else toInsert.push(lead);
+        }
 
-      let existing: any = null;
-      if (placeId) {
-        const { data } = await supabase.from("leads_imobiliarios").select("id").eq("google_place_id", placeId).maybeSingle();
-        existing = data;
+        let importados = 0;
+        // Bulk insert in chunks of 200
+        for (let i = 0; i < toInsert.length; i += 200) {
+          const chunk = toInsert.slice(i, i + 200);
+          const { error } = await supabase.from("leads_imobiliarios").insert(chunk);
+          if (!error) importados += chunk.length;
+        }
+        // Updates in parallel batches
+        for (let i = 0; i < toUpdate.length; i += 20) {
+          const batch = toUpdate.slice(i, i + 20);
+          await Promise.all(batch.map(({ id, lead }) =>
+            supabase.from("leads_imobiliarios").update(lead).eq("id", id)
+          ));
+        }
+
+        await supabase.from("apify_search_runs").update({
+          status: "concluido",
+          quantidade_retornada: retornados,
+          quantidade_importada: importados,
+          quantidade_duplicada: toUpdate.length,
+          duration_ms: Date.now() - bgStart,
+          finished_at: new Date().toISOString(),
+        }).eq("id", run_id);
+      } catch (e: any) {
+        console.error("apify-sync-run background error", e);
+        await supabase.from("apify_search_runs").update({
+          status: "erro",
+          error_message: e?.message || String(e),
+          finished_at: new Date().toISOString(),
+          duration_ms: Date.now() - bgStart,
+        }).eq("id", run_id);
       }
-      if (!existing && lead.email) {
-        const { data } = await supabase.from("leads_imobiliarios").select("id").eq("email", lead.email).maybeSingle();
-        existing = data;
-      }
+    };
 
-      if (existing) {
-        await supabase.from("leads_imobiliarios").update(lead).eq("id", existing.id);
-        duplicados++;
-      } else {
-        const { error } = await supabase.from("leads_imobiliarios").insert(lead);
-        if (!error) importados++;
-      }
-    }
-
-    await supabase.from("apify_search_runs").update({
-      status: "concluido",
-      quantidade_retornada: retornados,
-      quantidade_importada: importados,
-      quantidade_duplicada: duplicados,
-      duration_ms: Date.now() - startedAt,
-      finished_at: new Date().toISOString(),
-    }).eq("id", run_id);
+    // @ts-ignore EdgeRuntime
+    EdgeRuntime.waitUntil(processInBackground());
 
     return new Response(JSON.stringify({
-      success: true, status, retornados, importados, duplicados,
+      success: true, status, message: "Importação iniciada em segundo plano. Atualize em alguns segundos.",
     }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
   } catch (err: any) {
     console.error("apify-sync-run error", err);
