@@ -57,6 +57,7 @@ type Run = {
   error_message: string | null;
   duration_ms: number | null;
   created_at: string;
+  apify_run_id?: string | null;
 };
 
 const QUICK_SEARCHES = [
