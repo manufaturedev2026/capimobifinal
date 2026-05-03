@@ -70,16 +70,18 @@ Deno.serve(async (req) => {
       p_encrypted: settings.password_encrypted, p_key: key,
     });
 
-    const client = new SMTPClient({
+    const makeClient = () => new SMTPClient({
       connection: {
         hostname: settings.host, port: settings.port,
         tls: settings.security === "ssl",
         auth: { username: settings.username, password: pwd as string },
       },
+      pool: false,
     });
 
     // Test mode
     if (body.test_email) {
+      const client = makeClient();
       try {
         await client.send({
           from: `${settings.sender_name} <${settings.sender_email}>`,
@@ -88,11 +90,12 @@ Deno.serve(async (req) => {
           html: String(body.content_html).replaceAll("{{nome}}", "Teste").replaceAll("{{empresa}}", "Empresa Teste"),
           replyTo: settings.reply_to || undefined,
         });
-        await client.close();
+        await safeClose(client);
         return json({ ok: true, test: true });
       } catch (e) {
-        await client.close();
-        return json({ error: (e as Error).message }, 500);
+        const msg = (e as Error).message || "Erro ao enviar teste";
+        await safeClose(client);
+        return json({ error: msg, rate_limited: isRateLimitError(msg), retry_after_ms: SMTP_RATE_LIMIT_RETRY_MS }, isRateLimitError(msg) ? 200 : 500);
       }
     }
 
@@ -142,7 +145,6 @@ Deno.serve(async (req) => {
     }
 
     if (leads.length === 0) {
-      await client.close();
       return json({ ok: true, sent: 0, failed: 0, total: 0, message: "Nenhum lead disponível para envio (todos já receberam ou nenhum encontrado)." });
     }
 
