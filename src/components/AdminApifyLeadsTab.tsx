@@ -403,6 +403,31 @@ export default function AdminApifyLeadsTab() {
     await loadRuns();
   }
 
+  async function syncRun(runId: string) {
+    const { data, error } = await supabase.functions.invoke("apify-sync-run", {
+      body: { run_id: runId },
+    });
+    if (error) {
+      toast({ title: "Erro ao sincronizar", description: error.message, variant: "destructive" });
+      return;
+    }
+    const p = data as any;
+    if (p?.error) {
+      toast({ title: "Erro", description: p.error, variant: "destructive" });
+      return;
+    }
+    if (p?.status && p.status !== "SUCCEEDED") {
+      toast({ title: `Status Apify: ${p.status}`, description: p.message || "" });
+    } else {
+      toast({
+        title: "Sincronizado!",
+        description: `Retornados: ${p.retornados} • Importados: ${p.importados} • Duplicados: ${p.duplicados}`,
+      });
+    }
+    await loadRuns();
+    await loadLeads();
+  }
+
   async function runSearch() {
     if (!apifyToken) {
       toast({ title: "Configure o Token Apify", description: "Vá em Configurações Apify", variant: "destructive" });
