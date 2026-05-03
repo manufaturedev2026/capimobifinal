@@ -433,13 +433,14 @@ export default function AdminInviteTab() {
                 updateActiveBot((p) => ({
                   ...p,
                   ctaType: v,
-                  ctaUrl: v === "internal" ? "/anunciar" : v === "whatsapp" ? "https://wa.me/55" : v === "crm" || v === "captacao_imobiliaria" ? "" : "https://",
+                  ctaUrl: v === "internal" ? "/anunciar" : v === "signup_chat" ? "" : v === "whatsapp" ? "https://wa.me/55" : v === "crm" || v === "captacao_imobiliaria" ? "" : "https://",
                   flow: p.flows[v] || DEFAULT_FLOWS[v],
                 }));
               }}
               className="w-full text-sm bg-card text-foreground border border-border rounded px-3 py-2 mt-1"
             >
               <option value="internal">📱 Cadastro interno</option>
+              <option value="signup_chat">💬 Cadastro pelo Chat (popup no bot)</option>
               <option value="crm">📋 Salvar no CRM</option>
               <option value="whatsapp">💬 WhatsApp direto</option>
               <option value="whatsapp_group">👥 Grupo WhatsApp</option>
@@ -447,7 +448,20 @@ export default function AdminInviteTab() {
               <option value="captacao_imobiliaria">🏢 Captação de Imobiliárias</option>
             </select>
           </div>
-          {(activeBot.ctaType === "crm" || activeBot.ctaType === "captacao_imobiliaria") ? (
+          {activeBot.ctaType === "signup_chat" ? (
+            <div className="sm:col-span-2 space-y-3">
+              <div className="bg-primary/5 border border-primary/20 rounded-lg p-3 text-xs text-foreground">
+                <p className="font-semibold mb-1">💬 Cadastro pelo Chat ativado</p>
+                <p className="text-muted-foreground">
+                  Ao clicar no botão final, um popup de cadastro abre dentro do próprio chat. Depois de criar a conta, o visitante entra no funil automaticamente e a conversa continua normalmente.
+                </p>
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground">Texto do botão</label>
+                <Input value={activeBot.ctaText} onChange={(e) => updateActiveBot((p) => ({ ...p, ctaText: e.target.value }))} placeholder="🚀 Criar Minha Conta Grátis" className="mt-1" />
+              </div>
+            </div>
+          ) : (activeBot.ctaType === "crm" || activeBot.ctaType === "captacao_imobiliaria") ? (
             <div className="sm:col-span-2 space-y-3">
               <div className="bg-primary/5 border border-primary/20 rounded-lg p-3 text-xs text-foreground">
                 <p className="font-semibold mb-1">{activeBot.ctaType === "captacao_imobiliaria" ? "🏢 Modo Captação Imobiliárias" : "📋 Modo CRM ativado"}</p>
@@ -497,7 +511,7 @@ export default function AdminInviteTab() {
       <div className="bg-card border border-border rounded-xl p-4 space-y-3">
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-semibold text-foreground">🔀 Fluxo da Conversa — {
-            { internal: "📱 Cadastro", crm: "📋 CRM", whatsapp: "💬 WhatsApp", whatsapp_group: "👥 Grupo", url: "🔗 URL", captacao_imobiliaria: "🏢 Imobiliárias" }[activeBot.ctaType]
+            { internal: "📱 Cadastro", signup_chat: "💬 Cadastro Chat", crm: "📋 CRM", whatsapp: "💬 WhatsApp", whatsapp_group: "👥 Grupo", url: "🔗 URL", captacao_imobiliaria: "🏢 Imobiliárias" }[activeBot.ctaType]
           }</h3>
           <Button variant="ghost" size="sm" onClick={resetToDefault} className="text-xs text-muted-foreground">Restaurar padrão</Button>
         </div>
