@@ -6,8 +6,23 @@ const cors = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+const SEND_DELAY_MS = 70_000;
+const SMTP_RATE_LIMIT_RETRY_MS = 10 * 60_000;
+const MAX_RUNTIME_MS = 120_000; // stay under 150s edge timeout
+
+const isRateLimitError = (msg: string) =>
+  /rate\s*limit|ratelimit|hostinger_out_ratelimit|451|4\.7\.1|connection not recoverable|datamode|too many/i.test(msg || "");
+
 function json(d: unknown, s = 200) {
   return new Response(JSON.stringify(d), { status: s, headers: { ...cors, "Content-Type": "application/json" } });
+}
+
+async function safeClose(client: SMTPClient) {
+  try {
+    await client.close();
+  } catch (_) {
+    // Connection may already be unusable after Hostinger closes it in datamode.
+  }
 }
 
 interface CampaignBody {
