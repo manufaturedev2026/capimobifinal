@@ -6,8 +6,23 @@ const cors = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+const SEND_DELAY_MS = 70_000;
+const SMTP_RATE_LIMIT_RETRY_MS = 10 * 60_000;
+const MAX_RUNTIME_MS = 120_000; // stay under 150s edge timeout
+
+const isRateLimitError = (msg: string) =>
+  /rate\s*limit|ratelimit|hostinger_out_ratelimit|451|4\.7\.1|connection not recoverable|datamode|too many/i.test(msg || "");
+
 function json(d: unknown, s = 200) {
   return new Response(JSON.stringify(d), { status: s, headers: { ...cors, "Content-Type": "application/json" } });
+}
+
+async function safeClose(client: SMTPClient) {
+  try {
+    await client.close();
+  } catch (_) {
+    // Connection may already be unusable after Hostinger closes it in datamode.
+  }
 }
 
 interface CampaignBody {
@@ -55,16 +70,18 @@ Deno.serve(async (req) => {
       p_encrypted: settings.password_encrypted, p_key: key,
     });
 
-    const client = new SMTPClient({
+    const makeClient = () => new SMTPClient({
       connection: {
         hostname: settings.host, port: settings.port,
         tls: settings.security === "ssl",
         auth: { username: settings.username, password: pwd as string },
       },
+      pool: false,
     });
 
     // Test mode
     if (body.test_email) {
+      const client = makeClient();
       try {
         await client.send({
           from: `${settings.sender_name} <${settings.sender_email}>`,
@@ -73,11 +90,12 @@ Deno.serve(async (req) => {
           html: String(body.content_html).replaceAll("{{nome}}", "Teste").replaceAll("{{empresa}}", "Empresa Teste"),
           replyTo: settings.reply_to || undefined,
         });
-        await client.close();
+        await safeClose(client);
         return json({ ok: true, test: true });
       } catch (e) {
-        await client.close();
-        return json({ error: (e as Error).message }, 500);
+        const msg = (e as Error).message || "Erro ao enviar teste";
+        await safeClose(client);
+        return json({ error: msg, rate_limited: isRateLimitError(msg), retry_after_ms: SMTP_RATE_LIMIT_RETRY_MS }, isRateLimitError(msg) ? 200 : 500);
       }
     }
 
@@ -127,7 +145,6 @@ Deno.serve(async (req) => {
     }
 
     if (leads.length === 0) {
-      await client.close();
       return json({ ok: true, sent: 0, failed: 0, total: 0, message: "Nenhum lead disponível para envio (todos já receberam ou nenhum encontrado)." });
     }
 
@@ -154,12 +171,9 @@ Deno.serve(async (req) => {
 
     let sent = 0, failed = 0;
     let rateLimited = false;
-    const SEND_DELAY_MS = 70_000;
-    const MAX_RUNTIME_MS = 120_000; // stay under 150s edge timeout
+    let retryAfterMs = 0;
     const startedAt = Date.now();
     let timedOut = false;
-    const isRateLimitError = (msg: string) =>
-      /rate\s*limit|hostinger_out_ratelimit|4\.7\.1|connection not recoverable|datamode|too many/i.test(msg || "");
 
     for (let i = 0; i < leads.length; i++) {
       const lead = leads[i];
@@ -172,11 +186,31 @@ Deno.serve(async (req) => {
       const subj = String(body.subject).replaceAll("{{nome}}", firstName).replaceAll("{{empresa}}", lead.empresa || "");
 
       try {
-        await client.send({
-          from: `${settings.sender_name} <${settings.sender_email}>`,
-          to: lead.email!, subject: subj, html,
-          replyTo: settings.reply_to || undefined,
-        });
+        const { data: latestSent } = await admin
+          .from("lead_campaign_sends")
+          .select("sent_at")
+          .eq("status", "enviado")
+          .order("sent_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        const lastSentAt = latestSent?.sent_at ? new Date(latestSent.sent_at).getTime() : 0;
+        const waitMs = lastSentAt ? Math.max(0, SEND_DELAY_MS - (Date.now() - lastSentAt)) : 0;
+        if (waitMs > 1_000) {
+          rateLimited = true;
+          retryAfterMs = waitMs;
+          break;
+        }
+
+        const client = makeClient();
+        try {
+          await client.send({
+            from: `${settings.sender_name} <${settings.sender_email}>`,
+            to: lead.email!, subject: subj, html,
+            replyTo: settings.reply_to || undefined,
+          });
+        } finally {
+          await safeClose(client);
+        }
         await admin.from("lead_campaign_sends").insert({
           campaign_id: campaignId, lead_id: lead.id, to_email: lead.email!, status: "enviado",
         });
@@ -192,6 +226,7 @@ Deno.serve(async (req) => {
         failed++;
         if (isRateLimitError((e as Error).message)) {
           rateLimited = true;
+          retryAfterMs = SMTP_RATE_LIMIT_RETRY_MS;
           break;
         }
       }
@@ -203,8 +238,6 @@ Deno.serve(async (req) => {
         await new Promise((r) => setTimeout(r, SEND_DELAY_MS));
       }
     }
-
-    await client.close();
 
     await admin.from("lead_campaigns").update({
       status: (rateLimited || timedOut) ? "pausado" : "concluido", sent_count: sent, failed_count: failed,
@@ -218,6 +251,8 @@ Deno.serve(async (req) => {
       failed,
       total: leads.length,
       rate_limited: rateLimited,
+      retry_after_ms: rateLimited ? retryAfterMs || SMTP_RATE_LIMIT_RETRY_MS : 0,
+      delay_ms: SEND_DELAY_MS,
       partial: timedOut,
       message: rateLimited
         ? "Limite de envio do SMTP atingido. Aguarde ~10 minutos e clique em Enviar novamente para continuar (já enviados são pulados automaticamente)."
