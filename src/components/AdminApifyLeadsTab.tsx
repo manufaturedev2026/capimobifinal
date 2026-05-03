@@ -1444,11 +1444,12 @@ export default function AdminApifyLeadsTab() {
                     <TableHead>Duplic.</TableHead>
                     <TableHead>Tempo</TableHead>
                     <TableHead>Status</TableHead>
+                    <TableHead></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {runs.length === 0 ? (
-                    <TableRow><TableCell colSpan={8} className="text-center py-8 text-muted-foreground">Nenhuma busca executada</TableCell></TableRow>
+                    <TableRow><TableCell colSpan={9} className="text-center py-8 text-muted-foreground">Nenhuma busca executada</TableCell></TableRow>
                   ) : runs.map((r) => (
                     <TableRow key={r.id}>
                       <TableCell className="text-xs">{new Date(r.created_at).toLocaleString("pt-BR")}</TableCell>
@@ -1466,6 +1467,13 @@ export default function AdminApifyLeadsTab() {
                         {r.status === "concluido" && <Badge className="bg-emerald-500/10 text-emerald-600">Concluído</Badge>}
                         {r.status === "erro" && <Badge variant="destructive" title={r.error_message || ""}>Erro</Badge>}
                         {r.status === "rodando" && <Badge>Rodando</Badge>}
+                      </TableCell>
+                      <TableCell>
+                        {r.status === "rodando" && r.apify_run_id && (
+                          <Button size="sm" variant="outline" onClick={() => syncRun(r.id)}>
+                            <RefreshCw className="h-3 w-3 mr-1" />Sincronizar
+                          </Button>
+                        )}
                       </TableCell>
                     </TableRow>
                   ))}
