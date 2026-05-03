@@ -8,6 +8,7 @@ import { Helmet } from "react-helmet-async";
 import { SITE_URL } from "@/lib/siteUrl";
 import { DEFAULT_CONFIG, DEFAULT_FLOWS, type FlowStep, type BotStep, type InputStep, type ChoiceStep, type InviteChatConfig } from "@/data/inviteFlow";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import InviteSignupDialog from "@/components/InviteSignupDialog";
 
 const resolveInviteConfig = (parsed: any, botSlug?: string): InviteChatConfig => {
   const base = { ...DEFAULT_CONFIG };
@@ -52,6 +53,8 @@ export default function InvitePage() {
   const [crmCategory, setCrmCategory] = useState("imobiliaria");
   const [crmSaving, setCrmSaving] = useState(false);
   const [crmSaved, setCrmSaved] = useState(false);
+  const [signupOpen, setSignupOpen] = useState(false);
+  const [signedUp, setSignedUp] = useState(false);
 
   const chatRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -350,10 +353,32 @@ export default function InvitePage() {
     notifyAdminLead(userName || "Visitante do convite", "", notes);
 
     if (config.ctaType === "internal") {
-      navigate(config.ctaUrl);
+      setSignupOpen(true);
     } else {
       window.open(config.ctaUrl, "_blank", "noopener");
     }
+  };
+
+  const handleSignupSuccess = (name: string) => {
+    setSignedUp(true);
+    setShowCta(false);
+    trackEvent("signup_completed");
+    addBubble(`Pronto! Conta criada com sucesso, ${name}! 🎉`, "user");
+    setTimeout(() => {
+      addBubble(`Que demais, ${name}! 🚀 Sua conta está ativa e seu plano grátis liberado!`, "attendant");
+    }, 800);
+    setTimeout(() => {
+      addBubble("Agora é só acessar seu painel para criar sua loja, adicionar imóveis e começar a vender. Posso te explicar como começar?", "attendant");
+    }, 2200);
+    setTimeout(() => {
+      if (isAiMode) {
+        setAiMessages((prev) => [
+          ...prev,
+          { role: "user", content: `Acabei de criar minha conta como ${name}. Me ajude a começar.` },
+          { role: "assistant", content: "Conta criada com sucesso! Posso te guiar pelos primeiros passos do painel." },
+        ]);
+      }
+    }, 2400);
   };
 
   return (
@@ -365,6 +390,12 @@ export default function InvitePage() {
       </Helmet>
 
       <div className="flex flex-col overflow-hidden" style={{ background: "#e5ddd5", height: "100dvh", maxHeight: "100dvh" }}>
+        <InviteSignupDialog
+          open={signupOpen}
+          onOpenChange={setSignupOpen}
+          defaultName={userName || crmName}
+          onSuccess={handleSignupSuccess}
+        />
         <div className="sticky top-0 z-50 flex items-center gap-3 px-3 py-2" style={{ background: "#075e54" }}>
           <button onClick={() => navigate(-1)} className="text-white/80 hover:text-white"><ArrowLeft size={22} /></button>
           <div className="w-10 h-10 rounded-full bg-[#128c7e] flex items-center justify-center text-white font-bold text-lg overflow-hidden shrink-0">
