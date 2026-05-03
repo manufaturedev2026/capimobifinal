@@ -10,6 +10,8 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { productUrl } from "@/lib/productUrl";
+import { SITE_URL } from "@/lib/siteUrl";
 
 interface SellerContact {
   id: string;
@@ -42,6 +44,14 @@ interface ActivityLog {
 interface SellerItem {
   id: string;
   title: string;
+  slug?: string | null;
+  price?: number | null;
+  images?: string[] | null;
+  city?: string | null;
+  neighborhood?: string | null;
+  bedrooms?: number | null;
+  bathrooms?: number | null;
+  area?: number | null;
 }
 
 const DEFAULT_STAGES = [
@@ -148,7 +158,7 @@ export default function SellerCrmTab({ userId, sellerId }: SellerCrmTabProps) {
   const fetchItems = useCallback(async () => {
     const { data } = await supabase
       .from("seller_items")
-      .select("id, title")
+      .select("id, title, slug, price, images, city, neighborhood, bedrooms, bathrooms, area")
       .eq("seller_id", sellerId)
       .eq("status", "ativo")
       .order("title");
@@ -638,7 +648,10 @@ export default function SellerCrmTab({ userId, sellerId }: SellerCrmTabProps) {
                     {stageContacts.map((contact) => {
                       const isExpanded = expandedContact === contact.id;
                       const isDragging = draggedContact === contact.id;
-                      const itemTitle = sellerItems.find(i => i.id === contact.interested_item_id)?.title;
+                       const interestedItem = sellerItems.find(i => i.id === contact.interested_item_id);
+                       const itemTitle = interestedItem?.title;
+                       const itemImage = interestedItem?.images?.[0];
+                       const itemLink = interestedItem ? `${SITE_URL}${productUrl(interestedItem)}` : "";
                       const isFollowUpDue = contact.follow_up_date && contact.follow_up_date <= new Date().toISOString().split("T")[0];
                       return (
                         <motion.div key={contact.id} layout
@@ -689,10 +702,15 @@ export default function SellerCrmTab({ userId, sellerId }: SellerCrmTabProps) {
                                   )}
                                 </div>
                                 {contact.phone && <p className="text-[10px] text-muted-foreground mt-0.5">{contact.phone}</p>}
-                                {itemTitle && (
-                                  <p className="text-[10px] text-muted-foreground flex items-center gap-1 mt-0.5">
-                                    <Home size={9} /> {itemTitle}
-                                  </p>
+                                {interestedItem && (
+                                  <div className="flex items-center gap-1.5 mt-1 px-1.5 py-1 rounded-lg bg-primary/5 border border-primary/10">
+                                    {itemImage ? (
+                                      <img src={itemImage} alt={itemTitle} className="w-7 h-7 rounded object-cover shrink-0" />
+                                    ) : (
+                                      <div className="w-7 h-7 rounded bg-secondary flex items-center justify-center shrink-0"><Home size={11} className="text-muted-foreground" /></div>
+                                    )}
+                                    <p className="text-[10px] text-foreground font-medium truncate">{itemTitle}</p>
+                                  </div>
                                 )}
                                 {(contact.budget_min || contact.budget_max) && (
                                   <p className="text-[10px] text-muted-foreground flex items-center gap-1 mt-0.5">
@@ -726,6 +744,55 @@ export default function SellerCrmTab({ userId, sellerId }: SellerCrmTabProps) {
                               <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }}
                                 className="overflow-hidden" onClick={(e) => e.stopPropagation()}>
                                 <div className="mt-3 pt-3 border-t border-border space-y-3">
+                                  {/* Interested Property Card */}
+                                  {interestedItem && (
+                                    <div className="rounded-xl border border-primary/20 bg-primary/5 overflow-hidden">
+                                      <div className="flex gap-3 p-2.5">
+                                        {itemImage ? (
+                                          <img src={itemImage} alt={itemTitle} className="w-20 h-20 rounded-lg object-cover shrink-0" />
+                                        ) : (
+                                          <div className="w-20 h-20 rounded-lg bg-secondary flex items-center justify-center shrink-0"><Home size={24} className="text-muted-foreground" /></div>
+                                        )}
+                                        <div className="flex-1 min-w-0">
+                                          <p className="text-[10px] font-bold text-primary uppercase tracking-wide">🏠 Imóvel de interesse</p>
+                                          <p className="font-semibold text-xs text-foreground line-clamp-2 mt-0.5">{itemTitle}</p>
+                                          {interestedItem.price && (
+                                            <p className="text-[11px] font-bold text-foreground mt-0.5">{formatCurrency(interestedItem.price)}</p>
+                                          )}
+                                          {(interestedItem.neighborhood || interestedItem.city) && (
+                                            <p className="text-[10px] text-muted-foreground flex items-center gap-1 mt-0.5">
+                                              <MapPin size={9} /> {[interestedItem.neighborhood, interestedItem.city].filter(Boolean).join(" • ")}
+                                            </p>
+                                          )}
+                                          <div className="flex items-center gap-2 mt-1 text-[10px] text-muted-foreground">
+                                            {interestedItem.bedrooms ? <span>🛏️ {interestedItem.bedrooms}</span> : null}
+                                            {interestedItem.bathrooms ? <span>🚿 {interestedItem.bathrooms}</span> : null}
+                                            {interestedItem.area ? <span>📐 {interestedItem.area}m²</span> : null}
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div className="flex border-t border-primary/10">
+                                        <a href={itemLink} target="_blank" rel="noopener noreferrer"
+                                          className="flex-1 px-2 py-1.5 text-[10px] font-bold text-primary hover:bg-primary/10 transition-colors text-center border-r border-primary/10">
+                                          🔗 Abrir anúncio
+                                        </a>
+                                        <button type="button"
+                                          onClick={() => { navigator.clipboard.writeText(itemLink); toast({ title: "Link copiado!" }); }}
+                                          className="flex-1 px-2 py-1.5 text-[10px] font-bold text-primary hover:bg-primary/10 transition-colors text-center">
+                                            📋 Copiar link
+                                        </button>
+                                        {contact.phone && (
+                                          <a href={buildWhatsAppUrl(contact.phone, `Olá ${contact.full_name}! 😊\nSobre o imóvel "${itemTitle}"${interestedItem.price ? ` (${formatCurrency(interestedItem.price)})` : ""}, segue o link com todos os detalhes:\n${itemLink}\n\nFico à disposição para tirar dúvidas ou agendar uma visita!`)}
+                                            target="_blank" rel="noopener noreferrer"
+                                            onClick={() => markContacted(contact.id)}
+                                            className="flex-1 px-2 py-1.5 text-[10px] font-bold text-green-600 hover:bg-green-500/10 transition-colors text-center border-l border-primary/10">
+                                            💬 Enviar imóvel
+                                          </a>
+                                        )}
+                                      </div>
+                                    </div>
+                                  )}
+
                                   {/* Extra fields */}
                                   <div className="grid grid-cols-2 gap-2">
                                     <div>
@@ -783,10 +850,13 @@ export default function SellerCrmTab({ userId, sellerId }: SellerCrmTabProps) {
                                       <p className="text-[10px] font-bold text-muted-foreground mb-1.5">📲 Enviar WhatsApp:</p>
                                       <div className="flex flex-wrap gap-1.5">
                                         {(WHATSAPP_TEMPLATES[contact.funnel_stage] || WHATSAPP_TEMPLATES.novo).map((tpl) => {
-                                          const itemTitle = sellerItems.find(i => i.id === contact.interested_item_id)?.title;
+                                          const baseMsg = tpl.msg(contact.full_name, itemTitle);
+                                          const fullMsg = itemLink
+                                            ? `${baseMsg}\n\n🏠 Imóvel: ${itemTitle}\n🔗 ${itemLink}`
+                                            : baseMsg;
                                           return (
                                             <a key={tpl.label}
-                                              href={buildWhatsAppUrl(contact.phone!, tpl.msg(contact.full_name, itemTitle))}
+                                              href={buildWhatsAppUrl(contact.phone!, fullMsg)}
                                               target="_blank" rel="noopener noreferrer"
                                               onClick={() => markContacted(contact.id)}
                                               className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-green-500/10 text-green-600 text-[11px] font-medium hover:bg-green-500/20 transition-colors border border-green-500/20">
