@@ -688,13 +688,28 @@ export default function AdminApifyLeadsTab() {
     });
     if (test) setCampTesting(false); else setCampSending(false);
     if (error || (data as any)?.error) {
-      toast({ title: "Erro", description: error?.message || (data as any)?.error, variant: "destructive" });
+      const d = data as any;
+      if (d?.rate_limited) {
+        toast({
+          title: "Limite do SMTP atingido",
+          description: d?.message || "Aguarde ~10 minutos e clique em Enviar novamente. Os já enviados serão pulados automaticamente.",
+        });
+      } else {
+        toast({ title: "Erro", description: error?.message || d?.error, variant: "destructive" });
+      }
     } else {
       const d = data as any;
+      if (d.rate_limited) {
+        toast({
+          title: "Envio pausado (limite SMTP)",
+          description: `${d.sent} enviados antes do limite. Aguarde ~10min e clique em Enviar novamente para continuar.`,
+        });
+      } else {
       toast({
         title: test ? "E-mail de teste enviado" : "Campanha enviada",
         description: test ? campTestEmail : `${d.sent} enviados • ${d.failed} falhas • ${d.total} destinatários`,
       });
+      }
       if (!test) {
         setCampOpen(false);
         setSelectedLeadIds(new Set());
