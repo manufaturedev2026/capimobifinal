@@ -155,6 +155,9 @@ Deno.serve(async (req) => {
     let sent = 0, failed = 0;
     let rateLimited = false;
     const SEND_DELAY_MS = 70_000;
+    const MAX_RUNTIME_MS = 120_000; // stay under 150s edge timeout
+    const startedAt = Date.now();
+    let timedOut = false;
     const isRateLimitError = (msg: string) =>
       /rate\s*limit|hostinger_out_ratelimit|4\.7\.1|connection not recoverable|datamode|too many/i.test(msg || "");
 
@@ -193,6 +196,10 @@ Deno.serve(async (req) => {
         }
       }
       if (i < leads.length - 1) {
+        if (Date.now() - startedAt + SEND_DELAY_MS > MAX_RUNTIME_MS) {
+          timedOut = true;
+          break;
+        }
         await new Promise((r) => setTimeout(r, SEND_DELAY_MS));
       }
     }
@@ -200,7 +207,7 @@ Deno.serve(async (req) => {
     await client.close();
 
     await admin.from("lead_campaigns").update({
-      status: rateLimited ? "pausado" : "concluido", sent_count: sent, failed_count: failed,
+      status: (rateLimited || timedOut) ? "pausado" : "concluido", sent_count: sent, failed_count: failed,
       finished_at: new Date().toISOString(),
     }).eq("id", campaignId);
 
@@ -211,8 +218,11 @@ Deno.serve(async (req) => {
       failed,
       total: leads.length,
       rate_limited: rateLimited,
+      partial: timedOut,
       message: rateLimited
         ? "Limite de envio do SMTP atingido. Aguarde ~10 minutos e clique em Enviar novamente para continuar (já enviados são pulados automaticamente)."
+        : timedOut
+        ? `Lote parcial enviado (${sent}). Clique em Enviar novamente para continuar do próximo lead (já enviados são pulados).`
         : undefined,
     });
   } catch (e) {
