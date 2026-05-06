@@ -8,7 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useMyStoryCount } from "@/hooks/useStories";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { ImagePlus, Loader2, Link as LinkIcon, Type, FileText, Package, Users } from "lucide-react";
+import { ImagePlus, Loader2, Type, FileText, Package, Users } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface StoryUploadDialogProps {
@@ -47,7 +47,6 @@ export default function StoryUploadDialog({ open, onOpenChange, sellerId, onUplo
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [buttonText, setButtonText] = useState("");
-  const [buttonUrl, setButtonUrl] = useState("");
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [items, setItems] = useState<SellerItemOption[]>([]);
   const [showItemPicker, setShowItemPicker] = useState(false);
@@ -107,7 +106,6 @@ export default function StoryUploadDialog({ open, onOpenChange, sellerId, onUplo
     setTitle("");
     setDescription("");
     setButtonText("");
-    setButtonUrl("");
     setSelectedItemId(null);
     setSelectedMemberId(null);
     setShowItemPicker(false);
@@ -116,6 +114,14 @@ export default function StoryUploadDialog({ open, onOpenChange, sellerId, onUplo
 
   const handleUpload = async () => {
     if (!file || !user || !sellerId) return;
+    if (!selectedItemId) {
+      toast({
+        title: "Vincule um anúncio",
+        description: "Todo story precisa estar vinculado a um anúncio da sua loja.",
+        variant: "destructive",
+      });
+      return;
+    }
     setUploading(true);
     try {
       // Comprime apenas se for imagem (não comprime vídeos de stories)
@@ -136,10 +142,7 @@ export default function StoryUploadDialog({ open, onOpenChange, sellerId, onUplo
         .from("seller-uploads")
         .getPublicUrl(path);
 
-      let finalButtonUrl = buttonUrl;
-      if (selectedItemId && !finalButtonUrl) {
-        finalButtonUrl = `/imoveis/produto/${selectedItemId}`;
-      }
+      const finalButtonUrl = `/imoveis/produto/${selectedItemId}`;
 
       const { error: insertError } = await supabase
         .from("seller_stories")
@@ -150,7 +153,7 @@ export default function StoryUploadDialog({ open, onOpenChange, sellerId, onUplo
           title: title.trim() || null,
           description: description.trim() || null,
           button_text: buttonText.trim() || null,
-          button_url: finalButtonUrl.trim() || null,
+          button_url: finalButtonUrl,
           item_id: selectedItemId,
           team_member_id: selectedMemberId,
         } as any);
@@ -298,23 +301,20 @@ export default function StoryUploadDialog({ open, onOpenChange, sellerId, onUplo
                   <Textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Breve descrição..." maxLength={140} rows={2} />
                 </div>
 
-                {/* Button text + URL */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  <div className="space-y-1.5">
-                    <Label className="text-xs">Texto do botão</Label>
-                    <Input value={buttonText} onChange={(e) => setButtonText(e.target.value)} placeholder="Ver mais" maxLength={30} />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label className="flex items-center gap-1 text-xs"><LinkIcon className="w-3 h-3" /> Link</Label>
-                    <Input value={buttonUrl} onChange={(e) => setButtonUrl(e.target.value)} placeholder="https://..." disabled={!!selectedItemId} />
-                  </div>
+                {/* Button text */}
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Texto do botão</Label>
+                  <Input value={buttonText} onChange={(e) => setButtonText(e.target.value)} placeholder="Ver anúncio" maxLength={30} />
                 </div>
 
                 {/* Link to item */}
                 <div className="space-y-1.5">
                   <Label className="flex items-center gap-1.5 text-xs">
-                    <Package className="w-3.5 h-3.5" /> Vincular a um anúncio (opcional)
+                    <Package className="w-3.5 h-3.5" /> Vincular a um anúncio <span className="text-destructive">*</span>
                   </Label>
+                  <p className="text-[10px] text-muted-foreground">
+                    Obrigatório. O story sempre direciona para um anúncio da sua loja.
+                  </p>
                   {selectedItem ? (
                     <div className="flex items-center gap-2 p-2 rounded-lg border border-border bg-muted/50">
                       {selectedItem.photos?.[0] && <img loading="lazy" decoding="async" src={selectedItem.photos[0]} alt="" className="w-10 h-10 rounded object-cover" />}
@@ -322,7 +322,7 @@ export default function StoryUploadDialog({ open, onOpenChange, sellerId, onUplo
                         <p className="text-xs font-medium truncate">{selectedItem.title}</p>
                         {selectedItem.price && <p className="text-[10px] text-muted-foreground">{formatPrice(selectedItem.price)}</p>}
                       </div>
-                      <Button variant="ghost" size="sm" onClick={() => { setSelectedItemId(null); setButtonUrl(""); }}>✕</Button>
+                      <Button variant="ghost" size="sm" onClick={() => setSelectedItemId(null)}>✕</Button>
                     </div>
                   ) : (
                     <Button variant="outline" size="sm" className="w-full" onClick={() => setShowItemPicker(!showItemPicker)}>
@@ -362,7 +362,7 @@ export default function StoryUploadDialog({ open, onOpenChange, sellerId, onUplo
               Trocar imagem
             </Button>
           )}
-          <Button className="flex-1" disabled={!file || uploading} onClick={handleUpload}>
+          <Button className="flex-1" disabled={!file || uploading || !selectedItemId} onClick={handleUpload}>
             {uploading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
             Publicar Story
           </Button>
