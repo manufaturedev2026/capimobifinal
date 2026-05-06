@@ -115,6 +115,8 @@ interface AppliedCoupon {
   code: string;
   discount_percent: number;
   description: string | null;
+  discount_type?: "percent" | "fixed";
+  discount_amount_cents?: number | null;
 }
 
 export default function PackagesPage() {
@@ -211,15 +213,23 @@ export default function PackagesPage() {
   const calculateFinalPrice = (basePrice: number, tier: string) => {
     let price = basePrice;
     let totalDiscount = 0;
+    let fixedCents = 0;
     if (billingPeriod === "annual" && annualDiscount > 0) {
       totalDiscount += annualDiscount;
     }
     if (appliedCoupon && billingPeriod === "monthly") {
       // Cupons só são aplicados em planos Mensais
-      totalDiscount += appliedCoupon.discount_percent;
+      if (appliedCoupon.discount_type === "fixed") {
+        fixedCents += Number(appliedCoupon.discount_amount_cents || 0);
+      } else {
+        totalDiscount += appliedCoupon.discount_percent;
+      }
     }
     if (totalDiscount > 0) {
       price = price * (1 - Math.min(totalDiscount, 95) / 100);
+    }
+    if (fixedCents > 0) {
+      price = Math.max(1, price - fixedCents / 100);
     }
     return { final: price, discount: totalDiscount };
   };
@@ -239,7 +249,7 @@ export default function PackagesPage() {
     try {
       const { data, error } = await (supabase as any)
         .from("discount_coupons")
-        .select("id, code, discount_percent, description, applies_to, applicable_tiers, max_uses, uses_count, valid_until, is_active")
+        .select("id, code, discount_percent, discount_type, discount_amount_cents, description, applies_to, applicable_tiers, max_uses, uses_count, valid_until, is_active")
         .eq("code", code)
         .eq("is_active", true)
         .maybeSingle();
@@ -269,9 +279,14 @@ export default function PackagesPage() {
         code: data.code,
         discount_percent: data.discount_percent,
         description: data.description,
+        discount_type: data.discount_type,
+        discount_amount_cents: data.discount_amount_cents,
       });
       setCouponInput("");
-      toast({ title: `🎉 Cupom aplicado!`, description: `${data.discount_percent}% de desconto adicional.` });
+      const descTxt = data.discount_type === "fixed"
+        ? `R$ ${(Number(data.discount_amount_cents || 0) / 100).toFixed(2).replace(".", ",")} de desconto.`
+        : `${data.discount_percent}% de desconto adicional.`;
+      toast({ title: `🎉 Cupom aplicado!`, description: descTxt });
     } catch (err: any) {
       toast({ title: "Erro ao validar cupom", description: err.message, variant: "destructive" });
     }
@@ -710,7 +725,10 @@ export default function PackagesPage() {
                     Cupom <code className="font-mono text-emerald-600">{appliedCoupon.code}</code> aplicado
                   </p>
                   <p className="text-xs text-muted-foreground truncate">
-                    {appliedCoupon.discount_percent}% de desconto{appliedCoupon.description ? ` · ${appliedCoupon.description}` : ""}
+                    {appliedCoupon.discount_type === "fixed"
+                      ? `R$ ${(Number(appliedCoupon.discount_amount_cents || 0) / 100).toFixed(2).replace(".", ",")} de desconto`
+                      : `${appliedCoupon.discount_percent}% de desconto`}
+                    {appliedCoupon.description ? ` · ${appliedCoupon.description}` : ""}
                   </p>
                 </div>
                 <button
