@@ -155,7 +155,7 @@ export function usePushSubscription(
       if (!registration) {
         console.log("[Push] No push-sw found, registering...");
         registration = await withTimeout(
-          navigator.serviceWorker.register(PUSH_SW_URL, { scope: PUSH_SW_SCOPE }),
+          navigator.serviceWorker.register(PUSH_SW_URL),
           SUBSCRIPTION_TIMEOUT_MS,
           "Tempo esgotado ao registrar o app para push."
         );
