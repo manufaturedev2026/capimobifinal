@@ -944,6 +944,10 @@ export default function AdminPanel() {
           <AdminCouponsTab />
         )}
 
+        {tab === "cleanup" && (
+          <AdminCleanupTab />
+        )}
+
 
         {tab === "crm" && (
           <AdminCrmTab />
