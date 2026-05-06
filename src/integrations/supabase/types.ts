@@ -4064,6 +4064,15 @@ export type Database = {
         | "fundador_corretor"
         | "fundador_empresa"
         | "prime"
+        | "imob_basico"
+        | "imob_start"
+        | "imob_pro"
+        | "imob_elite"
+        | "const_basico"
+        | "const_start"
+        | "const_pro"
+        | "const_master"
+        | "fundador_construtora"
       rental_contract_status: "ativo" | "encerrado" | "cancelado" | "renovacao"
       rental_payment_status: "pago" | "pendente" | "atrasado" | "parcial"
       rental_reminder_type: "antes_vencimento" | "no_vencimento" | "atrasado"
@@ -4271,6 +4280,15 @@ export const Constants = {
         "fundador_corretor",
         "fundador_empresa",
         "prime",
+        "imob_basico",
+        "imob_start",
+        "imob_pro",
+        "imob_elite",
+        "const_basico",
+        "const_start",
+        "const_pro",
+        "const_master",
+        "fundador_construtora",
       ],
       rental_contract_status: ["ativo", "encerrado", "cancelado", "renovacao"],
       rental_payment_status: ["pago", "pendente", "atrasado", "parcial"],
