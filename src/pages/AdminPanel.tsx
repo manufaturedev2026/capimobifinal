@@ -931,12 +931,6 @@ export default function AdminPanel() {
 
         {tab === "billing" && (() => {
           const BILLING_LABEL_OVERRIDES: Record<string, string> = { prime_empresa: "Black Empresa" };
-          // Usa os planos reais do banco (preço atualizado) + qualquer tier ativo que não esteja no DB.
-          const dbTiers = dbPlans.map((p) => p.tier);
-          const extraTiers = Object.keys(totalByTier).filter(
-            (t) => t !== "sem_pacote" && !dbTiers.includes(t) && (totalByTier[t] || 0) > 0
-          );
-          const allTiers = [...dbTiers, ...extraTiers];
           const priceOf = (t: string) => {
             const p = dbPlans.find((x) => x.tier === t);
             if (p) return p.price;
@@ -953,13 +947,30 @@ export default function AdminPanel() {
             if (p?.border_color) return p.border_color;
             return (PACKAGE_CONFIG as any)[t]?.borderColor ?? "border-border";
           };
-          const orderedTiers = allTiers.filter((t) => (totalByTier[t] || 0) > 0 || priceOf(t) > 0);
+          // Deriva direto das assinaturas ativas acumuladas — só mostra tiers que existem de fato.
+          const tierCounts: Record<string, number> = {};
+          allActiveSubs.forEach((s: any) => {
+            tierCounts[s.tier] = (tierCounts[s.tier] || 0) + 1;
+          });
+          const orderedTiers = Object.keys(tierCounts).sort((a, b) => {
+            const pa = dbPlans.find((x) => x.tier === a)?.sort_order ?? 999;
+            const pb = dbPlans.find((x) => x.tier === b)?.sort_order ?? 999;
+            return pa - pb;
+          });
           return (
           <div className="bg-card border border-border rounded-2xl p-6">
-            <h3 className="font-display font-bold text-lg text-foreground mb-4">Resumo de Faturamento</h3>
+            <h3 className="font-display font-bold text-lg text-foreground mb-4">
+              Resumo de Faturamento
+              <span className="ml-2 text-sm font-normal text-muted-foreground">
+                ({allActiveSubs.length} assinatura{allActiveSubs.length === 1 ? "" : "s"} ativa{allActiveSubs.length === 1 ? "" : "s"})
+              </span>
+            </h3>
+            {orderedTiers.length === 0 && (
+              <p className="text-sm text-muted-foreground">Nenhuma assinatura ativa no momento.</p>
+            )}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {orderedTiers.map((tier) => {
-                const count = totalByTier[tier] || 0;
+                const count = tierCounts[tier] || 0;
                 const price = priceOf(tier);
                 const revenue = count * price;
                 return (
@@ -982,7 +993,7 @@ export default function AdminPanel() {
                 <strong>Receita mensal total estimada: </strong>
                 <span className="text-green-500 font-bold text-lg">
                   R$ {(
-                    orderedTiers.reduce((sum, t) => sum + (totalByTier[t] || 0) * priceOf(t), 0)
+                    orderedTiers.reduce((sum, t) => sum + (tierCounts[t] || 0) * priceOf(t), 0)
                   ).toFixed(2).replace(".", ",")}
                 </span>
               </p>
