@@ -126,7 +126,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       user_id: authUser.id,
       ...metadataProfile,
       store_layout: "marketplace",
-      store_theme: "luxury",
+      store_theme: "espirito-santo",
     };
 
     const { data, error } = await supabase
