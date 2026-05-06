@@ -420,6 +420,14 @@ export default function AdminPlansTab() {
                       className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm"
                     />
                   </Field>
+                  <Field label="Corretores na equipe" hint="0 = não exibe • 9999 = ilimitado">
+                    <input
+                      type="number"
+                      value={(editing as any).max_team_members ?? 0}
+                      onChange={(e) => setEditing({ ...editing, max_team_members: parseInt(e.target.value) || 0 } as any)}
+                      className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm"
+                    />
+                  </Field>
                 </div>
 
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
