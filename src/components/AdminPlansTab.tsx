@@ -34,6 +34,7 @@ function emptyPlan(): Partial<Plan> {
     setup_fee: 0,
     max_items: 5,
     ai_generations_per_day: 5,
+    max_team_members: 0,
     color: COLOR_PRESETS[0],
     border_color: "border-slate-400",
     badge_color: "bg-slate-500 text-white",
@@ -128,6 +129,7 @@ export default function AdminPlansTab() {
       setup_fee: Number(editing.setup_fee) || 0,
       max_items: Number(editing.max_items) || 5,
       ai_generations_per_day: Number(editing.ai_generations_per_day) || 0,
+      max_team_members: Number((editing as any).max_team_members) || 0,
       color: editing.color,
       border_color: editing.border_color,
       badge_color: editing.badge_color,
@@ -415,6 +417,14 @@ export default function AdminPlansTab() {
                       type="number"
                       value={editing.max_items ?? 5}
                       onChange={(e) => setEditing({ ...editing, max_items: parseInt(e.target.value) || 0 })}
+                      className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm"
+                    />
+                  </Field>
+                  <Field label="Corretores na equipe" hint="0 = não exibe • 9999 = ilimitado">
+                    <input
+                      type="number"
+                      value={(editing as any).max_team_members ?? 0}
+                      onChange={(e) => setEditing({ ...editing, max_team_members: parseInt(e.target.value) || 0 } as any)}
                       className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm"
                     />
                   </Field>
