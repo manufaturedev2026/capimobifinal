@@ -103,12 +103,13 @@ serve(async (req) => {
         .maybeSingle();
 
       if (profile) {
-        // Deactivate all paid subscriptions
+        // Deactivate ONLY stripe-paid subscriptions (preserve manual/admin/appmax activations)
         await supabaseAdmin
           .from("seller_subscriptions")
           .update({ is_active: false })
           .eq("user_id", user.id)
           .eq("is_active", true)
+          .eq("payment_method", "stripe")
           .neq("tier", "basico");
 
         // Check if user already has an active basico plan
@@ -157,12 +158,13 @@ serve(async (req) => {
         .maybeSingle();
 
       if (profile) {
-        // Deactivate old subscriptions
+        // Deactivate old stripe subscriptions only (preserve manual/accumulated plans)
         await supabaseAdmin
           .from("seller_subscriptions")
           .update({ is_active: false })
           .eq("user_id", user.id)
-          .eq("is_active", true);
+          .eq("is_active", true)
+          .eq("payment_method", "stripe");
 
         // Upsert current subscription
         await supabaseAdmin
