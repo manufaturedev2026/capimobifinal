@@ -180,17 +180,47 @@ export function usePushSubscription(
         SUBSCRIPTION_TIMEOUT_MS,
         "Não foi possível verificar a inscrição atual deste dispositivo."
       );
-      
+
+      // If an existing subscription was created with a different VAPID key,
+      // pushManager.subscribe() throws "Registration failed - A subscription
+      // with a different applicationServerKey already exists". Unsubscribe stale.
+      if (subscription) {
+        const existingKey = subscription.options?.applicationServerKey;
+        const sameKey = existingKey
+          ? new Uint8Array(existingKey).every((b, i) => b === applicationServerKey[i]) &&
+            new Uint8Array(existingKey).length === applicationServerKey.length
+          : false;
+        if (!sameKey) {
+          console.log("[Push] Stale subscription with different VAPID key, unsubscribing...");
+          try { await subscription.unsubscribe(); } catch {}
+          subscription = null;
+        }
+      }
+
       if (!subscription) {
         console.log("[Push] Creating new subscription...");
-        subscription = await withTimeout(
-          registration.pushManager.subscribe({
+        try {
+          subscription = await withTimeout(
+            registration.pushManager.subscribe({
+              userVisibleOnly: true,
+              applicationServerKey,
+            }),
+            SUBSCRIPTION_TIMEOUT_MS,
+            "A inscrição no push demorou demais para responder."
+          );
+        } catch (subErr) {
+          const m = subErr instanceof Error ? subErr.message : String(subErr);
+          // Retry once after fully unregistering the SW (handles corrupt state on Android)
+          console.warn("[Push] subscribe() failed, retrying after SW reset:", m);
+          try { await registration.unregister(); } catch {}
+          const fresh = await navigator.serviceWorker.register(PUSH_SW_URL);
+          await waitForActivation(fresh);
+          subscription = await fresh.pushManager.subscribe({
             userVisibleOnly: true,
             applicationServerKey,
-          }),
-          SUBSCRIPTION_TIMEOUT_MS,
-          "A inscrição no push demorou demais para responder."
-        );
+          });
+          registration = fresh;
+        }
       }
       console.log("[Push] Subscription obtained:", subscription.endpoint.substring(0, 60) + "...");
 
