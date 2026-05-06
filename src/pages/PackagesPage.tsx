@@ -423,7 +423,9 @@ export default function PackagesPage() {
     .sort((a, b) => a.lot_number - b.lot_number)[0];
   // Plano herdado configurado no lote ativo (Start, VIP, Prime, etc.)
   const inheritedTier = activeFounderLot?.inherited_tier;
-  const founderPlan = plans.find((p) => p.tier === inheritedTier) || plans.find((p) => p.tier === founderTier);
+  // Prioriza a linha fundador_* em subscription_plans (editável no Admin → Planos).
+  // Cai no plano herdado apenas se a linha Fundador não existir.
+  const founderPlan = plans.find((p) => p.tier === founderTier) || plans.find((p) => p.tier === inheritedTier);
 
   const handleSelectFounder = async (asUpgrade = false) => {
     if (!user || !profile) {
