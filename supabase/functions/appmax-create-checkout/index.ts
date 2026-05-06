@@ -161,7 +161,8 @@ serve(async (req) => {
     } else {
       const months = billing_period === "annual" ? 12 : 1;
       grossTotal = Number(plan.price) * months;
-      finalTotal = grossTotal * (1 - totalDiscount / 100);
+      finalTotal = grossTotal * (1 - totalDiscount / 100) - fixedDiscountCents / 100;
+      if (finalTotal < 1) finalTotal = 1;
       periodLabel = billing_period === "annual" ? "Anual (12 meses)" : "Mensal (30 dias)";
     }
     if (finalTotal < 1) throw new Error("Valor mínimo R$ 1,00");
