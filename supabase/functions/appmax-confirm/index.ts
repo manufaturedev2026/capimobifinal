@@ -90,8 +90,10 @@ async function activateSubscription(supabaseAdmin: any, payment: any) {
     if (inheritedTier) tier = inheritedTier;
   }
 
+  // Acúmulo de planos: mantém assinaturas vigentes e só desativa as vencidas.
   await supabaseAdmin.from("seller_subscriptions")
-    .update({ is_active: false }).eq("user_id", payment.user_id).eq("is_active", true);
+    .update({ is_active: false }).eq("user_id", payment.user_id)
+    .eq("is_active", true).lt("expires_at", new Date().toISOString());
 
   const days = billingPeriod === "annual" ? 365 : 30;
   const expiresAt = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString();

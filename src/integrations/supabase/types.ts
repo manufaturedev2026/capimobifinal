@@ -3890,6 +3890,7 @@ export type Database = {
       }
       consume_founder_slot: { Args: { p_lot_id: string }; Returns: boolean }
       cron_reset_all_monthly_credits: { Args: never; Returns: Json }
+      deactivate_expired_subscriptions: { Args: never; Returns: number }
       decrypt_smtp_password: {
         Args: { p_encrypted: string; p_key: string }
         Returns: string
@@ -3922,6 +3923,7 @@ export type Database = {
         Args: { p_tier: string }
         Returns: number
       }
+      get_effective_plan_limits: { Args: { p_user_id: string }; Returns: Json }
       get_user_plan_usage: { Args: { p_user_id: string }; Returns: Json }
       grant_plan_credits:
         | {
@@ -4000,6 +4002,7 @@ export type Database = {
       }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
+      tier_rank: { Args: { p_tier: string }; Returns: number }
       unaccent: { Args: { "": string }; Returns: string }
     }
     Enums: {
