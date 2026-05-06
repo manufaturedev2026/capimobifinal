@@ -9,7 +9,9 @@ function daysLeft(iso?: string | null) {
 }
 
 function fmt(n: number) {
-  if (n >= 9999) return "Ilimitado";
+  // 9999 é o valor sentinela usado nos planos para "ilimitado".
+  // Valores reais (ex: 1.500.000 visitas) NÃO devem ser confundidos com sentinela.
+  if (n === 9999 || n >= 1_000_000_000) return "Ilimitado";
   return n.toLocaleString("pt-BR");
 }
 
