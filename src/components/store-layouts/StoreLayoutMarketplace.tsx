@@ -356,10 +356,10 @@ export default function StoreLayoutMarketplace({
             className="flex flex-col gap-0.5 mb-2"
           >
             <div className="flex items-center gap-2">
-              <Sparkles size={14} style={{ color: storeTheme.primary }} />
+              <Sparkles size={14} style={{ color: storeTheme.accent || storeTheme.primary }} />
               {editingTitle && isOwner ? (
                 <span className="flex items-center gap-1.5">
-                  <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest" style={{ color: storeTheme.primary }}>
+                  <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest" style={{ color: storeTheme.accent || storeTheme.primary }}>
                     {profileDisplayName} —
                   </span>
                   <input
@@ -392,7 +392,7 @@ export default function StoreLayoutMarketplace({
                 </span>
               ) : (
                 <span className="inline-flex items-center gap-1.5 group">
-                  <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest" style={{ color: storeTheme.primary }}>
+                  <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest" style={{ color: storeTheme.accent || storeTheme.primary }}>
                     {profileDisplayName} — {currentTitle}
                   </span>
                   {isOwner && (
