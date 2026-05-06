@@ -490,17 +490,10 @@ export default function PackagesPage() {
     const maxItems = plan.max_items >= 9999 ? "Ilimitado" : plan.max_items.toLocaleString("pt-BR");
     const storageLabel = plan.storage_mb >= 1024 ? `${(plan.storage_mb / 1024).toFixed(1)} GB` : `${plan.storage_mb} MB`;
 
-    const teamMap: Record<string, string> = {
-      imob_basico: "Até 1",
-      imob_start: "Até 5",
-      imob_pro: "Até 15",
-      imob_elite: "Ilimitado",
-      const_basico: "Até 1",
-      const_start: "Até 20",
-      const_pro: "Até 100",
-      const_master: "Ilimitado",
-    };
-    const teamLabel = opts.showPartners ? teamMap[plan.tier] : null;
+    const teamCount = (plan as any).max_team_members ?? 0;
+    const teamLabel = opts.showPartners && teamCount > 0
+      ? (teamCount >= 9999 ? "Ilimitado" : `Até ${teamCount}`)
+      : null;
 
     return (
       <motion.div
