@@ -7,6 +7,7 @@ import { MARKETPLACE_THEMES } from "@/lib/marketplaceThemes";
 import { getMarketplaceThemeCssVars } from "@/lib/marketplaceThemeCssVars";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsAdmin, PACKAGE_CONFIG } from "@/hooks/useSubscription";
+import { useAllPlans } from "@/hooks/usePlans";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -66,6 +67,7 @@ export default function AdminPanel() {
   const { toast } = useToast();
   const [sellers, setSellers] = useState<SellerWithSub[]>([]);
   const [allActiveSubs, setAllActiveSubs] = useState<any[]>([]);
+  const { plans: dbPlans } = useAllPlans();
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [tierFilter, setTierFilter] = useState<string>("todos");
@@ -922,22 +924,42 @@ export default function AdminPanel() {
 
         {tab === "billing" && (() => {
           const BILLING_LABEL_OVERRIDES: Record<string, string> = { prime_empresa: "Black Empresa" };
-          // Inclui todos os tiers configurados (Corretor, Imobiliária, Construtora, Empresa, Fundador)
-          const orderedTiers = (Object.keys(PACKAGE_CONFIG) as string[])
-            .filter((t) => totalByTier[t] > 0 || (PACKAGE_CONFIG as any)[t]?.price > 0);
+          // Usa os planos reais do banco (preço atualizado) + qualquer tier ativo que não esteja no DB.
+          const dbTiers = dbPlans.map((p) => p.tier);
+          const extraTiers = Object.keys(totalByTier).filter(
+            (t) => t !== "sem_pacote" && !dbTiers.includes(t) && (totalByTier[t] || 0) > 0
+          );
+          const allTiers = [...dbTiers, ...extraTiers];
+          const priceOf = (t: string) => {
+            const p = dbPlans.find((x) => x.tier === t);
+            if (p) return p.price;
+            return (PACKAGE_CONFIG as any)[t]?.price ?? 0;
+          };
+          const nameOf = (t: string) => {
+            if (BILLING_LABEL_OVERRIDES[t]) return BILLING_LABEL_OVERRIDES[t];
+            const p = dbPlans.find((x) => x.tier === t);
+            if (p) return p.name;
+            return (PACKAGE_CONFIG as any)[t]?.name ?? t;
+          };
+          const borderOf = (t: string) => {
+            const p = dbPlans.find((x) => x.tier === t);
+            if (p?.border_color) return p.border_color;
+            return (PACKAGE_CONFIG as any)[t]?.borderColor ?? "border-border";
+          };
+          const orderedTiers = allTiers.filter((t) => (totalByTier[t] || 0) > 0 || priceOf(t) > 0);
           return (
           <div className="bg-card border border-border rounded-2xl p-6">
             <h3 className="font-display font-bold text-lg text-foreground mb-4">Resumo de Faturamento</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {orderedTiers.map((tier) => {
-                const config = PACKAGE_CONFIG[tier as keyof typeof PACKAGE_CONFIG];
                 const count = totalByTier[tier] || 0;
-                const revenue = count * (config.price ?? 0);
+                const price = priceOf(tier);
+                const revenue = count * price;
                 return (
-                  <div key={tier} className={`rounded-xl border-2 ${config.borderColor} p-4`}>
-                    <h4 className="font-display font-bold text-foreground">{BILLING_LABEL_OVERRIDES[tier] || config.name}</h4>
+                  <div key={tier} className={`rounded-xl border-2 ${borderOf(tier)} p-4`}>
+                    <h4 className="font-display font-bold text-foreground">{nameOf(tier)}</h4>
                     <p className="text-2xl font-bold text-foreground mt-1">{count} <span className="text-sm font-normal text-muted-foreground">assinantes</span></p>
-                    {config.price > 0 ? (
+                    {price > 0 ? (
                       <p className="text-sm text-muted-foreground mt-1">
                         Receita mensal: <strong className="text-green-500">R$ {revenue.toFixed(2).replace(".", ",")}</strong>
                       </p>
@@ -953,7 +975,7 @@ export default function AdminPanel() {
                 <strong>Receita mensal total estimada: </strong>
                 <span className="text-green-500 font-bold text-lg">
                   R$ {(
-                    orderedTiers.reduce((sum, t) => sum + (totalByTier[t] || 0) * PACKAGE_CONFIG[t as keyof typeof PACKAGE_CONFIG].price, 0)
+                    orderedTiers.reduce((sum, t) => sum + (totalByTier[t] || 0) * priceOf(t), 0)
                   ).toFixed(2).replace(".", ",")}
                 </span>
               </p>
