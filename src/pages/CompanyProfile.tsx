@@ -286,9 +286,10 @@ export default function CompanyProfile() {
           .single();
         
         if (member) {
-          // For partnership-based members, fetch latest photo from linked profile
           const memberAny = member as any;
-          if (memberAny.origin === "partnership" && memberAny.linked_profile_id) {
+          // Any team member with a linked profile (partnership OR manual broker
+          // who also has their own account) routes leads + push to that broker.
+          if (memberAny.linked_profile_id) {
             const { data: brokerProfile } = await supabase
               .from("profiles")
               .select("id, user_id, full_name, company_name, phone, instagram, bio, creci, seller_category, professional_title, logo_url")
@@ -297,7 +298,6 @@ export default function CompanyProfile() {
             if (brokerProfile?.logo_url) {
               member.photo_url = brokerProfile.logo_url;
             }
-            // Store broker's own profile info for CRM routing + storefront display
             if (brokerProfile) {
               (member as any)._partnerSellerId = brokerProfile.id;
               (member as any)._partnerUserId = brokerProfile.user_id;
