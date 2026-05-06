@@ -567,8 +567,15 @@ export default function AdminPanel() {
   };
 
   const totalByTier: Record<string, number> = {};
-  (Object.keys(PACKAGE_CONFIG) as string[]).forEach((t) => {
-    // Conta TODAS as assinaturas ativas acumuladas (não só a principal por usuário)
+  // Conta TODAS as assinaturas ativas acumuladas (não só a principal por usuário).
+  // Inicializa com tiers conhecidos (PACKAGE_CONFIG + planos do banco) para garantir
+  // que tiers como imob_*, const_* (não presentes no PACKAGE_CONFIG estático) também apareçam.
+  const knownTiers = new Set<string>([
+    ...Object.keys(PACKAGE_CONFIG),
+    ...dbPlans.map((p) => p.tier),
+    ...allActiveSubs.map((s: any) => s.tier),
+  ]);
+  knownTiers.forEach((t) => {
     totalByTier[t] = allActiveSubs.filter((s) => s.tier === t).length;
   });
   totalByTier.sem_pacote = sellers.filter((s) => !s.subscription).length;
