@@ -959,12 +959,21 @@ export default function PackagesPage() {
                     </p>
 
                     <ul className="mt-5 grid sm:grid-cols-2 gap-2.5 text-sm">
-                      {founderPlan.benefits.map((b, i) => (
-                        <li key={i} className="flex items-start gap-2">
-                          <CheckCircle2 size={16} className="text-white mt-0.5 flex-shrink-0" />
-                          <span className="text-white/95">{b}</span>
-                        </li>
-                      ))}
+                      {founderPlan.benefits.map((b, i) => {
+                        const text = founderBilling === "monthly"
+                          ? b
+                              .replace(/válido por 12 meses/gi, "válido por 30 dias")
+                              .replace(/12 meses/gi, "30 dias")
+                              .replace(/1 ano/gi, "30 dias")
+                              .replace(/anual/gi, "mensal")
+                          : b;
+                        return (
+                          <li key={i} className="flex items-start gap-2">
+                            <CheckCircle2 size={16} className="text-white mt-0.5 flex-shrink-0" />
+                            <span className="text-white/95">{text}</span>
+                          </li>
+                        );
+                      })}
                     </ul>
 
                     <div className="mt-5 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-black/30 backdrop-blur-sm">
