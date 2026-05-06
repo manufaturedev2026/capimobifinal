@@ -10,9 +10,9 @@ import {
 import AdminFoundersTab from "@/components/AdminFoundersTab";
 
 const CATEGORY_OPTIONS = [
-  { value: "free", label: "Grátis" },
-  { value: "individual", label: "Individual" },
-  { value: "enterprise", label: "Empresarial" },
+  { value: "corretor", label: "Corretor (individual)" },
+  { value: "imobiliaria", label: "Imobiliária" },
+  { value: "construtora", label: "Construtora" },
 ];
 
 const COLOR_PRESETS = [
@@ -40,7 +40,7 @@ function emptyPlan(): Partial<Plan> {
     border_color: "border-slate-400",
     badge_color: "bg-slate-500 text-white",
     benefits: [],
-    category: "individual",
+    category: "corretor",
     is_active: true,
     is_popular: false,
     sort_order: 99,
@@ -454,7 +454,7 @@ export default function AdminPlansTab() {
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                   <Field label="Categoria">
                     <select
-                      value={editing.category || "individual"}
+                      value={editing.category || "corretor"}
                       onChange={(e) => setEditing({ ...editing, category: e.target.value as any })}
                       className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm"
                     >
