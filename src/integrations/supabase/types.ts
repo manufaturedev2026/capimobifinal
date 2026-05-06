@@ -2448,6 +2448,7 @@ export type Database = {
           endpoint: string
           id: string
           p256dh: string
+          scope: string
           seller_id: string
           user_agent: string | null
           user_id: string | null
@@ -2458,6 +2459,7 @@ export type Database = {
           endpoint: string
           id?: string
           p256dh: string
+          scope?: string
           seller_id: string
           user_agent?: string | null
           user_id?: string | null
@@ -2468,6 +2470,7 @@ export type Database = {
           endpoint?: string
           id?: string
           p256dh?: string
+          scope?: string
           seller_id?: string
           user_agent?: string | null
           user_id?: string | null

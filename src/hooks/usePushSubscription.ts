@@ -10,7 +10,7 @@ const PUSH_SW_URL = "/push-sw.js";
 
 export function usePushSubscription(
   sellerId?: string,
-  options: { successDescription?: string } = {}
+  options: { successDescription?: string; scope?: "store" | "admin_home" } = {}
 ) {
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isSupported, setIsSupported] = useState(false);
@@ -232,6 +232,7 @@ export function usePushSubscription(
       // (like agenda visits) can be filtered to the owner's devices only.
       const { data: { user: currentUser } } = await supabase.auth.getUser();
       const currentUserId = currentUser?.id ?? null;
+      const scope = options.scope ?? "store";
 
       // Upsert: update if endpoint exists, insert if new
       const { error: saveError } = await withTimeout<{ error: { message: string; code?: string } | null }>(
@@ -244,6 +245,7 @@ export function usePushSubscription(
               p256dh: subJson.keys?.p256dh || "",
               auth: subJson.keys?.auth || "",
               user_agent: navigator.userAgent,
+              scope,
             },
             { onConflict: "endpoint" }
           )
