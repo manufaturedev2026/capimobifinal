@@ -34,6 +34,7 @@ function emptyPlan(): Partial<Plan> {
     setup_fee: 0,
     max_items: 5,
     ai_generations_per_day: 5,
+    ai_credits_per_month: 25,
     max_team_members: 0,
     color: COLOR_PRESETS[0],
     border_color: "border-slate-400",
@@ -129,6 +130,7 @@ export default function AdminPlansTab() {
       setup_fee: Number(editing.setup_fee) || 0,
       max_items: Number(editing.max_items) || 5,
       ai_generations_per_day: Number(editing.ai_generations_per_day) || 0,
+      ai_credits_per_month: Number((editing as any).ai_credits_per_month) || 0,
       max_team_members: Number((editing as any).max_team_members) || 0,
       color: editing.color,
       border_color: editing.border_color,
@@ -425,6 +427,25 @@ export default function AdminPlansTab() {
                       type="number"
                       value={(editing as any).max_team_members ?? 0}
                       onChange={(e) => setEditing({ ...editing, max_team_members: parseInt(e.target.value) || 0 } as any)}
+                      className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm"
+                    />
+                  </Field>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <Field label="Créditos IA / mês" hint="Referência: R$ 0,25/crédito avulso. Ex.: R$ 29,90 → 120 créditos">
+                    <input
+                      type="number"
+                      value={(editing as any).ai_credits_per_month ?? 0}
+                      onChange={(e) => setEditing({ ...editing, ai_credits_per_month: parseInt(e.target.value) || 0 } as any)}
+                      className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm"
+                    />
+                  </Field>
+                  <Field label="Gerações IA / dia (legado)" hint="Limite diário antigo. Use 0 para ignorar.">
+                    <input
+                      type="number"
+                      value={editing.ai_generations_per_day ?? 0}
+                      onChange={(e) => setEditing({ ...editing, ai_generations_per_day: parseInt(e.target.value) || 0 })}
                       className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm"
                     />
                   </Field>
