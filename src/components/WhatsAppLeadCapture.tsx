@@ -104,7 +104,10 @@ export default function WhatsAppLeadCapture({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[380px] rounded-2xl">
+      <DialogContent
+        className="sm:max-w-[380px] rounded-2xl"
+        onOpenAutoFocus={(e) => e.preventDefault()}
+      >
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-lg">
             <MessageCircle size={20} className="text-[#25d366]" />
