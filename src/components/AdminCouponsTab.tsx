@@ -12,7 +12,9 @@ interface Coupon {
   id: string;
   code: string;
   description: string | null;
-  discount_percent: number;
+  discount_percent: number | null;
+  discount_type: "percent" | "fixed";
+  discount_amount_cents: number | null;
   applies_to: "all" | "monthly" | "annual";
   applicable_tiers: string[] | null;
   max_uses: number | null;
@@ -33,7 +35,9 @@ function emptyCoupon(): Partial<Coupon> {
   return {
     code: "",
     description: "",
+    discount_type: "percent",
     discount_percent: 10,
+    discount_amount_cents: null,
     applies_to: "all",
     applicable_tiers: null,
     max_uses: null,
@@ -108,15 +112,25 @@ export default function AdminCouponsTab() {
       toast({ title: "Informe o código do cupom", variant: "destructive" });
       return;
     }
-    if (!editing.discount_percent || editing.discount_percent < 1 || editing.discount_percent > 100) {
-      toast({ title: "Desconto deve ser entre 1% e 100%", variant: "destructive" });
-      return;
+    const dtype = editing.discount_type || "percent";
+    if (dtype === "percent") {
+      if (!editing.discount_percent || editing.discount_percent < 1 || editing.discount_percent > 100) {
+        toast({ title: "Desconto deve ser entre 1% e 100%", variant: "destructive" });
+        return;
+      }
+    } else {
+      if (!editing.discount_amount_cents || editing.discount_amount_cents < 100) {
+        toast({ title: "Valor mínimo do cupom: R$ 1,00", variant: "destructive" });
+        return;
+      }
     }
     setSaving(true);
     const payload = {
       code: editing.code!.trim().toUpperCase(),
       description: editing.description?.trim() || null,
-      discount_percent: Number(editing.discount_percent),
+      discount_type: dtype,
+      discount_percent: dtype === "percent" ? Number(editing.discount_percent) : null,
+      discount_amount_cents: dtype === "fixed" ? Number(editing.discount_amount_cents) : null,
       applies_to: editing.applies_to || "all",
       applicable_tiers: editing.applicable_tiers && editing.applicable_tiers.length > 0
         ? editing.applicable_tiers : null,
