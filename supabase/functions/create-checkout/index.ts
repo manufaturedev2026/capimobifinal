@@ -128,6 +128,7 @@ serve(async (req) => {
     let appliedCouponId: string | null = null;
     let appliedCouponCode: string | null = null;
     let couponDescription = "";
+    let fixedDiscountCents = 0;
 
     if (billing_period === "annual" && !isFounder) {
       const { data: setting } = await supabaseAdmin
@@ -166,12 +167,20 @@ serve(async (req) => {
         throw new Error("Cupom só vale para planos anuais");
       }
 
-      totalDiscount += cpn.discount_percent;
       appliedCouponId = cpn.id;
       appliedCouponCode = cpn.code;
-      couponDescription = couponDescription
-        ? `${couponDescription} + Cupom ${cpn.code} (-${cpn.discount_percent}%)`
-        : `Cupom ${cpn.code} (-${cpn.discount_percent}%)`;
+      if (cpn.discount_type === "fixed") {
+        fixedDiscountCents += Number(cpn.discount_amount_cents || 0);
+        const reais = (Number(cpn.discount_amount_cents || 0) / 100).toFixed(2).replace(".", ",");
+        couponDescription = couponDescription
+          ? `${couponDescription} + Cupom ${cpn.code} (-R$ ${reais})`
+          : `Cupom ${cpn.code} (-R$ ${reais})`;
+      } else {
+        totalDiscount += cpn.discount_percent;
+        couponDescription = couponDescription
+          ? `${couponDescription} + Cupom ${cpn.code} (-${cpn.discount_percent}%)`
+          : `Cupom ${cpn.code} (-${cpn.discount_percent}%)`;
+      }
     }
 
     if (totalDiscount > 95) totalDiscount = 95;
@@ -198,7 +207,8 @@ serve(async (req) => {
       const basePrice = Number(plan.price);
       const months = billing_period === "annual" ? 12 : 1;
       grossTotal = basePrice * months;
-      finalTotal = grossTotal * (1 - totalDiscount / 100);
+      finalTotal = grossTotal * (1 - totalDiscount / 100) - fixedDiscountCents / 100;
+      if (finalTotal < 1) finalTotal = 1;
       periodLabel = billing_period === "annual" ? "Anual (12 meses)" : "Mensal (30 dias)";
     }
     const amountCents = Math.round(finalTotal * 100);

@@ -12,7 +12,9 @@ interface Coupon {
   id: string;
   code: string;
   description: string | null;
-  discount_percent: number;
+  discount_percent: number | null;
+  discount_type: "percent" | "fixed";
+  discount_amount_cents: number | null;
   applies_to: "all" | "monthly" | "annual";
   applicable_tiers: string[] | null;
   max_uses: number | null;
@@ -33,7 +35,9 @@ function emptyCoupon(): Partial<Coupon> {
   return {
     code: "",
     description: "",
+    discount_type: "percent",
     discount_percent: 10,
+    discount_amount_cents: null,
     applies_to: "all",
     applicable_tiers: null,
     max_uses: null,
@@ -108,15 +112,25 @@ export default function AdminCouponsTab() {
       toast({ title: "Informe o código do cupom", variant: "destructive" });
       return;
     }
-    if (!editing.discount_percent || editing.discount_percent < 1 || editing.discount_percent > 100) {
-      toast({ title: "Desconto deve ser entre 1% e 100%", variant: "destructive" });
-      return;
+    const dtype = editing.discount_type || "percent";
+    if (dtype === "percent") {
+      if (!editing.discount_percent || editing.discount_percent < 1 || editing.discount_percent > 100) {
+        toast({ title: "Desconto deve ser entre 1% e 100%", variant: "destructive" });
+        return;
+      }
+    } else {
+      if (!editing.discount_amount_cents || editing.discount_amount_cents < 100) {
+        toast({ title: "Valor mínimo do cupom: R$ 1,00", variant: "destructive" });
+        return;
+      }
     }
     setSaving(true);
     const payload = {
       code: editing.code!.trim().toUpperCase(),
       description: editing.description?.trim() || null,
-      discount_percent: Number(editing.discount_percent),
+      discount_type: dtype,
+      discount_percent: dtype === "percent" ? Number(editing.discount_percent) : null,
+      discount_amount_cents: dtype === "fixed" ? Number(editing.discount_amount_cents) : null,
       applies_to: editing.applies_to || "all",
       applicable_tiers: editing.applicable_tiers && editing.applicable_tiers.length > 0
         ? editing.applicable_tiers : null,
@@ -275,8 +289,10 @@ export default function AdminCouponsTab() {
                         <p className="text-xs text-primary-foreground/80 mt-1 line-clamp-2">{c.description}</p>
                       )}
                     </div>
-                    <span className="text-2xl font-display font-extrabold flex items-center">
-                      {c.discount_percent}<Percent size={16} className="ml-0.5" />
+                    <span className="text-2xl font-display font-extrabold flex items-center whitespace-nowrap">
+                      {c.discount_type === "fixed"
+                        ? `R$ ${((c.discount_amount_cents || 0) / 100).toFixed(2).replace(".", ",")}`
+                        : <>{c.discount_percent}<Percent size={16} className="ml-0.5" /></>}
                     </span>
                   </div>
                 </div>
@@ -383,6 +399,35 @@ export default function AdminCouponsTab() {
                       placeholder="FUNDADOR50"
                     />
                   </Field>
+                  <Field label="Tipo de desconto">
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setEditing({ ...editing, discount_type: "percent" })}
+                        className={`flex-1 px-3 py-2 rounded-lg border-2 text-xs font-bold ${
+                          (editing.discount_type || "percent") === "percent"
+                            ? "border-primary bg-primary text-primary-foreground"
+                            : "border-border bg-secondary text-foreground"
+                        }`}
+                      >
+                        % Porcentagem
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setEditing({ ...editing, discount_type: "fixed" })}
+                        className={`flex-1 px-3 py-2 rounded-lg border-2 text-xs font-bold ${
+                          editing.discount_type === "fixed"
+                            ? "border-primary bg-primary text-primary-foreground"
+                            : "border-border bg-secondary text-foreground"
+                        }`}
+                      >
+                        R$ Valor fixo
+                      </button>
+                    </div>
+                  </Field>
+                </div>
+
+                {(editing.discount_type || "percent") === "percent" ? (
                   <Field label="Desconto (%)">
                     <input
                       type="number" min={1} max={100}
@@ -391,7 +436,20 @@ export default function AdminCouponsTab() {
                       className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm font-bold"
                     />
                   </Field>
-                </div>
+                ) : (
+                  <Field label="Valor do desconto (R$)" hint="Ex: 10 = R$ 10,00 abatidos do total">
+                    <input
+                      type="number" min={1} step="0.01"
+                      value={editing.discount_amount_cents ? (editing.discount_amount_cents / 100) : ""}
+                      onChange={(e) => {
+                        const v = parseFloat(e.target.value);
+                        setEditing({ ...editing, discount_amount_cents: isNaN(v) ? null : Math.round(v * 100) });
+                      }}
+                      className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm font-bold"
+                      placeholder="10.00"
+                    />
+                  </Field>
+                )}
 
                 <Field label="Descrição (opcional)">
                   <input
