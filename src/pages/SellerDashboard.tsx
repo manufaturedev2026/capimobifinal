@@ -374,18 +374,12 @@ export default function SellerDashboard() {
   const isImobiliaria = profile?.seller_category === "imobiliaria" || profile?.seller_category === "construtora";
   const isEmpresaPlan = ["essencial_empresa", "premium_empresa", "prime_empresa"].includes(currentTier);
   const showTeamTab = isEmpresaPlan || isImobiliaria;
+  // Limite vem do banco (subscription_plans.max_team_members), editável no Admin → Planos.
+  const planMaxTeam = (pkgConfigRaw as any)?.max_team_members;
   const maxTeamMembers =
-    currentTier === "prime_empresa" ? 25 :
-    currentTier === "premium_empresa" ? 15 :
-    currentTier === "essencial_empresa" ? 8 :
-    currentTier === "basico_empresa" ? 1 :
-    currentTier === "prime" ? 999 :
-    currentTier === "imob_elite" || currentTier === "const_master" ? 999 :
-    currentTier === "imob_pro" ? 15 :
-    currentTier === "imob_start" ? 5 :
-    currentTier === "const_pro" ? 30 :
-    currentTier === "const_start" ? 10 :
-    isImobiliaria ? 1 : 0;
+    typeof planMaxTeam === "number" && planMaxTeam > 0
+      ? planMaxTeam
+      : isImobiliaria ? 1 : 0;
   // Todos os recursos do dashboard liberados em qualquer plano. Diferença = só limites numéricos.
   const lockedTabs: DashboardTab[] = [];
 
