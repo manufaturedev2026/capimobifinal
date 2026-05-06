@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ImagePlus, Loader2, Type, FileText, Package, Users } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface StoryUploadDialogProps {
   open: boolean;
@@ -315,37 +316,66 @@ export default function StoryUploadDialog({ open, onOpenChange, sellerId, onUplo
                   <p className="text-[10px] text-muted-foreground">
                     Obrigatório. O story sempre direciona para um anúncio da sua loja.
                   </p>
-                  {selectedItem ? (
+                  {items.length === 0 ? (
+                    <p className="text-xs text-muted-foreground p-3 text-center border border-border rounded-lg">
+                      Nenhum anúncio ativo. Crie um anúncio primeiro.
+                    </p>
+                  ) : (
+                    <Select
+                      value={selectedItemId ?? undefined}
+                      onValueChange={(v) => {
+                        setSelectedItemId(v);
+                        if (!buttonText) setButtonText("Ver anúncio");
+                      }}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Selecionar anúncio" />
+                      </SelectTrigger>
+                      <SelectContent className="max-h-[260px] z-[100]">
+                        {items.map((item) => (
+                          <SelectItem key={item.id} value={item.id}>
+                            <div className="flex items-center gap-2">
+                              {item.photos?.[0] && (
+                                <img
+                                  loading="lazy"
+                                  decoding="async"
+                                  src={item.photos[0]}
+                                  alt=""
+                                  className="w-7 h-7 rounded object-cover"
+                                />
+                              )}
+                              <div className="flex-1 min-w-0">
+                                <p className="text-xs font-medium truncate max-w-[220px]">{item.title}</p>
+                                {item.price && (
+                                  <p className="text-[10px] text-muted-foreground">{formatPrice(item.price)}</p>
+                                )}
+                              </div>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                  {selectedItem && (
                     <div className="flex items-center gap-2 p-2 rounded-lg border border-border bg-muted/50">
-                      {selectedItem.photos?.[0] && <img loading="lazy" decoding="async" src={selectedItem.photos[0]} alt="" className="w-10 h-10 rounded object-cover" />}
+                      {selectedItem.photos?.[0] && (
+                        <img
+                          loading="lazy"
+                          decoding="async"
+                          src={selectedItem.photos[0]}
+                          alt=""
+                          className="w-10 h-10 rounded object-cover"
+                        />
+                      )}
                       <div className="flex-1 min-w-0">
                         <p className="text-xs font-medium truncate">{selectedItem.title}</p>
-                        {selectedItem.price && <p className="text-[10px] text-muted-foreground">{formatPrice(selectedItem.price)}</p>}
+                        {selectedItem.price && (
+                          <p className="text-[10px] text-muted-foreground">{formatPrice(selectedItem.price)}</p>
+                        )}
                       </div>
-                      <Button variant="ghost" size="sm" onClick={() => setSelectedItemId(null)}>✕</Button>
-                    </div>
-                  ) : (
-                    <Button variant="outline" size="sm" className="w-full" onClick={() => setShowItemPicker(!showItemPicker)}>
-                      Selecionar anúncio
-                    </Button>
-                  )}
-                  {showItemPicker && !selectedItemId && (
-                    <div className="max-h-[150px] overflow-y-auto border border-border rounded-lg divide-y divide-border">
-                      {items.length === 0 ? (
-                        <p className="text-xs text-muted-foreground p-3 text-center">Nenhum anúncio ativo</p>
-                      ) : items.map((item) => (
-                        <button
-                          key={item.id}
-                          className="flex items-center gap-2 p-2 w-full text-left hover:bg-muted/50 transition-colors"
-                          onClick={() => { setSelectedItemId(item.id); setShowItemPicker(false); if (!buttonText) setButtonText("Ver anúncio"); }}
-                        >
-                          {item.photos?.[0] && <img loading="lazy" decoding="async" src={item.photos[0]} alt="" className="w-8 h-8 rounded object-cover" />}
-                          <div className="flex-1 min-w-0">
-                            <p className="text-xs font-medium truncate">{item.title}</p>
-                            {item.price && <p className="text-[10px] text-muted-foreground">{formatPrice(item.price)}</p>}
-                          </div>
-                        </button>
-                      ))}
+                      <Button variant="ghost" size="sm" onClick={() => setSelectedItemId(null)}>
+                        ✕
+                      </Button>
                     </div>
                   )}
                 </div>
