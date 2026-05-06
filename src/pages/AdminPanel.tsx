@@ -606,6 +606,7 @@ export default function AdminPanel() {
     { key: "invite" as const, label: "Convite", icon: MessageCircle },
     { key: "receivePush" as const, label: "Receber Push", icon: Bell },
     { key: "aiCosts" as const, label: "Custos de IA", icon: Brain },
+    { key: "cleanup" as const, label: "Limpeza de Dados", icon: HardDrive },
   ];
   const activeSidebarItem = sidebarItems.find((item) => item.key === tab) || sidebarItems[0];
   const ActiveSidebarIcon = activeSidebarItem.icon;
