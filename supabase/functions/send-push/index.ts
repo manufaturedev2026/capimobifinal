@@ -234,7 +234,8 @@ Deno.serve(async (req) => {
       .from("push_subscriptions")
       .select("*")
       .eq("seller_id", profile.id)
-      .is("user_id", null);
+      .is("user_id", null)
+      .eq("scope", "store");
 
     if (!subscriptions || subscriptions.length === 0) {
       return new Response(JSON.stringify({ sent: 0, failed: 0, message: "No subscribers" }), {
