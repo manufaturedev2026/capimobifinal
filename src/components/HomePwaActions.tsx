@@ -70,6 +70,7 @@ export default function HomePwaActions({ primaryColor }: { primaryColor?: string
           primaryColor={primaryColor}
           requireInstalled={false}
           positionClassName="bottom-6"
+          scope="admin_home"
         />
       )}
     </>
