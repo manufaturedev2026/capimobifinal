@@ -377,7 +377,7 @@ export default function MarketplaceHome() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
-        className="relative h-[360px] md:h-[480px] overflow-hidden pt-16 md:pt-0"
+        className="relative h-[380px] md:h-[480px] overflow-hidden"
       >
         <AnimatePresence mode="wait">
           <motion.div
