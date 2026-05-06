@@ -645,6 +645,7 @@ export type Database = {
         Row: {
           billing_period: string
           coupon_id: string
+          discount_amount_cents: number | null
           discount_percent: number
           id: string
           redeemed_at: string
@@ -655,6 +656,7 @@ export type Database = {
         Insert: {
           billing_period?: string
           coupon_id: string
+          discount_amount_cents?: number | null
           discount_percent: number
           id?: string
           redeemed_at?: string
@@ -665,6 +667,7 @@ export type Database = {
         Update: {
           billing_period?: string
           coupon_id?: string
+          discount_amount_cents?: number | null
           discount_percent?: number
           id?: string
           redeemed_at?: string
@@ -815,7 +818,9 @@ export type Database = {
           code: string
           created_at: string
           description: string | null
-          discount_percent: number
+          discount_amount_cents: number | null
+          discount_percent: number | null
+          discount_type: string
           id: string
           is_active: boolean
           max_uses: number | null
@@ -830,7 +835,9 @@ export type Database = {
           code: string
           created_at?: string
           description?: string | null
-          discount_percent: number
+          discount_amount_cents?: number | null
+          discount_percent?: number | null
+          discount_type?: string
           id?: string
           is_active?: boolean
           max_uses?: number | null
@@ -845,7 +852,9 @@ export type Database = {
           code?: string
           created_at?: string
           description?: string | null
-          discount_percent?: number
+          discount_amount_cents?: number | null
+          discount_percent?: number | null
+          discount_type?: string
           id?: string
           is_active?: boolean
           max_uses?: number | null
