@@ -380,7 +380,7 @@ export function useSubscription(userId?: string) {
           effectiveTier = (rpc as any).effective_tier || null;
         }
       } catch {}
-      const sub = (effectiveTier && activeSubs.find((s: any) => s.tier === effectiveTier)) || activeSubs[0];
+      const sub: any = (effectiveTier && activeSubs.find((s: any) => s.tier === effectiveTier)) || activeSubs[0];
       setSubscription({
         id: sub.id,
         user_id: sub.user_id,
