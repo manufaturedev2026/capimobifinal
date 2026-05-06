@@ -896,9 +896,10 @@ export default function AdminPanel() {
         )}
 
         {tab === "billing" && (() => {
-          const BILLING_ORDER = ["basico", "start", "premium", "prime", "essencial_empresa", "premium_empresa", "prime_empresa"] as const;
           const BILLING_LABEL_OVERRIDES: Record<string, string> = { prime_empresa: "Black Empresa" };
-          const orderedTiers = BILLING_ORDER.filter((t) => (PACKAGE_CONFIG as any)[t]);
+          // Inclui todos os tiers configurados (Corretor, Imobiliária, Construtora, Empresa, Fundador)
+          const orderedTiers = (Object.keys(PACKAGE_CONFIG) as string[])
+            .filter((t) => totalByTier[t] > 0 || (PACKAGE_CONFIG as any)[t]?.price > 0);
           return (
           <div className="bg-card border border-border rounded-2xl p-6">
             <h3 className="font-display font-bold text-lg text-foreground mb-4">Resumo de Faturamento</h3>
