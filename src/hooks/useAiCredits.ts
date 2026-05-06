@@ -37,6 +37,12 @@ export function useAiCredits(userId?: string, sellerId?: string) {
       p_seller_id: sellerId || null,
     });
 
+    // Soma os créditos mensais de TODOS os planos ativos (acumulado)
+    const { data: effective } = await (supabase as any).rpc("get_effective_plan_limits", {
+      p_user_id: userId,
+    });
+    const aggregatedMonthly = Number(effective?.aggregate?.ai_credits_per_month ?? 0);
+
     const { data: transactions } = await (supabase as any)
       .from("ai_credit_transactions")
       .select("id, tool_key, amount, transaction_type, status, notes, created_at")
@@ -47,7 +53,7 @@ export function useAiCredits(userId?: string, sellerId?: string) {
     if (!error && data) {
       setState({
         balance: Number(data.balance ?? 0),
-        monthlyPlanCredits: Number(data.monthly_plan_credits ?? 0),
+        monthlyPlanCredits: aggregatedMonthly || Number(data.monthly_plan_credits ?? 0),
         tier: String(data.tier ?? "basico"),
         loading: false,
         transactions: (transactions || []) as AiCreditTransaction[],
