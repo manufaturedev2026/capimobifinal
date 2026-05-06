@@ -5,7 +5,8 @@ import { detectIOS, isIOSStandaloneApp } from "@/lib/pwaInstall";
 
 const SUBSCRIPTION_TIMEOUT_MS = 20000;
 const PUSH_SW_URL = "/push-sw.js";
-const PUSH_SW_SCOPE = "/push-sw-scope/";
+// Use default scope ("/") — custom scopes require the
+// Service-Worker-Allowed response header which our static host does not set.
 
 export function usePushSubscription(
   sellerId?: string,
