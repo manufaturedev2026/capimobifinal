@@ -639,10 +639,30 @@ export default function AdminPanel() {
           <div className="grid grid-cols-2 gap-2 mb-4">
             {[
               { label: "Total", value: sellers.length, icon: Users, color: "text-primary" },
-              { label: "Start", value: totalByTier["start"] || 0, icon: Rocket, color: "text-emerald-500" },
-              { label: "Premium", value: totalByTier["premium"] || 0, icon: Star, color: "text-amber-500" },
-              { label: "Prime", value: (totalByTier["prime"] || 0) + (totalByTier["vip"] || 0), icon: Crown, color: "text-purple-500" },
-              { label: "Empresa", value: (totalByTier["essencial_empresa"] || 0) + (totalByTier["premium_empresa"] || 0) + (totalByTier["prime_empresa"] || 0), icon: Building2, color: "text-rose-500" },
+              {
+                label: "Corretor",
+                value: (totalByTier["start"] || 0) + (totalByTier["premium"] || 0) + (totalByTier["prime"] || 0) + (totalByTier["vip"] || 0),
+                icon: Rocket,
+                color: "text-emerald-500",
+              },
+              {
+                label: "Imobiliária",
+                value: (totalByTier["imob_start"] || 0) + (totalByTier["imob_pro"] || 0) + (totalByTier["imob_elite"] || 0) + (totalByTier["imob_basico"] || 0),
+                icon: Building2,
+                color: "text-rose-500",
+              },
+              {
+                label: "Construtora",
+                value: (totalByTier["const_start"] || 0) + (totalByTier["const_pro"] || 0) + (totalByTier["const_master"] || 0) + (totalByTier["const_basico"] || 0),
+                icon: Star,
+                color: "text-amber-500",
+              },
+              {
+                label: "Fundador",
+                value: (totalByTier["fundador_corretor"] || 0) + (totalByTier["fundador_empresa"] || 0) + (totalByTier["fundador_construtora"] || 0),
+                icon: Crown,
+                color: "text-purple-500",
+              },
             ].map((s) => (
               <div key={s.label} className="bg-secondary rounded-xl p-2.5 text-center">
                 <s.icon size={14} className={`${s.color} mx-auto mb-0.5`} />
