@@ -1,0 +1,9 @@
+ALTER TYPE package_tier ADD VALUE IF NOT EXISTS 'imob_basico';
+ALTER TYPE package_tier ADD VALUE IF NOT EXISTS 'imob_start';
+ALTER TYPE package_tier ADD VALUE IF NOT EXISTS 'imob_pro';
+ALTER TYPE package_tier ADD VALUE IF NOT EXISTS 'imob_elite';
+ALTER TYPE package_tier ADD VALUE IF NOT EXISTS 'const_basico';
+ALTER TYPE package_tier ADD VALUE IF NOT EXISTS 'const_start';
+ALTER TYPE package_tier ADD VALUE IF NOT EXISTS 'const_pro';
+ALTER TYPE package_tier ADD VALUE IF NOT EXISTS 'const_master';
+ALTER TYPE package_tier ADD VALUE IF NOT EXISTS 'fundador_construtora';
