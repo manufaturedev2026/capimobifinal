@@ -83,6 +83,7 @@ export default function SellerDashboard() {
   const pkgConfig = pkgConfigRaw || PACKAGE_CONFIG.basico;
   const { plans: dbPlans } = useActivePlans();
   const currentDbPlan = dbPlans.find((p) => p.tier === currentTier);
+  const { subscriptions: activeSubs, aggregate: aggLimits, count: activeSubsCount } = useActiveSubscriptions(user?.id);
   const { isAdmin } = useIsAdmin(user?.id);
   const { dailyData, weeklyData, totals: analyticsTotals, loading: analyticsLoading } = useSellerAnalytics(profile?.id);
   const [chartView, setChartView] = useState<"diario" | "semanal">("diario");
