@@ -65,6 +65,7 @@ export default function AdminPanel() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [sellers, setSellers] = useState<SellerWithSub[]>([]);
+  const [allActiveSubs, setAllActiveSubs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [tierFilter, setTierFilter] = useState<string>("todos");
@@ -309,6 +310,9 @@ export default function AdminPanel() {
     (subs || []).forEach((s: any) => {
       if (!subsMap.has(s.user_id)) subsMap.set(s.user_id, s);
     });
+    // Filtra assinaturas não-expiradas (acumuladas) para o resumo de faturamento
+    const nowTs = Date.now();
+    setAllActiveSubs((subs || []).filter((s: any) => !s.expires_at || new Date(s.expires_at).getTime() > nowTs));
     const walletsMap = new Map<string, number>();
     (wallets || []).forEach((w: any) => walletsMap.set(w.user_id, w.balance ?? 0));
 
@@ -562,7 +566,8 @@ export default function AdminPanel() {
 
   const totalByTier: Record<string, number> = {};
   (Object.keys(PACKAGE_CONFIG) as string[]).forEach((t) => {
-    totalByTier[t] = sellers.filter((s) => s.subscription?.tier === t).length;
+    // Conta TODAS as assinaturas ativas acumuladas (não só a principal por usuário)
+    totalByTier[t] = allActiveSubs.filter((s) => s.tier === t).length;
   });
   totalByTier.sem_pacote = sellers.filter((s) => !s.subscription).length;
 
