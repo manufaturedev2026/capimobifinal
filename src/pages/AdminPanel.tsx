@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Shield, Users, Package, DollarSign, Search, Check, X, RefreshCw, ArrowLeft, Crown, Star, Zap, Globe, Plus, Trash2, ExternalLink, Copy, Megaphone, LayoutDashboard, Building2, Rocket, FileText, UserCog, Filter, Camera, Phone, Ban, ShieldOff, Clock, MessageCircle, MapPin, Palette, Bell, Video, Save, Eye, BarChart3, Mail, Send, Database, Brain, Ticket } from "lucide-react";
+import { Shield, Users, Package, DollarSign, Search, Check, X, RefreshCw, ArrowLeft, Crown, Star, Zap, Globe, Plus, Trash2, ExternalLink, Copy, Megaphone, LayoutDashboard, Building2, Rocket, FileText, UserCog, Filter, Camera, Phone, Ban, ShieldOff, Clock, MessageCircle, MapPin, Palette, Bell, Video, Save, Eye, BarChart3, Mail, Send, Database, Brain, Ticket, HardDrive } from "lucide-react";
 import { Link } from "react-router-dom";
 import { MARKETPLACE_THEMES } from "@/lib/marketplaceThemes";
 import { getMarketplaceThemeCssVars } from "@/lib/marketplaceThemeCssVars";
@@ -28,6 +28,7 @@ import AdminReceivePushTab from "@/components/AdminReceivePushTab";
 import AdminAiCostsTab from "@/components/AdminAiCostsTab";
 import AdminFoundersTab from "@/components/AdminFoundersTab";
 import AdminCouponsTab from "@/components/AdminCouponsTab";
+import AdminCleanupTab from "@/components/AdminCleanupTab";
 import { LOGIN_HERO_PRESETS, normalizeLoginHeroSetting, resolveLoginHeroImage } from "@/data/loginHeroPresets";
 import { invalidateRegistrationsClosed } from "@/hooks/useRegistrationsClosed";
 
@@ -67,7 +68,7 @@ export default function AdminPanel() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [tierFilter, setTierFilter] = useState<string>("todos");
-  const [tab, setTab] = useState<"dashboard" | "clientes" | "managers" | "billing" | "plans" | "coupons" | "founders" | "referrals" | "crm" | "seo" | "vendas" | "config" | "push" | "receivePush" | "site" | "smtp" | "funnel" | "broadcast" | "ads" | "invite" | "apify" | "valuation" | "aiCosts">("dashboard");
+  const [tab, setTab] = useState<"dashboard" | "clientes" | "managers" | "billing" | "plans" | "coupons" | "founders" | "referrals" | "crm" | "seo" | "vendas" | "config" | "push" | "receivePush" | "site" | "smtp" | "funnel" | "broadcast" | "ads" | "invite" | "apify" | "valuation" | "aiCosts" | "cleanup">("dashboard");
   const [managersList, setManagersList] = useState<Array<{ id: string; name: string; phone: string | null; photo_url: string | null }>>([]);
   // Category edit dialog
   const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
@@ -605,6 +606,7 @@ export default function AdminPanel() {
     { key: "invite" as const, label: "Convite", icon: MessageCircle },
     { key: "receivePush" as const, label: "Receber Push", icon: Bell },
     { key: "aiCosts" as const, label: "Custos de IA", icon: Brain },
+    { key: "cleanup" as const, label: "Limpeza de Dados", icon: HardDrive },
   ];
   const activeSidebarItem = sidebarItems.find((item) => item.key === tab) || sidebarItems[0];
   const ActiveSidebarIcon = activeSidebarItem.icon;
@@ -940,6 +942,10 @@ export default function AdminPanel() {
 
         {tab === "coupons" && (
           <AdminCouponsTab />
+        )}
+
+        {tab === "cleanup" && (
+          <AdminCleanupTab />
         )}
 
 
