@@ -19,6 +19,12 @@ export function ActivePlansPanel({ userId }: { userId?: string }) {
   const { subscriptions, aggregate, count, loading } = useActiveSubscriptions(userId);
   if (!userId || loading || count === 0) return null;
 
+  // Se qualquer plano tem o valor sentinela (>= 9999) num campo, o agregado é ilimitado.
+  const anyUnlimited = (key: keyof typeof subscriptions[number]) =>
+    subscriptions.some((s: any) => Number(s[key] ?? 0) >= 9999);
+  const showAgg = (val: number, key: keyof typeof subscriptions[number], suffix = "") =>
+    anyUnlimited(key) ? "Ilimitado" : `${val.toLocaleString("pt-BR")}${suffix}`;
+
   return (
     <Card className="p-5 md:p-6 mb-8 border-2 border-primary/30 bg-gradient-to-br from-primary/5 via-background to-background shadow-lg">
       <div className="flex items-start justify-between flex-wrap gap-3 mb-4">
@@ -74,12 +80,12 @@ export function ActivePlansPanel({ userId }: { userId?: string }) {
           Total acumulado disponível
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          <Stat icon={<Layers className="w-4 h-4" />} label="Imóveis ativos" value={fmt(aggregate.max_items)} />
+          <Stat icon={<Layers className="w-4 h-4" />} label="Imóveis ativos" value={showAgg(aggregate.max_items, "max_items")} />
           <Stat icon={<ImageIcon className="w-4 h-4" />} label="Fotos / imóvel" value={fmt(aggregate.max_photos_per_listing)} hint="usa o maior" />
-          <Stat icon={<Sparkles className="w-4 h-4" />} label="Créditos IA / mês" value={fmt(aggregate.ai_credits_per_month)} />
-          <Stat icon={<HardDrive className="w-4 h-4" />} label="Storage" value={`${fmt(aggregate.storage_mb)} MB`} />
-          <Stat icon={<Eye className="w-4 h-4" />} label="Visitas / mês" value={fmt(aggregate.monthly_visits_limit)} />
-          <Stat icon={<Users className="w-4 h-4" />} label="Corretores" value={fmt(aggregate.max_team_members)} />
+          <Stat icon={<Sparkles className="w-4 h-4" />} label="Créditos IA / mês" value={showAgg(aggregate.ai_credits_per_month, "ai_credits_per_month")} />
+          <Stat icon={<HardDrive className="w-4 h-4" />} label="Storage" value={anyUnlimited("storage_mb") ? "Ilimitado" : `${aggregate.storage_mb.toLocaleString("pt-BR")} MB`} />
+          <Stat icon={<Eye className="w-4 h-4" />} label="Visitas / mês" value={showAgg(aggregate.monthly_visits_limit, "monthly_visits_limit")} />
+          <Stat icon={<Users className="w-4 h-4" />} label="Corretores" value={showAgg(aggregate.max_team_members, "max_team_members")} />
         </div>
       </div>
     </Card>
