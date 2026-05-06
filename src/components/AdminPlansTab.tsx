@@ -454,7 +454,7 @@ export default function AdminPlansTab() {
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                   <Field label="Categoria">
                     <select
-                      value={editing.category || "individual"}
+                      value={editing.category || "corretor"}
                       onChange={(e) => setEditing({ ...editing, category: e.target.value as any })}
                       className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm"
                     >
