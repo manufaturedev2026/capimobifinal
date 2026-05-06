@@ -19,9 +19,11 @@ export function ActivePlansPanel({ userId }: { userId?: string }) {
   const { subscriptions, aggregate, count, loading } = useActiveSubscriptions(userId);
   if (!userId || loading || count === 0) return null;
 
-  // Se qualquer plano tem o valor sentinela (>= 9999) num campo, o agregado é ilimitado.
+  // Sentinela "ilimitado": exatamente 9999 OU valores absurdos (>= 1 bi).
+  // Valores reais grandes (ex: 1.500.000 visitas/mês) NÃO são sentinela.
+  const isUnlimitedVal = (n: number) => n === 9999 || n >= 1_000_000_000;
   const anyUnlimited = (key: keyof typeof subscriptions[number]) =>
-    subscriptions.some((s: any) => Number(s[key] ?? 0) >= 9999);
+    subscriptions.some((s: any) => isUnlimitedVal(Number(s[key] ?? 0)));
   const showAgg = (val: number, key: keyof typeof subscriptions[number], suffix = "") =>
     anyUnlimited(key) ? "Ilimitado" : `${val.toLocaleString("pt-BR")}${suffix}`;
 
