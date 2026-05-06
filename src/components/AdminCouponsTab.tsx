@@ -399,6 +399,35 @@ export default function AdminCouponsTab() {
                       placeholder="FUNDADOR50"
                     />
                   </Field>
+                  <Field label="Tipo de desconto">
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setEditing({ ...editing, discount_type: "percent" })}
+                        className={`flex-1 px-3 py-2 rounded-lg border-2 text-xs font-bold ${
+                          (editing.discount_type || "percent") === "percent"
+                            ? "border-primary bg-primary text-primary-foreground"
+                            : "border-border bg-secondary text-foreground"
+                        }`}
+                      >
+                        % Porcentagem
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setEditing({ ...editing, discount_type: "fixed" })}
+                        className={`flex-1 px-3 py-2 rounded-lg border-2 text-xs font-bold ${
+                          editing.discount_type === "fixed"
+                            ? "border-primary bg-primary text-primary-foreground"
+                            : "border-border bg-secondary text-foreground"
+                        }`}
+                      >
+                        R$ Valor fixo
+                      </button>
+                    </div>
+                  </Field>
+                </div>
+
+                {(editing.discount_type || "percent") === "percent" ? (
                   <Field label="Desconto (%)">
                     <input
                       type="number" min={1} max={100}
@@ -407,7 +436,20 @@ export default function AdminCouponsTab() {
                       className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm font-bold"
                     />
                   </Field>
-                </div>
+                ) : (
+                  <Field label="Valor do desconto (R$)" hint="Ex: 10 = R$ 10,00 abatidos do total">
+                    <input
+                      type="number" min={1} step="0.01"
+                      value={editing.discount_amount_cents ? (editing.discount_amount_cents / 100) : ""}
+                      onChange={(e) => {
+                        const v = parseFloat(e.target.value);
+                        setEditing({ ...editing, discount_amount_cents: isNaN(v) ? null : Math.round(v * 100) });
+                      }}
+                      className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground text-sm font-bold"
+                      placeholder="10.00"
+                    />
+                  </Field>
+                )}
 
                 <Field label="Descrição (opcional)">
                   <input
