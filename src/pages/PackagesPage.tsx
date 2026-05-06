@@ -787,7 +787,10 @@ export default function PackagesPage() {
         {billingPeriod === "founder" && activeFounderLot && founderPlan && (() => {
           const slotsLeft = activeFounderLot.total_slots - activeFounderLot.used_slots;
           const pct = (activeFounderLot.used_slots / activeFounderLot.total_slots) * 100;
-          const credits = activeFounderLot.ia_credits ?? aiMonthlyCredits[founderTier];
+          const credits =
+            (founderPlan as any)?.ai_credits_per_month
+            ?? activeFounderLot.ia_credits
+            ?? aiMonthlyCredits[founderTier];
           const isCurrent = String(currentTier) === founderTier;
           const inheritedLabel = TIER_LABEL[activeFounderLot.inherited_tier] || (isImobiliaria ? "Black Empresa" : "VIP");
 
