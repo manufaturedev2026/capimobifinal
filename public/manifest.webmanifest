@@ -9,6 +9,11 @@
   "background_color": "#FFFFFF",
   "theme_color": "#00AEEF",
   "lang": "pt-BR",
+  "related_applications": [
+    { "platform": "webapp", "url": "https://capimobi.com.br/manifest.webmanifest" },
+    { "platform": "webapp", "url": "https://www.capimobi.com.br/manifest.webmanifest" }
+  ],
+  "prefer_related_applications": false,
   "icons": [
     { "src": "/pwa-icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
     { "src": "/pwa-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },

@@ -19,6 +19,7 @@ type Listener = (snapshot: PwaInstallSnapshot) => void;
 let deferredPrompt: BeforeInstallPromptEvent | null = null;
 let initialized = false;
 let installed = false;
+let relatedAppInstalled = false;
 
 const listeners = new Set<Listener>();
 
@@ -58,7 +59,7 @@ export function isStandaloneDisplayMode() {
 }
 
 export function isAppInstalled() {
-  return isStandaloneDisplayMode();
+  return isStandaloneDisplayMode() || relatedAppInstalled;
 }
 
 export function isIOSStandaloneApp() {
@@ -95,6 +96,11 @@ function handleBeforeInstallPrompt(event: Event) {
 function handleAppInstalled() {
   installed = true;
   deferredPrompt = null;
+  try {
+    localStorage.setItem("pwa:installed", "1");
+  } catch {
+    /* ignore */
+  }
   emitSnapshot();
 }
 
@@ -106,12 +112,42 @@ export function initPwaInstall() {
   if (typeof window === "undefined" || initialized) return;
 
   initialized = true;
-  installed = isAppInstalled();
+  try {
+    if (localStorage.getItem("pwa:installed") === "1") {
+      installed = true;
+    }
+  } catch {
+    /* ignore */
+  }
+  installed = installed || isAppInstalled();
 
   window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt as EventListener);
   window.addEventListener("appinstalled", handleAppInstalled);
   window.addEventListener("focus", syncInstallState);
   document.addEventListener("visibilitychange", syncInstallState);
+
+  // Detect already-installed PWA via getInstalledRelatedApps (Chrome Android).
+  const nav = navigator as Navigator & {
+    getInstalledRelatedApps?: () => Promise<Array<{ platform: string; url?: string; id?: string }>>;
+  };
+  if (typeof nav.getInstalledRelatedApps === "function") {
+    nav.getInstalledRelatedApps()
+      .then((apps) => {
+        if (apps && apps.length > 0) {
+          relatedAppInstalled = true;
+          installed = true;
+          try {
+            localStorage.setItem("pwa:installed", "1");
+          } catch {
+            /* ignore */
+          }
+          emitSnapshot();
+        }
+      })
+      .catch(() => {
+        /* ignore */
+      });
+  }
 }
 
 export function getPwaInstallSnapshot() {
