@@ -12,6 +12,7 @@ export interface Plan {
   storage_mb: number;
   ai_credits_per_month: number;
   ai_generations_per_day: number;
+  max_team_members: number;
   color: string;
   border_color: string;
   badge_color: string;
@@ -34,6 +35,7 @@ function normalize(row: any): Plan {
     storage_mb: row.storage_mb ?? 50,
     ai_credits_per_month: row.ai_credits_per_month ?? 25,
     ai_generations_per_day: row.ai_generations_per_day ?? 0,
+    max_team_members: row.max_team_members ?? 0,
     color: row.color || "from-slate-500 to-slate-600",
     border_color: row.border_color || "border-slate-400",
     badge_color: row.badge_color || "bg-slate-500 text-white",
