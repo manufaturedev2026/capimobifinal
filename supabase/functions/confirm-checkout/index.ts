@@ -130,11 +130,15 @@ serve(async (req) => {
       if (inheritedTier) tier = inheritedTier;
     }
 
+    // Acúmulo de planos: NÃO desativa assinaturas ativas anteriores.
+    // Cada compra cria uma nova linha com sua própria validade.
+    // Limpa apenas assinaturas já vencidas para manter a base limpa.
     await supabaseAdmin
       .from("seller_subscriptions")
       .update({ is_active: false })
       .eq("user_id", user.id)
-      .eq("is_active", true);
+      .eq("is_active", true)
+      .lt("expires_at", new Date().toISOString());
 
     // Fundador anual = 365 dias; Fundador mensal = 30 dias
     const days = ((isFounder && billingPeriod === "annual") || (!isFounder && billingPeriod === "annual")) ? 365 : 30;
