@@ -33,6 +33,7 @@ import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { useSubscription, useIsAdmin, PACKAGE_CONFIG } from "@/hooks/useSubscription";
 import { useActivePlans } from "@/hooks/usePlans";
+import { useActiveSubscriptions } from "@/hooks/useActiveSubscriptions";
 import PackageBadge from "@/components/PackageBadge";
 import { useSellerAnalytics } from "@/hooks/useSellerAnalytics";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, CartesianGrid } from "recharts";
