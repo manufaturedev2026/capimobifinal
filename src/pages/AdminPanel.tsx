@@ -566,7 +566,8 @@ export default function AdminPanel() {
 
   const totalByTier: Record<string, number> = {};
   (Object.keys(PACKAGE_CONFIG) as string[]).forEach((t) => {
-    totalByTier[t] = sellers.filter((s) => s.subscription?.tier === t).length;
+    // Conta TODAS as assinaturas ativas acumuladas (não só a principal por usuário)
+    totalByTier[t] = allActiveSubs.filter((s) => s.tier === t).length;
   });
   totalByTier.sem_pacote = sellers.filter((s) => !s.subscription).length;
 
