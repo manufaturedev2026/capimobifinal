@@ -287,7 +287,7 @@ export default function StoryUploadDialog({ open, onOpenChange, sellerId, onUplo
                 )}
 
                 {/* Title */}
-                <div className="space-y-1.5 order-3">
+                <div className="space-y-1.5">
                   <Label className="flex items-center gap-1.5 text-xs">
                     <Type className="w-3.5 h-3.5" /> Título (opcional)
                   </Label>
@@ -295,7 +295,7 @@ export default function StoryUploadDialog({ open, onOpenChange, sellerId, onUplo
                 </div>
 
                 {/* Description */}
-                <div className="space-y-1.5 order-4">
+                <div className="space-y-1.5">
                   <Label className="flex items-center gap-1.5 text-xs">
                     <FileText className="w-3.5 h-3.5" /> Descrição (opcional)
                   </Label>
@@ -303,13 +303,13 @@ export default function StoryUploadDialog({ open, onOpenChange, sellerId, onUplo
                 </div>
 
                 {/* Button text */}
-                <div className="space-y-1.5 order-5">
+                <div className="space-y-1.5">
                   <Label className="text-xs">Texto do botão</Label>
                   <Input value={buttonText} onChange={(e) => setButtonText(e.target.value)} placeholder="Ver anúncio" maxLength={30} />
                 </div>
 
                 {/* Link to item */}
-                <div className="space-y-1.5 order-2">
+                <div className="space-y-1.5">
                   <Label className="flex items-center gap-1.5 text-xs">
                     <Package className="w-3.5 h-3.5" /> Vincular a um anúncio <span className="text-destructive">*</span>
                   </Label>
