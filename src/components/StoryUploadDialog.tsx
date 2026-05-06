@@ -196,7 +196,7 @@ export default function StoryUploadDialog({ open, onOpenChange, sellerId, onUplo
           <DialogTitle>Publicar Story</DialogTitle>
         </DialogHeader>
 
-        <ScrollArea className="flex-1 min-h-0 px-4 sm:px-2 sm:max-h-[70vh]">
+        <ScrollArea className="flex-1 min-h-0 px-4 sm:px-2">
           <div className="space-y-4 pb-24 sm:pb-20">
             <p className="text-sm text-muted-foreground">
               {currentCount} stories ativos
@@ -286,29 +286,7 @@ export default function StoryUploadDialog({ open, onOpenChange, sellerId, onUplo
                   </button>
                 )}
 
-                {/* Title */}
-                <div className="space-y-1.5">
-                  <Label className="flex items-center gap-1.5 text-xs">
-                    <Type className="w-3.5 h-3.5" /> Título (opcional)
-                  </Label>
-                  <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Ex: Oferta imperdível!" maxLength={60} />
-                </div>
-
-                {/* Description */}
-                <div className="space-y-1.5">
-                  <Label className="flex items-center gap-1.5 text-xs">
-                    <FileText className="w-3.5 h-3.5" /> Descrição (opcional)
-                  </Label>
-                  <Textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Breve descrição..." maxLength={140} rows={2} />
-                </div>
-
-                {/* Button text */}
-                <div className="space-y-1.5">
-                  <Label className="text-xs">Texto do botão</Label>
-                  <Input value={buttonText} onChange={(e) => setButtonText(e.target.value)} placeholder="Ver anúncio" maxLength={30} />
-                </div>
-
-                {/* Link to item */}
+                {/* Link to item — moved BEFORE optional fields so the required selector is visible without scrolling */}
                 <div className="space-y-1.5">
                   <Label className="flex items-center gap-1.5 text-xs">
                     <Package className="w-3.5 h-3.5" /> Vincular a um anúncio <span className="text-destructive">*</span>
@@ -378,6 +356,28 @@ export default function StoryUploadDialog({ open, onOpenChange, sellerId, onUplo
                       </Button>
                     </div>
                   )}
+                </div>
+
+                {/* Title */}
+                <div className="space-y-1.5">
+                  <Label className="flex items-center gap-1.5 text-xs">
+                    <Type className="w-3.5 h-3.5" /> Título (opcional)
+                  </Label>
+                  <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Ex: Oferta imperdível!" maxLength={60} />
+                </div>
+
+                {/* Description */}
+                <div className="space-y-1.5">
+                  <Label className="flex items-center gap-1.5 text-xs">
+                    <FileText className="w-3.5 h-3.5" /> Descrição (opcional)
+                  </Label>
+                  <Textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Breve descrição..." maxLength={140} rows={2} />
+                </div>
+
+                {/* Button text */}
+                <div className="space-y-1.5">
+                  <Label className="text-xs">Texto do botão</Label>
+                  <Input value={buttonText} onChange={(e) => setButtonText(e.target.value)} placeholder="Ver anúncio" maxLength={30} />
                 </div>
 
               </>
