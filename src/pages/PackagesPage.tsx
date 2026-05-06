@@ -598,12 +598,22 @@ export default function PackagesPage() {
           </div>
 
           <ul className="space-y-1.5 flex-1 mb-5">
-            {plan.benefits.map((b, i) => (
-              <li key={i} className="flex items-start gap-2 text-[12px] md:text-[13px] text-white/70">
-                <Check className="w-3.5 h-3.5 mt-0.5 shrink-0 text-emerald-400" />
-                <span>{b}</span>
-              </li>
-            ))}
+            {plan.benefits.map((b, i) => {
+              const itemsLabel = plan.max_items >= 9999 ? "ilimitados" : plan.max_items.toLocaleString("pt-BR");
+              const teamLabel = teamCount >= 9999 ? "ilimitados" : String(teamCount);
+              const text = b
+                .replace(/Até\s+[\d.\s]+\s+(imóveis ativos|anúncios)/gi, `Até ${itemsLabel} $1`)
+                .replace(/Até\s+\d+\s+fotos por (imóvel|anúncio)/gi, `Até ${plan.max_photos_per_listing} fotos por $1`)
+                .replace(/[\d.,]+\s*(MB|GB)\s+de armazenamento/gi, storageLabel + " de armazenamento")
+                .replace(/[\d.,]+\s+créditos de IA por mês/gi, `${formatCredits(credits)} créditos de IA por mês`)
+                .replace(/Até\s+\d+\s+corretor(es)?/gi, teamCount > 0 ? `Até ${teamLabel} corretor${teamCount === 1 ? "" : "es"}` : "$&");
+              return (
+                <li key={i} className="flex items-start gap-2 text-[12px] md:text-[13px] text-white/70">
+                  <Check className="w-3.5 h-3.5 mt-0.5 shrink-0 text-emerald-400" />
+                  <span>{text}</span>
+                </li>
+              );
+            })}
           </ul>
 
           <button
