@@ -310,6 +310,9 @@ export default function AdminPanel() {
     (subs || []).forEach((s: any) => {
       if (!subsMap.has(s.user_id)) subsMap.set(s.user_id, s);
     });
+    // Filtra assinaturas não-expiradas (acumuladas) para o resumo de faturamento
+    const nowTs = Date.now();
+    setAllActiveSubs((subs || []).filter((s: any) => !s.expires_at || new Date(s.expires_at).getTime() > nowTs));
     const walletsMap = new Map<string, number>();
     (wallets || []).forEach((w: any) => walletsMap.set(w.user_id, w.balance ?? 0));
 
