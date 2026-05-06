@@ -350,16 +350,12 @@ export function useSubscription(userId?: string) {
 
   useEffect(() => {
     if (!userId) { setLoading(false); return; }
-    // First sync with Stripe, then fetch local
-    syncWithStripe().then(() => fetchSubscription());
+    // Appmax é o gateway atual; sincronização Stripe desativada
+    fetchSubscription();
   }, [userId]);
 
   const syncWithStripe = async () => {
-    try {
-      await supabase.functions.invoke("check-subscription");
-    } catch {
-      // Silently fail - local data will be used
-    }
+    // No-op: pagamentos via Appmax. check-subscription desativado para preservar ativações manuais.
   };
 
   const fetchSubscription = async () => {
