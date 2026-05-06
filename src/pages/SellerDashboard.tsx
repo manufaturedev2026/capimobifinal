@@ -32,6 +32,7 @@ import { getTagStyle, getTagLabel } from "@/data/products";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { useSubscription, useIsAdmin, PACKAGE_CONFIG } from "@/hooks/useSubscription";
+import { useActivePlans } from "@/hooks/usePlans";
 import PackageBadge from "@/components/PackageBadge";
 import { useSellerAnalytics } from "@/hooks/useSellerAnalytics";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, CartesianGrid } from "recharts";
@@ -79,6 +80,8 @@ export default function SellerDashboard() {
   const [statusFilter, setStatusFilter] = useState<string>("todos");
   const { subscription, currentTier, config: pkgConfigRaw, daysUntilExpiry, isExpiringSoon, isExpired } = useSubscription(user?.id);
   const pkgConfig = pkgConfigRaw || PACKAGE_CONFIG.basico;
+  const { plans: dbPlans } = useActivePlans();
+  const currentDbPlan = dbPlans.find((p) => p.tier === currentTier);
   const { isAdmin } = useIsAdmin(user?.id);
   const { dailyData, weeklyData, totals: analyticsTotals, loading: analyticsLoading } = useSellerAnalytics(profile?.id);
   const [chartView, setChartView] = useState<"diario" | "semanal">("diario");
@@ -375,7 +378,7 @@ export default function SellerDashboard() {
   const isEmpresaPlan = ["essencial_empresa", "premium_empresa", "prime_empresa"].includes(currentTier);
   const showTeamTab = isEmpresaPlan || isImobiliaria;
   // Limite vem do banco (subscription_plans.max_team_members), editável no Admin → Planos.
-  const planMaxTeam = (pkgConfigRaw as any)?.max_team_members;
+  const planMaxTeam = currentDbPlan?.max_team_members;
   const maxTeamMembers =
     typeof planMaxTeam === "number" && planMaxTeam > 0
       ? planMaxTeam
