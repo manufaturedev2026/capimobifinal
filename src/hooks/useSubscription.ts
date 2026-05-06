@@ -360,16 +360,27 @@ export function useSubscription(userId?: string) {
 
   const fetchSubscription = async () => {
     if (!userId) return;
+    // Fetch all active, non-expired subscriptions and pick the highest-tier one
+    // as the "effective" plan (badge + visibility weight come from this).
     const { data } = await supabase
       .from("seller_subscriptions")
       .select("*")
       .eq("user_id", userId)
       .eq("is_active", true)
-      .order("created_at", { ascending: false })
-      .limit(1);
+      .order("created_at", { ascending: false });
 
-    if (data && data.length > 0) {
-      const sub = data[0] as any;
+    const activeSubs = (data || []).filter((s: any) => !s.expires_at || new Date(s.expires_at) > new Date());
+
+    if (activeSubs.length > 0) {
+      // Resolve effective tier via RPC (uses tier_rank server-side)
+      let effectiveTier: string | null = null;
+      try {
+        const { data: rpc } = await supabase.rpc("get_effective_plan_limits" as any, { p_user_id: userId });
+        if (rpc && typeof rpc === "object") {
+          effectiveTier = (rpc as any).effective_tier || null;
+        }
+      } catch {}
+      const sub = (effectiveTier && activeSubs.find((s: any) => s.tier === effectiveTier)) || activeSubs[0];
       setSubscription({
         id: sub.id,
         user_id: sub.user_id,
