@@ -65,6 +65,7 @@ export default function AdminPanel() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [sellers, setSellers] = useState<SellerWithSub[]>([]);
+  const [allActiveSubs, setAllActiveSubs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [tierFilter, setTierFilter] = useState<string>("todos");
