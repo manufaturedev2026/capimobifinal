@@ -208,8 +208,7 @@ export default function NotificationsTab({ userId, sellerId }: NotificationsTabP
           ) : (
             <Button
               size="sm"
-              variant="outline"
-              className="gap-2"
+              className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
               disabled={pushSub.loading}
               onClick={async () => {
                 const ok = await pushSub.subscribe();
