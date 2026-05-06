@@ -33,6 +33,7 @@ import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { useSubscription, useIsAdmin, PACKAGE_CONFIG } from "@/hooks/useSubscription";
 import { useActivePlans } from "@/hooks/usePlans";
+import { useActiveSubscriptions } from "@/hooks/useActiveSubscriptions";
 import PackageBadge from "@/components/PackageBadge";
 import { useSellerAnalytics } from "@/hooks/useSellerAnalytics";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, CartesianGrid } from "recharts";
@@ -82,6 +83,7 @@ export default function SellerDashboard() {
   const pkgConfig = pkgConfigRaw || PACKAGE_CONFIG.basico;
   const { plans: dbPlans } = useActivePlans();
   const currentDbPlan = dbPlans.find((p) => p.tier === currentTier);
+  const { subscriptions: activeSubs, aggregate: aggLimits, count: activeSubsCount } = useActiveSubscriptions(user?.id);
   const { isAdmin } = useIsAdmin(user?.id);
   const { dailyData, weeklyData, totals: analyticsTotals, loading: analyticsLoading } = useSellerAnalytics(profile?.id);
   const [chartView, setChartView] = useState<"diario" | "semanal">("diario");
@@ -649,17 +651,40 @@ export default function SellerDashboard() {
                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
                   className={`rounded-2xl border-2 p-5 relative overflow-hidden ${isExpired ? "border-destructive bg-destructive/5" : isExpiringSoon ? "border-amber-400 bg-amber-400/5" : "border-primary/20 bg-gradient-to-r from-primary/5 via-card to-accent/5"}`}>
                   <div className="absolute top-0 right-0 w-32 h-32 rounded-full bg-primary/5 -translate-y-1/2 translate-x-1/2" />
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 relative">
-                    <div className="flex items-center gap-4">
-                      <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${pkgConfig.color} flex items-center justify-center shadow-lg`}>
+                  <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 relative">
+                    <div className="flex items-start gap-4 flex-1 min-w-0">
+                      <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${pkgConfig.color} flex items-center justify-center shadow-lg shrink-0`}>
                         {currentTier === "prime" ? <Crown size={22} className="text-white" /> : currentTier === "premium" ? <Star size={22} className="text-white" /> : <Zap size={22} className="text-white" />}
                       </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="font-display font-bold text-foreground text-lg">Pacote {pkgConfig.name}</span>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="font-display font-bold text-foreground text-lg">
+                            {activeSubsCount > 1 ? `${activeSubsCount} planos ativos` : `Pacote ${pkgConfig.name}`}
+                          </span>
                           <PackageBadge tier={currentTier} />
                         </div>
-                        {subscription ? (
+                        {activeSubs && activeSubs.length > 0 ? (
+                          <div className="mt-2 flex flex-col gap-1.5">
+                            {activeSubs.map((s) => {
+                              const days = s.expires_at ? Math.max(0, Math.ceil((new Date(s.expires_at).getTime() - Date.now()) / (1000 * 60 * 60 * 24))) : null;
+                              const expired = days !== null && days <= 0;
+                              return (
+                                <div key={s.id} className="flex items-center gap-2 text-xs flex-wrap">
+                                  <PackageBadge tier={s.tier as any} />
+                                  <span className="font-semibold text-foreground">{s.name || s.tier}</span>
+                                  {days !== null && (
+                                    <span className={expired ? "text-destructive font-semibold" : "text-muted-foreground"}>
+                                      {expired ? "⚠️ Expirado" : <>• Expira em <strong>{days} dias</strong></>}
+                                    </span>
+                                  )}
+                                </div>
+                              );
+                            })}
+                            <p className="text-xs text-muted-foreground mt-1 pt-1 border-t border-border/40">
+                              Total acumulado: <strong>{totalActive}/{aggLimits.max_items >= 9999 ? "∞" : aggLimits.max_items}</strong> anúncios
+                            </p>
+                          </div>
+                        ) : subscription ? (
                           <p className="text-xs text-muted-foreground mt-0.5">
                             {isExpired ? (
                               <span className="text-destructive font-semibold">⚠️ Expirado — renove agora!</span>
