@@ -196,7 +196,7 @@ export default function StoryUploadDialog({ open, onOpenChange, sellerId, onUplo
           <DialogTitle>Publicar Story</DialogTitle>
         </DialogHeader>
 
-        <ScrollArea className="flex-1 min-h-0 px-4 sm:px-2 sm:max-h-[70vh]">
+        <ScrollArea className="flex-1 min-h-0 px-4 sm:px-2">
           <div className="space-y-4 pb-24 sm:pb-20">
             <p className="text-sm text-muted-foreground">
               {currentCount} stories ativos
