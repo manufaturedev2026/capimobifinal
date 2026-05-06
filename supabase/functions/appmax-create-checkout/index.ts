@@ -111,6 +111,7 @@ serve(async (req) => {
     let appliedCouponId: string | null = null;
     let appliedCouponCode: string | null = null;
     let couponDescription = "";
+    let fixedDiscountCents = 0;
 
     if (billing_period === "annual" && !isFounder) {
       const { data: setting } = await supabaseAdmin
@@ -129,12 +130,20 @@ serve(async (req) => {
       if (cpn.applicable_tiers?.length && !cpn.applicable_tiers.includes(tier)) throw new Error("Cupom não vale para este plano");
       if (cpn.applies_to === "monthly" && billing_period === "annual") throw new Error("Cupom só para mensais");
       if (cpn.applies_to === "annual" && billing_period === "monthly") throw new Error("Cupom só para anuais");
-      totalDiscount += cpn.discount_percent;
       appliedCouponId = cpn.id;
       appliedCouponCode = cpn.code;
-      couponDescription = couponDescription
-        ? `${couponDescription} + Cupom ${cpn.code} (-${cpn.discount_percent}%)`
-        : `Cupom ${cpn.code} (-${cpn.discount_percent}%)`;
+      if (cpn.discount_type === "fixed") {
+        fixedDiscountCents += Number(cpn.discount_amount_cents || 0);
+        const reais = (Number(cpn.discount_amount_cents || 0) / 100).toFixed(2).replace(".", ",");
+        couponDescription = couponDescription
+          ? `${couponDescription} + Cupom ${cpn.code} (-R$ ${reais})`
+          : `Cupom ${cpn.code} (-R$ ${reais})`;
+      } else {
+        totalDiscount += cpn.discount_percent;
+        couponDescription = couponDescription
+          ? `${couponDescription} + Cupom ${cpn.code} (-${cpn.discount_percent}%)`
+          : `Cupom ${cpn.code} (-${cpn.discount_percent}%)`;
+      }
     }
     if (totalDiscount > 95) totalDiscount = 95;
 
