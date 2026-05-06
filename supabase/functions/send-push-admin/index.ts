@@ -161,6 +161,7 @@ Deno.serve(async (req) => {
     const hasCategoryFilter = audienceFilter && audienceFilter !== "all";
     const hasRegionFilter = (stateFilter && stateFilter !== "all") || (cityFilter && cityFilter.trim());
     let sellerIdsFilter: string[] | null = null;
+    let homepageSellerId: string | null = null;
 
     if (hasCategoryFilter || hasRegionFilter) {
       let profilesQuery = adminClient.from("profiles").select("id");
@@ -194,7 +195,7 @@ Deno.serve(async (req) => {
           .eq("key", "admin_push_seller_id")
           .maybeSingle();
 
-        let homepageSellerId: string | null = setting?.value ?? null;
+        homepageSellerId = setting?.value ?? null;
         if (!homepageSellerId) {
           // Fallback: oldest admin's profile id (mirrors HomePwaActions logic)
           const { data: adminRole } = await adminClient
@@ -224,12 +225,39 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Fetch push subscriptions (filtered or all)
-    let subsQuery = adminClient.from("push_subscriptions").select("*");
+    // Fetch push subscriptions. To avoid leaking the admin homepage audience
+    // into the broker dashboard send (and vice versa), the homepage seller id
+    // is fetched with scope = "admin_home" only, while all other seller ids
+    // are fetched with scope = "store".
+    let subscriptions: any[] = [];
     if (sellerIdsFilter) {
-      subsQuery = subsQuery.in("seller_id", sellerIdsFilter);
+      const otherSellerIds = sellerIdsFilter.filter((id) => id !== homepageSellerId);
+      const queries: Promise<any>[] = [];
+      if (otherSellerIds.length > 0) {
+        queries.push(
+          adminClient
+            .from("push_subscriptions")
+            .select("*")
+            .in("seller_id", otherSellerIds)
+            .eq("scope", "store"),
+        );
+      }
+      if (homepageSellerId) {
+        queries.push(
+          adminClient
+            .from("push_subscriptions")
+            .select("*")
+            .eq("seller_id", homepageSellerId)
+            .eq("scope", "admin_home"),
+        );
+      }
+      const results = await Promise.all(queries);
+      subscriptions = results.flatMap((r) => r.data || []);
+    } else {
+      // No filter = broadcast to everyone (all scopes).
+      const { data } = await adminClient.from("push_subscriptions").select("*");
+      subscriptions = data || [];
     }
-    const { data: subscriptions } = await subsQuery;
 
     if (!subscriptions || subscriptions.length === 0) {
       return new Response(JSON.stringify({ sent: 0, failed: 0, total: 0, message: "No subscribers" }), {
