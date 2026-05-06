@@ -68,7 +68,7 @@ export default function AdminPanel() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [tierFilter, setTierFilter] = useState<string>("todos");
-  const [tab, setTab] = useState<"dashboard" | "clientes" | "managers" | "billing" | "plans" | "coupons" | "founders" | "referrals" | "crm" | "seo" | "vendas" | "config" | "push" | "receivePush" | "site" | "smtp" | "funnel" | "broadcast" | "ads" | "invite" | "apify" | "valuation" | "aiCosts">("dashboard");
+  const [tab, setTab] = useState<"dashboard" | "clientes" | "managers" | "billing" | "plans" | "coupons" | "founders" | "referrals" | "crm" | "seo" | "vendas" | "config" | "push" | "receivePush" | "site" | "smtp" | "funnel" | "broadcast" | "ads" | "invite" | "apify" | "valuation" | "aiCosts" | "cleanup">("dashboard");
   const [managersList, setManagersList] = useState<Array<{ id: string; name: string; phone: string | null; photo_url: string | null }>>([]);
   // Category edit dialog
   const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
