@@ -3486,6 +3486,7 @@ export type Database = {
           is_popular: boolean
           max_items: number
           max_photos_per_listing: number
+          max_team_members: number
           monthly_visits_limit: number | null
           name: string
           price: number
@@ -3509,6 +3510,7 @@ export type Database = {
           is_popular?: boolean
           max_items?: number
           max_photos_per_listing?: number
+          max_team_members?: number
           monthly_visits_limit?: number | null
           name: string
           price?: number
@@ -3532,6 +3534,7 @@ export type Database = {
           is_popular?: boolean
           max_items?: number
           max_photos_per_listing?: number
+          max_team_members?: number
           monthly_visits_limit?: number | null
           name?: string
           price?: number
