@@ -172,7 +172,7 @@ export default function PackagesPage() {
       const [{ data: lots }, { data: settings }] = await Promise.all([
         (supabase as any)
           .from("founder_lots")
-          .select("id, category, lot_number, price, monthly_price, total_slots, used_slots, is_active, inherited_tier, ia_credits")
+          .select("id, category, lot_number, price, monthly_price, total_slots, used_slots, is_active, inherited_tier, ia_credits, ia_credits_monthly")
           .order("category")
           .order("lot_number"),
         (supabase as any)
@@ -787,10 +787,14 @@ export default function PackagesPage() {
         {billingPeriod === "founder" && activeFounderLot && founderPlan && (() => {
           const slotsLeft = activeFounderLot.total_slots - activeFounderLot.used_slots;
           const pct = (activeFounderLot.used_slots / activeFounderLot.total_slots) * 100;
-          const credits =
-            (founderPlan as any)?.ai_credits_per_month
-            ?? activeFounderLot.ia_credits
+          const annualCredits =
+            activeFounderLot.ia_credits
+            ?? (founderPlan as any)?.ai_credits_per_month
             ?? aiMonthlyCredits[founderTier];
+          const monthlyCredits =
+            activeFounderLot.ia_credits_monthly
+            ?? Math.round(annualCredits / 12);
+          const credits = founderBilling === "annual" ? annualCredits : monthlyCredits;
           const isCurrent = String(currentTier) === founderTier;
           const inheritedLabel = TIER_LABEL[activeFounderLot.inherited_tier] || (isImobiliaria ? "Black Empresa" : "VIP");
 
@@ -966,7 +970,7 @@ export default function PackagesPage() {
                     <div className="mt-5 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-black/30 backdrop-blur-sm">
                       <Coins size={18} className="text-amber-200" />
                       <span className="font-bold text-white">
-                        {formatCredits(founderBilling === "annual" ? credits : Math.round(credits / 12))} créditos IA
+                        {formatCredits(credits)} créditos IA
                       </span>
                       <span className="text-white/70 text-xs">· não renováveis</span>
                     </div>
