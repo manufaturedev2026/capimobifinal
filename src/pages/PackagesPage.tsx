@@ -966,7 +966,7 @@ export default function PackagesPage() {
                     <div className="mt-5 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-black/30 backdrop-blur-sm">
                       <Coins size={18} className="text-amber-200" />
                       <span className="font-bold text-white">
-                        {formatCredits(founderBilling === "annual" ? credits * 12 : credits)} créditos IA
+                        {formatCredits(founderBilling === "annual" ? credits : Math.round(credits / 12))} créditos IA
                       </span>
                       <span className="text-white/70 text-xs">· não renováveis</span>
                     </div>
