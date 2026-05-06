@@ -668,6 +668,9 @@ export default function PackagesPage() {
       </div>
 
       <div className="container max-w-6xl mx-auto px-4 -mt-8 relative z-10 pb-24 lg:pb-16">
+        {/* Painel de planos vigentes (acúmulo) */}
+        <ActivePlansPanel userId={user?.id} />
+
         {/* Toggle Mensal / Anual */}
         <div className="flex justify-center mb-6">
           <div className="inline-flex bg-card border-2 border-border rounded-2xl p-1.5 shadow-lg">
