@@ -289,8 +289,10 @@ export default function AdminCouponsTab() {
                         <p className="text-xs text-primary-foreground/80 mt-1 line-clamp-2">{c.description}</p>
                       )}
                     </div>
-                    <span className="text-2xl font-display font-extrabold flex items-center">
-                      {c.discount_percent}<Percent size={16} className="ml-0.5" />
+                    <span className="text-2xl font-display font-extrabold flex items-center whitespace-nowrap">
+                      {c.discount_type === "fixed"
+                        ? `R$ ${((c.discount_amount_cents || 0) / 100).toFixed(2).replace(".", ",")}`
+                        : <>{c.discount_percent}<Percent size={16} className="ml-0.5" /></>}
                     </span>
                   </div>
                 </div>
