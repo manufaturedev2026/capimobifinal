@@ -3,7 +3,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { detectIOS, isIOSStandaloneApp } from "@/lib/pwaInstall";
 
-const SUBSCRIPTION_TIMEOUT_MS = 20000;
+const SUBSCRIPTION_TIMEOUT_MS = 60000;
+const SUBSCRIBE_TIMEOUT_MS = 90000;
 const PUSH_SW_URL = "/push-sw.js";
 // Use default scope ("/") — custom scopes require the
 // Service-Worker-Allowed response header which our static host does not set.
@@ -205,7 +206,7 @@ export function usePushSubscription(
               userVisibleOnly: true,
               applicationServerKey,
             }),
-            SUBSCRIPTION_TIMEOUT_MS,
+            SUBSCRIBE_TIMEOUT_MS,
             "A inscrição no push demorou demais para responder."
           );
         } catch (subErr) {
