@@ -76,7 +76,8 @@ const styles: Record<string, { bg: string; icon: any; label: string; glow?: stri
   fundador_empresa: {
     bg: "bg-gradient-to-r from-amber-600 to-yellow-700",
     icon: Crown,
-    label: "Fundador Empresa",
+    label: "Fundador",
+    labelFull: "Fundador Empresa",
     glow: "shadow-amber-500/40",
     anim: "animate-badge-glow-strong",
     shine: true,
