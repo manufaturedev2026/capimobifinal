@@ -5,7 +5,7 @@ interface PackageBadgeProps {
   size?: "sm" | "md" | "lg";
 }
 
-const styles: Record<string, { bg: string; icon: any; label: string; glow?: string; anim?: string; shine?: boolean }> = {
+const styles: Record<string, { bg: string; icon: any; label: string; labelFull?: string; glow?: string; anim?: string; shine?: boolean }> = {
   start: {
     bg: "bg-gradient-to-r from-emerald-500 to-teal-500",
     icon: Zap,
@@ -76,7 +76,8 @@ const styles: Record<string, { bg: string; icon: any; label: string; glow?: stri
   fundador_empresa: {
     bg: "bg-gradient-to-r from-amber-600 to-yellow-700",
     icon: Crown,
-    label: "Fundador Empresa",
+    label: "Fundador",
+    labelFull: "Fundador Empresa",
     glow: "shadow-amber-500/40",
     anim: "animate-badge-glow-strong",
     shine: true,
@@ -115,7 +116,7 @@ export default function PackageBadge({ tier, size = "sm" }: PackageBadgeProps) {
     return (
       <span className={`relative overflow-hidden inline-flex items-center gap-2 ${config.bg} text-white font-bold rounded-xl px-4 py-2 text-sm shadow-lg ${config.glow || ""} ${config.anim || ""}`}>
         <Icon size={18} />
-        <span className="relative z-10">{config.label}</span>
+        <span className="relative z-10">{config.labelFull || config.label}</span>
         {shineOverlay}
       </span>
     );
@@ -127,6 +128,7 @@ export default function PackageBadge({ tier, size = "sm" }: PackageBadgeProps) {
     <span className={`relative overflow-hidden inline-flex items-center gap-0.5 ${config.bg} text-white font-bold rounded-md ${sizeClasses} shadow-sm ${config.glow || ""} ${config.anim || ""}`}>
       <Icon size={size === "sm" ? 8 : 12} />
       <span className="relative z-10">{config.label}</span>
+      {config.labelFull && <span className="relative z-10 hidden md:inline">&nbsp;{config.labelFull.replace(config.label, "").trim()}</span>}
       {shineOverlay}
     </span>
   );
