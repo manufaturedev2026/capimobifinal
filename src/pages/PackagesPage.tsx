@@ -1140,6 +1140,9 @@ export default function PackagesPage() {
                       ✨ Sem renovação automática · Troque de plano quando quiser
                     </p>
                   )}
+                  <p className="text-xs text-muted-foreground/80 mt-2 italic leading-relaxed">
+                    ℹ️ Quando você tem mais de um plano ativo, exibimos aqui o <strong>plano principal</strong> (o de maior nível). Ele é o responsável pelas vantagens visuais como <strong>badge de destaque</strong>, <strong>melhor exposição nos resultados</strong> e prioridade nas vitrines. Os demais planos continuam ativos e seus limites (anúncios, créditos IA, etc.) <strong>somam ao principal</strong>.
+                  </p>
                 </div>
 
               </div>
