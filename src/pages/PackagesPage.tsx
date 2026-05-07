@@ -618,12 +618,14 @@ export default function PackagesPage() {
           </ul>
 
           <button
-            onClick={() => handleSelect(plan)}
-            disabled={isCurrent || selecting === plan.tier}
+            onClick={() => { if (plan.price === 0) return; handleSelect(plan); }}
+            disabled={isCurrent || selecting === plan.tier || plan.price === 0}
             className={`w-full rounded-xl py-2.5 font-bold text-sm transition-all flex items-center justify-center gap-1 ${
               isCurrent
                 ? "bg-white/5 text-white/50 cursor-default border border-white/10"
-                : style.ctaGradient
+                : plan.price === 0
+                  ? "bg-white/5 text-white/60 cursor-default border border-white/10"
+                  : style.ctaGradient
                   ? `bg-gradient-to-r ${style.ctaGradient} hover:brightness-110 text-white shadow-lg`
                   : "bg-white/10 hover:bg-white/20 text-white border border-white/10"
             }`}
@@ -639,7 +641,7 @@ export default function PackagesPage() {
                   : currentTier === plan.tier && billingPeriod === "monthly"
                     ? `Mudar para Mensal`
                     : `Assinar ${plan.name}`}
-            {!isCurrent && <ArrowRight className="w-4 h-4" />}
+            {!isCurrent && plan.price !== 0 && <ArrowRight className="w-4 h-4" />}
           </button>
         </div>
       </motion.div>
