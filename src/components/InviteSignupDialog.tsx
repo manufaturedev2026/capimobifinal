@@ -79,7 +79,10 @@ export default function InviteSignupDialog({ open, onOpenChange, defaultName = "
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
+      <DialogContent
+        className="sm:max-w-md max-h-[90vh] overflow-y-auto"
+        onOpenAutoFocus={(e) => e.preventDefault()}
+      >
         {success ? (
           <div className="flex flex-col items-center gap-3 py-8 text-center">
             <CheckCircle2 className="w-16 h-16 text-green-500" />
