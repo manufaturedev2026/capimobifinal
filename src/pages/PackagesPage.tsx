@@ -67,20 +67,20 @@ const formatCredits = (credits: number) => credits.toLocaleString("pt-BR");
 // Estilo épico por tier (replicado de /anunciar para unificar visual)
 // ============================================================
 const TIER_STYLES: Record<string, { gradient: string; glow: string; ring: string; icon: any; badge?: string; ctaGradient?: string; subtitle: string }> = {
-  basico:            { gradient: "from-slate-500/20 to-slate-700/10",     glow: "shadow-slate-500/10",   ring: "border-white/10",                                              icon: Rocket,    subtitle: "Para começar agora" },
-  basico_empresa:    { gradient: "from-slate-500/20 to-blue-700/10",      glow: "shadow-blue-500/10",    ring: "border-white/10",                                              icon: Building2, subtitle: "Para imobiliárias começarem" },
-  start:             { gradient: "from-emerald-500/30 to-teal-700/10",    glow: "shadow-emerald-500/20", ring: "border-emerald-400/30",                                        icon: Zap,       subtitle: "Para corretores em ascensão" },
-  premium:           { gradient: "from-amber-500/40 to-orange-600/20",    glow: "shadow-amber-500/30",   ring: "border-amber-400/60 ring-1 ring-amber-400/40",                 icon: Star,      subtitle: "⭐ Mais popular",            badge: "Mais Popular", ctaGradient: "from-amber-500 to-orange-500" },
-  prime:             { gradient: "from-fuchsia-500/30 to-purple-700/20",  glow: "shadow-fuchsia-500/30", ring: "border-fuchsia-400/50",                                        icon: Crown,     subtitle: "Para dominar o mercado" },
-  vip:               { gradient: "from-fuchsia-500/30 to-purple-700/20",  glow: "shadow-fuchsia-500/30", ring: "border-fuchsia-400/50",                                        icon: Crown,     subtitle: "Para dominar o mercado" },
-  imob_basico:       { gradient: "from-slate-500/20 to-blue-700/10",      glow: "shadow-blue-500/10",    ring: "border-white/10",                                              icon: Building2, subtitle: "Para imobiliárias começarem" },
-  imob_start:        { gradient: "from-cyan-500/30 to-blue-700/20",       glow: "shadow-cyan-500/20",    ring: "border-cyan-400/40",                                           icon: Shield,    subtitle: "Para imobiliárias em crescimento" },
-  imob_pro:          { gradient: "from-violet-500/30 to-indigo-700/20",   glow: "shadow-violet-500/30",  ring: "border-violet-400/50",                                         icon: Gem,       subtitle: "Para imobiliárias estabelecidas" },
-  imob_elite:        { gradient: "from-yellow-500/30 to-amber-700/30",    glow: "shadow-yellow-500/30",  ring: "border-yellow-500/60 ring-1 ring-yellow-500/40",               icon: Diamond,   subtitle: "★ Top imobiliária",          badge: "★ TOP",        ctaGradient: "from-zinc-800 to-black text-yellow-400 border border-yellow-500/40" },
-  const_basico:      { gradient: "from-slate-500/20 to-orange-700/10",    glow: "shadow-orange-500/10",  ring: "border-white/10",                                              icon: Building2, subtitle: "Para construtoras iniciantes" },
-  const_start:       { gradient: "from-amber-500/30 to-orange-700/20",    glow: "shadow-amber-500/20",   ring: "border-amber-400/40",                                          icon: Shield,    subtitle: "Para construtoras em ascensão" },
-  const_pro:         { gradient: "from-orange-500/30 to-red-700/20",      glow: "shadow-orange-500/30",  ring: "border-orange-400/50",                                         icon: Gem,       subtitle: "Para construtoras consolidadas" },
-  const_master:      { gradient: "from-yellow-500/30 to-amber-700/30",    glow: "shadow-yellow-500/30",  ring: "border-yellow-500/60 ring-1 ring-yellow-500/40",               icon: Diamond,   subtitle: "★ Top construtora",          badge: "★ TOP",        ctaGradient: "from-zinc-800 to-black text-yellow-400 border border-yellow-500/40" },
+  basico:            { gradient: "from-slate-400/40 to-slate-600/30",     glow: "shadow-slate-500/20",   ring: "border-white/20",                                              icon: Rocket,    subtitle: "Para começar agora" },
+  basico_empresa:    { gradient: "from-sky-400/40 to-blue-600/30",        glow: "shadow-blue-500/20",    ring: "border-white/20",                                              icon: Building2, subtitle: "Para imobiliárias começarem" },
+  start:             { gradient: "from-emerald-400/60 to-teal-600/40",    glow: "shadow-emerald-500/30", ring: "border-emerald-300/50",                                        icon: Zap,       subtitle: "Para corretores em ascensão" },
+  premium:           { gradient: "from-amber-400/70 to-orange-500/50",    glow: "shadow-amber-500/40",   ring: "border-amber-300/70 ring-1 ring-amber-400/50",                 icon: Star,      subtitle: "⭐ Mais popular",            badge: "Mais Popular", ctaGradient: "from-amber-500 to-orange-500" },
+  prime:             { gradient: "from-fuchsia-400/60 to-purple-600/40",  glow: "shadow-fuchsia-500/40", ring: "border-fuchsia-300/60",                                        icon: Crown,     subtitle: "Para dominar o mercado" },
+  vip:               { gradient: "from-fuchsia-400/60 to-purple-600/40",  glow: "shadow-fuchsia-500/40", ring: "border-fuchsia-300/60",                                        icon: Crown,     subtitle: "Para dominar o mercado" },
+  imob_basico:       { gradient: "from-sky-400/40 to-blue-600/30",        glow: "shadow-blue-500/20",    ring: "border-white/20",                                              icon: Building2, subtitle: "Para imobiliárias começarem" },
+  imob_start:        { gradient: "from-cyan-400/60 to-blue-600/40",       glow: "shadow-cyan-500/30",    ring: "border-cyan-300/50",                                           icon: Shield,    subtitle: "Para imobiliárias em crescimento" },
+  imob_pro:          { gradient: "from-violet-400/60 to-indigo-600/40",   glow: "shadow-violet-500/40",  ring: "border-violet-300/60",                                         icon: Gem,       subtitle: "Para imobiliárias estabelecidas" },
+  imob_elite:        { gradient: "from-yellow-300/60 to-amber-600/50",    glow: "shadow-yellow-500/40",  ring: "border-yellow-300/70 ring-1 ring-yellow-400/50",               icon: Diamond,   subtitle: "★ Top imobiliária",          badge: "★ TOP",        ctaGradient: "from-zinc-800 to-black text-yellow-400 border border-yellow-500/40" },
+  const_basico:      { gradient: "from-orange-300/40 to-orange-600/30",   glow: "shadow-orange-500/20",  ring: "border-white/20",                                              icon: Building2, subtitle: "Para construtoras iniciantes" },
+  const_start:       { gradient: "from-amber-400/60 to-orange-600/40",    glow: "shadow-amber-500/30",   ring: "border-amber-300/50",                                          icon: Shield,    subtitle: "Para construtoras em ascensão" },
+  const_pro:         { gradient: "from-orange-400/60 to-red-600/40",      glow: "shadow-orange-500/40",  ring: "border-orange-300/60",                                         icon: Gem,       subtitle: "Para construtoras consolidadas" },
+  const_master:      { gradient: "from-yellow-300/60 to-amber-600/50",    glow: "shadow-yellow-500/40",  ring: "border-yellow-300/70 ring-1 ring-yellow-400/50",               icon: Diamond,   subtitle: "★ Top construtora",          badge: "★ TOP",        ctaGradient: "from-zinc-800 to-black text-yellow-400 border border-yellow-500/40" },
 };
 const getTierStyle = (tier: string) => TIER_STYLES[tier] || TIER_STYLES.basico;
 
@@ -506,7 +506,7 @@ export default function PackagesPage() {
         viewport={{ once: true }}
         transition={{ delay: idx * 0.08, duration: 0.5 }}
         whileHover={{ y: -6, transition: { duration: 0.2 } }}
-        className={`group relative bg-zinc-950 bg-gradient-to-br ${style.gradient} backdrop-blur-xl rounded-2xl border ${style.ring} ${style.glow} shadow-2xl p-5 md:p-6 flex flex-col text-white ${isCurrent ? "ring-2 ring-primary" : ""}`}
+        className={`group relative bg-zinc-800/60 bg-gradient-to-br ${style.gradient} backdrop-blur-xl rounded-2xl border ${style.ring} ${style.glow} shadow-2xl p-5 md:p-6 flex flex-col text-white ${isCurrent ? "ring-2 ring-primary" : ""}`}
       >
         {/* Glow ambient */}
         <div className="absolute -top-20 -right-20 w-40 h-40 bg-white/5 rounded-full blur-3xl group-hover:bg-white/10 transition-all duration-500 overflow-hidden pointer-events-none" />
@@ -560,7 +560,7 @@ export default function PackagesPage() {
           </div>
 
           <div className="mb-3 grid grid-cols-2 gap-2">
-            <div className="px-3 py-2 rounded-lg bg-black/30 border border-white/5">
+            <div className="px-3 py-2 rounded-lg bg-white/10 border border-white/10">
               <p className="text-[9px] uppercase tracking-wider text-white/40 mb-0.5">Anúncios</p>
               <p className="text-xs md:text-sm font-bold text-white">{maxItems}</p>
             </div>
@@ -568,11 +568,11 @@ export default function PackagesPage() {
               <p className="text-[9px] uppercase tracking-wider text-purple-200/70 mb-0.5 flex items-center gap-1"><Sparkles className="w-2.5 h-2.5" /> Créditos IA/mês</p>
               <p className="text-xs md:text-sm font-bold text-white">{formatCredits(credits)}</p>
             </div>
-            <div className="px-3 py-2 rounded-lg bg-black/30 border border-white/5">
+            <div className="px-3 py-2 rounded-lg bg-white/10 border border-white/10">
               <p className="text-[9px] uppercase tracking-wider text-white/40 mb-0.5">Fotos / Anúncio</p>
               <p className="text-xs md:text-sm font-bold text-white">Até {plan.max_photos_per_listing}</p>
             </div>
-            <div className="px-3 py-2 rounded-lg bg-black/30 border border-white/5">
+            <div className="px-3 py-2 rounded-lg bg-white/10 border border-white/10">
               <p className="text-[9px] uppercase tracking-wider text-white/40 mb-0.5">Storage</p>
               <p className="text-xs md:text-sm font-bold text-white">{storageLabel}</p>
             </div>
