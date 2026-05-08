@@ -226,7 +226,13 @@ export function usePushSubscription(
           : false;
         if (!sameKey) {
           console.log("[Push] Stale subscription with different VAPID key, unsubscribing...");
-          try { await subscription.unsubscribe(); } catch {}
+          try {
+            await withTimeout(
+              subscription.unsubscribe(),
+              SUBSCRIPTION_TIMEOUT_MS,
+              "Não foi possível limpar a inscrição antiga deste dispositivo."
+            );
+          } catch {}
           subscription = null;
         }
       }
@@ -246,13 +252,27 @@ export function usePushSubscription(
           const m = subErr instanceof Error ? subErr.message : String(subErr);
           // Retry once after fully unregistering the SW (handles corrupt state on Android)
           console.warn("[Push] subscribe() failed, retrying after SW reset:", m);
-          try { await registration.unregister(); } catch {}
-          const fresh = await navigator.serviceWorker.register(PUSH_SW_URL);
+          try {
+            await withTimeout(
+              registration.unregister(),
+              SUBSCRIPTION_TIMEOUT_MS,
+              "Não foi possível reiniciar o suporte a push deste dispositivo."
+            );
+          } catch {}
+          const fresh = await withTimeout(
+            navigator.serviceWorker.register(PUSH_SW_URL),
+            SW_REGISTER_TIMEOUT_MS,
+            "Não foi possível registrar o app para push. Tente fechar e abrir o app."
+          );
           await waitForActivation(fresh);
-          subscription = await fresh.pushManager.subscribe({
-            userVisibleOnly: true,
-            applicationServerKey,
-          });
+          subscription = await withTimeout(
+            fresh.pushManager.subscribe({
+              userVisibleOnly: true,
+              applicationServerKey,
+            }),
+            SUBSCRIBE_TIMEOUT_MS,
+            "A inscrição no push demorou demais para responder. Feche e abra o app, depois tente novamente."
+          );
           registration = fresh;
         }
       }
