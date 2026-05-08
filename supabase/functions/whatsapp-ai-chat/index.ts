@@ -206,6 +206,48 @@ serve(async (req) => {
       }
     }
 
+    // Fallback: if model didn't call save_lead but the conversation already contains
+    // a Brazilian phone number, force a second pass that MUST call save_lead.
+    if (!extractedData) {
+      const convoText = messages.map((m) => `${m.role}: ${m.content}`).join("\n");
+      const phoneRegex = /(?:\+?55\s*)?\(?\d{2}\)?[\s-]?9?\d{4}[\s-]?\d{4}/;
+      if (phoneRegex.test(convoText)) {
+        try {
+          const forceResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+            method: "POST",
+            headers: { Authorization: `Bearer ${LOVABLE_API_KEY}`, "Content-Type": "application/json" },
+            body: JSON.stringify({
+              model: "google/gemini-2.5-flash-lite",
+              messages: [
+                {
+                  role: "system",
+                  content:
+                    "Extraia os dados do lead da conversa abaixo e chame OBRIGATORIAMENTE a ferramenta save_lead. Use exatamente os dados fornecidos pelo visitante. Se o nome não foi informado, use 'Cliente'. Não escreva nada além da chamada da ferramenta.",
+                },
+                { role: "user", content: convoText },
+              ],
+              tools: [EXTRACT_TOOL],
+              tool_choice: { type: "function", function: { name: "save_lead" } },
+              max_tokens: 300,
+            }),
+          });
+          if (forceResp.ok) {
+            const forceData = await forceResp.json();
+            const fc = forceData.choices?.[0]?.message?.tool_calls?.[0];
+            if (fc?.function?.name === "save_lead") {
+              try {
+                extractedData = JSON.parse(fc.function.arguments);
+              } catch (e) {
+                console.error("force parse error", e);
+              }
+            }
+          }
+        } catch (e) {
+          console.error("force extract error", e);
+        }
+      }
+    }
+
     if (extractedData && !reply) {
       reply = `Perfeito, ${extractedData.full_name || ""}! ✅ Já anotei tudo. Vou te conectar agora com o corretor pelo WhatsApp! 🚀`;
     }
