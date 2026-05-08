@@ -127,7 +127,7 @@ export default function PackageBadge({ tier, size = "sm" }: PackageBadgeProps) {
     return (
       <span className={`relative overflow-hidden inline-flex items-center gap-2 ${config.bg} text-white font-bold rounded-xl px-4 py-2 text-sm shadow-lg ${config.glow || ""} ${config.anim || ""}`}>
         <Icon size={18} />
-        <span className="relative z-10">{isFounder ? "Fundador" : (config.labelFull || config.label)}</span>
+        <span className="relative z-10">{config.labelFull || config.label}</span>
         {shineOverlay}
       </span>
     );
@@ -135,10 +135,10 @@ export default function PackageBadge({ tier, size = "sm" }: PackageBadgeProps) {
 
   const sizeClasses = size === "sm" ? "px-1.5 py-0.5 text-[9px]" : "px-2.5 py-1 text-xs";
 
-  // Founder badges always show only "Fundador" (independent of corretor/imobiliária/construtora)
-  if (isFounder) {
+  // On mobile (sm), founder badges show only "Fundador" to avoid cropping
+  if (isFounder && size === "sm") {
     return (
-      <span className={`relative overflow-hidden inline-flex items-center ${config.bg} text-white font-bold rounded-md ${sizeClasses} shadow-sm ${config.glow || ""} ${config.anim || ""}`}>
+      <span className={`relative overflow-hidden inline-flex items-center ${config.bg} text-white font-bold rounded-md px-1.5 py-0.5 text-[9px] shadow-sm ${config.glow || ""} ${config.anim || ""}`}>
         <span className="relative z-10">Fundador</span>
         {shineOverlay}
       </span>
