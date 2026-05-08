@@ -506,7 +506,7 @@ export default function PackagesPage() {
         viewport={{ once: true }}
         transition={{ delay: idx * 0.08, duration: 0.5 }}
         whileHover={{ y: -6, transition: { duration: 0.2 } }}
-        className={`group relative bg-zinc-950 bg-gradient-to-br ${style.gradient} backdrop-blur-xl rounded-2xl border ${style.ring} ${style.glow} shadow-2xl p-5 md:p-6 flex flex-col text-white ${isCurrent ? "ring-2 ring-primary" : ""}`}
+        className={`group relative bg-zinc-800/60 bg-gradient-to-br ${style.gradient} backdrop-blur-xl rounded-2xl border ${style.ring} ${style.glow} shadow-2xl p-5 md:p-6 flex flex-col text-white ${isCurrent ? "ring-2 ring-primary" : ""}`}
       >
         {/* Glow ambient */}
         <div className="absolute -top-20 -right-20 w-40 h-40 bg-white/5 rounded-full blur-3xl group-hover:bg-white/10 transition-all duration-500 overflow-hidden pointer-events-none" />
@@ -560,7 +560,7 @@ export default function PackagesPage() {
           </div>
 
           <div className="mb-3 grid grid-cols-2 gap-2">
-            <div className="px-3 py-2 rounded-lg bg-black/30 border border-white/5">
+            <div className="px-3 py-2 rounded-lg bg-white/10 border border-white/10">
               <p className="text-[9px] uppercase tracking-wider text-white/40 mb-0.5">Anúncios</p>
               <p className="text-xs md:text-sm font-bold text-white">{maxItems}</p>
             </div>
@@ -568,11 +568,11 @@ export default function PackagesPage() {
               <p className="text-[9px] uppercase tracking-wider text-purple-200/70 mb-0.5 flex items-center gap-1"><Sparkles className="w-2.5 h-2.5" /> Créditos IA/mês</p>
               <p className="text-xs md:text-sm font-bold text-white">{formatCredits(credits)}</p>
             </div>
-            <div className="px-3 py-2 rounded-lg bg-black/30 border border-white/5">
+            <div className="px-3 py-2 rounded-lg bg-white/10 border border-white/10">
               <p className="text-[9px] uppercase tracking-wider text-white/40 mb-0.5">Fotos / Anúncio</p>
               <p className="text-xs md:text-sm font-bold text-white">Até {plan.max_photos_per_listing}</p>
             </div>
-            <div className="px-3 py-2 rounded-lg bg-black/30 border border-white/5">
+            <div className="px-3 py-2 rounded-lg bg-white/10 border border-white/10">
               <p className="text-[9px] uppercase tracking-wider text-white/40 mb-0.5">Storage</p>
               <p className="text-xs md:text-sm font-bold text-white">{storageLabel}</p>
             </div>
