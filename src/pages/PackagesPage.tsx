@@ -541,7 +541,7 @@ export default function PackagesPage() {
         className={`group relative bg-black bg-gradient-to-br ${plan.color || style.gradient} backdrop-blur-xl rounded-2xl border ${plan.border_color || style.ring} ${style.glow} shadow-[0_8px_40px_-12px_${cc.shadow}] p-5 md:p-6 flex flex-col text-white ${isCurrent ? `ring-2 ${cc.ring}` : ""}`}
       >
         {/* Glow ambient */}
-        <div className={`absolute -top-20 -right-20 w-40 h-40 ${cc.glow} rounded-full blur-3xl group-hover:${cc.glow.replace("/10", "/20")} transition-all duration-500 overflow-hidden pointer-events-none`} />
+        <div className={`absolute -top-20 -right-20 w-40 h-40 ${cc.glow} rounded-full blur-3xl transition-all duration-500 overflow-hidden pointer-events-none`} />
 
         {isCurrent && (
           <span className="absolute -top-3 left-4 z-10 bg-primary text-primary-foreground text-[10px] font-black uppercase px-3 py-1 rounded-full tracking-widest shadow-lg">
