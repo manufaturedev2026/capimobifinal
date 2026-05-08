@@ -41,7 +41,7 @@ export default function WhatsAppAiChat({
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, open]);
+  }, [messages, open, leadSaved]);
 
   // Greeting on open
   useEffect(() => {
