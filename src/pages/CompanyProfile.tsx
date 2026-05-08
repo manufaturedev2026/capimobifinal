@@ -108,6 +108,8 @@ export default function CompanyProfile() {
   const { sellerStories } = useStories(dbProfile?.id);
   const [storyViewerOpen, setStoryViewerOpen] = useState(false);
   const [leadCaptureOpen, setLeadCaptureOpen] = useState(false);
+  const [aiChatOpen, setAiChatOpen] = useState(false);
+  const [aiChatContext, setAiChatContext] = useState<string | null>(null);
   const [storyUploadOpen, setStoryUploadOpen] = useState(false);
   const [pendingWhatsAppAction, setPendingWhatsAppAction] = useState<(() => void) | null>(null);
   const [leadCaptureContext, setLeadCaptureContext] = useState<{ funnelStage?: string; extraNotes?: string; leadSource?: string } | null>(null);
