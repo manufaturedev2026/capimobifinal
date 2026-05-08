@@ -25,7 +25,8 @@ const SYSTEM_BASE_VALUES = `
 INTERPRETAÇÃO DE VALORES (MUITO IMPORTANTE):
 - Estamos no Brasil (R$). Interprete os números do jeito que um brasileiro fala.
 - Para ALUGUEL, valores típicos ficam entre R$ 500 e R$ 15.000/mês. Se o visitante disser "1600", "2 mil", "3500", entenda como reais por mês (R$ 1.600, R$ 2.000, R$ 3.500). NUNCA multiplique por 100 nem confunda com 160.000.
-- Para COMPRA/VENDA, "300" geralmente significa R$ 300 mil; "1,2" ou "1.2" significa R$ 1,2 milhão. Use o contexto.
+- Para COMPRA/VENDA, número puro menor que 10.000 deve ser mantido como reais EXATOS, a menos que o visitante escreva "mil", "milhão", "mi" ou "k". Ex.: "1200" = R$ 1.200, NÃO R$ 1.200.000; "300" = R$ 300, NÃO R$ 300 mil. Se parecer improvável para compra, confirme com o visitante antes de salvar.
+- Só interprete como milhares/milhões quando houver unidade explícita: "300 mil" = R$ 300.000; "1,2 milhão"/"1.2 mi" = R$ 1.200.000.
 - "k" = mil, "mi" / "milhão" = milhão. Ex.: "2k" = R$ 2.000, "1,5mi" = R$ 1.500.000.
 - Se houver QUALQUER ambiguidade no valor, CONFIRME com o visitante antes de registrar (ex.: "Só pra confirmar: R$ 1.600 por mês, certo? 😊").
 - Ao salvar em desired_price, escreva sempre formatado em reais com a unidade clara (ex.: "R$ 1.600/mês" para aluguel, "R$ 450.000" para compra).`;
@@ -222,7 +223,7 @@ serve(async (req) => {
                 {
                   role: "system",
                   content:
-                    "Extraia os dados do lead da conversa abaixo e chame OBRIGATORIAMENTE a ferramenta save_lead. Use exatamente os dados fornecidos pelo visitante. Se o nome não foi informado, use 'Cliente'. Não escreva nada além da chamada da ferramenta.",
+                    `Extraia os dados do lead da conversa abaixo e chame OBRIGATORIAMENTE a ferramenta save_lead. Use exatamente os dados fornecidos pelo visitante. Se o nome não foi informado, use 'Cliente'. ${SYSTEM_BASE_VALUES} Não escreva nada além da chamada da ferramenta.`,
                 },
                 { role: "user", content: convoText },
               ],
