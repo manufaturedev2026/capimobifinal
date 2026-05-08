@@ -80,6 +80,8 @@ export default function WhatsAppAiChat({
       }
       const ed = data?.extractedData;
       if (ed?.full_name && ed?.phone && !leadSaved) {
+        const resolvedSellerId = corretorSlug ? (data?.leadTarget?.sellerId || sellerId) : sellerId;
+        const resolvedUserId = corretorSlug ? (data?.leadTarget?.userId || sellerUserId) : sellerUserId;
         // Save in CRM and notify the broker
         const notes = [
           ed.finality ? `🎯 Intenção: ${ed.finality}` : null,
@@ -95,8 +97,8 @@ export default function WhatsAppAiChat({
           .join("\n");
         try {
           await supabase.from("seller_crm_contacts").insert({
-            seller_id: sellerId,
-            user_id: sellerUserId,
+            seller_id: resolvedSellerId,
+            user_id: resolvedUserId,
             full_name: String(ed.full_name).trim().slice(0, 100),
             phone: String(ed.phone).trim().slice(0, 20),
             funnel_stage: "novo",
@@ -106,13 +108,13 @@ export default function WhatsAppAiChat({
           supabase.functions
             .invoke("notify-new-lead", {
               body: {
-                target_user_id: sellerUserId,
+                target_user_id: resolvedUserId,
                 title: "Novo lead da atendente IA 🤖",
                 body: `${ed.full_name} foi qualificado(a) pela ${attendantName || "atendente IA"} no WhatsApp.`,
                 url: "/painel?tab=crm",
               },
             })
-            .catch(() => {});
+            .catch((pushError) => console.error("notify-new-lead error", pushError));
         } catch (e) {
           console.error("crm insert error", e);
         }
