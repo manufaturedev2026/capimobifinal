@@ -187,7 +187,9 @@ export function usePushSubscription(
               })
               .map((r) => r.unregister().catch(() => false))
           );
-        } catch {}
+        } catch {
+          console.warn("[Push] Failed to clean stale push service workers before retry.");
+        }
         registration = await withTimeout(
           navigator.serviceWorker.register(PUSH_SW_URL),
           SW_REGISTER_TIMEOUT_MS,
@@ -232,7 +234,9 @@ export function usePushSubscription(
               SUBSCRIPTION_TIMEOUT_MS,
               "Não foi possível limpar a inscrição antiga deste dispositivo."
             );
-          } catch {}
+          } catch {
+            console.warn("[Push] Failed to remove stale push subscription before retry.");
+          }
           subscription = null;
         }
       }
@@ -258,7 +262,9 @@ export function usePushSubscription(
               SUBSCRIPTION_TIMEOUT_MS,
               "Não foi possível reiniciar o suporte a push deste dispositivo."
             );
-          } catch {}
+          } catch {
+            console.warn("[Push] Failed to unregister push service worker before retry.");
+          }
           const fresh = await withTimeout(
             navigator.serviceWorker.register(PUSH_SW_URL),
             SW_REGISTER_TIMEOUT_MS,
