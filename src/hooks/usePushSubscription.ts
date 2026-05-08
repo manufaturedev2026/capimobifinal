@@ -4,7 +4,8 @@ import { toast } from "@/hooks/use-toast";
 import { detectIOS, isIOSStandaloneApp } from "@/lib/pwaInstall";
 
 const SUBSCRIPTION_TIMEOUT_MS = 60000;
-const SUBSCRIBE_TIMEOUT_MS = 90000;
+const PERMISSION_TIMEOUT_MS = 20000;
+const SUBSCRIBE_TIMEOUT_MS = 30000;
 const SW_REGISTER_TIMEOUT_MS = 30000;
 const PUSH_SW_URL = "/push-sw.js";
 // Use default scope ("/") — custom scopes require the
@@ -120,7 +121,11 @@ export function usePushSubscription(
     try {
       // Step 1: Request permission
       console.log("[Push] Requesting permission...");
-      const perm = await Notification.requestPermission();
+      const perm = await withTimeout(
+        Notification.requestPermission(),
+        PERMISSION_TIMEOUT_MS,
+        "O iPhone demorou demais para responder à permissão. Feche e abra o app, depois tente novamente."
+      );
       setPermission(perm);
 
       if (perm !== "granted") {
