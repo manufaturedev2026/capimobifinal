@@ -38,7 +38,7 @@ interface NotificationLog {
 
 export default function NotificationsTab({ userId, sellerId }: NotificationsTabProps) {
   const { toast } = useToast();
-  const pushSub = usePushSubscription(sellerId);
+  const pushSub = usePushSubscription(sellerId, { scope: "panel" });
   const [subscriberCount, setSubscriberCount] = useState(0);
   const [logs, setLogs] = useState<NotificationLog[]>([]);
   const [loading, setLoading] = useState(true);

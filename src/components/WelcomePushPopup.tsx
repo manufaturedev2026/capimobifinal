@@ -15,7 +15,7 @@ const STORAGE_KEY_PREFIX = "capimobi_welcome_push_seen_";
 export default function WelcomePushPopup({ sellerId, userId, userName }: WelcomePushPopupProps) {
   const [open, setOpen] = useState(false);
   const [success, setSuccess] = useState(false);
-  const { isSubscribed, isSupported, subscribe, loading, unsupportedReason } = usePushSubscription(sellerId);
+  const { isSubscribed, isSupported, subscribe, loading, unsupportedReason } = usePushSubscription(sellerId, { scope: "panel" });
 
   const isIOSBrowser = detectIOS() && !isStandaloneDisplayMode();
   const storageKey = `${STORAGE_KEY_PREFIX}${userId}`;

@@ -107,7 +107,7 @@ export default function SellerDashboard() {
   const [dashThemeId, setDashThemeId] = useState("azul");
   const [defaultManager, setDefaultManager] = useState<{ name: string; phone: string | null; photo_url: string | null } | null>(null);
   const { guideMode, installed, requestInstall } = usePwaInstall();
-  const pushSub = usePushSubscription(profile?.id);
+  const pushSub = usePushSubscription(profile?.id, { scope: "panel" });
   const aiCredits = useAiCredits(user?.id, profile?.id);
   const [newCaptureCount, setNewCaptureCount] = useState(0);
   const [newCrmCount, setNewCrmCount] = useState(0);
