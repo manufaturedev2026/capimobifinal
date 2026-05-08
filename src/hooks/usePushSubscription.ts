@@ -5,6 +5,7 @@ import { detectIOS, isIOSStandaloneApp } from "@/lib/pwaInstall";
 
 const SUBSCRIPTION_TIMEOUT_MS = 60000;
 const SUBSCRIBE_TIMEOUT_MS = 90000;
+const SW_REGISTER_TIMEOUT_MS = 30000;
 const PUSH_SW_URL = "/push-sw.js";
 // Use default scope ("/") — custom scopes require the
 // Service-Worker-Allowed response header which our static host does not set.
@@ -156,23 +157,36 @@ export function usePushSubscription(
       }
       console.log("[Push] VAPID key received");
 
-      // Step 3: Register the dedicated push service worker
+      // Step 3: Register the dedicated push service worker.
+      // register() is idempotent — if same URL is already registered it returns
+      // the existing registration immediately. So we skip the search loop
+      // (which can be slow when there are stale/broken SW entries) and call
+      // register() directly. If it times out, we clean up and retry once.
       console.log("[Push] Registering service worker...");
-      let registration: ServiceWorkerRegistration | undefined;
-
-      // Look for existing push-sw registration
-      const allRegs = await navigator.serviceWorker.getRegistrations();
-      registration = allRegs.find((r) => {
-        const url = r.active?.scriptURL || r.installing?.scriptURL || r.waiting?.scriptURL || "";
-        return url.includes("push-sw");
-      });
-
-      if (!registration) {
-        console.log("[Push] No push-sw found, registering...");
+      let registration: ServiceWorkerRegistration;
+      try {
         registration = await withTimeout(
           navigator.serviceWorker.register(PUSH_SW_URL),
-          SUBSCRIPTION_TIMEOUT_MS,
+          SW_REGISTER_TIMEOUT_MS,
           "Tempo esgotado ao registrar o app para push."
+        );
+      } catch (regErr) {
+        console.warn("[Push] register() failed, cleaning up stale SWs and retrying:", regErr);
+        try {
+          const allRegs = await navigator.serviceWorker.getRegistrations();
+          await Promise.all(
+            allRegs
+              .filter((r) => {
+                const url = r.active?.scriptURL || r.installing?.scriptURL || r.waiting?.scriptURL || "";
+                return url.includes("push-sw");
+              })
+              .map((r) => r.unregister().catch(() => false))
+          );
+        } catch {}
+        registration = await withTimeout(
+          navigator.serviceWorker.register(PUSH_SW_URL),
+          SW_REGISTER_TIMEOUT_MS,
+          "Não foi possível registrar o app para push. Tente recarregar a página."
         );
       }
 
