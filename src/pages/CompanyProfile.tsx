@@ -2406,6 +2406,22 @@ export default function CompanyProfile() {
         />
       )}
 
+      {isDbProfile && dbProfile && (
+        <WhatsAppAiChat
+          open={aiChatOpen}
+          onOpenChange={(v) => {
+            setAiChatOpen(v);
+            if (!v) setAiChatContext(null);
+          }}
+          sellerId={dbProfile.id}
+          sellerUserId={dbProfile.user_id}
+          sellerWhatsapp={company.whatsapp}
+          attendantName={(dbProfile as any)?.whatsapp_ai_name || null}
+          themePrimary={storeTheme.primary}
+          contextTitle={aiChatContext || undefined}
+        />
+      )}
+
       {dbProfile?.id && (
         <>
           <InstallAppFloatingButton primaryColor={storeTheme.primary} />
