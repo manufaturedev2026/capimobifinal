@@ -109,6 +109,36 @@ const getAiBots = (tier: string) => {
   return bots;
 };
 
+const getBaseColor = (colorStr: string) => {
+  const m = colorStr.match(/from-([a-z]+)-\d+/);
+  return m ? m[1] : "amber";
+};
+
+const getColorClasses = (baseColor: string) => {
+  const map: Record<string, { text: string; iconBg: string; iconBorder: string; iconText: string; statBg: string; statBorder: string; statHighlightBg: string; statHighlightBorder: string; botBg: string; botBorder: string; check: string; glow: string; ring: string; shadow: string; ctaFrom: string; ctaTo: string }> = {
+    amber: { text: "text-amber-400", iconBg: "from-amber-400/30 to-yellow-600/20", iconBorder: "border-amber-400/30", iconText: "text-amber-300", statBg: "bg-amber-500/5", statBorder: "border-amber-500/20", statHighlightBg: "from-amber-500/20 to-yellow-500/5", statHighlightBorder: "border-amber-400/30", botBg: "from-amber-500/15 via-yellow-500/5 to-transparent", botBorder: "border-amber-400/25", check: "text-amber-400", glow: "bg-amber-400/10", ring: "ring-amber-400", shadow: "rgba(245,158,11,0.25)", ctaFrom: "from-amber-500", ctaTo: "to-yellow-600" },
+    yellow: { text: "text-yellow-400", iconBg: "from-yellow-400/30 to-amber-600/20", iconBorder: "border-yellow-400/30", iconText: "text-yellow-300", statBg: "bg-yellow-500/5", statBorder: "border-yellow-500/20", statHighlightBg: "from-yellow-500/20 to-amber-500/5", statHighlightBorder: "border-yellow-400/30", botBg: "from-yellow-500/15 via-amber-500/5 to-transparent", botBorder: "border-yellow-400/25", check: "text-yellow-400", glow: "bg-yellow-400/10", ring: "ring-yellow-400", shadow: "rgba(234,179,8,0.25)", ctaFrom: "from-yellow-500", ctaTo: "to-amber-600" },
+    emerald: { text: "text-emerald-400", iconBg: "from-emerald-400/30 to-teal-600/20", iconBorder: "border-emerald-400/30", iconText: "text-emerald-300", statBg: "bg-emerald-500/5", statBorder: "border-emerald-500/20", statHighlightBg: "from-emerald-500/20 to-teal-500/5", statHighlightBorder: "border-emerald-400/30", botBg: "from-emerald-500/15 via-teal-500/5 to-transparent", botBorder: "border-emerald-400/25", check: "text-emerald-400", glow: "bg-emerald-400/10", ring: "ring-emerald-400", shadow: "rgba(16,185,129,0.25)", ctaFrom: "from-emerald-500", ctaTo: "to-teal-600" },
+    teal: { text: "text-teal-400", iconBg: "from-teal-400/30 to-emerald-600/20", iconBorder: "border-teal-400/30", iconText: "text-teal-300", statBg: "bg-teal-500/5", statBorder: "border-teal-500/20", statHighlightBg: "from-teal-500/20 to-emerald-500/5", statHighlightBorder: "border-teal-400/30", botBg: "from-teal-500/15 via-emerald-500/5 to-transparent", botBorder: "border-teal-400/25", check: "text-teal-400", glow: "bg-teal-400/10", ring: "ring-teal-400", shadow: "rgba(20,184,166,0.25)", ctaFrom: "from-teal-500", ctaTo: "to-emerald-600" },
+    blue: { text: "text-blue-400", iconBg: "from-blue-400/30 to-indigo-600/20", iconBorder: "border-blue-400/30", iconText: "text-blue-300", statBg: "bg-blue-500/5", statBorder: "border-blue-500/20", statHighlightBg: "from-blue-500/20 to-indigo-500/5", statHighlightBorder: "border-blue-400/30", botBg: "from-blue-500/15 via-indigo-500/5 to-transparent", botBorder: "border-blue-400/25", check: "text-blue-400", glow: "bg-blue-400/10", ring: "ring-blue-400", shadow: "rgba(59,130,246,0.25)", ctaFrom: "from-blue-500", ctaTo: "to-indigo-600" },
+    indigo: { text: "text-indigo-400", iconBg: "from-indigo-400/30 to-blue-600/20", iconBorder: "border-indigo-400/30", iconText: "text-indigo-300", statBg: "bg-indigo-500/5", statBorder: "border-indigo-500/20", statHighlightBg: "from-indigo-500/20 to-blue-500/5", statHighlightBorder: "border-indigo-400/30", botBg: "from-indigo-500/15 via-blue-500/5 to-transparent", botBorder: "border-indigo-400/25", check: "text-indigo-400", glow: "bg-indigo-400/10", ring: "ring-indigo-400", shadow: "rgba(99,102,241,0.25)", ctaFrom: "from-indigo-500", ctaTo: "to-blue-600" },
+    purple: { text: "text-purple-400", iconBg: "from-purple-400/30 to-fuchsia-600/20", iconBorder: "border-purple-400/30", iconText: "text-purple-300", statBg: "bg-purple-500/5", statBorder: "border-purple-500/20", statHighlightBg: "from-purple-500/20 to-fuchsia-500/5", statHighlightBorder: "border-purple-400/30", botBg: "from-purple-500/15 via-fuchsia-500/5 to-transparent", botBorder: "border-purple-400/25", check: "text-purple-400", glow: "bg-purple-400/10", ring: "ring-purple-400", shadow: "rgba(168,85,247,0.25)", ctaFrom: "from-purple-500", ctaTo: "to-fuchsia-600" },
+    fuchsia: { text: "text-fuchsia-400", iconBg: "from-fuchsia-400/30 to-purple-600/20", iconBorder: "border-fuchsia-400/30", iconText: "text-fuchsia-300", statBg: "bg-fuchsia-500/5", statBorder: "border-fuchsia-500/20", statHighlightBg: "from-fuchsia-500/20 to-purple-500/5", statHighlightBorder: "border-fuchsia-400/30", botBg: "from-fuchsia-500/15 via-purple-500/5 to-transparent", botBorder: "border-fuchsia-400/25", check: "text-fuchsia-400", glow: "bg-fuchsia-400/10", ring: "ring-fuchsia-400", shadow: "rgba(192,38,211,0.25)", ctaFrom: "from-fuchsia-500", ctaTo: "to-purple-600" },
+    pink: { text: "text-pink-400", iconBg: "from-pink-400/30 to-rose-600/20", iconBorder: "border-pink-400/30", iconText: "text-pink-300", statBg: "bg-pink-500/5", statBorder: "border-pink-500/20", statHighlightBg: "from-pink-500/20 to-rose-500/5", statHighlightBorder: "border-pink-400/30", botBg: "from-pink-500/15 via-rose-500/5 to-transparent", botBorder: "border-pink-400/25", check: "text-pink-400", glow: "bg-pink-400/10", ring: "ring-pink-400", shadow: "rgba(236,72,153,0.25)", ctaFrom: "from-pink-500", ctaTo: "to-rose-600" },
+    rose: { text: "text-rose-400", iconBg: "from-rose-400/30 to-pink-600/20", iconBorder: "border-rose-400/30", iconText: "text-rose-300", statBg: "bg-rose-500/5", statBorder: "border-rose-500/20", statHighlightBg: "from-rose-500/20 to-pink-500/5", statHighlightBorder: "border-rose-400/30", botBg: "from-rose-500/15 via-pink-500/5 to-transparent", botBorder: "border-rose-400/25", check: "text-rose-400", glow: "bg-rose-400/10", ring: "ring-rose-400", shadow: "rgba(244,63,94,0.25)", ctaFrom: "from-rose-500", ctaTo: "to-pink-600" },
+    orange: { text: "text-orange-400", iconBg: "from-orange-400/30 to-amber-600/20", iconBorder: "border-orange-400/30", iconText: "text-orange-300", statBg: "bg-orange-500/5", statBorder: "border-orange-500/20", statHighlightBg: "from-orange-500/20 to-amber-500/5", statHighlightBorder: "border-orange-400/30", botBg: "from-orange-500/15 via-amber-500/5 to-transparent", botBorder: "border-orange-400/25", check: "text-orange-400", glow: "bg-orange-400/10", ring: "ring-orange-400", shadow: "rgba(249,115,22,0.25)", ctaFrom: "from-orange-500", ctaTo: "to-amber-600" },
+    red: { text: "text-red-400", iconBg: "from-red-400/30 to-rose-600/20", iconBorder: "border-red-400/30", iconText: "text-red-300", statBg: "bg-red-500/5", statBorder: "border-red-500/20", statHighlightBg: "from-red-500/20 to-rose-500/5", statHighlightBorder: "border-red-400/30", botBg: "from-red-500/15 via-rose-500/5 to-transparent", botBorder: "border-red-400/25", check: "text-red-400", glow: "bg-red-400/10", ring: "ring-red-400", shadow: "rgba(239,68,68,0.25)", ctaFrom: "from-red-500", ctaTo: "to-rose-600" },
+    cyan: { text: "text-cyan-400", iconBg: "from-cyan-400/30 to-sky-600/20", iconBorder: "border-cyan-400/30", iconText: "text-cyan-300", statBg: "bg-cyan-500/5", statBorder: "border-cyan-500/20", statHighlightBg: "from-cyan-500/20 to-sky-500/5", statHighlightBorder: "border-cyan-400/30", botBg: "from-cyan-500/15 via-sky-500/5 to-transparent", botBorder: "border-cyan-400/25", check: "text-cyan-400", glow: "bg-cyan-400/10", ring: "ring-cyan-400", shadow: "rgba(6,182,212,0.25)", ctaFrom: "from-cyan-500", ctaTo: "to-sky-600" },
+    sky: { text: "text-sky-400", iconBg: "from-sky-400/30 to-cyan-600/20", iconBorder: "border-sky-400/30", iconText: "text-sky-300", statBg: "bg-sky-500/5", statBorder: "border-sky-500/20", statHighlightBg: "from-sky-500/20 to-cyan-500/5", statHighlightBorder: "border-sky-400/30", botBg: "from-sky-500/15 via-cyan-500/5 to-transparent", botBorder: "border-sky-400/25", check: "text-sky-400", glow: "bg-sky-400/10", ring: "ring-sky-400", shadow: "rgba(14,165,233,0.25)", ctaFrom: "from-sky-500", ctaTo: "to-cyan-600" },
+    slate: { text: "text-slate-400", iconBg: "from-slate-400/30 to-gray-600/20", iconBorder: "border-slate-400/30", iconText: "text-slate-300", statBg: "bg-slate-500/5", statBorder: "border-slate-500/20", statHighlightBg: "from-slate-500/20 to-gray-500/5", statHighlightBorder: "border-slate-400/30", botBg: "from-slate-500/15 via-gray-500/5 to-transparent", botBorder: "border-slate-400/25", check: "text-slate-400", glow: "bg-slate-400/10", ring: "ring-slate-400", shadow: "rgba(148,163,184,0.25)", ctaFrom: "from-slate-500", ctaTo: "to-gray-600" },
+    zinc: { text: "text-zinc-400", iconBg: "from-zinc-400/30 to-neutral-600/20", iconBorder: "border-zinc-400/30", iconText: "text-zinc-300", statBg: "bg-zinc-500/5", statBorder: "border-zinc-500/20", statHighlightBg: "from-zinc-500/20 to-neutral-500/5", statHighlightBorder: "border-zinc-400/30", botBg: "from-zinc-500/15 via-neutral-500/5 to-transparent", botBorder: "border-zinc-400/25", check: "text-zinc-400", glow: "bg-zinc-400/10", ring: "ring-zinc-400", shadow: "rgba(161,161,170,0.25)", ctaFrom: "from-zinc-500", ctaTo: "to-neutral-600" },
+    lime: { text: "text-lime-400", iconBg: "from-lime-400/30 to-green-600/20", iconBorder: "border-lime-400/30", iconText: "text-lime-300", statBg: "bg-lime-500/5", statBorder: "border-lime-500/20", statHighlightBg: "from-lime-500/20 to-green-500/5", statHighlightBorder: "border-lime-400/30", botBg: "from-lime-500/15 via-green-500/5 to-transparent", botBorder: "border-lime-400/25", check: "text-lime-400", glow: "bg-lime-400/10", ring: "ring-lime-400", shadow: "rgba(132,204,22,0.25)", ctaFrom: "from-lime-500", ctaTo: "to-green-600" },
+    green: { text: "text-green-400", iconBg: "from-green-400/30 to-lime-600/20", iconBorder: "border-green-400/30", iconText: "text-green-300", statBg: "bg-green-500/5", statBorder: "border-green-500/20", statHighlightBg: "from-green-500/20 to-lime-500/5", statHighlightBorder: "border-green-400/30", botBg: "from-green-500/15 via-lime-500/5 to-transparent", botBorder: "border-green-400/25", check: "text-green-400", glow: "bg-green-400/10", ring: "ring-green-400", shadow: "rgba(34,197,94,0.25)", ctaFrom: "from-green-500", ctaTo: "to-lime-600" },
+    violet: { text: "text-violet-400", iconBg: "from-violet-400/30 to-purple-600/20", iconBorder: "border-violet-400/30", iconText: "text-violet-300", statBg: "bg-violet-500/5", statBorder: "border-violet-500/20", statHighlightBg: "from-violet-500/20 to-purple-500/5", statHighlightBorder: "border-violet-400/30", botBg: "from-violet-500/15 via-purple-500/5 to-transparent", botBorder: "border-violet-400/25", check: "text-violet-400", glow: "bg-violet-400/10", ring: "ring-violet-400", shadow: "rgba(139,92,246,0.25)", ctaFrom: "from-violet-500", ctaTo: "to-purple-600" },
+  };
+  return map[baseColor] || map.amber;
+};
+
 type BillingPeriod = "monthly" | "annual" | "founder";
 
 interface AppliedCoupon {
@@ -480,6 +510,8 @@ export default function PackagesPage() {
   const renderCard = (plan: Plan, idx: number, opts: { showPartners?: boolean } = {}) => {
     const style = getTierStyle(plan.tier);
     const Icon = style.icon;
+    const baseColor = getBaseColor(plan.color || style.gradient);
+    const cc = getColorClasses(baseColor);
     // Considera plano atual somente quando tier E período de cobrança coincidem.
     // Assim, quem está no Mensal pode fazer upgrade para Anual do mesmo plano (e vice-versa).
     const currentBilling = (subscription as any)?.billing_period || "monthly";
@@ -506,10 +538,10 @@ export default function PackagesPage() {
         viewport={{ once: true }}
         transition={{ delay: idx * 0.08, duration: 0.5 }}
         whileHover={{ y: -6, transition: { duration: 0.2 } }}
-        className={`group relative bg-black bg-gradient-to-br ${style.gradient} backdrop-blur-xl rounded-2xl border ${style.ring} ${style.glow} shadow-[0_8px_40px_-12px_rgba(245,158,11,0.25)] p-5 md:p-6 flex flex-col text-white ${isCurrent ? "ring-2 ring-amber-400" : ""}`}
+        className={`group relative bg-black bg-gradient-to-br ${plan.color || style.gradient} backdrop-blur-xl rounded-2xl border ${plan.border_color || style.ring} ${style.glow} shadow-[0_8px_40px_-12px_${cc.shadow}] p-5 md:p-6 flex flex-col text-white ${isCurrent ? `ring-2 ${cc.ring}` : ""}`}
       >
         {/* Glow ambient */}
-        <div className="absolute -top-20 -right-20 w-40 h-40 bg-amber-400/10 rounded-full blur-3xl group-hover:bg-amber-400/20 transition-all duration-500 overflow-hidden pointer-events-none" />
+        <div className={`absolute -top-20 -right-20 w-40 h-40 ${cc.glow} rounded-full blur-3xl transition-all duration-500 overflow-hidden pointer-events-none`} />
 
         {isCurrent && (
           <span className="absolute -top-3 left-4 z-10 bg-primary text-primary-foreground text-[10px] font-black uppercase px-3 py-1 rounded-full tracking-widest shadow-lg">
@@ -517,7 +549,7 @@ export default function PackagesPage() {
           </span>
         )}
         {!isCurrent && style.badge && (
-          <span className={`absolute -top-3 left-1/2 -translate-x-1/2 z-10 ${style.ctaGradient ? `bg-gradient-to-r ${style.ctaGradient}` : "bg-gradient-to-r from-amber-500 to-orange-500"} text-white text-[10px] font-black uppercase px-4 py-1 rounded-full tracking-widest shadow-lg`}>
+          <span className={`absolute -top-3 left-1/2 -translate-x-1/2 z-10 ${plan.badge_color || (style.ctaGradient ? `bg-gradient-to-r ${style.ctaGradient}` : "bg-gradient-to-r from-amber-500 to-orange-500")} text-white text-[10px] font-black uppercase px-4 py-1 rounded-full tracking-widest shadow-lg`}>
             {style.badge}
           </span>
         )}
@@ -529,8 +561,8 @@ export default function PackagesPage() {
 
         <div className="relative z-10 flex flex-col h-full">
           <div className="flex items-center gap-2 mb-3">
-            <div className="p-2 bg-gradient-to-br from-amber-400/30 to-yellow-600/20 rounded-lg backdrop-blur border border-amber-400/30">
-              <Icon className="w-5 h-5 text-amber-300" />
+            <div className={`p-2 bg-gradient-to-br ${cc.iconBg} rounded-lg backdrop-blur border ${cc.iconBorder}`}>
+              <Icon className={`w-5 h-5 ${cc.iconText}`} />
             </div>
             <h3 className="font-display font-black text-xl md:text-2xl">{plan.name}</h3>
           </div>
@@ -560,37 +592,37 @@ export default function PackagesPage() {
           </div>
 
           <div className="mb-3 grid grid-cols-2 gap-2">
-            <div className="px-3 py-2 rounded-lg bg-amber-500/5 border border-amber-500/20">
+            <div className={`px-3 py-2 rounded-lg ${cc.statBg} border ${cc.statBorder}`}>
               <p className="text-[9px] uppercase tracking-wider text-white/40 mb-0.5">Anúncios</p>
               <p className="text-xs md:text-sm font-bold text-white">{maxItems}</p>
             </div>
-            <div className="px-3 py-2 rounded-lg bg-gradient-to-br from-amber-500/20 to-yellow-500/5 border border-amber-400/30">
-              <p className="text-[9px] uppercase tracking-wider text-amber-200/80 mb-0.5 flex items-center gap-1"><Sparkles className="w-2.5 h-2.5" /> Créditos IA/mês</p>
+            <div className={`px-3 py-2 rounded-lg bg-gradient-to-br ${cc.statHighlightBg} border ${cc.statHighlightBorder}`}>
+              <p className={`text-[9px] uppercase tracking-wider ${cc.text} mb-0.5 flex items-center gap-1`}><Sparkles className="w-2.5 h-2.5" /> Créditos IA/mês</p>
               <p className="text-xs md:text-sm font-bold text-white">{formatCredits(credits)}</p>
             </div>
-            <div className="px-3 py-2 rounded-lg bg-amber-500/5 border border-amber-500/20">
+            <div className={`px-3 py-2 rounded-lg ${cc.statBg} border ${cc.statBorder}`}>
               <p className="text-[9px] uppercase tracking-wider text-white/40 mb-0.5">Fotos / Anúncio</p>
               <p className="text-xs md:text-sm font-bold text-white">Até {plan.max_photos_per_listing}</p>
             </div>
-            <div className="px-3 py-2 rounded-lg bg-amber-500/5 border border-amber-500/20">
+            <div className={`px-3 py-2 rounded-lg ${cc.statBg} border ${cc.statBorder}`}>
               <p className="text-[9px] uppercase tracking-wider text-white/40 mb-0.5">Storage</p>
               <p className="text-xs md:text-sm font-bold text-white">{storageLabel}</p>
             </div>
             {teamLabel && (
-              <div className="col-span-2 px-3 py-2 rounded-lg bg-gradient-to-br from-amber-500/15 to-yellow-500/5 border border-amber-400/25">
-                <p className="text-[9px] uppercase tracking-wider text-amber-200/80 mb-0.5 flex items-center gap-1"><Users className="w-2.5 h-2.5" /> Corretores na equipe</p>
+              <div className={`col-span-2 px-3 py-2 rounded-lg bg-gradient-to-br ${cc.statHighlightBg} border ${cc.statHighlightBorder}`}>
+                <p className={`text-[9px] uppercase tracking-wider ${cc.text} mb-0.5 flex items-center gap-1`}><Users className="w-2.5 h-2.5" /> Corretores na equipe</p>
                 <p className="text-xs md:text-sm font-bold text-white">{teamLabel}</p>
               </div>
             )}
           </div>
 
-          <div className="mb-4 px-3 py-2.5 rounded-lg bg-gradient-to-br from-amber-500/15 via-yellow-500/5 to-transparent border border-amber-400/25">
-            <p className="text-[9px] uppercase tracking-wider text-amber-200/90 mb-1.5 flex items-center gap-1 font-bold">
+          <div className={`mb-4 px-3 py-2.5 rounded-lg bg-gradient-to-br ${cc.botBg} border ${cc.botBorder}`}>
+            <p className={`text-[9px] uppercase tracking-wider ${cc.text} mb-1.5 flex items-center gap-1 font-bold`}>
               <Bot className="w-3 h-3" /> Bots de IA inclusos
             </p>
             <div className="flex flex-wrap gap-1">
               {getAiBots(plan.tier).map((bot) => (
-                <span key={bot.name} className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-amber-500/10 border border-amber-400/20 text-[10px] text-white/90">
+                <span key={bot.name} className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md ${cc.statBg} border ${cc.statBorder} text-[10px] text-white/90`}>
                   <span>{bot.emoji}</span>
                   <span className="font-medium">{bot.name}</span>
                 </span>
@@ -610,7 +642,7 @@ export default function PackagesPage() {
                 .replace(/Até\s+\d+\s+corretor(es)?/gi, teamCount > 0 ? `Até ${teamLabel} corretor${teamCount === 1 ? "" : "es"}` : "$&");
               return (
                 <li key={i} className="flex items-start gap-2 text-[12px] md:text-[13px] text-white/70">
-                  <Check className="w-3.5 h-3.5 mt-0.5 shrink-0 text-amber-400" />
+                  <Check className={`w-3.5 h-3.5 mt-0.5 shrink-0 ${cc.check}`} />
                   <span>{text}</span>
                 </li>
               );
@@ -626,8 +658,8 @@ export default function PackagesPage() {
                 : plan.price === 0
                   ? "bg-white/5 text-white/60 cursor-default border border-white/10"
                   : style.ctaGradient
-                  ? `bg-gradient-to-r ${style.ctaGradient} hover:brightness-110 text-black shadow-[0_4px_20px_-4px_rgba(245,158,11,0.6)]`
-                  : "bg-gradient-to-r from-amber-500 to-yellow-600 hover:brightness-110 text-black shadow-[0_4px_20px_-4px_rgba(245,158,11,0.5)]"
+                  ? `bg-gradient-to-r ${style.ctaGradient} hover:brightness-110 text-black shadow-[0_4px_20px_-4px_${cc.shadow}]`
+                  : `bg-gradient-to-r ${cc.ctaFrom} ${cc.ctaTo} hover:brightness-110 text-black shadow-[0_4px_20px_-4px_${cc.shadow}]`
             }`}
           >
             {selecting === plan.tier
