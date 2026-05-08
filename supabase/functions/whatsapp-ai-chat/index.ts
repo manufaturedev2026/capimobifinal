@@ -102,6 +102,8 @@ serve(async (req) => {
     //   and the transaction is logged on the broker's account.
     let payerUserId = ownerUserId;
     let payerSellerId: string | null = sellerId;
+    let leadTargetUserId = ownerUserId;
+    let leadTargetSellerId: string | null = sellerId;
     let payerNote = `Atendente IA WhatsApp da loja ${sellerName}`;
     if (corretorSlug && typeof corretorSlug === "string") {
       const { data: member } = await admin
@@ -121,6 +123,8 @@ serve(async (req) => {
         if (brokerProfile?.user_id) {
           payerUserId = brokerProfile.user_id as string;
           payerSellerId = (brokerProfile as any).id as string;
+          leadTargetUserId = brokerProfile.user_id as string;
+          leadTargetSellerId = (brokerProfile as any).id as string;
           payerNote = `Atendente IA WhatsApp via loja parceira de ${sellerName}`;
         }
       }
@@ -260,6 +264,7 @@ serve(async (req) => {
       JSON.stringify({
         reply,
         extractedData,
+        leadTarget: { userId: leadTargetUserId, sellerId: leadTargetSellerId },
         aiCredits: { charged: credit.cost, balance: credit.balance },
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
