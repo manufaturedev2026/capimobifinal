@@ -262,12 +262,15 @@ serve(async (req) => {
       }
     }
 
-    // Fallback: if model didn't call save_lead but the conversation already contains
-    // a Brazilian phone number, force a second pass that MUST call save_lead.
+    // Fallback: only force save_lead if the conversation already contains
+    // a phone number AND a clear intent (compra/aluguel/venda) AND at least one
+    // property hint. Avoids saving the lead too early.
     if (!extractedData) {
       const convoText = messages.map((m) => `${m.role}: ${m.content}`).join("\n");
       const phoneRegex = /(?:\+?55\s*)?\(?\d{2}\)?[\s-]?9?\d{4}[\s-]?\d{4}/;
-      if (phoneRegex.test(convoText)) {
+      const intentRegex = /\b(comprar|compra|alugar|aluguel|locar|loca[çc][ãa]o|vender|venda)\b/i;
+      const detailRegex = /\b(casa|apartamento|apto|kitnet|studio|st[úu]dio|terreno|lote|s[íi]tio|ch[áa]cara|sala|loja|comercial|galp[ãa]o|cobertura|quarto|quartos|su[íi]te|bairro|cidade|R\$|mil|milh[ãa]o|mi)\b/i;
+      if (phoneRegex.test(convoText) && intentRegex.test(convoText) && detailRegex.test(convoText)) {
         try {
           const forceResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
             method: "POST",
