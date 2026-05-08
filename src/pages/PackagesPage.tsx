@@ -506,10 +506,10 @@ export default function PackagesPage() {
         viewport={{ once: true }}
         transition={{ delay: idx * 0.08, duration: 0.5 }}
         whileHover={{ y: -6, transition: { duration: 0.2 } }}
-        className={`group relative bg-zinc-800/60 bg-gradient-to-br ${style.gradient} backdrop-blur-xl rounded-2xl border ${style.ring} ${style.glow} shadow-2xl p-5 md:p-6 flex flex-col text-white ${isCurrent ? "ring-2 ring-primary" : ""}`}
+        className={`group relative bg-black bg-gradient-to-br ${style.gradient} backdrop-blur-xl rounded-2xl border ${style.ring} ${style.glow} shadow-[0_8px_40px_-12px_rgba(245,158,11,0.25)] p-5 md:p-6 flex flex-col text-white ${isCurrent ? "ring-2 ring-amber-400" : ""}`}
       >
         {/* Glow ambient */}
-        <div className="absolute -top-20 -right-20 w-40 h-40 bg-white/5 rounded-full blur-3xl group-hover:bg-white/10 transition-all duration-500 overflow-hidden pointer-events-none" />
+        <div className="absolute -top-20 -right-20 w-40 h-40 bg-amber-400/10 rounded-full blur-3xl group-hover:bg-amber-400/20 transition-all duration-500 overflow-hidden pointer-events-none" />
 
         {isCurrent && (
           <span className="absolute -top-3 left-4 z-10 bg-primary text-primary-foreground text-[10px] font-black uppercase px-3 py-1 rounded-full tracking-widest shadow-lg">
@@ -560,37 +560,37 @@ export default function PackagesPage() {
           </div>
 
           <div className="mb-3 grid grid-cols-2 gap-2">
-            <div className="px-3 py-2 rounded-lg bg-white/10 border border-white/10">
+            <div className="px-3 py-2 rounded-lg bg-amber-500/5 border border-amber-500/20">
               <p className="text-[9px] uppercase tracking-wider text-white/40 mb-0.5">Anúncios</p>
               <p className="text-xs md:text-sm font-bold text-white">{maxItems}</p>
             </div>
-            <div className="px-3 py-2 rounded-lg bg-gradient-to-br from-purple-500/20 to-fuchsia-500/10 border border-purple-400/20">
-              <p className="text-[9px] uppercase tracking-wider text-purple-200/70 mb-0.5 flex items-center gap-1"><Sparkles className="w-2.5 h-2.5" /> Créditos IA/mês</p>
+            <div className="px-3 py-2 rounded-lg bg-gradient-to-br from-amber-500/20 to-yellow-500/5 border border-amber-400/30">
+              <p className="text-[9px] uppercase tracking-wider text-amber-200/80 mb-0.5 flex items-center gap-1"><Sparkles className="w-2.5 h-2.5" /> Créditos IA/mês</p>
               <p className="text-xs md:text-sm font-bold text-white">{formatCredits(credits)}</p>
             </div>
-            <div className="px-3 py-2 rounded-lg bg-white/10 border border-white/10">
+            <div className="px-3 py-2 rounded-lg bg-amber-500/5 border border-amber-500/20">
               <p className="text-[9px] uppercase tracking-wider text-white/40 mb-0.5">Fotos / Anúncio</p>
               <p className="text-xs md:text-sm font-bold text-white">Até {plan.max_photos_per_listing}</p>
             </div>
-            <div className="px-3 py-2 rounded-lg bg-white/10 border border-white/10">
+            <div className="px-3 py-2 rounded-lg bg-amber-500/5 border border-amber-500/20">
               <p className="text-[9px] uppercase tracking-wider text-white/40 mb-0.5">Storage</p>
               <p className="text-xs md:text-sm font-bold text-white">{storageLabel}</p>
             </div>
             {teamLabel && (
-              <div className="col-span-2 px-3 py-2 rounded-lg bg-gradient-to-br from-cyan-500/15 to-blue-500/5 border border-cyan-400/20">
-                <p className="text-[9px] uppercase tracking-wider text-cyan-200/70 mb-0.5 flex items-center gap-1"><Users className="w-2.5 h-2.5" /> Corretores na equipe</p>
+              <div className="col-span-2 px-3 py-2 rounded-lg bg-gradient-to-br from-amber-500/15 to-yellow-500/5 border border-amber-400/25">
+                <p className="text-[9px] uppercase tracking-wider text-amber-200/80 mb-0.5 flex items-center gap-1"><Users className="w-2.5 h-2.5" /> Corretores na equipe</p>
                 <p className="text-xs md:text-sm font-bold text-white">{teamLabel}</p>
               </div>
             )}
           </div>
 
-          <div className="mb-4 px-3 py-2.5 rounded-lg bg-gradient-to-br from-purple-500/10 via-fuchsia-500/5 to-transparent border border-purple-400/20">
-            <p className="text-[9px] uppercase tracking-wider text-purple-200/80 mb-1.5 flex items-center gap-1 font-bold">
+          <div className="mb-4 px-3 py-2.5 rounded-lg bg-gradient-to-br from-amber-500/15 via-yellow-500/5 to-transparent border border-amber-400/25">
+            <p className="text-[9px] uppercase tracking-wider text-amber-200/90 mb-1.5 flex items-center gap-1 font-bold">
               <Bot className="w-3 h-3" /> Bots de IA inclusos
             </p>
             <div className="flex flex-wrap gap-1">
               {getAiBots(plan.tier).map((bot) => (
-                <span key={bot.name} className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-white/5 border border-white/10 text-[10px] text-white/80">
+                <span key={bot.name} className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-amber-500/10 border border-amber-400/20 text-[10px] text-white/90">
                   <span>{bot.emoji}</span>
                   <span className="font-medium">{bot.name}</span>
                 </span>
@@ -610,7 +610,7 @@ export default function PackagesPage() {
                 .replace(/Até\s+\d+\s+corretor(es)?/gi, teamCount > 0 ? `Até ${teamLabel} corretor${teamCount === 1 ? "" : "es"}` : "$&");
               return (
                 <li key={i} className="flex items-start gap-2 text-[12px] md:text-[13px] text-white/70">
-                  <Check className="w-3.5 h-3.5 mt-0.5 shrink-0 text-emerald-400" />
+                  <Check className="w-3.5 h-3.5 mt-0.5 shrink-0 text-amber-400" />
                   <span>{text}</span>
                 </li>
               );
