@@ -48,7 +48,11 @@ serve(async (req) => {
 
   try {
     const body = await req.json();
-    const { messages, sellerId } = body as { messages: Array<{ role: string; content: string }>; sellerId: string };
+    const { messages, sellerId, corretorSlug } = body as {
+      messages: Array<{ role: string; content: string }>;
+      sellerId: string;
+      corretorSlug?: string | null;
+    };
 
     if (!sellerId || !Array.isArray(messages)) {
       return new Response(JSON.stringify({ error: "Parâmetros inválidos." }), {
@@ -81,6 +85,36 @@ serve(async (req) => {
     const customPrompt = ((sellerProfile as any).whatsapp_ai_prompt || "").toString().slice(0, 2000);
     const welcome = ((sellerProfile as any).whatsapp_ai_welcome || "").toString().slice(0, 500);
 
+    // Resolve who pays for the AI session.
+    // - Mirror store (manual broker, no linked profile or origin != 'partner'): agency owner pays.
+    // - Partner store (origin = 'partner' with linked_profile_id): the broker pays from their own wallet,
+    //   and the transaction is logged on the broker's account.
+    let payerUserId = ownerUserId;
+    let payerSellerId: string | null = sellerId;
+    let payerNote = `Atendente IA WhatsApp da loja ${sellerName}`;
+    if (corretorSlug && typeof corretorSlug === "string") {
+      const { data: member } = await admin
+        .from("team_members")
+        .select("id, origin, linked_profile_id, full_name")
+        .eq("company_id", sellerId)
+        .eq("slug", corretorSlug)
+        .eq("is_active", true)
+        .maybeSingle();
+      const m: any = member;
+      if (m?.origin === "partner" && m?.linked_profile_id) {
+        const { data: brokerProfile } = await admin
+          .from("profiles")
+          .select("id, user_id")
+          .eq("id", m.linked_profile_id)
+          .maybeSingle();
+        if (brokerProfile?.user_id) {
+          payerUserId = brokerProfile.user_id as string;
+          payerSellerId = (brokerProfile as any).id as string;
+          payerNote = `Atendente IA WhatsApp via loja parceira de ${sellerName}`;
+        }
+      }
+    }
+
     // Greeting (no charge, no AI call)
     if (messages.length === 0) {
       const reply =
@@ -96,8 +130,15 @@ serve(async (req) => {
       (req.headers.get("x-forwarded-for") || "").split(",")[0].trim() ||
       req.headers.get("cf-connecting-ip") ||
       "unknown";
-    const visitorKey = `${visitorIp}:${sellerId}`;
-    const credit = await consumeAiCreditsForUser(admin, ownerUserId, sellerId, "whatsapp_ai_chat", corsHeaders, visitorKey);
+    const visitorKey = `${visitorIp}:${sellerId}:${corretorSlug || "_"}`;
+    const credit = await consumeAiCreditsForUser(
+      admin,
+      payerUserId,
+      payerSellerId,
+      "whatsapp_ai_chat",
+      corsHeaders,
+      visitorKey,
+    );
     if (!credit.ok) return credit.response;
 
     let systemPrompt = `${SYSTEM_BASE}\n\nVocê está representando "${sellerName}". Seu nome de atendimento é "${attendantName}" — use exatamente esse nome quando se apresentar.`;
