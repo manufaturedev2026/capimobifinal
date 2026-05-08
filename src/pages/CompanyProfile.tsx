@@ -2420,6 +2420,7 @@ export default function CompanyProfile() {
           attendantAvatar={(dbProfile as any)?.whatsapp_ai_avatar || null}
           themePrimary={storeTheme.primary}
           contextTitle={aiChatContext || undefined}
+          corretorSlug={corretorSlug || undefined}
         />
       )}
 
