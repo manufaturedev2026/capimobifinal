@@ -391,14 +391,17 @@ export default function InvitePage() {
         <link rel="canonical" href={`${SITE_URL}/convite`} />
       </Helmet>
 
-      <div className="flex flex-col overflow-hidden" style={{ background: "#e5ddd5", height: "100dvh", maxHeight: "100dvh" }}>
+      <div
+        className="fixed inset-0 flex flex-col overflow-hidden"
+        style={{ background: "#e5ddd5", height: "100dvh", maxHeight: "100dvh" }}
+      >
         <InviteSignupDialog
           open={signupOpen}
           onOpenChange={setSignupOpen}
           defaultName={userName || crmName}
           onSuccess={handleSignupSuccess}
         />
-        <div className="sticky top-0 z-50 flex items-center gap-3 px-3 py-2" style={{ background: "#075e54" }}>
+        <div className="shrink-0 z-50 flex items-center gap-3 px-3 py-2" style={{ background: "#075e54" }}>
           <button onClick={() => navigate(-1)} className="text-white/80 hover:text-white"><ArrowLeft size={22} /></button>
           <div className="w-10 h-10 rounded-full bg-[#128c7e] flex items-center justify-center text-white font-bold text-lg overflow-hidden shrink-0">
             {config.attendantAvatar ? <img loading="lazy" decoding="async" src={config.attendantAvatar} alt="" className="w-full h-full object-cover" /> : (config.attendantName.replace(/\{\{site\}\}/gi, site_name).charAt(0).toUpperCase())}
@@ -578,7 +581,10 @@ export default function InvitePage() {
         </div>
 
         {/* Input bar */}
-        <div className="sticky bottom-0 flex items-center gap-2 px-2 py-2" style={{ background: "#f0f2f5" }}>
+        <div
+          className="shrink-0 flex items-center gap-2 px-2 py-2"
+          style={{ background: "#f0f2f5", paddingBottom: "calc(0.5rem + env(safe-area-inset-bottom))" }}
+        >
           {/* AI mode: always show active input */}
           {showAiInput ? (
             <>
