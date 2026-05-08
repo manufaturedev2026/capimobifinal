@@ -11,6 +11,7 @@ const PERMISSION_TIMEOUT_MS = 20000;
 const SUBSCRIBE_TIMEOUT_MS = 30000;
 const SW_REGISTER_TIMEOUT_MS = 30000;
 const PUSH_SW_URL = "/push-sw.js";
+const PUSH_SW_SCOPE = "/push-notifications/";
 // Use default scope ("/") — custom scopes require the
 // Service-Worker-Allowed response header which our static host does not set.
 
