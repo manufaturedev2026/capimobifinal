@@ -6,12 +6,13 @@ export const AI_CREDIT_COSTS: Record<string, number> = {
   valuation_ad: 2,
   photo_analysis: 3,
   platform_help_chat: 1,
+  whatsapp_ai_chat: 1,
   capture_bot_chat: 3,
   agenda_bot_chat: 3,
   invite_chat: 3,
 };
 
-const DEFAULT_SESSION_BASED_TOOLS = new Set(["capture_bot_chat", "agenda_bot_chat", "invite_chat"]);
+const DEFAULT_SESSION_BASED_TOOLS = new Set(["whatsapp_ai_chat", "capture_bot_chat", "agenda_bot_chat", "invite_chat"]);
 const DEFAULT_SESSION_WINDOW_MINUTES = 30;
 
 // Cache em memória dos custos do DB (1 minuto)
