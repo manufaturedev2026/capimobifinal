@@ -84,14 +84,15 @@ export function usePushSubscription(
           .eq("endpoint", currentEndpoint)
           .maybeSingle();
 
-        if (data?.id && currentUserId && ((data as any).user_id !== currentUserId || (data as any).scope !== scope)) {
+        const savedSubscription = data as any;
+        if (savedSubscription?.id && currentUserId && (savedSubscription.user_id !== currentUserId || savedSubscription.scope !== scope)) {
           await supabase
             .from("push_subscriptions" as any)
             .update({ user_id: currentUserId, scope })
-            .eq("id", (data as any).id);
+            .eq("id", savedSubscription.id);
         }
 
-        setIsSubscribed(!!data);
+        setIsSubscribed(!!savedSubscription);
       } catch {
         setIsSubscribed(false);
       }
