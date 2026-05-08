@@ -16,6 +16,8 @@ interface Props {
   themePrimary?: string;
   /** Optional context to attach to the WhatsApp redirect message */
   contextTitle?: string;
+  /** Slug of the team member (mirror/partner store). Edge function uses it to decide who pays for credits */
+  corretorSlug?: string;
 }
 
 export default function WhatsAppAiChat({
@@ -28,6 +30,7 @@ export default function WhatsAppAiChat({
   attendantAvatar,
   themePrimary,
   contextTitle,
+  corretorSlug,
 }: Props) {
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
@@ -46,7 +49,7 @@ export default function WhatsAppAiChat({
     (async () => {
       try {
         const { data } = await supabase.functions.invoke("whatsapp-ai-chat", {
-          body: { sellerId, messages: [] },
+          body: { sellerId, messages: [], corretorSlug },
         });
         if (!cancelled && data?.reply) {
           setMessages([{ role: "assistant", content: data.reply }]);
@@ -56,7 +59,7 @@ export default function WhatsAppAiChat({
     return () => {
       cancelled = true;
     };
-  }, [open, sellerId, messages.length]);
+  }, [open, sellerId, messages.length, corretorSlug]);
 
   const send = useCallback(async () => {
     const text = input.trim();
@@ -68,7 +71,7 @@ export default function WhatsAppAiChat({
     setLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke("whatsapp-ai-chat", {
-        body: { sellerId, messages: all },
+        body: { sellerId, messages: all, corretorSlug },
       });
       if (error) throw error;
       if (data?.reply) {
@@ -123,7 +126,7 @@ export default function WhatsAppAiChat({
     } finally {
       setLoading(false);
     }
-  }, [input, loading, messages, sellerId, sellerUserId, leadSaved, attendantName, contextTitle]);
+  }, [input, loading, messages, sellerId, sellerUserId, leadSaved, attendantName, contextTitle, corretorSlug]);
 
   const goWhatsApp = () => {
     if (!sellerWhatsapp) return;
