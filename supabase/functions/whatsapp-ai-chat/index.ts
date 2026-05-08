@@ -151,7 +151,7 @@ serve(async (req) => {
     );
     if (!credit.ok) return credit.response;
 
-    let systemPrompt = `${SYSTEM_BASE}\n\nVocê está representando "${sellerName}". Seu nome de atendimento é "${attendantName}" — use exatamente esse nome quando se apresentar.`;
+    let systemPrompt = `${SYSTEM_BASE}${SYSTEM_BASE_VALUES}\n\nVocê está representando "${sellerName}". Seu nome de atendimento é "${attendantName}" — use exatamente esse nome quando se apresentar.`;
     if (customPrompt.trim()) {
       systemPrompt += `\n\nINSTRUÇÕES PERSONALIZADAS DO CORRETOR (siga sempre que não conflitarem com segurança/leis):\n${customPrompt.trim()}`;
     }
