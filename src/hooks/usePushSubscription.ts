@@ -11,7 +11,7 @@ const PUSH_SW_URL = "/push-sw.js";
 
 export function usePushSubscription(
   sellerId?: string,
-  options: { successDescription?: string; scope?: "store" | "admin_home" } = {}
+  options: { successDescription?: string; scope?: "store" | "panel" | "admin_home" } = {}
 ) {
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isSupported, setIsSupported] = useState(false);
@@ -273,7 +273,7 @@ export function usePushSubscription(
     } finally {
       setLoading(false);
     }
-  }, [sellerId, options.successDescription]);
+  }, [sellerId, options.successDescription, options.scope]);
 
   return { isSubscribed, isSupported, permission, subscribe, loading, unsupportedReason };
 }

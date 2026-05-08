@@ -138,10 +138,24 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { data: subscriptions } = await adminClient
+    const { data: ownerSubscriptions } = await adminClient
       .from("push_subscriptions")
       .select("*")
-      .eq("seller_id", targetProfile.id);
+      .eq("seller_id", targetProfile.id)
+      .eq("user_id", target_user_id);
+
+    const { data: legacyPanelSubscriptions } = await adminClient
+      .from("push_subscriptions")
+      .select("*")
+      .eq("seller_id", targetProfile.id)
+      .is("user_id", null)
+      .in("scope", ["panel", "admin_home"]);
+
+    const subscriptionsByEndpoint = new Map<string, any>();
+    for (const sub of [...(ownerSubscriptions || []), ...(legacyPanelSubscriptions || [])]) {
+      if (sub?.endpoint) subscriptionsByEndpoint.set(sub.endpoint, sub);
+    }
+    const subscriptions = Array.from(subscriptionsByEndpoint.values());
 
     if (!subscriptions || subscriptions.length === 0) {
       return new Response(JSON.stringify({ sent: 0, message: "No subscribers" }), {
