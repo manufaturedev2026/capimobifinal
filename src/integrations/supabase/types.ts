@@ -1873,6 +1873,7 @@ export type Database = {
           video_description: string | null
           video_title: string | null
           video_url: string | null
+          whatsapp_ai_avatar: string | null
           whatsapp_ai_name: string | null
           whatsapp_ai_prompt: string | null
           whatsapp_ai_welcome: string | null
@@ -1931,6 +1932,7 @@ export type Database = {
           video_description?: string | null
           video_title?: string | null
           video_url?: string | null
+          whatsapp_ai_avatar?: string | null
           whatsapp_ai_name?: string | null
           whatsapp_ai_prompt?: string | null
           whatsapp_ai_welcome?: string | null
@@ -1989,6 +1991,7 @@ export type Database = {
           video_description?: string | null
           video_title?: string | null
           video_url?: string | null
+          whatsapp_ai_avatar?: string | null
           whatsapp_ai_name?: string | null
           whatsapp_ai_prompt?: string | null
           whatsapp_ai_welcome?: string | null

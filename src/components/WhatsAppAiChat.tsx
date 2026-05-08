@@ -12,6 +12,7 @@ interface Props {
   sellerUserId: string;
   sellerWhatsapp?: string | null;
   attendantName?: string | null;
+  attendantAvatar?: string | null;
   themePrimary?: string;
   /** Optional context to attach to the WhatsApp redirect message */
   contextTitle?: string;
@@ -24,6 +25,7 @@ export default function WhatsAppAiChat({
   sellerUserId,
   sellerWhatsapp,
   attendantName,
+  attendantAvatar,
   themePrimary,
   contextTitle,
 }: Props) {
@@ -152,8 +154,12 @@ export default function WhatsAppAiChat({
             className="flex items-center gap-3 px-4 py-3 text-white shrink-0"
             style={{ background: `linear-gradient(135deg, ${primary}, #128C7E)` }}
           >
-            <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center">
-              <Bot size={20} />
+            <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center overflow-hidden">
+              {attendantAvatar ? (
+                <img src={attendantAvatar} alt={attendantName || "Atendente"} className="w-full h-full object-cover" />
+              ) : (
+                <Bot size={20} />
+              )}
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-semibold text-sm truncate">{attendantName || "Atendente IA"}</p>

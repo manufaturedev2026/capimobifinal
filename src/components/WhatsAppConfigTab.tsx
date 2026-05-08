@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { MessageCircle, Bot, PowerOff, Loader2, Save, Sparkles } from "lucide-react";
+import { MessageCircle, Bot, PowerOff, Loader2, Save, Sparkles, Upload, X } from "lucide-react";
 
 type Mode = "disabled" | "crm" | "ai";
 
@@ -26,12 +26,14 @@ export default function WhatsAppConfigTab({ userId, sellerId }: Props) {
   const [aiName, setAiName] = useState("Sofia");
   const [welcome, setWelcome] = useState("");
   const [prompt, setPrompt] = useState(DEFAULT_PROMPT);
+  const [avatar, setAvatar] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     (async () => {
       const { data } = await supabase
         .from("profiles")
-        .select("whatsapp_mode, whatsapp_ai_name, whatsapp_ai_welcome, whatsapp_ai_prompt, show_floating_whatsapp")
+        .select("whatsapp_mode, whatsapp_ai_name, whatsapp_ai_welcome, whatsapp_ai_prompt, whatsapp_ai_avatar, show_floating_whatsapp")
         .eq("id", sellerId)
         .maybeSingle();
       if (data) {
@@ -39,10 +41,34 @@ export default function WhatsAppConfigTab({ userId, sellerId }: Props) {
         setAiName((data as any).whatsapp_ai_name || "Sofia");
         setWelcome((data as any).whatsapp_ai_welcome || "");
         setPrompt((data as any).whatsapp_ai_prompt || DEFAULT_PROMPT);
+        setAvatar((data as any).whatsapp_ai_avatar || null);
       }
       setLoading(false);
     })();
   }, [sellerId]);
+
+  const handleUpload = async (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      toast({ title: "Arquivo inválido", description: "Envie uma imagem.", variant: "destructive" });
+      return;
+    }
+    if (file.size > 3 * 1024 * 1024) {
+      toast({ title: "Imagem muito grande", description: "Máx. 3MB.", variant: "destructive" });
+      return;
+    }
+    setUploading(true);
+    const ext = file.name.split(".").pop() || "jpg";
+    const path = `${userId}/whatsapp-ai-${Date.now()}.${ext}`;
+    const { error: upErr } = await supabase.storage.from("seller-uploads").upload(path, file, { upsert: true });
+    if (upErr) {
+      setUploading(false);
+      toast({ title: "Erro no upload", description: upErr.message, variant: "destructive" });
+      return;
+    }
+    const { data: pub } = supabase.storage.from("seller-uploads").getPublicUrl(path);
+    setAvatar(pub.publicUrl);
+    setUploading(false);
+  };
 
   const save = async () => {
     setSaving(true);
@@ -51,6 +77,7 @@ export default function WhatsAppConfigTab({ userId, sellerId }: Props) {
       whatsapp_ai_name: aiName.trim().slice(0, 60) || "Sofia",
       whatsapp_ai_welcome: welcome.trim().slice(0, 500) || null,
       whatsapp_ai_prompt: prompt.trim().slice(0, 2000) || null,
+      whatsapp_ai_avatar: avatar,
       // Mantém o toggle legado em sincronia
       show_floating_whatsapp: mode !== "disabled",
     };
@@ -142,6 +169,43 @@ export default function WhatsAppConfigTab({ userId, sellerId }: Props) {
           <div className="flex items-center gap-2">
             <Sparkles size={16} className="text-primary" />
             <h3 className="font-bold text-foreground">Personalização da Atendente IA</h3>
+          </div>
+
+          <div>
+            <label className="text-xs font-bold text-foreground uppercase tracking-wider">Foto da atendente</label>
+            <div className="mt-2 flex items-center gap-3">
+              <div className="w-16 h-16 rounded-full bg-muted overflow-hidden flex items-center justify-center border border-border">
+                {avatar ? (
+                  <img src={avatar} alt="Atendente" className="w-full h-full object-cover" />
+                ) : (
+                  <Bot size={28} className="text-muted-foreground" />
+                )}
+              </div>
+              <label className="cursor-pointer inline-flex items-center gap-2 px-3 py-2 rounded-xl border border-border bg-background text-foreground text-sm hover:bg-muted transition">
+                {uploading ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />}
+                {avatar ? "Trocar foto" : "Enviar foto"}
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    if (f) handleUpload(f);
+                    e.target.value = "";
+                  }}
+                />
+              </label>
+              {avatar && (
+                <button
+                  type="button"
+                  onClick={() => setAvatar(null)}
+                  className="inline-flex items-center gap-1 px-3 py-2 rounded-xl border border-border bg-background text-muted-foreground text-sm hover:text-foreground transition"
+                >
+                  <X size={14} /> Remover
+                </button>
+              )}
+            </div>
+            <p className="text-[11px] text-muted-foreground mt-1">PNG ou JPG, até 3MB. Aparece no popup do chat com o visitante.</p>
           </div>
 
           <div>
