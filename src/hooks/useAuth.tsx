@@ -106,7 +106,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       state: signupData?.state?.trim() || (typeof metadata.state === "string" && metadata.state.trim() ? metadata.state.trim() : null),
     };
 
-    const existingProfile = await fetchProfile(authUser.id);
+    let fetchErrored = false;
+    const fetchRes = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("user_id", authUser.id)
+      .maybeSingle();
+    let existingProfile = fetchRes.data;
+    if (fetchRes.error) {
+      if (fetchRes.error.code === "PGRST303" || /jwt/i.test(fetchRes.error.message || "")) {
+        try { await supabase.auth.refreshSession(); } catch {}
+        const retry = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("user_id", authUser.id)
+          .maybeSingle();
+        existingProfile = retry.data;
+        fetchErrored = !!retry.error;
+      } else {
+        fetchErrored = true;
+      }
+    }
+    if (existingProfile) {
+      setProfile(existingProfile);
+    }
+    if (fetchErrored) {
+      // Don't try to insert on a transient error — keep current profile state
+      return null;
+    }
     if (existingProfile) {
       const profileUpdates: Partial<ProfileInsert> = {};
       if (signupData?.fullName?.trim()) profileUpdates.full_name = metadataProfile.full_name;
