@@ -79,7 +79,10 @@ export default function WhatsAppAiChat({
         setMessages((prev) => [...prev, { role: "assistant", content: data.reply }]);
       }
       const ed = data?.extractedData;
-      if (ed?.full_name && ed?.phone && !leadSaved) {
+      const normalizedLead = ed?.full_name && ed?.phone
+        ? { name: String(ed.full_name), phone: String(ed.phone) }
+        : null;
+      if (normalizedLead && !leadSaved) {
         const resolvedSellerId = corretorSlug ? (data?.leadTarget?.sellerId || sellerId) : sellerId;
         const resolvedUserId = corretorSlug ? (data?.leadTarget?.userId || sellerUserId) : sellerUserId;
         // Save in CRM and notify the broker
@@ -99,8 +102,8 @@ export default function WhatsAppAiChat({
           await supabase.from("seller_crm_contacts").insert({
             seller_id: resolvedSellerId,
             user_id: resolvedUserId,
-            full_name: String(ed.full_name).trim().slice(0, 100),
-            phone: String(ed.phone).trim().slice(0, 20),
+            full_name: normalizedLead.name.trim().slice(0, 100),
+            phone: normalizedLead.phone.trim().slice(0, 20),
             funnel_stage: "novo",
             lead_source: "whatsapp_ai",
             notes,
@@ -118,7 +121,7 @@ export default function WhatsAppAiChat({
         } catch (e) {
           console.error("crm insert error", e);
         }
-        setLeadSaved({ name: String(ed.full_name), phone: String(ed.phone) });
+        setLeadSaved(normalizedLead);
         const summaryParts = [
           ed.finality ? `Intenção: ${ed.finality}` : null,
           ed.property_type ? `Tipo: ${ed.property_type}` : null,
@@ -126,6 +129,8 @@ export default function WhatsAppAiChat({
           ed.desired_price ? `Faixa: ${ed.desired_price}` : null,
         ].filter(Boolean);
         setLeadSummary(summaryParts.join(" • "));
+      } else if (normalizedLead) {
+        setLeadSaved(normalizedLead);
       }
     } catch (e: any) {
       const msg =
