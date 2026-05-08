@@ -11,8 +11,8 @@ const PERMISSION_TIMEOUT_MS = 20000;
 const SUBSCRIBE_TIMEOUT_MS = 30000;
 const SW_REGISTER_TIMEOUT_MS = 30000;
 const PUSH_SW_URL = "/push-sw.js";
-// Use default scope ("/") — custom scopes require the
-// Service-Worker-Allowed response header which our static host does not set.
+const PUSH_SW_SCOPE = "/push-notifications/";
+// Dedicated scope keeps notification push separate from the main PWA/offline worker.
 
 export function usePushSubscription(
   sellerId?: string,
@@ -166,38 +166,21 @@ export function usePushSubscription(
       console.log("[Push] VAPID key received");
 
       // Step 3: Register the dedicated push service worker.
-      // register() is idempotent — if same URL is already registered it returns
-      // the existing registration immediately. So we skip the search loop
-      // (which can be slow when there are stale/broken SW entries) and call
-      // register() directly. If it times out, we clean up and retry once.
+      // iOS PWA can hang when repeatedly re-registering/unregistering workers,
+      // so reuse any existing push worker before attempting a fresh register.
       console.log("[Push] Registering service worker...");
       let registration: ServiceWorkerRegistration;
       try {
-        registration = await withTimeout(
-          navigator.serviceWorker.register(PUSH_SW_URL),
-          SW_REGISTER_TIMEOUT_MS,
-          "Tempo esgotado ao registrar o app para push."
-        );
+        const existingRegistration = await getExistingPushRegistration();
+        registration = existingRegistration ?? await registerPushWorker();
       } catch (regErr) {
         console.warn("[Push] register() failed, cleaning up stale SWs and retrying:", regErr);
         try {
-          const allRegs = await navigator.serviceWorker.getRegistrations();
-          await Promise.all(
-            allRegs
-              .filter((r) => {
-                const url = r.active?.scriptURL || r.installing?.scriptURL || r.waiting?.scriptURL || "";
-                return url.includes("push-sw");
-              })
-              .map((r) => r.unregister().catch(() => false))
-          );
+          await cleanupPushRegistrations();
         } catch {
           console.warn("[Push] Failed to clean stale push service workers before retry.");
         }
-        registration = await withTimeout(
-          navigator.serviceWorker.register(PUSH_SW_URL),
-          SW_REGISTER_TIMEOUT_MS,
-          "Não foi possível registrar o app para push. Tente recarregar a página."
-        );
+        registration = await registerPushWorker("Não foi possível registrar o app para push. Feche e abra o app, depois tente novamente.");
       }
 
       // Only wait for activation if not already active
@@ -360,6 +343,39 @@ function withTimeout<T>(promise: PromiseLike<T>, timeoutMs: number, message: str
       window.setTimeout(() => reject(new Error(message)), timeoutMs);
     }),
   ]);
+}
+
+async function getExistingPushRegistration() {
+  const registrations = await withTimeout(
+    navigator.serviceWorker.getRegistrations(),
+    SW_REGISTER_TIMEOUT_MS,
+    "Não foi possível verificar o app de notificações neste dispositivo."
+  );
+
+  return registrations.find((registration) => {
+    const url = registration.active?.scriptURL || registration.installing?.scriptURL || registration.waiting?.scriptURL || "";
+    return url.includes("push-sw");
+  }) ?? null;
+}
+
+function registerPushWorker(message = "Tempo esgotado ao registrar o app para push.") {
+  return withTimeout(
+    navigator.serviceWorker.register(PUSH_SW_URL, { scope: PUSH_SW_SCOPE }),
+    SW_REGISTER_TIMEOUT_MS,
+    message
+  );
+}
+
+async function cleanupPushRegistrations() {
+  const registrations = await navigator.serviceWorker.getRegistrations();
+  await Promise.all(
+    registrations
+      .filter((registration) => {
+        const url = registration.active?.scriptURL || registration.installing?.scriptURL || registration.waiting?.scriptURL || "";
+        return url.includes("push-sw");
+      })
+      .map((registration) => registration.unregister().catch(() => false))
+  );
 }
 
 async function waitForActivation(registration: ServiceWorkerRegistration) {
