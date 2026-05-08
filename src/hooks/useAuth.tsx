@@ -62,15 +62,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const fetchProfile = async (userId: string) => {
-    const { data, error } = await supabase
+    let { data, error } = await supabase
       .from("profiles")
       .select("*")
       .eq("user_id", userId)
       .maybeSingle();
 
+    // JWT expired — try refresh once before giving up (don't wipe profile)
+    if (error && (error.code === "PGRST303" || /jwt/i.test(error.message || ""))) {
+      try {
+        await supabase.auth.refreshSession();
+      } catch {}
+      const retry = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("user_id", userId)
+        .maybeSingle();
+      data = retry.data;
+      error = retry.error;
+    }
+
     if (error) {
       console.error("Erro ao carregar perfil:", error);
-      setProfile(null);
+      // Keep current profile to avoid flashing a "Vendedor" fallback on transient errors
       return null;
     }
 
