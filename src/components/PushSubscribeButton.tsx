@@ -9,7 +9,7 @@ interface PushSubscribeButtonProps {
   /** When true, only show after the PWA is installed (gives priority to the Install button) */
   requireInstalled?: boolean;
   positionClassName?: string;
-  scope?: "store" | "admin_home";
+  scope?: "store" | "panel" | "admin_home";
 }
 
 export default function PushSubscribeButton({ sellerId, primaryColor, requireInstalled = true, positionClassName = "bottom-20 md:bottom-6", scope = "store" }: PushSubscribeButtonProps) {
