@@ -36,6 +36,7 @@ export default function WhatsAppAiChat({
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [leadSaved, setLeadSaved] = useState<{ name: string; phone: string } | null>(null);
+  const [leadSummary, setLeadSummary] = useState<string>("");
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -116,6 +117,13 @@ export default function WhatsAppAiChat({
           console.error("crm insert error", e);
         }
         setLeadSaved({ name: String(ed.full_name), phone: String(ed.phone) });
+        const summaryParts = [
+          ed.finality ? `Intenção: ${ed.finality}` : null,
+          ed.property_type ? `Tipo: ${ed.property_type}` : null,
+          ed.address ? `Local: ${ed.address}` : null,
+          ed.desired_price ? `Faixa: ${ed.desired_price}` : null,
+        ].filter(Boolean);
+        setLeadSummary(summaryParts.join(" • "));
       }
     } catch (e: any) {
       const msg =
@@ -131,11 +139,13 @@ export default function WhatsAppAiChat({
   const goWhatsApp = () => {
     if (!sellerWhatsapp) return;
     const phone = sellerWhatsapp.replace(/\D/g, "");
-    const intro = leadSaved
-      ? `Olá! Sou ${leadSaved.name}. Acabei de conversar com a ${attendantName || "atendente"} no site${
-          contextTitle ? ` sobre: ${contextTitle}` : ""
-        }.`
-      : `Olá! Vim do site${contextTitle ? ` interessado(a) em: ${contextTitle}` : ""}.`;
+    let intro: string;
+    if (leadSaved) {
+      intro = `Olá! Sou ${leadSaved.name}. Acabei de conversar com a ${attendantName || "atendente"} no site.`;
+      if (leadSummary) intro += `\n\nResumo do meu interesse: ${leadSummary}`;
+    } else {
+      intro = `Olá! Vim do site${contextTitle ? ` (estava vendo: ${contextTitle})` : ""}.`;
+    }
     window.open(`https://wa.me/${phone}?text=${encodeURIComponent(intro)}`, "_blank", "noopener,noreferrer");
   };
 
