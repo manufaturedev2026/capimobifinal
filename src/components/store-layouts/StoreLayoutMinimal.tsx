@@ -377,7 +377,7 @@ export default function StoreLayoutMinimal({
         >
           ─ Categorias
         </p>
-        <div className="flex gap-2.5 overflow-x-auto scrollbar-hide pb-2">
+        <div className="flex gap-2.5 overflow-x-auto scrollbar-hide py-2">
           {activeCats.map((cat) => {
             const isActive = activeCategory === cat.slug;
             const count = categoryCounts[cat.slug] || 0;
