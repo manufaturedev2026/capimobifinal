@@ -1,7 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
 import { toast } from "@/hooks/use-toast";
 import { detectIOS, isIOSStandaloneApp } from "@/lib/pwaInstall";
+
+type PushSubscriptionRow = Database["public"]["Tables"]["push_subscriptions"]["Row"];
 
 const SUBSCRIPTION_TIMEOUT_MS = 60000;
 const PERMISSION_TIMEOUT_MS = 20000;
@@ -80,16 +83,16 @@ export function usePushSubscription(
         // If it was saved before login (user_id null) or under an old scope,
         // repair it so private pushes (agenda/CRM) target the panel owner device.
         const { data } = await supabase
-          .from("push_subscriptions" as any)
+          .from("push_subscriptions")
           .select("id,user_id,scope")
           .eq("seller_id", sellerId)
           .eq("endpoint", currentEndpoint)
           .maybeSingle();
 
-        const savedSubscription = data as any;
+        const savedSubscription = data as Pick<PushSubscriptionRow, "id" | "user_id" | "scope"> | null;
         if (savedSubscription?.id && currentUserId && (savedSubscription.user_id !== currentUserId || savedSubscription.scope !== scope)) {
           await supabase
-            .from("push_subscriptions" as any)
+            .from("push_subscriptions")
             .update({ user_id: currentUserId, scope })
             .eq("id", savedSubscription.id);
         }
@@ -297,7 +300,7 @@ export function usePushSubscription(
       // Upsert: update if endpoint exists, insert if new
       const { error: saveError } = await withTimeout<{ error: { message: string; code?: string } | null }>(
         Promise.resolve(
-          supabase.from("push_subscriptions" as any).upsert(
+          supabase.from("push_subscriptions").upsert(
             {
               seller_id: sellerId,
               user_id: currentUserId,
