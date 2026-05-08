@@ -70,20 +70,34 @@ export function usePushSubscription(
           return;
         }
 
-        // Check DB if this endpoint is already saved for this seller
+        const scope = options.scope ?? "store";
+        const { data: { user: currentUser } } = await supabase.auth.getUser();
+        const currentUserId = currentUser?.id ?? null;
+
+        // Check DB if this endpoint is already saved for this seller.
+        // If it was saved before login (user_id null) or under an old scope,
+        // repair it so private pushes (agenda/CRM) target the panel owner device.
         const { data } = await supabase
           .from("push_subscriptions" as any)
-          .select("id")
+          .select("id,user_id,scope")
           .eq("seller_id", sellerId)
           .eq("endpoint", currentEndpoint)
           .maybeSingle();
 
-        setIsSubscribed(!!data);
+        const savedSubscription = data as any;
+        if (savedSubscription?.id && currentUserId && (savedSubscription.user_id !== currentUserId || savedSubscription.scope !== scope)) {
+          await supabase
+            .from("push_subscriptions" as any)
+            .update({ user_id: currentUserId, scope })
+            .eq("id", savedSubscription.id);
+        }
+
+        setIsSubscribed(!!savedSubscription);
       } catch {
         setIsSubscribed(false);
       }
     })();
-  }, [sellerId]);
+  }, [sellerId, options.scope]);
 
   const subscribe = useCallback(async () => {
     if (!sellerId) {
