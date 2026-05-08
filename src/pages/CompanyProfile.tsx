@@ -620,6 +620,15 @@ export default function CompanyProfile() {
 
   const handleWhatsApp = (title: string, productId?: string) => {
     if (isDbProfile && dbProfile) {
+      const mode = (dbProfile as any)?.whatsapp_mode || "crm";
+      if (mode === "disabled") {
+        return;
+      }
+      if (mode === "ai") {
+        setAiChatContext(title);
+        setAiChatOpen(true);
+        return;
+      }
       setLeadCaptureContext(null); // Reset context for normal WhatsApp
       setPendingWhatsAppAction(() => () => doWhatsAppRedirect(title, productId));
       setLeadCaptureOpen(true);
