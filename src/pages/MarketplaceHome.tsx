@@ -202,7 +202,10 @@ export default function MarketplaceHome() {
 
   const categoryCounts = useMemo(() => {
     const counts: Record<string, number> = {};
-    realItems.forEach((i) => {
+    const source = filterCity
+      ? realItems.filter((i) => (i.city || "").toLowerCase() === filterCity.toLowerCase())
+      : realItems;
+    source.forEach((i) => {
       if ((i as any).status === "vendido" || (i as any).status === "inativo") return;
       const cat = i.category || "outros";
       counts[cat] = (counts[cat] || 0) + 1;
@@ -211,7 +214,7 @@ export default function MarketplaceHome() {
       }
     });
     return counts;
-  }, [realItems]);
+  }, [realItems, filterCity]);
 
   const filteredItems = useMemo(() => {
     let items = [...realItems];
