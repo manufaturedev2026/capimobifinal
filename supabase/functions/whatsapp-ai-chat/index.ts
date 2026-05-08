@@ -59,10 +59,11 @@ serve(async (req) => {
 
   try {
     const body = await req.json();
-    const { messages, sellerId, corretorSlug } = body as {
+    const { messages, sellerId, corretorSlug, chatSessionId } = body as {
       messages: Array<{ role: string; content: string }>;
       sellerId: string;
       corretorSlug?: string | null;
+      chatSessionId?: string | null;
     };
 
     if (!sellerId || !Array.isArray(messages)) {
@@ -145,7 +146,7 @@ serve(async (req) => {
       (req.headers.get("x-forwarded-for") || "").split(",")[0].trim() ||
       req.headers.get("cf-connecting-ip") ||
       "unknown";
-    const visitorKey = `${visitorIp}:${sellerId}:${corretorSlug || "_"}`;
+    const visitorKey = `${visitorIp}:${sellerId}:${corretorSlug || "_"}:${chatSessionId || "_"}`;
     const credit = await consumeAiCreditsForUser(
       admin,
       payerUserId,
