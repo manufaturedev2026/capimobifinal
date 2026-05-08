@@ -54,6 +54,34 @@ const EXTRACT_TOOL = {
   },
 };
 
+function normalizeDesiredPrice(extractedData: any, messages: Array<{ role: string; content: string }>) {
+  if (!extractedData?.desired_price) return extractedData;
+  const priceText = String(extractedData.desired_price);
+  const parsed = Number(priceText.replace(/\D/g, ""));
+  if (!Number.isFinite(parsed) || parsed < 100_000) return extractedData;
+
+  const convo = messages.map((m) => m.content).join(" \n ").toLowerCase();
+  const hasMillionUnit = /\b(mi|milh(?:ã|a)o|milh(?:õ|o)es)\b/.test(convo);
+  const hasThousandUnit = /\bmil\b/.test(convo);
+  if (hasMillionUnit || hasThousandUnit) return extractedData;
+
+  for (const divisor of [1000, 100]) {
+    const candidate = parsed / divisor;
+    if (!Number.isInteger(candidate) || candidate < 500 || candidate > 15000) continue;
+    const raw = String(candidate);
+    const rawPattern = new RegExp(`(^|\\D)${raw}(\\D|$)`);
+    if (rawPattern.test(convo)) {
+      return {
+        ...extractedData,
+        desired_price: `R$ ${candidate.toLocaleString("pt-BR")}`,
+        notes: `${extractedData.notes || ""}\nValor normalizado automaticamente: o visitante escreveu ${raw}, sem mencionar mil/milhão.`.trim(),
+      };
+    }
+  }
+
+  return extractedData;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
