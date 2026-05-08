@@ -298,6 +298,7 @@ serve(async (req) => {
       reply = `Perfeito, ${extractedData.full_name || ""}! ✅ Já anotei tudo. Vou te conectar agora com o corretor pelo WhatsApp! 🚀`;
     }
     extractedData = normalizeDesiredPrice(extractedData, messages);
+    reply = sanitizeReplyPrice(reply, extractedData);
     if (!reply && !extractedData) {
       reply = "Desculpe, não consegui entender. Pode repetir? 😊";
     }
