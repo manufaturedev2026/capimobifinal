@@ -262,7 +262,7 @@ export default function StoreLayoutMagazine({
             </button>
           )}
         </div>
-        <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2 -mx-4 px-4 lg:-mx-12 lg:px-12">
+        <div className="flex gap-3 overflow-x-auto scrollbar-hide py-2 -mx-4 px-4 lg:-mx-12 lg:px-12">
           {visualCategories.map((cat) => {
             const isActive = activeCategory === cat.slug;
             const count = categoryCounts[cat.slug] || 0;
