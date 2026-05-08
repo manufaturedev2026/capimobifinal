@@ -742,7 +742,7 @@ export default function MarketplaceHome() {
             <Crown size={16} style={{ color: PRIMARY }} />
             <h2 className="font-display font-bold text-lg" style={{ color: TEXT }}>O que você procura?</h2>
           </div>
-          <div className="flex gap-2.5 md:gap-3 overflow-x-auto scrollbar-hide pb-2 -mx-4 px-4 md:mx-0 md:px-0 md:grid md:grid-cols-6 md:overflow-visible">
+          <div className="flex gap-2.5 md:gap-3 overflow-x-auto scrollbar-hide py-2 -mx-4 px-4 md:mx-0 md:px-0 md:grid md:grid-cols-6 md:overflow-visible">
             {QUICK_ACTIONS.map((action, idx) => {
               const Icon = action.icon;
               const isActive = activeCategory === action.slug;
