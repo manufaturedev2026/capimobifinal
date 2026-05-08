@@ -18,7 +18,17 @@ REGRAS GLOBAIS:
 - Se o visitante perguntar sobre imóveis específicos, valor ou disponibilidade, diga que vai conectar com o corretor humano após coletar nome e WhatsApp.
 - Se o visitante for ofensivo, redirecione educadamente.
 
-OBJETIVO: Qualificar o lead coletando NOME, WHATSAPP, INTENÇÃO (compra/aluguel/venda), e detalhes do imóvel desejado (cidade/bairro, faixa de valor, tipo). Assim que tiver pelo menos NOME + TELEFONE, chame a ferramenta save_lead.`;
+OBJETIVO: Qualificar o lead coletando NOME, WHATSAPP, INTENÇÃO (compra/aluguel/venda), e detalhes do imóvel (cidade/bairro, tipo, faixa de valor).
+
+QUANDO CHAMAR save_lead (REGRA CRÍTICA — não quebre):
+- NUNCA chame save_lead apenas com nome+telefone.
+- Só chame save_lead quando tiver TODOS estes dados confirmados pelo visitante:
+  1) NOME completo
+  2) WHATSAPP (telefone com DDD)
+  3) INTENÇÃO (compra, aluguel ou venda)
+  4) Pelo menos UM detalhe do imóvel: tipo (casa/apto/terreno/comercial) OU cidade/bairro OU faixa de valor
+- Antes de chamar save_lead, FAÇA UMA ÚLTIMA mensagem de confirmação amigável recapitulando o que entendeu e pergunte se está tudo certo. Só na resposta SEGUINTE (após o "sim") chame save_lead.
+- Se faltar qualquer item, faça a próxima pergunta — uma de cada vez — em vez de salvar.`;
 
 const SYSTEM_BASE_VALUES = `
 
@@ -36,7 +46,7 @@ const EXTRACT_TOOL = {
   function: {
     name: "save_lead",
     description:
-      "Salva os dados do lead quando nome e telefone foram coletados. Chame assim que tiver pelo menos nome e telefone.",
+      "Salva o lead. SÓ chame depois de coletar nome + telefone + intenção (compra/aluguel/venda) + ao menos um detalhe (tipo, cidade/bairro ou faixa de valor) E após o visitante confirmar o resumo. Nunca chame somente com nome e telefone.",
     parameters: {
       type: "object",
       properties: {
@@ -48,7 +58,7 @@ const EXTRACT_TOOL = {
         notes: { type: "string", description: "Resumo da conversa e observações" },
         finality: { type: "string", enum: ["compra", "aluguel", "venda", "outro"] },
       },
-      required: ["full_name", "phone"],
+      required: ["full_name", "phone", "finality"],
       additionalProperties: false,
     },
   },
@@ -252,12 +262,15 @@ serve(async (req) => {
       }
     }
 
-    // Fallback: if model didn't call save_lead but the conversation already contains
-    // a Brazilian phone number, force a second pass that MUST call save_lead.
+    // Fallback: only force save_lead if the conversation already contains
+    // a phone number AND a clear intent (compra/aluguel/venda) AND at least one
+    // property hint. Avoids saving the lead too early.
     if (!extractedData) {
       const convoText = messages.map((m) => `${m.role}: ${m.content}`).join("\n");
       const phoneRegex = /(?:\+?55\s*)?\(?\d{2}\)?[\s-]?9?\d{4}[\s-]?\d{4}/;
-      if (phoneRegex.test(convoText)) {
+      const intentRegex = /\b(comprar|compra|alugar|aluguel|locar|loca[çc][ãa]o|vender|venda)\b/i;
+      const detailRegex = /\b(casa|apartamento|apto|kitnet|studio|st[úu]dio|terreno|lote|s[íi]tio|ch[áa]cara|sala|loja|comercial|galp[ãa]o|cobertura|quarto|quartos|su[íi]te|bairro|cidade|R\$|mil|milh[ãa]o|mi)\b/i;
+      if (phoneRegex.test(convoText) && intentRegex.test(convoText) && detailRegex.test(convoText)) {
         try {
           const forceResp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
             method: "POST",

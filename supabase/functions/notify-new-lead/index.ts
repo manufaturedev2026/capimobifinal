@@ -138,21 +138,24 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { data: ownerSubscriptions } = await adminClient
+    // Centralized at agency level: deliver to ALL panel/admin_home subscriptions
+    // tied to this seller (agency owner + linked brokers + legacy null user).
+    // Plus any panel subscription owned directly by the target user, in case
+    // they registered the PWA from a different seller context.
+    const { data: agencyPanelSubs } = await adminClient
       .from("push_subscriptions")
       .select("*")
       .eq("seller_id", targetProfile.id)
-      .eq("user_id", target_user_id);
+      .in("scope", ["panel", "admin_home"]);
 
-    const { data: legacyPanelSubscriptions } = await adminClient
+    const { data: targetUserPanelSubs } = await adminClient
       .from("push_subscriptions")
       .select("*")
-      .eq("seller_id", targetProfile.id)
-      .is("user_id", null)
+      .eq("user_id", target_user_id)
       .in("scope", ["panel", "admin_home"]);
 
     const subscriptionsByEndpoint = new Map<string, any>();
-    for (const sub of [...(ownerSubscriptions || []), ...(legacyPanelSubscriptions || [])]) {
+    for (const sub of [...(agencyPanelSubs || []), ...(targetUserPanelSubs || [])]) {
       if (sub?.endpoint) subscriptionsByEndpoint.set(sub.endpoint, sub);
     }
     const subscriptions = Array.from(subscriptionsByEndpoint.values());
