@@ -151,7 +151,7 @@ export default function WhatsAppConfigTab({ userId, sellerId }: Props) {
               onChange={(e) => setAiName(e.target.value)}
               maxLength={60}
               placeholder="Sofia"
-              className="mt-1 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/30"
+              className="mt-1 w-full rounded-xl border border-input bg-background text-foreground placeholder:text-muted-foreground px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/30"
             />
           </div>
 
@@ -163,7 +163,7 @@ export default function WhatsAppConfigTab({ userId, sellerId }: Props) {
               maxLength={500}
               rows={3}
               placeholder="Olá! 👋 Sou a Sofia da imobiliária X. Como posso te ajudar?"
-              className="mt-1 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/30"
+              className="mt-1 w-full rounded-xl border border-input bg-background text-foreground placeholder:text-muted-foreground px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/30"
             />
             <p className="text-[11px] text-muted-foreground mt-1">Aparece como primeira mensagem. Se vazio, usamos um padrão.</p>
           </div>
@@ -175,7 +175,7 @@ export default function WhatsAppConfigTab({ userId, sellerId }: Props) {
               onChange={(e) => setPrompt(e.target.value)}
               maxLength={2000}
               rows={8}
-              className="mt-1 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/30 font-mono"
+              className="mt-1 w-full rounded-xl border border-input bg-background text-foreground placeholder:text-muted-foreground px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/30 font-mono"
             />
             <p className="text-[11px] text-muted-foreground mt-1">
               Diga como ela deve atender, o que perguntar e o tom de voz. Máx. 2000 caracteres.
