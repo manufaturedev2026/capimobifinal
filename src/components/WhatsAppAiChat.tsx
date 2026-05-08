@@ -82,7 +82,7 @@ export default function WhatsAppAiChat({
     setLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke("whatsapp-ai-chat", {
-        body: { sellerId, messages: all, corretorSlug },
+        body: { sellerId, messages: all, corretorSlug, chatSessionId },
       });
       if (error) throw error;
       if (data?.reply) {
@@ -151,7 +151,7 @@ export default function WhatsAppAiChat({
     } finally {
       setLoading(false);
     }
-  }, [input, loading, messages, sellerId, sellerUserId, leadSaved, attendantName, contextTitle, corretorSlug]);
+  }, [input, loading, messages, sellerId, sellerUserId, leadSaved, attendantName, contextTitle, corretorSlug, chatSessionId]);
 
   const goWhatsApp = () => {
     if (!sellerWhatsapp) return;
