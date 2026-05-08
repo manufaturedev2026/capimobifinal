@@ -169,9 +169,10 @@ export function usePushSubscription(
       // iOS PWA can hang when repeatedly re-registering/unregistering workers,
       // so reuse any existing push worker before attempting a fresh register.
       console.log("[Push] Registering service worker...");
-      let registration = await getExistingPushRegistration();
+      let registration: ServiceWorkerRegistration;
       try {
-        registration = registration ?? await registerPushWorker();
+        const existingRegistration = await getExistingPushRegistration();
+        registration = existingRegistration ?? await registerPushWorker();
       } catch (regErr) {
         console.warn("[Push] register() failed, cleaning up stale SWs and retrying:", regErr);
         try {
