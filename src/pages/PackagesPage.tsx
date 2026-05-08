@@ -592,37 +592,37 @@ export default function PackagesPage() {
           </div>
 
           <div className="mb-3 grid grid-cols-2 gap-2">
-            <div className="px-3 py-2 rounded-lg bg-amber-500/5 border border-amber-500/20">
+            <div className={`px-3 py-2 rounded-lg ${cc.statBg} border ${cc.statBorder}`}>
               <p className="text-[9px] uppercase tracking-wider text-white/40 mb-0.5">Anúncios</p>
               <p className="text-xs md:text-sm font-bold text-white">{maxItems}</p>
             </div>
-            <div className="px-3 py-2 rounded-lg bg-gradient-to-br from-amber-500/20 to-yellow-500/5 border border-amber-400/30">
-              <p className="text-[9px] uppercase tracking-wider text-amber-200/80 mb-0.5 flex items-center gap-1"><Sparkles className="w-2.5 h-2.5" /> Créditos IA/mês</p>
+            <div className={`px-3 py-2 rounded-lg bg-gradient-to-br ${cc.statHighlightBg} border ${cc.statHighlightBorder}`}>
+              <p className={`text-[9px] uppercase tracking-wider ${cc.text} mb-0.5 flex items-center gap-1`}><Sparkles className="w-2.5 h-2.5" /> Créditos IA/mês</p>
               <p className="text-xs md:text-sm font-bold text-white">{formatCredits(credits)}</p>
             </div>
-            <div className="px-3 py-2 rounded-lg bg-amber-500/5 border border-amber-500/20">
+            <div className={`px-3 py-2 rounded-lg ${cc.statBg} border ${cc.statBorder}`}>
               <p className="text-[9px] uppercase tracking-wider text-white/40 mb-0.5">Fotos / Anúncio</p>
               <p className="text-xs md:text-sm font-bold text-white">Até {plan.max_photos_per_listing}</p>
             </div>
-            <div className="px-3 py-2 rounded-lg bg-amber-500/5 border border-amber-500/20">
+            <div className={`px-3 py-2 rounded-lg ${cc.statBg} border ${cc.statBorder}`}>
               <p className="text-[9px] uppercase tracking-wider text-white/40 mb-0.5">Storage</p>
               <p className="text-xs md:text-sm font-bold text-white">{storageLabel}</p>
             </div>
             {teamLabel && (
-              <div className="col-span-2 px-3 py-2 rounded-lg bg-gradient-to-br from-amber-500/15 to-yellow-500/5 border border-amber-400/25">
-                <p className="text-[9px] uppercase tracking-wider text-amber-200/80 mb-0.5 flex items-center gap-1"><Users className="w-2.5 h-2.5" /> Corretores na equipe</p>
+              <div className={`col-span-2 px-3 py-2 rounded-lg bg-gradient-to-br ${cc.statHighlightBg} border ${cc.statHighlightBorder}`}>
+                <p className={`text-[9px] uppercase tracking-wider ${cc.text} mb-0.5 flex items-center gap-1`}><Users className="w-2.5 h-2.5" /> Corretores na equipe</p>
                 <p className="text-xs md:text-sm font-bold text-white">{teamLabel}</p>
               </div>
             )}
           </div>
 
-          <div className="mb-4 px-3 py-2.5 rounded-lg bg-gradient-to-br from-amber-500/15 via-yellow-500/5 to-transparent border border-amber-400/25">
-            <p className="text-[9px] uppercase tracking-wider text-amber-200/90 mb-1.5 flex items-center gap-1 font-bold">
+          <div className={`mb-4 px-3 py-2.5 rounded-lg bg-gradient-to-br ${cc.botBg} border ${cc.botBorder}`}>
+            <p className={`text-[9px] uppercase tracking-wider ${cc.text} mb-1.5 flex items-center gap-1 font-bold`}>
               <Bot className="w-3 h-3" /> Bots de IA inclusos
             </p>
             <div className="flex flex-wrap gap-1">
               {getAiBots(plan.tier).map((bot) => (
-                <span key={bot.name} className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-amber-500/10 border border-amber-400/20 text-[10px] text-white/90">
+                <span key={bot.name} className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md ${cc.statBg} border ${cc.statBorder} text-[10px] text-white/90`}>
                   <span>{bot.emoji}</span>
                   <span className="font-medium">{bot.name}</span>
                 </span>
@@ -642,7 +642,7 @@ export default function PackagesPage() {
                 .replace(/Até\s+\d+\s+corretor(es)?/gi, teamCount > 0 ? `Até ${teamLabel} corretor${teamCount === 1 ? "" : "es"}` : "$&");
               return (
                 <li key={i} className="flex items-start gap-2 text-[12px] md:text-[13px] text-white/70">
-                  <Check className="w-3.5 h-3.5 mt-0.5 shrink-0 text-amber-400" />
+                  <Check className={`w-3.5 h-3.5 mt-0.5 shrink-0 ${cc.check}`} />
                   <span>{text}</span>
                 </li>
               );
@@ -658,8 +658,8 @@ export default function PackagesPage() {
                 : plan.price === 0
                   ? "bg-white/5 text-white/60 cursor-default border border-white/10"
                   : style.ctaGradient
-                  ? `bg-gradient-to-r ${style.ctaGradient} hover:brightness-110 text-black shadow-[0_4px_20px_-4px_rgba(245,158,11,0.6)]`
-                  : "bg-gradient-to-r from-amber-500 to-yellow-600 hover:brightness-110 text-black shadow-[0_4px_20px_-4px_rgba(245,158,11,0.5)]"
+                  ? `bg-gradient-to-r ${style.ctaGradient} hover:brightness-110 text-black shadow-[0_4px_20px_-4px_${cc.shadow}]`
+                  : `bg-gradient-to-r ${cc.ctaFrom} ${cc.ctaTo} hover:brightness-110 text-black shadow-[0_4px_20px_-4px_${cc.shadow}]`
             }`}
           >
             {selecting === plan.tier
