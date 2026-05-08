@@ -37,11 +37,21 @@ export default function WhatsAppAiChat({
   const [loading, setLoading] = useState(false);
   const [leadSaved, setLeadSaved] = useState<{ name: string; phone: string } | null>(null);
   const [leadSummary, setLeadSummary] = useState<string>("");
+  const [chatSessionId, setChatSessionId] = useState(() => crypto.randomUUID());
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, open]);
+  }, [messages, open, leadSaved]);
+
+  useEffect(() => {
+    if (open) return;
+    setMessages([]);
+    setInput("");
+    setLeadSaved(null);
+    setLeadSummary("");
+    setChatSessionId(crypto.randomUUID());
+  }, [open]);
 
   // Greeting on open
   useEffect(() => {
@@ -50,7 +60,7 @@ export default function WhatsAppAiChat({
     (async () => {
       try {
         const { data } = await supabase.functions.invoke("whatsapp-ai-chat", {
-          body: { sellerId, messages: [], corretorSlug },
+          body: { sellerId, messages: [], corretorSlug, chatSessionId },
         });
         if (!cancelled && data?.reply) {
           setMessages([{ role: "assistant", content: data.reply }]);
@@ -60,7 +70,7 @@ export default function WhatsAppAiChat({
     return () => {
       cancelled = true;
     };
-  }, [open, sellerId, messages.length, corretorSlug]);
+  }, [open, sellerId, messages.length, corretorSlug, chatSessionId]);
 
   const send = useCallback(async () => {
     const text = input.trim();
@@ -72,14 +82,19 @@ export default function WhatsAppAiChat({
     setLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke("whatsapp-ai-chat", {
-        body: { sellerId, messages: all, corretorSlug },
+        body: { sellerId, messages: all, corretorSlug, chatSessionId },
       });
       if (error) throw error;
       if (data?.reply) {
         setMessages((prev) => [...prev, { role: "assistant", content: data.reply }]);
       }
       const ed = data?.extractedData;
-      if (ed?.full_name && ed?.phone && !leadSaved) {
+      const normalizedLead = ed?.full_name && ed?.phone
+        ? { name: String(ed.full_name), phone: String(ed.phone) }
+        : null;
+      if (normalizedLead && !leadSaved) {
+        const resolvedSellerId = corretorSlug ? (data?.leadTarget?.sellerId || sellerId) : sellerId;
+        const resolvedUserId = corretorSlug ? (data?.leadTarget?.userId || sellerUserId) : sellerUserId;
         // Save in CRM and notify the broker
         const notes = [
           ed.finality ? `🎯 Intenção: ${ed.finality}` : null,
@@ -95,10 +110,10 @@ export default function WhatsAppAiChat({
           .join("\n");
         try {
           await supabase.from("seller_crm_contacts").insert({
-            seller_id: sellerId,
-            user_id: sellerUserId,
-            full_name: String(ed.full_name).trim().slice(0, 100),
-            phone: String(ed.phone).trim().slice(0, 20),
+            seller_id: resolvedSellerId,
+            user_id: resolvedUserId,
+            full_name: normalizedLead.name.trim().slice(0, 100),
+            phone: normalizedLead.phone.trim().slice(0, 20),
             funnel_stage: "novo",
             lead_source: "whatsapp_ai",
             notes,
@@ -106,17 +121,17 @@ export default function WhatsAppAiChat({
           supabase.functions
             .invoke("notify-new-lead", {
               body: {
-                target_user_id: sellerUserId,
+                target_user_id: resolvedUserId,
                 title: "Novo lead da atendente IA 🤖",
                 body: `${ed.full_name} foi qualificado(a) pela ${attendantName || "atendente IA"} no WhatsApp.`,
                 url: "/painel?tab=crm",
               },
             })
-            .catch(() => {});
+            .catch((pushError) => console.error("notify-new-lead error", pushError));
         } catch (e) {
           console.error("crm insert error", e);
         }
-        setLeadSaved({ name: String(ed.full_name), phone: String(ed.phone) });
+        setLeadSaved(normalizedLead);
         const summaryParts = [
           ed.finality ? `Intenção: ${ed.finality}` : null,
           ed.property_type ? `Tipo: ${ed.property_type}` : null,
@@ -124,6 +139,8 @@ export default function WhatsAppAiChat({
           ed.desired_price ? `Faixa: ${ed.desired_price}` : null,
         ].filter(Boolean);
         setLeadSummary(summaryParts.join(" • "));
+      } else if (normalizedLead) {
+        setLeadSaved(normalizedLead);
       }
     } catch (e: any) {
       const msg =
@@ -134,7 +151,7 @@ export default function WhatsAppAiChat({
     } finally {
       setLoading(false);
     }
-  }, [input, loading, messages, sellerId, sellerUserId, leadSaved, attendantName, contextTitle, corretorSlug]);
+  }, [input, loading, messages, sellerId, sellerUserId, leadSaved, attendantName, contextTitle, corretorSlug, chatSessionId]);
 
   const goWhatsApp = () => {
     if (!sellerWhatsapp) return;

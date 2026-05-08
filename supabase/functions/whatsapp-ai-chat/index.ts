@@ -25,7 +25,8 @@ const SYSTEM_BASE_VALUES = `
 INTERPRETAÇÃO DE VALORES (MUITO IMPORTANTE):
 - Estamos no Brasil (R$). Interprete os números do jeito que um brasileiro fala.
 - Para ALUGUEL, valores típicos ficam entre R$ 500 e R$ 15.000/mês. Se o visitante disser "1600", "2 mil", "3500", entenda como reais por mês (R$ 1.600, R$ 2.000, R$ 3.500). NUNCA multiplique por 100 nem confunda com 160.000.
-- Para COMPRA/VENDA, "300" geralmente significa R$ 300 mil; "1,2" ou "1.2" significa R$ 1,2 milhão. Use o contexto.
+- Para COMPRA/VENDA, número puro menor que 10.000 deve ser mantido como reais EXATOS, a menos que o visitante escreva "mil", "milhão", "mi" ou "k". Ex.: "1200" = R$ 1.200, NÃO R$ 1.200.000; "300" = R$ 300, NÃO R$ 300 mil. Se parecer improvável para compra, confirme com o visitante antes de salvar.
+- Só interprete como milhares/milhões quando houver unidade explícita: "300 mil" = R$ 300.000; "1,2 milhão"/"1.2 mi" = R$ 1.200.000.
 - "k" = mil, "mi" / "milhão" = milhão. Ex.: "2k" = R$ 2.000, "1,5mi" = R$ 1.500.000.
 - Se houver QUALQUER ambiguidade no valor, CONFIRME com o visitante antes de registrar (ex.: "Só pra confirmar: R$ 1.600 por mês, certo? 😊").
 - Ao salvar em desired_price, escreva sempre formatado em reais com a unidade clara (ex.: "R$ 1.600/mês" para aluguel, "R$ 450.000" para compra).`;
@@ -53,15 +54,56 @@ const EXTRACT_TOOL = {
   },
 };
 
+function normalizeDesiredPrice(extractedData: any, messages: Array<{ role: string; content: string }>) {
+  if (!extractedData?.desired_price) return extractedData;
+  const priceText = String(extractedData.desired_price);
+  const parsed = Number(priceText.replace(/\D/g, ""));
+  if (!Number.isFinite(parsed) || parsed < 100_000) return extractedData;
+
+  const convo = messages.map((m) => m.content).join(" \n ").toLowerCase();
+  const hasMillionUnit = /\b(mi|milh(?:ã|a)o|milh(?:õ|o)es)\b/.test(convo);
+  const hasThousandUnit = /\bmil\b/.test(convo);
+  if (hasMillionUnit || hasThousandUnit) return extractedData;
+
+  for (const divisor of [1000, 100]) {
+    const candidate = parsed / divisor;
+    if (!Number.isInteger(candidate) || candidate < 500 || candidate > 15000) continue;
+    const raw = String(candidate);
+    const rawPattern = new RegExp(`(^|\\D)${raw}(\\D|$)`);
+    if (rawPattern.test(convo)) {
+      return {
+        ...extractedData,
+        desired_price: `R$ ${candidate.toLocaleString("pt-BR")}`,
+        notes: `${extractedData.notes || ""}\nValor normalizado automaticamente: o visitante escreveu ${raw}, sem mencionar mil/milhão.`.trim(),
+      };
+    }
+  }
+
+  return extractedData;
+}
+
+function sanitizeReplyPrice(reply: string, extractedData: any) {
+  const price = String(extractedData?.desired_price || "");
+  const normalized = Number(price.replace(/\D/g, ""));
+  if (!reply || !normalized || normalized >= 100_000) return reply;
+  const millionLike = normalized * 1000;
+  const formattedMillion = millionLike.toLocaleString("pt-BR");
+  const formattedNormalized = `R$ ${normalized.toLocaleString("pt-BR")}`;
+  return reply
+    .replace(new RegExp(`R\\$\\s*${formattedMillion}(?:,00)?`, "g"), formattedNormalized)
+    .replace(new RegExp(`\\b${millionLike}\\b`, "g"), formattedNormalized);
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
     const body = await req.json();
-    const { messages, sellerId, corretorSlug } = body as {
+    const { messages, sellerId, corretorSlug, chatSessionId } = body as {
       messages: Array<{ role: string; content: string }>;
       sellerId: string;
       corretorSlug?: string | null;
+      chatSessionId?: string | null;
     };
 
     if (!sellerId || !Array.isArray(messages)) {
@@ -101,6 +143,8 @@ serve(async (req) => {
     //   and the transaction is logged on the broker's account.
     let payerUserId = ownerUserId;
     let payerSellerId: string | null = sellerId;
+    let leadTargetUserId = ownerUserId;
+    let leadTargetSellerId: string | null = sellerId;
     let payerNote = `Atendente IA WhatsApp da loja ${sellerName}`;
     if (corretorSlug && typeof corretorSlug === "string") {
       const { data: member } = await admin
@@ -120,6 +164,8 @@ serve(async (req) => {
         if (brokerProfile?.user_id) {
           payerUserId = brokerProfile.user_id as string;
           payerSellerId = (brokerProfile as any).id as string;
+          leadTargetUserId = brokerProfile.user_id as string;
+          leadTargetSellerId = (brokerProfile as any).id as string;
           payerNote = `Atendente IA WhatsApp via loja parceira de ${sellerName}`;
         }
       }
@@ -140,7 +186,7 @@ serve(async (req) => {
       (req.headers.get("x-forwarded-for") || "").split(",")[0].trim() ||
       req.headers.get("cf-connecting-ip") ||
       "unknown";
-    const visitorKey = `${visitorIp}:${sellerId}:${corretorSlug || "_"}`;
+    const visitorKey = `${visitorIp}:${sellerId}:${corretorSlug || "_"}:${chatSessionId || "_"}`;
     const credit = await consumeAiCreditsForUser(
       admin,
       payerUserId,
@@ -222,7 +268,7 @@ serve(async (req) => {
                 {
                   role: "system",
                   content:
-                    "Extraia os dados do lead da conversa abaixo e chame OBRIGATORIAMENTE a ferramenta save_lead. Use exatamente os dados fornecidos pelo visitante. Se o nome não foi informado, use 'Cliente'. Não escreva nada além da chamada da ferramenta.",
+                    `Extraia os dados do lead da conversa abaixo e chame OBRIGATORIAMENTE a ferramenta save_lead. Use exatamente os dados fornecidos pelo visitante. Se o nome não foi informado, use 'Cliente'. ${SYSTEM_BASE_VALUES} Não escreva nada além da chamada da ferramenta.`,
                 },
                 { role: "user", content: convoText },
               ],
@@ -251,6 +297,8 @@ serve(async (req) => {
     if (extractedData && !reply) {
       reply = `Perfeito, ${extractedData.full_name || ""}! ✅ Já anotei tudo. Vou te conectar agora com o corretor pelo WhatsApp! 🚀`;
     }
+    extractedData = normalizeDesiredPrice(extractedData, messages);
+    reply = sanitizeReplyPrice(reply, extractedData);
     if (!reply && !extractedData) {
       reply = "Desculpe, não consegui entender. Pode repetir? 😊";
     }
@@ -259,6 +307,7 @@ serve(async (req) => {
       JSON.stringify({
         reply,
         extractedData,
+        leadTarget: { userId: leadTargetUserId, sellerId: leadTargetSellerId },
         aiCredits: { charged: credit.cost, balance: credit.balance },
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
