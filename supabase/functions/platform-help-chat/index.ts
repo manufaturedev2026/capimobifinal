@@ -61,7 +61,7 @@ Construtora tem MUITO mais corretores vinculados, mais armazenamento, mais visit
 **Modalidades de cobrança:**
 - **Mensal**: pagamento único válido por 30 dias.
 - **Anual**: pagamento único válido por 365 dias com desconto padrão de 20% (configurável). Ex: Premium Anual ≈ R$ 574,80 (12 × 59,90 × 0,80) cobrado de uma vez.
-- Cupons de desconto podem ser aplicados sobre Mensal ou Anual (cumulativos com `forever`).
+- Cupons de desconto podem ser aplicados sobre Mensal ou Anual (cumulativos com \`forever\`).
 - Créditos de IA: Mensal recarrega todo mês; Anual entrega 12 meses de créditos de uma vez na compra.
 
 **Plano Fundador** (oportunidade limitada por lotes — quando esgota, próximo lote sobe de preço):
