@@ -1,10 +1,14 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
 import { toast } from "@/hooks/use-toast";
 import { detectIOS, isIOSStandaloneApp } from "@/lib/pwaInstall";
 
+type PushSubscriptionRow = Database["public"]["Tables"]["push_subscriptions"]["Row"];
+
 const SUBSCRIPTION_TIMEOUT_MS = 60000;
-const SUBSCRIBE_TIMEOUT_MS = 90000;
+const PERMISSION_TIMEOUT_MS = 20000;
+const SUBSCRIBE_TIMEOUT_MS = 30000;
 const SW_REGISTER_TIMEOUT_MS = 30000;
 const PUSH_SW_URL = "/push-sw.js";
 // Use default scope ("/") — custom scopes require the
@@ -79,16 +83,16 @@ export function usePushSubscription(
         // If it was saved before login (user_id null) or under an old scope,
         // repair it so private pushes (agenda/CRM) target the panel owner device.
         const { data } = await supabase
-          .from("push_subscriptions" as any)
+          .from("push_subscriptions")
           .select("id,user_id,scope")
           .eq("seller_id", sellerId)
           .eq("endpoint", currentEndpoint)
           .maybeSingle();
 
-        const savedSubscription = data as any;
+        const savedSubscription = data as Pick<PushSubscriptionRow, "id" | "user_id" | "scope"> | null;
         if (savedSubscription?.id && currentUserId && (savedSubscription.user_id !== currentUserId || savedSubscription.scope !== scope)) {
           await supabase
-            .from("push_subscriptions" as any)
+            .from("push_subscriptions")
             .update({ user_id: currentUserId, scope })
             .eq("id", savedSubscription.id);
         }
@@ -120,7 +124,11 @@ export function usePushSubscription(
     try {
       // Step 1: Request permission
       console.log("[Push] Requesting permission...");
-      const perm = await Notification.requestPermission();
+      const perm = await withTimeout(
+        Notification.requestPermission(),
+        PERMISSION_TIMEOUT_MS,
+        "O iPhone demorou demais para responder à permissão. Feche e abra o app, depois tente novamente."
+      );
       setPermission(perm);
 
       if (perm !== "granted") {
@@ -182,7 +190,9 @@ export function usePushSubscription(
               })
               .map((r) => r.unregister().catch(() => false))
           );
-        } catch {}
+        } catch {
+          console.warn("[Push] Failed to clean stale push service workers before retry.");
+        }
         registration = await withTimeout(
           navigator.serviceWorker.register(PUSH_SW_URL),
           SW_REGISTER_TIMEOUT_MS,
@@ -221,7 +231,15 @@ export function usePushSubscription(
           : false;
         if (!sameKey) {
           console.log("[Push] Stale subscription with different VAPID key, unsubscribing...");
-          try { await subscription.unsubscribe(); } catch {}
+          try {
+            await withTimeout(
+              subscription.unsubscribe(),
+              SUBSCRIPTION_TIMEOUT_MS,
+              "Não foi possível limpar a inscrição antiga deste dispositivo."
+            );
+          } catch {
+            console.warn("[Push] Failed to remove stale push subscription before retry.");
+          }
           subscription = null;
         }
       }
@@ -241,13 +259,29 @@ export function usePushSubscription(
           const m = subErr instanceof Error ? subErr.message : String(subErr);
           // Retry once after fully unregistering the SW (handles corrupt state on Android)
           console.warn("[Push] subscribe() failed, retrying after SW reset:", m);
-          try { await registration.unregister(); } catch {}
-          const fresh = await navigator.serviceWorker.register(PUSH_SW_URL);
+          try {
+            await withTimeout(
+              registration.unregister(),
+              SUBSCRIPTION_TIMEOUT_MS,
+              "Não foi possível reiniciar o suporte a push deste dispositivo."
+            );
+          } catch {
+            console.warn("[Push] Failed to unregister push service worker before retry.");
+          }
+          const fresh = await withTimeout(
+            navigator.serviceWorker.register(PUSH_SW_URL),
+            SW_REGISTER_TIMEOUT_MS,
+            "Não foi possível registrar o app para push. Tente fechar e abrir o app."
+          );
           await waitForActivation(fresh);
-          subscription = await fresh.pushManager.subscribe({
-            userVisibleOnly: true,
-            applicationServerKey,
-          });
+          subscription = await withTimeout(
+            fresh.pushManager.subscribe({
+              userVisibleOnly: true,
+              applicationServerKey,
+            }),
+            SUBSCRIBE_TIMEOUT_MS,
+            "A inscrição no push demorou demais para responder. Feche e abra o app, depois tente novamente."
+          );
           registration = fresh;
         }
       }
@@ -266,7 +300,7 @@ export function usePushSubscription(
       // Upsert: update if endpoint exists, insert if new
       const { error: saveError } = await withTimeout<{ error: { message: string; code?: string } | null }>(
         Promise.resolve(
-          supabase.from("push_subscriptions" as any).upsert(
+          supabase.from("push_subscriptions").upsert(
             {
               seller_id: sellerId,
               user_id: currentUserId,
