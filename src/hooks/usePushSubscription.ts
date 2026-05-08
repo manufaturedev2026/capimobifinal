@@ -345,6 +345,39 @@ function withTimeout<T>(promise: PromiseLike<T>, timeoutMs: number, message: str
   ]);
 }
 
+async function getExistingPushRegistration() {
+  const registrations = await withTimeout(
+    navigator.serviceWorker.getRegistrations(),
+    SW_REGISTER_TIMEOUT_MS,
+    "Não foi possível verificar o app de notificações neste dispositivo."
+  );
+
+  return registrations.find((registration) => {
+    const url = registration.active?.scriptURL || registration.installing?.scriptURL || registration.waiting?.scriptURL || "";
+    return url.includes("push-sw");
+  }) ?? null;
+}
+
+function registerPushWorker(message = "Tempo esgotado ao registrar o app para push.") {
+  return withTimeout(
+    navigator.serviceWorker.register(PUSH_SW_URL, { scope: PUSH_SW_SCOPE }),
+    SW_REGISTER_TIMEOUT_MS,
+    message
+  );
+}
+
+async function cleanupPushRegistrations() {
+  const registrations = await navigator.serviceWorker.getRegistrations();
+  await Promise.all(
+    registrations
+      .filter((registration) => {
+        const url = registration.active?.scriptURL || registration.installing?.scriptURL || registration.waiting?.scriptURL || "";
+        return url.includes("push-sw");
+      })
+      .map((registration) => registration.unregister().catch(() => false))
+  );
+}
+
 async function waitForActivation(registration: ServiceWorkerRegistration) {
   const worker = registration.installing || registration.waiting;
   if (!worker) return;
