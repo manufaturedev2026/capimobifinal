@@ -82,6 +82,18 @@ function normalizeDesiredPrice(extractedData: any, messages: Array<{ role: strin
   return extractedData;
 }
 
+function sanitizeReplyPrice(reply: string, extractedData: any) {
+  const price = String(extractedData?.desired_price || "");
+  const normalized = Number(price.replace(/\D/g, ""));
+  if (!reply || !normalized || normalized >= 100_000) return reply;
+  const millionLike = normalized * 1000;
+  const formattedMillion = millionLike.toLocaleString("pt-BR");
+  const formattedNormalized = `R$ ${normalized.toLocaleString("pt-BR")}`;
+  return reply
+    .replace(new RegExp(`R\\$\\s*${formattedMillion}(?:,00)?`, "g"), formattedNormalized)
+    .replace(new RegExp(`\\b${millionLike}\\b`, "g"), formattedNormalized);
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
