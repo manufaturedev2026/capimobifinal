@@ -529,8 +529,8 @@ export default function PackagesPage() {
 
         <div className="relative z-10 flex flex-col h-full">
           <div className="flex items-center gap-2 mb-3">
-            <div className="p-2 bg-white/10 rounded-lg backdrop-blur">
-              <Icon className="w-5 h-5 text-white" />
+            <div className="p-2 bg-gradient-to-br from-amber-400/30 to-yellow-600/20 rounded-lg backdrop-blur border border-amber-400/30">
+              <Icon className="w-5 h-5 text-amber-300" />
             </div>
             <h3 className="font-display font-black text-xl md:text-2xl">{plan.name}</h3>
           </div>
@@ -626,8 +626,8 @@ export default function PackagesPage() {
                 : plan.price === 0
                   ? "bg-white/5 text-white/60 cursor-default border border-white/10"
                   : style.ctaGradient
-                  ? `bg-gradient-to-r ${style.ctaGradient} hover:brightness-110 text-white shadow-lg`
-                  : "bg-white/10 hover:bg-white/20 text-white border border-white/10"
+                  ? `bg-gradient-to-r ${style.ctaGradient} hover:brightness-110 text-black shadow-[0_4px_20px_-4px_rgba(245,158,11,0.6)]`
+                  : "bg-gradient-to-r from-amber-500 to-yellow-600 hover:brightness-110 text-black shadow-[0_4px_20px_-4px_rgba(245,158,11,0.5)]"
             }`}
           >
             {selecting === plan.tier
