@@ -2417,6 +2417,7 @@ export default function CompanyProfile() {
           sellerUserId={dbProfile.user_id}
           sellerWhatsapp={company.whatsapp}
           attendantName={(dbProfile as any)?.whatsapp_ai_name || null}
+          attendantAvatar={(dbProfile as any)?.whatsapp_ai_avatar || null}
           themePrimary={storeTheme.primary}
           contextTitle={aiChatContext || undefined}
         />
