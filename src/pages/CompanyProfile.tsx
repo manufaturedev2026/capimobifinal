@@ -2271,7 +2271,7 @@ export default function CompanyProfile() {
         </PoolBallButton>
       )}
 
-      {company.whatsapp && (dbProfile as any)?.show_floating_whatsapp && (
+      {company.whatsapp && (dbProfile as any)?.show_floating_whatsapp && ((dbProfile as any)?.whatsapp_mode || "crm") !== "disabled" && (
         <PoolBallButton
           initialBottom={144}
           initialRight={16}
