@@ -510,6 +510,8 @@ export default function PackagesPage() {
   const renderCard = (plan: Plan, idx: number, opts: { showPartners?: boolean } = {}) => {
     const style = getTierStyle(plan.tier);
     const Icon = style.icon;
+    const baseColor = getBaseColor(plan.color || style.gradient);
+    const cc = getColorClasses(baseColor);
     // Considera plano atual somente quando tier E período de cobrança coincidem.
     // Assim, quem está no Mensal pode fazer upgrade para Anual do mesmo plano (e vice-versa).
     const currentBilling = (subscription as any)?.billing_period || "monthly";
@@ -536,10 +538,10 @@ export default function PackagesPage() {
         viewport={{ once: true }}
         transition={{ delay: idx * 0.08, duration: 0.5 }}
         whileHover={{ y: -6, transition: { duration: 0.2 } }}
-        className={`group relative bg-black bg-gradient-to-br ${style.gradient} backdrop-blur-xl rounded-2xl border ${style.ring} ${style.glow} shadow-[0_8px_40px_-12px_rgba(245,158,11,0.25)] p-5 md:p-6 flex flex-col text-white ${isCurrent ? "ring-2 ring-amber-400" : ""}`}
+        className={`group relative bg-black bg-gradient-to-br ${plan.color || style.gradient} backdrop-blur-xl rounded-2xl border ${plan.border_color || style.ring} ${style.glow} shadow-[0_8px_40px_-12px_${cc.shadow}] p-5 md:p-6 flex flex-col text-white ${isCurrent ? `ring-2 ${cc.ring}` : ""}`}
       >
         {/* Glow ambient */}
-        <div className="absolute -top-20 -right-20 w-40 h-40 bg-amber-400/10 rounded-full blur-3xl group-hover:bg-amber-400/20 transition-all duration-500 overflow-hidden pointer-events-none" />
+        <div className={`absolute -top-20 -right-20 w-40 h-40 ${cc.glow} rounded-full blur-3xl group-hover:${cc.glow.replace("/10", "/20")} transition-all duration-500 overflow-hidden pointer-events-none`} />
 
         {isCurrent && (
           <span className="absolute -top-3 left-4 z-10 bg-primary text-primary-foreground text-[10px] font-black uppercase px-3 py-1 rounded-full tracking-widest shadow-lg">
@@ -547,7 +549,7 @@ export default function PackagesPage() {
           </span>
         )}
         {!isCurrent && style.badge && (
-          <span className={`absolute -top-3 left-1/2 -translate-x-1/2 z-10 ${style.ctaGradient ? `bg-gradient-to-r ${style.ctaGradient}` : "bg-gradient-to-r from-amber-500 to-orange-500"} text-white text-[10px] font-black uppercase px-4 py-1 rounded-full tracking-widest shadow-lg`}>
+          <span className={`absolute -top-3 left-1/2 -translate-x-1/2 z-10 ${plan.badge_color || (style.ctaGradient ? `bg-gradient-to-r ${style.ctaGradient}` : "bg-gradient-to-r from-amber-500 to-orange-500")} text-white text-[10px] font-black uppercase px-4 py-1 rounded-full tracking-widest shadow-lg`}>
             {style.badge}
           </span>
         )}
@@ -559,8 +561,8 @@ export default function PackagesPage() {
 
         <div className="relative z-10 flex flex-col h-full">
           <div className="flex items-center gap-2 mb-3">
-            <div className="p-2 bg-gradient-to-br from-amber-400/30 to-yellow-600/20 rounded-lg backdrop-blur border border-amber-400/30">
-              <Icon className="w-5 h-5 text-amber-300" />
+            <div className={`p-2 bg-gradient-to-br ${cc.iconBg} rounded-lg backdrop-blur border ${cc.iconBorder}`}>
+              <Icon className={`w-5 h-5 ${cc.iconText}`} />
             </div>
             <h3 className="font-display font-black text-xl md:text-2xl">{plan.name}</h3>
           </div>
