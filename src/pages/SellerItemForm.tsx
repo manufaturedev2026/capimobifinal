@@ -163,6 +163,8 @@ export default function SellerItemForm() {
   const { subscription, currentTier, config: pkgConfig, isExpired } = useSubscription(user?.id);
   const { usage: planUsage } = usePlanUsage(user?.id);
   const MAX_PHOTOS = planUsage?.limits.max_photos_per_listing ?? DEFAULT_MAX_PHOTOS;
+  const effectiveMaxItems = planUsage?.limits.max_items ?? pkgConfig.maxItems;
+  const effectivePlanName = planUsage?.plan_name ?? pkgConfig.name;
   const [limitDialog, setLimitDialog] = useState<{ open: boolean; kind: LimitKind }>({ open: false, kind: "items" });
 
   const openLimit = (kind: LimitKind) => setLimitDialog({ open: true, kind });
@@ -309,7 +311,7 @@ export default function SellerItemForm() {
     }
   }, [user]);
 
-  const isAtLimit = !isEdit && activeItemCount >= pkgConfig.maxItems;
+  const isAtLimit = !isEdit && activeItemCount >= effectiveMaxItems;
   const premiumOnlyTags: string[] = ["premium", "luxo", "alto_padrao", "exclusivo"];
   const allTagValues = Object.values(TAG_CATEGORIES).flatMap((c) => c.tags);
 
@@ -436,7 +438,7 @@ export default function SellerItemForm() {
     if (!profile) { toast({ title: "Erro", description: "Perfil não encontrado.", variant: "destructive" }); return; }
     if (!isAluguel && !form.category) { toast({ title: "Erro", description: "Selecione uma categoria.", variant: "destructive" }); return; }
     if (!form.title.trim()) { toast({ title: "Erro", description: "Preencha o título.", variant: "destructive" }); return; }
-    if (!isEdit && activeItemCount >= pkgConfig.maxItems) {
+    if (!isEdit && activeItemCount >= effectiveMaxItems) {
       openLimit("items");
       return;
     }
@@ -618,7 +620,7 @@ export default function SellerItemForm() {
             <Lock size={20} className="text-red-500 flex-shrink-0" />
             <div className="flex-1 text-center sm:text-left">
               <p className="font-bold text-red-600 text-sm">Limite de anúncios atingido!</p>
-              <p className="text-xs text-muted-foreground">Seu plano {pkgConfig.name} permite até {pkgConfig.maxItems} anúncios.</p>
+              <p className="text-xs text-muted-foreground">Seu plano {effectivePlanName} permite até {effectiveMaxItems} anúncios.</p>
             </div>
             <a href="/pacotes" className="px-4 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-bold hover:bg-primary/90">Ver Pacotes</a>
           </div>
@@ -1011,7 +1013,7 @@ export default function SellerItemForm() {
           undefined
         }
         limit={
-          limitDialog.kind === "items" ? pkgConfig.maxItems :
+          limitDialog.kind === "items" ? effectiveMaxItems :
           limitDialog.kind === "photos" ? MAX_PHOTOS :
           limitDialog.kind === "storage" ? planUsage?.limits.storage_mb :
           undefined
