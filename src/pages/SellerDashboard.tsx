@@ -24,6 +24,7 @@ import PropertyMeterTab from "@/components/PropertyMeterTab";
 import PartnerBrokerTab from "@/components/PartnerBrokerTab";
 import PropertyPartnershipsTab from "@/components/PropertyPartnershipsTab";
 import SellerAdsTab from "@/components/SellerAdsTab";
+import WhatsAppConfigTab from "@/components/WhatsAppConfigTab";
 import PartnerAgencyTab from "@/components/PartnerAgencyTab";
 import { Suspense } from "react";
 import SellerCustomization from "@/pages/SellerCustomization";
@@ -64,7 +65,7 @@ type SellerItem = {
   sold_at: string | null;
 };
 
-type DashboardTab = "overview" | "items" | "stats" | "domain" | "loja-espelhada" | "events" | "referral" | "crm" | "gallery" | "rentals" | "contracts" | "captacao" | "stories" | "notifications" | "profit" | "meter" | "customization" | "profile" | "imobiliarias" | "ads" | "parcerias";
+type DashboardTab = "overview" | "items" | "stats" | "domain" | "loja-espelhada" | "events" | "referral" | "crm" | "gallery" | "rentals" | "contracts" | "captacao" | "stories" | "notifications" | "profit" | "meter" | "customization" | "profile" | "imobiliarias" | "ads" | "parcerias" | "whatsapp";
 type SidebarNavItem =
   | { type: "tab"; id: DashboardTab; label: string; icon: any; locked?: boolean; tourId?: string }
   | { type: "link"; href: string; label: string; icon: any; className?: string; tourId?: string; badge?: string }
@@ -397,7 +398,7 @@ export default function SellerDashboard() {
     { key: "imoveis", title: "Imóveis", emoji: "🏘️", items: [tabNav("items", "Meus Anúncios", Package), linkNav("/painel/novo", "Novo Anúncio", Plus, { tourId: "tour-new-listing" }), tabNav("rentals" as DashboardTab, "Aluguéis", Building2), tabNav("contracts" as DashboardTab, "Contratos", FileText), linkNav("/avaliacao-ia", "Avaliação de Imóveis", Sparkles, { badge: "NEW" }), tabNav("meter" as DashboardTab, "Medidor de Imóveis", Ruler), tabNav("profit" as DashboardTab, "Calculadora de Lucro", Calculator)] },
     { key: "marketing", title: "Marketing", emoji: "🚀", items: [tabNav("gallery" as DashboardTab, "Galeria de Anúncios", Image), tabNav("stories" as DashboardTab, "Stories", Camera), tabNav("notifications" as DashboardTab, "Push", Bell), tabNav("ads" as DashboardTab, "Fazer ADS", Megaphone, { tourId: "tour-ads" }), tabNav("captacao" as DashboardTab, "Captação", Magnet)] },
     { key: "network", title: "Network", emoji: "🤝", items: [tabNav("parcerias" as DashboardTab, "Parcerias", Handshake), tabNav("imobiliarias" as DashboardTab, "Imobiliárias", Building2)] },
-    { key: "loja", title: "Loja/Site", emoji: "🛒", items: [tabNav("domain", "Meu Domínio", Globe, { locked: lockedTabs.includes("domain") }), tabNav("events", "Efeitos", Sparkles)] },
+    { key: "loja", title: "Loja/Site", emoji: "🛒", items: [tabNav("domain", "Meu Domínio", Globe, { locked: lockedTabs.includes("domain") }), tabNav("events", "Efeitos", Sparkles), tabNav("whatsapp" as DashboardTab, "WhatsApp da Loja", MessageCircle)] },
     { key: "financeiro", title: "Financeiro", emoji: "💰", items: [linkNav("/pacotes", "Pacotes", Package)] },
     { key: "conta", title: "Conta", emoji: "👤", items: [tabNav("profile", "Meu Perfil", UserCircle), ...(!installed ? [actionNav("install", "Instalar APP", Download, async () => { const result = await requestInstall(); if (result.outcome === "unavailable") setShowInstallGuide(true); })] : []), ...(!pushSub.isSubscribed ? [actionNav("push", pushSub.loading ? "Ativando..." : "Ativar Notificações", Bell, async () => { if (!pushSub.isSupported) { toast({ title: "Notificações não suportadas", description: pushSub.unsupportedReason || "Este navegador não suporta push notifications. Tente pelo app instalado.", variant: "destructive" }); return; } if (pushSub.permission === "denied") { toast({ title: "Notificações bloqueadas", description: "Desbloqueie nas configurações do navegador.", variant: "destructive" }); return; } await pushSub.subscribe(); }, { disabled: pushSub.loading })] : [actionNav("push-active", "Notificações ativas ✓", Bell, () => {}, { disabled: true })])] },
     ...(isAdmin ? [{ key: "admin", title: "Admin", emoji: "⚙️", items: [linkNav("/admin", "Painel Admin", Shield)] }] : []),
