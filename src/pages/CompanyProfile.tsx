@@ -27,6 +27,7 @@ import { useWhatsAppPicker } from "@/components/WhatsAppTeamPicker";
 import StoryViewer from "@/components/StoryViewer";
 import { useStories } from "@/hooks/useStories";
 import WhatsAppLeadCapture from "@/components/WhatsAppLeadCapture";
+import WhatsAppAiChat from "@/components/WhatsAppAiChat";
 
 import StoriesBar from "@/components/StoriesBar";
 import StoryUploadDialog from "@/components/StoryUploadDialog";
@@ -107,6 +108,8 @@ export default function CompanyProfile() {
   const { sellerStories } = useStories(dbProfile?.id);
   const [storyViewerOpen, setStoryViewerOpen] = useState(false);
   const [leadCaptureOpen, setLeadCaptureOpen] = useState(false);
+  const [aiChatOpen, setAiChatOpen] = useState(false);
+  const [aiChatContext, setAiChatContext] = useState<string | null>(null);
   const [storyUploadOpen, setStoryUploadOpen] = useState(false);
   const [pendingWhatsAppAction, setPendingWhatsAppAction] = useState<(() => void) | null>(null);
   const [leadCaptureContext, setLeadCaptureContext] = useState<{ funnelStage?: string; extraNotes?: string; leadSource?: string } | null>(null);
@@ -617,6 +620,15 @@ export default function CompanyProfile() {
 
   const handleWhatsApp = (title: string, productId?: string) => {
     if (isDbProfile && dbProfile) {
+      const mode = (dbProfile as any)?.whatsapp_mode || "crm";
+      if (mode === "disabled") {
+        return;
+      }
+      if (mode === "ai") {
+        setAiChatContext(title);
+        setAiChatOpen(true);
+        return;
+      }
       setLeadCaptureContext(null); // Reset context for normal WhatsApp
       setPendingWhatsAppAction(() => () => doWhatsAppRedirect(title, productId));
       setLeadCaptureOpen(true);
@@ -2259,7 +2271,7 @@ export default function CompanyProfile() {
         </PoolBallButton>
       )}
 
-      {company.whatsapp && (dbProfile as any)?.show_floating_whatsapp && (
+      {company.whatsapp && (dbProfile as any)?.show_floating_whatsapp && ((dbProfile as any)?.whatsapp_mode || "crm") !== "disabled" && (
         <PoolBallButton
           initialBottom={144}
           initialRight={16}
@@ -2391,6 +2403,22 @@ export default function CompanyProfile() {
           onOpenChange={setStoryUploadOpen}
           sellerId={dbProfile.id}
           onUploaded={() => window.location.reload()}
+        />
+      )}
+
+      {isDbProfile && dbProfile && (
+        <WhatsAppAiChat
+          open={aiChatOpen}
+          onOpenChange={(v) => {
+            setAiChatOpen(v);
+            if (!v) setAiChatContext(null);
+          }}
+          sellerId={dbProfile.id}
+          sellerUserId={dbProfile.user_id}
+          sellerWhatsapp={company.whatsapp}
+          attendantName={(dbProfile as any)?.whatsapp_ai_name || null}
+          themePrimary={storeTheme.primary}
+          contextTitle={aiChatContext || undefined}
         />
       )}
 

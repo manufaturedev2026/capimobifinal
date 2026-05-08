@@ -1170,6 +1170,11 @@ export default function SellerDashboard() {
               <StoreEffectsPicker userId={user.id} sellerId={profile.id} />
             )}
 
+            {/* WhatsApp Config Tab */}
+            {activeTab === "whatsapp" && user?.id && profile?.id && (
+              <WhatsAppConfigTab userId={user.id} sellerId={profile.id} />
+            )}
+
 
             {/* CRM Tab */}
             {activeTab === "crm" && user?.id && profile?.id && (
