@@ -82,6 +82,15 @@ const styles: Record<string, { bg: string; icon: any; label: string; labelFull?:
     anim: "animate-badge-glow-strong",
     shine: true,
   },
+  fundador_construtora: {
+    bg: "bg-gradient-to-r from-amber-600 to-yellow-700",
+    icon: Crown,
+    label: "Fundador",
+    labelFull: "Fundador Construtora",
+    glow: "shadow-amber-500/40",
+    anim: "animate-badge-glow-strong",
+    shine: true,
+  },
   imob_basico: { bg: "bg-slate-500", icon: Building, label: "Imob Grátis" },
   imob_start: { bg: "bg-gradient-to-r from-emerald-500 to-teal-500", icon: Building, label: "Imob Start", anim: "animate-badge-glow-soft" },
   imob_pro: { bg: "bg-gradient-to-r from-amber-500 to-orange-500", icon: Building, label: "Imob Pro", glow: "shadow-amber-500/30", anim: "animate-badge-glow-soft", shine: true },
@@ -98,6 +107,8 @@ export default function PackageBadge({ tier, size = "sm" }: PackageBadgeProps) {
   const config = styles[tier];
   if (!config) return null;
   const Icon = config.icon;
+
+  const isFounder = tier.startsWith("fundador");
 
   const shineOverlay = config.shine ? (
     <span
@@ -123,6 +134,16 @@ export default function PackageBadge({ tier, size = "sm" }: PackageBadgeProps) {
   }
 
   const sizeClasses = size === "sm" ? "px-1.5 py-0.5 text-[9px]" : "px-2.5 py-1 text-xs";
+
+  // On mobile (sm), founder badges show text-only to avoid cropping
+  if (isFounder && size === "sm") {
+    return (
+      <span className={`relative overflow-hidden inline-flex items-center ${config.bg} text-white font-bold rounded-md px-1.5 py-0.5 text-[9px] shadow-sm ${config.glow || ""} ${config.anim || ""}`}>
+        <span className="relative z-10">Fundador</span>
+        {shineOverlay}
+      </span>
+    );
+  }
 
   return (
     <span className={`relative overflow-hidden inline-flex items-center gap-0.5 ${config.bg} text-white font-bold rounded-md ${sizeClasses} shadow-sm ${config.glow || ""} ${config.anim || ""}`}>
