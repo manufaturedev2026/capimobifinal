@@ -37,11 +37,21 @@ export default function WhatsAppAiChat({
   const [loading, setLoading] = useState(false);
   const [leadSaved, setLeadSaved] = useState<{ name: string; phone: string } | null>(null);
   const [leadSummary, setLeadSummary] = useState<string>("");
+  const [chatSessionId, setChatSessionId] = useState(() => crypto.randomUUID());
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, open, leadSaved]);
+
+  useEffect(() => {
+    if (open) return;
+    setMessages([]);
+    setInput("");
+    setLeadSaved(null);
+    setLeadSummary("");
+    setChatSessionId(crypto.randomUUID());
+  }, [open]);
 
   // Greeting on open
   useEffect(() => {
@@ -50,7 +60,7 @@ export default function WhatsAppAiChat({
     (async () => {
       try {
         const { data } = await supabase.functions.invoke("whatsapp-ai-chat", {
-          body: { sellerId, messages: [], corretorSlug },
+          body: { sellerId, messages: [], corretorSlug, chatSessionId },
         });
         if (!cancelled && data?.reply) {
           setMessages([{ role: "assistant", content: data.reply }]);
@@ -60,7 +70,7 @@ export default function WhatsAppAiChat({
     return () => {
       cancelled = true;
     };
-  }, [open, sellerId, messages.length, corretorSlug]);
+  }, [open, sellerId, messages.length, corretorSlug, chatSessionId]);
 
   const send = useCallback(async () => {
     const text = input.trim();
