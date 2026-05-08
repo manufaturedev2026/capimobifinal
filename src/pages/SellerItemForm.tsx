@@ -1013,7 +1013,7 @@ export default function SellerItemForm() {
           undefined
         }
         limit={
-          limitDialog.kind === "items" ? pkgConfig.maxItems :
+          limitDialog.kind === "items" ? effectiveMaxItems :
           limitDialog.kind === "photos" ? MAX_PHOTOS :
           limitDialog.kind === "storage" ? planUsage?.limits.storage_mb :
           undefined
