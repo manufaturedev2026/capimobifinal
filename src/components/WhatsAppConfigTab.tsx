@@ -90,7 +90,7 @@ export default function WhatsAppConfigTab({ userId, sellerId }: Props) {
       id: "ai",
       icon: Bot,
       title: "Atendente IA (recepciona o lead)",
-      desc: "Uma atendente IA conversa com o visitante no site, qualifica o lead, salva no CRM e te avisa. Custa 3 créditos por sessão de 30min.",
+      desc: "Uma atendente IA conversa com o visitante no site, qualifica o lead, salva no CRM e te avisa. Custa 1 crédito por sessão de 30min.",
       color: "from-primary/30 to-accent/10",
     },
   ];
