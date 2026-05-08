@@ -20,6 +20,16 @@ REGRAS GLOBAIS:
 
 OBJETIVO: Qualificar o lead coletando NOME, WHATSAPP, INTENÇÃO (compra/aluguel/venda), e detalhes do imóvel desejado (cidade/bairro, faixa de valor, tipo). Assim que tiver pelo menos NOME + TELEFONE, chame a ferramenta save_lead.`;
 
+const SYSTEM_BASE_VALUES = `
+
+INTERPRETAÇÃO DE VALORES (MUITO IMPORTANTE):
+- Estamos no Brasil (R$). Interprete os números do jeito que um brasileiro fala.
+- Para ALUGUEL, valores típicos ficam entre R$ 500 e R$ 15.000/mês. Se o visitante disser "1600", "2 mil", "3500", entenda como reais por mês (R$ 1.600, R$ 2.000, R$ 3.500). NUNCA multiplique por 100 nem confunda com 160.000.
+- Para COMPRA/VENDA, "300" geralmente significa R$ 300 mil; "1,2" ou "1.2" significa R$ 1,2 milhão. Use o contexto.
+- "k" = mil, "mi" / "milhão" = milhão. Ex.: "2k" = R$ 2.000, "1,5mi" = R$ 1.500.000.
+- Se houver QUALQUER ambiguidade no valor, CONFIRME com o visitante antes de registrar (ex.: "Só pra confirmar: R$ 1.600 por mês, certo? 😊").
+- Ao salvar em desired_price, escreva sempre formatado em reais com a unidade clara (ex.: "R$ 1.600/mês" para aluguel, "R$ 450.000" para compra).`;
+
 const EXTRACT_TOOL = {
   type: "function",
   function: {
