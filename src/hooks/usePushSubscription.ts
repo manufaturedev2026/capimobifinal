@@ -166,38 +166,20 @@ export function usePushSubscription(
       console.log("[Push] VAPID key received");
 
       // Step 3: Register the dedicated push service worker.
-      // register() is idempotent — if same URL is already registered it returns
-      // the existing registration immediately. So we skip the search loop
-      // (which can be slow when there are stale/broken SW entries) and call
-      // register() directly. If it times out, we clean up and retry once.
+      // iOS PWA can hang when repeatedly re-registering/unregistering workers,
+      // so reuse any existing push worker before attempting a fresh register.
       console.log("[Push] Registering service worker...");
-      let registration: ServiceWorkerRegistration;
+      let registration = await getExistingPushRegistration();
       try {
-        registration = await withTimeout(
-          navigator.serviceWorker.register(PUSH_SW_URL),
-          SW_REGISTER_TIMEOUT_MS,
-          "Tempo esgotado ao registrar o app para push."
-        );
+        registration = registration ?? await registerPushWorker();
       } catch (regErr) {
         console.warn("[Push] register() failed, cleaning up stale SWs and retrying:", regErr);
         try {
-          const allRegs = await navigator.serviceWorker.getRegistrations();
-          await Promise.all(
-            allRegs
-              .filter((r) => {
-                const url = r.active?.scriptURL || r.installing?.scriptURL || r.waiting?.scriptURL || "";
-                return url.includes("push-sw");
-              })
-              .map((r) => r.unregister().catch(() => false))
-          );
+          await cleanupPushRegistrations();
         } catch {
           console.warn("[Push] Failed to clean stale push service workers before retry.");
         }
-        registration = await withTimeout(
-          navigator.serviceWorker.register(PUSH_SW_URL),
-          SW_REGISTER_TIMEOUT_MS,
-          "Não foi possível registrar o app para push. Tente recarregar a página."
-        );
+        registration = await registerPushWorker("Não foi possível registrar o app para push. Feche e abra o app, depois tente novamente.");
       }
 
       // Only wait for activation if not already active
